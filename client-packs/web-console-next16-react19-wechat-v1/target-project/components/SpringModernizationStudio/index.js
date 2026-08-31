@@ -8,10 +8,10 @@ Component(createHandPortComponent({
   "source": {
     "file": "app/spring/SpringModernizationStudio.tsx",
     "componentName": "SpringModernizationStudio",
-    "sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
+    "sha256": "sha256:048f5c6dbf28a160dc8a797240fc28ec2bf0b24f9bd6b554dbf07b398850126d",
     "range": {
       "start": 9025,
-      "end": 46037
+      "end": 46056
     }
   },
   "blocker": {
@@ -177,5 +177,5 @@ Component(createHandPortComponent({
     "SpringModernizationStudio:source-blocker",
     "SpringModernizationStudio:effect-cleanup:13244"
   ],
-  "irDigest": "sha256:70b72c5ebb0b179883470fbf0a3847b6d79755a04645f88aaf0408a9956780f0"
+  "irDigest": "sha256:9e805c8e0ec458bdca6d4ec10d8b5318058e248de1d5613af3d9fa041e5e6160"
 }));

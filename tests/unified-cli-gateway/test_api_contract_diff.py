@@ -1,5 +1,6 @@
 """Unit tests for Polyglot API Contract & Backward-Compatibility Drift Differ."""
 
+import copy
 import unittest
 from elmos_polyglot_compiler.api_contract_diff import (
     ApiContractDiffer,
@@ -33,6 +34,7 @@ class TestApiContractDiffer(unittest.TestCase):
                     "request_fields": {
                         "order_id": {"type": "string", "required": True},
                         "amount": {"type": "float", "required": True},
+                        "currency": {"type": "string", "required": False},
                     },
                     "response_fields": {
                         "order_id": {"type": "string"},
@@ -62,6 +64,18 @@ class TestApiContractDiffer(unittest.TestCase):
         self.assertIsInstance(rep, ContractDiffReport)
         self.assertTrue(rep.is_backward_compatible)
         self.assertEqual(rep.breaking_changes_count, 0)
+        self.assertEqual(rep.non_breaking_count, 1)
+
+    def test_optional_request_field_removal_is_breaking(self):
+        target = copy.deepcopy(self.tgt_spec_compatible)
+        del target["endpoints"]["POST /api/v1/orders"]["request_fields"][
+            "currency"
+        ]
+
+        rep = self.differ.compare_specs(self.src_spec, target)
+
+        self.assertFalse(rep.is_backward_compatible)
+        self.assertEqual(rep.breaking_changes_count, 1)
         self.assertEqual(rep.non_breaking_count, 1)
 
     def test_breaking_diff(self):

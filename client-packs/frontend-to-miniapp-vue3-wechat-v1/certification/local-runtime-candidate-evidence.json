@@ -17,14 +17,14 @@
     "source_scripts_executed": false
   },
   "runtime_implementation": {
-    "digest": "sha256:3c66e54aa46545dc22c2ca245ab074d46924d5d02b1b2bd6b60e96bf7ab77aca",
+    "digest": "sha256:fe391c887d86c2a15587a0ceb0aee73b75306a61b3347c25c821c4db187aa238",
     "file_count": 24,
     "node_version": "26.0.0",
     "typescript_version": "5.9.2",
     "vue_compiler_sfc_version": "3.5.39"
   },
   "evidence_root": {
-    "digest": "sha256:b3a09731defd0559dfb18b4c33a23fbcd2da837d7185178d285fc8140b399988",
+    "digest": "sha256:887bdbe4b8cbee139b7f30b184f09e25bb5bb0db94511916930f3ed0153518c7",
     "entry_count": 38,
     "entries": [
       {
@@ -109,8 +109,8 @@
       },
       {
         "path": "dist/src/miniapp-semantic-ir.js",
-        "bytes": 156553,
-        "sha256": "sha256:206da93cbd8d82ae7730a639748265d3fdc29c227492fd035b75dcbca5eb6637"
+        "bytes": 157008,
+        "sha256": "sha256:2c46a71296dd27e2968f00c83ab10c88038f9333ecfa6ee9b934e9609c10a3ad"
       },
       {
         "path": "dist/src/miniapp-skill-runtime.js",
@@ -134,13 +134,13 @@
       },
       {
         "path": "package.json",
-        "bytes": 1123,
-        "sha256": "sha256:4e15dd29f10d03cc76f2d91cca03ce7ddfa14f57a078ef06a6b005c807a13b81"
+        "bytes": 988,
+        "sha256": "sha256:afee6fb3a196ccb241db87cc45e8a12cb5150394c52f6bbaed61c21b710c64fe"
       },
       {
         "path": "pnpm-lock.yaml",
-        "bytes": 8878,
-        "sha256": "sha256:77592e787157ec5fb0fad3548906ee8d06524674b0698557ce15134a34b28603"
+        "bytes": 7036,
+        "sha256": "sha256:6332bb41562d1a33fe282b05c451cac07ecd1bc686d2fd8b474c26445b3c1748"
       },
       {
         "path": "scripts/batch32/run_client_gate.py",
@@ -189,8 +189,8 @@
       },
       {
         "path": "src/miniapp-semantic-ir.ts",
-        "bytes": 160447,
-        "sha256": "sha256:1b8e1170c07ecc89faef8ccb898bbff0dce41dafaa41798275a1b95d89954ba5"
+        "bytes": 160903,
+        "sha256": "sha256:ff4661413fb0dd4e67eee1f74f0fb3073141678fd2a6252975a458511639157a"
       },
       {
         "path": "src/miniapp-skill-runtime.ts",

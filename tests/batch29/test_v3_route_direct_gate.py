@@ -48,7 +48,7 @@ def create_v3_route(root: Path, route_key: str = "java-to-kotlin") -> Path:
     )
 
     route = root / route_key
-    for relative in VALIDATOR.REQUIRED_DIRS:
+    for relative in VALIDATOR.V3_RESEARCH_REQUIRED_DIRS:
         (route / relative).mkdir(parents=True, exist_ok=True)
     write_json(
         route / "route.json",

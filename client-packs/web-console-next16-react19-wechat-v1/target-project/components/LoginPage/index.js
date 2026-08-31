@@ -8,10 +8,10 @@ Component(createHandPortComponent({
   "source": {
     "file": "app/login/page.tsx",
     "componentName": "LoginPage",
-    "sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
+    "sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
     "range": {
-      "start": 930,
-      "end": 3002
+      "start": 1008,
+      "end": 3538
     }
   },
   "blocker": {
@@ -22,7 +22,7 @@ Component(createHandPortComponent({
   "props": [
     {
       "name": "searchParams",
-      "type": "Promise<{ error?: string; returnTo?: string }>",
+      "type": "Promise<{ error?: string; registered?: string; returnTo?: string }>",
       "optional": false
     }
   ],
@@ -39,8 +39,10 @@ Component(createHandPortComponent({
     "auth-card",
     "auth-error",
     "auth-form",
+    "auth-links",
     "auth-not-configured",
     "auth-page",
+    "auth-success",
     "button button-primary",
     "current-password",
     "eyebrow",
@@ -52,11 +54,9 @@ Component(createHandPortComponent({
     "status",
     "submit",
     "test",
+    "text-link",
     "username",
-    "仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。",
-    "使用企业账户登录",
-    "使用本地测试账号登录",
-    "密码"
+    "仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。"
   ],
   "adapters": [
     "wechat-cancellable-request-v1"
@@ -64,5 +64,5 @@ Component(createHandPortComponent({
   "obligations": [
     "LoginPage:source-blocker"
   ],
-  "irDigest": "sha256:4daa6201239fa52a6355352d1aead7209302bf0b80e989c1a5b3d53bf4c0f092"
+  "irDigest": "sha256:5d0d13976a192191e46712a8a0db5ea1f6e505fe78ca96d47ce30f8a1bfce0fa"
 }));

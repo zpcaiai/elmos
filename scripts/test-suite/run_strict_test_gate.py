@@ -238,8 +238,13 @@ def verify_certification_request(
     blockers: list[str],
 ) -> bool:
     try:
-        request_path.resolve().relative_to(suite_root)
-        signature_path.resolve().relative_to(suite_root)
+        # macOS may expose a tempfile created under /var through the canonical
+        # /private/var path. Canonicalize both sides before enforcing the
+        # suite-root boundary; otherwise a valid in-root request is rejected,
+        # while the boundary check itself remains fail-closed.
+        canonical_suite_root = suite_root.resolve()
+        request_path.resolve().relative_to(canonical_suite_root)
+        signature_path.resolve().relative_to(canonical_suite_root)
         request = load_json(request_path)
         trust_store = load_json(trust_store_path)
     except Exception as exc:  # noqa: BLE001

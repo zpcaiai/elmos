@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0811",
+  "skill_name": "frt-0811-component-test-generator",
+  "batch": "G08",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g08/frt-0811-component-test-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-test-generator",
+  "execution_contract_sha256": "sha256:4d436b84737a9962502b483035562a5b8500377423173d0d62f83bf933e75010",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:fa01e9157c8fc03f4ee33a049f0e76e6b9e0e8c2a80ee8544d627862ff69292a",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

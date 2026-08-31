@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state locale has unsupported type \"UiLocale\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+    "reason": "component body statement kind ExpressionStatement is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [
     {
@@ -57,5 +57,5 @@ Component(createHandPortComponent({
   "obligations": [
     "UiPreferencesProvider:source-blocker"
   ],
-  "irDigest": "sha256:4edbff9b7b9d35799d94b85777466027744f545608f6938e4e8e5057229181ff"
+  "irDigest": "sha256:280a190f494d8405172a468548c3b99beff36c9dbd60249c44357c3866ec4dc3"
 }));

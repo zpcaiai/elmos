@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "elmos.frontend-component-migration-closure",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
-  "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "source_revision": "e69e1ac37295d593df4491b297f8b3048fd052d2",
+  "source_snapshot_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
   "target_tuple": {
     "stack": "wechat-native-miniapp-candidate",
     "versions": [
@@ -60,13 +60,13 @@
     ]
   },
   "totals": {
-    "discovered": 71,
-    "automatic": 32,
-    "hand_ported": 39,
+    "discovered": 72,
+    "automatic": 31,
+    "hand_ported": 41,
     "unhandled": 0,
     "scan_errors": 0
   },
-  "automatic_coverage": 0.450704,
+  "automatic_coverage": 0.430556,
   "implementation_coverage": 1,
   "delivery_status": "COMPLETE_WITH_HANDOFF",
   "runtime_evidence": "NOT_RUN",
@@ -285,13 +285,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-        "reason": "expression kind CallExpression is outside certified-component-v1",
-        "semantic_category": "effects-and-resources"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state rows element.settledAmountMinor has unsupported type \"string | number | null\"",
+        "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:98b0fba6ae3ccaeead373b86ace7de1d75d82364ba3ad210fef6847c007f41bc",
+      "manual_ir_digest": "sha256:3ae79b5b4debae661ff57f08ac507e248eec2b0d15bd9edf847414ef74ac5f09",
       "target_path": "target-project/components/PlatformJobsPanel",
-      "target_sha256": "sha256:1c8ee1ffaf40587b021bfd15ee58ecaaf9eb449cc4317f21cac9a4474a0df9fa",
+      "target_sha256": "sha256:b775c12b7cd19972618a48897fe7575bd33cb18d52a5bc4e0e5193d2b065ade3",
       "target_files": [
         "target-project/components/PlatformJobsPanel/index.js",
         "target-project/components/PlatformJobsPanel/index.json",
@@ -335,13 +335,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:3eb719279ae8dea4f86faa8b530e26c7cf20e6586af44fcadb00cefdeb615f0b",
+      "manual_ir_digest": "sha256:ecd9b1c3cf1d208565f9b18668baad2a548fd9e8e1b2e284b826b63c30797023",
       "target_path": "target-project/components/CommercializationConsole",
-      "target_sha256": "sha256:a1d425624ace74dedfbae96375f40be7aadb196969dcce8641fbae314ca4f6f0",
+      "target_sha256": "sha256:f0d866052d642f14dc471b342c47d472e508c880911c8cafddab90f74c6d473b",
       "target_files": [
         "target-project/components/CommercializationConsole/index.js",
         "target-project/components/CommercializationConsole/index.json",
@@ -381,13 +381,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:ba8119cd660e0b55719ea5b2c5bc2d556c8e177029b6f52ecaa10f43289eefa0",
+      "manual_ir_digest": "sha256:099b465388edd70cd04579a4f6316690d563e44af56a264b4a92ac056d7e9134",
       "target_path": "target-project/components/AccountSessionProvider",
-      "target_sha256": "sha256:4d0e7785157e1f8448ebd9fdf513d864f012b2f15117bd88aec4d45a60486906",
+      "target_sha256": "sha256:abb01cc6a5f06d9711be17c6f18a5e4629123245d14a449092440b9cd77ef881",
       "target_files": [
         "target-project/components/AccountSessionProvider/index.js",
         "target-project/components/AccountSessionProvider/index.json",
@@ -452,7 +452,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "BehaviorChart",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -473,20 +473,24 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "CoverageMeter",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "disposition": "AUTOMATIC",
-      "automatic_subset_status": "IN_SUBSET",
-      "blocker": null,
-      "manual_ir_digest": null,
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE",
+        "reason": "spread attributes are outside certified-component-v1",
+        "semantic_category": "platform-semantics"
+      },
+      "manual_ir_digest": "sha256:c19dbf8b731734078536d6485224d0e36438129e99dd1436ca9fa6185dd334c5",
       "target_path": "target-project/components/CoverageMeter",
-      "target_sha256": "sha256:0b4451ef711cec404fa83aa00c9eb786254f61c26ccf4517458fd74ed803c6e9",
+      "target_sha256": "sha256:d9b6f9f6a27d102531b72c77d2b630ea3a398d9c4660786d9e905ee65d76f045",
       "target_files": [
         "target-project/components/CoverageMeter/index.js",
         "target-project/components/CoverageMeter/index.json",
         "target-project/components/CoverageMeter/index.wxml",
         "target-project/components/CoverageMeter/index.wxss"
       ],
-      "syntax_evidence": "PASSED",
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -494,7 +498,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "EmptyEvidence",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -515,7 +519,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "EquivalenceMatrix",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -523,9 +527,9 @@
         "reason": "expression kind CallExpression is outside certified-component-v1",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:ca75212f87491733a77e44bcf08b7130d0498425eba1d3cf8485845894142c5c",
+      "manual_ir_digest": "sha256:01ab2b3d4b29ab18a0096aa436ccb4dcba0d43767bd764327a925f1b6412bb1e",
       "target_path": "target-project/components/EquivalenceMatrix",
-      "target_sha256": "sha256:a5142304fa84f4f6095446bcf0a43d7275746861d1b79d8547327aeaa2bf7136",
+      "target_sha256": "sha256:0a162d38eb17aea6fc6458fadc98a75fd8432978b8181dc26ba96e4d8a25d0e2",
       "target_files": [
         "target-project/components/EquivalenceMatrix/index.js",
         "target-project/components/EquivalenceMatrix/index.json",
@@ -540,7 +544,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "EvidenceGraph",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -548,9 +552,9 @@
         "reason": "expression kind NewExpression is outside certified-component-v1",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:5c7964c10595935a24db931d62d1b73d3206d4858f829a0079dbab56649921ec",
+      "manual_ir_digest": "sha256:3804bd13e0e7364b0480ce16e79a6c7944cfe396f2df01c5b0894d326814686e",
       "target_path": "target-project/components/EvidenceGraph",
-      "target_sha256": "sha256:3bc93c054120eaa67e41b293948a93efe297a70cfa06616386020bb12fecbad7",
+      "target_sha256": "sha256:e1d3526b284cedbfed41596669bc64151e680e1ffdde2921498a7fd914032880",
       "target_files": [
         "target-project/components/EvidenceGraph/index.js",
         "target-project/components/EvidenceGraph/index.json",
@@ -565,7 +569,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "ProjectEvidenceCharts",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -573,9 +577,9 @@
         "reason": "expression kind CallExpression is outside certified-component-v1",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:1e4b05ec3ec13926e34ca1f8f4cabf91d7b3b1c14c4783034c16939817db5ff8",
+      "manual_ir_digest": "sha256:969526c9b0040591ad40bc8930283317a03454fdde17346509b185d3f4a140e8",
       "target_path": "target-project/components/ProjectEvidenceCharts",
-      "target_sha256": "sha256:7e92497c3d96210057a926fee9bda12fcde564f82d2ee9c2cc3e0a5af24bbb71",
+      "target_sha256": "sha256:c41cba414c22e5343686b0b9687bf811afff9255e3cf75fb1be310477bf29d4d",
       "target_files": [
         "target-project/components/ProjectEvidenceCharts/index.js",
         "target-project/components/ProjectEvidenceCharts/index.json",
@@ -590,7 +594,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "SemanticMappingChart",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -611,7 +615,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "StatusMark",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -632,7 +636,7 @@
     {
       "source_path": "app/components/ProjectEvidenceCharts.tsx",
       "component_name": "TranslationEvidenceCharts",
-      "source_sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+      "source_sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -683,12 +687,12 @@
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
         "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+        "reason": "state evidence.result has unsupported type \"unknown\"",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:8462c13edbd2efe5e3092553c9784c9e251f054e65b748c8c688712b311e59e0",
+      "manual_ir_digest": "sha256:b729dd8238de604a8105d026cb0890d59653db4df31dbd12882021278d1a69f8",
       "target_path": "target-project/components/SmokeRunButton",
-      "target_sha256": "sha256:1a89c0fb07bf9101ddce13b5eb8ea2b9b5dc513e48614df86564a74147cb6559",
+      "target_sha256": "sha256:eded1a12c7ef19769ceb9b44ce9ee7a72c769e39344e8be33f99f24f5ae36ab2",
       "target_files": [
         "target-project/components/SmokeRunButton/index.js",
         "target-project/components/SmokeRunButton/index.json",
@@ -728,13 +732,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state locale has unsupported type \"UiLocale\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+        "reason": "component body statement kind ExpressionStatement is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:4edbff9b7b9d35799d94b85777466027744f545608f6938e4e8e5057229181ff",
+      "manual_ir_digest": "sha256:280a190f494d8405172a468548c3b99beff36c9dbd60249c44357c3866ec4dc3",
       "target_path": "target-project/components/UiPreferencesProvider",
-      "target_sha256": "sha256:a99a6a81b23004fef1474c3c961274a128a9bb8b210d82ceec0b342337df9455",
+      "target_sha256": "sha256:63b116ff15f0023248c328e483246438bd5e37e9a063ababe2ac0571153a8943",
       "target_files": [
         "target-project/components/UiPreferencesProvider/index.js",
         "target-project/components/UiPreferencesProvider/index.json",
@@ -845,13 +849,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind ArrowFunction is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:a3e803c2faca35da6e5a5a7baa001a11e50bfe149bbd6eabfce0d4c2feeb7418",
+      "manual_ir_digest": "sha256:88e14d52239a3908c82bc344888f33994a589a4ce5067ecb3dd421bbffb82361",
       "target_path": "target-project/components/GovernanceWorkspace",
-      "target_sha256": "sha256:8580602b48530407ca749337cb8a268482fd306cbf54d32428487bc6ad78d314",
+      "target_sha256": "sha256:287e8591542e31ac345c0ec77bc69f9f59f2cca0bc29d2906a7d6bff23f31138",
       "target_files": [
         "target-project/components/GovernanceWorkspace/index.js",
         "target-project/components/GovernanceWorkspace/index.json",
@@ -958,7 +962,7 @@
     {
       "source_path": "app/intake/page.tsx",
       "component_name": "MultimodalIntakePage",
-      "source_sha256": "sha256:74043ecc35875e8ba9d95fe35d1c223546de0edbd38c7c5e6f9f3891cde03666",
+      "source_sha256": "sha256:c28e91082cc8a0f83e185efe57031b5dbd5c7b85ece1219df21eeef2b924f3a5",
       "disposition": "AUTOMATIC",
       "automatic_subset_status": "IN_SUBSET",
       "blocker": null,
@@ -1004,7 +1008,7 @@
     {
       "source_path": "app/login/page.tsx",
       "component_name": "LoginPage",
-      "source_sha256": "sha256:56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
+      "source_sha256": "sha256:ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1012,9 +1016,9 @@
         "reason": "prop searchParams.then has no object fields",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:4daa6201239fa52a6355352d1aead7209302bf0b80e989c1a5b3d53bf4c0f092",
+      "manual_ir_digest": "sha256:5d0d13976a192191e46712a8a0db5ea1f6e505fe78ca96d47ce30f8a1bfce0fa",
       "target_path": "target-project/components/LoginPage",
-      "target_sha256": "sha256:858bda7cbaef88ec02a255587068d31989150beeae853c6af619c9d15d1ea949",
+      "target_sha256": "sha256:fa83f400d3ed5970fdf6934622b81d8c9bc135e7ccf9dc3a6cf0b2ddbd64bcaf",
       "target_files": [
         "target-project/components/LoginPage/index.js",
         "target-project/components/LoginPage/index.json",
@@ -1054,13 +1058,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state view has unsupported type \"StudioView\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:bc6e60abd992258487a258d99d55a81ec78998685ca6261fd5800e44f0d0a4bd",
+      "manual_ir_digest": "sha256:6bb341b4e3636718ebfd8b22a5bb9cb5730ce72046ede1ec4cf6043cde1f9033",
       "target_path": "target-project/components/MigrationStudio",
-      "target_sha256": "sha256:561fb81cfad014b3eedb0306e0c1b333b8a9d6e11a75c17620df19ac4c40224f",
+      "target_sha256": "sha256:daf2603056a9602dbd4163088c812e43dba8f54d74045fb184ba24075b8aec3a",
       "target_files": [
         "target-project/components/MigrationStudio/index.js",
         "target-project/components/MigrationStudio/index.json",
@@ -1101,12 +1105,12 @@
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
         "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+        "reason": "state result.statements element.sourceAst has incompatible union object shapes",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:3e994b4e4b8ffd6ec12f8434e959e7f497d89598569f5a870f123631c4f13c41",
+      "manual_ir_digest": "sha256:affbbeca3643aea8c350afe1bb71794297357aa3e0a7b2ca04be6dae4857af05",
       "target_path": "target-project/components/ChinaDbSqlPreflightStudio",
-      "target_sha256": "sha256:c6c19657149b60c62b1b188adb93cead4536d42e15b7eb9a1e51668c3b0f6222",
+      "target_sha256": "sha256:52bfd26780c8a4caeac97a913bf37caeb48abef8c6ced978300f801f294a4189",
       "target_files": [
         "target-project/components/ChinaDbSqlPreflightStudio/index.js",
         "target-project/components/ChinaDbSqlPreflightStudio/index.json",
@@ -1209,17 +1213,17 @@
     {
       "source_path": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
       "component_name": "RepositoryOrchestratorWorkbench",
-      "source_sha256": "sha256:94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
+      "source_sha256": "sha256:1743a60296e6221e75adc6c14b3ca8dd592f9830b84e3818aae86db293d34380",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
         "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+        "reason": "state result.dag.tasks element has unsupported type \"unknown\"",
         "semantic_category": "data-contracts"
       },
-      "manual_ir_digest": "sha256:a28d848f49a4a40f9ce97fb62bc16b4234fa934286a761b963d20e96cb92c87c",
+      "manual_ir_digest": "sha256:33c0dd69c64fe4ca7687dc78507e5026bd0e277542d542c48d11a2635370939b",
       "target_path": "target-project/components/RepositoryOrchestratorWorkbench",
-      "target_sha256": "sha256:b6088e48058609a3a858c2c0f0c8486c1410b5d3e3b59bd513afdcd0a8bf15f0",
+      "target_sha256": "sha256:6a02e70b93030c31431371fd6e07e1fc93c2b9de98e4a04e652956717905b836",
       "target_files": [
         "target-project/components/RepositoryOrchestratorWorkbench/index.js",
         "target-project/components/RepositoryOrchestratorWorkbench/index.json",
@@ -1280,7 +1284,7 @@
     {
       "source_path": "app/playground/PlaygroundWorkspace.tsx",
       "component_name": "PlaygroundWorkspace",
-      "source_sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
+      "source_sha256": "sha256:044932f80cf783ca91439b29611dab173589fb4c1915e450eeecfd9a6b2da868",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1288,9 +1292,9 @@
         "reason": "state \"sourceCode\" requires a primitive literal initializer",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:44e638446c0e3da6106bef05a25b75a1b4a2583aa2d8f1a7447be862984ae409",
+      "manual_ir_digest": "sha256:bf0c53646c91354a607e4bcb8c71803231b8078cc083ac0f5536d9004a8c3223",
       "target_path": "target-project/components/PlaygroundWorkspace",
-      "target_sha256": "sha256:c46c76fba4875826db0a71f6be25e49dc49791b970af410cb09be91610293dc2",
+      "target_sha256": "sha256:8d7727fc14075c7f1cdaaece5835996021daa86b48bacb71c5ac6835ec1a087f",
       "target_files": [
         "target-project/components/PlaygroundWorkspace/index.js",
         "target-project/components/PlaygroundWorkspace/index.json",
@@ -1430,13 +1434,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "string method find is outside certified-component-v1",
+        "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:68a1e599f4620b1c6776a4b94dc683e9acf13dda52bca6092d25dced2f69432c",
+      "manual_ir_digest": "sha256:7ed848e1d83acdc10f5c8025b6cf23aceecbed3f1b39e905695a3be6079e65f0",
       "target_path": "target-project/components/ModernizationProofStudio",
-      "target_sha256": "sha256:14912855f69db9c6a21152951c4a61155235f714739266bcde650f23b3ee8346",
+      "target_sha256": "sha256:c3492bde5b83beff420e611832ccf420d920e04c977cd45d03e6602a4daf3176",
       "target_files": [
         "target-project/components/ModernizationProofStudio/index.js",
         "target-project/components/ModernizationProofStudio/index.json",
@@ -1465,6 +1469,31 @@
         "target-project/components/ModernizationProofPage/index.wxss"
       ],
       "syntax_evidence": "PASSED",
+      "runtime_evidence": "NOT_RUN",
+      "independent_evidence": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "source_path": "app/register/page.tsx",
+      "component_name": "RegisterPage",
+      "source_sha256": "sha256:7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
+      "disposition": "HAND_PORTED",
+      "automatic_subset_status": "OUT_OF_SUBSET",
+      "blocker": {
+        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "prop searchParams.then has no object fields",
+        "semantic_category": "data-contracts"
+      },
+      "manual_ir_digest": "sha256:f208b5e9560e7e5e91bc0196a5cb28515f5bcb2117fb49250b49f620587d6a24",
+      "target_path": "target-project/components/RegisterPage",
+      "target_sha256": "sha256:2a2f2bd0a1a48afcc67c3ae3672eac9273874349c447d3a8a51f72e45aff0c73",
+      "target_files": [
+        "target-project/components/RegisterPage/index.js",
+        "target-project/components/RegisterPage/index.json",
+        "target-project/components/RegisterPage/index.wxml",
+        "target-project/components/RegisterPage/index.wxss"
+      ],
+      "syntax_evidence": "LOCAL_WXML_PARSE_PENDING",
       "runtime_evidence": "NOT_RUN",
       "independent_evidence": "NOT_RUN",
       "certification": "NOT_CERTIFIED"
@@ -1568,13 +1597,13 @@
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
-        "reason_code": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state namespace has unsupported type \"Namespace\"",
-        "semantic_category": "data-contracts"
+        "reason_code": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
+        "reason": "useMemo callback must return one pure expression directly",
+        "semantic_category": "render-tree"
       },
-      "manual_ir_digest": "sha256:ec480b17b41d8d40808d79619d6b14b92e8eb6b8f9b1796961a89b42331f5cbd",
+      "manual_ir_digest": "sha256:72de0d78a0bd686bbee4567e40c8197e4a7b84b886fe692d270b12aef8f9b93f",
       "target_path": "target-project/components/SkillsWorkspace",
-      "target_sha256": "sha256:302037f6b4dfa9aac7347f9287d34861f7f192c843adcb4eced53ec5ede32609",
+      "target_sha256": "sha256:e6dfcd198de9fbb331528fee713fa02e21a8c2ef41e476b2d6649e1175991838",
       "target_files": [
         "target-project/components/SkillsWorkspace/index.js",
         "target-project/components/SkillsWorkspace/index.json",
@@ -1652,7 +1681,7 @@
     {
       "source_path": "app/spring/SpringModernizationStudio.tsx",
       "component_name": "SpringModernizationStudio",
-      "source_sha256": "sha256:629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
+      "source_sha256": "sha256:048f5c6dbf28a160dc8a797240fc28ec2bf0b24f9bd6b554dbf07b398850126d",
       "disposition": "HAND_PORTED",
       "automatic_subset_status": "OUT_OF_SUBSET",
       "blocker": {
@@ -1660,9 +1689,9 @@
         "reason": "expression kind CallExpression is outside certified-component-v1",
         "semantic_category": "effects-and-resources"
       },
-      "manual_ir_digest": "sha256:70b72c5ebb0b179883470fbf0a3847b6d79755a04645f88aaf0408a9956780f0",
+      "manual_ir_digest": "sha256:9e805c8e0ec458bdca6d4ec10d8b5318058e248de1d5613af3d9fa041e5e6160",
       "target_path": "target-project/components/SpringModernizationStudio",
-      "target_sha256": "sha256:c9fe32bd777e077eee255b07cbd81663290547adf861ea39ef5ca30631729824",
+      "target_sha256": "sha256:388d572bcf876f596b0a6bcc6b1b9a2b403bd04157cd5dde2b0eb8d765e4b7f1",
       "target_files": [
         "target-project/components/SpringModernizationStudio/index.js",
         "target-project/components/SpringModernizationStudio/index.json",
@@ -1721,5 +1750,5 @@
       "certification": "NOT_CERTIFIED"
     }
   ],
-  "registry_digest": "sha256:a7992267b481a2117fd80bcdab03371a936c55ea8d1e7d4d4deeabdf1bc3d580"
+  "registry_digest": "sha256:3f16632e62f800b49510c92b8cdf2fdc9ecdbf2fa5d12dc09de72bfa3cb5caa0"
 }

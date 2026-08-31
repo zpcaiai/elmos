@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "file_count": 297,
+  "file_count": 301,
   "files": [
     {
       "path": "target-project/app.js",
@@ -60,8 +60,8 @@
     },
     {
       "path": "target-project/components/AccountSessionProvider/index.js",
-      "sha256": "sha256:ce80289eb4ae9e397ed9f8a5a4c50052c4aed3c56bbd88fb51b95d588baad1fa",
-      "bytes": 2091
+      "sha256": "sha256:de52d58ced472907b7815dc2c0ae967edeeac4687268ff193d4ae9675983b04c",
+      "bytes": 2095
     },
     {
       "path": "target-project/components/AccountSessionProvider/index.json",
@@ -180,8 +180,8 @@
     },
     {
       "path": "target-project/components/ChinaDbSqlPreflightStudio/index.js",
-      "sha256": "sha256:f813b063cd43714942fa38e175338450a7d258930913375aec87cd0e91c6be43",
-      "bytes": 2593
+      "sha256": "sha256:b2b2e2785aa9d85e7606d0929eb6e5c7bf9af465c9298f49fe7cae62c6d8fe3f",
+      "bytes": 2605
     },
     {
       "path": "target-project/components/ChinaDbSqlPreflightStudio/index.json",
@@ -200,8 +200,8 @@
     },
     {
       "path": "target-project/components/CommercializationConsole/index.js",
-      "sha256": "sha256:4b3fb08fd20f9ff79afe54d7cac0189b1216b4aa1ff465fdcc235f54667cf747",
-      "bytes": 2059
+      "sha256": "sha256:77e8c1708e96154034d20a2a6d506e18b7e19dc5be4a9bb633af3c1ef2d7d17e",
+      "bytes": 2072
     },
     {
       "path": "target-project/components/CommercializationConsole/index.json",
@@ -240,23 +240,23 @@
     },
     {
       "path": "target-project/components/CoverageMeter/index.js",
-      "sha256": "sha256:cd08756d680c29ab839c834e2a45ecb1420ca78386d6cd5484b9ac1a84ea6527",
-      "bytes": 432
+      "sha256": "sha256:9c7154d276e707247c25699e2a56a6aea54b7b8b53b2fbdd541af2511828e745",
+      "bytes": 1781
     },
     {
       "path": "target-project/components/CoverageMeter/index.json",
-      "sha256": "sha256:03a63c6cc7df7c618e85cc69cec540d713956bbc4d7d7f3f06058017ec598d32",
-      "bytes": 102
+      "sha256": "sha256:dcd04eaf580f07ff886e476c2e6c786be20f8334b99247ef5afc64b7947b295d",
+      "bytes": 60
     },
     {
       "path": "target-project/components/CoverageMeter/index.wxml",
-      "sha256": "sha256:ef645ab4b1ea904f251e5bdb3018d25f07fc3ea7e5b03075e454b1b2c1b4e0d7",
-      "bytes": 16574
+      "sha256": "sha256:fb8c8fb94a67630d37e2ba17a8533dc682501bb18dd278692e74ef2d43c97807",
+      "bytes": 898
     },
     {
       "path": "target-project/components/CoverageMeter/index.wxss",
-      "sha256": "sha256:7d81706fbcb00fca6b9352c1342eef0361e3da2030eba52ba4946a420c7059ac",
-      "bytes": 734
+      "sha256": "sha256:b5c40e3c0b7a5bb352cfff7a125f56c0050330f6ad37f85dbb32792333a4b707",
+      "bytes": 1233
     },
     {
       "path": "target-project/components/Empty/index.js",
@@ -300,7 +300,7 @@
     },
     {
       "path": "target-project/components/EquivalenceMatrix/index.js",
-      "sha256": "sha256:faef4ac6293af713847e3ea1047ec0a5f518418cf1758a23eac6cd0ace5761e9",
+      "sha256": "sha256:9a2833d053b168a62b29061b05fbd1ab20b928fe50da89b5219c5fcfb2a8c471",
       "bytes": 1807
     },
     {
@@ -340,7 +340,7 @@
     },
     {
       "path": "target-project/components/EvidenceGraph/index.js",
-      "sha256": "sha256:777f22837797033a36efc590dde10e2a454f3cf545c0700835190e29832a14a9",
+      "sha256": "sha256:b522679f1ab93ab4ef21f45cda8eca41d3fbe862f1983968863c1502158929dc",
       "bytes": 1858
     },
     {
@@ -440,8 +440,8 @@
     },
     {
       "path": "target-project/components/GovernanceWorkspace/index.js",
-      "sha256": "sha256:9fed75ae45255508464e98cb133ec69201c964c77054293e29a9286acf593b97",
-      "bytes": 2076
+      "sha256": "sha256:3eb2f932a409ab093b17b7c9e5a410ac4a9c95e54608ed692d97525e4229209a",
+      "bytes": 2095
     },
     {
       "path": "target-project/components/GovernanceWorkspace/index.json",
@@ -560,8 +560,8 @@
     },
     {
       "path": "target-project/components/LoginPage/index.js",
-      "sha256": "sha256:d5187000971bd22ecbbe2da56df78314e6fb6f7c53dea28bea25701c22a64cb0",
-      "bytes": 1643
+      "sha256": "sha256:20bee12009943835f125bcd6cb49f8ca69310eec0560ce28403749ef361d115a",
+      "bytes": 1636
     },
     {
       "path": "target-project/components/LoginPage/index.json",
@@ -620,8 +620,8 @@
     },
     {
       "path": "target-project/components/MigrationStudio/index.js",
-      "sha256": "sha256:bab109456fa96d560de92c3e75976a065fde2a0108791e6edcf8133f072d8015",
-      "bytes": 2931
+      "sha256": "sha256:01604322ec8d831559a37abaec39808004bf31615e05f7798b82d534bfa488cd",
+      "bytes": 2962
     },
     {
       "path": "target-project/components/MigrationStudio/index.json",
@@ -660,8 +660,8 @@
     },
     {
       "path": "target-project/components/ModernizationProofStudio/index.js",
-      "sha256": "sha256:2012ee04b3df96df08f4571dcecad0070c161827fe4ddc95dc0427b354e0df27",
-      "bytes": 3081
+      "sha256": "sha256:8bc776d6b36538f44cfa5d3151fe7ca5ed08027d212ec119cbf39b6ab8ef912f",
+      "bytes": 3071
     },
     {
       "path": "target-project/components/ModernizationProofStudio/index.json",
@@ -800,8 +800,8 @@
     },
     {
       "path": "target-project/components/PlatformJobsPanel/index.js",
-      "sha256": "sha256:d27354929ce16ffb86b101ee4b6309b14c37df2e2e2c757e09bef2708727f8ea",
-      "bytes": 2103
+      "sha256": "sha256:3b57913744edb69b6d4a51ae1227d1173dfaf69043c8b81ff7ebb1c16ea5b07b",
+      "bytes": 2111
     },
     {
       "path": "target-project/components/PlatformJobsPanel/index.json",
@@ -860,7 +860,7 @@
     },
     {
       "path": "target-project/components/PlaygroundWorkspace/index.js",
-      "sha256": "sha256:29fb131699797aa09d188bb62d16c6b5082c1f62a96f9a750e86a15f751bb827",
+      "sha256": "sha256:f5a8bb9ce803d8483b818d5d3f9f73dd859148b43fb0dc1c0571be6dbc49d404",
       "bytes": 2534
     },
     {
@@ -920,7 +920,7 @@
     },
     {
       "path": "target-project/components/ProjectEvidenceCharts/index.js",
-      "sha256": "sha256:69bbbaa9df6407723b3ddf10be642f522c1bfc5dfe61c0bb57e5566244b821d8",
+      "sha256": "sha256:586a20659fad7e28d427248936acbbf59a6794fb49810281f08086baf2150ff7",
       "bytes": 1797
     },
     {
@@ -955,6 +955,26 @@
     },
     {
       "path": "target-project/components/ProjectGenerationStudio/index.wxss",
+      "sha256": "sha256:b5c40e3c0b7a5bb352cfff7a125f56c0050330f6ad37f85dbb32792333a4b707",
+      "bytes": 1233
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.js",
+      "sha256": "sha256:bbf3565438d7ae7f5ab52de89e4b1fbb304f6fabac8622bfee8ab424257ee72b",
+      "bytes": 1538
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.json",
+      "sha256": "sha256:dcd04eaf580f07ff886e476c2e6c786be20f8334b99247ef5afc64b7947b295d",
+      "bytes": 60
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.wxml",
+      "sha256": "sha256:633e3c02e42a4442a88e09a7f143ee7e3e73acfcadf7584c13cdfab2f7b8a171",
+      "bytes": 591
+    },
+    {
+      "path": "target-project/components/RegisterPage/index.wxss",
       "sha256": "sha256:b5c40e3c0b7a5bb352cfff7a125f56c0050330f6ad37f85dbb32792333a4b707",
       "bytes": 1233
     },
@@ -1020,8 +1040,8 @@
     },
     {
       "path": "target-project/components/RepositoryOrchestratorWorkbench/index.js",
-      "sha256": "sha256:dd1526fa1a4d1b9671bb1f3d11521e458eeced28b0d499be5f0795f4da6974fb",
-      "bytes": 2924
+      "sha256": "sha256:c26c12da2b0906cdb83544e04f8b08e28dadaea9a47123020e4632c179dfd25f",
+      "bytes": 2926
     },
     {
       "path": "target-project/components/RepositoryOrchestratorWorkbench/index.json",
@@ -1140,8 +1160,8 @@
     },
     {
       "path": "target-project/components/SkillsWorkspace/index.js",
-      "sha256": "sha256:d9da4238788ad3e0eb274d05781027af21ab874ad3947e34510f7394475815a6",
-      "bytes": 1896
+      "sha256": "sha256:e6fe0bb3959fc23427df5098d7501583ec231911a5d2c6b90b8ebbdf42456472",
+      "bytes": 1900
     },
     {
       "path": "target-project/components/SkillsWorkspace/index.json",
@@ -1200,8 +1220,8 @@
     },
     {
       "path": "target-project/components/SmokeRunButton/index.js",
-      "sha256": "sha256:fc1b69a4ea34aa12377b7dab95e6e6858113190ee0f06f5756f71c56ef561f28",
-      "bytes": 2799
+      "sha256": "sha256:d4ad765c83cd4094126becf8c69e0e75d2e9a840c317b5eac926022c845d1982",
+      "bytes": 2788
     },
     {
       "path": "target-project/components/SmokeRunButton/index.json",
@@ -1240,7 +1260,7 @@
     },
     {
       "path": "target-project/components/SpringModernizationStudio/index.js",
-      "sha256": "sha256:a781faad13d43298dd023e5644e7c09b9d0af4c12ad971515651d54ca7e6dcce",
+      "sha256": "sha256:2a3682dfb491c979da7999e7abc2ff882f58496883632f606cf034f201ae28b8",
       "bytes": 4130
     },
     {
@@ -1380,8 +1400,8 @@
     },
     {
       "path": "target-project/components/UiPreferencesProvider/index.js",
-      "sha256": "sha256:da705ba638eb328e00a19513cae8db69c7758b33a9bf6e8381275cf02283bb1f",
-      "bytes": 1382
+      "sha256": "sha256:40b3fbaafa246b79ed89dcd9905f8bbf44f824c3c5e2a05a49741cdf60fd168f",
+      "bytes": 1431
     },
     {
       "path": "target-project/components/UiPreferencesProvider/index.json",
@@ -1440,28 +1460,28 @@
     },
     {
       "path": "target-project/coverage-report.json",
-      "sha256": "sha256:3303f92e6e7f6e5f0311fa1796eaaf5ce7b58b231e6d98bf26e0af52e225ffe0",
-      "bytes": 56536
+      "sha256": "sha256:a6a1ee60419c1441506cd939f1ebb507290500731111d6e8777a0f45b0779a2a",
+      "bytes": 57048
     },
     {
       "path": "target-project/handoff.json",
-      "sha256": "sha256:402e44357e7ec48a9075114055b89a29699e0cf41b929c570b0f3a11ecf1443d",
-      "bytes": 32072
+      "sha256": "sha256:d410d502e9be5b4419f08a309b470a346c60a0afe5b0e8ba44435fa52ac1200a",
+      "bytes": 33535
     },
     {
       "path": "target-project/pages/index/index.js",
-      "sha256": "sha256:4fbbc8326ba91f64dea5c1e182edc8cbc5aa1248e84f936a99b0cb1483abe37e",
-      "bytes": 4541
+      "sha256": "sha256:1d25dfbb0b2f2ccbbafcce9338566f445251a2339fccf012bd61d198e13595a6",
+      "bytes": 4737
     },
     {
       "path": "target-project/pages/index/index.json",
-      "sha256": "sha256:d759e41248c48fae691e52a331c032df3abae5acd95a9625080dfe8651cf971e",
-      "bytes": 2731
+      "sha256": "sha256:a3f951882d94602498622c2eaff503897df4bdfc93e3c54ebba4f9d5473bb5c7",
+      "bytes": 2843
     },
     {
       "path": "target-project/pages/index/index.wxml",
-      "sha256": "sha256:f9744747b35e753f6f6aa87d3c6d97cebdc49c1317fd9790c25f54481cb7cd5d",
-      "bytes": 3771
+      "sha256": "sha256:6c0f86b04d43e9a0c8214f11636f16d4d47fac55a8c2a75fa29591214ae0a6ec",
+      "bytes": 3932
     },
     {
       "path": "target-project/pages/index/index.wxss",
@@ -1489,7 +1509,7 @@
       "bytes": 140
     }
   ],
-  "target_digest": "sha256:8037e2b6d20395ce8bc7def9d9038b03f7663e703ac725e14283f2ad65ad9dd8",
+  "target_digest": "sha256:ad75fae27ed1d14e4c65dcbbcce9cddaf6a14528d64aa3b05329559d463b2b83",
   "official_build": "NOT_RUN",
   "certification": "NOT_CERTIFIED"
 }

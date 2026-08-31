@@ -7,21 +7,21 @@
   "status": "PARTIAL",
   "deliveryStatus": "COMPLETE_WITH_HANDOFF",
   "totals": {
-    "discovered": 71,
-    "converted": 32,
+    "discovered": 72,
+    "converted": 31,
     "blocked": 0,
-    "manuallyPorted": 39
+    "manuallyPorted": 41
   },
   "handoff": {
-    "total": 39,
+    "total": 41,
     "unassigned": 0,
     "assigned": 0,
-    "manuallyPorted": 39,
+    "manuallyPorted": 41,
     "stale": 0,
     "byAssignee": [
       {
         "assignee": "elmos-web-console-wechat-migration",
-        "count": 39
+        "count": 41
       }
     ]
   },
@@ -167,6 +167,11 @@
       "detail": []
     },
     {
+      "sourcePath": "app/register/page.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
       "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
       "alerts": [],
       "detail": []
@@ -193,6 +198,11 @@
     },
     {
       "sourcePath": "app/admin/OperationsAdmin.tsx",
+      "alerts": [],
+      "detail": []
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
       "alerts": [],
       "detail": []
     },
@@ -928,8 +938,8 @@
       "targetPath": "components/PlatformJobsPanel",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-      "reason": "expression kind CallExpression is outside certified-component-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "state rows element.settledAmountMinor has unsupported type \"string | number | null\"",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -965,8 +975,8 @@
       "targetPath": "components/CommercializationConsole",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -990,8 +1000,8 @@
       "targetPath": "components/AccountSessionProvider",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1053,7 +1063,7 @@
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+      "reason": "state evidence.result has unsupported type \"unknown\"",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1078,8 +1088,8 @@
       "targetPath": "components/UiPreferencesProvider",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state locale has unsupported type \"UiLocale\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+      "reason": "component body statement kind ExpressionStatement is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1140,8 +1150,8 @@
       "targetPath": "components/GovernanceWorkspace",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind ArrowFunction is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1239,8 +1249,8 @@
       "targetPath": "components/MigrationStudio",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state view has unsupported type \"StudioView\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "expression kind CallExpression is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1265,7 +1275,7 @@
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+      "reason": "state result.statements element.sourceAst has incompatible union object shapes",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1315,7 +1325,7 @@
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+      "reason": "state result.dag.tasks element has unsupported type \"unknown\"",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1414,8 +1424,8 @@
       "targetPath": "components/ModernizationProofStudio",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "reason": "string method find is outside certified-component-v1",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1433,6 +1443,18 @@
       "notes": [
         "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated"
       ]
+    },
+    {
+      "sourcePath": "app/register/page.tsx",
+      "targetPath": "components/RegisterPage",
+      "status": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "reason": "prop searchParams.then has no object fields",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
     },
     {
       "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
@@ -1476,8 +1498,8 @@
       "targetPath": "components/SkillsWorkspace",
       "status": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "reason": "state namespace has unsupported type \"Namespace\"",
+      "reasonCode": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
+      "reason": "useMemo callback must return one pure expression directly",
       "syntaxStatus": null,
       "executionStatus": null,
       "notes": [],
@@ -1629,16 +1651,14 @@
     {
       "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
       "targetPath": "components/CoverageMeter",
-      "ownership": "ENGINE_GENERATED",
-      "status": "CONVERTED",
-      "reasonCode": null,
-      "reason": null,
-      "syntaxStatus": "PASSED",
-      "executionStatus": "EXECUTION_NOT_ATTEMPTED",
-      "notes": [
-        "WeChat mini program styling is emitted as generated WXSS classes; the source project's own CSS was NOT translated",
-        "WeChat properties cannot express a required prop; required props are emitted with a synthesized default value and will read back as optional"
-      ]
+      "ownership": "HAND_PORTED",
+      "status": "MANUALLY_PORTED",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE",
+      "reason": "spread attributes are outside certified-component-v1",
+      "syntaxStatus": null,
+      "executionStatus": null,
+      "notes": [],
+      "handoffAlerts": []
     },
     {
       "sourcePath": "app/components/ProjectEvidenceCharts.tsx",

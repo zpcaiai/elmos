@@ -49,6 +49,93 @@ def _not_run(history_length: int, message: str) -> BisectResult:
     )
 
 
+def _legacy_binary_result(
+    revisions: List[Dict[str, Any]],
+    verdicts: List[str],
+) -> BisectResult:
+    """Resolve the bounded v0 ``is_valid`` snapshot format.
+
+    The old gateway supplied every verdict in the snapshot itself.  We can
+    therefore binary-search the known facts while still checking the complete
+    sequence for a monotonic boundary; no unobserved revision is inferred.
+    """
+
+    started = time.perf_counter()
+    if not revisions:
+        return BisectResult(
+            status="EMPTY_HISTORY",
+            first_bad_revision=None,
+            total_steps=0,
+            culprit_message="No revisions were provided",
+            history_length=0,
+            bisect_duration_ms=0.0,
+            steps=[],
+        )
+    if len(revisions) < 2:
+        return _not_run(
+            len(revisions),
+            "At least two explicit legacy validity snapshots are required",
+        )
+    steps: List[BisectStep] = []
+    if verdicts[0] != "PASS":
+        first_bad = 0
+    elif all(verdict == "PASS" for verdict in verdicts):
+        return BisectResult(
+            status="ALL_PASSING",
+            first_bad_revision=None,
+            total_steps=0,
+            culprit_message="Every supplied revision evaluated PASS",
+            history_length=len(revisions),
+            bisect_duration_ms=round((time.perf_counter() - started) * 1000, 3),
+            steps=[],
+        )
+    else:
+        first_bad = len(verdicts) - 1
+        low = 0
+        high = first_bad
+        while low < high:
+            middle = (low + high) // 2
+            verdict = verdicts[middle]
+            steps.append(
+                BisectStep(
+                    step_index=len(steps) + 1,
+                    rev_id=str(revisions[middle]["id"]),
+                    evaluated_verdict=verdict,
+                    evaluated_at=time.time(),
+                )
+            )
+            if verdict == "PASS":
+                low = middle + 1
+            else:
+                high = middle
+        first_bad = low
+    if any(verdict == "PASS" for verdict in verdicts[first_bad:]):
+        return BisectResult(
+            status="NON_MONOTONIC_HISTORY",
+            first_bad_revision=None,
+            total_steps=len(steps),
+            culprit_message="The supplied validity snapshots do not have a unique regression boundary",
+            history_length=len(revisions),
+            bisect_duration_ms=round((time.perf_counter() - started) * 1000, 3),
+            steps=steps,
+        )
+    culprit = revisions[first_bad]
+    message = culprit.get("message")
+    return BisectResult(
+        status="FOUND_CULPRIT",
+        first_bad_revision=str(culprit["id"]),
+        total_steps=len(steps),
+        culprit_message=(
+            message
+            if isinstance(message, str) and message
+            else f"Revision {culprit['id']} is the first explicit FAIL"
+        ),
+        history_length=len(revisions),
+        bisect_duration_ms=round((time.perf_counter() - started) * 1000, 3),
+        steps=steps,
+    )
+
+
 class SemanticRegressionBisector:
     """Locate a regression from a real evaluator or explicit PASS/FAIL facts."""
 
@@ -67,7 +154,15 @@ class SemanticRegressionBisector:
         if not isinstance(revisions, list):
             raise ValueError("revisions must be a list")
         if not revisions:
-            return _not_run(0, "No revisions were provided")
+            return BisectResult(
+                status="EMPTY_HISTORY",
+                first_bad_revision=None,
+                total_steps=0,
+                culprit_message="No revisions were provided",
+                history_length=0,
+                bisect_duration_ms=0.0,
+                steps=[],
+            )
         if len(revisions) > 1_000_000:
             raise ValueError("revision history exceeds the bounded limit")
 
@@ -88,6 +183,15 @@ class SemanticRegressionBisector:
             seen_ids.add(rev_id)
             normalized.append(dict(revision))
 
+        legacy_snapshot = evaluator_fn is None and all(
+            type(revision.get("is_valid")) is bool and "verdict" not in revision
+            for revision in normalized
+        )
+        if legacy_snapshot:
+            return _legacy_binary_result(
+                normalized,
+                ["PASS" if revision["is_valid"] else "FAIL" for revision in normalized],
+            )
         if evaluator_fn is None and not all(
             revision.get("verdict") in {"PASS", "FAIL"}
             for revision in normalized
@@ -240,6 +344,7 @@ def run_semantic_bisect(
         "status": result.status,
         "first_bad_revision": result.first_bad_revision,
         "culprit_message": result.culprit_message,
+        "reason": result.culprit_message if result.status == "NOT_RUN" else None,
         "total_steps": result.total_steps,
         "history_length": result.history_length,
         "bisect_duration_ms": result.bisect_duration_ms,

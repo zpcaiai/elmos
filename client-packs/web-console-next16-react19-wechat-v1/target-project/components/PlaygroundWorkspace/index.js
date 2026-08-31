@@ -8,10 +8,10 @@ Component(createHandPortComponent({
   "source": {
     "file": "app/playground/PlaygroundWorkspace.tsx",
     "componentName": "PlaygroundWorkspace",
-    "sha256": "sha256:ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
+    "sha256": "sha256:044932f80cf783ca91439b29611dab173589fb4c1915e450eeecfd9a6b2da868",
     "range": {
       "start": 1307,
-      "end": 16296
+      "end": 16295
     }
   },
   "blocker": {
@@ -86,5 +86,5 @@ Component(createHandPortComponent({
   "obligations": [
     "PlaygroundWorkspace:source-blocker"
   ],
-  "irDigest": "sha256:44e638446c0e3da6106bef05a25b75a1b4a2583aa2d8f1a7447be862984ae409"
+  "irDigest": "sha256:bf0c53646c91354a607e4bcb8c71803231b8078cc083ac0f5536d9004a8c3223"
 }));

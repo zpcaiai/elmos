@@ -107,7 +107,17 @@ def _validate_fields(value: Any, label: str) -> Dict[str, Dict[str, Any]]:
 
 
 def _validate_spec(value: Any, label: str) -> Dict[str, Dict[str, Any]]:
-    if not isinstance(value, Mapping) or set(value) != _SPEC_KEYS:
+    if not isinstance(value, Mapping):
+        raise ContractSpecError(
+            f"{label} must contain exactly schema_version and endpoints"
+        )
+    # Keep the original pre-v1 gateway payload readable while making the
+    # conversion explicit and bounded.  This is a compatibility shim for
+    # callers that have not yet added the schema marker; it is not a relaxed
+    # path for arbitrary JSON.  The normalized v1 path below remains strict.
+    if set(value) == {"endpoints"}:
+        return _validate_legacy_endpoints(value["endpoints"], label)
+    if set(value) != _SPEC_KEYS:
         raise ContractSpecError(
             f"{label} must contain exactly schema_version and endpoints"
         )
@@ -138,6 +148,70 @@ def _validate_spec(value: Any, label: str) -> Dict[str, Dict[str, Any]]:
                 f"{label}.endpoints[{endpoint_key}].response_fields",
             ),
         }
+    return endpoints
+
+
+def _validate_legacy_endpoints(
+    raw_endpoints: Any, label: str
+) -> Dict[str, Dict[str, Any]]:
+    """Normalize the bounded gateway-v0 endpoint shape to the v1 model."""
+
+    if not isinstance(raw_endpoints, Mapping) or not raw_endpoints:
+        raise ContractSpecError(f"{label}.endpoints must be a non-empty object")
+    if len(raw_endpoints) > 10_000:
+        raise ContractSpecError(f"{label}.endpoints exceeds the endpoint limit")
+    endpoints: Dict[str, Dict[str, Any]] = {}
+    for endpoint_key, raw_endpoint in raw_endpoints.items():
+        endpoint_key = _validate_endpoint_key(endpoint_key, f"{label}.endpoints key")
+        if not isinstance(raw_endpoint, Mapping) or set(raw_endpoint) != _ENDPOINT_KEYS:
+            raise ContractSpecError(
+                f"{label}.endpoints[{endpoint_key}] must contain exactly "
+                "request_fields and response_fields"
+            )
+        normalized_channels: Dict[str, Dict[str, Any]] = {}
+        for channel in ("request_fields", "response_fields"):
+            raw_fields = raw_endpoint[channel]
+            if not isinstance(raw_fields, Mapping) or len(raw_fields) > 10_000:
+                raise ContractSpecError(
+                    f"{label}.endpoints[{endpoint_key}].{channel} must be a bounded object"
+                )
+            fields: Dict[str, Dict[str, Any]] = {}
+            for field_name, raw_schema in raw_fields.items():
+                if not isinstance(field_name, str) or _FIELD_NAME.fullmatch(field_name) is None:
+                    raise ContractSpecError(f"{channel} contains an invalid field name")
+                if not isinstance(raw_schema, Mapping) or set(raw_schema) - {
+                    "type", "required"
+                } or "type" not in raw_schema:
+                    raise ContractSpecError(
+                        f"{label}.endpoints[{endpoint_key}].{channel}.{field_name} "
+                        "is not a supported legacy field"
+                    )
+                legacy_type = raw_schema["type"]
+                # ``float`` and ``int`` were the only pre-v1 aliases.  Keep
+                # their meaning, but compare them using the canonical v1
+                # algebra so a legacy and v1 document diff consistently.
+                field_type = {"float": "number", "int": "integer"}.get(
+                    legacy_type, legacy_type
+                )
+                if field_type not in _FIELD_TYPES:
+                    raise ContractSpecError(
+                        f"{label}.endpoints[{endpoint_key}].{channel}.{field_name}.type "
+                        "is unsupported"
+                    )
+                required = raw_schema.get("required", False)
+                if type(required) is not bool:
+                    raise ContractSpecError(
+                        f"{label}.endpoints[{endpoint_key}].{channel}.{field_name}.required "
+                        "must be boolean"
+                    )
+                fields[field_name] = {
+                    "type": field_type,
+                    "required": required,
+                    "nullable": False,
+                    "format": None,
+                }
+            normalized_channels[channel] = fields
+        endpoints[endpoint_key] = normalized_channels
     return endpoints
 
 
@@ -219,6 +293,11 @@ class ApiContractDiffer:
         for field_name, source_field in source_fields.items():
             target_field = target_fields.get(field_name)
             if target_field is None:
+                # A source client may send an optional request field even when
+                # it is not required.  Removing it from the target contract is
+                # therefore breaking unless a separate unknown-field policy is
+                # represented and proved; this normalized model has no such
+                # permissive contract.
                 changes.append(
                     ContractDiffItem(
                         endpoint=endpoint,

@@ -426,7 +426,7 @@
     "strict-profile.schema.json": "sha256:1be15bbd630c245eece71868f756db2994749b296db2bf992bd674c609fa9115",
     "test-case.schema.json": "sha256:809e22a2f62adbf86f78d72f71c4a1e0917450acfd04146b2cbf6b36786e171d",
     "test-environment.schema.json": "sha256:80ee4c8447eb3f0cced6a679e98e327e494832a28c88032454374238a937c63a",
-    "test-result.schema.json": "sha256:0e029efe2122fc3836da97bf8f809c59b3d17851ce562f8c08cfe7705712ecb4",
+    "test-result.schema.json": "sha256:694c4a329344acfac7f77c3e36d646b8a5abe4651f48aaca371b855dfd9debe0",
     "test-suite.schema.json": "sha256:7c736ed44869b8be0a86d5a23bcde7fc93caf0f34f6c1a5ed3b8aa51e214f156",
     "trust-store.schema.json": "sha256:43fd42669cdfdf2b1717ea6669d5e933109fb71448b15ddfb07ae1c295adb427",
     "waiver.schema.json": "sha256:effda289f0506e895c32b6d501df10d7974dbcb7359d06af2f0fa2cfbb1c452a"

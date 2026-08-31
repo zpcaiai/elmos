@@ -919,6 +919,8 @@ def verify_pure_module(
     output: Path,
     javascript_descriptor: dict[str, Any] | None = None,
     javascript_descriptor_bytes: bytes | None = None,
+    repository_execution_mode: bool = False,
+    repository_language_lifecycle: str | None = None,
 ) -> dict[str, Any]:
     """Persist a content-bound typed-pure-module equivalence composition.
 
@@ -930,8 +932,15 @@ def verify_pure_module(
 
     source_language = source_ir.source_language
     target_language = target_ir.source_language
-    if not is_routed_pair(source_language, target_language):
+    routed_pair = is_routed_pair(source_language, target_language)
+    if not routed_pair and not repository_execution_mode:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    repository_language_lifecycle_for_execution(
+        source_language,
+        target_language,
+        repository_execution_mode=repository_execution_mode,
+        supplied=repository_language_lifecycle,
+    )
     validate_identifier_plan(source_ir, identifier_plan)
     observed_normalized_target = alpha_normalize_target(source_ir, raw_target_ir, identifier_plan)
     if observed_normalized_target.to_mapping() != target_ir.to_mapping():
@@ -2505,10 +2514,11 @@ def _javascript_guard_edges(
                     helper_id="finite_number",
                 )
 
-    ignored_normalizations = {
-        "javascript.integer.negative-zero-normalized",
-        "javascript.return.integer.negative-zero-normalized",
-    }
+        ignored_normalizations = {
+            "javascript.integer.negative-zero-normalized",
+            "javascript.parameter.integer.negative-zero-normalized",
+            "javascript.return.integer.negative-zero-normalized",
+        }
     observed_rules = {
         rule
         for rule in emitted_rules
@@ -3012,15 +3022,32 @@ def migrate_module(
     target_language: Language,
     manifest_path: Path,
     output: Path,
+    *,
+    repository_execution_mode: bool = False,
+    repository_language_lifecycle: str | None = None,
 ) -> dict[str, Any]:
-    """Snapshot immutable module inputs, then run the closed migration."""
+    """Snapshot immutable module inputs, then run the closed migration.
+
+    Deprecated Node.js directions remain replayable for repository-local
+    evidence, but only when the caller opts into repository execution and
+    supplies the explicit ``DEPRECATED_REPLAY`` lifecycle marker.  That keeps
+    module migrations aligned with the single-function API instead of leaving
+    an authorization gap at the module boundary.
+    """
 
     if source_language not in REPOSITORY_SURFACE_LANGUAGES or target_language not in REPOSITORY_SURFACE_LANGUAGES:
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    routed_pair = is_routed_pair(source_language, target_language)
+    if not routed_pair and not repository_execution_mode:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    expected_lifecycle = repository_language_lifecycle_for_execution(
+        source_language,
+        target_language,
+        repository_execution_mode=repository_execution_mode,
+        supplied=repository_language_lifecycle,
+    )
     resolved_source = source.resolve()
     resolved_manifest = manifest_path.resolve()
     source_bytes = resolved_source.read_bytes()
@@ -3051,6 +3078,8 @@ def migrate_module(
                 target_language,
                 manifest_snapshot,
                 output,
+                repository_execution_mode=repository_execution_mode,
+                repository_language_lifecycle=expected_lifecycle,
                 identifier_unit_namespace=identifier_unit_namespace,
                 javascript_descriptor=descriptor_binding,
                 javascript_descriptor_bytes=descriptor_bytes,
@@ -3074,6 +3103,8 @@ def _migrate_module_snapshot(
     manifest_path: Path,
     output: Path,
     *,
+    repository_execution_mode: bool = False,
+    repository_language_lifecycle: str | None = None,
     identifier_unit_namespace: IdentifierUnitNamespace,
     javascript_descriptor: dict[str, Any] | None = None,
     javascript_descriptor_bytes: bytes | None = None,
@@ -3084,8 +3115,15 @@ def _migrate_module_snapshot(
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    routed_pair = is_routed_pair(source_language, target_language)
+    if not routed_pair and not repository_execution_mode:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
+    expected_lifecycle = repository_language_lifecycle_for_execution(
+        source_language,
+        target_language,
+        repository_execution_mode=repository_execution_mode,
+        supplied=repository_language_lifecycle,
+    )
     source = source.resolve()
     manifest_path = manifest_path.resolve()
     source_bytes = source.read_bytes()
@@ -3255,6 +3293,8 @@ def _migrate_module_snapshot(
         whole_file_closure=whole_file_closure,
         javascript_descriptor=report_javascript_descriptor,
         javascript_descriptor_bytes=javascript_descriptor_bytes,
+        repository_execution_mode=repository_execution_mode,
+        repository_language_lifecycle=expected_lifecycle,
         output=output,
     )
     source_validation_path = output / "source-module-validation.json"
@@ -3263,6 +3303,9 @@ def _migrate_module_snapshot(
     write_json(target_validation_path, target_validation)
     report["source_validation"] = source_validation
     report["target_validation"] = target_validation
+    report["route_pack_status"] = "DECLARED" if routed_pair else "NOT_AVAILABLE"
+    report["repository_execution_mode"] = repository_execution_mode
+    report["repository_language_lifecycle"] = expected_lifecycle
     report["artifact_refs"].extend(
         [
             _artifact_ref(output, source_validation_path, "source-module-validation"),

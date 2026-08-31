@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2513",
+  "skill_name": "frt-2513-responsive-and-adaptive-acceptance",
+  "batch": "G25",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g25/frt-2513-responsive-and-adaptive-acceptance/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.responsive-and-adaptive-acceptance",
+  "execution_contract_sha256": "sha256:8e52f222e4074bbb622b3f9d3be406790eabfe9b18c34e705de4240ae251ce5b",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:13879f41d7471b9a61a0a8e58abe82b99464439fe310940a321a62a3e761bb1f",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

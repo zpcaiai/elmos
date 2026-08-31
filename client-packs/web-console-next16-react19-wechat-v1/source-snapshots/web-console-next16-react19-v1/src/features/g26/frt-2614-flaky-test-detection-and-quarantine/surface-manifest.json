@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2614",
+  "skill_name": "frt-2614-flaky-test-detection-and-quarantine",
+  "batch": "G26",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g26/frt-2614-flaky-test-detection-and-quarantine/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g26.flaky-test-detection-and-quarantine",
+  "execution_contract_sha256": "sha256:5ceddd4a58e2048a9d7c870118bce735ad8f6d8ac93f7c8011b86c0c720111b5",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:3e01614e404d3c3ce784ec427f5074bb055f42d463bb2e73c5bf47716c3b757d",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

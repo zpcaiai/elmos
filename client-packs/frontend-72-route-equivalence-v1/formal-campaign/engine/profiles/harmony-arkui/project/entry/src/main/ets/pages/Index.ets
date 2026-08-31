@@ -11,7 +11,7 @@ struct Index {
       Row() {
         Column({ space: 8 }) {
           Text("ELMOS 有界导航验证").fontSize(22).fontWeight(FontWeight.Bold)
-          ForEach(GENERATED_ROUTES, (item: GeneratedRoute) => {
+          ForEach(GENERATED_ROUTES.slice(), (item: GeneratedRoute) => {
             Button(item.title).width('100%').accessibilityText(item.id + '|' + item.path + '|auth:' + item.requiresAuth + '|deep:' + item.deepLink).onClick(() => { this.selected = GENERATED_ROUTES.indexOf(item); })
           }, (item: GeneratedRoute) => item.id)
         }.width('34%').padding(16)

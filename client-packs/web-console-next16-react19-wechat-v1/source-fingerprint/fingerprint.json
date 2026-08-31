@@ -12,7 +12,7 @@
     ],
     "runtime": "nodejs",
     "runtime_versions": [
-      "26.0.0"
+      "24.16.0"
     ],
     "build_tool": "next-16.3.0",
     "package_manager": "pnpm-10.12.4",
@@ -59,8 +59,8 @@
     ],
     "devices": []
   },
-  "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
-  "snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "source_revision": "e69e1ac37295d593df4491b297f8b3048fd052d2",
+  "snapshot_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
   "coverage": 1,
   "routes": [
     {
@@ -146,6 +146,11 @@
     {
       "path": "/proof-loop",
       "source_ref": "apps/web-console/app/proof-loop/page.tsx",
+      "discovery": "next-app-router-static"
+    },
+    {
+      "path": "/register",
+      "source_ref": "apps/web-console/app/register/page.tsx",
       "discovery": "next-app-router-static"
     },
     {
@@ -476,6 +481,11 @@
       "discovery": "typescript-compiler-api"
     },
     {
+      "name": "RegisterPage",
+      "source_ref": "apps/web-console/app/register/page.tsx",
+      "discovery": "typescript-compiler-api"
+    },
+    {
       "name": "RepositoriesPage",
       "source_ref": "apps/web-console/app/repositories/page.tsx",
       "discovery": "typescript-compiler-api"
@@ -592,6 +602,7 @@
     "apps/web-console/app/pricing/UsageDashboard.tsx#UsageMeter",
     "apps/web-console/app/proof-loop/ModernizationProofStudio.tsx#ModernizationProofStudio",
     "apps/web-console/app/proof-loop/page.tsx#ModernizationProofPage",
+    "apps/web-console/app/register/page.tsx#RegisterPage",
     "apps/web-console/app/repositories/page.tsx#RepositoriesPage",
     "apps/web-console/app/repositories/RepositoryWorkspaceStudio.tsx#RepositoryWorkspaceStudio",
     "apps/web-console/app/skills/page.tsx#SkillsPage",
@@ -2616,6 +2627,11 @@
     },
     {
       "name": "/api/modernization-proof/subject-digest",
+      "source_ref": "apps/web-console/app",
+      "provider": "fetch"
+    },
+    {
+      "name": "/api/auth/register",
       "source_ref": "apps/web-console/app",
       "provider": "fetch"
     },

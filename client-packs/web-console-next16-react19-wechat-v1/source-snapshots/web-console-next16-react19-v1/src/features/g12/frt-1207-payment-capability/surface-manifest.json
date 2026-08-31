@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1207",
+  "skill_name": "frt-1207-payment-capability",
+  "batch": "G12",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g12/frt-1207-payment-capability/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.payment-capability",
+  "execution_contract_sha256": "sha256:3b6cb8b9b79876949ada61a1f49b3b7a9d30a5afbb591c56eaccc344e871710d",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:0b611d608c0bbec820a4642a34de1785696e903cb21d1fa776e99da1c72d46d3",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

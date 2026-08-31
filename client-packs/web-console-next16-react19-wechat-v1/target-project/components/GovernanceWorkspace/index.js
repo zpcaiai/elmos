@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+    "reason": "expression kind ArrowFunction is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [],
   "states": [
@@ -77,5 +77,5 @@ Component(createHandPortComponent({
   "obligations": [
     "GovernanceWorkspace:source-blocker"
   ],
-  "irDigest": "sha256:a3e803c2faca35da6e5a5a7baa001a11e50bfe149bbd6eabfce0d4c2feeb7418"
+  "irDigest": "sha256:88e14d52239a3908c82bc344888f33994a589a4ce5067ecb3dd421bbffb82361"
 }));

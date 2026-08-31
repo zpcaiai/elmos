@@ -1,0 +1,13 @@
+<view class="shell" data-component="{{componentName}}">
+  <view class="heading"><text>{{title}}</text></view>
+  <view class="status status--{{status}}"><text>{{status}}</text><text wx:if="{{error}}"> · {{error}}</text></view>
+  <slot />
+  <view class="source-labels">
+    <text class="source-label">//</text>
+    <text class="source-label">/api/auth/register</text>
+    <text class="source-label">LOCAL DEVELOPMENT IDENTITY</text>
+    <text class="source-label">alert</text>
+    <text class="source-label">auth-card</text>
+    <text class="source-label">auth-error</text>
+  </view>
+</view>

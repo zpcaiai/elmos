@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1209",
+  "skill_name": "frt-1209-app-lifecycle-and-background-capability",
+  "batch": "G12",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g12/frt-1209-app-lifecycle-and-background-capability/",
+  "status": "shared_implementation",
+  "handler_kind": "cross_platform",
+  "capability_key": "frt.g12.app-lifecycle-and-background-capability",
+  "execution_contract_sha256": "sha256:5f54511a90acc368f46b38781c919a7cae22ba21014bbc39ce253af5682e33c0",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "requiredCapabilities",
+      "platformCapabilities"
+    ],
+    "optional": [
+      "bridges"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:90ac24a086dc93cc22f2581d8f6880501b002bd1f4471d8301eb70d87444ebcd",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

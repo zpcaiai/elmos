@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1013",
+  "skill_name": "frt-1013-application-boundary-certification",
+  "batch": "G10",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g10/frt-1013-application-boundary-certification/",
+  "status": "shared_implementation",
+  "handler_kind": "design_system",
+  "capability_key": "frt.g10.application-boundary-certification",
+  "execution_contract_sha256": "sha256:37e704157dfef791baee9229fa97b683b876438a37cccfff28d34000b3abd311",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "routes"
+    ],
+    "optional": [
+      "forms",
+      "apiCalls",
+      "storage",
+      "permissions"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:2daad579c6bccc99a80a80bcea8f580e51e0d163fefc6c47a4a8fcee063d5519",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

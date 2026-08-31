@@ -11,7 +11,7 @@ metadata:
   normalized_namespace: "autonomous-qa-self-healing-v1"
   runtime_module: "engines/autonomous-qa-engine/src/elmos_autonomous_qa/skill_runtime.py"
   runtime_module_sha256: "sha256:85431b42fa21826db81525410286d92a35e3f5407f28eb108feea2dae97e6e17"
-  runtime_authority_sha256: "sha256:9c3b0b037de966d82b69f6b0aea4e8cb3f11cd54f1be6f5e86aa7c86293c8ec0"
+  runtime_authority_sha256: "sha256:b6437e80cab248e00ae3e8461dc7e59fecf8968399d85aff020f2a8f246c2b84"
   runtime_dispatcher: "dispatch_skill"
   runtime_skill_key: "26-impact-analysis-regression"
   runtime_handler: "execute_26_impact_analysis_regression"

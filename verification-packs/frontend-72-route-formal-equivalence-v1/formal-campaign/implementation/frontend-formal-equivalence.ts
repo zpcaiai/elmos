@@ -134,7 +134,14 @@ const unsupportedSemanticBlocks = [
   "component-state-action",
 ] as const;
 const lockedZ3Version = "Z3 version 4.16.0 - 64 bit";
-const lockedZ3BinaryDigest = "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7";
+const lockedZ3BinaryDigests: Readonly<Record<string, string>> = Object.freeze({
+  "darwin-arm64": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  "linux-x64": "sha256:e583c4186a45e72411fa2cb2048401eed03f0f8e5f24694676a8f6271a50b765",
+});
+
+export function lockedZ3BinaryDigestFor(platform: NodeJS.Platform, arch: string): string | null {
+  return lockedZ3BinaryDigests[`${platform}-${arch}`] ?? null;
+}
 
 const codePointCompare = (left: string, right: string): number => left < right ? -1 : left > right ? 1 : 0;
 
@@ -588,6 +595,10 @@ const generatedConsumerPaths: Readonly<Record<UiFrameworkId, readonly string[]>>
   vue3: ["src/routes.ts", "src/router.ts", "src/views/GeneratedPage.vue", "src/App.vue", "src/main.ts"],
 };
 
+export function boundedNavigationGeneratedConsumerPaths(profile: UiFrameworkId): readonly string[] {
+  return generatedConsumerPaths[profile];
+}
+
 function generatedProjectName(profile: UiFrameworkId, files: Readonly<Record<string, string>>): string {
   const manifest = files["package.json"];
   if (manifest === undefined) return `formal-${profile.replaceAll("-", "")}`;
@@ -676,12 +687,20 @@ function expectedConsumerContext(
   };
 }
 
+export function expectedBoundedNavigationConsumerFiles(
+  profile: UiFrameworkId,
+  model: BoundedNavigationSemanticModel,
+  files: Readonly<Record<string, string>>,
+): Readonly<Record<string, string>> {
+  return renderTargetProject(expectedConsumerContext(profile, model, files));
+}
+
 function validateGeneratedConsumerGrammar(
   profile: UiFrameworkId,
   model: BoundedNavigationSemanticModel,
   files: Readonly<Record<string, string>>,
 ): void {
-  const expected = renderTargetProject(expectedConsumerContext(profile, model, files));
+  const expected = expectedBoundedNavigationConsumerFiles(profile, model, files);
   for (const path of generatedConsumerPaths[profile]) {
     if (files[path] === undefined) throw new Error(`reachable generated consumer is missing: ${profile}:${path}`);
     if (expected[path] === undefined || files[path] !== expected[path]) {
@@ -1071,6 +1090,10 @@ export function runFrontendSolver(smt2: string, options: FrontendSolverOptions =
     unconditional_proof: false,
   });
   if ((options.args?.length ?? 0) > 0) return rejected("ERROR", "custom solver arguments are forbidden by the locked Z3 profile");
+  const lockedZ3BinaryDigest = lockedZ3BinaryDigestFor(process.platform, process.arch);
+  if (lockedZ3BinaryDigest === null) {
+    return rejected("ERROR", `locked Z3 profile does not support ${process.platform}-${process.arch}`);
+  }
   let binaryPath: string | undefined;
   const candidates = command.includes("/")
     ? [resolve(command)]
@@ -1696,6 +1719,8 @@ export function verifyFrontendFormalCampaign(outputDirectory: string): readonly 
           || solver.smt2_digest !== links.smt2_digest) throw new Error("solver result/status linkage drifted");
         if (solver.identity_status === "VERIFIED") {
           const binaryPath = String(solver.solver_binary_realpath);
+          const lockedZ3BinaryDigest = lockedZ3BinaryDigestFor(process.platform, process.arch);
+          if (lockedZ3BinaryDigest === null) throw new Error("locked solver platform tuple is unsupported");
           if (solver.solver !== binaryPath || basename(binaryPath) !== "z3" || realpathSync(binaryPath) !== binaryPath
             || solver.solver_version !== lockedZ3Version || solver.solver_binary_sha256 !== lockedZ3BinaryDigest
             || solver.solver_binary_sha256 !== bytesDigest(readFileSync(binaryPath))

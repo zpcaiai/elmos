@@ -10,7 +10,7 @@
     {
       "path": "certification/certification.json",
       "byte_size": 2020,
-      "sha256": "4fb4146a61fbb4f52bae59f5a9eb4f8557347048c76f970ea78de8971473f29a"
+      "sha256": "bf5ef754e7bf9f2be29423a59746b627563ff9aff64899bc01498c13abaa96af"
     },
     {
       "path": "certification/evidence.json",
@@ -19,8 +19,8 @@
     },
     {
       "path": "certification/local-test-result.json",
-      "byte_size": 2275,
-      "sha256": "f78a903d30fa23a1afc041e167ff194c530ad060c7c5da094f62d9b943930275"
+      "byte_size": 2273,
+      "sha256": "6fb210ad6a830d446a780c489bb58c7d353fc5a32b327c2cd3edb1a5320411df"
     },
     {
       "path": "corpus/development/manifest.json",
@@ -100,7 +100,7 @@
     {
       "path": "pack.json",
       "byte_size": 1715,
-      "sha256": "23744dce2002875fe8d590afc6c93d61869b33dfc1be4e675b8286d69f8ecf90"
+      "sha256": "cfbe94c557c017a2d7df6e20b31d13250268649dae2f25ef38ff59dec65607ef"
     },
     {
       "path": "properties/sample.json",

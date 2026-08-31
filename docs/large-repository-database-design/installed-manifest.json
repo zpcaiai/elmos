@@ -295,6 +295,26 @@
     "referenced_path_present_in_archive": false,
     "importer_executes_workflow": false
   },
+  "postgresql_partition_constraint_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V020__runs_tasks_sessions_and_recovery.sql",
+    "source_sha256": "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e",
+    "affected_tables": [
+      "exec.run_event",
+      "exec.session_event"
+    ],
+    "source_partition_keys": [
+      "run_id",
+      "session_id"
+    ],
+    "declared_unique_key": [
+      "tenant_id",
+      "event_id"
+    ],
+    "postgresql_requirement": "every unique key on a partitioned table must include every partition-key column",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
   "installation": {
     "runtime_root": "agent-skills/runtime",
     "workspace_root": ".agents/skills",

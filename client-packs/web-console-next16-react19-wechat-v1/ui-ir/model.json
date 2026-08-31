@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "source_snapshot_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
   "routes": [
     {
       "id": "route.account-page",
@@ -205,6 +205,18 @@
       ],
       "source_refs": [
         "apps/web-console/app/proof-loop/page.tsx"
+      ]
+    },
+    {
+      "id": "route.register-page",
+      "kind": "next-app-route-to-wechat-catalog-entry",
+      "name": "/register",
+      "path": "/register",
+      "references": [
+        "component.register-page"
+      ],
+      "source_refs": [
+        "apps/web-console/app/register/page.tsx"
       ]
     },
     {
@@ -457,6 +469,17 @@
       ]
     },
     {
+      "id": "view.register-page",
+      "kind": "route-view",
+      "name": "RegisterPage",
+      "references": [
+        "component.register-page"
+      ],
+      "source_refs": [
+        "apps/web-console/app/register/page.tsx"
+      ]
+    },
+    {
       "id": "view.repositories-page",
       "kind": "route-view",
       "name": "RepositoriesPage",
@@ -702,10 +725,10 @@
     },
     {
       "id": "component.coverage-meter",
-      "kind": "automatic-certified-subset-component",
+      "kind": "explicit-hand-ported-component",
       "name": "CoverageMeter",
-      "ownership": "ENGINE_GENERATED",
-      "disposition": "AUTOMATIC",
+      "ownership": "HAND_PORTED",
+      "disposition": "HAND_PORTED",
       "references": [],
       "source_refs": [
         "apps/web-console/app/components/ProjectEvidenceCharts.tsx"
@@ -1171,6 +1194,17 @@
       "references": [],
       "source_refs": [
         "apps/web-console/app/proof-loop/page.tsx"
+      ]
+    },
+    {
+      "id": "component.register-page",
+      "kind": "explicit-hand-ported-component",
+      "name": "RegisterPage",
+      "ownership": "HAND_PORTED",
+      "disposition": "HAND_PORTED",
+      "references": [],
+      "source_refs": [
+        "apps/web-console/app/register/page.tsx"
       ]
     },
     {
@@ -6147,6 +6181,18 @@
       ]
     },
     {
+      "id": "action.register-page.api.0",
+      "kind": "allowlisted-cancellable-request",
+      "name": "RegisterPage /api/auth/register",
+      "api_path": "/api/auth/register",
+      "references": [
+        "component.register-page"
+      ],
+      "source_refs": [
+        "apps/web-console/app/register/page.tsx"
+      ]
+    },
+    {
       "id": "action.repository-workspace-studio.api.0",
       "kind": "allowlisted-cancellable-request",
       "name": "RepositoryWorkspaceStudio /api/repository-workspaces",
@@ -7400,7 +7446,7 @@
       "id": "resource.source-snapshot",
       "kind": "content-addressed-git-snapshot",
       "name": "Pinned web console source snapshot",
-      "digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
       "references": [],
       "source_refs": [
         "apps/web-console/package.json"
@@ -7499,6 +7545,10 @@
       "owner": "elmos-web-console-wechat-migration"
     },
     {
+      "node_id": "route.register-page",
+      "owner": "elmos-web-console-wechat-migration"
+    },
+    {
       "node_id": "route.repositories-page",
       "owner": "elmos-web-console-wechat-migration"
     },
@@ -7584,6 +7634,10 @@
     },
     {
       "node_id": "view.modernization-proof-page",
+      "owner": "elmos-web-console-wechat-migration"
+    },
+    {
+      "node_id": "view.register-page",
       "owner": "elmos-web-console-wechat-migration"
     },
     {
@@ -7844,6 +7898,10 @@
     },
     {
       "node_id": "component.modernization-proof-page",
+      "owner": "elmos-web-console-wechat-migration"
+    },
+    {
+      "node_id": "component.register-page",
       "owner": "elmos-web-console-wechat-migration"
     },
     {
@@ -9504,6 +9562,10 @@
     },
     {
       "node_id": "action.modernization-proof-studio.api.2",
+      "owner": "elmos-web-console-wechat-migration"
+    },
+    {
+      "node_id": "action.register-page.api.0",
       "owner": "elmos-web-console-wechat-migration"
     },
     {

@@ -12,9 +12,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "98df93a6ef767e471a1f70f9890a74eab997411ec0f6657c8695d18967e6e76f",
       "targetHashAtPort": "8cd702483e620990f62198be387fabdf75220b2e531f047e1da54c14f0f62c45",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/AccountOrganizationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/account/AccountWalletPanel.tsx",
@@ -26,9 +26,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "200579d81e50f84e976dca0b711d7dfbc01da52b71a34ea99534828b8147a215",
       "targetHashAtPort": "d6f80ab6f26aaa1dc0ab344b434d9c6482a8e5ae07b950251f10e66b831c5756",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/AccountWalletPanel",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/admin/OperationsAdmin.tsx",
@@ -40,9 +40,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
       "sourceHashAtPort": "887dfc4ed913566b13192fb8ca4b4a86b6487f501806b3bc31b77183259f390f",
       "targetHashAtPort": "9e9cbb6bf55d590797890fb8d0c5e392a807365e0e980079d2a42a2778da7906",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/EventTable",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/admin/OperationsAdmin.tsx",
@@ -54,9 +54,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "887dfc4ed913566b13192fb8ca4b4a86b6487f501806b3bc31b77183259f390f",
       "targetHashAtPort": "36cb47f4455d15b3214c5a650491cb2cf3dd878e7ec9374208169e1b966bf6e4",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/OperationsAdmin",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/admin/PlatformJobsPanel.tsx",
@@ -64,13 +64,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "effects-and-resources via wechat-css-module-token-map-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-scroll-row-table-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+      "note": "data-contracts via wechat-css-module-token-map-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-scroll-row-table-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
       "sourceHashAtPort": "3233268915de085f38d5e618a88ad6d47793570299b8bc8116bf950f1f837332",
-      "targetHashAtPort": "1c8ee1ffaf40587b021bfd15ee58ecaaf9eb449cc4317f21cac9a4474a0df9fa",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "b775c12b7cd19972618a48897fe7575bd33cb18d52a5bc4e0e5193d2b065ade3",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PlatformJobsPanel",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/admin/PlatformWalletPanel.tsx",
@@ -82,9 +82,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
       "sourceHashAtPort": "264530e63449713173afb307dd119d8d7d557ef0e6765879579b950df1e79c80",
       "targetHashAtPort": "faad49e19ec1bb76119e38c53c7a8945a0968dd9df7535d6f65b6857070bb2fa",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PlatformWalletPanel",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/commercialization/CommercializationConsole.tsx",
@@ -92,13 +92,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "ee51fb034a155dbcd446de5ee5d6cfe9e0b07ff3c400a0858f427edc401e0e64",
-      "targetHashAtPort": "a1d425624ace74dedfbae96375f40be7aadb196969dcce8641fbae314ca4f6f0",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "f0d866052d642f14dc471b342c47d472e508c880911c8cafddab90f74c6d473b",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/CommercializationConsole",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/AccountSessionProvider.tsx",
@@ -106,13 +106,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "5eeb7245de7ee2b85a5fde36819b059a1c2e1e437b5225f1648e2091efec1945",
-      "targetHashAtPort": "4d0e7785157e1f8448ebd9fdf513d864f012b2f15117bd88aec4d45a60486906",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "abb01cc6a5f06d9711be17c6f18a5e4629123245d14a449092440b9cd77ef881",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/AccountSessionProvider",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/AppShell.tsx",
@@ -124,9 +124,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "2b3161832ec8413c9a1d2405a5ef48106612c775cc86a677d44f66d1b351762b",
       "targetHashAtPort": "822837a2851bb91f13de355c89e4b09e53e5c4c2f6bcba6d0f5526cf4e3778bf",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/AppShell",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/Icon.tsx",
@@ -138,9 +138,23 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
       "sourceHashAtPort": "1454edb408e7acbf7febd33f67e882f87a9ab3b56666b823f3c7935fcd0cd6fa",
       "targetHashAtPort": "21823e9941b5e075780e415b4f0fbc69b615e1df0141e42e4960986371ff181d",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/Icon",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
+    },
+    {
+      "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
+      "componentName": "CoverageMeter",
+      "state": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "assignee": "elmos-web-console-wechat-migration",
+      "note": "platform-semantics via wechat-plain-collection-projection-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE",
+      "sourceHashAtPort": "1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "targetHashAtPort": "d9b6f9f6a27d102531b72c77d2b630ea3a398d9c4660786d9e905ee65d76f045",
+      "markedAt": "2026-08-31T16:54:40+08:00",
+      "targetPathAtPort": "components/CoverageMeter",
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
@@ -150,11 +164,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "effects-and-resources via wechat-controlled-disclosure-v1, wechat-plain-collection-projection-v1, wechat-scroll-row-table-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-      "sourceHashAtPort": "ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "targetHashAtPort": "a5142304fa84f4f6095446bcf0a43d7275746861d1b79d8547327aeaa2bf7136",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "targetHashAtPort": "0a162d38eb17aea6fc6458fadc98a75fd8432978b8181dc26ba96e4d8a25d0e2",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/EquivalenceMatrix",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
@@ -164,11 +178,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "effects-and-resources via wechat-controlled-disclosure-v1, wechat-plain-collection-projection-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-      "sourceHashAtPort": "ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "targetHashAtPort": "3bc93c054120eaa67e41b293948a93efe297a70cfa06616386020bb12fecbad7",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "targetHashAtPort": "e1d3526b284cedbfed41596669bc64151e680e1ffdde2921498a7fd914032880",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/EvidenceGraph",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/ProjectEvidenceCharts.tsx",
@@ -178,11 +192,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "effects-and-resources via wechat-plain-collection-projection-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-      "sourceHashAtPort": "ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "targetHashAtPort": "7e92497c3d96210057a926fee9bda12fcde564f82d2ee9c2cc3e0a5af24bbb71",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "targetHashAtPort": "c41cba414c22e5343686b0b9687bf811afff9255e3cf75fb1be310477bf29d4d",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/ProjectEvidenceCharts",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/RuntimeDeploymentGuide.tsx",
@@ -194,9 +208,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
       "sourceHashAtPort": "2982aa717205f11ffed88ddc53f5f62ecedf9bf3f1575e4f47455c2daa5a784b",
       "targetHashAtPort": "9af38545bed237b629c9d38178c4e5b203fa12361b1241432db19b04aea72990",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/RuntimeDeploymentGuide",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/SmokeRunButton.tsx",
@@ -207,10 +221,10 @@
       "note": "data-contracts via wechat-cancellable-request-v1, wechat-controlled-disclosure-v1, wechat-css-module-token-map-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
       "sourceHashAtPort": "db3b9af0bb07b114d7fba77f72d2022b8a831fcc5d55c637be7689f0b3f43819",
-      "targetHashAtPort": "1a89c0fb07bf9101ddce13b5eb8ea2b9b5dc513e48614df86564a74147cb6559",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "eded1a12c7ef19769ceb9b44ce9ee7a72c769e39344e8be33f99f24f5ae36ab2",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/SmokeRunButton",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/components/UiPreferencesProvider.tsx",
@@ -218,13 +232,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
       "sourceHashAtPort": "e42a90912474fce7aa4dafb5a7e0f9f6f574486aecd116d461733b81932b31bf",
-      "targetHashAtPort": "a99a6a81b23004fef1474c3c961274a128a9bb8b210d82ceec0b342337df9455",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "63b116ff15f0023248c328e483246438bd5e37e9a063ababe2ac0571153a8943",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/UiPreferencesProvider",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/frontend/FrontendTransformationStudio.tsx",
@@ -236,9 +250,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "146c5d65be5d140ada7af4fb9e6a58921cce935e217379f15dd6034ada0b1695",
       "targetHashAtPort": "c045c3baef69c81384b0bef98a0db63a8bd8bf42ede08afc58b6fbcb75588fab",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/FrontendTransformationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/generation/ProjectGenerationStudio.tsx",
@@ -250,9 +264,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "42160731ba1beea98e4bc4cafe94a3cb9e648b6b944abaa9f084808ef560b751",
       "targetHashAtPort": "487204e8f45a3952f422dceff7624e55bff57c37831f2cab9b75fa1376700dc2",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/ProjectGenerationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/governance/GovernanceWorkspace.tsx",
@@ -260,13 +274,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-css-module-token-map-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-css-module-token-map-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "6e4df100ea8494750f34ea97b13567df1002a14e00e44c3f5bf578a961b86e69",
-      "targetHashAtPort": "8580602b48530407ca749337cb8a268482fd306cbf54d32428487bc6ad78d314",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "287e8591542e31ac345c0ec77bc69f9f59f2cca0bc29d2906a7d6bff23f31138",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/GovernanceWorkspace",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/help/HelpCenter.tsx",
@@ -278,9 +292,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
       "sourceHashAtPort": "3de4e8529ce03968e3b25f2be70bdb289440a398a14c535d25638132ad950498",
       "targetHashAtPort": "c70a7b7fe3b3f21d450da9408dd7d34823ee82df83be44bb5fa53c54329acdc3",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/HelpCenter",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/intake/MultimodalIntakeWorkbench.tsx",
@@ -292,9 +306,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "2116ac344e8bff9551f28388582ad926d9f4a0f8d8a3a4d6caaa6999c3f1c8ac",
       "targetHashAtPort": "fc5ac26d4de0cd5c96148c4946e35011863c54d3e13976b9ccdc65c1b159292f",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/MultimodalIntakeWorkbench",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/layout.tsx",
@@ -306,9 +320,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TAG",
       "sourceHashAtPort": "cfb13ad9af43d647ac18d845ad0cae68f8eba9e1db71e673f2ca549fe6be5405",
       "targetHashAtPort": "14affe580e61a589ec19338381ad3b87dd210b2fb2c4d0ba6598e528cdc1da8d",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/RootLayout",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/login/page.tsx",
@@ -318,11 +332,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "data-contracts via wechat-cancellable-request-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "sourceHashAtPort": "56c094fdf03884c2e7bfad9b1d360aa5cc1b3337ed6f2fbfc20d151a3c7c609f",
-      "targetHashAtPort": "858bda7cbaef88ec02a255587068d31989150beeae853c6af619c9d15d1ea949",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "ef1719bfed2fbc3eca9d74b8dcff37df54d309829bc7bef671900252cd8c4995",
+      "targetHashAtPort": "fa83f400d3ed5970fdf6934622b81d8c9bc135e7ccf9dc3a6cf0b2ddbd64bcaf",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/LoginPage",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/migration/MigrationStudio.tsx",
@@ -330,13 +344,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "af0df409a9921bec3801daa9e7bce63619141ec81ca514c070476f1b25b80b5f",
-      "targetHashAtPort": "561fb81cfad014b3eedb0306e0c1b333b8a9d6e11a75c17620df19ac4c40224f",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "daf2603056a9602dbd4163088c812e43dba8f54d74045fb184ba24075b8aec3a",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/MigrationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/migration/sql/ChinaDbSqlPreflightStudio.tsx",
@@ -347,10 +361,10 @@
       "note": "data-contracts via wechat-cancellable-request-v1, wechat-controlled-disclosure-v1, wechat-css-module-token-map-v1, wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
       "sourceHashAtPort": "ed319e03c4dfb31ec46e4c713ab04df4d5cb94e101181618299f26ff35fee9c8",
-      "targetHashAtPort": "c6c19657149b60c62b1b188adb93cead4536d42e15b7eb9a1e51668c3b0f6222",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "52bfd26780c8a4caeac97a913bf37caeb48abef8c6ced978300f801f294a4189",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/ChinaDbSqlPreflightStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/observability/ObservabilityWorkspace.tsx",
@@ -362,9 +376,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
       "sourceHashAtPort": "09653cd1b9253c7d7d575e1aeac4e5a399e1210fd115e04bdf28ce38b6c1cc20",
       "targetHashAtPort": "dcf2084d1d52006b58772cfd35ccfec99b88774e0f4bf2e6abe4ff9b137f8fd7",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/ObservabilityWorkspace",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/orchestration/RepositoryOrchestratorWorkbench.tsx",
@@ -374,11 +388,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "data-contracts via wechat-cancellable-request-v1, wechat-css-module-token-map-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-      "sourceHashAtPort": "94cf80c45cfde92de4a15528c7c6ebb7489e213e99c12216ec8135436695c10e",
-      "targetHashAtPort": "b6088e48058609a3a858c2c0f0c8486c1410b5d3e3b59bd513afdcd0a8bf15f0",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "1743a60296e6221e75adc6c14b3ca8dd592f9830b84e3818aae86db293d34380",
+      "targetHashAtPort": "6a02e70b93030c31431371fd6e07e1fc93c2b9de98e4a04e652956717905b836",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/RepositoryOrchestratorWorkbench",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/playground/page.tsx",
@@ -390,9 +404,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_SLOT",
       "sourceHashAtPort": "03967bfb8666799e7040efc95c96b53fd79f418e7d98d075ff2bfbca94461b3b",
       "targetHashAtPort": "febbc41df1bdbb0a0a7348cf43000ef3b645b3d8877be0f8a837be0ae349c85b",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PlaygroundPage",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/playground/PlaygroundWorkspace.tsx",
@@ -402,11 +416,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "effects-and-resources via wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
-      "sourceHashAtPort": "ce49066ffce81485aec4a0683ffff54409bde3b0d62051cbb9de734d70cdf6c5",
-      "targetHashAtPort": "c46c76fba4875826db0a71f6be25e49dc49791b970af410cb09be91610293dc2",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "044932f80cf783ca91439b29611dab173589fb4c1915e450eeecfd9a6b2da868",
+      "targetHashAtPort": "8d7727fc14075c7f1cdaaece5835996021daa86b48bacb71c5ac6835ec1a087f",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PlaygroundWorkspace",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/pricing/BillingActions.tsx",
@@ -418,9 +432,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
       "targetHashAtPort": "0aa1cda50d4a0f25c089bf1b29d0e887165ebaa86df7dcabe0c25c8bc301cb5e",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PlanBillingAction",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/pricing/BillingActions.tsx",
@@ -432,9 +446,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "f8886c700e43d4769668a30e60a5a02c8e801ccf7b8d3897e5ff16ef68f60e29",
       "targetHashAtPort": "41780f4f2c4bcb94f13f3fd7f79d25c04f91024856ca77372a171b1bc6c7b194",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/SubscriptionManager",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/pricing/page.tsx",
@@ -446,9 +460,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "89fe2fda31ee4263c106c1011e815e849b27da2831658d3faf97f6c9c14b363d",
       "targetHashAtPort": "0678f30d859481d071b496b9e6f3e49284870757dc66be5722f7c37f956d776c",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PricingPage",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/pricing/UsageDashboard.tsx",
@@ -460,9 +474,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_LITERAL",
       "sourceHashAtPort": "13a07e674998e609a1dc106fc3cf96562f65fab44c27414a8b9990b98b216533",
       "targetHashAtPort": "8307468a7c8b79902310823b750d864b76f67502314edc5cba18b3e148c92ad8",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/UsageDashboard",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/proof-loop/ModernizationProofStudio.tsx",
@@ -470,13 +484,27 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-cancellable-request-v1, wechat-controlled-disclosure-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "effects-and-resources via wechat-cancellable-request-v1, wechat-controlled-disclosure-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "ad19b406e3b1afff3c4af5c1011eaac4f16e065d2fcc8ab75567a571479d721e",
-      "targetHashAtPort": "14912855f69db9c6a21152951c4a61155235f714739266bcde650f23b3ee8346",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "c3492bde5b83beff420e611832ccf420d920e04c977cd45d03e6602a4daf3176",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/ModernizationProofStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
+    },
+    {
+      "sourcePath": "app/register/page.tsx",
+      "componentName": "RegisterPage",
+      "state": "MANUALLY_PORTED",
+      "ownership": "HAND_PORTED",
+      "assignee": "elmos-web-console-wechat-migration",
+      "note": "data-contracts via wechat-cancellable-request-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "sourceHashAtPort": "7a3d403961ce8e8ed01cd9a6fcb260bd95c350e40485c04f747ccf75864c97cd",
+      "targetHashAtPort": "2a2f2bd0a1a48afcc67c3ae3672eac9273874349c447d3a8a51f72e45aff0c73",
+      "markedAt": "2026-08-31T16:54:40+08:00",
+      "targetPathAtPort": "components/RegisterPage",
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/repositories/RepositoryWorkspaceStudio.tsx",
@@ -488,9 +516,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "98ec19f726b01677cacfc578f28e60afae3a80654f9d4e54b43bbf028eea86a5",
       "targetHashAtPort": "f09aec888a2cb1c578babaee3868d13f8790ab64b081553e2db8a076b75654c6",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/RepositoryWorkspaceStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/skills/PrecisionMigrationJobs.tsx",
@@ -502,9 +530,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "f02823e4442841704d5832ef16e897dff1906c511ed66d5ccdf0551879bf5e39",
       "targetHashAtPort": "91435369027edbeab28a403d9e02584b4a5521332b501c948b46a5e9e5cf7bed",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/PrecisionMigrationJobs",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/skills/SkillsWorkspace.tsx",
@@ -512,13 +540,13 @@
       "state": "MANUALLY_PORTED",
       "ownership": "HAND_PORTED",
       "assignee": "elmos-web-console-wechat-migration",
-      "note": "data-contracts via wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
-      "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+      "note": "render-tree via wechat-effect-resource-lifecycle-v1, wechat-named-slot-projection-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
+      "reasonCode": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
       "sourceHashAtPort": "21249a99cee595a685701e6cf03435d3f4b7acdba5c09d76f90725a5c8bc0db3",
-      "targetHashAtPort": "302037f6b4dfa9aac7347f9287d34861f7f192c843adcb4eced53ec5ede32609",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "targetHashAtPort": "e6dfcd198de9fbb331528fee713fa02e21a8c2ef41e476b2d6649e1175991838",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/SkillsWorkspace",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/spring/SpringModernizationStudio.tsx",
@@ -528,11 +556,11 @@
       "assignee": "elmos-web-console-wechat-migration",
       "note": "effects-and-resources via wechat-cancellable-request-v1, wechat-effect-resource-lifecycle-v1, wechat-plain-collection-projection-v1, wechat-typed-state-decoder-v1",
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-      "sourceHashAtPort": "629e8e56e5a04e3024f5ddf888c53191510a05769369a83e29bf7594f3136d2a",
-      "targetHashAtPort": "c9fe32bd777e077eee255b07cbd81663290547adf861ea39ef5ca30631729824",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "sourceHashAtPort": "048f5c6dbf28a160dc8a797240fc28ec2bf0b24f9bd6b554dbf07b398850126d",
+      "targetHashAtPort": "388d572bcf876f596b0a6bcc6b1b9a2b403bd04157cd5dde2b0eb8d765e4b7f1",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/SpringModernizationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     },
     {
       "sourcePath": "app/translation/TranslationStudio.tsx",
@@ -544,9 +572,9 @@
       "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
       "sourceHashAtPort": "a3e4f64b8aab2060dc23ffd3ece9772eb0512c61f28ba35175bda4092fe87124",
       "targetHashAtPort": "603065b87137b7b7f414c311f4da050907c76d105565d0409759df67e015fbb5",
-      "markedAt": "2026-08-31T06:47:25+08:00",
+      "markedAt": "2026-08-31T16:54:40+08:00",
       "targetPathAtPort": "components/TranslationStudio",
-      "updatedAt": "2026-08-31T06:47:25+08:00"
+      "updatedAt": "2026-08-31T16:54:40+08:00"
     }
   ]
 }

@@ -1,39 +1,10 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "status": "PASSED_LOCAL_SOURCE_BUILD",
-  "observed_at": "2026-08-30T23:13:00Z",
-  "install_command": "pnpm install --frozen-lockfile --ignore-scripts",
+  "status": "NOT_RUN",
   "command": "pnpm build",
-  "exact_source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
-  "executor": "codex-local-node26-pnpm10.12.4",
-  "working_directory": "apps/web-console",
-  "toolchain": {
-    "node": "26.0.0",
-    "pnpm": "10.12.4",
-    "next": "16.3.0",
-    "react": "19.2.7",
-    "typescript": "5.9.2"
-  },
-  "exit_code": 0,
-  "result": {
-    "compiled": true,
-    "typescript_check": "PASSED",
-    "static_pages_generated": 25,
-    "static_pages_total": 25
-  },
-  "artifact_digest": "sha256:fdd1574add6e68e93ded1c51086d4d7593b081d7d585ad6d511a1059465bcb97",
-  "artifact_digests": [
-    { "path": "apps/web-console/.next/BUILD_ID", "sha256": "fdd1574add6e68e93ded1c51086d4d7593b081d7d585ad6d511a1059465bcb97" },
-    { "path": "apps/web-console/.next/build-manifest.json", "sha256": "fbf79db870d27f93744c9d731783f920e5de70de83f6db67ccacca2ff84ebb4a" },
-    { "path": "apps/web-console/.next/routes-manifest.json", "sha256": "f3bfbdef1b07ffcd555b755deda6ba1b8606c3bdcecd7434f996aef490f83dfc" },
-    { "path": "apps/web-console/.next/prerender-manifest.json", "sha256": "2c32a56e14dc18dd7cad87c703b660a56d867e5557516e25d22c2944a9cb6f18" },
-    { "path": "apps/web-console/.next/server/app-paths-manifest.json", "sha256": "292e269eebf803443ae252925b02dfa790d39dc41a792cef5064bde207c86523" }
-  ],
-  "warnings": [
-    { "code": "NEXT_DYNAMIC_FILESYSTEM_ACCESS_TRACE", "path": "apps/web-console/app/lib/server/multimodalIntakeRunner.ts:374", "detail": "Next.js reported dynamic filesystem access around spawn while collecting the build trace." },
-    { "code": "NEXT_WHOLE_PROJECT_TRACE", "path": "apps/web-console/app/lib/server/translationRoutes.ts:330", "detail": "Next.js reported readFileSync with a whole-project trace during build collection." }
-  ],
-  "evidence_scope": "Local self-attested source build only; this is not target runtime, device, independent, production, or certification evidence.",
+  "exact_source_revision": "e69e1ac37295d593df4491b297f8b3048fd052d2",
+  "executor": null,
+  "artifact_digest": null,
   "certification": "NOT_CERTIFIED"
 }
