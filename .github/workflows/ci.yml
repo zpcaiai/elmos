@@ -197,8 +197,15 @@ jobs:
         run: |
           openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
+          openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
+          image_os="${ImageOS:-UNSET}"
+          image_version="${ImageVersion:-UNSET}"
+          test "$(/usr/bin/uname -m)" = "arm64"
+          test "$(/usr/bin/sw_vers -productVersion | /usr/bin/cut -d. -f1)" = "15"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
+          test -f "${openssl_receipt}"
+          test ! -L "${openssl_receipt}"
           test "$(python3.11 -I -B -c \
             'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
             "${openssl_bin}")" = "${openssl_bin}"
@@ -207,6 +214,15 @@ jobs:
             "${openssl_opt_bin}")" = "${openssl_bin}"
           test "$("${openssl_bin}" version)" = \
             "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+          python3.11 -I -B -c \
+            'import json, pathlib, sys; value=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")); source=value.get("source"); assert value.get("arch") == "arm64"; assert value.get("built_as_bottle") is True; assert value.get("poured_from_bottle") is True; assert isinstance(source, dict); assert source.get("tap") == "homebrew/core"; assert source.get("spec") == "stable"; assert source.get("versions", {}).get("stable") == "3.6.3"; assert pathlib.Path(str(source.get("path"))).name == "packages.arm64_sequoia.jws.json"' \
+            "${openssl_receipt}"
+          openssl_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${openssl_bin}")"
+          openssl_sha256="$(/usr/bin/shasum -a 256 "${openssl_bin}" | /usr/bin/awk '{print $1}')"
+          printf 'OPENSSL3_RUNNER_RECEIPT image_os=%s image_version=%s stat=%s sha256=%s\n' \
+            "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
+          test "${image_os}" = "macos15"
+          test "${image_version}" = "20260727.0256.1"
           /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
           probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-probe.XXXXXX")"
           trap '/bin/rm -rf -- "${probe_root}"' EXIT
@@ -224,9 +240,17 @@ jobs:
       - name: Verify bound OpenSSL runtime
         run: |
           openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          image_os="${ImageOS:-UNSET}"
+          image_version="${ImageVersion:-UNSET}"
           test "$(command -v openssl)" = "${openssl_bin}"
           test "$(openssl version)" = \
             "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
+          openssl_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${openssl_bin}")"
+          openssl_sha256="$(/usr/bin/shasum -a 256 "${openssl_bin}" | /usr/bin/awk '{print $1}')"
+          printf 'OPENSSL3_RUNNER_RECEIPT image_os=%s image_version=%s stat=%s sha256=%s\n' \
+            "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
+          test "${image_os}" = "macos15"
+          test "${image_version}" = "20260727.0256.1"
           /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
           probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-path-probe.XXXXXX")"
           trap '/bin/rm -rf -- "${probe_root}"' EXIT
@@ -247,13 +271,76 @@ jobs:
           done
           make batch35-check
 
-  polyglot-routes:
-    name: Directed language route contracts
+  polyglot-route-pack-contracts:
+    name: Directed route pack contract prerequisites
+    # Keep the complete Batch 29 suite and all 176 route directories outside
+    # the engine worker's independent six-hour execution budget.
+    runs-on: macos-26
+    timeout-minutes: 360
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up bootstrap Python 3.12.10
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+          architecture: arm64
+      - name: Set up Java 21.0.11
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21.0.11"
+      - name: Set up .NET 10.0.301
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "10.0.301"
+      - name: Set up Node.js 26.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked route-pack tools
+        run: |
+          python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-pack-venv" \
+            >>"${GITHUB_ENV}"
+          npm install --global pnpm@10.12.4
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          cargo fetch \
+            --locked \
+            --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+      - name: Run complete Batch 29 and route-pack contracts
+        run: |
+          if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
+            export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-pack-venv"
+          uv --directory engines/polyglot-route-engine sync --locked
+          make b29-skills-test
+          python scripts/operations/validate_translation_route_matrix.py
+          for route in routes/*/; do
+            python scripts/batch29/run_route_gate.py "$route"
+          done
+
+  polyglot-route-engine:
+    name: Directed route engine qualification
     # Objective-C target execution requires the real Foundation framework.
     # Linux clang can parse the bounded source subset, but cannot provide that
     # runtime contract, so the complete 9-language matrix runs on macOS.
     runs-on: macos-26
-    timeout-minutes: 60
+    # The frozen 223-node engine qualification took about 5h28m locally.
+    # Keep its exact selectors and native-toolchain checks intact.
+    timeout-minutes: 360
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -290,6 +377,9 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv" \
+            >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           # The native Rust analyzer executes with --offline --locked so a
@@ -307,18 +397,28 @@ jobs:
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
             export ELMOS_JAVA21_HOME="$JAVA_HOME"
           fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
+          uv --directory engines/polyglot-route-engine run --locked pytest \
+            "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
           uv --directory engines/polyglot-route-engine run --locked pytest
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
           uv --directory engines/polyglot-route-engine run --locked mypy src
-      - name: Run the complete Batch 29 Skill contract suite
-        run: make b29-skills-test
-      - name: Verify all route packs and console contracts
+
+  polyglot-routes:
+    name: Directed language route contracts
+    needs:
+      - polyglot-route-pack-contracts
+      - polyglot-route-engine
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every directed-route worker
         run: |
-          python scripts/operations/validate_translation_route_matrix.py
-          for route in routes/*/; do
-            python scripts/batch29/run_route_gate.py "$route"
-          done
+          test "${{ needs.polyglot-route-pack-contracts.result }}" = "success"
+          test "${{ needs.polyglot-route-engine.result }}" = "success"
 
   sql-dialect-engine:
     name: SQL Dialect Engine

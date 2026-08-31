@@ -1783,6 +1783,30 @@ class FormalRouteCampaignTests(unittest.TestCase):
             )
             self.assertTrue(any(str(shadow) in error for error in errors), errors)
 
+    def test_specialized_packed_replay_rejects_missing_pinned_uv_origin(
+        self,
+    ) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            ambient = Path(directory) / "ambient-uv"
+            ambient.write_bytes(b"ambient uv fixture\n")
+            ambient.chmod(0o555)
+            missing = Path(directory) / "missing" / "uv"
+            errors: list[str] = []
+            with (
+                mock.patch.object(validator.shutil, "which", return_value=str(ambient)),
+                mock.patch.object(validator, "PINNED_UV_PATH", missing),
+            ):
+                observed = validator.pinned_uv_runtime("missing test", errors)
+            self.assertIsNone(observed)
+            self.assertTrue(
+                any("pinned uv origin cannot be resolved" in error for error in errors),
+                errors,
+            )
+            self.assertTrue(
+                any(str(missing.parent) in error for error in errors), errors
+            )
+
     def test_specialized_packed_replay_uses_private_sanitized_environment(self) -> None:
         validator = load_formal_campaign_validator()
         with tempfile.TemporaryDirectory() as directory:
@@ -2151,9 +2175,7 @@ class FormalRouteCampaignTests(unittest.TestCase):
                 typescript_sources[
                     f"{launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{record_path}"
                 ] = (source_path, str(record["mode"]))
-            self.assertEqual(
-                len(typescript_sources), launcher.TYPESCRIPT_FILE_COUNT
-            )
+            self.assertEqual(len(typescript_sources), launcher.TYPESCRIPT_FILE_COUNT)
             runtime_sources = {
                 launcher.PYTHON_ARCHIVE_RELATIVE: (
                     python_source,
@@ -2209,9 +2231,7 @@ class FormalRouteCampaignTests(unittest.TestCase):
                         "runtime_manifest_sha256": (
                             launcher.TYPESCRIPT_RUNTIME_MANIFEST_SHA256
                         ),
-                        "compiler_closure_sha256": (
-                            launcher.TYPESCRIPT_CLOSURE_SHA256
-                        ),
+                        "compiler_closure_sha256": (launcher.TYPESCRIPT_CLOSURE_SHA256),
                         "file_count": launcher.TYPESCRIPT_FILE_COUNT,
                         "bytes": launcher.TYPESCRIPT_CLOSURE_BYTES,
                         "files": [

@@ -73,6 +73,8 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
                 "dotnet-engine",
                 "python-engine",
                 "frontend-client-engine",
+                "polyglot-route-engine",
+                "polyglot-route-pack-contracts",
                 "polyglot-routes",
                 "project-synthesis",
                 "project-synthesis-acceptance",
@@ -81,11 +83,20 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             }.issubset(jobs)
         )
         rendered = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-        polyglot_job = json.dumps(jobs["polyglot-routes"], ensure_ascii=False, sort_keys=True)
+        polyglot_job = json.dumps(
+            jobs["polyglot-route-engine"], ensure_ascii=False, sort_keys=True
+        )
         polyglot_verify = next(
             step["run"]
-            for step in jobs["polyglot-routes"]["steps"]
+            for step in jobs["polyglot-route-engine"]["steps"]
             if step.get("name") == "Verify compiler-backed route engine"
+        )
+        self.assertEqual(
+            jobs["polyglot-routes"]["name"], "Directed language route contracts"
+        )
+        self.assertEqual(
+            set(jobs["polyglot-routes"]["needs"]),
+            {"polyglot-route-engine", "polyglot-route-pack-contracts"},
         )
         synthesis_evidence_job = json.dumps(
             jobs["project-synthesis-acceptance"],
