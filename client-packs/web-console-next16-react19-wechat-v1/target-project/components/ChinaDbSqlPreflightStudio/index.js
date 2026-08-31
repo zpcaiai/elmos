@@ -16,7 +16,7 @@ Component(createHandPortComponent({
   },
   "blocker": {
     "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+    "reason": "state result.statements element.sourceAst has incompatible union object shapes",
     "category": "data-contracts"
   },
   "props": [],
@@ -101,5 +101,5 @@ Component(createHandPortComponent({
   "obligations": [
     "ChinaDbSqlPreflightStudio:source-blocker"
   ],
-  "irDigest": "sha256:3e994b4e4b8ffd6ec12f8434e959e7f497d89598569f5a870f123631c4f13c41"
+  "irDigest": "sha256:affbbeca3643aea8c350afe1bb71794297357aa3e0a7b2ca04be6dae4857af05"
 }));

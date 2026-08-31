@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+    "reason": "expression kind CallExpression is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [],
   "states": [
@@ -80,5 +80,5 @@ Component(createHandPortComponent({
   "obligations": [
     "CommercializationConsole:source-blocker"
   ],
-  "irDigest": "sha256:3eb719279ae8dea4f86faa8b530e26c7cf20e6586af44fcadb00cefdeb615f0b"
+  "irDigest": "sha256:ecd9b1c3cf1d208565f9b18668baad2a548fd9e8e1b2e284b826b63c30797023"
 }));

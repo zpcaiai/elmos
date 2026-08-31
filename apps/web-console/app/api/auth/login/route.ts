@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   accountCookieDeletionOptions,
   accountSessionErrorResponse,
   assertLocalCredentialRequest,
@@ -37,24 +38,24 @@ function setLocalSessionCookies(
   result: ReturnType<typeof authenticateLocalCredentials>,
 ): void {
   const maxAge = sessionCookieMaxAge(result.expiresAt);
-  response.cookies.set(accountCookieNames.session, result.session, {
+  response.cookies.set(localAccountCookieNames.session, result.session, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "lax",
     path: "/",
     maxAge,
   });
-  response.cookies.set(accountCookieNames.accessToken, result.accessToken, {
+  response.cookies.set(localAccountCookieNames.accessToken, result.accessToken, {
     httpOnly: true,
-    secure: true,
+    secure: false,
     sameSite: "lax",
     path: "/",
     maxAge,
   });
   for (const name of [
-    accountCookieNames.refreshToken,
-    accountCookieNames.authorizationFlow,
-    accountCookieNames.tenant,
+    localAccountCookieNames.refreshToken,
+    localAccountCookieNames.authorizationFlow,
+    localAccountCookieNames.tenant,
   ]) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
   }

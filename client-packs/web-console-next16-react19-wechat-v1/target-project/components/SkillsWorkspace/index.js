@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state namespace has unsupported type \"Namespace\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
+    "reason": "useMemo callback must return one pure expression directly",
+    "category": "render-tree"
   },
   "props": [],
   "states": [
@@ -71,5 +71,5 @@ Component(createHandPortComponent({
   "obligations": [
     "SkillsWorkspace:source-blocker"
   ],
-  "irDigest": "sha256:ec480b17b41d8d40808d79619d6b14b92e8eb6b8f9b1796961a89b42331f5cbd"
+  "irDigest": "sha256:72de0d78a0bd686bbee4567e40c8197e4a7b84b886fe692d270b12aef8f9b93f"
 }));

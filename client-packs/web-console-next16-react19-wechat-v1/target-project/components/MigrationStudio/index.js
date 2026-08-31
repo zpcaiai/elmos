@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state view has unsupported type \"StudioView\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+    "reason": "expression kind CallExpression is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [],
   "states": [
@@ -124,5 +124,5 @@ Component(createHandPortComponent({
     "MigrationStudio:effect-cleanup:3807",
     "MigrationStudio:effect-cleanup:4270"
   ],
-  "irDigest": "sha256:bc6e60abd992258487a258d99d55a81ec78998685ca6261fd5800e44f0d0a4bd"
+  "irDigest": "sha256:6bb341b4e3636718ebfd8b22a5bb9cb5730ce72046ede1ec4cf6043cde1f9033"
 }));

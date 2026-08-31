@@ -10,6 +10,7 @@ import {
   canonicalBoundedNavigationModel,
   frontendFormalDigest,
   frontendFormalFixtureRequest,
+  lockedZ3BinaryDigestFor,
   materializeFrontendFormalCampaign,
   observeBoundedNavigationModel,
   reliftBoundedNavigationProject,
@@ -23,6 +24,19 @@ import { navigationSourceSpec, type BoundedNavigationSemanticModel } from "../sr
 function sha256Bytes(value: string): string {
   return `sha256:${createHash("sha256").update(value, "utf8").digest("hex")}`;
 }
+
+test("locked Z3 artifacts are exact per supported platform tuple", () => {
+  assert.equal(
+    lockedZ3BinaryDigestFor("darwin", "arm64"),
+    "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
+  );
+  assert.equal(
+    lockedZ3BinaryDigestFor("linux", "x64"),
+    "sha256:e583c4186a45e72411fa2cb2048401eed03f0f8e5f24694676a8f6271a50b765",
+  );
+  assert.equal(lockedZ3BinaryDigestFor("win32", "x64"), null);
+  assert.equal(lockedZ3BinaryDigestFor("linux", "arm64"), null);
+});
 
 function matchingBrace(text: string, open: number): number {
   let depth = 0;

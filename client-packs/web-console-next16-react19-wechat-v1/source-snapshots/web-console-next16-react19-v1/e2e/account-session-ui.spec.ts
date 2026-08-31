@@ -39,6 +39,16 @@ test("local test account establishes a development-only session", async ({ page 
       roles: ["DEVELOPER"],
     },
   });
+  const cookies = await page.context().cookies();
+  for (const name of ["elmos_dev_session", "elmos_dev_access_token"]) {
+    expect(cookies).toContainEqual(expect.objectContaining({
+      name,
+      httpOnly: true,
+      secure: false,
+      sameSite: "Lax",
+    }));
+  }
+  expect(cookies.map(({ name }) => name)).not.toContain("__Host-elmos_session");
 });
 
 test("local registration creates an account and starts a session", async ({ page }) => {

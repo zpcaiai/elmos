@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+    "reason": "expression kind CallExpression is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [
     {
@@ -87,5 +87,5 @@ Component(createHandPortComponent({
   "obligations": [
     "AccountSessionProvider:source-blocker"
   ],
-  "irDigest": "sha256:ba8119cd660e0b55719ea5b2c5bc2d556c8e177029b6f52ecaa10f43289eefa0"
+  "irDigest": "sha256:099b465388edd70cd04579a4f6316690d563e44af56a264b4a92ac056d7e9134"
 }));

@@ -1,6 +1,4 @@
 {
   "component": true,
-  "usingComponents": {
-    "status-mark": "/components/StatusMark/index"
-  }
+  "styleIsolation": "apply-shared"
 }

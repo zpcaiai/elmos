@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   accountCookieDeletionOptions,
   accountSessionErrorResponse,
   assertSameOriginMutation,
@@ -44,7 +45,10 @@ export async function POST(request: NextRequest) {
     endSessionUrl = null;
   }
   const response = NextResponse.json({ loggedOut: true, revocationConfirmed, endSessionUrl });
-  for (const name of Object.values(accountCookieNames)) {
+  for (const name of [
+    ...Object.values(accountCookieNames),
+    ...Object.values(localAccountCookieNames),
+  ]) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
   }
   response.headers.set("Cache-Control", "no-store, private");

@@ -16,7 +16,7 @@ Component(createHandPortComponent({
   },
   "blocker": {
     "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+    "reason": "state result.dag.tasks element has unsupported type \"unknown\"",
     "category": "data-contracts"
   },
   "props": [],
@@ -118,5 +118,5 @@ Component(createHandPortComponent({
   "obligations": [
     "RepositoryOrchestratorWorkbench:source-blocker"
   ],
-  "irDigest": "sha256:05df34c98e0fe4ec9e1b1da247f0bb5d58b43c9b82a8227afdb885b8ed5d0b43"
+  "irDigest": "sha256:33c0dd69c64fe4ca7687dc78507e5026bd0e277542d542c48d11a2635370939b"
 }));

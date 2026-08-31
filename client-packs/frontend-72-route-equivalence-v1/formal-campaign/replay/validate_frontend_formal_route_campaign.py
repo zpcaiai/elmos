@@ -783,26 +783,45 @@ def validate_toolchain_evidence(
         normalized_routes[route_id] = normalized
         if route_bindings.get(route_id) != normalized:
             errors.append(f"toolchain normalized route binding drift: {route_id}")
+    navigation_identity_boundary = (
+        raw.get("implementation_closure") is None
+        and raw.get("engine_preverification") is None
+        and raw.get("semantic_block_ids") == []
+        and raw.get("scenario_manifest_digest") is None
+        and raw.get("scenario_policy") is None
+        and raw.get("mutation_replay") == []
+    )
+    if not navigation_identity_boundary:
+        errors.append("toolchain raw v1 identity boundary drift")
     identity_core = {
         "producer": raw_producer,
+        "implementation_closure": None,
+        "engine_preverification_digest": None,
         "campaign_sha256": engine_digest,
+        "proof_profile": "bounded-navigation-v1",
+        "semantic_block_ids": [],
+        "scenario_manifest_digest": None,
+        "scenario_policy": None,
+        "mutation_replay_digest": canonical_digest([]),
         "policy": raw.get("policy"),
         "profile_execution_ids": [
-            executions[item].get("execution_id") for item in sorted(executions)
+            execution.get("execution_id") for execution in executions.values()
         ],
         "route_execution_bindings": [
             {
-                "route_id": item,
-                "source_execution_id": raw_routes[item].get("source_execution_id"),
-                "target_execution_id": raw_routes[item].get("target_execution_id"),
-                "status": raw_routes[item].get("status"),
+                "route_id": record.get("route_id"),
+                "source_execution_id": record.get("source_execution_id"),
+                "target_execution_id": record.get("target_execution_id"),
+                "status": record.get("status"),
             }
-            for item in sorted(raw_routes)
+            for record in raw_routes.values()
         ],
     }
     if raw.get("evidence_identity") != {
+        "algorithm": "sha256(canonical-json(identity_payload))",
+        "identity_payload": identity_core,
         "sha256": canonical_digest(identity_core),
-        "scope": "producer+campaign+policy+profile-executions+route-bindings",
+        "scope": "producer+engine-preverification+implementation+campaign+scenario+policy+profile-executions+route-bindings",
     }:
         errors.append("toolchain raw evidence identity drift")
     states = {item.get("toolchain_status") for item in normalized_profiles.values()}

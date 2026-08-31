@@ -11,7 +11,7 @@
     "target_profile": "react-native",
     "target_framework_version": "0.86.0"
   },
-  "source_project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
+  "source_project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
   "target_project_digest": "sha256:bcea48117319a6498a7c51c5baa859c3b68e98f9cc84a38adccebae13de57796",
   "canonical_model": {
     "schemaVersion": "1.0",
@@ -57,12 +57,12 @@
   "canonical_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
   "source_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
   "target_model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d",
-  "source_model_artifact_digest": "sha256:be191243a5ca4cac3ef3d780088c1199d1d6069598011f8cddeff34d487ebac2",
+  "source_model_artifact_digest": "sha256:d16b57269187eff7b6dcb478f754740467f1a5e348c39a948dde4a872b44707a",
   "target_model_artifact_digest": "sha256:e90ccb56cff562e5731c0172b8637d31409bbda99be39695f79e5473107a0a0c",
   "semantic_equal": true,
   "behavior_digest": "sha256:18874c140e01cc56cbc0ff0113cb04943938a273310344b45e99b3fbb01d7be9",
   "behavior_equal": true,
-  "chunk_digest": "sha256:328a2b5f4e29c8301e36a31931a854cc4870c9ba5b96f406088082d837ea8f79",
+  "chunk_digest": "sha256:9155f79bfa097ff528d00e0d43172f2089780b2f35bf5e9b87dc9d0171e4f3f0",
   "chunk_equal": true,
   "assumptions": [
     "The proof covers only the canonical bounded-navigation-v1 IR and ELMOS-emitted profile projects, not arbitrary customer source.",

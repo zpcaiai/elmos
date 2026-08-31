@@ -2,9 +2,9 @@
   "schema_version": 1,
   "kind": "elmos.git-source-snapshot-manifest",
   "source_root": "source-snapshots/web-console-next16-react19-v1",
-  "aggregate_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
-  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
-  "observed_at": "2026-08-31T16:35:14+08:00",
+  "aggregate_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
+  "source_revision": "e69e1ac37295d593df4491b297f8b3048fd052d2",
+  "observed_at": "2026-08-31T16:54:40+08:00",
   "repository_relative_root": "apps/web-console",
   "file_count": 785,
   "files": [
@@ -190,13 +190,13 @@
     },
     {
       "path": "app/api/auth/login/route.ts",
-      "sha256": "sha256:7e7b77858ab41050a5a720e773cb93ef8611a893ca980d3b70993ff458b252ff",
-      "bytes": 4651
+      "sha256": "sha256:5de69f7ccc191c0b33ca9eb167f69487208d0f4a213cf39a9170ec9c1000137e",
+      "bytes": 4705
     },
     {
       "path": "app/api/auth/logout/route.ts",
-      "sha256": "sha256:faffa0c925637d202b755221ec665b3821168d8ea5ab5f485b0368f5994c2f1f",
-      "bytes": 1678
+      "sha256": "sha256:3869eaf9deb70ef9e0ba9fc8e4358985fb719f7212276a6f3994d9cf3c471062",
+      "bytes": 1766
     },
     {
       "path": "app/api/auth/refresh/route.ts",
@@ -205,8 +205,8 @@
     },
     {
       "path": "app/api/auth/register/route.ts",
-      "sha256": "sha256:09ca5d2fd3f1ffc9a9d4a552b66b13bb6c9391337b6f907a0112b0e6eedd6edd",
-      "bytes": 4933
+      "sha256": "sha256:78436cfdcc68ed7787b18268e77791e1a9e498c3066bb4ebfa4cbdcd9b10da4c",
+      "bytes": 4965
     },
     {
       "path": "app/api/auth/session/route.ts",
@@ -600,8 +600,8 @@
     },
     {
       "path": "app/components/ProjectEvidenceCharts.tsx",
-      "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
-      "bytes": 24453
+      "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+      "bytes": 24517
     },
     {
       "path": "app/components/RuntimeDeploymentGuide.tsx",
@@ -785,8 +785,8 @@
     },
     {
       "path": "app/lib/server/accountSession.ts",
-      "sha256": "sha256:a4df344b7a0472f39c6cbdfeeaf72f1fdc31f8a6d23e99dfaa54e3935e0063b3",
-      "bytes": 44452
+      "sha256": "sha256:960be9625427e3af2da2f542909a4996577dfaa4ee81c66e5a923a8a9ff3bc52",
+      "bytes": 45570
     },
     {
       "path": "app/lib/server/adminMutationPolicy.ts",
@@ -1245,8 +1245,8 @@
     },
     {
       "path": "e2e/account-session-ui.spec.ts",
-      "sha256": "sha256:56cc1cf4ca29071e9ebdc0c844a06fe781eaa043af6a014259183286547ab584",
-      "bytes": 2533
+      "sha256": "sha256:b1598ebd4bc4a3ea5fce677f0b6e9093c42e81e7aa541e79bf9d01dc472d4b3b",
+      "bytes": 2888
     },
     {
       "path": "e2e/admin-billing-reconciliation.spec.ts",
@@ -3875,8 +3875,8 @@
     },
     {
       "path": "test/accountSession.test.mjs",
-      "sha256": "sha256:608544b7a4c5251493a427585e4d45ad2bd74ad7ce930a2568324313d50f1e02",
-      "bytes": 5220
+      "sha256": "sha256:f1f80393ed3c39be34d2246f076c785b54a0fb8baf3fcb7a68018b3301d5e7b1",
+      "bytes": 6083
     },
     {
       "path": "test/durableJobLease.test.mjs",
@@ -3934,6 +3934,6 @@
       "bytes": 82
     }
   ],
-  "snapshot_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
+  "snapshot_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
   "boundary": "References exact tracked source bytes at source_revision; source scripts are not executed by this generator."
 }

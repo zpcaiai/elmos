@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
-    "category": "data-contracts"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+    "reason": "string method find is outside certified-component-v1",
+    "category": "effects-and-resources"
   },
   "props": [],
   "states": [
@@ -129,5 +129,5 @@ Component(createHandPortComponent({
   "obligations": [
     "ModernizationProofStudio:source-blocker"
   ],
-  "irDigest": "sha256:68a1e599f4620b1c6776a4b94dc683e9acf13dda52bca6092d25dced2f69432c"
+  "irDigest": "sha256:7ed848e1d83acdc10f5c8025b6cf23aceecbed3f1b39e905695a3be6079e65f0"
 }));

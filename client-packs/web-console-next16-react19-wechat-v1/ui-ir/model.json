@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_snapshot_digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
+  "source_snapshot_digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
   "routes": [
     {
       "id": "route.account-page",
@@ -725,10 +725,10 @@
     },
     {
       "id": "component.coverage-meter",
-      "kind": "automatic-certified-subset-component",
+      "kind": "explicit-hand-ported-component",
       "name": "CoverageMeter",
-      "ownership": "ENGINE_GENERATED",
-      "disposition": "AUTOMATIC",
+      "ownership": "HAND_PORTED",
+      "disposition": "HAND_PORTED",
       "references": [],
       "source_refs": [
         "apps/web-console/app/components/ProjectEvidenceCharts.tsx"
@@ -7446,7 +7446,7 @@
       "id": "resource.source-snapshot",
       "kind": "content-addressed-git-snapshot",
       "name": "Pinned web console source snapshot",
-      "digest": "sha256:ee3bb01b1f19b5c5b7610aa957e73a73edf42e5526bb073182656bedacd99a83",
+      "digest": "sha256:8bfaea4e2e8a100bd952a527390b0cd1eccee58c3546f5f575d97010b83c5e61",
       "references": [],
       "source_refs": [
         "apps/web-console/package.json"

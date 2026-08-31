@@ -10,6 +10,7 @@
     "account-session-provider": "/components/AccountSessionProvider/index",
     "app-shell": "/components/AppShell/index",
     "icon": "/components/Icon/index",
+    "coverage-meter": "/components/CoverageMeter/index",
     "equivalence-matrix": "/components/EquivalenceMatrix/index",
     "evidence-graph": "/components/EvidenceGraph/index",
     "project-evidence-charts": "/components/ProjectEvidenceCharts/index",

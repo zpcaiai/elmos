@@ -5,11 +5,11 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 
 import {
-  accountCookieNames,
   accountSessionFromRequest,
   assertLocalCredentialRequest,
   authenticateLocalCredentials,
   localCredentialsConfigured,
+  localAccountCookieNames,
   localRegistrationConfigured,
   registerLocalAccount,
 } from "../app/lib/server/accountSession.ts";
@@ -57,11 +57,32 @@ test("local test account issues an encrypted least-privilege session", () => {
 
     const request = new Request("http://127.0.0.1/api/auth/session", {
       headers: {
-        cookie: `${accountCookieNames.session}=${result.session}; ${accountCookieNames.accessToken}=${result.accessToken}`,
+        host: "127.0.0.1",
+        cookie: `${localAccountCookieNames.session}=${result.session}; ${localAccountCookieNames.accessToken}=${result.accessToken}`,
       },
     });
     const session = accountSessionFromRequest(request, "spring:execute");
     assert.equal(session.principal.actorId, "local:test");
+  });
+});
+
+test("production ignores development-cookie names even when they contain a valid sealed session", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_ALLOW_LOCAL_CREDENTIALS: "true",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    const result = authenticateLocalCredentials("test", "test");
+    process.env.NODE_ENV = "production";
+    assert.throws(
+      () => accountSessionFromRequest(new Request("https://console.example/api/auth/session", {
+        headers: {
+          host: "console.example",
+          cookie: `${localAccountCookieNames.session}=${result.session}; ${localAccountCookieNames.accessToken}=${result.accessToken}`,
+        },
+      })),
+      (error) => error?.code === "LOCAL_CREDENTIALS_DISABLED" && error?.status === 404,
+    );
   });
 });
 

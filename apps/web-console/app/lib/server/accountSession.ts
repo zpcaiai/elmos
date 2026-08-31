@@ -27,14 +27,27 @@ export const accountCookieNames = {
   tenant: "__Host-elmos_tenant",
 } as const;
 
+export const localAccountCookieNames = {
+  session: "elmos_dev_session",
+  accessToken: "elmos_dev_access_token",
+  refreshToken: "elmos_dev_refresh_token",
+  authorizationFlow: "elmos_dev_authorization_flow",
+  tenant: "elmos_dev_tenant",
+} as const;
+
 export type AccountCookieName =
-  typeof accountCookieNames[keyof typeof accountCookieNames];
+  | typeof accountCookieNames[keyof typeof accountCookieNames]
+  | typeof localAccountCookieNames[keyof typeof localAccountCookieNames];
 
 export function accountCookieDeletionOptions(name: AccountCookieName) {
+  const local = (Object.values(localAccountCookieNames) as string[]).includes(name);
   return {
     httpOnly: true,
-    secure: true,
-    sameSite: name === accountCookieNames.refreshToken ? "strict" : "lax",
+    secure: !local,
+    sameSite: name === accountCookieNames.refreshToken
+      || name === localAccountCookieNames.refreshToken
+      ? "strict"
+      : "lax",
     path: "/",
     maxAge: 0,
     expires: new Date(0),
@@ -1320,8 +1333,22 @@ export function accountSessionFromRequest(
   expiresAt: number;
 } {
   const cookies = cookieMap(request.headers.get("cookie"));
-  const sealed = cookies.get(accountCookieNames.session) ?? "";
-  const accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  const productionSealed = cookies.get(accountCookieNames.session) ?? "";
+  const productionAccessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  const useProductionCookies = Boolean(productionSealed && productionAccessToken);
+  let sealed = productionSealed;
+  let accessToken = productionAccessToken;
+  let tenantCookie = cookies.get(accountCookieNames.tenant);
+  if (!useProductionCookies) {
+    const localSealed = cookies.get(localAccountCookieNames.session) ?? "";
+    const localAccessToken = cookies.get(localAccountCookieNames.accessToken) ?? "";
+    if (localSealed || localAccessToken) {
+      assertLocalCredentialRequest(request);
+      sealed = localSealed;
+      accessToken = localAccessToken;
+      tenantCookie = cookies.get(localAccountCookieNames.tenant);
+    }
+  }
   if (!sealed || !accessToken) {
     throw new AccountSessionError(401, "ACCOUNT_SESSION_REQUIRED", "请先登录企业账户。");
   }
@@ -1335,7 +1362,7 @@ export function accountSessionFromRequest(
   }
   const selected = activeMembership(
     session.principal,
-    cookies.get(accountCookieNames.tenant),
+    tenantCookie,
   );
   const principal = {
     ...session.principal,

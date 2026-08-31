@@ -15,9 +15,9 @@ Component(createHandPortComponent({
     }
   },
   "blocker": {
-    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-    "reason": "expression kind CallExpression is outside certified-component-v1",
-    "category": "effects-and-resources"
+    "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+    "reason": "state rows element.settledAmountMinor has unsupported type \"string | number | null\"",
+    "category": "data-contracts"
   },
   "props": [],
   "states": [
@@ -88,5 +88,5 @@ Component(createHandPortComponent({
   "obligations": [
     "PlatformJobsPanel:source-blocker"
   ],
-  "irDigest": "sha256:98b0fba6ae3ccaeead373b86ace7de1d75d82364ba3ad210fef6847c007f41bc"
+  "irDigest": "sha256:3ae79b5b4debae661ff57f08ac507e248eec2b0d15bd9edf847414ef74ac5f09"
 }));

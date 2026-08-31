@@ -374,6 +374,10 @@ REQUIRED_DIRS = [
     "corpus/real-repository",
     "certification",
 ]
+V3_RESEARCH_REQUIRED_DIRS = [
+    "compat-runtime",
+    "certification",
+]
 ALLOWED_ROUTE_STATUS = {
     "research",
     "experimental",
@@ -12269,9 +12273,6 @@ def main() -> int:
     module_required = False
     if not route.is_dir():
         errors.append(f"missing route dir: {route}")
-    for directory in REQUIRED_DIRS:
-        if not (route / directory).exists():
-            errors.append(f"missing: {route / directory}")
     try:
         manifest = load(route / "route.json")
         from route_sets import (  # imported only at the CLI boundary for packed replay
@@ -12372,6 +12373,10 @@ def main() -> int:
                 errors.append("Node.js/TypeScript integer gate drift")
     except Exception as exc:
         errors.append(str(exc))
+    required_directories = V3_RESEARCH_REQUIRED_DIRS if v3 else REQUIRED_DIRS
+    for directory in required_directories:
+        if not (route / directory).exists():
+            errors.append(f"missing: {route / directory}")
     try:
         support = load(route / "support-matrix.json")
         _validate_optional_json_schema(

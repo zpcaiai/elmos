@@ -7,6 +7,13 @@
   "bounded_proof_profile_ready": true,
   "formal_ready": false,
   "external_evidence_status": "NOT_RUN",
+  "frontend_formal_contract_version": 1,
+  "model_formal_ready": false,
+  "browser_ready": false,
+  "native_ready": false,
+  "runtime_ready": false,
+  "independent_ready": false,
+  "certification_ready": false,
   "certification_requested": false,
   "certification_decision": "NOT_CERTIFIED",
   "pack_status": "experimental",
@@ -24,6 +31,15 @@
     "certification_ready": false,
     "proved_route_count": 0,
     "proved_under_assumptions_route_count": 72,
-    "native_route_count": 0
+    "native_route_count": 0,
+    "native_applicable_route_count": null,
+    "native_passed_route_count": null,
+    "model_formal_ready": null,
+    "browser_ready": null,
+    "native_ready": null,
+    "runtime_ready": null,
+    "independent_ready": null,
+    "block_count": null,
+    "scenario_count": null
   }
 }

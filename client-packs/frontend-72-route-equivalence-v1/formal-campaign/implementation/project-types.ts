@@ -72,6 +72,149 @@ export interface UiProjectGenerationRequest {
   readonly uiIr: UiInteractionProject;
 }
 
+/**
+ * Exact bounded Batch32 interaction input.  This is deliberately a separate
+ * discriminated request so schemaVersion 1.0 callers retain their existing
+ * generic-node contract and cannot be silently upgraded to stronger claims.
+ */
+export interface UiInteractionBindingV2 {
+  readonly id: string;
+  readonly references: readonly string[];
+  readonly sourceRefs: readonly string[];
+}
+
+export interface UiInteractionComponentV2 extends UiInteractionBindingV2 {
+  readonly componentId: "interaction.shell";
+  readonly templateKind: "ROUTE_DETAIL_WITH_INTERACTION_MATRIX";
+  readonly keyedBy: "route.id";
+  readonly titleBinding: "route.title";
+  readonly textBinding: "route.text";
+}
+
+export interface UiInteractionStateV2 extends UiInteractionBindingV2 {
+  readonly stateId: "bounded.counter";
+  readonly initial: 0;
+  readonly minimum: 0;
+  readonly maximum: 2;
+  readonly transition: "SATURATING_INCREMENT";
+}
+
+export interface UiInteractionActionV2 extends UiInteractionBindingV2 {
+  readonly acceptedEvents: readonly ["BOOT", "NAVIGATE", "AUTHENTICATE", "SUBMIT", "CANCEL", "HYDRATE", "DISPLAY_CHANGE", "NATIVE_DEEPLINK"];
+  readonly deniedAction: "BLOCK";
+  readonly keyboardSubmit: "Enter";
+}
+
+export interface UiInteractionEffectV2 extends UiInteractionBindingV2 {
+  readonly mountEffect: "LOAD_ON_MOUNT";
+  readonly cleanupEffect: "CANCEL_ON_UNMOUNT";
+  readonly maxExecutionsPerMount: 1;
+  readonly staleResponsePolicy: "IGNORE_AFTER_CANCEL";
+}
+
+export interface UiInteractionFormV2 extends UiInteractionBindingV2 {
+  readonly formId: "search";
+  readonly fieldId: "query";
+  readonly initialValue: "";
+  readonly required: true;
+  readonly minimumLength: 2;
+  readonly validation: "ON_SUBMIT";
+  readonly invalidCode: "QUERY_TOO_SHORT";
+}
+
+export interface UiInteractionApiV2 extends UiInteractionBindingV2 {
+  readonly operationId: "search";
+  readonly method: "POST";
+  readonly path: "/api/search";
+  readonly timeoutMs: 1000;
+  readonly retry: "NEVER";
+  readonly cacheScope: "TENANT_QUERY";
+  readonly cancelOnUnmount: true;
+}
+
+export interface UiInteractionIdentityV2 extends UiInteractionBindingV2 {
+  readonly anonymousRole: "ANONYMOUS";
+  readonly authenticatedRole: "MEMBER";
+  readonly requiredPermission: "search:execute";
+  readonly deniedBehavior: "HIDE_AND_BLOCK";
+  readonly tenantIsolation: "EXACT_TENANT_MATCH";
+  readonly serverAuthorityRequired: true;
+}
+
+export interface UiInteractionRenderingV2 extends UiInteractionBindingV2 {
+  readonly mode: "HYDRATABLE_CSR";
+  readonly hydrationPolicy: "REQUIRE_MATCH";
+  readonly mismatchBehavior: "RENDER_ERROR";
+  readonly duplicateEffectsAllowed: false;
+}
+
+export interface UiInteractionAccessibilityV2 extends UiInteractionBindingV2 {
+  readonly navigationLabel: "主要导航";
+  readonly mainRole: "main";
+  readonly headingLevel: 1;
+  readonly formLabel: "搜索";
+  readonly errorRole: "alert";
+  readonly liveRegion: "polite";
+  readonly invalidFocusTarget: "query";
+  readonly keyboardSubmit: "Enter";
+}
+
+export interface UiInteractionI18nThemeResponsiveV2 extends UiInteractionBindingV2 {
+  readonly supportedLocales: readonly ["zh-CN", "en-US"];
+  readonly fallbackLocale: "en-US";
+  readonly themes: readonly ["LIGHT", "DARK"];
+  readonly defaultTheme: "LIGHT";
+  readonly compactBreakpoint: 720;
+  readonly compactColumns: 1;
+  readonly wideColumns: 2;
+}
+
+export interface UiInteractionNativeV2 extends UiInteractionBindingV2 {
+  readonly boundary: "ADAPTER";
+  readonly capability: "OPEN_DEEP_LINK";
+  readonly lifecycleStates: readonly ["FOREGROUND", "BACKGROUND"];
+  readonly permission: "DEEPLINK_OPEN";
+  readonly deniedBehavior: "NO_OP_REPORTED";
+  readonly recovery: "FOREGROUND_RETRY";
+}
+
+export interface UiInteractionProjectV2 {
+  readonly schemaVersion: "2.0";
+  readonly profile: "bounded-frontend-interaction-v1";
+  readonly sourceSnapshotDigest: string;
+  readonly routes: readonly UiIrRoute[];
+  readonly views: readonly UiIrNode[];
+  readonly components: readonly UiIrComponent[];
+  readonly componentTemplate: UiInteractionComponentV2;
+  readonly stateManagement: UiInteractionStateV2;
+  readonly actionEvent: UiInteractionActionV2;
+  readonly effectLifecycle: UiInteractionEffectV2;
+  readonly formBindingValidation: UiInteractionFormV2;
+  readonly apiNetwork: UiInteractionApiV2;
+  readonly identityPermission: UiInteractionIdentityV2;
+  readonly renderingHydration: UiInteractionRenderingV2;
+  readonly accessibilityFocus: UiInteractionAccessibilityV2;
+  readonly i18nThemeResponsive: UiInteractionI18nThemeResponsiveV2;
+  readonly nativePlatform: UiInteractionNativeV2;
+  readonly unknowns: readonly UiIrUnknown[];
+}
+
+export interface UiProjectGenerationRequestV2 {
+  readonly schemaVersion: "2.0";
+  readonly projectName: string;
+  readonly applicationId: string;
+  readonly title: string;
+  readonly source: {
+    readonly framework: UiFrameworkId;
+    readonly version: string;
+    readonly platform: UiPlatform;
+  };
+  readonly targetFramework: UiFrameworkId;
+  readonly packageName: string;
+  readonly bundleId: string;
+  readonly uiIr: UiInteractionProjectV2;
+}
+
 export interface ExactUiTargetProfile {
   readonly id: UiFrameworkId;
   readonly label: string;

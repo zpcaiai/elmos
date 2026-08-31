@@ -2,8 +2,8 @@
   "schema_version": 1,
   "kind": "elmos.manual-component-ir-bundle",
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_revision": "6f18bd578f1b4fd13c37e1867b97e929b77870d4",
-  "component_count": 40,
+  "source_revision": "e69e1ac37295d593df4491b297f8b3048fd052d2",
+  "component_count": 41,
   "components": [
     {
       "schemaVersion": "1.0",
@@ -2103,9 +2103,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
-        "reason": "expression kind CallExpression is outside certified-component-v1",
-        "category": "effects-and-resources"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
+        "reason": "state rows element.settledAmountMinor has unsupported type \"string | number | null\"",
+        "category": "data-contracts"
       },
       "props": [],
       "state": [
@@ -2326,14 +2326,14 @@
       "obligations": [
         {
           "id": "PlatformJobsPanel:source-blocker",
-          "category": "effects-and-resources",
+          "category": "data-contracts",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: expression kind CallExpression is outside certified-component-v1"
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state rows element.settledAmountMinor has unsupported type \"string | number | null\""
         }
       ],
       "targetPlan": {
@@ -2349,7 +2349,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:98b0fba6ae3ccaeead373b86ace7de1d75d82364ba3ad210fef6847c007f41bc"
+      "irDigest": "sha256:3ae79b5b4debae661ff57f08ac507e248eec2b0d15bd9edf847414ef74ac5f09"
     },
     {
       "schemaVersion": "1.0",
@@ -2779,9 +2779,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state payload has unsupported type \"ProductCapabilityResponse\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [],
       "state": [
@@ -2959,14 +2959,14 @@
       "obligations": [
         {
           "id": "CommercializationConsole:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state payload has unsupported type \"ProductCapabilityResponse\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: expression kind CallExpression is outside certified-component-v1"
         }
       ],
       "targetPlan": {
@@ -2981,7 +2981,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:3eb719279ae8dea4f86faa8b530e26c7cf20e6586af44fcadb00cefdeb615f0b"
+      "irDigest": "sha256:ecd9b1c3cf1d208565f9b18668baad2a548fd9e8e1b2e284b826b63c30797023"
     },
     {
       "schemaVersion": "1.0",
@@ -2996,9 +2996,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state status has unsupported type \"AccountSessionState[\\\"status\\\"]\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [
         {
@@ -3182,14 +3182,14 @@
       "obligations": [
         {
           "id": "AccountSessionProvider:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state status has unsupported type \"AccountSessionState[\\\"status\\\"]\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: expression kind CallExpression is outside certified-component-v1"
         }
       ],
       "targetPlan": {
@@ -3204,7 +3204,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:ba8119cd660e0b55719ea5b2c5bc2d556c8e177029b6f52ecaa10f43289eefa0"
+      "irDigest": "sha256:099b465388edd70cd04579a4f6316690d563e44af56a264b4a92ac056d7e9134"
     },
     {
       "schemaVersion": "1.0",
@@ -3714,11 +3714,139 @@
       "kind": "elmos.manual-component-ir",
       "source": {
         "file": "app/components/ProjectEvidenceCharts.tsx",
-        "componentName": "EquivalenceMatrix",
-        "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+        "componentName": "CoverageMeter",
+        "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
         "range": {
-          "start": 11121,
-          "end": 14308
+          "start": 1873,
+          "end": 4313
+        }
+      },
+      "blocker": {
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE",
+        "reason": "spread attributes are outside certified-component-v1",
+        "category": "platform-semantics"
+      },
+      "props": [
+        {
+          "name": "counts",
+          "type": "StatusCounts",
+          "optional": true
+        },
+        {
+          "name": "label",
+          "type": "string",
+          "optional": false
+        },
+        {
+          "name": "passed",
+          "type": "number",
+          "optional": false
+        },
+        {
+          "name": "status",
+          "type": "DisplayStatus",
+          "optional": false
+        },
+        {
+          "name": "total",
+          "type": "number",
+          "optional": false
+        }
+      ],
+      "state": [],
+      "hooks": [],
+      "effects": [],
+      "collections": [
+        {
+          "operation": "filter",
+          "sourceRange": {
+            "start": 2454,
+            "end": 2641
+          }
+        },
+        {
+          "operation": "map",
+          "sourceRange": {
+            "start": 2454,
+            "end": 2597
+          }
+        },
+        {
+          "operation": "map",
+          "sourceRange": {
+            "start": 2715,
+            "end": 2804
+          }
+        },
+        {
+          "operation": "map",
+          "sourceRange": {
+            "start": 3443,
+            "end": 3787
+          }
+        },
+        {
+          "operation": "map",
+          "sourceRange": {
+            "start": 3884,
+            "end": 4196
+          }
+        }
+      ],
+      "platformSemantics": [],
+      "cssModuleTokens": [],
+      "apiPaths": [],
+      "textLabels": [
+        "0 / 0；当前没有可执行义务",
+        "NOT_RUN",
+        "PASSED",
+        "UNKNOWN",
+        "aria-valuemax",
+        "aria-valuemin",
+        "aria-valuenow",
+        "aria-valuetext",
+        "evidence-meter",
+        "evidence-meter-heading",
+        "evidence-meter-legend",
+        "evidence-meter-track",
+        "progressbar",
+        "status",
+        "true"
+      ],
+      "obligations": [
+        {
+          "id": "CoverageMeter:source-blocker",
+          "category": "platform-semantics",
+          "evidence": [
+            "official-target-build",
+            "emulator-or-device-journey",
+            "differential-behavior",
+            "independent-review"
+          ],
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_ATTRIBUTE: spread attributes are outside certified-component-v1"
+        }
+      ],
+      "targetPlan": {
+        "platform": "wechat",
+        "disposition": "HAND_PORTED",
+        "adapters": [
+          "wechat-plain-collection-projection-v1"
+        ],
+        "runtimeEvidence": "NOT_RUN",
+        "certification": "NOT_CERTIFIED"
+      },
+      "irDigest": "sha256:c19dbf8b731734078536d6485224d0e36438129e99dd1436ca9fa6185dd334c5"
+    },
+    {
+      "schemaVersion": "1.0",
+      "kind": "elmos.manual-component-ir",
+      "source": {
+        "file": "app/components/ProjectEvidenceCharts.tsx",
+        "componentName": "EquivalenceMatrix",
+        "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
+        "range": {
+          "start": 11185,
+          "end": 14372
         }
       },
       "blocker": {
@@ -3745,36 +3873,36 @@
         {
           "operation": "Map",
           "sourceRange": {
-            "start": 11327,
-            "end": 11423
+            "start": 11391,
+            "end": 11487
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 11335,
-            "end": 11422
+            "start": 11399,
+            "end": 11486
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 12886,
-            "end": 12987
+            "start": 12950,
+            "end": 13051
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 13050,
-            "end": 14221
+            "start": 13114,
+            "end": 14285
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 13205,
-            "end": 14181
+            "start": 13269,
+            "end": 14245
           }
         }
       ],
@@ -3872,7 +4000,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:ca75212f87491733a77e44bcf08b7130d0498425eba1d3cf8485845894142c5c"
+      "irDigest": "sha256:01ab2b3d4b29ab18a0096aa436ccb4dcba0d43767bd764327a925f1b6412bb1e"
     },
     {
       "schemaVersion": "1.0",
@@ -3880,10 +4008,10 @@
       "source": {
         "file": "app/components/ProjectEvidenceCharts.tsx",
         "componentName": "EvidenceGraph",
-        "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+        "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
         "range": {
-          "start": 5464,
-          "end": 7534
+          "start": 5528,
+          "end": 7598
         }
       },
       "blocker": {
@@ -3925,36 +4053,36 @@
         {
           "operation": "Map",
           "sourceRange": {
-            "start": 5694,
-            "end": 5739
+            "start": 5758,
+            "end": 5803
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 5702,
-            "end": 5738
+            "start": 5766,
+            "end": 5802
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 6255,
-            "end": 6903
+            "start": 6319,
+            "end": 6967
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 6479,
-            "end": 6851
+            "start": 6543,
+            "end": 6915
           }
         },
         {
           "operation": "map",
           "sourceRange": {
-            "start": 7090,
-            "end": 7468
+            "start": 7154,
+            "end": 7532
           }
         }
       ],
@@ -4007,7 +4135,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:5c7964c10595935a24db931d62d1b73d3206d4858f829a0079dbab56649921ec"
+      "irDigest": "sha256:3804bd13e0e7364b0480ce16e79a6c7944cfe396f2df01c5b0894d326814686e"
     },
     {
       "schemaVersion": "1.0",
@@ -4015,10 +4143,10 @@
       "source": {
         "file": "app/components/ProjectEvidenceCharts.tsx",
         "componentName": "ProjectEvidenceCharts",
-        "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+        "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
         "range": {
-          "start": 15842,
-          "end": 19611
+          "start": 15906,
+          "end": 19675
         }
       },
       "blocker": {
@@ -4040,8 +4168,8 @@
         {
           "operation": "map",
           "sourceRange": {
-            "start": 18960,
-            "end": 19242
+            "start": 19024,
+            "end": 19306
           }
         }
       ],
@@ -4096,7 +4224,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:1e4b05ec3ec13926e34ca1f8f4cabf91d7b3b1c14c4783034c16939817db5ff8"
+      "irDigest": "sha256:969526c9b0040591ad40bc8930283317a03454fdde17346509b185d3f4a140e8"
     },
     {
       "schemaVersion": "1.0",
@@ -4307,7 +4435,7 @@
       },
       "blocker": {
         "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+        "reason": "state evidence.result has unsupported type \"unknown\"",
         "category": "data-contracts"
       },
       "props": [
@@ -4829,7 +4957,7 @@
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state capability has unsupported type \"SmokeCapabilityResponse\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state evidence.result has unsupported type \"unknown\""
         }
       ],
       "targetPlan": {
@@ -4846,7 +4974,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:8462c13edbd2efe5e3092553c9784c9e251f054e65b748c8c688712b311e59e0"
+      "irDigest": "sha256:b729dd8238de604a8105d026cb0890d59653db4df31dbd12882021278d1a69f8"
     },
     {
       "schemaVersion": "1.0",
@@ -4861,9 +4989,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state locale has unsupported type \"UiLocale\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT",
+        "reason": "component body statement kind ExpressionStatement is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [
         {
@@ -4979,14 +5107,14 @@
       "obligations": [
         {
           "id": "UiPreferencesProvider:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state locale has unsupported type \"UiLocale\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_STATEMENT: component body statement kind ExpressionStatement is outside certified-component-v1"
         }
       ],
       "targetPlan": {
@@ -5000,7 +5128,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:4edbff9b7b9d35799d94b85777466027744f545608f6938e4e8e5057229181ff"
+      "irDigest": "sha256:280a190f494d8405172a468548c3b99beff36c9dbd60249c44357c3866ec4dc3"
     },
     {
       "schemaVersion": "1.0",
@@ -6946,9 +7074,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state activeTab has unsupported type \"\\\"mutation\\\"\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind ArrowFunction is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [],
       "state": [
@@ -7118,14 +7246,14 @@
       "obligations": [
         {
           "id": "GovernanceWorkspace:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state activeTab has unsupported type \"\\\"mutation\\\"\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: expression kind ArrowFunction is outside certified-component-v1"
         }
       ],
       "targetPlan": {
@@ -7139,7 +7267,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:a3e803c2faca35da6e5a5a7baa001a11e50bfe149bbd6eabfce0d4c2feeb7418"
+      "irDigest": "sha256:88e14d52239a3908c82bc344888f33994a589a4ce5067ecb3dd421bbffb82361"
     },
     {
       "schemaVersion": "1.0",
@@ -9326,9 +9454,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state view has unsupported type \"StudioView\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "expression kind CallExpression is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [],
       "state": [
@@ -9750,14 +9878,14 @@
       "obligations": [
         {
           "id": "MigrationStudio:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state view has unsupported type \"StudioView\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: expression kind CallExpression is outside certified-component-v1"
         },
         {
           "id": "MigrationStudio:effect-cleanup:3376",
@@ -9799,7 +9927,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:bc6e60abd992258487a258d99d55a81ec78998685ca6261fd5800e44f0d0a4bd"
+      "irDigest": "sha256:6bb341b4e3636718ebfd8b22a5bb9cb5730ce72046ede1ec4cf6043cde1f9033"
     },
     {
       "schemaVersion": "1.0",
@@ -9815,7 +9943,7 @@
       },
       "blocker": {
         "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state capabilities has unsupported type \"ChinaDbSqlCapabilities\"",
+        "reason": "state result.statements element.sourceAst has incompatible union object shapes",
         "category": "data-contracts"
       },
       "props": [],
@@ -10147,7 +10275,7 @@
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state capabilities has unsupported type \"ChinaDbSqlCapabilities\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state result.statements element.sourceAst has incompatible union object shapes"
         }
       ],
       "targetPlan": {
@@ -10165,7 +10293,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:3e994b4e4b8ffd6ec12f8434e959e7f497d89598569f5a870f123631c4f13c41"
+      "irDigest": "sha256:affbbeca3643aea8c350afe1bb71794297357aa3e0a7b2ca04be6dae4857af05"
     },
     {
       "schemaVersion": "1.0",
@@ -10356,7 +10484,7 @@
       },
       "blocker": {
         "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state catalog has unsupported type \"RepositoryModelCatalog\"",
+        "reason": "state result.dag.tasks element has unsupported type \"unknown\"",
         "category": "data-contracts"
       },
       "props": [],
@@ -10766,7 +10894,7 @@
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state catalog has unsupported type \"RepositoryModelCatalog\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state result.dag.tasks element has unsupported type \"unknown\""
         }
       ],
       "targetPlan": {
@@ -10782,7 +10910,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:05df34c98e0fe4ec9e1b1da247f0bb5d58b43c9b82a8227afdb885b8ed5d0b43"
+      "irDigest": "sha256:33c0dd69c64fe4ca7687dc78507e5026bd0e277542d542c48d11a2635370939b"
     },
     {
       "schemaVersion": "1.0",
@@ -11896,9 +12024,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state contracts element has unsupported type \"ModernizationProofContract\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION",
+        "reason": "string method find is outside certified-component-v1",
+        "category": "effects-and-resources"
       },
       "props": [],
       "state": [
@@ -12267,14 +12395,14 @@
       "obligations": [
         {
           "id": "ModernizationProofStudio:source-blocker",
-          "category": "data-contracts",
+          "category": "effects-and-resources",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state contracts element has unsupported type \"ModernizationProofContract\""
+          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_EXPRESSION: string method find is outside certified-component-v1"
         }
       ],
       "targetPlan": {
@@ -12290,7 +12418,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:68a1e599f4620b1c6776a4b94dc683e9acf13dda52bca6092d25dced2f69432c"
+      "irDigest": "sha256:7ed848e1d83acdc10f5c8025b6cf23aceecbed3f1b39e905695a3be6079e65f0"
     },
     {
       "schemaVersion": "1.0",
@@ -13248,9 +13376,9 @@
         }
       },
       "blocker": {
-        "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-        "reason": "state namespace has unsupported type \"Namespace\"",
-        "category": "data-contracts"
+        "reasonCode": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK",
+        "reason": "useMemo callback must return one pure expression directly",
+        "category": "render-tree"
       },
       "props": [],
       "state": [
@@ -13367,14 +13495,14 @@
       "obligations": [
         {
           "id": "SkillsWorkspace:source-blocker",
-          "category": "data-contracts",
+          "category": "render-tree",
           "evidence": [
             "official-target-build",
             "emulator-or-device-journey",
             "differential-behavior",
             "independent-review"
           ],
-          "detail": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE: state namespace has unsupported type \"Namespace\""
+          "detail": "CERTIFIED_COMPONENT_USEMEMO_CALLBACK: useMemo callback must return one pure expression directly"
         }
       ],
       "targetPlan": {
@@ -13389,7 +13517,7 @@
         "runtimeEvidence": "NOT_RUN",
         "certification": "NOT_CERTIFIED"
       },
-      "irDigest": "sha256:ec480b17b41d8d40808d79619d6b14b92e8eb6b8f9b1796961a89b42331f5cbd"
+      "irDigest": "sha256:72de0d78a0bd686bbee4567e40c8197e4a7b84b886fe692d270b12aef8f9b93f"
     },
     {
       "schemaVersion": "1.0",
@@ -15045,5 +15173,5 @@
       "irDigest": "sha256:7e2dea0e31ff3e08f1519acf8670f42d28d7287412232a6cd87958722b2fe582"
     }
   ],
-  "bundle_digest": "sha256:13a7061bea8f3e21f869f90214c8aa0b9de23c41643d9d2230b707c78c13b56b"
+  "bundle_digest": "sha256:30329c8038ab0d1fe082f800e31dfd221361a53821b4e78d67ddf79f545d0132"
 }

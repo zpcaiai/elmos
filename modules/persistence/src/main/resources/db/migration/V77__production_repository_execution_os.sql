@@ -319,6 +319,42 @@ CREATE TABLE artifact.artifacts (
     created_at timestamptz NOT NULL DEFAULT now()
 );
 
+-- V44 also imported a specification-only evidence projection at
+-- artifact.content_objects. Preserve it before the production content store
+-- takes that exact name, with the same fail-closed shape check used above.
+DO $$
+DECLARE
+    has_imported_shape boolean;
+BEGIN
+    IF to_regclass('artifact.content_objects') IS NOT NULL THEN
+        SELECT count(*) = 16 AND
+            count(*) FILTER (WHERE column_name IN (
+                'record_id', 'organization_id', 'domain_run_id',
+                'subject_digest', 'context_snapshot_digest', 'policy_version',
+                'status', 'independent_verifier_id', 'critical_open_risks',
+                'evidence_refs', 'payload', 'external_operation_executed',
+                'human_approval_ref', 'idempotency_key', 'observed_at', 'created_at'
+            )) = 16
+        INTO has_imported_shape
+        FROM information_schema.columns
+        WHERE table_schema = 'artifact' AND table_name = 'content_objects';
+
+        IF has_imported_shape THEN
+            IF to_regclass('artifact.specification_imported_content_objects') IS NOT NULL THEN
+                RAISE EXCEPTION
+                    'artifact namespace migration blocked: specification_imported_content_objects already exists';
+            END IF;
+            ALTER TABLE artifact.content_objects RENAME TO specification_imported_content_objects;
+            COMMENT ON TABLE artifact.specification_imported_content_objects IS
+                'Append-only V44 SPECIFICATION_IMPORTED evidence projection retained during the V77 production runtime expansion.';
+        ELSE
+            RAISE EXCEPTION
+                'artifact namespace migration blocked: artifact.content_objects has an unknown shape';
+        END IF;
+    END IF;
+END;
+$$;
+
 CREATE TABLE artifact.content_objects (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     tenant_id uuid NOT NULL REFERENCES identity.tenants(id),

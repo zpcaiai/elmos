@@ -8,10 +8,10 @@ Component(createHandPortComponent({
   "source": {
     "file": "app/components/ProjectEvidenceCharts.tsx",
     "componentName": "ProjectEvidenceCharts",
-    "sha256": "sha256:ad59776ffb66f5cb0a2844508827422769445969adba9feb4ec0ad8cd97ca77f",
+    "sha256": "sha256:1191ba4343eba89806266218465287a1169f436b763c4214b2a4dfd897e741db",
     "range": {
-      "start": 15842,
-      "end": 19611
+      "start": 15906,
+      "end": 19675
     }
   },
   "blocker": {
@@ -62,5 +62,5 @@ Component(createHandPortComponent({
   "obligations": [
     "ProjectEvidenceCharts:source-blocker"
   ],
-  "irDigest": "sha256:1e4b05ec3ec13926e34ca1f8f4cabf91d7b3b1c14c4783034c16939817db5ff8"
+  "irDigest": "sha256:969526c9b0040591ad40bc8930283317a03454fdde17346509b185d3f4a140e8"
 }));

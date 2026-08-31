@@ -16,7 +16,7 @@ Component(createHandPortComponent({
   },
   "blocker": {
     "reasonCode": "CERTIFIED_COMPONENT_UNSUPPORTED_TYPE",
-    "reason": "state capability has unsupported type \"SmokeCapabilityResponse\"",
+    "reason": "state evidence.result has unsupported type \"unknown\"",
     "category": "data-contracts"
   },
   "props": [
@@ -128,5 +128,5 @@ Component(createHandPortComponent({
   "obligations": [
     "SmokeRunButton:source-blocker"
   ],
-  "irDigest": "sha256:8462c13edbd2efe5e3092553c9784c9e251f054e65b748c8c688712b311e59e0"
+  "irDigest": "sha256:b729dd8238de604a8105d026cb0890d59653db4df31dbd12882021278d1a69f8"
 }));

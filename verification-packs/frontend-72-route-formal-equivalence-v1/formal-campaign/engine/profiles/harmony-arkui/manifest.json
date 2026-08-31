@@ -7,9 +7,9 @@
     "HARMONYOS"
   ],
   "project_path": "project",
-  "project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
+  "project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
   "digest_scope": "sorted UTF-8 project files keyed by POSIX relative path",
-  "file_count": 28,
+  "file_count": 30,
   "files": [
     {
       "path": ".editorconfig",
@@ -58,8 +58,8 @@
     },
     {
       "path": "build-profile.json5",
-      "sha256": "sha256:b20a4c9f2442f08e5d44af5b633f48458cbffc447bd83250126173f7fecd6f4e",
-      "byte_count": 721
+      "sha256": "sha256:e1e1e47924d94d713d7e4fec1e65d6ef79ef59def30a2ec2237944f43cc4534a",
+      "byte_count": 738
     },
     {
       "path": "conversion/obligations.json",
@@ -73,8 +73,8 @@
     },
     {
       "path": "elmos.ui-migration.json",
-      "sha256": "sha256:cf37ae2969a059a3b9ad67ac500702ced373ffec10d1a37343b5ef2ab981e9a5",
-      "byte_count": 2932
+      "sha256": "sha256:561ebd6ac999a5f122f216b6068f1f5667abf612273c3c850cdfcdf61544baa0",
+      "byte_count": 3087
     },
     {
       "path": "entry/build-profile.json5",
@@ -92,7 +92,7 @@
       "byte_count": 158
     },
     {
-      "path": "entry/src/main/ets/elmos-bounded-navigation.ets",
+      "path": "entry/src/main/ets/elmos-bounded-navigation.ts",
       "sha256": "sha256:da681243607b2d7696960b62cb535c134a1270e72c3298028a2078bbe08e40f0",
       "byte_count": 1934
     },
@@ -103,13 +103,18 @@
     },
     {
       "path": "entry/src/main/ets/pages/Index.ets",
-      "sha256": "sha256:d8a87ed8229d871c34e1dac2084860cc8206a8318846efa6bc104d662311a46c",
-      "byte_count": 1400
+      "sha256": "sha256:9ec7886890f3a42ad332c9df39a1891fab0087f9620bae82707101768b9f5583",
+      "byte_count": 1408
     },
     {
       "path": "entry/src/main/module.json5",
-      "sha256": "sha256:fe2ec957ec43659d01304b010f4c90697baea9f35e3ee5f824ee973cf39f7131",
-      "byte_count": 759
+      "sha256": "sha256:dbd2ab005634a5ce11bff0882f7557ebaecdcda6dea60d5d653458b1c34e061e",
+      "byte_count": 844
+    },
+    {
+      "path": "entry/src/main/resources/base/element/color.json",
+      "sha256": "sha256:473b1fcb9f734c373fa6b6f886d674d3773a2e7831de7aaa1eaac1d64bd1c462",
+      "byte_count": 99
     },
     {
       "path": "entry/src/main/resources/base/element/string.json",
@@ -127,14 +132,19 @@
       "byte_count": 4626
     },
     {
+      "path": "hvigor/hvigor-config.json5",
+      "sha256": "sha256:875d669a4a58a7cfac802ffdbc6fbf2e5272f98a00831a99c0b3814ebd6d0278",
+      "byte_count": 128
+    },
+    {
       "path": "hvigorfile.ts",
       "sha256": "sha256:2378c5e0c5246005ada73a67e8c9834fa08adb9ffd6fb6c219051456753bed5a",
       "byte_count": 103
     },
     {
       "path": "oh-package.json5",
-      "sha256": "sha256:80b9c5cb2e65612a9b002000049ca48560583c9ee407531b6b1c185a9ae4ec54",
-      "byte_count": 173
+      "sha256": "sha256:7e6391a3cfa8f59bcaeffb06d7832d761dd52a791300436d57ef6a8aa45a9d1d",
+      "byte_count": 214
     },
     {
       "path": "scripts/verify.sh",
@@ -143,8 +153,8 @@
     },
     {
       "path": "target-profile/profile.json",
-      "sha256": "sha256:e0800865800432d619c365cfe0b6643cd21d846e04d767ccdf29318321101693",
-      "byte_count": 830
+      "sha256": "sha256:a3b47b323afc7e10b969f7d05e6b709fe2a71ce4cac4b5c1111dbc4353edf5db",
+      "byte_count": 888
     },
     {
       "path": "ui-ir/model.json",
@@ -152,5 +162,5 @@
       "byte_count": 7155
     }
   ],
-  "manifest_digest": "sha256:e4b883688ada203f4e86aa8640703b03d43be14b3ff0ec2856f10f9b861f7cce"
+  "manifest_digest": "sha256:a9dc2c22ec04cc788ef67b6a4e5ae4b78ae8be1c6174090f5aa299efa92151fb"
 }
