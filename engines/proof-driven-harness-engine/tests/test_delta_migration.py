@@ -208,6 +208,20 @@ class DeltaMigrationAssetTests(unittest.TestCase):
             self.tool.SUPPORT_RELATIONS[0],
         )
 
+    def test_relation_dependent_functions_follow_their_table(self) -> None:
+        table = self.sql.index(
+            "CREATE TABLE proof_harness_runtime."
+            "runtime_assurance_invocation_receipts"
+        )
+        for function in (
+            "is_live_runtime_assurance_claim",
+            "assert_runtime_application_writer",
+        ):
+            declaration = self.sql.index(
+                f"CREATE OR REPLACE FUNCTION proof_harness_runtime.{function}"
+            )
+            self.assertGreater(declaration, table, function)
+
     def test_lifecycle_and_content_guards_are_explicit(self) -> None:
         for guard in (
             "guard_tool_result_commit",
@@ -348,6 +362,15 @@ class DeltaMigrationAssetTests(unittest.TestCase):
         self.assertIn(
             ("SELECT pg_advisory_xact_lock(%s)", (self.tool.ADVISORY_LOCK_KEY,)),
             cursor.executions,
+        )
+        catalog_index = next(
+            index
+            for index, execution in enumerate(cursor.executions)
+            if execution[0] == self.tool._CATALOG_FINGERPRINT_SQL
+        )
+        self.assertEqual(
+            cursor.executions[catalog_index - 1],
+            ("SET LOCAL search_path = pg_catalog", None),
         )
         ledger_writes = [
             execution

@@ -389,8 +389,15 @@ def _execution_environment(
     *,
     postgres: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    executable = Path(sys.executable).resolve(strict=True)
-    executable_payload, _ = _safe_regular_bytes(executable)
+    # Record the exact path used to launch child commands.  A virtual
+    # environment interpreter is commonly a symlink; resolving it in the
+    # environment record while retaining the symlink in argv creates two
+    # different identities for the same execution and makes the receipt
+    # unverifiable.  Hash the resolved regular target but preserve the
+    # absolute invocation path as the executable identity.
+    executable = Path(os.path.abspath(sys.executable))
+    executable_target = executable.resolve(strict=True)
+    executable_payload, _ = _safe_regular_bytes(executable_target)
     tool_path = repository_root / tool_relative
     tool_payload, _ = _safe_regular_bytes(tool_path)
     packages: dict[str, str] = {}

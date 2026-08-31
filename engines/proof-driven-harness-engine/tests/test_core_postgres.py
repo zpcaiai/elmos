@@ -60,6 +60,14 @@ class _FakeReadinessConnection:
         return None
 
 
+class _CapturingDriverCursor:
+    def __init__(self) -> None:
+        self.calls: list[tuple[str, Any]] = []
+
+    def execute(self, statement: str, parameters: Any = None) -> None:
+        self.calls.append((statement, parameters))
+
+
 class _FakeReadinessStore(PostgresStore):
     def __init__(self, responses: list[dict[str, Any] | None]) -> None:
         self._health_context = SecurityContext(
@@ -185,6 +193,41 @@ def _ready_responses() -> list[dict[str, Any] | None]:
 
 
 class StorageProtocolTests(unittest.TestCase):
+    def test_postgres_cursor_escapes_literal_percent_tokens_with_parameters(
+        self,
+    ) -> None:
+        driver_cursor = _CapturingDriverCursor()
+        cursor = postgres_module._PostgresCursor(driver_cursor)
+
+        cursor.execute(
+            "SELECT format('%I.%I','proof_harness_runtime',name) FROM unnest(?) name",
+            (["runs"],),
+        )
+
+        self.assertEqual(
+            driver_cursor.calls,
+            [
+                (
+                    "SELECT format('%%I.%%I','proof_harness_runtime',name) "
+                    "FROM unnest(%s) name",
+                    (["runs"],),
+                )
+            ],
+        )
+
+    def test_postgres_cursor_leaves_parameterless_percent_tokens_unchanged(
+        self,
+    ) -> None:
+        driver_cursor = _CapturingDriverCursor()
+        cursor = postgres_module._PostgresCursor(driver_cursor)
+
+        cursor.execute("SELECT format('%I.%I','proof_harness_runtime','runs')")
+
+        self.assertEqual(
+            driver_cursor.calls,
+            [("SELECT format('%I.%I','proof_harness_runtime','runs')", None)],
+        )
+
     def test_sqlite_implements_shared_protocol_and_receipt_semantics(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             store = SQLiteStore(Path(directory) / "local-engineering.sqlite3")
@@ -273,6 +316,24 @@ class StorageProtocolTests(unittest.TestCase):
         self.assertEqual(
             delta_ledger[1],
             (POSTGRES_DELTA_SCHEMA_VERSION, POSTGRES_DELTA_MIGRATION_NAME),
+        )
+        catalog_index = next(
+            index
+            for index, item in enumerate(statements)
+            if item[0] == postgres_module._CATALOG_FINGERPRINT_SQL
+        )
+        self.assertEqual(
+            statements[catalog_index - 1],
+            ("SET LOCAL search_path = pg_catalog", None),
+        )
+        policy_index = next(
+            index
+            for index, item in enumerate(statements)
+            if "runtime_assurance_trusted_scope_isolation" in item[0]
+        )
+        self.assertEqual(
+            statements[policy_index - 1],
+            ("SET LOCAL search_path = pg_catalog", None),
         )
         self.assertTrue(
             any(

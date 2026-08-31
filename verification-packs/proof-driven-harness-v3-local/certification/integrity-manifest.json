@@ -7,9 +7,9 @@
       "sha256": "41655458d6571c1666f854540c4c5ad6ad2a00ab09c7934a26e8e0ad27ef1956"
     },
     {
-      "byte_size": 24239,
+      "byte_size": 24389,
       "path": "artifacts/engine-tree-inventory.json",
-      "sha256": "5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4"
+      "sha256": "554c558d55519a78fcbffadacd900ababebb7c704143b0e0ef54464f811c3b63"
     },
     {
       "byte_size": 2845,
@@ -24,12 +24,12 @@
     {
       "byte_size": 1671,
       "path": "certification/certification.json",
-      "sha256": "66fd833485a92242c58bc60b09535b327c86866fbe1a8c8fd07b4a922641fb73"
+      "sha256": "7b3d9eae76cb3050afc0e616d189d8cd3c94d781cb7d28699f77f725a52acc63"
     },
     {
-      "byte_size": 2438,
+      "byte_size": 2512,
       "path": "certification/evidence.json",
-      "sha256": "5525617d12c100169b3bdb52cf312e00f3b7d240cdc8da45b71bfba36e4a08b6"
+      "sha256": "ea77275b808b0a7c6c09b5baf8ad05e218027206c6e18224a6e53e743f10eaf1"
     },
     {
       "byte_size": 554,
@@ -37,9 +37,9 @@
       "sha256": "e527f1431376272ad7107049e83f451393d651428d6bc59ffb271649cf1fc095"
     },
     {
-      "byte_size": 12768,
+      "byte_size": 16139,
       "path": "certification/repository-binding.json",
-      "sha256": "5bbd6d061cbfbb196258b05068ba933424b245f9af540e7555dd176bbf4200e2"
+      "sha256": "cf890a5abdcdf1bbc206f75b7342211461da5a993361057c11ddf72b5270d50b"
     },
     {
       "byte_size": 210,
@@ -47,14 +47,14 @@
       "sha256": "e8846424f691a70055c1fc66d7b5abf759a2bf010691d114dc9553ff25ee1e9c"
     },
     {
-      "byte_size": 2666,
+      "byte_size": 4701,
       "path": "contracts/local-qualification-contract.json",
-      "sha256": "56d44b7fd01c39fdc6c0ae3ed90340668b56836358fe6b857198e1ccba307ad1"
+      "sha256": "b439e1c377501aa149103d8b8b720aa9d0c5222429ad5e3b4b62e6756cb5a5c3"
     },
     {
       "byte_size": 900,
       "path": "contracts/repository-binding-contract.json",
-      "sha256": "c24eca68f63566b835deebfe4a5d158aaa40ce83dba6789d032b0392157fd851"
+      "sha256": "a2df48fbb9d54ff7a6789c8657ede5571c612dd7bc0aee3a159b2f13151a5d60"
     },
     {
       "byte_size": 448,
@@ -64,12 +64,12 @@
     {
       "byte_size": 610,
       "path": "corpus/development/manifest.json",
-      "sha256": "fd20dc5e4f45950ddc7cc7afb5fabc047e7849463fc56ca60ed34b1658edc44d"
+      "sha256": "2da5a458f2f94d591914830a58475b5240cf50fc1f99c5b5af7b9b79d62d661e"
     },
     {
-      "byte_size": 3634,
+      "byte_size": 4199,
       "path": "corpus/development/seed.json",
-      "sha256": "29132eb615655ae863d6a6e02ab91488d902cea4ac12b7c7448abad43bf63721"
+      "sha256": "abc1be2cadcf7f97ccd8d81f4858330753c26b4fb6c1c8a21728efdb563cda70"
     },
     {
       "byte_size": 437,
@@ -84,12 +84,12 @@
     {
       "byte_size": 12394,
       "path": "corpus/negative/cases.json",
-      "sha256": "f368709c680a9fde152e75bf5992271d54fad79380de2f1782ba8a4f22a9de99"
+      "sha256": "891a8aeb00957005f033169ed40fbc4741566e54bbca013a4943515bb812599a"
     },
     {
       "byte_size": 606,
       "path": "corpus/negative/manifest.json",
-      "sha256": "ed6e9e050d24881b80cde4aa336fe7dee5f4ed1b09562069a684b4542bd509f6"
+      "sha256": "dae478ef59f4e1f4657e065b1ba6c6c13526096b929a9f2c766ed19dcd943790"
     },
     {
       "byte_size": 437,
@@ -114,17 +114,17 @@
     {
       "byte_size": 1353,
       "path": "counterexamples/sample.json",
-      "sha256": "3490a17f802becbc6fe8d4b818d4d8c9954b8bad7db2d8505cc109424b5be41d"
+      "sha256": "4b0301fe2a0f4e92f3e9e4bbca4ab73b9a2b3f57ee24a5455cea66459425b7b0"
     },
     {
       "byte_size": 288,
       "path": "coverage/local-coverage.json",
-      "sha256": "b08aaa1fd0808702cdeceb64d094f99168a2afc1f22dbab14f69619266278994"
+      "sha256": "6e6c84e54ade07ee67f328e81ddd87da15fcf4f5379cca7cced57c690ac3ee49"
     },
     {
-      "byte_size": 10839,
+      "byte_size": 17113,
       "path": "environment/local-environment.json",
-      "sha256": "f43b29a9cc421b13e30855234510d5a8a2f64cbb1613935ff15138815c5c157a"
+      "sha256": "70ad68b5b6eacb32d0501676ede007ee4b8019c2ebcf8449bda8774b39e601c6"
     },
     {
       "byte_size": 475,
@@ -169,7 +169,7 @@
     {
       "byte_size": 1932,
       "path": "pack.json",
-      "sha256": "1de9af44ebb5e1116ac7f3c7cc040041c6c710bec9f80a85e65771175cd2042a"
+      "sha256": "b7b1632ebee391a5c09347683cc0868a5cf2062beb39c6a595f46e56a3ecb100"
     },
     {
       "byte_size": 1127,
@@ -182,54 +182,59 @@
       "sha256": "62636bc5a1b2319963a4e0365ec96fc60ee5405098f97866d8bc0f39638cd16c"
     },
     {
-      "byte_size": 102042,
+      "byte_size": 102782,
       "path": "qualification/delta-v3.1/raw/delta-engine-tests.json",
-      "sha256": "08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9"
+      "sha256": "dc227fecd933eab2a1870593fe32c23e202994bb1eca17a4ba181617877cd893"
     },
     {
-      "byte_size": 18381,
+      "byte_size": 18498,
       "path": "qualification/delta-v3.1/raw/delta-importer-tests.json",
-      "sha256": "648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4"
+      "sha256": "24477fb96ca98223fd57f36ac6b0ca944be02970d4104b48b81bbfc46d85d52d"
     },
     {
-      "byte_size": 2205,
+      "byte_size": 2327,
       "path": "qualification/delta-v3.1/raw/delta-installation-check.json",
-      "sha256": "50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3"
+      "sha256": "db10eecb4ce93a6b33d8b5a6db293554d30a7ba9c94b159f3feb2a2b8dc2668f"
     },
     {
       "byte_size": 1376,
       "path": "qualification/delta-v3.1/receipt-validation.json",
-      "sha256": "3a6b2c1c80a4e6fa2716fa63555e67257f66ae3206e7d00c85310cfd5a9c10a7"
+      "sha256": "e83bd4cfac283d7b4cc66af207df5eb87cc714dd9382a4100c015b028b75686b"
     },
     {
-      "byte_size": 148422,
+      "byte_size": 148610,
       "path": "qualification/delta-v3.1/source-receipt.json",
-      "sha256": "b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83"
+      "sha256": "ea45cfb023d19ae460d1bf17a2a4e8f8e867bb775ff9f888ceb3fda0000aa7a3"
     },
     {
-      "byte_size": 10226,
+      "byte_size": 10282,
       "path": "qualification/raw/archive-installation-check.json",
-      "sha256": "8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7"
+      "sha256": "ae80a51c0700150643d6d94817ab57c347fbdfb0f5e3cdfb3ac7604bcd7c9781"
     },
     {
-      "byte_size": 176911,
+      "byte_size": 187028,
       "path": "qualification/raw/engine-tests.json",
-      "sha256": "80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce"
+      "sha256": "ad07515e3291d506b45ad21bc440b7b6f7cb9e97708410afa5d12a73265bbc0a"
     },
     {
-      "byte_size": 29509,
+      "byte_size": 33427,
       "path": "qualification/raw/package-integration-tests.json",
-      "sha256": "2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c"
+      "sha256": "2464016d41aa5f5590334b41715692d7a37501d10a3b04e2d38ac33dbdbe52ad"
     },
     {
-      "byte_size": 1310,
+      "byte_size": 7256,
+      "path": "qualification/raw/postgres17-integration.json",
+      "sha256": "7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13"
+    },
+    {
+      "byte_size": 3292,
       "path": "qualification/receipt-validation.json",
-      "sha256": "cd95d194968834008f20c172713da436afdead02357a0dd3e72880ee1eb09343"
+      "sha256": "ab3402b52b9146d70587cfa398ea833eb08b0697d629af056faa520cefb2c32d"
     },
     {
-      "byte_size": 25836,
+      "byte_size": 27620,
       "path": "qualification/source-receipt.json",
-      "sha256": "82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb"
+      "sha256": "ce306e0e66e12e8a9af9d18cbd0ef7f899fd3d993df68f6ce600d716ce675ee0"
     },
     {
       "byte_size": 158,

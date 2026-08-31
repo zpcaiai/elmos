@@ -2,19 +2,72 @@
   "certification": "NOT_CERTIFIED",
   "component_count": 96,
   "component_ids_sha256": "sha256:3e76361a14ce21d6ad4c56a3d6fc080946c054295263673e9df845ab0e0649a3",
-  "engine_tree_sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
+  "engine_tree_sha256": "sha256:554c558d55519a78fcbffadacd900ababebb7c704143b0e0ef54464f811c3b63",
   "external_evidence": "NOT_RUN",
   "independent_verification": "NOT_RUN",
   "kind": "elmos.proof-driven-harness-v3.receipt-validation",
   "postgresql17": {
-    "raw_log": null,
-    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "certification": "NOT_CERTIFIED",
+    "environment": {
+      "observed_version": "17.5",
+      "psycopg_binary_version": "3.2.13",
+      "psycopg_version": "3.2.13",
+      "required_version": "17.5",
+      "status": "AVAILABLE_EXACT",
+      "tools": [
+        {
+          "name": "initdb",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/initdb",
+          "sha256": "sha256:02d6ece702f765ca84f42662a306f5883da7ce98f21caa05622300e5681316aa",
+          "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "pg_ctl",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/pg_ctl",
+          "sha256": "sha256:6b59e75c123ce3fca74916abd3914b59a392a1d1758b0b563a0b0e78c5521d02",
+          "version_output": "pg_ctl (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "psql",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/psql",
+          "sha256": "sha256:4770a125f9ecf370d1d02a06883bbc5d320128936f8fb433e0a13d7811d043ac",
+          "version_output": "psql (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "postgres",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/postgres",
+          "sha256": "sha256:1377b20533d1f88bcbd8c372427514dddd25631723782130cfe4a335850e6e98",
+          "version_output": "postgres (PostgreSQL) 17.5 (Homebrew)"
+        }
+      ],
+      "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+    },
+    "external_evidence": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "raw_log": {
+      "bytes": 7256,
+      "path": "qualification/raw/postgres17-integration.json",
+      "sha256": "7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13"
+    },
     "required_postgresql_version": "17.5",
     "required_psycopg_version": "3.2.13",
-    "status": "NOT_RUN"
+    "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "tests": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failed": 0,
+      "passed": 6,
+      "selected": 6,
+      "skipped": 0,
+      "unexpected_successes": 0
+    }
   },
-  "qualifier_sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f",
-  "receipt_sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb",
+  "qualifier_sha256": "sha256:82e0b8599473d01a639f7560f0680f992a84ea34fd2df1313786f30e92ac448d",
+  "receipt_sha256": "sha256:ce306e0e66e12e8a9af9d18cbd0ef7f899fd3d993df68f6ce600d716ce675ee0",
   "schema_version": 1,
   "skill_count": 16,
   "skill_names_sha256": "sha256:dfceeb074cb8525aa6a999fec19dae565383f82c33cb1fbe3eaef76e8d8fb0e4",
@@ -24,9 +77,9 @@
     "errors": 0,
     "expected_failures": 0,
     "failed": 0,
-    "passed": 308,
-    "raw_log_count": 3,
-    "selected": 308,
+    "passed": 335,
+    "raw_log_count": 4,
+    "selected": 335,
     "skipped": 0,
     "status": "PASS",
     "unexpected_successes": 0

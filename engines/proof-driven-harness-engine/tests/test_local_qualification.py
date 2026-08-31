@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import importlib.metadata
 import importlib.util
+import io
 import os
 from pathlib import Path
 import subprocess
@@ -15,6 +16,7 @@ from unittest.mock import call, patch
 ROOT = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = ROOT.parents[1]
 TOOL = ROOT / "tools" / "qualify_local.py"
+RUNNER_TOOL = ROOT / "tools" / "run_structured_unittest.py"
 
 
 def load_tool() -> ModuleType:
@@ -26,12 +28,58 @@ def load_tool() -> ModuleType:
     return module
 
 
+def load_runner() -> ModuleType:
+    specification = importlib.util.spec_from_file_location(
+        "run_structured_unittest_for_test",
+        RUNNER_TOOL,
+    )
+    if specification is None or specification.loader is None:
+        raise RuntimeError("structured runner could not be loaded")
+    module = importlib.util.module_from_spec(specification)
+    specification.loader.exec_module(module)
+    return module
+
+
 class LocalQualificationTests(unittest.TestCase):
     tool: ClassVar[ModuleType]
+    runner: ClassVar[ModuleType]
 
     @classmethod
     def setUpClass(cls) -> None:
         cls.tool = load_tool()
+        cls.runner = load_runner()
+
+    def test_structured_runner_source_binds_setup_class_errors(self) -> None:
+        error = unittest.suite._ErrorHolder(  # type: ignore[attr-defined]
+            f"setUpClass ({__name__}.LocalQualificationTests)"
+        )
+        result = self.runner.StructuredResult(
+            io.StringIO(),
+            True,
+            2,
+            repository_root=REPOSITORY_ROOT,
+        )
+        binding = result._source_binding(error)
+        self.assertEqual(binding["selector"], error.id())
+        self.assertEqual(
+            binding["source_path"],
+            Path(__file__).resolve().relative_to(REPOSITORY_ROOT).as_posix(),
+        )
+
+    def test_execution_environment_preserves_virtualenv_invocation_path(self) -> None:
+        with tempfile.TemporaryDirectory() as value:
+            invocation = Path(value) / "python"
+            invocation.symlink_to(Path(os.sys.executable).resolve(strict=True))
+            with patch.object(self.tool.sys, "executable", str(invocation)):
+                environment = self.tool._execution_environment(
+                    REPOSITORY_ROOT,
+                    RUNNER_TOOL.relative_to(REPOSITORY_ROOT),
+                )
+
+        self.assertEqual(
+            environment["python"]["executable"],
+            str(invocation.absolute()),
+        )
 
     def _postgres_bin(self, root: Path) -> Path:
         bin_root = root / "postgresql-17.5" / "bin"

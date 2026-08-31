@@ -251,7 +251,6 @@ class DisposablePostgres17:
             GRANT SELECT, INSERT, UPDATE ON
               proof_harness_runtime.tool_result_commits,
               proof_harness_runtime.step_execution_plans,
-              proof_harness_runtime.step_plan_tool_bindings,
               proof_harness_runtime.pending_tool_call_bindings,
               proof_harness_runtime.capability_leases,
               proof_harness_runtime.executor_generations,
@@ -259,11 +258,15 @@ class DisposablePostgres17:
               proof_harness_runtime.executor_replacement_effects,
               proof_harness_runtime.durable_event_instances,
               proof_harness_runtime.runtime_assurance_invocation_receipts,
-              proof_harness_runtime.subagent_execution_specs,
               proof_harness_runtime.workspace_leases TO {APP_ROLE};
             GRANT SELECT, INSERT ON
+              proof_harness_runtime.step_plan_tool_bindings,
               proof_harness_runtime.durable_event_registrations,
-              proof_harness_runtime.typed_ingress_records TO {APP_ROLE};
+              proof_harness_runtime.typed_ingress_records,
+              proof_harness_runtime.subagent_execution_specs TO {APP_ROLE};
+            GRANT SELECT ON
+              proof_harness_runtime.runtime_authority_capability_receipts,
+              proof_harness_runtime.subagent_budget_reservation_bindings TO {APP_ROLE};
             GRANT USAGE, SELECT ON SEQUENCE
               proof_harness_runtime.typed_ingress_records_persisted_sequence_seq TO {APP_ROLE};
             GRANT EXECUTE ON FUNCTION
@@ -285,6 +288,8 @@ class DisposablePostgres17:
               proof_harness_runtime.runtime_authority_capability_receipts,
               proof_harness_runtime.subagent_budget_reservation_bindings TO {AUTHORITY_ROLE};
             GRANT EXECUTE ON FUNCTION
+              proof_harness.current_tenant_key(),
+              proof_harness.current_project_key(),
               proof_harness_runtime.is_bounded_text_array(jsonb, integer, integer),
               proof_harness_runtime.is_valid_interceptor_chain(jsonb),
               proof_harness_runtime.is_valid_workspace_scopes(jsonb),

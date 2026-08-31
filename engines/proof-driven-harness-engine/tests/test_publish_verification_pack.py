@@ -194,7 +194,8 @@ class SyntheticQualificationRepository:
             "expected_failures": 0,
             "unexpected_successes": 0,
         }
-        python_executable = Path(sys.executable).resolve(strict=True)
+        python_invocation = Path(os.path.abspath(sys.executable))
+        python_executable = python_invocation.resolve(strict=True)
         python_digest = (
             "sha256:" + hashlib.sha256(python_executable.read_bytes()).hexdigest()
         )
@@ -281,7 +282,7 @@ class SyntheticQualificationRepository:
                         "implementation": platform.python_implementation(),
                         "version": platform.python_version(),
                         "cache_tag": sys.implementation.cache_tag,
-                        "executable": str(python_executable),
+                        "executable": str(python_invocation),
                         "executable_sha256": python_digest,
                     },
                     "tool": {
@@ -780,6 +781,35 @@ class ProofDrivenHarnessVerificationPackPublisherTests(unittest.TestCase):
         with self.assertRaisesRegex(
             publisher.VerificationPackError,
             "receipt identity/status",
+        ):
+            publisher.publish_pack(self.root)
+        self.assertFalse(self.pack.exists())
+
+    def test_rebound_raw_log_with_different_python_executable_fails_closed(
+        self,
+    ) -> None:
+        raw_relative = Path("qualification/raw/engine-tests.json")
+        raw_path = self.root / publisher.ENGINE_ROOT / raw_relative
+        record = _json(raw_path)
+        argv = record["argv"]
+        self.assertIsInstance(argv, list)
+        argv[0] = "/different/python"
+        payload = publisher.canonical_bytes(record) + b"\n"
+        _write(raw_path, payload)
+
+        receipt_path = self.root / publisher.RECEIPT_RELATIVE
+        receipt = _json(receipt_path)
+        raw_logs = receipt["tests"]["raw_logs"]
+        reference = next(
+            item for item in raw_logs if item["path"] == raw_relative.as_posix()
+        )
+        reference["sha256"] = hashlib.sha256(payload).hexdigest()
+        reference["bytes"] = len(payload)
+        _write(receipt_path, publisher.canonical_bytes(receipt) + b"\n")
+
+        with self.assertRaisesRegex(
+            publisher.VerificationPackError,
+            "Python executable binding failed",
         ):
             publisher.publish_pack(self.root)
         self.assertFalse(self.pack.exists())

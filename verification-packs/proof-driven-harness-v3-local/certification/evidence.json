@@ -10,6 +10,7 @@
     "qualification/raw/archive-installation-check.json",
     "qualification/raw/engine-tests.json",
     "qualification/raw/package-integration-tests.json",
+    "qualification/raw/postgres17-integration.json",
     "qualification/delta-v3.1/raw/delta-engine-tests.json",
     "qualification/delta-v3.1/raw/delta-importer-tests.json",
     "qualification/delta-v3.1/raw/delta-installation-check.json",
@@ -35,7 +36,7 @@
     "model_campaign": "NOT_RUN",
     "mutation_campaign": "NOT_RUN",
     "negative_corpus": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "postgresql17": "NOT_RUN",
+    "postgresql17": "LOCAL_EXECUTED_SELF_ATTESTED",
     "query_numeric_data_money": "NOT_RUN",
     "receipt_revalidation": "LOCAL_EXECUTED_SELF_ATTESTED",
     "representative_workloads": "NOT_RUN",
@@ -44,7 +45,7 @@
   "integrity_manifest": "certification/integrity-manifest.json",
   "metrics": {
     "local_test_pass_rate": 1.0,
-    "local_tests": 485
+    "local_tests": 513
   },
   "notes": [
     "Only the development and negative local corpora are passed.",

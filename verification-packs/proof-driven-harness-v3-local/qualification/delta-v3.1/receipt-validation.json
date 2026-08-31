@@ -12,7 +12,7 @@
   "certification": "NOT_CERTIFIED",
   "composite_version": "3.1.0",
   "delta_source_version": "3.1.0",
-  "engine_tree_sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
+  "engine_tree_sha256": "sha256:554c558d55519a78fcbffadacd900ababebb7c704143b0e0ef54464f811c3b63",
   "external_evidence": "NOT_RUN",
   "independent_verification": "NOT_RUN",
   "kind": "elmos.harness-runtime-assurance-delta.receipt-validation",
@@ -21,7 +21,7 @@
   "provider_runtime": "NOT_RUN",
   "qualifier_sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3",
   "raw_log_count": 3,
-  "receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
+  "receipt_sha256": "sha256:ea45cfb023d19ae460d1bf17a2a4e8f8e867bb775ff9f888ceb3fda0000aa7a3",
   "remote_executor": "NOT_RUN",
   "schema_version": 1,
   "source_archive_sha256": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
@@ -31,8 +31,8 @@
     "errors": 0,
     "expected_failures": 0,
     "failed": 0,
-    "passed": 177,
-    "selected": 177,
+    "passed": 178,
+    "selected": 178,
     "skipped": 0,
     "unexpected_successes": 0
   }

@@ -3,7 +3,7 @@
   "evidence_trace_coverage": "NOT_RUN",
   "line_coverage": "NOT_RUN",
   "local_test_pass_rate": 1.0,
-  "local_tests": 485,
+  "local_tests": 513,
   "schema_version": 1,
   "source_map_coverage": "NOT_RUN",
   "status": "LOCAL_EXECUTED_SELF_ATTESTED",

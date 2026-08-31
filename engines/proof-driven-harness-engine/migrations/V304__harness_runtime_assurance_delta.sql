@@ -323,147 +323,6 @@ BEGIN
 END
 $runtime_assurance_event_is_exact$;
 
-CREATE OR REPLACE FUNCTION proof_harness_runtime.is_live_runtime_assurance_claim(
-  p_tenant_id text,
-  p_project_id text,
-  p_actor_id text,
-  p_run_id text,
-  p_execution_epoch bigint,
-  p_fencing_generation bigint,
-  p_authority_revision text,
-  p_revision_set_id text,
-  p_invocation_id text,
-  p_require_current_backend boolean
-)
-RETURNS boolean
-LANGUAGE sql
-STABLE
-STRICT
-SET search_path = pg_catalog, proof_harness_runtime
-AS $is_live_runtime_assurance_claim$
-  SELECT EXISTS (
-    SELECT 1
-      FROM proof_harness_runtime.runtime_assurance_invocation_receipts AS receipt
-      JOIN pg_catalog.pg_locks AS held
-        ON held.locktype = 'advisory'
-       AND held.mode = 'ExclusiveLock'
-       AND held.database = (
-         SELECT oid FROM pg_catalog.pg_database WHERE datname = current_database()
-       )
-       AND held.pid = receipt.claim_backend_pid
-       AND held.classid = (((receipt.claim_lock_key >> 32) & 4294967295)::oid)
-       AND held.objid = ((receipt.claim_lock_key & 4294967295)::oid)
-       AND held.objsubid = 1
-       AND held.granted
-     WHERE receipt.tenant_id = p_tenant_id
-       AND receipt.project_id = p_project_id
-       AND receipt.actor_id = p_actor_id
-       AND receipt.run_id = p_run_id
-       AND receipt.execution_epoch = p_execution_epoch
-       AND receipt.fencing_generation = p_fencing_generation
-       AND receipt.authority_revision = p_authority_revision
-       AND receipt.revision_set_id = p_revision_set_id
-       AND receipt.invocation_id = p_invocation_id
-       AND receipt.state = 'IN_PROGRESS'
-       AND (NOT p_require_current_backend OR receipt.claim_backend_pid = pg_backend_pid())
-  )
-$is_live_runtime_assurance_claim$;
-
-CREATE OR REPLACE FUNCTION proof_harness_runtime.assert_runtime_application_writer(
-  p_helper_oid oid
-)
-RETURNS void
-LANGUAGE plpgsql
-SECURITY DEFINER
-SET search_path = pg_catalog, proof_harness_runtime
-AS $assert_runtime_application_writer$
-DECLARE
-  application_oid oid;
-  control_owner_oid oid;
-BEGIN
-  SELECT oid INTO application_oid FROM pg_catalog.pg_roles
-   WHERE rolname = session_user;
-  SELECT c.relowner INTO control_owner_oid
-    FROM pg_catalog.pg_class AS c
-   WHERE c.oid = 'proof_harness_runtime.runtime_assurance_invocation_receipts'::regclass;
-  IF application_oid IS NULL OR control_owner_oid IS NULL
-     OR application_oid = control_owner_oid
-     OR (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = current_user)
-        IS DISTINCT FROM control_owner_oid
-     OR NOT EXISTS (
-       SELECT 1 FROM pg_catalog.pg_roles AS caller
-        WHERE caller.oid = application_oid
-          AND caller.rolcanlogin
-          AND NOT caller.rolsuper AND NOT caller.rolbypassrls
-          AND NOT caller.rolcreatedb AND NOT caller.rolcreaterole
-          AND NOT caller.rolreplication
-     )
-     OR EXISTS (
-       SELECT 1 FROM pg_catalog.pg_auth_members AS membership
-        WHERE membership.roleid = application_oid
-           OR membership.member = application_oid
-     )
-     OR pg_has_role(session_user, pg_get_userbyid(control_owner_oid), 'SET')
-     OR EXISTS (
-       SELECT 1
-         FROM unnest(ARRAY[
-           'proof_harness_runtime.audit_events'::regclass,
-           'proof_harness_runtime.outbox_events'::regclass
-         ]) AS secured(relation_oid)
-         JOIN pg_catalog.pg_class AS relation ON relation.oid = secured.relation_oid
-        WHERE relation.relowner <> control_owner_oid
-           OR EXISTS (
-             SELECT 1 FROM pg_catalog.pg_attribute AS attribute
-              WHERE attribute.attrelid = relation.oid
-                AND attribute.attnum > 0 AND NOT attribute.attisdropped
-                AND attribute.attacl IS NOT NULL
-           )
-           OR NOT EXISTS (
-             SELECT 1 FROM aclexplode(COALESCE(
-               relation.relacl, acldefault('r', relation.relowner)
-             )) AS privilege
-              WHERE privilege.grantee = application_oid
-                AND privilege.privilege_type = 'INSERT'
-                AND NOT privilege.is_grantable
-           )
-           OR EXISTS (
-             SELECT 1 FROM aclexplode(COALESCE(
-               relation.relacl, acldefault('r', relation.relowner)
-             )) AS privilege
-              WHERE privilege.privilege_type = 'INSERT'
-                AND privilege.grantee NOT IN (control_owner_oid, application_oid)
-           )
-     )
-     OR NOT EXISTS (
-       SELECT 1 FROM pg_catalog.pg_proc AS helper
-        WHERE helper.oid = p_helper_oid
-          AND helper.proowner = control_owner_oid
-          AND helper.prosecdef
-          AND helper.proconfig = ARRAY[
-            'search_path=pg_catalog, proof_harness_runtime'
-          ]::text[]
-          AND EXISTS (
-            SELECT 1 FROM aclexplode(COALESCE(
-              helper.proacl, acldefault('f', helper.proowner)
-            )) AS privilege
-             WHERE privilege.grantee = application_oid
-               AND privilege.privilege_type = 'EXECUTE'
-               AND NOT privilege.is_grantable
-          )
-          AND NOT EXISTS (
-            SELECT 1 FROM aclexplode(COALESCE(
-              helper.proacl, acldefault('f', helper.proowner)
-            )) AS privilege
-             WHERE privilege.privilege_type = 'EXECUTE'
-               AND privilege.grantee NOT IN (control_owner_oid, application_oid)
-          )
-     ) THEN
-    RAISE EXCEPTION 'runtime mutation requires the exact application writer identity'
-      USING ERRCODE = '42501';
-  END IF;
-END
-$assert_runtime_application_writer$;
-
 CREATE OR REPLACE FUNCTION proof_harness_runtime.guard_runtime_run_actor_identity()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1769,6 +1628,147 @@ CREATE INDEX runtime_assurance_invocation_receipts_state_idx
   ON proof_harness_runtime.runtime_assurance_invocation_receipts(
     tenant_id, project_id, run_id, state, updated_at
   );
+
+CREATE OR REPLACE FUNCTION proof_harness_runtime.is_live_runtime_assurance_claim(
+  p_tenant_id text,
+  p_project_id text,
+  p_actor_id text,
+  p_run_id text,
+  p_execution_epoch bigint,
+  p_fencing_generation bigint,
+  p_authority_revision text,
+  p_revision_set_id text,
+  p_invocation_id text,
+  p_require_current_backend boolean
+)
+RETURNS boolean
+LANGUAGE sql
+STABLE
+STRICT
+SET search_path = pg_catalog, proof_harness_runtime
+AS $is_live_runtime_assurance_claim$
+  SELECT EXISTS (
+    SELECT 1
+      FROM proof_harness_runtime.runtime_assurance_invocation_receipts AS receipt
+      JOIN pg_catalog.pg_locks AS held
+        ON held.locktype = 'advisory'
+       AND held.mode = 'ExclusiveLock'
+       AND held.database = (
+         SELECT oid FROM pg_catalog.pg_database WHERE datname = current_database()
+       )
+       AND held.pid = receipt.claim_backend_pid
+       AND held.classid = (((receipt.claim_lock_key >> 32) & 4294967295)::oid)
+       AND held.objid = ((receipt.claim_lock_key & 4294967295)::oid)
+       AND held.objsubid = 1
+       AND held.granted
+     WHERE receipt.tenant_id = p_tenant_id
+       AND receipt.project_id = p_project_id
+       AND receipt.actor_id = p_actor_id
+       AND receipt.run_id = p_run_id
+       AND receipt.execution_epoch = p_execution_epoch
+       AND receipt.fencing_generation = p_fencing_generation
+       AND receipt.authority_revision = p_authority_revision
+       AND receipt.revision_set_id = p_revision_set_id
+       AND receipt.invocation_id = p_invocation_id
+       AND receipt.state = 'IN_PROGRESS'
+       AND (NOT p_require_current_backend OR receipt.claim_backend_pid = pg_backend_pid())
+  )
+$is_live_runtime_assurance_claim$;
+
+CREATE OR REPLACE FUNCTION proof_harness_runtime.assert_runtime_application_writer(
+  p_helper_oid oid
+)
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, proof_harness_runtime
+AS $assert_runtime_application_writer$
+DECLARE
+  application_oid oid;
+  control_owner_oid oid;
+BEGIN
+  SELECT oid INTO application_oid FROM pg_catalog.pg_roles
+   WHERE rolname = session_user;
+  SELECT c.relowner INTO control_owner_oid
+    FROM pg_catalog.pg_class AS c
+   WHERE c.oid = 'proof_harness_runtime.runtime_assurance_invocation_receipts'::regclass;
+  IF application_oid IS NULL OR control_owner_oid IS NULL
+     OR application_oid = control_owner_oid
+     OR (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = current_user)
+        IS DISTINCT FROM control_owner_oid
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_catalog.pg_roles AS caller
+        WHERE caller.oid = application_oid
+          AND caller.rolcanlogin
+          AND NOT caller.rolsuper AND NOT caller.rolbypassrls
+          AND NOT caller.rolcreatedb AND NOT caller.rolcreaterole
+          AND NOT caller.rolreplication
+     )
+     OR EXISTS (
+       SELECT 1 FROM pg_catalog.pg_auth_members AS membership
+        WHERE membership.roleid = application_oid
+           OR membership.member = application_oid
+     )
+     OR pg_has_role(session_user, pg_get_userbyid(control_owner_oid), 'SET')
+     OR EXISTS (
+       SELECT 1
+         FROM unnest(ARRAY[
+           'proof_harness_runtime.audit_events'::regclass,
+           'proof_harness_runtime.outbox_events'::regclass
+         ]) AS secured(relation_oid)
+         JOIN pg_catalog.pg_class AS relation ON relation.oid = secured.relation_oid
+        WHERE relation.relowner <> control_owner_oid
+           OR EXISTS (
+             SELECT 1 FROM pg_catalog.pg_attribute AS attribute
+              WHERE attribute.attrelid = relation.oid
+                AND attribute.attnum > 0 AND NOT attribute.attisdropped
+                AND attribute.attacl IS NOT NULL
+           )
+           OR NOT EXISTS (
+             SELECT 1 FROM aclexplode(COALESCE(
+               relation.relacl, acldefault('r', relation.relowner)
+             )) AS privilege
+              WHERE privilege.grantee = application_oid
+                AND privilege.privilege_type = 'INSERT'
+                AND NOT privilege.is_grantable
+           )
+           OR EXISTS (
+             SELECT 1 FROM aclexplode(COALESCE(
+               relation.relacl, acldefault('r', relation.relowner)
+             )) AS privilege
+              WHERE privilege.privilege_type = 'INSERT'
+                AND privilege.grantee NOT IN (control_owner_oid, application_oid)
+           )
+     )
+     OR NOT EXISTS (
+       SELECT 1 FROM pg_catalog.pg_proc AS helper
+        WHERE helper.oid = p_helper_oid
+          AND helper.proowner = control_owner_oid
+          AND helper.prosecdef
+          AND helper.proconfig = ARRAY[
+            'search_path=pg_catalog, proof_harness_runtime'
+          ]::text[]
+          AND EXISTS (
+            SELECT 1 FROM aclexplode(COALESCE(
+              helper.proacl, acldefault('f', helper.proowner)
+            )) AS privilege
+             WHERE privilege.grantee = application_oid
+               AND privilege.privilege_type = 'EXECUTE'
+               AND NOT privilege.is_grantable
+          )
+          AND NOT EXISTS (
+            SELECT 1 FROM aclexplode(COALESCE(
+              helper.proacl, acldefault('f', helper.proowner)
+            )) AS privilege
+             WHERE privilege.privilege_type = 'EXECUTE'
+               AND privilege.grantee NOT IN (control_owner_oid, application_oid)
+          )
+     ) THEN
+    RAISE EXCEPTION 'runtime mutation requires the exact application writer identity'
+      USING ERRCODE = '42501';
+  END IF;
+END
+$assert_runtime_application_writer$;
 
 CREATE OR REPLACE FUNCTION proof_harness_runtime.claim_runtime_assurance_invocation(
   p_tenant_id text,
