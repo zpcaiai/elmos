@@ -225,7 +225,12 @@ install_pinned_ada_url() {
   if ! ada_url_library_profile="$(
       verify_pinned_ada_url_library_identity "${ADA_URL_LIBRARY}"
     )"; then
-    printf 'Pinned ada-url identity does not provide the exact libada.3 closure.\n' >&2
+    local observed_byte_count
+    local observed_sha256
+    observed_byte_count="$(stat -f '%z' "${ADA_URL_LIBRARY}")" || exit 3
+    observed_sha256="$(file_sha256 "${ADA_URL_LIBRARY}")" || exit 3
+    printf 'Pinned ada-url identity does not provide the exact libada.3 closure: observed %s:%s.\n' \
+      "${observed_byte_count}" "${observed_sha256}" >&2
     exit 3
   fi
   printf 'Pinned ada-url installed library profile: %s\n' \
