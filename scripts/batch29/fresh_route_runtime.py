@@ -1347,6 +1347,8 @@ def run_in_fresh_locked_runtime(
                 "PYTHONNOUSERSITE": "1",
                 "UV_NO_CONFIG": "1",
                 "UV_OFFLINE": "1",
+                "UV_NO_DEFAULT_GROUPS": "1",
+                "UV_NO_DEV": "1",
                 "UV_PYTHON_DOWNLOADS": "never",
                 PROJECT_ENVIRONMENT_ENV: str(project_environment),
             }
@@ -1357,6 +1359,8 @@ def run_in_fresh_locked_runtime(
                 "--project",
                 str(project),
                 "run",
+                "--no-dev",
+                "--no-default-groups",
                 "--locked",
                 "--offline",
                 "--no-python-downloads",

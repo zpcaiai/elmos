@@ -1455,28 +1455,47 @@ def _python() -> ExactToolchain:
         "EXACT_TOOLCHAIN_PYTHON_ARCHIVE_UNSAFE",
     )
     tree_after = _python_runtime_tree()
-    if (
-        tree_before != tree_after
-        or archive_before != archive_after
-        or archive_chain_before != archive_chain_after
-        or executable_before != executable_after
-        or libpython_before != libpython_after
-        or executable_after.get("sha256") != _EXPECTED_PYTHON_EXECUTABLE_SHA256
-        or executable_after.get("bytes") != _EXPECTED_PYTHON_EXECUTABLE_BYTES
-        or libpython_after.get("sha256") != _EXPECTED_PYTHON_LIBPYTHON_SHA256
-        or libpython_after.get("bytes") != _EXPECTED_PYTHON_LIBPYTHON_BYTES
-        or archive_after.get("sha256") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256
-        or archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES
-        or hashlib.sha256(observed.encode("utf-8")).hexdigest() != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
-        or runtime.get("version") != "3.12.12"
-        or runtime.get("implementation") != "cpython"
-        or runtime.get("executable") != str(_EXPECTED_PYTHON_EXECUTABLE)
-        or runtime.get("prefix") != str(_EXPECTED_PYTHON_ROOT)
-        or runtime.get("base_prefix") != str(_EXPECTED_PYTHON_ROOT)
-        or runtime.get("stdlib") != str(_EXPECTED_PYTHON_STDLIB)
-        or runtime.get("math_origin") != "built-in"
+    mismatch_fields: list[str] = []
+    if tree_before != tree_after:
+        mismatch_fields.append("tree_changed")
+    if archive_before != archive_after:
+        mismatch_fields.append("archive_changed")
+    if archive_chain_before != archive_chain_after:
+        mismatch_fields.append("archive_chain_changed")
+    if executable_before != executable_after:
+        mismatch_fields.append("executable_changed")
+    if libpython_before != libpython_after:
+        mismatch_fields.append("libpython_changed")
+    if executable_after.get("sha256") != _EXPECTED_PYTHON_EXECUTABLE_SHA256:
+        mismatch_fields.append("executable_sha256")
+    if executable_after.get("bytes") != _EXPECTED_PYTHON_EXECUTABLE_BYTES:
+        mismatch_fields.append("executable_bytes")
+    if libpython_after.get("sha256") != _EXPECTED_PYTHON_LIBPYTHON_SHA256:
+        mismatch_fields.append("libpython_sha256")
+    if libpython_after.get("bytes") != _EXPECTED_PYTHON_LIBPYTHON_BYTES:
+        mismatch_fields.append("libpython_bytes")
+    if archive_after.get("sha256") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256:
+        mismatch_fields.append("archive_sha256")
+    if archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES:
+        mismatch_fields.append("archive_bytes")
+    if hashlib.sha256(observed.encode("utf-8")).hexdigest() != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256:
+        mismatch_fields.append("runtime_identity_sha256")
+    for key, expected in (
+        ("version", "3.12.12"),
+        ("implementation", "cpython"),
+        ("executable", str(_EXPECTED_PYTHON_EXECUTABLE)),
+        ("prefix", str(_EXPECTED_PYTHON_ROOT)),
+        ("base_prefix", str(_EXPECTED_PYTHON_ROOT)),
+        ("stdlib", str(_EXPECTED_PYTHON_STDLIB)),
+        ("math_origin", "built-in"),
     ):
-        raise RouteError("EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211")
+        if runtime.get(key) != expected:
+            mismatch_fields.append(f"runtime_{key}")
+    if mismatch_fields:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211:"
+            + ",".join(mismatch_fields)
+        )
     return ExactToolchain(
         "python",
         "3.12.12+20260211",

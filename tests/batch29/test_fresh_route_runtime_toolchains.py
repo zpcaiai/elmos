@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
-import os
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -15,6 +13,9 @@ REPOSITORY = Path(__file__).resolve().parents[2]
 RUNTIME_PATH = REPOSITORY / "scripts" / "batch29" / "fresh_route_runtime.py"
 CI_INSTALLER_PATH = (
     REPOSITORY / "scripts" / "toolchains" / "install_polyglot_route_ci_toolchains.sh"
+)
+FRESH_RUNTIME_SELECTOR_FIXTURE = (
+    REPOSITORY / "tests" / "batch29" / "fresh_runtime_selector_fixture.py"
 )
 
 
@@ -511,7 +512,9 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert "ELMOS_BATCH29_PYTHON_ARCHIVE" not in environment
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
         assert command[command.index("run") + 1] == "--no-dev"
+        assert "--no-default-groups" in command
         assert command.index("--no-dev") < command.index("--locked")
+        assert command.index("--no-default-groups") < command.index("--locked")
         assert "mypy" not in command
         assert "pytest" not in command
         assert "ruff" not in command
@@ -549,50 +552,9 @@ def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_p
     runtime = _runtime()
 
     assert (
-        runtime.run_in_fresh_locked_runtime(Path(__file__), ["--selector-smoke"]) == 0
-    )
-
-
-def main() -> int:
-    if sys.argv[1:] != ["--selector-smoke"]:
-        raise SystemExit("focused fresh-child fixture received unexpected arguments")
-    from elmos_polyglot_route import toolchains
-    from elmos_polyglot_route.models import DEPRECATED_LANGUAGES, ROUTED_LANGUAGES
-    from elmos_polyglot_route.toolchains import ExactToolchain
-
-    selectors = {
-        "java": "_java",
-        "python": "_python",
-        "csharp": "_csharp",
-        "typescript": "_typescript",
-        "go": "_go",
-        "rust": "_rust",
-        "cpp": "_cpp",
-        "objc": "_objc",
-        "swift": "_swift",
-        "php": "_php",
-        "kotlin": "_kotlin",
-        "react": "_react",
-        "flutter": "_flutter",
-    }
-    assert tuple(selectors) == tuple(ROUTED_LANGUAGES)
-    assert tuple(DEPRECATED_LANGUAGES) == ("javascript",)
-    assert callable(toolchains._javascript)
-    for language, selector in selectors.items():
-        setattr(
-            toolchains,
-            selector,
-            lambda language=language: ExactToolchain(
-                language, "fixture", "/fixed/tool"
-            ),
+        runtime.run_in_fresh_locked_runtime(
+            FRESH_RUNTIME_SELECTOR_FIXTURE,
+            ["--selector-smoke"],
         )
-    selected = [toolchains.exact_toolchain(language) for language in selectors]  # type: ignore[arg-type]
-    assert [item.language for item in selected] == list(selectors)
-    path = os.environ["PATH"].split(os.pathsep)
-    assert "/opt/homebrew/Cellar/uv/0.11.16/bin" in path
-    assert path[0].endswith("/.venv/bin")
-    assert "/Users/stephen/.local/bin" not in path
-    assert "/opt/homebrew/bin" not in path
-    assert os.environ["UV_OFFLINE"] == "1"
-    assert os.environ["UV_PYTHON_DOWNLOADS"] == "never"
-    return 0
+        == 0
+    )
