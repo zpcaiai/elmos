@@ -9,6 +9,7 @@
 .NOTPARALLEL: qic postgres-qic delta-qic release-local release-postgres-local
 
 PYTHON ?= python3
+UV ?= uv
 ENGINE := engines/proof-driven-harness-engine
 INTEGRATOR := tooling/integrate_proof_driven_harness_v3.py
 DELTA_INTEGRATOR := tooling/integrate_harness_runtime_assurance_delta.py
@@ -104,8 +105,8 @@ publish-check:
 	$(PYTHON) $(PUBLISHER) --repo-root . --check
 
 batch35: publish
-	$(PYTHON) scripts/batch35/validate_verification_pack.py $(PACK) --repository-root .
-	$(PYTHON) scripts/batch35/run_verification_gate.py $(PACK)
+	UV_OFFLINE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py $(PACK) --repository-root .
+	UV_OFFLINE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py $(PACK)
 	$(PYTHON) -c 'import json,pathlib; value=json.loads(pathlib.Path("$(PACK)/certification/gate-result.json").read_text()); assert value["certification_decision"] == "NOT_CERTIFIED" and value["certification_readiness"] == "BLOCKED"'
 
 release-local: release-contract-generate qic delta-qic publish batch35
