@@ -68,6 +68,25 @@ release-local`. It independently qualifies the base and delta bytes before it
 publishes the bounded Batch 35 pack. A successful local workflow does not
 authorize distribution or certification.
 
+The opt-in PostgreSQL workflow uses the engine's locked dependency set and an
+exact PostgreSQL 17.5 tool directory. Homebrew's parenthesized vendor suffix is
+accepted, but patch or different minor versions remain rejected. It creates
+and destroys only a repository-owned disposable cluster:
+
+```bash
+uv --directory engines/proof-driven-harness-engine \
+  sync --extra postgres --locked
+env -u ELMOS_MIGRATION_OWNER_DSN \
+  ALLOW_DISPOSABLE_POSTGRES17=1 \
+  ELMOS_TEST_POSTGRES17_BIN=/opt/homebrew/opt/postgresql@17/bin \
+  PYTHON=engines/proof-driven-harness-engine/.venv/bin/python \
+  make -f Makefile.proof-harness-v3 release-postgres-local
+```
+
+Do not run `qualify`, `qic`, or `release-local` after this target: those default
+workflows intentionally record PostgreSQL as `NOT_RUN`. Re-run
+`release-postgres-local` when a fresh PostgreSQL-bound receipt is required.
+
 The delta qualifier also validates the repository-owned static mapping from all
 13 source acceptance documents to 104 exact local test cases. Every mapped
 selector must pass with its source-file digest intact. This is bounded,

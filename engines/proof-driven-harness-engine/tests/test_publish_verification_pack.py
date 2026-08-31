@@ -47,6 +47,43 @@ def _json(path: Path) -> dict[str, object]:
     return value
 
 
+class PostgreSQLQualificationContractTests(unittest.TestCase):
+    def test_version_output_contract_accepts_vendor_suffix_only(self) -> None:
+        accepted = (
+            "initdb (PostgreSQL) 17.5",
+            "initdb (PostgreSQL) 17.5 (Homebrew)",
+            "initdb (PostgreSQL) 17.5 (vendor-build)",
+        )
+        rejected = (
+            "initdb (PostgreSQL) 17.5.1",
+            "initdb (PostgreSQL) 17.6 (Homebrew)",
+            "initdb (PostgreSQL) 17.5 unbounded",
+            "initdb (PostgreSQL) 17.5 (nested(vendor))",
+        )
+        for value in accepted:
+            with self.subTest(value=value):
+                self.assertIsNotNone(
+                    publisher.POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(value)
+                )
+        for value in rejected:
+            with self.subTest(value=value):
+                self.assertIsNone(
+                    publisher.POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(value)
+                )
+        for name, pattern in publisher.POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS.items():
+            with self.subTest(tool=name):
+                self.assertIsNotNone(
+                    pattern.fullmatch(
+                        f"{name} (PostgreSQL) 17.5 (Homebrew)"
+                    )
+                )
+                self.assertIsNone(
+                    pattern.fullmatch(
+                        f"{name} (PostgreSQL) 17.5.1 (Homebrew)"
+                    )
+                )
+
+
 class SyntheticQualificationRepository:
     """Exact receipt fixture; no source-package executable is ever invoked."""
 

@@ -9,6 +9,7 @@ import tempfile
 import unittest
 import zipfile
 from pathlib import Path
+from typing import Callable
 from unittest import mock
 
 from tooling import integrate_proof_driven_harness_v3 as integration
@@ -390,7 +391,14 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
                 records = integration._engine_inventory_at(root_fd)
             self.assertEqual([record["path"] for record in records], ["src/runtime.py"])
 
-    def _write_valid_receipt(self, repo: Path) -> dict[str, object]:
+    def _write_valid_receipt(
+        self,
+        repo: Path,
+        *,
+        postgres: bool = False,
+        v11: bool = False,
+    ) -> dict[str, object]:
+        strict_v11 = postgres or v11
         engine = repo / integration.ENGINE_ROOT
         qualifier = repo / integration.QUALIFIER_RELATIVE_PATH
         qualifier.parent.mkdir(parents=True)
@@ -399,6 +407,113 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
         source.parent.mkdir(parents=True)
         source.write_bytes(b"SKILL_REGISTRY = {}\n")
 
+        runner_relative = Path(
+            "engines/proof-driven-harness-engine/tools/run_structured_unittest.py"
+        )
+        importer_relative = Path("tooling/integrate_proof_driven_harness_v3.py")
+        for relative in (runner_relative, importer_relative):
+            path = repo / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(f"# fixture {relative.as_posix()}\n".encode())
+
+        def execution_environment(
+            tool_relative: Path,
+            *,
+            postgresql: dict[str, object] | None = None,
+        ) -> dict[str, object]:
+            tool_payload = (repo / tool_relative).read_bytes()
+            return {
+                "schema_version": "1.0.0",
+                "os": {
+                    "system": "Darwin",
+                    "release": "fixture",
+                    "version": "fixture",
+                    "machine": "arm64",
+                },
+                "python": {
+                    "implementation": "CPython",
+                    "version": "3.14.0",
+                    "cache_tag": "cpython-314",
+                    "executable": "/usr/bin/python3",
+                    "executable_sha256": "sha256:" + "a" * 64,
+                },
+                "tool": {
+                    "path": tool_relative.as_posix(),
+                    "version": integration.PACKAGE_VERSION,
+                    "sha256": "sha256:" + integration._sha256_bytes(tool_payload),
+                },
+                "packages": {
+                    "psycopg": "3.2.13",
+                    "psycopg-binary": "3.2.13",
+                },
+                "postgresql": postgresql
+                or {
+                    "status": "NOT_APPLICABLE_TO_COMMAND",
+                    "required_version": "17.5",
+                },
+                "evidence_boundary": dict(integration._LOCAL_EVIDENCE_BOUNDARY),
+            }
+
+        def structured_result(
+            *,
+            raw_path: str,
+            argv_tail: tuple[str, ...],
+            selected: int,
+            source_relative: Path,
+        ) -> dict[str, object]:
+            source_path = repo / source_relative
+            source_path.parent.mkdir(parents=True, exist_ok=True)
+            source_path.write_bytes(
+                f"# fixture source for {raw_path}\n".encode()
+            )
+            source_sha256 = "sha256:" + integration._sha256_bytes(
+                source_path.read_bytes()
+            )
+            outcomes: list[dict[str, object]] = []
+            for item in range(selected):
+                binding = {
+                    "selector": (
+                        f"{source_relative.stem}.TestCase.test_{item:02d}"
+                    ),
+                    "source_path": source_relative.as_posix(),
+                    "source_sha256": source_sha256,
+                }
+                outcomes.append(
+                    {
+                        **binding,
+                        "selector_source_binding_sha256": "sha256:"
+                        + integration._sha256_bytes(
+                            integration._canonical_json_bytes(binding)
+                        ),
+                        "status": "PASSED",
+                        "duration_milliseconds": 1,
+                    }
+                )
+            totals = {
+                "selected": selected,
+                "passed": selected,
+                "failed": 0,
+                "errors": 0,
+                "skipped": 0,
+                "expected_failures": 0,
+                "unexpected_successes": 0,
+            }
+            return {
+                "schema_version": "1.0.0",
+                "kind": "elmos.proof-harness.structured-unittest-results",
+                "status": "PASS",
+                "discovery": {
+                    "start_directory": argv_tail[4],
+                    "pattern": argv_tail[6],
+                },
+                "totals": totals,
+                "outcomes": outcomes,
+                "runner_output": f"Ran {selected} tests in 0.001s\nOK\n",
+                "captured_stdout": "",
+                "captured_stderr": "",
+                "evidence_boundary": dict(integration._LOCAL_EVIDENCE_BOUNDARY),
+            }
+
         raw_references: list[dict[str, object]] = []
         passed = 0
         for index, (raw_path, argv_tail) in enumerate(
@@ -406,7 +521,26 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
             start=1,
         ):
             test_count = index if index < 3 else 0
-            record = {
+            if strict_v11 and test_count:
+                source_relative = (
+                    Path(argv_tail[4])
+                    / f"fixture_{Path(raw_path).stem.replace('-', '_')}.py"
+                )
+                stdout = integration._canonical_json_bytes(
+                    structured_result(
+                        raw_path=raw_path,
+                        argv_tail=argv_tail,
+                        selected=test_count,
+                        source_relative=source_relative,
+                    )
+                ).decode()
+            else:
+                stdout = (
+                    f"Ran {test_count} tests in 0.001s\nOK\n"
+                    if test_count
+                    else "PASS\n"
+                )
+            record: dict[str, object] = {
                 "schema_version": "1.0.0",
                 "name": Path(raw_path).stem,
                 "argv": ["/usr/bin/python3", *argv_tail],
@@ -414,9 +548,13 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
                 "returncode": 0,
                 "timed_out": False,
                 "wall_clock_milliseconds": index,
-                "stdout": f"Ran {test_count} tests in 0.001s\nOK\n" if test_count else "PASS\n",
+                "stdout": stdout,
                 "stderr": "",
             }
+            if strict_v11:
+                record["execution_environment"] = execution_environment(
+                    Path(argv_tail[0])
+                )
             payload = integration._canonical_json_bytes(record) + b"\n"
             raw_file = engine / Path(raw_path)
             raw_file.parent.mkdir(parents=True, exist_ok=True)
@@ -430,6 +568,78 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
             )
             passed += test_count
 
+        postgres_record: dict[str, object] | None = None
+        postgres_reference: dict[str, object] | None = None
+        postgres_tests = {
+            "selected": 1,
+            "passed": 1,
+            "failed": 0,
+            "errors": 0,
+            "skipped": 0,
+            "expected_failures": 0,
+            "unexpected_successes": 0,
+        }
+        postgres_environment = {
+            "status": "AVAILABLE_EXACT",
+            "required_version": "17.5",
+            "observed_version": "17.5",
+            "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)",
+            "psycopg_version": "3.2.13",
+            "psycopg_binary_version": "3.2.13",
+            "tools": [
+                {
+                    "name": name,
+                    "path": f"/fixture/postgresql-17.5/bin/{name}",
+                    "sha256": "sha256:" + format(index, "064x"),
+                    "observed_version": "17.5",
+                    "version_output": (
+                        f"{name} (PostgreSQL) 17.5 (Homebrew)"
+                    ),
+                }
+                for index, name in enumerate(
+                    ("initdb", "pg_ctl", "psql", "postgres"),
+                    start=1,
+                )
+            ],
+        }
+        if postgres:
+            postgres_source = Path(
+                "engines/proof-driven-harness-engine/tests/"
+                "postgres17_integration.py"
+            )
+            structured = structured_result(
+                raw_path=integration._POSTGRES_RAW_LOG,
+                argv_tail=integration._POSTGRES_RAW_COMMAND,
+                selected=1,
+                source_relative=postgres_source,
+            )
+            postgres_record = {
+                "schema_version": "1.0.0",
+                "name": "postgres17-integration",
+                "argv": ["/usr/bin/python3", *integration._POSTGRES_RAW_COMMAND],
+                "cwd": ".",
+                "returncode": 0,
+                "timed_out": False,
+                "wall_clock_milliseconds": 1,
+                "stdout": integration._canonical_json_bytes(structured).decode(),
+                "stderr": "",
+                "execution_environment": execution_environment(
+                    runner_relative,
+                    postgresql=postgres_environment,
+                ),
+            }
+            postgres_payload = integration._canonical_json_bytes(postgres_record) + b"\n"
+            postgres_file = engine / integration._POSTGRES_RAW_LOG
+            postgres_file.parent.mkdir(parents=True, exist_ok=True)
+            postgres_file.write_bytes(postgres_payload)
+            postgres_reference = {
+                "path": integration._POSTGRES_RAW_LOG,
+                "sha256": integration._sha256_bytes(postgres_payload),
+                "bytes": len(postgres_payload),
+            }
+            raw_references.append(postgres_reference)
+            passed += 1
+
         with integration._repo_anchor(repo) as (_absolute, root_fd, _identity):
             records = integration._engine_inventory_at(root_fd)
         skill_names = sorted(skill.name for skill in integration.SKILLS)
@@ -438,8 +648,24 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
             for kernel in range(1, 9)
             for component in range(1, 13)
         ]
-        receipt = {
-            "schema_version": "1.0.0",
+        test_result: dict[str, object] = {
+            "status": "PASS",
+            "passed": passed,
+            "failed": 0,
+            "skipped": 0,
+            "raw_logs": raw_references,
+        }
+        if strict_v11:
+            test_result.update(
+                {
+                    "selected": passed,
+                    "errors": 0,
+                    "expected_failures": 0,
+                    "unexpected_successes": 0,
+                }
+            )
+        receipt: dict[str, object] = {
+            "schema_version": "1.1.0" if strict_v11 else "1.0.0",
             "kind": "elmos.proof-driven-harness-v3.local-qualification",
             "status": "PASS",
             "package": {
@@ -462,21 +688,68 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
                     integration._canonical_json_bytes(component_ids)
                 ),
             },
-            "tests": {
-                "status": "PASS",
-                "passed": passed,
-                "failed": 0,
-                "skipped": 0,
-                "raw_logs": raw_references,
-            },
+            "tests": test_result,
             "qualifier": {
                 "path": integration.QUALIFIER_RELATIVE_PATH.as_posix(),
                 "sha256": integration._sha256_bytes(qualifier.read_bytes()),
             },
         }
+        if postgres:
+            assert postgres_reference is not None
+            receipt["postgresql17"] = {
+                "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+                "required_postgresql_version": "17.5",
+                "required_psycopg_version": "3.2.13",
+                "environment": postgres_environment,
+                "tests": postgres_tests,
+                "raw_log": postgres_reference,
+                "external_evidence": "NOT_RUN",
+                "independent_verification": "NOT_RUN",
+                "certification": "NOT_CERTIFIED",
+            }
+        elif strict_v11:
+            receipt["postgresql17"] = {
+                "status": "NOT_RUN",
+                "required_postgresql_version": "17.5",
+                "required_psycopg_version": "3.2.13",
+                "raw_log": None,
+                "reason": "PostgreSQL qualification was not requested by the fixture.",
+            }
         receipt_path = repo / integration.QUALIFICATION_RELATIVE_PATH
         receipt_path.write_bytes(integration._canonical_json_bytes(receipt) + b"\n")
         return receipt
+
+    def _rewrite_raw_record(
+        self,
+        repo: Path,
+        receipt: dict[str, object],
+        raw_path: str,
+        mutate: Callable[[dict[str, object]], None],
+    ) -> None:
+        raw_file = repo / integration.ENGINE_ROOT / raw_path
+        record = json.loads(raw_file.read_text())
+        self.assertIsInstance(record, dict)
+        mutate(record)
+        payload = integration._canonical_json_bytes(record) + b"\n"
+        raw_file.write_bytes(payload)
+        replacement = {
+            "path": raw_path,
+            "sha256": integration._sha256_bytes(payload),
+            "bytes": len(payload),
+        }
+        tests = receipt["tests"]
+        self.assertIsInstance(tests, dict)
+        raw_logs = tests["raw_logs"]
+        self.assertIsInstance(raw_logs, list)
+        for index, reference in enumerate(raw_logs):
+            if isinstance(reference, dict) and reference.get("path") == raw_path:
+                raw_logs[index] = replacement
+                break
+        else:
+            self.fail(f"raw log reference not found: {raw_path}")
+        postgresql = receipt.get("postgresql17")
+        if isinstance(postgresql, dict) and raw_path == integration._POSTGRES_RAW_LOG:
+            postgresql["raw_log"] = replacement
 
     def test_only_exact_digest_bound_receipt_promotes_status(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -514,6 +787,193 @@ class ProofDrivenHarnessQualificationTests(unittest.TestCase):
             self.assertEqual(downgraded.implementation_status, integration.DECLARED_STATUS)
             self.assertEqual(downgraded.validation, "INVALID")
             self.assertEqual(receipt["status"], "PASS")
+
+    def test_postgres_qualification_promotes_only_with_four_bound_raw_logs(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            receipt = self._write_valid_receipt(repo, postgres=True)
+            state = integration.qualification_state(repo, self.audit)
+            self.assertEqual(state.implementation_status, integration.QUALIFIED_STATUS)
+            self.assertEqual(state.validation, "VALID")
+            tests = receipt["tests"]
+            self.assertIsInstance(tests, dict)
+            self.assertEqual(len(tests["raw_logs"]), 4)
+
+    def test_v11_not_run_accepts_exact_three_log_contract(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            receipt = self._write_valid_receipt(repo, v11=True)
+            state = integration.qualification_state(repo, self.audit)
+            self.assertEqual(state.implementation_status, integration.QUALIFIED_STATUS)
+            self.assertEqual(state.validation, "VALID")
+            postgresql = receipt["postgresql17"]
+            tests = receipt["tests"]
+            self.assertIsInstance(postgresql, dict)
+            self.assertIsInstance(tests, dict)
+            self.assertEqual(postgresql["status"], "NOT_RUN")
+            self.assertEqual(len(tests["raw_logs"]), 3)
+
+    def test_v11_not_run_rejects_a_fourth_raw_log(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            receipt = self._write_valid_receipt(repo, v11=True)
+            tests = receipt["tests"]
+            self.assertIsInstance(tests, dict)
+            raw_logs = tests["raw_logs"]
+            self.assertIsInstance(raw_logs, list)
+            raw_logs.append(copy.deepcopy(raw_logs[0]))
+            receipt_path = repo / integration.QUALIFICATION_RELATIVE_PATH
+            receipt_path.write_bytes(
+                integration._canonical_json_bytes(receipt) + b"\n"
+            )
+            state = integration.qualification_state(repo, self.audit)
+            self.assertEqual(state.implementation_status, integration.DECLARED_STATUS)
+            self.assertEqual(state.validation, "INVALID")
+
+    def test_v11_rejects_missing_environment_and_fabricated_aggregate(self) -> None:
+        raw_path = "qualification/raw/engine-tests.json"
+        for mutation in (
+            "missing-environment",
+            "fabricated-aggregate",
+            "forged-selector",
+        ):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                repo = Path(temporary)
+                receipt = self._write_valid_receipt(repo, v11=True)
+
+                def mutate(record: dict[str, object]) -> None:
+                    if mutation == "missing-environment":
+                        record.pop("execution_environment")
+                    elif mutation == "fabricated-aggregate":
+                        stdout = json.loads(str(record["stdout"]))
+                        record["stdout"] = integration._canonical_json_bytes(
+                            {
+                                "status": "PASS",
+                                "totals": stdout["totals"],
+                                "runner_output": "Ran 1 test in 0.001s\nOK\n",
+                            }
+                        ).decode()
+                    else:
+                        stdout = json.loads(str(record["stdout"]))
+                        outcome = stdout["outcomes"][0]
+                        outcome["selector"] = "forged.TestCase.test_00"
+                        binding = {
+                            "selector": outcome["selector"],
+                            "source_path": outcome["source_path"],
+                            "source_sha256": outcome["source_sha256"],
+                        }
+                        outcome["selector_source_binding_sha256"] = (
+                            "sha256:"
+                            + integration._sha256_bytes(
+                                integration._canonical_json_bytes(binding)
+                            )
+                        )
+                        record["stdout"] = integration._canonical_json_bytes(
+                            stdout
+                        ).decode()
+
+                self._rewrite_raw_record(repo, receipt, raw_path, mutate)
+                receipt_path = repo / integration.QUALIFICATION_RELATIVE_PATH
+                receipt_path.write_bytes(
+                    integration._canonical_json_bytes(receipt) + b"\n"
+                )
+                state = integration.qualification_state(repo, self.audit)
+                self.assertEqual(
+                    state.implementation_status,
+                    integration.DECLARED_STATUS,
+                )
+                self.assertEqual(state.validation, "INVALID")
+
+    def test_v11_uses_structured_totals_not_captured_ran_text(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            repo = Path(temporary)
+            receipt = self._write_valid_receipt(repo, v11=True)
+            raw_path = "qualification/raw/engine-tests.json"
+
+            def mutate(record: dict[str, object]) -> None:
+                stdout = json.loads(str(record["stdout"]))
+                stdout["captured_stdout"] = "Ran 999 tests\n"
+                record["stdout"] = integration._canonical_json_bytes(stdout).decode()
+
+            self._rewrite_raw_record(repo, receipt, raw_path, mutate)
+            receipt_path = repo / integration.QUALIFICATION_RELATIVE_PATH
+            receipt_path.write_bytes(
+                integration._canonical_json_bytes(receipt) + b"\n"
+            )
+            state = integration.qualification_state(repo, self.audit)
+            self.assertEqual(state.implementation_status, integration.QUALIFIED_STATUS)
+            self.assertEqual(state.validation, "VALID")
+
+    def test_postgres_qualification_rejects_missing_or_unbound_raw_log(self) -> None:
+        for mutation in (
+            "missing",
+            "unbound",
+            "wrong-environment",
+            "wrong-version-output",
+            "relative-tool-path",
+            "wrong-driver-package",
+        ):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                repo = Path(temporary)
+                receipt = self._write_valid_receipt(repo, postgres=True)
+                tests = receipt["tests"]
+                postgresql = receipt["postgresql17"]
+                self.assertIsInstance(tests, dict)
+                self.assertIsInstance(postgresql, dict)
+                raw_logs = tests["raw_logs"]
+                self.assertIsInstance(raw_logs, list)
+                if mutation == "missing":
+                    raw_logs.pop()
+                elif mutation == "unbound":
+                    postgresql["raw_log"] = raw_logs[0]
+                else:
+                    def mutate_environment(environment: dict[str, object]) -> None:
+                        if mutation == "wrong-environment":
+                            environment["observed_version"] = "17.6"
+                        elif mutation == "wrong-version-output":
+                            environment["version_output"] = (
+                                "initdb (PostgreSQL) 17.5.1 (Homebrew)"
+                            )
+                        else:
+                            tools = environment["tools"]
+                            self.assertIsInstance(tools, list)
+                            tool = tools[0]
+                            self.assertIsInstance(tool, dict)
+                            tool["path"] = "relative/initdb"
+
+                    if mutation != "wrong-driver-package":
+                        environment = postgresql["environment"]
+                        self.assertIsInstance(environment, dict)
+                        mutate_environment(environment)
+
+                    def mutate_record(record: dict[str, object]) -> None:
+                        execution_environment = record["execution_environment"]
+                        self.assertIsInstance(execution_environment, dict)
+                        if mutation == "wrong-driver-package":
+                            packages = execution_environment["packages"]
+                            self.assertIsInstance(packages, dict)
+                            packages["psycopg-binary"] = "3.2.12"
+                        else:
+                            raw_environment = execution_environment["postgresql"]
+                            self.assertIsInstance(raw_environment, dict)
+                            mutate_environment(raw_environment)
+
+                    self._rewrite_raw_record(
+                        repo,
+                        receipt,
+                        integration._POSTGRES_RAW_LOG,
+                        mutate_record,
+                    )
+                receipt_path = repo / integration.QUALIFICATION_RELATIVE_PATH
+                receipt_path.write_bytes(
+                    integration._canonical_json_bytes(receipt) + b"\n"
+                )
+                state = integration.qualification_state(repo, self.audit)
+                self.assertEqual(
+                    state.implementation_status,
+                    integration.DECLARED_STATUS,
+                )
+                self.assertEqual(state.validation, "INVALID")
 
 
 if __name__ == "__main__":

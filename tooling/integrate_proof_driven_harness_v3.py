@@ -1408,6 +1408,49 @@ _EXPECTED_RAW_LOG_COMMANDS: Mapping[str, tuple[str, ...]] = {
         "--qualification-phase",
     ),
 }
+_POSTGRES_RAW_LOG = "qualification/raw/postgres17-integration.json"
+_POSTGRES_RAW_COMMAND = (
+    "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+    "--repo-root",
+    ".",
+    "--start-directory",
+    "engines/proof-driven-harness-engine/tests",
+    "--pattern",
+    "postgres17_integration.py",
+)
+_POSTGRES_VERSION_OUTPUT_PATTERN = re.compile(
+    r"initdb \(PostgreSQL\) 17\.5(?:[ \t]+\([^()\r\n]+\))?"
+)
+_POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS = {
+    name: re.compile(
+        rf"{re.escape(name)} \(PostgreSQL\) 17\.5(?:[ \t]+\([^()\r\n]+\))?"
+    )
+    for name in ("initdb", "pg_ctl", "psql", "postgres")
+}
+_STRUCTURED_RAW_LOGS = frozenset(
+    {
+        "qualification/raw/engine-tests.json",
+        "qualification/raw/package-integration-tests.json",
+        _POSTGRES_RAW_LOG,
+    }
+)
+_TEST_TOTAL_KEYS = frozenset(
+    {
+        "selected",
+        "passed",
+        "failed",
+        "errors",
+        "skipped",
+        "expected_failures",
+        "unexpected_successes",
+    }
+)
+_LOCAL_EVIDENCE_BOUNDARY = {
+    "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "external_evidence": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+}
 
 
 def _engine_member_excluded(relative: PurePosixPath) -> bool:
@@ -1553,13 +1596,237 @@ def _nonnegative_integer(value: Any, label: str) -> int:
     return value
 
 
+def _validate_v11_execution_environment(
+    repo_fd: int,
+    raw_path: str,
+    value: Any,
+    *,
+    allowed_commands: Mapping[str, tuple[str, ...]],
+) -> Mapping[str, Any]:
+    environment = _exact_keys(
+        value,
+        {
+            "schema_version",
+            "os",
+            "python",
+            "tool",
+            "packages",
+            "postgresql",
+            "evidence_boundary",
+        },
+        f"raw log execution environment {raw_path}",
+    )
+    os_record = _exact_keys(
+        environment["os"],
+        {"system", "release", "version", "machine"},
+        f"raw log operating system {raw_path}",
+    )
+    python = _exact_keys(
+        environment["python"],
+        {
+            "implementation",
+            "version",
+            "cache_tag",
+            "executable",
+            "executable_sha256",
+        },
+        f"raw log Python environment {raw_path}",
+    )
+    tool = _exact_keys(
+        environment["tool"],
+        {"path", "version", "sha256"},
+        f"raw log tool environment {raw_path}",
+    )
+    packages = _exact_keys(
+        environment["packages"],
+        {"psycopg", "psycopg-binary"},
+        f"raw log dependency environment {raw_path}",
+    )
+    expected_tool = allowed_commands[raw_path][0]
+    loaded_tool = _read_file_at(
+        repo_fd,
+        Path(*PurePosixPath(expected_tool).parts),
+        limit=MAX_MEMBER_BYTES,
+    )
+    if loaded_tool is None:
+        raise IntegrationError(f"qualification tool is missing: {expected_tool}")
+    tool_payload, _tool_metadata = loaded_tool
+    if (
+        environment["schema_version"] != "1.0.0"
+        or any(not isinstance(item, str) or not item for item in os_record.values())
+        or any(
+            not isinstance(python[key], str) or not python[key]
+            for key in ("implementation", "version", "cache_tag", "executable")
+        )
+        or not Path(python["executable"]).is_absolute()
+        or not re.fullmatch(
+            r"sha256:[0-9a-f]{64}", str(python["executable_sha256"])
+        )
+        or tool
+        != {
+            "path": expected_tool,
+            "version": PACKAGE_VERSION,
+            "sha256": "sha256:" + _sha256_bytes(tool_payload),
+        }
+        or any(not isinstance(item, str) or not item for item in packages.values())
+        or environment["evidence_boundary"] != _LOCAL_EVIDENCE_BOUNDARY
+    ):
+        raise IntegrationError(
+            f"qualification raw log execution environment is invalid: {raw_path}"
+        )
+    postgresql = environment["postgresql"]
+    if raw_path == _POSTGRES_RAW_LOG:
+        if (
+            not isinstance(postgresql, dict)
+            or packages
+            != {"psycopg": "3.2.13", "psycopg-binary": "3.2.13"}
+        ):
+            raise IntegrationError(
+                "PostgreSQL raw log execution environment is malformed"
+            )
+    elif postgresql != {
+        "status": "NOT_APPLICABLE_TO_COMMAND",
+        "required_version": "17.5",
+    }:
+        raise IntegrationError(
+            f"unexpected PostgreSQL environment for raw log: {raw_path}"
+        )
+    return environment
+
+
+def _validate_v11_structured_result(
+    repo_fd: int,
+    raw_path: str,
+    stdout: str,
+    *,
+    allowed_commands: Mapping[str, tuple[str, ...]],
+) -> Mapping[str, int]:
+    result = _exact_keys(
+        _load_json(stdout.encode("utf-8"), source=f"{raw_path} stdout"),
+        {
+            "schema_version",
+            "kind",
+            "status",
+            "discovery",
+            "totals",
+            "outcomes",
+            "runner_output",
+            "captured_stdout",
+            "captured_stderr",
+            "evidence_boundary",
+        },
+        f"structured result {raw_path}",
+    )
+    command = allowed_commands[raw_path]
+    discovery = _exact_keys(
+        result["discovery"],
+        {"start_directory", "pattern"},
+        f"structured discovery {raw_path}",
+    )
+    totals = _exact_keys(
+        result["totals"],
+        set(_TEST_TOTAL_KEYS),
+        f"structured totals {raw_path}",
+    )
+    normalized_totals = {
+        key: _nonnegative_integer(totals[key], f"{raw_path} {key}")
+        for key in _TEST_TOTAL_KEYS
+    }
+    outcomes = result["outcomes"]
+    if (
+        result["schema_version"] != "1.0.0"
+        or result["kind"] != "elmos.proof-harness.structured-unittest-results"
+        or result["status"] != "PASS"
+        or discovery
+        != {"start_directory": command[4], "pattern": command[6]}
+        or not isinstance(outcomes, list)
+        or len(outcomes) != normalized_totals["selected"]
+        or normalized_totals["selected"] <= 0
+        or normalized_totals["passed"] != normalized_totals["selected"]
+        or any(
+            normalized_totals[key] != 0
+            for key in _TEST_TOTAL_KEYS.difference({"selected", "passed"})
+        )
+        or any(
+            not isinstance(result[key], str)
+            for key in ("runner_output", "captured_stdout", "captured_stderr")
+        )
+        or result["evidence_boundary"] != _LOCAL_EVIDENCE_BOUNDARY
+    ):
+        raise IntegrationError(f"structured qualification result is invalid: {raw_path}")
+
+    expected_start = PurePosixPath(command[4])
+    selectors: set[str] = set()
+    for raw_outcome in outcomes:
+        outcome = _exact_keys(
+            raw_outcome,
+            {
+                "selector",
+                "source_path",
+                "source_sha256",
+                "selector_source_binding_sha256",
+                "status",
+                "duration_milliseconds",
+            },
+            f"structured outcome {raw_path}",
+        )
+        selector = outcome["selector"]
+        source_value = outcome["source_path"]
+        if (
+            not isinstance(selector, str)
+            or not selector
+            or selector in selectors
+            or not isinstance(source_value, str)
+            or not source_value
+        ):
+            raise IntegrationError(f"structured outcome identity is invalid: {raw_path}")
+        source_path = PurePosixPath(source_value)
+        if (
+            source_path.is_absolute()
+            or ".." in source_path.parts
+            or source_path.parts[: len(expected_start.parts)]
+            != expected_start.parts
+            or not selector.startswith(source_path.stem + ".")
+        ):
+            raise IntegrationError(f"structured outcome source escapes scope: {raw_path}")
+        loaded_source = _read_file_at(
+            repo_fd,
+            Path(*source_path.parts),
+            limit=MAX_MEMBER_BYTES,
+        )
+        if loaded_source is None:
+            raise IntegrationError(f"structured outcome source is missing: {source_value}")
+        source_payload, _source_metadata = loaded_source
+        binding = {
+            "selector": selector,
+            "source_path": source_value,
+            "source_sha256": "sha256:" + _sha256_bytes(source_payload),
+        }
+        if (
+            outcome["source_sha256"] != binding["source_sha256"]
+            or outcome["selector_source_binding_sha256"]
+            != "sha256:" + _sha256_bytes(_canonical_json_bytes(binding))
+            or outcome["status"] != "PASSED"
+        ):
+            raise IntegrationError(f"structured outcome binding is invalid: {raw_path}")
+        _nonnegative_integer(
+            outcome["duration_milliseconds"],
+            f"structured outcome duration {raw_path}",
+        )
+        selectors.add(selector)
+    return normalized_totals
+
+
 def _validate_raw_log(
     repo_fd: int,
     raw_ref: Any,
-) -> tuple[str, int]:
+    *,
+    allowed_commands: Mapping[str, tuple[str, ...]],
+    strict_v11: bool,
+) -> tuple[str, int, Mapping[str, Any], Mapping[str, int] | None]:
     reference = _exact_keys(raw_ref, {"path", "sha256", "bytes"}, "raw log reference")
     raw_path = reference["path"]
-    if raw_path not in _EXPECTED_RAW_LOG_COMMANDS:
+    if raw_path not in allowed_commands:
         raise IntegrationError(f"unexpected qualification raw log: {raw_path!r}")
     if not isinstance(reference["sha256"], str) or not re.fullmatch(
         r"[0-9a-f]{64}", reference["sha256"]
@@ -1590,20 +1857,25 @@ def _validate_raw_log(
     }
     if isinstance(loaded_record, dict) and "execution_environment" in loaded_record:
         raw_keys.add("execution_environment")
+    if strict_v11:
+        raw_keys.add("execution_environment")
     record = _exact_keys(loaded_record, raw_keys, f"raw log {raw_path}")
     if record["schema_version"] != "1.0.0" or record["cwd"] != ".":
         raise IntegrationError(f"qualification raw log identity mismatch: {raw_path}")
-    if "execution_environment" in record:
+    validated_environment: Mapping[str, Any] | None = None
+    if strict_v11:
+        validated_environment = _validate_v11_execution_environment(
+            repo_fd,
+            raw_path,
+            record["execution_environment"],
+            allowed_commands=allowed_commands,
+        )
+    elif "execution_environment" in record:
         environment = record["execution_environment"]
         if not isinstance(environment, dict):
             raise IntegrationError(f"qualification raw log environment is malformed: {raw_path}")
         boundary = environment.get("evidence_boundary")
-        if boundary != {
-            "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
-            "external_evidence": "NOT_RUN",
-            "independent_verification": "NOT_RUN",
-            "certification": "NOT_CERTIFIED",
-        }:
+        if boundary != _LOCAL_EVIDENCE_BOUNDARY:
             raise IntegrationError(f"qualification raw log evidence boundary is invalid: {raw_path}")
     expected_name = PurePosixPath(raw_path).stem
     if record["name"] != expected_name:
@@ -1613,7 +1885,14 @@ def _validate_raw_log(
         not isinstance(argv, list)
         or not argv
         or any(not isinstance(item, str) or not item for item in argv)
-        or tuple(argv[1:]) != _EXPECTED_RAW_LOG_COMMANDS[raw_path]
+        or tuple(argv[1:]) != allowed_commands[raw_path]
+        or (
+            strict_v11
+            and (
+                validated_environment is None
+                or argv[0] != validated_environment["python"]["executable"]
+            )
+        )
     ):
         raise IntegrationError(f"qualification raw log command mismatch: {raw_path}")
     if (
@@ -1622,15 +1901,26 @@ def _validate_raw_log(
         or record["timed_out"] is not False
         or not isinstance(record["stdout"], str)
         or not isinstance(record["stderr"], str)
+        or (strict_v11 and record["stderr"] != "")
     ):
         raise IntegrationError(f"qualification raw log did not pass: {raw_path}")
     _nonnegative_integer(record["wall_clock_milliseconds"], "raw log duration")
-    matches = re.findall(
-        r"Ran\s+(\d+)\s+tests?",
-        record["stdout"] + "\n" + record["stderr"],
-    )
-    passed = sum(int(match) for match in matches)
-    return raw_path, passed
+    structured_totals: Mapping[str, int] | None = None
+    if strict_v11 and raw_path in _STRUCTURED_RAW_LOGS:
+        structured_totals = _validate_v11_structured_result(
+            repo_fd,
+            raw_path,
+            record["stdout"],
+            allowed_commands=allowed_commands,
+        )
+        passed = structured_totals["passed"]
+    else:
+        matches = re.findall(
+            r"Ran\s+(\d+)\s+tests?",
+            record["stdout"] + "\n" + record["stderr"],
+        )
+        passed = sum(int(match) for match in matches)
+    return raw_path, passed, record, structured_totals
 
 
 def _validate_qualification_receipt(
@@ -1760,28 +2050,17 @@ def _validate_qualification_receipt(
             or unexpected_successes != 0
         ):
             raise IntegrationError("qualification test totals are not fully passing")
-    raw_logs = tests["raw_logs"]
-    if not isinstance(raw_logs, list) or len(raw_logs) != len(_EXPECTED_RAW_LOG_COMMANDS):
-        raise IntegrationError("qualification raw log set is incomplete")
-    observed_paths: set[str] = set()
-    observed_passed = 0
-    for raw_ref in raw_logs:
-        raw_path, raw_passed = _validate_raw_log(repo_fd, raw_ref)
-        if raw_path in observed_paths:
-            raise IntegrationError(f"duplicate qualification raw log: {raw_path}")
-        observed_paths.add(raw_path)
-        observed_passed += raw_passed
-    if observed_paths != set(_EXPECTED_RAW_LOG_COMMANDS):
-        raise IntegrationError("qualification raw log identities are incomplete")
-    if failed != 0 or skipped != 0 or passed <= 0 or passed != observed_passed:
-        raise IntegrationError("qualification test totals do not match raw evidence")
-
+    allowed_commands = dict(_EXPECTED_RAW_LOG_COMMANDS)
+    postgresql: Mapping[str, Any] | None = None
+    postgres_status: str | None = None
+    postgres_tests: Mapping[str, Any] | None = None
+    postgres_environment: Mapping[str, Any] | None = None
     if receipt["schema_version"] == "1.1.0":
-        postgresql = receipt["postgresql17"]
-        if not isinstance(postgresql, dict):
+        raw_postgresql = receipt["postgresql17"]
+        if not isinstance(raw_postgresql, dict):
             raise IntegrationError("qualification PostgreSQL boundary is malformed")
-        status = postgresql.get("status")
-        if status == "NOT_RUN":
+        postgres_status = raw_postgresql.get("status")
+        if postgres_status == "NOT_RUN":
             expected_postgresql_keys = {
                 "status",
                 "required_postgresql_version",
@@ -1789,7 +2068,7 @@ def _validate_qualification_receipt(
                 "raw_log",
                 "reason",
             }
-        elif status in {"LOCAL_EXECUTED_SELF_ATTESTED", "FAILED"}:
+        elif postgres_status == "LOCAL_EXECUTED_SELF_ATTESTED":
             expected_postgresql_keys = {
                 "status",
                 "required_postgresql_version",
@@ -1801,26 +2080,204 @@ def _validate_qualification_receipt(
                 "independent_verification",
                 "certification",
             }
+            allowed_commands[_POSTGRES_RAW_LOG] = _POSTGRES_RAW_COMMAND
         else:
             raise IntegrationError("qualification PostgreSQL status is invalid")
         postgresql = _exact_keys(
-            postgresql, expected_postgresql_keys, "qualification PostgreSQL boundary"
+            raw_postgresql,
+            expected_postgresql_keys,
+            "qualification PostgreSQL boundary",
         )
         if (
             postgresql["required_postgresql_version"] != "17.5"
             or postgresql["required_psycopg_version"] != "3.2.13"
         ):
             raise IntegrationError("qualification PostgreSQL version binding is invalid")
-        if status == "NOT_RUN":
-            if postgresql["raw_log"] is not None or not isinstance(postgresql["reason"], str) or not postgresql["reason"]:
-                raise IntegrationError("qualification PostgreSQL NOT_RUN boundary is invalid")
+        if postgres_status == "NOT_RUN":
+            if (
+                postgresql["raw_log"] is not None
+                or not isinstance(postgresql["reason"], str)
+                or not postgresql["reason"]
+            ):
+                raise IntegrationError(
+                    "qualification PostgreSQL NOT_RUN boundary is invalid"
+                )
         else:
             if (
                 postgresql["external_evidence"] != "NOT_RUN"
                 or postgresql["independent_verification"] != "NOT_RUN"
                 or postgresql["certification"] != "NOT_CERTIFIED"
             ):
-                raise IntegrationError("qualification PostgreSQL evidence boundary is invalid")
+                raise IntegrationError(
+                    "qualification PostgreSQL evidence boundary is invalid"
+                )
+            postgres_environment = _exact_keys(
+                postgresql["environment"],
+                {
+                    "status",
+                    "required_version",
+                    "observed_version",
+                    "version_output",
+                    "psycopg_version",
+                    "psycopg_binary_version",
+                    "tools",
+                },
+                "qualification PostgreSQL environment",
+            )
+            if (
+                postgres_environment["status"] != "AVAILABLE_EXACT"
+                or postgres_environment["required_version"] != "17.5"
+                or postgres_environment["observed_version"] != "17.5"
+                or not isinstance(postgres_environment["version_output"], str)
+                or _POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(
+                    postgres_environment["version_output"]
+                )
+                is None
+                or postgres_environment["psycopg_version"] != "3.2.13"
+                or postgres_environment["psycopg_binary_version"] != "3.2.13"
+            ):
+                raise IntegrationError(
+                    "qualification PostgreSQL exact environment is invalid"
+                )
+            postgres_tools = postgres_environment["tools"]
+            if (
+                not isinstance(postgres_tools, list)
+                or len(postgres_tools) != 4
+                or [
+                    item.get("name")
+                    for item in postgres_tools
+                    if isinstance(item, dict)
+                ]
+                != ["initdb", "pg_ctl", "psql", "postgres"]
+                or any(
+                    not isinstance(item, dict)
+                    or set(item)
+                    != {
+                        "name",
+                        "path",
+                        "sha256",
+                        "observed_version",
+                        "version_output",
+                    }
+                    or not isinstance(item["path"], str)
+                    or not Path(item["path"]).is_absolute()
+                    or item["observed_version"] != "17.5"
+                    or not isinstance(item["version_output"], str)
+                    or _POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS.get(
+                        str(item["name"]), re.compile(r"(?!)")
+                    ).fullmatch(item["version_output"])
+                    is None
+                    or not re.fullmatch(
+                        r"sha256:[0-9a-f]{64}", str(item["sha256"])
+                    )
+                    for item in postgres_tools
+                )
+            ):
+                raise IntegrationError(
+                    "qualification PostgreSQL tool identities are invalid"
+                )
+            postgres_tests = _exact_keys(
+                postgresql["tests"],
+                {
+                    "selected",
+                    "passed",
+                    "failed",
+                    "errors",
+                    "skipped",
+                    "expected_failures",
+                    "unexpected_successes",
+                },
+                "qualification PostgreSQL tests",
+            )
+            postgres_selected = _nonnegative_integer(
+                postgres_tests["selected"], "qualification PostgreSQL selected"
+            )
+            if (
+                postgres_selected <= 0
+                or _nonnegative_integer(
+                    postgres_tests["passed"], "qualification PostgreSQL passed"
+                )
+                != postgres_selected
+                or any(
+                    _nonnegative_integer(
+                        postgres_tests[key], f"qualification PostgreSQL {key}"
+                    )
+                    != 0
+                    for key in (
+                        "failed",
+                        "errors",
+                        "skipped",
+                        "expected_failures",
+                        "unexpected_successes",
+                    )
+                )
+            ):
+                raise IntegrationError(
+                    "qualification PostgreSQL tests are not fully passing"
+                )
+
+    raw_logs = tests["raw_logs"]
+    if not isinstance(raw_logs, list) or len(raw_logs) != len(allowed_commands):
+        raise IntegrationError("qualification raw log set is incomplete")
+    observed_paths: set[str] = set()
+    observed_passed = 0
+    observed_totals = {key: 0 for key in _TEST_TOTAL_KEYS}
+    observed_refs: dict[str, Mapping[str, Any]] = {}
+    observed_records: dict[str, Mapping[str, Any]] = {}
+    observed_structured: dict[str, Mapping[str, int]] = {}
+    for raw_ref in raw_logs:
+        raw_path, raw_passed, raw_record, structured_totals = _validate_raw_log(
+            repo_fd,
+            raw_ref,
+            allowed_commands=allowed_commands,
+            strict_v11=receipt["schema_version"] == "1.1.0",
+        )
+        if raw_path in observed_paths:
+            raise IntegrationError(f"duplicate qualification raw log: {raw_path}")
+        observed_paths.add(raw_path)
+        observed_passed += raw_passed
+        observed_refs[raw_path] = raw_ref
+        observed_records[raw_path] = raw_record
+        if structured_totals is not None:
+            observed_structured[raw_path] = structured_totals
+            for key in _TEST_TOTAL_KEYS:
+                observed_totals[key] += structured_totals[key]
+    if observed_paths != set(allowed_commands):
+        raise IntegrationError("qualification raw log identities are incomplete")
+    if failed != 0 or skipped != 0 or passed <= 0 or passed != observed_passed:
+        raise IntegrationError("qualification test totals do not match raw evidence")
+    if receipt["schema_version"] == "1.1.0" and {
+        key: tests[key] for key in _TEST_TOTAL_KEYS
+    } != observed_totals:
+        raise IntegrationError(
+            "qualification test totals do not match structured raw evidence"
+        )
+    if postgres_status == "LOCAL_EXECUTED_SELF_ATTESTED":
+        if (
+            postgresql is None
+            or postgres_environment is None
+            or postgres_tests is None
+        ):
+            raise IntegrationError(
+                "qualification PostgreSQL validated state is unavailable"
+            )
+        postgres_record = observed_records[_POSTGRES_RAW_LOG]
+        execution_environment = postgres_record.get("execution_environment")
+        if (
+            postgresql["raw_log"] != observed_refs[_POSTGRES_RAW_LOG]
+            or not isinstance(execution_environment, dict)
+            or execution_environment.get("postgresql") != postgres_environment
+        ):
+            raise IntegrationError(
+                "qualification PostgreSQL raw evidence binding is invalid"
+            )
+        if (
+            _POSTGRES_RAW_LOG not in observed_structured
+            or observed_structured[_POSTGRES_RAW_LOG] != postgres_tests
+        ):
+            raise IntegrationError(
+                "qualification PostgreSQL structured result binding is invalid"
+            )
 
     # Recompute the complete tree after all receipt/evidence checks so a
     # concurrent mutation cannot be promoted from an earlier observation.

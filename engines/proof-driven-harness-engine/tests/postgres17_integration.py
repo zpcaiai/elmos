@@ -20,6 +20,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import socket
 import subprocess
@@ -63,6 +64,20 @@ APP_ROLE = "proof_harness_app_it"
 AUTHORITY_ROLE = "proof_harness_authority_it"
 OWNER_ROLE = "proof_harness_owner_it"
 _DIGEST_A = "sha256:" + "a" * 64
+POSTGRES_VERSION = "17.5"
+POSTGRES_VERSION_NUM = "170005"
+POSTGRES_TOOL_NAMES = ("initdb", "pg_ctl", "psql", "postgres")
+
+
+def _tool_version_is_exact(name: str, output: str) -> bool:
+    return (
+        re.fullmatch(
+            rf"{re.escape(name)} \(PostgreSQL\) {re.escape(POSTGRES_VERSION)}"
+            r"(?:[ \t]+\([^()\r\n]+\))?",
+            output,
+        )
+        is not None
+    )
 
 
 def _load_repository_tool(name: str) -> ModuleType:
@@ -121,14 +136,17 @@ class DisposablePostgres17:
         )
 
     def start(self) -> None:
-        for executable in ("initdb", "pg_ctl", "psql"):
+        for executable in POSTGRES_TOOL_NAMES:
             if not (PG_BIN / executable).is_file():
                 raise RuntimeError(
                     f"PostgreSQL 17 executable is missing: {PG_BIN / executable}"
                 )
-        version = self._run(str(PG_BIN / "initdb"), "--version").stdout
-        if " 17." not in version:
-            raise RuntimeError(f"expected PostgreSQL 17, observed {version.strip()}")
+            version = self._run(str(PG_BIN / executable), "--version").stdout.strip()
+            if not _tool_version_is_exact(executable, version):
+                raise RuntimeError(
+                    f"expected exact PostgreSQL {POSTGRES_VERSION} for {executable}, "
+                    f"observed {version!r}"
+                )
         self._run(
             str(PG_BIN / "initdb"),
             "-A",
@@ -151,6 +169,33 @@ class DisposablePostgres17:
             "start",
         )
         self.started = True
+        server_version_num = self._run(
+            str(PG_BIN / "psql"),
+            self.admin_dsn,
+            "--no-psqlrc",
+            "--tuples-only",
+            "--no-align",
+            "--command",
+            "SHOW server_version_num",
+        ).stdout.strip()
+        server_version = self._run(
+            str(PG_BIN / "psql"),
+            self.admin_dsn,
+            "--no-psqlrc",
+            "--tuples-only",
+            "--no-align",
+            "--command",
+            "SHOW server_version",
+        ).stdout.strip()
+        if server_version_num != POSTGRES_VERSION_NUM or re.fullmatch(
+            rf"{re.escape(POSTGRES_VERSION)}(?:[ \t]+\([^()\r\n]+\))?",
+            server_version,
+        ) is None:
+            raise RuntimeError(
+                f"expected exact PostgreSQL server {POSTGRES_VERSION}/"
+                f"{POSTGRES_VERSION_NUM}, observed {server_version!r}/"
+                f"{server_version_num!r}"
+            )
         self.psql(
             f"""
             CREATE ROLE {OWNER_ROLE} NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS;
