@@ -92,6 +92,16 @@ source = Path(sys.argv[1]).read_text(encoding="utf-8")
 marker = "  bottle do\n"
 if source.count(marker) != 1:
     raise SystemExit("pinned Homebrew formula has an unexpected bottle contract")
+autobump_lines = [
+    line for line in source.splitlines(keepends=True)
+    if line.startswith("  no_autobump!")
+]
+if len(autobump_lines) > 1:
+    raise SystemExit("pinned Homebrew formula has an unexpected no_autobump contract")
+if autobump_lines:
+    # no_autobump! is official-tap publication metadata. Homebrew rejects it
+    # in a local tap; removing it does not alter source or bottle identity.
+    source = source.replace(autobump_lines[0], "", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
