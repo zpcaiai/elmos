@@ -207,6 +207,9 @@ verify_pinned_ada_url_library_identity() {
     "613248:e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4")
       printf '%s\n' "homebrew-node26-libada-e4b04b323411-613248"
       ;;
+    "598704:b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8")
+      printf '%s\n' "github-macos26-libada-b39ba5c76cfa-598704"
+      ;;
     *) return 1 ;;
   esac
 }
