@@ -167,7 +167,7 @@ jobs:
     # MISSING and make the fail-closed solver tests fail before they exercise
     # the engine.
     runs-on: macos-15
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -181,8 +181,10 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.11"
-      - name: Install locked schema validator
-        run: python3.11 -m pip install --disable-pip-version-check 'jsonschema==4.25.1'
+      - name: Install locked Python validation tools
+        run: >-
+          python3.11 -m pip install --disable-pip-version-check
+          'jsonschema==4.25.1' 'uv==0.11.16'
       - name: Install locked dependencies
         run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
       - name: Bind locked Z3 solver
@@ -191,6 +193,13 @@ jobs:
           echo "ELMOS_FRONTEND_Z3=$GITHUB_WORKSPACE/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3" >> "$GITHUB_ENV"
       - name: Test Frontend Client Engine
         run: pnpm --dir engines/frontend-client-engine check
+      - name: Replay complete Batch 32 and Batch 35 formal gates
+        run: |
+          make batch32-check
+          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
+            python3.11 scripts/batch32/run_client_gate.py "$pack"
+          done
+          make batch35-check
 
   polyglot-routes:
     name: Directed language route contracts
@@ -256,6 +265,8 @@ jobs:
           uv --directory engines/polyglot-route-engine run --locked pytest
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
           uv --directory engines/polyglot-route-engine run --locked mypy src
+      - name: Run the complete Batch 29 Skill contract suite
+        run: make b29-skills-test
       - name: Verify all route packs and console contracts
         run: |
           python scripts/operations/validate_translation_route_matrix.py
@@ -495,6 +506,8 @@ jobs:
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
+      - name: Verify translation Runner evidence and cancellation invariants
+        run: pnpm --dir apps/web-console check:evidence
       - name: Verify every Batch 32 client pack with portable evidence boundary
         run: |
           make batch32-portable-check
@@ -523,6 +536,7 @@ jobs:
           e2e/pricing-ui.spec.ts
           e2e/repository-workspace-ui.spec.ts
           e2e/runtime-deployment-guide.spec.ts
+          e2e/truthful-workbench-ui.spec.ts
           e2e/usage-meter-ui.spec.ts
       - name: Preserve browser journey evidence
         if: ${{ always() && steps.browser-journeys.outcome != 'skipped' }}
@@ -803,22 +817,20 @@ jobs:
           done
       - name: Batch 29-45 check targets run through make
         run: |
-          # Batch 29's full route replay is Darwin/arm64-only by contract and
-          # runs in the polyglot-routes job.  This Ubuntu job exercises its
-          # repository/skill contracts without claiming an exact macOS
-          # compiler matrix executed here.
+          # The complete Batch 29 suite runs in the macOS polyglot-routes job.
+          # This Ubuntu target is an additional portable contract check; it is
+          # not a substitute for that native suite.
           make b29-portable-skills-test b30-skills-test b31-skills-test
           for batch in 33 34 36 37 38 39 40 41 42 43 44 45; do
             make "batch${batch}-check"
           done
-          # Batch 32's complete formal replay is intentionally executed in
-          # the macOS Frontend Client Engine job, where its receipt-bound Node/Z3/browser
-          # toolchain exists. This target validates the portable contracts on
-          # Ubuntu without pretending that native browser evidence ran here.
+          # Batch 32's complete formal replay runs in the macOS Frontend Client
+          # Engine job, where its receipt-bound Node/Z3 toolchain exists. This
+          # target adds portable validation without claiming native replay.
           make batch32-portable-check
-          # Batch 35 contains immutable Mach-O Z3 and Homebrew TypeScript
-          # receipts. Exercise portable/static and negative contracts on
-          # Ubuntu while receipt replay stays in the macOS formal jobs.
+          # Batch 35's complete immutable Mach-O Z3 and TypeScript receipt
+          # replay also runs in the macOS Frontend Client Engine job. This
+          # Ubuntu target adds portable/static and negative coverage only.
           make batch35-portable-check
       - name: Optional-source-package guard holds in both directions
         run: |

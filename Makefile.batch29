@@ -13,6 +13,7 @@ b29-repository-contract-check:
 b29-skills-test: b29-repository-contract-check external-gate-intake-test
 	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
 	$(BATCH29_ROUTE_PYTHON) -m unittest discover -s ../../tests/batch29 -p 'test_*.py'
+	$(BATCH29_ROUTE_PYTHON) -m pytest -q ../../tests/batch29/test_fresh_route_runtime_toolchains.py
 b29-portable-skills-test: b29-repository-contract-check external-gate-intake-test
 	$(BATCH29_PYTHON) scripts/batch29/validate_skill_bundle.py
 	$(BATCH29_PYTHON) -m unittest discover -s tests/batch29 -p 'test_repository_gate.py'

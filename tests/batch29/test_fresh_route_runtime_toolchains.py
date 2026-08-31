@@ -297,6 +297,78 @@ def test_java_python_ci_profile_uses_the_verified_setup_java_temurin_contract() 
     assert environment_binding in installer
 
 
+def test_full_ci_profile_rebuilds_only_the_exact_homebrew_java_resource_seal() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
+    input_identity = (
+        '"$(file_sha256 "${HOMEBREW_JAVA_HOME}/bin/java")" '
+        '!= "${HOMEBREW_JAVA_SHA256}"'
+    )
+    preseal_identity = (
+        'readonly HOMEBREW_JAVA_PRESEAL_IDENTITY="$(file_sha256 '
+        '"${HOMEBREW_JAVA_EXECUTABLE}"):$(stat -f \'%Lp:%l:%z\' '
+        '"${HOMEBREW_JAVA_EXECUTABLE}")"'
+    )
+    preseal_cases = (
+        '"${HOMEBREW_JAVA_BOTTLE_EXECUTABLE_SHA256}:644:1:130384"|\\\n'
+        '    "${HOMEBREW_JAVA_RUBY_MACHO_EXECUTABLE_SHA256}:644:1:112176"|\\\n'
+        '    "${HOMEBREW_JAVA_EXECUTABLE_SHA256}:644:1:130192")'
+    )
+    signature_entry_enumeration = (
+        'HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY="$(find \\\n'
+        '      "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" \\\n'
+        "      -mindepth 1 -maxdepth 1 ! -name 'CodeResources' -print -quit)\""
+    )
+    signature_entry_freeze = "readonly HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY"
+    signature_entry_guard = (
+        '[[ -n "${HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY}" ]]'
+    )
+    resource_preimage_guard = (
+        '"$(stat -f \'%Lp:%l:%z\' "${HOMEBREW_JAVA_CODE_RESOURCES}")" '
+        '!= "644:1:81759"'
+    )
+    exact_resign = (
+        "/usr/bin/codesign --force --deep --sign - --pagesize 4096 "
+        '"${HOMEBREW_JAVA_BUNDLE}"'
+    )
+    strict_verification = (
+        "/usr/bin/codesign --verify --deep --strict "
+        '"${HOMEBREW_JAVA_BUNDLE}"'
+    )
+    sealed_identity = (
+        '"$(file_sha256 "${HOMEBREW_JAVA_CODE_RESOURCES}")" '
+        '!= "${HOMEBREW_JAVA_CODE_RESOURCES_SHA256}"'
+    )
+
+    assert homebrew_install in installer
+    assert input_identity in installer
+    assert preseal_identity in installer
+    assert preseal_cases in installer
+    assert signature_entry_enumeration in installer
+    assert signature_entry_freeze in installer
+    assert signature_entry_guard in installer
+    assert resource_preimage_guard in installer
+    assert exact_resign in installer
+    assert strict_verification in installer
+    assert sealed_identity in installer
+    assert "dbf6c7847b3bd0a476bd5e980ada9112a35c4ef00348209ad511031944d986fc" in installer
+    assert "83bba6f42332fe76c090d99acd7b68947f687fade1827a0917d7e27df9b1258d" in installer
+    assert "02f323e9d3f58bc04d228d475b745111af37871c3a1f7acdd23d656bde1452a3" in installer
+    assert "56f1666041b6451258db96c168353f40ffeb3c98d0b7d8b7c4f2d29257563e4f" in installer
+    assert "5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8" in installer
+    assert installer.index(homebrew_install) < installer.index(input_identity)
+    assert installer.index(input_identity) < installer.index(preseal_identity)
+    assert installer.index(preseal_identity) < installer.index(exact_resign)
+    assert installer.index(signature_entry_enumeration) < installer.index(
+        signature_entry_freeze
+    )
+    assert installer.index(signature_entry_guard) < installer.index(exact_resign)
+    assert installer.index(resource_preimage_guard) < installer.index(exact_resign)
+    assert installer.index(sealed_identity) < installer.index(exact_resign)
+    assert installer.index(exact_resign) < installer.index(strict_verification)
+    assert installer.index(strict_verification) < installer.rindex(sealed_identity)
+
+
 def test_python_archive_rejects_same_size_content_drift() -> None:
     runtime = _runtime()
     archive = runtime.PYTHON_ARCHIVE_CACHE.read_bytes()

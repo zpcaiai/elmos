@@ -52,8 +52,26 @@ export default async function globalTeardown(): Promise<void> {
   }
 
   const translationFixtureRoot = process.env.ELMOS_E2E_EFFECTIVE_TRANSLATION_FIXTURE_ROOT;
+  const translationFixtureOwner = process.env.ELMOS_E2E_TRANSLATION_FIXTURE_OWNER_TOKEN;
+  let ownsTranslationFixture = false;
   if (
-    translationFixtureRoot
+    process.env.ELMOS_E2E_AUTO_TRANSLATION_FIXTURE_ROOT === "true"
+    && translationFixtureRoot
+    && translationFixtureOwner
+    && /^[0-9a-f]{64}$/.test(translationFixtureOwner)
+  ) {
+    try {
+      ownsTranslationFixture = await readFile(
+        path.join(translationFixtureRoot, ".elmos-translation-fixture-owner"),
+        "utf8",
+      ) === `${translationFixtureOwner}\n`;
+    } catch {
+      ownsTranslationFixture = false;
+    }
+  }
+  if (
+    ownsTranslationFixture
+    && translationFixtureRoot
     && path.dirname(path.resolve(translationFixtureRoot)) === canonicalTemporaryRoot
     && path.basename(translationFixtureRoot).startsWith("elmos-web-console-e2e-translation-fixtures-")
   ) {

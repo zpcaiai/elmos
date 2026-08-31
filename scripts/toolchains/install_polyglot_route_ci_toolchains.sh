@@ -312,6 +312,116 @@ else
     "c739c5820462b4ca246f217cbc164ce7348bc48a" \
     "Formula/o/openjdk@21.rb" \
     "748be615c1c7b6713143e88aa2895d93f6a1fbbb2ae17e6566cd38c869bad647"
+
+  # The pinned Homebrew bottle is ad-hoc signed, but its archive can omit the
+  # bundle resource envelope after Homebrew has relocated the poured files.
+  # Rebuild that exact envelope with the page size used by the historical
+  # route evidence, then require the complete signed identity to match. This
+  # does not add publisher identity (the contract remains TeamIdentifier=not
+  # set); it deterministically restores the repository's bounded LOCAL runtime.
+  readonly HOMEBREW_JAVA_HOME="${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+  readonly HOMEBREW_JAVA_BUNDLE="${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk"
+  readonly HOMEBREW_JAVA_EXECUTABLE="${HOMEBREW_JAVA_BUNDLE}/Contents/MacOS/libjli.dylib"
+  readonly HOMEBREW_JAVA_CODE_RESOURCES="${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature/CodeResources"
+  readonly HOMEBREW_JAVA_SHA256="2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42"
+  readonly HOMEBREW_JAVAC_SHA256="c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db"
+  readonly HOMEBREW_JAVA_MODULES_SHA256="5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee"
+  readonly HOMEBREW_JAVA_JVM_SHA256="bbe54637903f04770492627e8d4f6051d79bc8591cab70e02dc3b4a9575d0588"
+  readonly HOMEBREW_JAVA_RELEASE_SHA256="7befd86565133fbebfa54138e55ec5b03bb59649ea5dda35d9f9b95265226756"
+  readonly HOMEBREW_JAVA_EXECUTABLE_SHA256="02f323e9d3f58bc04d228d475b745111af37871c3a1f7acdd23d656bde1452a3"
+  readonly HOMEBREW_JAVA_BOTTLE_EXECUTABLE_SHA256="dbf6c7847b3bd0a476bd5e980ada9112a35c4ef00348209ad511031944d986fc"
+  readonly HOMEBREW_JAVA_RUBY_MACHO_EXECUTABLE_SHA256="56f1666041b6451258db96c168353f40ffeb3c98d0b7d8b7c4f2d29257563e4f"
+  readonly HOMEBREW_JAVA_CODE_RESOURCES_SHA256="83bba6f42332fe76c090d99acd7b68947f687fade1827a0917d7e27df9b1258d"
+  readonly HOMEBREW_JAVA_CDHASH_FULL="5a88122cc14733538f6b92d150fafb7f5b560455bfda0ae83c93a34eef2887e8"
+  readonly HOMEBREW_JAVA_VERSION="$(printf '%s\n' \
+    'openjdk version "21.0.11" 2026-04-21' \
+    'OpenJDK Runtime Environment Homebrew (build 21.0.11)' \
+    'OpenJDK 64-Bit Server VM Homebrew (build 21.0.11, mixed mode, sharing)')"
+
+  if [[ ! -d "${HOMEBREW_JAVA_BUNDLE}" || -L "${HOMEBREW_JAVA_BUNDLE}" \
+    || ! -d "${HOMEBREW_JAVA_HOME}" || -L "${HOMEBREW_JAVA_HOME}" \
+    || ! -f "${HOMEBREW_JAVA_HOME}/bin/java" || -L "${HOMEBREW_JAVA_HOME}/bin/java" \
+    || ! -f "${HOMEBREW_JAVA_HOME}/bin/javac" || -L "${HOMEBREW_JAVA_HOME}/bin/javac" \
+    || ! -f "${HOMEBREW_JAVA_HOME}/lib/modules" || -L "${HOMEBREW_JAVA_HOME}/lib/modules" \
+    || ! -f "${HOMEBREW_JAVA_HOME}/lib/server/libjvm.dylib" || -L "${HOMEBREW_JAVA_HOME}/lib/server/libjvm.dylib" \
+    || ! -f "${HOMEBREW_JAVA_HOME}/release" || -L "${HOMEBREW_JAVA_HOME}/release" \
+    || ! -f "${HOMEBREW_JAVA_EXECUTABLE}" || -L "${HOMEBREW_JAVA_EXECUTABLE}" ]]; then
+    printf 'Pinned Homebrew Java bundle structure is unsafe.\n' >&2
+    exit 3
+  fi
+  if [[ "$(stat -f '%l' "${HOMEBREW_JAVA_HOME}/bin/java")" != "1" \
+    || "$(stat -f '%l' "${HOMEBREW_JAVA_HOME}/bin/javac")" != "1" \
+    || "$(stat -f '%l' "${HOMEBREW_JAVA_HOME}/lib/modules")" != "1" \
+    || "$(stat -f '%l' "${HOMEBREW_JAVA_HOME}/lib/server/libjvm.dylib")" != "1" \
+    || "$(stat -f '%l' "${HOMEBREW_JAVA_HOME}/release")" != "1" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_HOME}/bin/java")" != "${HOMEBREW_JAVA_SHA256}" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_HOME}/bin/javac")" != "${HOMEBREW_JAVAC_SHA256}" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_HOME}/lib/modules")" != "${HOMEBREW_JAVA_MODULES_SHA256}" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_HOME}/lib/server/libjvm.dylib")" != "${HOMEBREW_JAVA_JVM_SHA256}" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_HOME}/release")" != "${HOMEBREW_JAVA_RELEASE_SHA256}" \
+    || "$("${HOMEBREW_JAVA_HOME}/bin/java" -version 2>&1)" != "${HOMEBREW_JAVA_VERSION}" \
+    || "$("${HOMEBREW_JAVA_HOME}/bin/javac" -version 2>&1)" != "javac 21.0.11" ]]; then
+    printf 'Pinned Homebrew Java input identity mismatch before resource sealing.\n' >&2
+    exit 3
+  fi
+  readonly HOMEBREW_JAVA_PRESEAL_IDENTITY="$(file_sha256 "${HOMEBREW_JAVA_EXECUTABLE}"):$(stat -f '%Lp:%l:%z' "${HOMEBREW_JAVA_EXECUTABLE}")"
+  case "${HOMEBREW_JAVA_PRESEAL_IDENTITY}" in
+    "${HOMEBREW_JAVA_BOTTLE_EXECUTABLE_SHA256}:644:1:130384"|\
+    "${HOMEBREW_JAVA_RUBY_MACHO_EXECUTABLE_SHA256}:644:1:112176"|\
+    "${HOMEBREW_JAVA_EXECUTABLE_SHA256}:644:1:130192") ;;
+    *)
+      printf 'Pinned Homebrew Java bundle executable preimage mismatch: %s\n' \
+        "${HOMEBREW_JAVA_PRESEAL_IDENTITY}" >&2
+      exit 3
+      ;;
+  esac
+  if [[ -e "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" \
+    || -L "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" ]]; then
+    if [[ ! -d "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" \
+      || -L "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" ]]; then
+      printf 'Pinned Homebrew Java signature directory is unsafe.\n' >&2
+      exit 3
+    fi
+    HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY="$(find \
+      "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" \
+      -mindepth 1 -maxdepth 1 ! -name 'CodeResources' -print -quit)"
+    readonly HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY
+    if [[ -n "${HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY}" ]]; then
+      printf 'Pinned Homebrew Java signature directory contains unexpected entries.\n' >&2
+      exit 3
+    fi
+  fi
+  if [[ -e "${HOMEBREW_JAVA_CODE_RESOURCES}" || -L "${HOMEBREW_JAVA_CODE_RESOURCES}" ]]; then
+    if [[ ! -f "${HOMEBREW_JAVA_CODE_RESOURCES}" \
+      || -L "${HOMEBREW_JAVA_CODE_RESOURCES}" \
+      || "$(stat -f '%Lp:%l:%z' "${HOMEBREW_JAVA_CODE_RESOURCES}")" != "644:1:81759" \
+      || "$(file_sha256 "${HOMEBREW_JAVA_CODE_RESOURCES}")" != "${HOMEBREW_JAVA_CODE_RESOURCES_SHA256}" ]]; then
+      printf 'Pinned Homebrew Java resource envelope preimage is unsafe.\n' >&2
+      exit 3
+    fi
+  fi
+
+  /usr/bin/codesign --force --deep --sign - --pagesize 4096 "${HOMEBREW_JAVA_BUNDLE}"
+  if ! /usr/bin/codesign --verify --deep --strict "${HOMEBREW_JAVA_BUNDLE}"; then
+    printf 'Pinned Homebrew Java bundle signature verification failed.\n' >&2
+    exit 3
+  fi
+  if [[ ! -f "${HOMEBREW_JAVA_EXECUTABLE}" || -L "${HOMEBREW_JAVA_EXECUTABLE}" \
+    || "$(stat -f '%Lp:%l:%z' "${HOMEBREW_JAVA_EXECUTABLE}")" != "644:1:130192" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_EXECUTABLE}")" != "${HOMEBREW_JAVA_EXECUTABLE_SHA256}" \
+    || ! -f "${HOMEBREW_JAVA_CODE_RESOURCES}" || -L "${HOMEBREW_JAVA_CODE_RESOURCES}" \
+    || "$(stat -f '%Lp:%l:%z' "${HOMEBREW_JAVA_CODE_RESOURCES}")" != "644:1:81759" \
+    || "$(file_sha256 "${HOMEBREW_JAVA_CODE_RESOURCES}")" != "${HOMEBREW_JAVA_CODE_RESOURCES_SHA256}" ]]; then
+    printf 'Pinned Homebrew Java sealed resource identity mismatch.\n' >&2
+    exit 3
+  fi
+  readonly HOMEBREW_JAVA_SIGNATURE="$(/usr/bin/codesign -d --verbose=4 "${HOMEBREW_JAVA_BUNDLE}" 2>&1)"
+  if [[ "${HOMEBREW_JAVA_SIGNATURE}" != *'Identifier=net.java.openjdk.jdk'* \
+    || "${HOMEBREW_JAVA_SIGNATURE}" != *'TeamIdentifier=not set'* \
+    || "${HOMEBREW_JAVA_SIGNATURE}" != *"CandidateCDHashFull sha256=${HOMEBREW_JAVA_CDHASH_FULL}"* ]]; then
+    printf 'Pinned Homebrew Java signed identity mismatch.\n' >&2
+    exit 3
+  fi
 fi
 
 if [[ "${CI_PROFILE}" == "full" ]]; then

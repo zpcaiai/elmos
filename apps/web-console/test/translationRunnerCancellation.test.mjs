@@ -14,7 +14,7 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import test from "node:test";
+import test, { after } from "node:test";
 import { zipSync } from "fflate";
 
 import { DurableJobLease } from "../app/lib/server/durableJobLease.ts";
@@ -31,8 +31,46 @@ import {
   translationArtifact,
   translationRunnerHealth,
 } from "../app/lib/server/translationRunner.ts";
+import {
+  createTranslationRouteAdmissionFixture,
+  TEST_ROUTE_JOB_ADMISSION,
+} from "./translationRouteAdmissionFixture.mjs";
 
 const repositoryRoot = path.resolve(import.meta.dirname, "../../..");
+const admittedRepository = await createTranslationRouteAdmissionFixture(repositoryRoot);
+const admittedRepositoryRoot = admittedRepository.root;
+after(async () => admittedRepository.cleanup());
+
+test("route admission fixture rejects duplicate fields and path identities before writes", async () => {
+  const fakeRepository = await realpath(
+    await mkdtemp(path.join(tmpdir(), "elmos-route-admission-negative-")),
+  );
+  const inventoryPath = path.join(fakeRepository, "routes", "inventory.json");
+  try {
+    await mkdir(path.dirname(inventoryPath), { recursive: true });
+    await writeFile(inventoryPath, '{"routes":[],"routes":[]}\n');
+    await assert.rejects(
+      createTranslationRouteAdmissionFixture(fakeRepository),
+      (error) => error?.message === "DUPLICATE_JSON_FIELD",
+    );
+
+    const inventory = JSON.parse(
+      await readFile(path.join(repositoryRoot, "routes", "inventory.json"), "utf8"),
+    );
+    inventory.routes[0].route_key = "../escape";
+    await writeFile(inventoryPath, `${JSON.stringify(inventory)}\n`);
+    await assert.rejects(
+      createTranslationRouteAdmissionFixture(fakeRepository),
+      (error) => error?.message === "TEST_ROUTE_INVENTORY_IDENTITY_INVALID:../escape",
+    );
+    await assert.rejects(
+      readFile(path.join(fakeRepository, "escape", "route.json")),
+      (error) => error?.code === "ENOENT",
+    );
+  } finally {
+    await rm(fakeRepository, { recursive: true, force: true });
+  }
+});
 
 function codeArtifactFixture({ tamperPayloadDigest = false } = {}) {
   const payload = Buffer.from("export function migrated(value) { return value + 1; }\n");
@@ -232,7 +270,7 @@ async function rootlessTwoInstanceFixture({ refuseRemove = false } = {}) {
     NODE_ENV: "development",
     ELMOS_LOCAL_RUNNER_ENABLED: "true",
     ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-    ELMOS_REPOSITORY_ROOT: repositoryRoot,
+    ELMOS_REPOSITORY_ROOT: admittedRepositoryRoot,
     ELMOS_TRANSLATION_SOURCE_ROOT: sourceRoot,
     ELMOS_TRANSLATION_CASES_ROOT: casesRoot,
     ELMOS_UV_PATH: process.execPath,
@@ -369,7 +407,7 @@ test("cancellation during lease acquisition cannot be overwritten by the stale e
     Object.assign(process.env, {
       ELMOS_LOCAL_RUNNER_ENABLED: "true",
       ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-      ELMOS_REPOSITORY_ROOT: repositoryRoot,
+      ELMOS_REPOSITORY_ROOT: admittedRepositoryRoot,
       ELMOS_TRANSLATION_SOURCE_ROOT: sourceRoot,
       ELMOS_TRANSLATION_CASES_ROOT: casesRoot,
       ELMOS_UV_PATH: process.execPath,
@@ -646,7 +684,7 @@ test("persisted artifact descriptors above the 256 MiB commercial bound fail bef
     Object.assign(process.env, {
       ELMOS_LOCAL_RUNNER_ENABLED: "true",
       ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-      ELMOS_REPOSITORY_ROOT: repositoryRoot,
+      ELMOS_REPOSITORY_ROOT: admittedRepositoryRoot,
       ELMOS_TRANSLATION_SOURCE_ROOT: sourceRoot,
       ELMOS_TRANSLATION_CASES_ROOT: casesRoot,
       ELMOS_UV_PATH: process.execPath,
@@ -662,6 +700,7 @@ test("persisted artifact descriptors above the 256 MiB commercial bound fail bef
     ), JSON.stringify({
       id: jobId,
       tenantId: context.tenantId,
+      ...TEST_ROUTE_JOB_ADMISSION,
       artifactReady: true,
       artifactSha256: "a".repeat(64),
       artifactSize: MAX_TRANSLATION_ARTIFACT_BYTES + 1,
@@ -719,7 +758,7 @@ test("artifact download keeps the verified open file when the pathname is replac
     Object.assign(process.env, {
       ELMOS_LOCAL_RUNNER_ENABLED: "true",
       ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-      ELMOS_REPOSITORY_ROOT: repositoryRoot,
+      ELMOS_REPOSITORY_ROOT: admittedRepositoryRoot,
       ELMOS_TRANSLATION_SOURCE_ROOT: sourceRoot,
       ELMOS_TRANSLATION_CASES_ROOT: casesRoot,
       ELMOS_UV_PATH: process.execPath,
@@ -729,9 +768,8 @@ test("artifact download keeps the verified open file when the pathname is replac
     const jobRecord = {
       id: jobId,
       tenantId: context.tenantId,
+      ...TEST_ROUTE_JOB_ADMISSION,
       repositoryRef: "workspace@artifact-snapshot",
-      sourceLanguage: "python",
-      targetLanguage: "typescript",
       status: "COMPLETE",
       artifactReady: true,
       artifactSha256: createHash("sha256").update(original).digest("hex"),
@@ -790,7 +828,7 @@ test("non-ZIP bytes and a self-consistent archive with a false manifest digest a
     Object.assign(process.env, {
       ELMOS_LOCAL_RUNNER_ENABLED: "true",
       ELMOS_LOCAL_RUNNER_ROOT: runnerRoot,
-      ELMOS_REPOSITORY_ROOT: repositoryRoot,
+      ELMOS_REPOSITORY_ROOT: admittedRepositoryRoot,
       ELMOS_TRANSLATION_SOURCE_ROOT: sourceRoot,
       ELMOS_TRANSLATION_CASES_ROOT: casesRoot,
       ELMOS_UV_PATH: process.execPath,
@@ -800,9 +838,8 @@ test("non-ZIP bytes and a self-consistent archive with a false manifest digest a
     const jobRecord = {
       id: jobId,
       tenantId: context.tenantId,
+      ...TEST_ROUTE_JOB_ADMISSION,
       repositoryRef: "workspace@artifact-snapshot",
-      sourceLanguage: "python",
-      targetLanguage: "typescript",
       status: "COMPLETE",
       artifactReady: true,
       artifactSha256: createHash("sha256").update(archive).digest("hex"),

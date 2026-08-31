@@ -1,5 +1,21 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import { createHash } from "node:crypto";
+import { readFile, readdir } from "node:fs/promises";
+import path from "node:path";
+
+async function translationJobIds(runnerRoot: string): Promise<string[]> {
+  try {
+    const entries = await readdir(
+      path.join(runnerRoot, "tenants", "local-e2e", "translation-jobs"),
+      { withFileTypes: true },
+    );
+    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code === "ENOENT") return [];
+    throw error;
+  }
+}
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
@@ -240,7 +256,50 @@ test("整库清单在权威路线本地 Profile 未通过时由服务端拒绝",
 });
 
 test("跨语言整库 Runner 在路线证据未通过时拒绝创建任务", async ({ page }) => {
+  const inventoryPath = path.resolve(__dirname, "../../..", "routes/inventory.json");
+  const inventoryBefore = await readFile(inventoryPath);
+  const inventoryDigestBefore = createHash("sha256").update(inventoryBefore).digest("hex");
+  const runnerRoot = process.env.ELMOS_E2E_EFFECTIVE_RUNNER_ROOT;
+  if (!runnerRoot) throw new Error("ELMOS_E2E_EFFECTIVE_RUNNER_ROOT_REQUIRED");
+  const jobsBefore = await translationJobIds(runnerRoot);
+
   await page.goto("/translation");
+  const capabilityResponse = await page.request.get("/api/capabilities/translation");
+  expect(capabilityResponse.status()).toBe(200);
+  const capability = await capabilityResponse.json() as {
+    languages: Array<{ id: string }>;
+    routes: Array<{
+      id: string;
+      localExecution: string;
+      repositoryExecutionStatus: string;
+      repositoryProfile: string | null;
+      repositoryEvidenceRef: string | null;
+      repositoryEvidenceSha256: string | null;
+      repositoryEvidenceBytes: number | null;
+      independentVerification: string;
+      externalVerification: string;
+    }>;
+    routePackageCount: number;
+    repositoryExecutableRouteCount: number;
+    certificationStatus: string;
+  };
+  expect(capability.languages).toHaveLength(13);
+  expect(capability.routePackageCount).toBe(156);
+  expect(capability.routes).toHaveLength(156);
+  expect(new Set(capability.routes.map((route) => route.id)).size).toBe(156);
+  expect(capability.repositoryExecutableRouteCount).toBe(0);
+  expect(capability.certificationStatus).toBe("NOT_CERTIFIED");
+  expect(capability.routes.find((route) => route.id === "python-to-typescript")).toMatchObject({
+    localExecution: "NOT_RUN",
+    repositoryExecutionStatus: "NOT_RUN",
+    repositoryProfile: null,
+    repositoryEvidenceRef: null,
+    repositoryEvidenceSha256: null,
+    repositoryEvidenceBytes: null,
+    independentVerification: "NOT_RUN",
+    externalVerification: "NOT_RUN",
+  });
+
   await page.getByLabel("跨语言租户标识").fill("local-e2e");
   await page.getByLabel("跨语言执行者标识").fill("user:e2e");
   await page.getByLabel("跨语言 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
@@ -267,4 +326,10 @@ test("跨语言整库 Runner 在路线证据未通过时拒绝创建任务", asy
     status: "BLOCKED",
     reason: "TRANSLATION_ROUTE_NOT_LOCALLY_EXECUTABLE",
   });
+  expect(await translationJobIds(runnerRoot)).toEqual(jobsBefore);
+  const inventoryAfter = await readFile(inventoryPath);
+  expect(inventoryAfter).toEqual(inventoryBefore);
+  expect(createHash("sha256").update(inventoryAfter).digest("hex")).toBe(
+    inventoryDigestBefore,
+  );
 });
