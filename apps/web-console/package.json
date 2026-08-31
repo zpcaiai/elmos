@@ -31,6 +31,7 @@
     "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
     "test:e2e": "playwright test",
     "test:frt-external-quality": "playwright test --config=playwright.external-quality.config.ts",
+    "test:vercel-smoke": "playwright test --config=playwright.vercel.config.ts",
     "capture:frt-visual-candidates": "playwright test e2e/frt-visual-candidate.spec.ts",
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
