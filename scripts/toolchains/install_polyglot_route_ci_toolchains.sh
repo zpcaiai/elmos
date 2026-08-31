@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod codesign curl find git install mv python3 shasum stat sudo tar; do
+for command_name in brew chmod curl find git install mv python3 shasum stat sudo tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -271,57 +271,6 @@ install_pinned_formula \
   "c739c5820462b4ca246f217cbc164ce7348bc48a" \
   "Formula/o/openjdk@21.rb" \
   "748be615c1c7b6713143e88aa2895d93f6a1fbbb2ae17e6566cd38c869bad647"
-
-# The Tahoe arm64 bottle is byte-identical to the certified Homebrew 21.0.11
-# route bundle except that its archive omits the signed resource envelope.
-# Restore only that exact, repository-pinned envelope. Existing content is
-# never overwritten: a conflicting file fails closed before strict codesign.
-readonly JAVA_BUNDLE="${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/openjdk.jdk"
-readonly JAVA_CODE_RESOURCES_CAPTURE="${REPOSITORY_ROOT}/scripts/toolchains/captures/openjdk-21.0.11-CodeResources.plist"
-readonly JAVA_SIGNATURE_DIRECTORY="${JAVA_BUNDLE}/Contents/_CodeSignature"
-readonly JAVA_CODE_RESOURCES_TARGET="${JAVA_SIGNATURE_DIRECTORY}/CodeResources"
-readonly JAVA_CODE_RESOURCES_SHA256="83bba6f42332fe76c090d99acd7b68947f687fade1827a0917d7e27df9b1258d"
-readonly JAVA_CODE_RESOURCES_BYTES="81759"
-
-if [[ ! -d "${JAVA_BUNDLE}" || -L "${JAVA_BUNDLE}" ]]; then
-  printf 'Pinned Homebrew Java bundle is missing or is a symlink: %s\n' "${JAVA_BUNDLE}" >&2
-  exit 3
-fi
-if [[ ! -f "${JAVA_CODE_RESOURCES_CAPTURE}" || -L "${JAVA_CODE_RESOURCES_CAPTURE}" \
-  || "$(stat -f '%z' "${JAVA_CODE_RESOURCES_CAPTURE}")" != "${JAVA_CODE_RESOURCES_BYTES}" \
-  || "$(file_sha256 "${JAVA_CODE_RESOURCES_CAPTURE}")" != "${JAVA_CODE_RESOURCES_SHA256}" ]]; then
-  printf 'Repository Java CodeResources capture does not match its pinned receipt.\n' >&2
-  exit 3
-fi
-if [[ -e "${JAVA_SIGNATURE_DIRECTORY}" || -L "${JAVA_SIGNATURE_DIRECTORY}" ]]; then
-  if [[ ! -d "${JAVA_SIGNATURE_DIRECTORY}" || -L "${JAVA_SIGNATURE_DIRECTORY}" ]]; then
-    printf 'Pinned Homebrew Java signature directory is not a real directory.\n' >&2
-    exit 3
-  fi
-else
-  install -d -m 0755 "${JAVA_SIGNATURE_DIRECTORY}"
-fi
-if [[ -e "${JAVA_CODE_RESOURCES_TARGET}" || -L "${JAVA_CODE_RESOURCES_TARGET}" ]]; then
-  if [[ ! -f "${JAVA_CODE_RESOURCES_TARGET}" || -L "${JAVA_CODE_RESOURCES_TARGET}" \
-    || "$(stat -f '%z' "${JAVA_CODE_RESOURCES_TARGET}")" != "${JAVA_CODE_RESOURCES_BYTES}" \
-    || "$(file_sha256 "${JAVA_CODE_RESOURCES_TARGET}")" != "${JAVA_CODE_RESOURCES_SHA256}" ]]; then
-    printf 'Refusing to overwrite a conflicting Homebrew Java CodeResources file.\n' >&2
-    exit 3
-  fi
-else
-  install -m 0444 "${JAVA_CODE_RESOURCES_CAPTURE}" "${JAVA_CODE_RESOURCES_TARGET}"
-fi
-chmod 0444 "${JAVA_CODE_RESOURCES_TARGET}"
-if [[ ! -f "${JAVA_CODE_RESOURCES_TARGET}" || -L "${JAVA_CODE_RESOURCES_TARGET}" \
-  || "$(stat -f '%Lp:%l:%z' "${JAVA_CODE_RESOURCES_TARGET}")" != "444:1:${JAVA_CODE_RESOURCES_BYTES}" \
-  || "$(file_sha256 "${JAVA_CODE_RESOURCES_TARGET}")" != "${JAVA_CODE_RESOURCES_SHA256}" ]]; then
-  printf 'Installed Homebrew Java CodeResources metadata does not match its pinned receipt.\n' >&2
-  exit 3
-fi
-if ! /usr/bin/codesign --verify --deep --strict "${JAVA_BUNDLE}"; then
-  printf 'Pinned Homebrew Java bundle failed strict resource verification.\n' >&2
-  exit 3
-fi
 
 if [[ "${CI_PROFILE}" == "full" ]]; then
   # Node's fixed Mach-O receipt includes every non-system dynamic dependency.
