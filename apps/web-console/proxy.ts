@@ -80,7 +80,16 @@ function auditFailure(
 
 async function auditApiAttempt(request: NextRequest): Promise<NextResponse | null> {
   const path = request.nextUrl.pathname;
-  if (!path.startsWith("/api/") || path === "/api/telemetry/events" || path === "/api/health") {
+  // Authentication has its own security-event/audit boundary and must remain
+  // reachable before a session exists. The operations audit key is not an
+  // authentication prerequisite; otherwise an audit outage would make login
+  // and logout impossible and turn a recoverable dependency issue into a lockout.
+  if (
+    !path.startsWith("/api/")
+    || path.startsWith("/api/auth/")
+    || path === "/api/telemetry/events"
+    || path === "/api/health"
+  ) {
     return null;
   }
   let baseUrl = "";

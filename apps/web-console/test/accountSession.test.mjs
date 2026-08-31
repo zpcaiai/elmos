@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import test from "node:test";
+import { tmpdir } from "node:os";
+import path from "node:path";
 
 import {
   accountCookieNames,
@@ -7,6 +10,8 @@ import {
   assertLocalCredentialRequest,
   authenticateLocalCredentials,
   localCredentialsConfigured,
+  localRegistrationConfigured,
+  registerLocalAccount,
 } from "../app/lib/server/accountSession.ts";
 
 const trackedEnvironment = [
@@ -16,6 +21,7 @@ const trackedEnvironment = [
   "ELMOS_LOCAL_CREDENTIALS_USERNAME",
   "ELMOS_LOCAL_CREDENTIALS_PASSWORD",
   "ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID",
+  "ELMOS_LOCAL_CREDENTIALS_STORE_PATH",
 ];
 
 function withEnvironment(overrides, callback) {
@@ -100,4 +106,38 @@ test("local test account rejects non-loopback requests", () => {
       (error) => error?.code === "LOCAL_CREDENTIALS_LOOPBACK_ONLY" && error?.status === 403,
     );
   });
+});
+
+test("local registration persists a hashed account and can sign it in", () => {
+  const root = mkdtempSync(path.join(tmpdir(), "elmos-account-session-test-"));
+  try {
+    withEnvironment({
+      NODE_ENV: "test",
+      ELMOS_ALLOW_LOCAL_CREDENTIALS: "true",
+      ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+      ELMOS_LOCAL_CREDENTIALS_STORE_PATH: path.join(root, "accounts.json"),
+    }, () => {
+      assert.equal(localRegistrationConfigured(), true);
+      registerLocalAccount({
+        username: "alice",
+        displayName: "Alice",
+        email: "alice@example.com",
+        password: "correct-horse-battery",
+        passwordConfirmation: "correct-horse-battery",
+      });
+      const persisted = readFileSync(path.join(root, "accounts.json"), "utf8");
+      assert.match(persisted, /"passwordHash"/);
+      assert.doesNotMatch(persisted, /correct-horse-battery/);
+      const result = authenticateLocalCredentials("alice", "correct-horse-battery");
+      assert.equal(result.principal.actorId, "local:alice");
+      assert.equal(result.principal.displayName, "Alice");
+      assert.match(result.principal.organizationId, /^local-[0-9a-f]{16}$/);
+      assert.throws(
+        () => authenticateLocalCredentials("alice", "wrong-password"),
+        (error) => error?.code === "LOCAL_CREDENTIALS_INVALID" && error?.status === 401,
+      );
+    });
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
 });
