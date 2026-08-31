@@ -17,6 +17,17 @@ CI_INSTALLER_PATH = (
 FRESH_RUNTIME_SELECTOR_FIXTURE = (
     REPOSITORY / "tests" / "batch29" / "fresh_runtime_selector_fixture.py"
 )
+JAVA_CODE_RESOURCES_CAPTURE = (
+    REPOSITORY
+    / "scripts"
+    / "toolchains"
+    / "captures"
+    / "openjdk-21.0.11-CodeResources.plist"
+)
+JAVA_CODE_RESOURCES_SHA256 = (
+    "83bba6f42332fe76c090d99acd7b68947f687fade1827a0917d7e27df9b1258d"
+)
+JAVA_CODE_RESOURCES_BYTES = 81_759
 
 
 def _runtime() -> Any:
@@ -282,6 +293,49 @@ def test_java_python_ci_profile_materializes_the_required_typescript_closure() -
     assert installer.index(profile_guard) < installer.index(capture_guard)
     assert installer.index(capture_guard) < installer.index(manifest_validation)
     assert installer.index(manifest_validation) < installer.index(full_only_toolchains)
+
+
+def test_homebrew_java_signature_envelope_is_exact_and_conflict_safe() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    capture = JAVA_CODE_RESOURCES_CAPTURE.read_bytes()
+    homebrew_install = 'install_pinned_formula \\\n  "openjdk@21" "21.0.11"'
+    capture_validation = (
+        'if [[ ! -f "${JAVA_CODE_RESOURCES_CAPTURE}" || '
+        '-L "${JAVA_CODE_RESOURCES_CAPTURE}" \\'
+    )
+    existing_target_guard = (
+        'if [[ -e "${JAVA_CODE_RESOURCES_TARGET}" || '
+        '-L "${JAVA_CODE_RESOURCES_TARGET}" ]]; then'
+    )
+    conflict_rejection = (
+        "Refusing to overwrite a conflicting Homebrew Java CodeResources file."
+    )
+    exact_install = (
+        'install -m 0444 "${JAVA_CODE_RESOURCES_CAPTURE}" '
+        '"${JAVA_CODE_RESOURCES_TARGET}"'
+    )
+    strict_verification = '/usr/bin/codesign --verify --deep --strict "${JAVA_BUNDLE}"'
+    java_probe = (
+        '"${HOMEBREW_CELLAR}/openjdk@21/21.0.11/libexec/'
+        'openjdk.jdk/Contents/Home/bin/java" -version'
+    )
+
+    assert len(capture) == JAVA_CODE_RESOURCES_BYTES
+    assert hashlib.sha256(capture).hexdigest() == JAVA_CODE_RESOURCES_SHA256
+    assert "for command_name in brew chmod codesign " in installer
+    assert capture_validation in installer
+    assert existing_target_guard in installer
+    assert conflict_rejection in installer
+    assert exact_install in installer
+    assert 'chmod 0444 "${JAVA_CODE_RESOURCES_TARGET}"' in installer
+    assert "444:1:${JAVA_CODE_RESOURCES_BYTES}" in installer
+    assert strict_verification in installer
+    assert installer.index(homebrew_install) < installer.index(capture_validation)
+    assert installer.index(capture_validation) < installer.index(existing_target_guard)
+    assert installer.index(existing_target_guard) < installer.index(conflict_rejection)
+    assert installer.index(conflict_rejection) < installer.index(exact_install)
+    assert installer.index(exact_install) < installer.index(strict_verification)
+    assert installer.index(strict_verification) < installer.index(java_probe)
 
 
 def test_python_archive_rejects_same_size_content_drift() -> None:
