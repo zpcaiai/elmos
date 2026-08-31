@@ -28,7 +28,9 @@ test("account session discovery represents anonymous state without a console-lev
 test("user login directs the platform administrator to the dedicated entry", async ({ page }) => {
   await page.goto("/login?error=ADMIN_LOGIN_ENTRY_REQUIRED");
 
-  await expect(page.getByRole("alert")).toContainText("管理员账户必须从独立的管理员入口登录");
+  await expect(page.locator(".auth-error")).toContainText(
+    "管理员账户必须从独立的管理员入口登录",
+  );
   await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
     "href",
     "/admin/login",

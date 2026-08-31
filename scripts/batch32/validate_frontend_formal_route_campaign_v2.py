@@ -5574,9 +5574,9 @@ def verify_external_ed25519(
     label: str,
     errors: list[str],
 ) -> bool:
-    openssl = shutil.which("openssl")
-    if openssl is None:
-        errors.append(f"{label} cannot be verified because openssl is unavailable")
+    node = shutil.which("node")
+    if node is None:
+        errors.append(f"{label} cannot be verified because node is unavailable")
         return False
     if not isinstance(public_key_pem, str) or not isinstance(signature_base64, str):
         errors.append(f"{label} key/signature is malformed")
@@ -5597,16 +5597,20 @@ def verify_external_ed25519(
             signature_path.write_bytes(signature)
             completed = subprocess.run(
                 [
-                    openssl,
-                    "pkeyutl",
-                    "-verify",
-                    "-pubin",
-                    "-inkey",
+                    node,
+                    "-e",
+                    (
+                        "const fs=require('node:fs');"
+                        "const crypto=require('node:crypto');"
+                        "const [key,input,signature]=process.argv.slice(1);"
+                        "let valid=false;"
+                        "try { valid=crypto.verify(null,fs.readFileSync(input),"
+                        "fs.readFileSync(key),fs.readFileSync(signature)); }"
+                        "catch (error) { process.stderr.write(String(error));process.exit(2); }"
+                        "process.exit(valid?0:1);"
+                    ),
                     str(public_path),
-                    "-rawin",
-                    "-in",
                     str(payload_path),
-                    "-sigfile",
                     str(signature_path),
                 ],
                 capture_output=True,

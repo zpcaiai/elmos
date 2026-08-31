@@ -320,6 +320,7 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert "db3cda12f2efe5c488b074bdab022a3a22db56700e8687473c8f6807963b02aa" in installer
     assert 'readonly ADA_URL_LIBRARY="${ADA_URL_ROOT}/lib/libada.3.4.4.dylib"' in installer
     assert 'readonly ADA_URL_ABI_LINK="${ADA_URL_ROOT}/lib/libada.3.dylib"' in installer
+    assert 'readonly ADA_URL_OPT_LINK="${HOMEBREW_PREFIX}/opt/ada-url"' in installer
     assert '[[ ! -L "${abi_link}" ]]' in installer
     assert '"${link_target}" != "libada.3.4.4.dylib"' in installer
     assert "brew chmod codesign curl find git install mv python3 realpath shasum" in installer
@@ -328,8 +329,9 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert 'resolved_target="$("${REALPATH_PATH}" "${abi_link}")"' in installer
     assert '"${root}"/*) ;;' in installer
     assert '[[ "${resolved_target}" == "${versioned_library}" ]]' in installer
+    assert 'verify_pinned_formula_opt_link "${ADA_URL_ROOT}" "${ADA_URL_OPT_LINK}"' in installer
+    assert '[[ "${resolved_target}" == "${root}" ]]' in installer
     assert "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" in installer
-    assert '"../Cellar/ada-url/3.4.4"' in installer
     assert "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" in installer
     assert "ada-url brotli" not in installer
 
@@ -386,6 +388,49 @@ def test_ci_ada_url_abi_link_rejects_drift_and_cellar_escape(tmp_path: Path) -> 
     escaped.write_bytes(b"escaped library")
     library.symlink_to(escaped)
     abi_link.symlink_to(library.name)
+    assert verify().returncode != 0
+
+
+def test_ci_ada_url_opt_link_requires_the_exact_cellar_root(tmp_path: Path) -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    start = installer.index("verify_pinned_formula_opt_link() {")
+    end = installer.index("\n}\n", start) + len("\n}\n")
+    function = installer[start:end]
+    root = tmp_path / "Cellar" / "ada-url" / "3.4.4"
+    root.mkdir(parents=True)
+    opt = tmp_path / "opt" / "ada-url"
+    opt.parent.mkdir()
+    opt.symlink_to(root)
+
+    def verify() -> subprocess.CompletedProcess[str]:
+        command = " ".join(
+            (
+                "verify_pinned_formula_opt_link",
+                shlex.quote(str(root)),
+                shlex.quote(str(opt)),
+            )
+        )
+        return subprocess.run(
+            [
+                "bash",
+                "-c",
+                "readonly REALPATH_PATH="
+                + shlex.quote(str(Path(shutil.which("realpath") or "")))
+                + "\n"
+                + function
+                + "\n"
+                + command,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    assert verify().returncode == 0
+    opt.unlink()
+    escaped = tmp_path / "outside"
+    escaped.mkdir()
+    opt.symlink_to(escaped)
     assert verify().returncode != 0
 
 

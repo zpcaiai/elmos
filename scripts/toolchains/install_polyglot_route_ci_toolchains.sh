@@ -180,6 +180,17 @@ verify_pinned_ada_url_abi_link() {
   [[ "${resolved_target}" == "${versioned_library}" ]]
 }
 
+verify_pinned_formula_opt_link() {
+  local root="$1"
+  local opt_link="$2"
+  local resolved_target
+  if [[ ! -L "${opt_link}" ]]; then
+    return 1
+  fi
+  resolved_target="$("${REALPATH_PATH}" "${opt_link}")" || return 1
+  [[ "${resolved_target}" == "${root}" ]]
+}
+
 install_pinned_ada_url() {
   install_pinned_formula \
     "ada-url" "3.4.4" \
@@ -189,11 +200,15 @@ install_pinned_ada_url() {
   readonly ADA_URL_ROOT="${HOMEBREW_CELLAR}/ada-url/3.4.4"
   readonly ADA_URL_LIBRARY="${ADA_URL_ROOT}/lib/libada.3.4.4.dylib"
   readonly ADA_URL_ABI_LINK="${ADA_URL_ROOT}/lib/libada.3.dylib"
+  readonly ADA_URL_OPT_LINK="${HOMEBREW_PREFIX}/opt/ada-url"
   if [[ ! -f "${ADA_URL_LIBRARY}" || -L "${ADA_URL_LIBRARY}" \
     || "$(stat -f '%z' "${ADA_URL_LIBRARY}")" != "616512" \
-    || "$(file_sha256 "${ADA_URL_LIBRARY}")" != "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" \
-    || "$(readlink "${HOMEBREW_PREFIX}/opt/ada-url")" != "../Cellar/ada-url/3.4.4" ]]; then
+    || "$(file_sha256 "${ADA_URL_LIBRARY}")" != "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" ]]; then
     printf 'Pinned ada-url identity does not provide the exact libada.3 closure.\n' >&2
+    exit 3
+  fi
+  if ! verify_pinned_formula_opt_link "${ADA_URL_ROOT}" "${ADA_URL_OPT_LINK}"; then
+    printf 'Pinned ada-url opt link escapes or drifts from the exact Cellar root.\n' >&2
     exit 3
   fi
   if ! verify_pinned_ada_url_abi_link \

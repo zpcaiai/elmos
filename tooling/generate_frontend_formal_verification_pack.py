@@ -1902,9 +1902,9 @@ def _parse_utc_v2(value: object, label: str) -> datetime:
 def _verify_ed25519_v2(
     *, public_key_pem: str, signature_base64: str, payload: bytes, label: str
 ) -> None:
-    openssl = shutil.which("openssl")
-    if openssl is None:
-        raise RuntimeError("V2_EXTERNAL_OPENSSL_UNAVAILABLE")
+    node = shutil.which("node")
+    if node is None:
+        raise RuntimeError("V2_EXTERNAL_NODE_UNAVAILABLE")
     try:
         signature = base64.b64decode(signature_base64, validate=True)
     except (binascii.Error, ValueError) as exc:
@@ -1919,16 +1919,20 @@ def _verify_ed25519_v2(
         signature_path.write_bytes(signature)
         completed = subprocess.run(
             [
-                openssl,
-                "pkeyutl",
-                "-verify",
-                "-pubin",
-                "-inkey",
+                node,
+                "-e",
+                (
+                    "const fs=require('node:fs');"
+                    "const crypto=require('node:crypto');"
+                    "const [key,input,signature]=process.argv.slice(1);"
+                    "let valid=false;"
+                    "try { valid=crypto.verify(null,fs.readFileSync(input),"
+                    "fs.readFileSync(key),fs.readFileSync(signature)); }"
+                    "catch (error) { process.stderr.write(String(error));process.exit(2); }"
+                    "process.exit(valid?0:1);"
+                ),
                 str(public_key),
-                "-rawin",
-                "-in",
                 str(payload_path),
-                "-sigfile",
                 str(signature_path),
             ],
             capture_output=True,

@@ -403,6 +403,51 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                 now=generator.datetime(2026, 8, 10, tzinfo=generator.UTC),
             )
             self.assertEqual("attacker-self-root", valid_self_chain["root_id"])
+            invalid_trust = json.loads(json.dumps(trust))
+            invalid_signature = bytearray(
+                base64.b64decode(
+                    invalid_trust["root_authorization"]["signature_base64"],
+                    validate=True,
+                )
+            )
+            invalid_signature[0] ^= 1
+            invalid_trust["root_authorization"]["signature_base64"] = (
+                base64.b64encode(invalid_signature).decode("ascii")
+            )
+            with self.assertRaisesRegex(
+                RuntimeError, "V2_EXTERNAL_SIGNATURE_INVALID"
+            ):
+                generator._validate_external_trust_chain_v2(
+                    trust_root=root,
+                    trust=invalid_trust,
+                    now=generator.datetime(2026, 8, 10, tzinfo=generator.UTC),
+                )
+            validator_errors: list[str] = []
+            self.assertTrue(
+                validator.verify_external_ed25519(
+                    public_key_pem=public_keys["root-key"],
+                    signature_base64=trust["root_authorization"]["signature_base64"],
+                    payload=unsigned_trust,
+                    label="test root authorization",
+                    errors=validator_errors,
+                ),
+                validator_errors,
+            )
+            self.assertFalse(
+                validator.verify_external_ed25519(
+                    public_key_pem=public_keys["root-key"],
+                    signature_base64=invalid_trust["root_authorization"][
+                        "signature_base64"
+                    ],
+                    payload=unsigned_trust,
+                    label="test invalid root authorization",
+                    errors=validator_errors,
+                )
+            )
+            self.assertIn(
+                "test invalid root authorization signature is invalid",
+                validator_errors,
+            )
             errors: list[str] = []
             result = validator.validate_external_trust_chain_v2(
                 pack=pack,
