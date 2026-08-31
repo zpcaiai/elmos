@@ -511,6 +511,10 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert isinstance(environment, dict)
         assert "ELMOS_BATCH29_PYTHON_ARCHIVE" not in environment
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
+        assert environment["ELMOS_JAVA21_HOME"] == "/fixed/java/Contents/Home"
+        assert environment["ELMOS_JAVA21_DISTRIBUTION"] == "temurin"
+        assert "JAVA_HOME" not in environment
+        assert "_JAVA_OPTIONS" not in environment
         assert command[command.index("run") + 1] == "--no-dev"
         assert "--no-default-groups" in command
         assert command.index("--no-dev") < command.index("--locked")
@@ -522,6 +526,10 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
 
     monkeypatch.setenv("PATH", "/hostile/bin")
     monkeypatch.setenv("ELMOS_BATCH29_PYTHON_ARCHIVE", "/private/tmp/ambient")
+    monkeypatch.setenv("ELMOS_JAVA21_HOME", "/fixed/java/Contents/Home")
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv("JAVA_HOME", "/hostile/java")
+    monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
     monkeypatch.setattr(runtime, "_prepare_python_runtime", prepare_python)
     monkeypatch.setattr(runtime, "_prepare_typescript_runtime", prepare_typescript)

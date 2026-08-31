@@ -1334,6 +1334,8 @@ def run_in_fresh_locked_runtime(
                 "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT",
                 "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT",
                 "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX",
+                "ELMOS_JAVA21_HOME",
+                "ELMOS_JAVA21_DISTRIBUTION",
                 "ELMOS_BATCH29_PINNED_UV_PATH",
                 "ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR",
             )
