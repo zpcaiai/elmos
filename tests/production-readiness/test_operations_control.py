@@ -133,7 +133,10 @@ class OperationsControlReadinessTests(unittest.TestCase):
         ).read_text(encoding="utf-8")
         self.assertIn('permission: Record<AdminRole, AccountPermission>', proxy)
         self.assertIn("ACCOUNT_SESSION_REQUIRED", proxy)
-        self.assertIn("ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK", proxy)
+        self.assertIn("isPlatformAdministrator", proxy)
+        self.assertIn("ADMIN_EMAIL_REQUIRED", proxy)
+        self.assertNotIn("ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK", proxy)
+        self.assertNotIn("ELMOS_ADMIN_OBSERVABILITY_TOKEN", proxy)
 
 
 if __name__ == "__main__":

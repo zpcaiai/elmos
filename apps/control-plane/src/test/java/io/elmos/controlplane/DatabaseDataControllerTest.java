@@ -116,7 +116,7 @@ class DatabaseDataControllerTest {
     ) {
         var grant = new ControlPlanePrincipal.TenantGrant(Set.of("VIEWER"), permissions);
         var principal = new ControlPlanePrincipal(
-                organizationId, actorId, Set.of("VIEWER"), permissions,
+                organizationId, actorId, false, Set.of("VIEWER"), permissions,
                 Map.of(organizationId, grant));
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute(OidcTenantMembershipFilter.PRINCIPAL_ATTRIBUTE, principal);

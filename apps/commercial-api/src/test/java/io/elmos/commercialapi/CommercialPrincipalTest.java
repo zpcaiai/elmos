@@ -45,6 +45,46 @@ class CommercialPrincipalTest {
         assertThrows(AccessDeniedException.class, () -> principal.requireScope("usage:write"));
     }
 
+    @Test
+    void verifiedExactAdministratorRetainsCommercialAdminScopes() {
+        CommercialPrincipal principal = CommercialPrincipal.from(jwt(
+                "actor-admin",
+                Map.of(
+                        "organization_id", "org-a",
+                        "email", " ZPCHONEY@GMAIL.COM ",
+                        "email_verified", true,
+                        "scope", "commercial:billing:admin commercial:billing:write",
+                        "scp", List.of("commercial:usage:admin"))));
+
+        assertDoesNotThrow(() -> principal.requireScope("commercial:billing:admin"));
+        assertDoesNotThrow(() -> principal.requireScope("commercial:usage:admin"));
+        assertDoesNotThrow(() -> principal.requireScope("commercial:billing:write"));
+    }
+
+    @Test
+    void stripsCommercialAdminScopesFromEveryOtherOrUnverifiedEmail() {
+        for (Map<String, Object> identity : List.of(
+                Map.<String, Object>of("email", "other@example.com", "email_verified", true),
+                Map.<String, Object>of("email", "zpchoney@gmail.com", "email_verified", false),
+                Map.<String, Object>of("email", "zpchoney+alias@gmail.com", "email_verified", true),
+                Map.<String, Object>of("email", "zpchoney@gmail.com", "email_verified", "true"),
+                Map.<String, Object>of("email_verified", true))) {
+            Map<String, Object> claims = new java.util.LinkedHashMap<>(identity);
+            claims.put("organization_id", "org-a");
+            claims.put("scope", "commercial:billing:admin commercial:billing:write");
+            claims.put("scp", List.of("commercial:usage:admin", "commercial:usage:read"));
+
+            CommercialPrincipal principal = CommercialPrincipal.from(jwt("actor-user", claims));
+
+            assertThrows(AccessDeniedException.class, () ->
+                    principal.requireScope("commercial:billing:admin"));
+            assertThrows(AccessDeniedException.class, () ->
+                    principal.requireScope("commercial:usage:admin"));
+            assertDoesNotThrow(() -> principal.requireScope("commercial:billing:write"));
+            assertDoesNotThrow(() -> principal.requireScope("commercial:usage:read"));
+        }
+    }
+
     private static Jwt jwt(String subject, Map<String, Object> claims) {
         return new Jwt(
                 "encoded",

@@ -65,7 +65,7 @@ export class RunnerFleetPolicyError extends Error {
 
 export type RunnerFleetAdminPrincipal = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION" | "BREAK_GLASS_TOKEN";
+  authentication: "OIDC_SESSION";
   accessToken?: string;
 };
 
@@ -84,7 +84,7 @@ export function requireRunnerFleetOidcAdmin(
     throw new RunnerFleetPolicyError(
       403,
       "RUNNER_FLEET_OIDC_SESSION_REQUIRED",
-      "Runner Fleet 治理动作只接受已验证的企业账户会话，break-glass 不授予 Runner 写权限。",
+      "Runner Fleet 治理动作只接受已验证的管理员企业账户会话。",
     );
   }
   if (roleRank[principal.role] < roleRank[requiredRole]) {

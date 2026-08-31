@@ -156,9 +156,9 @@ const approver = {
   authentication: "OIDC_SESSION",
   accessToken: oidcAccessToken,
 };
-const breakGlass = {
+const unsupportedCredential = {
   role: "APPROVER",
-  authentication: "BREAK_GLASS_TOKEN",
+  authentication: "UNSUPPORTED_CREDENTIAL",
 };
 const consoleOrigin = "https://console.example.test";
 
@@ -248,7 +248,7 @@ for (const profile of [
     () => validateRunnerFleetMutationRequest(
       mutationRequest(profile.path),
       "runner-1",
-      breakGlass,
+      unsupportedCredential,
       profile.role,
     ),
     403,

@@ -18,19 +18,11 @@ function request(origin, fetchSite) {
   });
 }
 
-for (const uncredentialed of [
-  request(undefined, undefined),
-  request("https://attacker.example", "cross-site"),
-]) {
-  assert.doesNotThrow(() => assertAdminMutationOrigin(uncredentialed, false));
-  checks += 1;
-}
-
 for (const sameOrigin of [
   request("https://console.example.test", undefined),
   request("https://console.example.test", "same-origin"),
 ]) {
-  assert.doesNotThrow(() => assertAdminMutationOrigin(sameOrigin, true));
+  assert.doesNotThrow(() => assertAdminMutationOrigin(sameOrigin));
   checks += 1;
 }
 
@@ -43,7 +35,7 @@ for (const rejected of [
   request("https://console.example.test", "none"),
 ]) {
   assert.throws(
-    () => assertAdminMutationOrigin(rejected, true),
+    () => assertAdminMutationOrigin(rejected),
     (error) => {
       assert.ok(error instanceof AdminMutationPolicyError);
       assert.equal(error.status, 403);

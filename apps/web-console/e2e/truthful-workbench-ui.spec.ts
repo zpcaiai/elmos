@@ -67,9 +67,9 @@ test("smoke page does not nest main landmarks", async ({ page }) => {
 test("desktop account menu keeps secure logout inside the viewport and usable", async ({ page }) => {
   await page.setViewportSize({ width: 1024, height: 768 });
   await page.goto("/login");
-  await page.getByLabel("用户名").fill("test");
+  await page.getByLabel("邮箱").fill("test@example.test");
   await page.getByLabel("密码").fill("test");
-  await page.getByRole("button", { name: "使用本地测试账号登录" }).click();
+  await page.getByRole("button", { name: "使用邮箱登录" }).click();
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("button", { name: "打开账户菜单" }).click();
@@ -90,9 +90,9 @@ test("desktop account menu keeps secure logout inside the viewport and usable", 
 test("mobile top avatar opens the account menu inside the navigation drawer", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/login");
-  await page.getByLabel("用户名").fill("test");
+  await page.getByLabel("邮箱").fill("test@example.test");
   await page.getByLabel("密码").fill("test");
-  await page.getByRole("button", { name: "使用本地测试账号登录" }).click();
+  await page.getByRole("button", { name: "使用邮箱登录" }).click();
   await expect(page).toHaveURL(/\/$/);
 
   await page.getByRole("button", { name: "打开账户菜单" }).click();

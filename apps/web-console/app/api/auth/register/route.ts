@@ -20,7 +20,8 @@ function safeReturnTo(value: unknown): string {
   return typeof value === "string"
     && value.startsWith("/")
     && !value.startsWith("//")
-    && !/[\r\n\0]/.test(value)
+    && !value.startsWith("/admin")
+    && !/[\\\r\n\0]/.test(value)
     ? value
     : "/";
 }
@@ -50,11 +51,7 @@ function setLocalSessionCookies(
     ...options,
     maxAge,
   });
-  for (const name of [
-    accountCookieNames.refreshToken,
-    accountCookieNames.authorizationFlow,
-    accountCookieNames.tenant,
-  ]) {
+  for (const name of Object.values(accountCookieNames)) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
   }
 }
@@ -64,7 +61,7 @@ async function registrationFields(request: NextRequest): Promise<{
   password: string;
   passwordConfirmation: string;
   displayName: string;
-  email?: string;
+  email: string;
   returnTo: string;
 }> {
   const contentLength = Number(request.headers.get("content-length") ?? "");
@@ -80,7 +77,7 @@ async function registrationFields(request: NextRequest): Promise<{
         ? body.passwordConfirmation
         : "",
       displayName: typeof body.displayName === "string" ? body.displayName : "",
-      email: typeof body.email === "string" ? body.email : undefined,
+      email: typeof body.email === "string" ? body.email : "",
       returnTo: safeReturnTo(body.returnTo),
     };
   }
@@ -96,7 +93,7 @@ async function registrationFields(request: NextRequest): Promise<{
     password: typeof password === "string" ? password : "",
     passwordConfirmation: typeof passwordConfirmation === "string" ? passwordConfirmation : "",
     displayName: typeof displayName === "string" ? displayName : "",
-    email: typeof email === "string" && email ? email : undefined,
+    email: typeof email === "string" ? email : "",
     returnTo: safeReturnTo(returnTo),
   };
 }
@@ -108,7 +105,7 @@ export async function POST(request: NextRequest) {
     assertLocalCredentialRequest(request);
     const fields = await registrationFields(request);
     registerLocalAccount(fields);
-    const result = authenticateLocalCredentials(fields.username, fields.password);
+    const result = authenticateLocalCredentials(fields.email, fields.password);
     const response = jsonResponse
       ? NextResponse.json({
         registered: true,

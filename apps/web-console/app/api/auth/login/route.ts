@@ -3,16 +3,21 @@ import {
   accountCookieNames,
   accountCookieDeletionOptions,
   accountSessionErrorResponse,
+  AccountSessionError,
+  assertLoginModeAccess,
   assertLocalCredentialRequest,
   assertSameOriginMutation,
   authenticateLocalCredentials,
   authorizationFlowCookieMaxAge,
   createAuthorizationFlow,
+  isPlatformAdministrator,
   localAccountCookieNames,
   localAccountCookieOptions,
   sessionCookieMaxAge,
   trustedPublicOrigin,
+  type AccountLoginMode,
 } from "../../../lib/server/accountSession";
+import { notifyAdministratorLogin } from "../../../lib/server/adminLoginNotification";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,13 +26,23 @@ function safeReturnTo(value: unknown): string {
   return typeof value === "string"
     && value.startsWith("/")
     && !value.startsWith("//")
-    && !/[\r\n\0]/.test(value)
+    && !/[\\\r\n\0]/.test(value)
     ? value
     : "/";
 }
 
-function localLoginError(request: NextRequest, code: string): NextResponse {
-  const target = new URL("/login", trustedPublicOrigin(request));
+function loginMode(value: unknown): AccountLoginMode {
+  if (value === undefined || value === null || value === "" || value === "USER") return "USER";
+  if (value === "ADMIN") return "ADMIN";
+  throw new AccountSessionError(400, "LOGIN_MODE_INVALID", "登录入口无效。");
+}
+
+function localLoginError(
+  request: NextRequest,
+  code: string,
+  mode: AccountLoginMode,
+): NextResponse {
+  const target = new URL(mode === "ADMIN" ? "/admin/login" : "/login", trustedPublicOrigin(request));
   target.searchParams.set("error", code);
   const response = NextResponse.redirect(target, 303);
   response.headers.set("Cache-Control", "no-store, private");
@@ -49,19 +64,16 @@ function setLocalSessionCookies(
     ...options,
     maxAge,
   });
-  for (const name of [
-    accountCookieNames.refreshToken,
-    accountCookieNames.authorizationFlow,
-    accountCookieNames.tenant,
-  ]) {
+  for (const name of Object.values(accountCookieNames)) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
   }
 }
 
 async function loginFields(request: NextRequest): Promise<{
-  username: string;
+  email: string;
   password: string;
   returnTo: string;
+  loginMode: AccountLoginMode;
 }> {
   const contentLength = Number(request.headers.get("content-length") ?? "");
   if (Number.isFinite(contentLength) && contentLength > 16 * 1024) {
@@ -70,26 +82,32 @@ async function loginFields(request: NextRequest): Promise<{
   if ((request.headers.get("content-type") ?? "").includes("application/json")) {
     const body = await request.json() as Record<string, unknown>;
     return {
-      username: typeof body.username === "string" ? body.username : "",
+      email: typeof body.email === "string"
+        ? body.email
+        : typeof body.username === "string" ? body.username : "",
       password: typeof body.password === "string" ? body.password : "",
       returnTo: safeReturnTo(body.returnTo),
+      loginMode: loginMode(body.loginMode),
     };
   }
   const form = await request.formData();
-  const username = form.get("username");
+  const email = form.get("email") ?? form.get("username");
   const password = form.get("password");
   const returnTo = form.get("returnTo");
   return {
-    username: typeof username === "string" ? username : "",
+    email: typeof email === "string" ? email : "",
     password: typeof password === "string" ? password : "",
     returnTo: safeReturnTo(returnTo),
+    loginMode: loginMode(form.get("loginMode")),
   };
 }
 
 export async function GET(request: NextRequest) {
   try {
+    const mode = loginMode(request.nextUrl.searchParams.get("mode"));
     const { sealedFlow, authorizationUrl } = createAuthorizationFlow(
       request.nextUrl.searchParams.get("returnTo") ?? "/",
+      mode,
     );
     const response = NextResponse.redirect(authorizationUrl, 302);
     response.cookies.set(accountCookieNames.authorizationFlow, sealedFlow, {
@@ -108,23 +126,42 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   const jsonResponse = (request.headers.get("content-type") ?? "").includes("application/json");
+  let mode: AccountLoginMode = "USER";
   try {
     assertSameOriginMutation(request);
     assertLocalCredentialRequest(request);
     const fields = await loginFields(request);
-    const result = authenticateLocalCredentials(fields.username, fields.password);
+    mode = fields.loginMode;
+    const result = authenticateLocalCredentials(fields.email, fields.password);
+    assertLoginModeAccess(result.principal, mode);
+    const returnTo = mode === "ADMIN"
+      ? fields.returnTo.startsWith("/admin") ? fields.returnTo : "/admin"
+      : fields.returnTo.startsWith("/admin") ? "/" : fields.returnTo;
+    const notification = isPlatformAdministrator(result.principal)
+      ? await notifyAdministratorLogin(
+        request,
+        result.principal,
+        "LOCAL_DEVELOPMENT_CREDENTIAL",
+      )
+      : null;
     const response = jsonResponse
       ? NextResponse.json({
         authenticated: true,
         authentication: "LOCAL_DEVELOPMENT_CREDENTIAL",
         principal: result.principal,
         expiresAt: new Date(result.expiresAt).toISOString(),
+        adminLoginNotification: notification
+          ? { status: "ACCEPTED", eventId: notification.eventId }
+          : null,
       })
       : NextResponse.redirect(
-        new URL(fields.returnTo, trustedPublicOrigin(request)),
+        new URL(returnTo, trustedPublicOrigin(request)),
         303,
       );
     setLocalSessionCookies(request, response, result);
+    if (notification) {
+      response.headers.set("X-ELMOS-Admin-Login-Notification", "ACCEPTED");
+    }
     response.headers.set("Cache-Control", "no-store, private");
     return response;
   } catch (error) {
@@ -133,7 +170,7 @@ export async function POST(request: NextRequest) {
       const code = error && typeof error === "object" && "code" in error
         ? String(error.code)
         : "LOCAL_CREDENTIALS_UNAVAILABLE";
-      return localLoginError(request, code);
+      return localLoginError(request, code, mode);
     } catch (redirectError) {
       return accountSessionErrorResponse(redirectError);
     }

@@ -46,12 +46,11 @@ rejected(
 assert.doesNotThrow(() => assertCommercialTenantDelegation(jwt("tenant-a"), "tenant-a"));
 checks += 1;
 
-// Break-glass remains useful for operations, but is deliberately not a
-// financial credential even if its configured operations role is APPROVER.
+// Any non-OIDC authentication discriminator fails closed.
 rejected(
   () => requireFinancialOidcAdmin({
     role: "APPROVER",
-    authentication: "BREAK_GLASS_TOKEN",
+    authentication: "UNSUPPORTED_CREDENTIAL",
   }, "VIEWER"),
   BillingReconciliationPolicyError,
   "FINANCIAL_OIDC_SESSION_REQUIRED",

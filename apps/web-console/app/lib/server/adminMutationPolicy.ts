@@ -141,16 +141,8 @@ export async function assertEmptyAdminMutationBody(request: Request): Promise<vo
   );
 }
 
-/**
- * Cookie-authenticated writes require an explicit same-origin browser signal.
- * Ambient-cookie-free break-glass CLI calls remain possible; their Bearer
- * credential is independently short-lived, tenant-bound, and role checked.
- */
-export function assertAdminMutationOrigin(
-  request: Request,
-  hasAmbientAccountCookie: boolean,
-): void {
-  if (!hasAmbientAccountCookie) return;
+/** Every administrator mutation is cookie-authenticated and same-origin. */
+export function assertAdminMutationOrigin(request: Request): void {
   let expectedOrigin: string;
   try {
     expectedOrigin = new URL(request.url).origin;

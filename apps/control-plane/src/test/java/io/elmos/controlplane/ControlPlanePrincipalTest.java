@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,10 +24,12 @@ class ControlPlanePrincipalTest {
     }
 
     @Test
-    void derivesTenantActorAndOperatorPermissionsFromVerifiedJwt() {
+    void grantsAdministratorPermissionsOnlyToTheVerifiedExactEmail() {
         authenticate(Map.of(
                 "sub", "user:operator",
                 "organization_id", "tenant-a",
+                "email", "ZPCHONEY@GMAIL.COM",
+                "email_verified", true,
                 "roles", List.of("OPERATOR")
         ));
 
@@ -34,7 +37,8 @@ class ControlPlanePrincipalTest {
 
         principal.require("tenant-a", "user:operator", "repository:write");
         principal.require("tenant-a", "user:operator", "admin:operate");
-        assertEquals("OPERATOR", principal.adminRole());
+        assertEquals("APPROVER", principal.adminRole());
+        assertTrue(principal.platformAdministrator());
         assertTrue(principal.permissions().contains("translation:execute"));
     }
 
@@ -72,10 +76,12 @@ class ControlPlanePrincipalTest {
     }
 
     @Test
-    void authorizesOnlyTheRolesDeclaredForTheSelectedTenantMembership() {
+    void keepsBusinessPermissionsTenantScopedWhileApplyingTheExactAdminBoundary() {
         authenticate(Map.of(
                 "sub", "user:multi-tenant",
                 "organization_id", "tenant-a",
+                "email", "zpchoney@gmail.com",
+                "email_verified", true,
                 "roles", List.of("VIEWER"),
                 "elmos_tenants", List.of(
                         Map.of(
@@ -92,14 +98,61 @@ class ControlPlanePrincipalTest {
 
         principal.require("tenant-b", "user:multi-tenant", "admin:operate");
         principal.require("tenant-b", "user:multi-tenant", "repository:push");
-        assertEquals("OPERATOR", principal.adminRole("tenant-b"));
+        assertEquals("APPROVER", principal.adminRole("tenant-b"));
         assertEquals("tenant-b", principal.auditOrganizationId("tenant-b"));
         assertEquals("tenant-a", principal.auditOrganizationId("tenant-d"));
-        assertEquals("", principal.adminRole("tenant-c"));
+        assertEquals("APPROVER", principal.adminRole("tenant-c"));
         assertThrows(AccessDeniedException.class, () ->
                 principal.require("tenant-c", "user:multi-tenant", "repository:push"));
         assertThrows(AccessDeniedException.class, () ->
                 principal.require("tenant-d", "user:multi-tenant", "workspace:view"));
+    }
+
+    @Test
+    void stripsForgedAdministratorClaimsFromEveryOtherOrUnverifiedEmail() {
+        for (Map<String, Object> identity : List.of(
+                Map.<String, Object>of(
+                        "email", "other@example.com", "email_verified", true),
+                Map.<String, Object>of(
+                        "email", "zpchoney@gmail.com", "email_verified", false),
+                Map.<String, Object>of(
+                        "email", "zpchoney+alias@gmail.com", "email_verified", true))) {
+            Map<String, Object> claims = new java.util.LinkedHashMap<>(identity);
+            claims.put("sub", "user:forged-admin");
+            claims.put("organization_id", "tenant-a");
+            claims.put("roles", List.of("TENANT_ADMIN"));
+            claims.put("permissions", List.of(
+                    "admin:read", "admin:operate", "admin:approve", "configuration:manage"));
+            authenticate(claims);
+
+            ControlPlanePrincipal principal = ControlPlanePrincipal.current().orElseThrow();
+
+            assertEquals("", principal.adminRole());
+            assertTrue(!principal.platformAdministrator());
+            assertThrows(AccessDeniedException.class, () ->
+                    principal.require("tenant-a", "user:forged-admin", "admin:read"));
+            SecurityContextHolder.clearContext();
+        }
+    }
+
+    @Test
+    void directConstructionCannotBypassTheAdministratorBoundary() {
+        var forged = new ControlPlanePrincipal.TenantGrant(
+                Set.of("TENANT_ADMIN"),
+                Set.of("workspace:view", "admin:read", "admin:operate"));
+
+        ControlPlanePrincipal principal = new ControlPlanePrincipal(
+                "tenant-a",
+                "user:forged-admin",
+                false,
+                forged.roles(),
+                forged.permissions(),
+                Map.of("tenant-a", forged));
+
+        assertEquals(Set.of("workspace:view"), principal.permissions());
+        assertTrue(principal.roles().isEmpty());
+        assertThrows(AccessDeniedException.class, () ->
+                principal.require("tenant-a", "user:forged-admin", "admin:read"));
     }
 
     private static void authenticate(Map<String, Object> claims) {

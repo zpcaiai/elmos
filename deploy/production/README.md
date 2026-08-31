@@ -49,6 +49,12 @@ cp deploy/production/elmos-commercial.env.example /srv/elmos/elmos.env
 chmod 0600 /srv/elmos/elmos.env
 # 逐项填写；未填项对应能力会失败关闭，这是预期行为
 
+# 管理员登录邮件 Secret：Web 容器以 UID 10001 运行，文件必须 owner-only 且可读。
+sudo install -d -o 10001 -g 10001 -m 0700 /srv/elmos/secrets
+sudo install -o 10001 -g 10001 -m 0600 /dev/null /srv/elmos/secrets/resend-api-key
+# 通过 Secret Manager 或无回显的受控流程写入 Resend API Key；不要写入 shell 历史。
+# 网络策略仅为 Web Console 放行 api.resend.com:443；禁止重定向与其他邮件端点。
+
 # 2. PostgreSQL 迁移完成后配置 NOBYPASSRLS 运行角色与对象后端
 scripts/operations/configure_control_plane_runtime_role.sh
 psql "${ELMOS_DATABASE_URL#jdbc:}" \

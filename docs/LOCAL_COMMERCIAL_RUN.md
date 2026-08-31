@@ -2,8 +2,8 @@
 
 这条入口用于在一台开发机上真实启动 ELMOS 的最小商业管理闭环：PostgreSQL、
 Control Plane、Commercial API、Workspace Service 与 Web Console。它会生成 8 小时有效、
-绑定 `local-commercial` 租户和 `local-commercial-admin` 操作者的服务、管理与会话短期凭据，等待依赖就绪，
-然后实际请求各服务 readiness 与管理端聚合 API。
+绑定 `local-commercial` 租户和 `local-commercial-admin` 操作者的服务与会话短期凭据，等待依赖就绪，
+然后实际请求各服务 readiness，并验证共享 Bearer 值无法访问管理 API。
 
 前置条件：本机 Docker 必须使用 Unix socket 的本地 context，并安装 Java 21、Maven 3.9
 与摘要校验通过的 pnpm 10.12.4。
@@ -21,8 +21,8 @@ make local-commercial-up
 
 命令成功后会打印：
 
-- 管理端地址 `http://127.0.0.1:3000/admin`；
-- 短期管理令牌的到期时间和按需取令牌命令（避免把密钥直接写入终端日志）；
+- 管理员专用入口 `http://127.0.0.1:3000/admin/login`（本地栈未配置 OIDC，失败关闭）；
+- 服务短期凭据到期时间；
 - 冒烟证据路径 `.elmos/local-commercial/smoke-result.json`。
 
 日常操作：
@@ -30,7 +30,6 @@ make local-commercial-up
 ```bash
 make local-commercial-status
 make local-commercial-smoke
-python3 scripts/operations/local_commercial.py token
 make local-commercial-down
 ```
 
@@ -43,12 +42,9 @@ python3 scripts/operations/local_commercial.py bootstrap-self-test
 
 `down` 只停止并移除本项目容器，默认保留数据库卷。所有宿主机端口只绑定
 `127.0.0.1`。Workspace 容器执行、Secret 注入、自动修复、付费扣款、邮件通知、托管 Runner
-和真实仓库均默认关闭；本地管理令牌不能替代企业 OIDC 的用户/成员管理权限。
-
-管理端的本地短期凭据可读取运营总览、真实持久作业队列和 secret-free Runner
-Fleet 投影，并可以 OPERATOR 身份请求取消本租户的未终态作业。Runner
-attestation 确认、节点排空、用户/成员变更和财务对账结案必须使用真实企业
-OIDC 会话；break-glass 不会获得这些权限。
+和真实仓库均默认关闭。所有管理读取与写入都要求已验证的指定管理员 OIDC 会话；
+本地生成的负向 Bearer fixture 只用于证明旧共享令牌路径返回 401，不能读取运营总览、
+作业、Runner Fleet、财务或用户数据。
 
 数据库密码不属于 8 小时短租约；它会随保留的数据卷稳定存在。密码与数据卷是一对不可分割的
 本地恢复材料。不要只删除
@@ -67,7 +63,7 @@ python3 scripts/operations/local_commercial.py reset-data --confirm-local-data-l
 ## 证据边界
 
 本入口的 `LOCAL_PASS` 只证明当前提交在当前 Docker 环境中能够构建、启动、响应核心健康检查，
-并通过服务端绑定的短期管理凭据读取管理数据。冒烟仅将检查名、HTTP 状态、
+并证明共享管理 Bearer fixture 被管理 API 拒绝。冒烟仅将检查名、HTTP 状态、
 耗时和已验证的契约断言写入 `smoke-result.json`；不持久化响应体、令牌、Secret、
 作业内容或修复预览，上游错误体也不会回显。以下门禁不会被本地冒烟提升：
 

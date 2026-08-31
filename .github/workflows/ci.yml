@@ -530,6 +530,9 @@ jobs:
           --project=mobile-chromium
           e2e/console-usability.spec.ts
           e2e/core-business-lines-ui.spec.ts
+          e2e/admin-billing-reconciliation.spec.ts
+          e2e/admin-jobs-runner.spec.ts
+          e2e/admin-login-ui.spec.ts
           e2e/experience-quality.spec.ts
           e2e/maturity-status-ui.spec.ts
           e2e/operations-admin-ui.spec.ts

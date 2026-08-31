@@ -144,6 +144,7 @@ Commercial API 侧（Java，变量名与 Web 不同，注意不要混用）：
 
 | # | 依赖 | 状态 | 配置项 |
 |---|---|---|---|
+| N0 | 管理员登录安全通知（Resend 固定 API） | `PREPARED_NOT_CONFIGURED` | `ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED` / `ELMOS_ADMIN_LOGIN_EMAIL_FROM` / `ELMOS_RESEND_API_KEY_FILE`；未获接受回执时管理员登录失败关闭 |
 | N1 | 邮件发送服务商（SES / Resend / 阿里云邮推等） | `PREPARED_NOT_CONFIGURED` | `ELMOS_USAGE_EMAIL_ALERTS_ENABLED` |
 | N2 | 发件域名与 SPF/DKIM/DMARC | 未配置 | —— |
 | N3 | 退订、频控、地址验证、回执、失败重试、隐私评审 | 未完成 | 开启邮件前的硬前置 |

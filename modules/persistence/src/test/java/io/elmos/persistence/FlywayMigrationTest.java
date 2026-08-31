@@ -62,6 +62,7 @@ class FlywayMigrationTest {
         var dataSource = new org.springframework.jdbc.datasource.DriverManagerDataSource(
                 POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
         var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(dataSource);
+        verifyPlatformAdminIdentityBoundary(jdbc);
         assertEquals(1, jdbc.sql("""
                 SELECT count(*) FROM flyway_schema_history
                  WHERE version = '63' AND success
@@ -427,6 +428,99 @@ class FlywayMigrationTest {
         assertThrows(
                 io.elmos.workflow.RunnerRegistrationPort.RunnerAuthenticationException.class,
                 () -> runnerStore.authorizeNode("runner-test-1", firstNodeToken));
+    }
+
+    private static void verifyPlatformAdminIdentityBoundary(
+            org.springframework.jdbc.core.simple.JdbcClient jdbc) {
+        jdbc.sql("""
+                INSERT INTO accounts (
+                    account_id, display_name, primary_email,
+                    email_verified_at, phone_verified_at, status)
+                VALUES
+                    ('acct-platform-target', 'Designated administrator',
+                     'ZPCHONEY@GMAIL.COM', now(), NULL, 'ACTIVE'),
+                    ('acct-platform-other', 'Other verified user',
+                     'other-platform@example.test', now(), NULL, 'ACTIVE'),
+                    ('acct-platform-alias', 'Alias user',
+                     'zpchoney+alias@gmail.com', now(), NULL, 'ACTIVE'),
+                    ('acct-platform-whitespace', 'Non-canonical user',
+                     ' zpchoney@gmail.com ', now(), NULL, 'ACTIVE')
+                """).update();
+
+        assertEquals("DENIED_POLICY", jdbc.sql("""
+                SELECT elmos_platform_bootstrap_admin(
+                    'acct-platform-other', 'negative database identity test')
+                """).query(String.class).single());
+        assertEquals("DENIED_POLICY", jdbc.sql("""
+                SELECT elmos_platform_bootstrap_admin(
+                    'acct-platform-alias', 'alias must not authorize')
+                """).query(String.class).single());
+        assertEquals("DENIED_POLICY", jdbc.sql("""
+                SELECT elmos_platform_bootstrap_admin(
+                    'acct-platform-whitespace', 'non-canonical value must not authorize')
+                """).query(String.class).single());
+
+        assertEquals("ALLOWED", jdbc.sql("""
+                SELECT elmos_platform_bootstrap_admin(
+                    'acct-platform-target', 'verified designated administrator test')
+                """).query(String.class).single());
+        assertEquals("ALLOWED", jdbc.sql("""
+                SELECT elmos_platform_authorize(
+                    'acct-platform-target', 'PLATFORM_VIEWER',
+                    'V79_LIVE_BOUNDARY_TEST', NULL, NULL)
+                """).query(String.class).single());
+        assertEquals("DENIED_POLICY", jdbc.sql("""
+                SELECT elmos_platform_grant_admin(
+                    'acct-platform-target', 'acct-platform-other',
+                    'PLATFORM_VIEWER', 'must remain the only administrator')
+                """).query(String.class).single());
+
+        assertThrows(RuntimeException.class, () -> jdbc.sql("""
+                INSERT INTO platform_administrators (
+                    account_id, platform_role, grant_reason)
+                VALUES (
+                    'acct-platform-alias', 'PLATFORM_VIEWER',
+                    'attempt to bypass the grant function')
+                """).update(), "the table trigger must block a direct grant bypass");
+
+        // Revoking email verification is a safety operation and must succeed.
+        // A verified phone keeps the ACTIVE account shape valid while V79
+        // automatically revokes the administrator record in the same statement.
+        assertEquals(1, jdbc.sql("""
+                UPDATE accounts
+                   SET email_verified_at = NULL, phone_verified_at = now()
+                 WHERE account_id = 'acct-platform-target'
+                """).update());
+        assertEquals(0, jdbc.sql("""
+                SELECT count(*) FROM platform_administrators
+                 WHERE account_id = 'acct-platform-target' AND revoked_at IS NULL
+                """).query(Integer.class).single());
+        assertEquals(1, jdbc.sql("""
+                SELECT count(*) FROM platform_admin_access_log
+                 WHERE admin_account_id = 'acct-platform-target'
+                   AND operation = 'AUTO_REVOKE_IDENTITY'
+                """).query(Integer.class).single());
+        assertEquals("DENIED_NOT_ADMIN", jdbc.sql("""
+                SELECT elmos_platform_authorize(
+                    'acct-platform-target', 'PLATFORM_VIEWER',
+                    'V79_REVOKED_BOUNDARY_TEST', NULL, NULL)
+                """).query(String.class).single());
+
+        // Restoring the verified email does not silently restore privilege;
+        // the direct-operator bootstrap remains an explicit audited action.
+        assertEquals(1, jdbc.sql("""
+                UPDATE accounts SET email_verified_at = now()
+                 WHERE account_id = 'acct-platform-target'
+                """).update());
+        assertEquals("DENIED_NOT_ADMIN", jdbc.sql("""
+                SELECT elmos_platform_authorize(
+                    'acct-platform-target', 'PLATFORM_VIEWER',
+                    'V79_NOT_AUTO_REGRANTED_TEST', NULL, NULL)
+                """).query(String.class).single());
+        assertEquals("ALLOWED", jdbc.sql("""
+                SELECT elmos_platform_bootstrap_admin(
+                    'acct-platform-target', 'explicitly restore after re-verification')
+                """).query(String.class).single());
     }
 
     private static String sha256(String value) {

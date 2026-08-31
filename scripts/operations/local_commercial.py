@@ -37,11 +37,12 @@ LEASE_HOURS = 8
 RUNTIME_ENVIRONMENT_KEYS = (
     "LOCAL_DATABASE_PASSWORD",
     "LOCAL_OPERATIONS_API_KEY",
-    "LOCAL_ADMIN_TOKEN",
+    "LOCAL_REJECTED_ADMIN_TOKEN",
     "LOCAL_WORKSPACE_API_KEY",
     "LOCAL_SESSION_SECRET",
     "LOCAL_CREDENTIAL_EXPIRES_AT",
 )
+LEGACY_RUNTIME_ENVIRONMENT_KEY = "LOCAL_ADMIN_TOKEN"
 JAVA_ARTIFACTS = (
     ROOT / "apps" / "control-plane" / "target" / "elmos-control-plane-0.1.0-SNAPSHOT-exec.jar",
     ROOT / "apps" / "commercial-api" / "target" / "elmos-commercial-api-0.1.0-SNAPSHOT-exec.jar",
@@ -133,9 +134,12 @@ def parse_env() -> dict[str, str]:
         if not line or line.startswith("#") or "=" not in line:
             continue
         key, value = line.split("=", 1)
-        if key not in RUNTIME_ENVIRONMENT_KEYS or key in values:
+        if key not in (*RUNTIME_ENVIRONMENT_KEYS, LEGACY_RUNTIME_ENVIRONMENT_KEY) or key in values:
             raise LocalCommercialError("runtime.env 包含未知或重复配置键。")
         values[key] = value
+    legacy_admin_token = values.pop(LEGACY_RUNTIME_ENVIRONMENT_KEY, "")
+    if legacy_admin_token and "LOCAL_REJECTED_ADMIN_TOKEN" not in values:
+        values["LOCAL_REJECTED_ADMIN_TOKEN"] = legacy_admin_token
     return values
 
 
@@ -151,7 +155,7 @@ def credentials_valid(values: dict[str, str]) -> bool:
     required = (
         "LOCAL_DATABASE_PASSWORD",
         "LOCAL_OPERATIONS_API_KEY",
-        "LOCAL_ADMIN_TOKEN",
+        "LOCAL_REJECTED_ADMIN_TOKEN",
         "LOCAL_WORKSPACE_API_KEY",
         "LOCAL_SESSION_SECRET",
     )
@@ -219,7 +223,7 @@ def ensure_credentials(*, rotate: bool = False) -> dict[str, str]:
         return values
     # PostgreSQL only applies POSTGRES_PASSWORD when initializing an empty
     # volume. Keep that password stable while rotating the short-lived service
-    # leases, otherwise an expired admin token would make a healthy retained
+    # leases, otherwise an expired service lease would make a healthy retained
     # local database impossible to reconnect to.
     database_password = values.get("LOCAL_DATABASE_PASSWORD", "")
     if len(database_password) < 32:
@@ -236,7 +240,8 @@ def ensure_credentials(*, rotate: bool = False) -> dict[str, str]:
     values = {
         "LOCAL_DATABASE_PASSWORD": database_password,
         "LOCAL_OPERATIONS_API_KEY": secrets.token_urlsafe(36),
-        "LOCAL_ADMIN_TOKEN": secrets.token_urlsafe(36),
+        # Negative fixture only: the Web admin BFF must reject this Bearer value.
+        "LOCAL_REJECTED_ADMIN_TOKEN": secrets.token_urlsafe(36),
         "LOCAL_WORKSPACE_API_KEY": secrets.token_urlsafe(36),
         "LOCAL_SESSION_SECRET": secrets.token_urlsafe(48),
         "LOCAL_CREDENTIAL_EXPIRES_AT": iso8601(expires),
@@ -643,16 +648,16 @@ def smoke(values: dict[str, str]) -> dict[str, Any]:
         probe_json("web-liveness", "http://127.0.0.1:3000/api/health?probe=liveness"),
         probe_json("web-readiness", "http://127.0.0.1:3000/api/health?probe=readiness"),
         probe_text(
-            "admin-page",
+            "admin-login-page",
             "http://127.0.0.1:3000/admin",
-            contains="运营管理端",
+            contains="管理员登录",
         ),
         probe_expected_status(
             "admin-operations-auth-required",
             "http://127.0.0.1:3000/api/admin/operations?hours=1&limit=5"
             "&businessLine=ALL&result=ALL",
-            expected=403,
-            assertion="admin-token-required",
+            expected=401,
+            assertion="administrator-session-required",
         ),
         probe_expected_status(
             "workspace-service-auth-required",
@@ -682,21 +687,27 @@ def smoke(values: dict[str, str]) -> dict[str, Any]:
             },
             assertion="workspace-credential-accepted-without-mutation",
         ),
-        probe_json(
-            "admin-operations",
+        probe_expected_status(
+            "admin-operations-rejects-bearer",
             "http://127.0.0.1:3000/api/admin/operations?hours=1&limit=5"
             "&businessLine=ALL&result=ALL",
-            token=values["LOCAL_ADMIN_TOKEN"],
+            expected=401,
+            headers={"Authorization": f"Bearer {values['LOCAL_REJECTED_ADMIN_TOKEN']}"},
+            assertion="administrator-email-session-required",
         ),
-        probe_json(
-            "admin-jobs",
+        probe_expected_status(
+            "admin-jobs-rejects-bearer",
             "http://127.0.0.1:3000/api/admin/jobs?limit=5",
-            token=values["LOCAL_ADMIN_TOKEN"],
+            expected=401,
+            headers={"Authorization": f"Bearer {values['LOCAL_REJECTED_ADMIN_TOKEN']}"},
+            assertion="administrator-email-session-required",
         ),
-        probe_json(
-            "admin-runner-fleet",
+        probe_expected_status(
+            "admin-runner-fleet-rejects-bearer",
             "http://127.0.0.1:3000/api/admin/runners?limit=5",
-            token=values["LOCAL_ADMIN_TOKEN"],
+            expected=401,
+            headers={"Authorization": f"Bearer {values['LOCAL_REJECTED_ADMIN_TOKEN']}"},
+            assertion="administrator-email-session-required",
         ),
     ]
     for service_name in (
@@ -725,45 +736,6 @@ def smoke(values: dict[str, str]) -> dict[str, Any]:
     ):
         raise LocalCommercialError("Web readiness 未证明三个核心依赖全部 UP。")
     readiness_check["assertion"] = "health-and-core-dependencies:UP"
-    admin_check = next(check for check in checks if check["name"] == "admin-operations")
-    admin = admin_check["body"]
-    missing = [key for key in ("activity", "control", "role", "actorId") if key not in admin]
-    if missing:
-        raise LocalCommercialError(
-            "管理端响应缺少权威字段：" + ", ".join(missing)
-        )
-    if (
-        not isinstance(admin.get("activity"), dict)
-        or not isinstance(admin.get("control"), dict)
-        or admin.get("role") != "APPROVER"
-        or admin.get("actorId") != LOCAL_ACTOR_ID
-    ):
-        raise LocalCommercialError("管理端主体绑定或运营数据契约不匹配。")
-    admin_check["assertion"] = "admin-principal-and-console-contract"
-    jobs_check = next(check for check in checks if check["name"] == "admin-jobs")
-    jobs = jobs_check["body"]
-    if (
-        jobs.get("schemaVersion") != "1.0.0"
-        or not isinstance(jobs.get("items"), list)
-        or any(
-            not isinstance(item, dict)
-            or item.get("organizationId") != LOCAL_ORGANIZATION_ID
-            for item in jobs.get("items", [])
-        )
-    ):
-        raise LocalCommercialError("管理端未返回可验证的持久作业列表。")
-    jobs_check["assertion"] = "tenant-bound-job-list-contract"
-    runners_check = next(
-        check for check in checks if check["name"] == "admin-runner-fleet"
-    )
-    runners = runners_check["body"]
-    if (
-        runners.get("schemaVersion") != "1.0.0"
-        or not isinstance(runners.get("items"), list)
-        or runners.get("returned") != len(runners["items"])
-    ):
-        raise LocalCommercialError("管理端未返回可验证的 Runner Fleet 列表。")
-    runners_check["assertion"] = "secret-free-runner-list-contract"
     result = {
         "schema": "elmos.local-commercial-smoke/1",
         "status": "LOCAL_PASS",
@@ -903,9 +875,8 @@ def command_up(args: argparse.Namespace) -> None:
         )
         raise unexpected from error
     print(f"本地商业管理核心已启动：{result['status']}")
-    print("管理端：http://127.0.0.1:3000/admin")
-    print(f"短期管理令牌到期时间：{values['LOCAL_CREDENTIAL_EXPIRES_AT']}")
-    print("按需取令牌：python3 scripts/operations/local_commercial.py token")
+    print("管理员入口：http://127.0.0.1:3000/admin/login（本地栈未配置 OIDC，失败关闭）")
+    print(f"服务短期凭据到期时间：{values['LOCAL_CREDENTIAL_EXPIRES_AT']}")
     print(f"本地证据：{RESULT_FILE}")
     print("真实 OIDC、支付商户、私有 Runner、生产部署与客户验收仍为 NOT_RUN。")
 
@@ -960,8 +931,9 @@ def command_status(_: argparse.Namespace) -> None:
 
 
 def command_token(_: argparse.Namespace) -> None:
-    values = active_credentials()
-    print(values["LOCAL_ADMIN_TOKEN"])
+    raise LocalCommercialError(
+        "共享管理员令牌入口已移除；管理员必须使用已验证邮箱的 OIDC 专用入口。"
+    )
 
 
 def command_down(_: argparse.Namespace) -> None:
@@ -995,7 +967,7 @@ def command_reset_data(args: argparse.Namespace) -> None:
     reset_environment.update({
         "LOCAL_DATABASE_PASSWORD": "reset-only-placeholder-not-a-credential",
         "LOCAL_OPERATIONS_API_KEY": "reset-only-placeholder-not-a-credential",
-        "LOCAL_ADMIN_TOKEN": "reset-only-placeholder-not-a-credential",
+        "LOCAL_REJECTED_ADMIN_TOKEN": "reset-only-placeholder-not-a-credential",
         "LOCAL_WORKSPACE_API_KEY": "reset-only-placeholder-not-a-credential",
         "LOCAL_SESSION_SECRET": "reset-only-placeholder-not-a-credential",
         "LOCAL_CREDENTIAL_EXPIRES_AT": "1970-01-01T00:00:00Z",
@@ -1050,7 +1022,7 @@ def parser() -> argparse.ArgumentParser:
     smoke_command.set_defaults(handler=command_smoke)
     status = commands.add_parser("status", help="显示容器与最近冒烟状态")
     status.set_defaults(handler=command_status)
-    token = commands.add_parser("token", help="显示当前本地短期管理令牌")
+    token = commands.add_parser("token", help="报告共享管理员令牌入口已移除")
     token.set_defaults(handler=command_token)
     down = commands.add_parser("down", help="停止容器但保留本地数据库卷")
     down.set_defaults(handler=command_down)

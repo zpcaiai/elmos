@@ -10,7 +10,7 @@ export const reconciliationBodyLimitBytes = 4_096;
 
 export type FinancialAdminPrincipal = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION" | "BREAK_GLASS_TOKEN";
+  authentication: "OIDC_SESSION";
   accessToken?: string;
 };
 
@@ -49,7 +49,7 @@ export function requireFinancialOidcAdmin(
     throw new BillingReconciliationPolicyError(
       403,
       "FINANCIAL_OIDC_SESSION_REQUIRED",
-      "财务对账只接受已验证的企业账户会话，break-glass 不授予财务权限。",
+      "财务对账只接受已验证的管理员企业账户会话。",
     );
   }
   const actualRank = roleRank[principal.role];

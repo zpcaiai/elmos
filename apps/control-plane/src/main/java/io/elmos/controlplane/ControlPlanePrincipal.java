@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 record ControlPlanePrincipal(
         String organizationId,
         String actorId,
+        boolean platformAdministrator,
         Set<String> roles,
         Set<String> permissions,
         Map<String, TenantGrant> memberships
@@ -33,6 +34,11 @@ record ControlPlanePrincipal(
             Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:-]{0,127}");
     private static final Pattern ACTOR =
             Pattern.compile("[A-Za-z0-9][A-Za-z0-9._:@/-]{0,199}");
+    static final String PLATFORM_ADMINISTRATOR_EMAIL = "zpchoney@gmail.com";
+    private static final Set<String> ADMINISTRATOR_ROLES = Set.of(
+            "OPERATOR", "APPROVER", "TENANT_ADMIN");
+    private static final Set<String> ADMINISTRATOR_PERMISSIONS = Set.of(
+            "admin:read", "admin:operate", "admin:approve", "configuration:manage");
     private static final Set<String> KNOWN_PERMISSIONS = Set.of(
             "workspace:view", "spring:execute", "translation:execute",
             "generation:execute", "repository:read", "repository:write",
@@ -69,12 +75,22 @@ record ControlPlanePrincipal(
                 || !ACTOR.matcher(actorId).matches()) {
             throw new AccessDeniedException("CONTROL_PLANE_PRINCIPAL_INVALID");
         }
-        roles = Set.copyOf(roles);
-        permissions = Set.copyOf(permissions);
-        memberships = Map.copyOf(memberships);
-        if (!memberships.containsKey(organizationId)) {
+        Map<String, TenantGrant> constrainedMemberships = new java.util.LinkedHashMap<>();
+        memberships.forEach((tenantId, grant) -> {
+            if (tenantId == null || !ORGANIZATION.matcher(tenantId).matches()
+                    || grant == null) {
+                throw new AccessDeniedException("CONTROL_PLANE_TENANT_MEMBERSHIP_INVALID");
+            }
+            constrainedMemberships.put(tenantId, administratorBoundary(
+                    grant.roles(), grant.permissions(), platformAdministrator));
+        });
+        TenantGrant primary = constrainedMemberships.get(organizationId);
+        if (primary == null) {
             throw new AccessDeniedException("CONTROL_PLANE_PRIMARY_TENANT_MISSING");
         }
+        roles = primary.roles();
+        permissions = primary.permissions();
+        memberships = Map.copyOf(constrainedMemberships);
     }
 
     static Optional<ControlPlanePrincipal> current() {
@@ -98,11 +114,16 @@ record ControlPlanePrincipal(
         Object boundActor = jwt.getToken().getClaims().get("elmos_actor_id");
         String actorId = boundActor instanceof String value
                 ? value : jwt.getToken().getSubject();
+        boolean platformAdministrator = isPlatformAdministratorEmail(
+                jwt.getToken().getClaims().get("email"),
+                jwt.getToken().getClaims().get("email_verified"));
         Set<String> roles = roles(jwt.getToken().getClaims());
         Set<String> permissions = effectivePermissions(
                 roles, explicitPermissions(jwt.getToken().getClaims()));
+        TenantGrant primary = administratorBoundary(
+                roles, permissions, platformAdministrator);
         Map<String, TenantGrant> memberships = new java.util.LinkedHashMap<>();
-        memberships.put(organizationId, new TenantGrant(roles, permissions));
+        memberships.put(organizationId, primary);
         Object rawMemberships = jwt.getToken().getClaims().get("elmos_tenants");
         if (rawMemberships instanceof Iterable<?> values) {
             for (Object rawMembership : values) {
@@ -115,12 +136,13 @@ record ControlPlanePrincipal(
                 Set<String> tenantRoles = rolesFrom(membership.get("roles"));
                 Set<String> tenantPermissions = effectivePermissions(
                         tenantRoles, explicitPermissions(membership));
-                memberships.put(tenantId, new TenantGrant(
-                        tenantRoles, tenantPermissions));
+                memberships.put(tenantId, administratorBoundary(
+                        tenantRoles, tenantPermissions, platformAdministrator));
             }
         }
         return Optional.of(new ControlPlanePrincipal(
-                organizationId, actorId, roles, permissions, memberships));
+                organizationId, actorId, platformAdministrator,
+                primary.roles(), primary.permissions(), memberships));
     }
 
     static ControlPlanePrincipal requireDatabaseBound(
@@ -145,6 +167,7 @@ record ControlPlanePrincipal(
     static ControlPlanePrincipal databaseBound(
             String selectedOrganizationId,
             String oidcActorId,
+            boolean platformAdministrator,
             List<io.elmos.persistence.JdbcOrganizationSelfServiceStore.OrganizationGrant> grants
     ) {
         Map<String, TenantGrant> memberships = new java.util.LinkedHashMap<>();
@@ -152,8 +175,8 @@ record ControlPlanePrincipal(
             Set<String> tenantRoles = databaseRoles(grant.role());
             Set<String> tenantPermissions = databasePermissions(
                     grant.role(), tenantRoles);
-            memberships.put(grant.organizationId(),
-                    new TenantGrant(tenantRoles, tenantPermissions));
+            memberships.put(grant.organizationId(), administratorBoundary(
+                    tenantRoles, tenantPermissions, platformAdministrator));
         }
         var selected = grants.stream()
                 .filter(grant -> grant.organizationId().equals(selectedOrganizationId))
@@ -164,6 +187,7 @@ record ControlPlanePrincipal(
         return new ControlPlanePrincipal(
                 selectedOrganizationId,
                 oidcActorId,
+                platformAdministrator,
                 primary.roles(),
                 primary.permissions(),
                 memberships);
@@ -201,6 +225,30 @@ record ControlPlanePrincipal(
             return requestedOrganizationId;
         }
         return organizationId;
+    }
+
+    static boolean isPlatformAdministratorEmail(Object email, Object emailVerified) {
+        return Boolean.TRUE.equals(emailVerified)
+                && email instanceof String value
+                && PLATFORM_ADMINISTRATOR_EMAIL.equals(
+                        value.trim().toLowerCase(Locale.ROOT));
+    }
+
+    private static TenantGrant administratorBoundary(
+            Set<String> roles,
+            Set<String> permissions,
+            boolean platformAdministrator
+    ) {
+        Set<String> constrainedRoles = new LinkedHashSet<>(roles);
+        Set<String> constrainedPermissions = new LinkedHashSet<>(permissions);
+        if (platformAdministrator) {
+            constrainedRoles.add("APPROVER");
+            constrainedPermissions.addAll(ADMINISTRATOR_PERMISSIONS);
+        } else {
+            constrainedRoles.removeAll(ADMINISTRATOR_ROLES);
+            constrainedPermissions.removeAll(ADMINISTRATOR_PERMISSIONS);
+        }
+        return new TenantGrant(constrainedRoles, constrainedPermissions);
     }
 
     private static Set<String> roles(Map<String, Object> claims) {
