@@ -759,6 +759,10 @@ V2_ENGINE_VERIFIER_MODULES = (
     "project-templates",
     "project-types",
 )
+LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT = 67
+LOCKED_V2_NODE_TYPES_TREE_SHA256 = (
+    "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
+)
 ENGINE_SOLVER_RESULT_KEYS = {
     "schema_version",
     "solver",
@@ -883,6 +887,58 @@ def safe_source_file(root: Path, relative: object, label: str) -> Path:
     if not resolved.is_file():
         raise RuntimeError(f"FILE_REQUIRED:{label}:{value}")
     return resolved
+
+
+def locked_v2_node_types_sources(repo_root: Path) -> list[tuple[Path, str]]:
+    """Return the exact regular-file closure of the locked pnpm Node types tree."""
+
+    public_root = repo_root / "engines/frontend-client-engine/node_modules/@types/node"
+    expected_root = (
+        repo_root
+        / "engines/frontend-client-engine/node_modules/.pnpm/"
+        "@types+node@24.3.0/node_modules/@types/node"
+    )
+    expected_link = "../.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    if not public_root.is_symlink():
+        raise RuntimeError("V2_NODE_TYPES_LINK_REQUIRED")
+    try:
+        link_value = os.readlink(public_root)
+        resolved_public = public_root.resolve(strict=True)
+        resolved_expected = expected_root.resolve(strict=True)
+    except (OSError, RuntimeError) as exc:
+        raise RuntimeError("V2_NODE_TYPES_ROOT_UNAVAILABLE") from exc
+    if link_value != expected_link or resolved_public != resolved_expected:
+        raise RuntimeError("V2_NODE_TYPES_LINK_DRIFT")
+    current = repo_root / "engines/frontend-client-engine"
+    for part in expected_root.relative_to(current).parts:
+        current = current / part
+        if current.is_symlink():
+            raise RuntimeError("V2_NODE_TYPES_PNPM_ROOT_SYMLINK_FORBIDDEN")
+    rows: list[dict[str, object]] = []
+    sources: list[tuple[Path, str]] = []
+    for source in sorted(resolved_expected.rglob("*"), key=lambda item: item.as_posix()):
+        relative = source.relative_to(resolved_expected).as_posix()
+        if source.is_symlink():
+            raise RuntimeError(f"V2_NODE_TYPES_NESTED_SYMLINK_FORBIDDEN:{relative}")
+        if source.is_dir():
+            continue
+        if not source.is_file():
+            raise RuntimeError(f"V2_NODE_TYPES_REGULAR_FILE_REQUIRED:{relative}")
+        content = source.read_bytes()
+        rows.append(
+            {
+                "path": relative,
+                "sha256": digest_bytes(content),
+                "byte_count": len(content),
+            }
+        )
+        sources.append((source, relative))
+    if (
+        len(rows) != LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT
+        or canonical_digest(rows) != LOCKED_V2_NODE_TYPES_TREE_SHA256
+    ):
+        raise RuntimeError("V2_NODE_TYPES_TREE_IDENTITY_DRIFT")
+    return sources
 
 
 def pointer_escape(value: str) -> str:
@@ -1562,6 +1618,14 @@ def capture_engine_verifier_v2(
         if not source.is_file() or source.is_symlink():
             raise RuntimeError("V2_TYPESCRIPT_RUNTIME_FILE_REQUIRED")
         sources.append((source, captured_relative, "engine-verifier-runtime-v2"))
+    for source, relative in locked_v2_node_types_sources(repo_root):
+        sources.append(
+            (
+                source,
+                f"formal-campaign/engine-verifier/node_modules/@types/node/{relative}",
+                "engine-verifier-runtime-v2",
+            )
+        )
     runtime_ids: list[str] = []
     entrypoint_id: str | None = None
     for source, relative, role in sources:

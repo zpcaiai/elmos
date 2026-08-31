@@ -2148,7 +2148,7 @@ def validate_engine_artifacts(
     return engine, engine_routes, path_to_id
 
 
-ENGINE_VERIFIER_RUNTIME_PATHS = frozenset(
+ENGINE_VERIFIER_RUNTIME_BASE_PATHS = frozenset(
     {
         "formal-campaign/engine-verifier/package.json",
         "formal-campaign/engine-verifier/src/frontend-interaction-formal-cli.js",
@@ -2164,6 +2164,13 @@ ENGINE_VERIFIER_RUNTIME_PATHS = frozenset(
         "formal-campaign/engine-verifier/node_modules/typescript/package.json",
         "formal-campaign/engine-verifier/node_modules/typescript/lib/typescript.js",
     }
+)
+ENGINE_VERIFIER_NODE_TYPES_PREFIX = (
+    "formal-campaign/engine-verifier/node_modules/@types/node/"
+)
+LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT = 67
+LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256 = (
+    "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
 )
 ENGINE_VERIFIER_REPOSITORY_MAP = {
     "formal-campaign/engine-verifier/package.json": (
@@ -2187,6 +2194,96 @@ ENGINE_VERIFIER_REPOSITORY_MAP = {
         )
     },
 }
+
+
+def engine_verifier_node_types_tree(
+    *,
+    runtime_ids: list[str],
+    artifacts: dict[str, dict[str, Any]],
+    artifact_files: dict[str, Path],
+    errors: list[str],
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for identifier in runtime_ids:
+        reference = artifacts.get(identifier, {})
+        runtime_path = str(reference.get("path"))
+        if not runtime_path.startswith(ENGINE_VERIFIER_NODE_TYPES_PREFIX):
+            continue
+        relative = runtime_path.removeprefix(ENGINE_VERIFIER_NODE_TYPES_PREFIX)
+        if (
+            not relative
+            or PurePosixPath(relative).as_posix() != relative
+            or any(part in {"", ".", ".."} for part in PurePosixPath(relative).parts)
+        ):
+            errors.append(f"engine verifier Node types runtime path is unsafe: {runtime_path}")
+            continue
+        artifact_file = artifact_files.get(identifier)
+        if (
+            artifact_file is None
+            or artifact_file.is_symlink()
+            or not artifact_file.is_file()
+        ):
+            errors.append(f"engine verifier Node types runtime file is invalid: {runtime_path}")
+            continue
+        content = artifact_file.read_bytes()
+        rows.append(
+            {
+                "path": relative,
+                "sha256": v1.digest_bytes(content),
+                "byte_count": len(content),
+            }
+        )
+    rows.sort(key=lambda row: str(row["path"]))
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
+
+
+def live_engine_verifier_node_types_tree(root: Path, errors: list[str]) -> dict[str, Any]:
+    public_root = root / "node_modules/@types/node"
+    expected_root = (
+        root / "node_modules/.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    )
+    expected_link = "../.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    try:
+        if not public_root.is_symlink() or os.readlink(public_root) != expected_link:
+            raise ValueError("public link drift")
+        resolved_public = public_root.resolve(strict=True)
+        resolved_expected = expected_root.resolve(strict=True)
+        if resolved_public != resolved_expected:
+            raise ValueError("public link target drift")
+        current = root
+        for part in expected_root.relative_to(root).parts:
+            current = current / part
+            if current.is_symlink():
+                raise ValueError("pnpm root contains symlink")
+        rows: list[dict[str, Any]] = []
+        for path in sorted(resolved_expected.rglob("*"), key=lambda item: item.as_posix()):
+            relative = path.relative_to(resolved_expected).as_posix()
+            if path.is_symlink():
+                raise ValueError(f"nested symlink: {relative}")
+            if path.is_dir():
+                continue
+            if not path.is_file():
+                raise ValueError(f"non-regular entry: {relative}")
+            content = path.read_bytes()
+            rows.append(
+                {
+                    "path": relative,
+                    "sha256": v1.digest_bytes(content),
+                    "byte_count": len(content),
+                }
+            )
+    except (OSError, RuntimeError, ValueError) as exc:
+        errors.append(f"engine verifier live Node types tree invalid: {exc}")
+        rows = []
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
 
 
 def validate_engine_verifier_emit(
@@ -2314,11 +2411,28 @@ def validate_engine_verifier(
     runtime_paths = {
         str(artifacts.get(identifier, {}).get("path")) for identifier in runtime_ids
     }
-    if runtime_paths != ENGINE_VERIFIER_RUNTIME_PATHS:
+    node_types_tree = engine_verifier_node_types_tree(
+        runtime_ids=runtime_ids,
+        artifacts=artifacts,
+        artifact_files=artifact_files,
+        errors=errors,
+    )
+    expected_runtime_paths = ENGINE_VERIFIER_RUNTIME_BASE_PATHS | {
+        ENGINE_VERIFIER_NODE_TYPES_PREFIX + str(row["path"])
+        for row in node_types_tree["files"]
+    }
+    if (
+        node_types_tree["file_count"]
+        != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT
+        or node_types_tree["digest"]
+        != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256
+    ):
+        errors.append("engine verifier Node types tree identity drift")
+    if runtime_paths != expected_runtime_paths:
         errors.append(
             "engine verifier runtime path closure is not exact: "
-            f"missing={sorted(ENGINE_VERIFIER_RUNTIME_PATHS - runtime_paths)} "
-            f"extra={sorted(runtime_paths - ENGINE_VERIFIER_RUNTIME_PATHS)}"
+            f"missing={sorted(expected_runtime_paths - runtime_paths)} "
+            f"extra={sorted(runtime_paths - expected_runtime_paths)}"
         )
     implementation = campaign.get("implementation", {})
     implementation_manifest_id = str(implementation.get("manifest_artifact_id"))
@@ -2374,6 +2488,13 @@ def validate_engine_verifier(
                 errors.append(
                     f"engine verifier live TypeScript runtime drift: {runtime_path}"
                 )
+    if not captured_replay and live_runtime_replay:
+        live_node_types_tree = live_engine_verifier_node_types_tree(
+            Path(__file__).resolve().parents[2] / "engines/frontend-client-engine",
+            errors,
+        )
+        if live_node_types_tree != node_types_tree:
+            errors.append("engine verifier live Node types runtime drift")
     entry_id = str(declaration.get("entrypoint_artifact_id"))
     if artifacts.get(entry_id, {}).get("role") != "engine-verifier-entrypoint-v2":
         errors.append("engine verifier entrypoint role drift")
@@ -2396,6 +2517,10 @@ def validate_engine_verifier(
             "formal-campaign/engine-verifier/node_modules/typescript/package.json",
             ("typescript", "5.9.2"),
         ),
+        (
+            "formal-campaign/engine-verifier/node_modules/@types/node/package.json",
+            ("@types/node", "24.3.0"),
+        ),
     ):
         path = artifact_files.get(str(package_ids.get(relative)))
         if path is None:
@@ -2407,7 +2532,9 @@ def validate_engine_verifier(
                 f"engine verifier package manifest invalid: {relative}: {exc}"
             )
             continue
-        if relative.endswith("node_modules/typescript/package.json"):
+        if relative.endswith("node_modules/typescript/package.json") or relative.endswith(
+            "node_modules/@types/node/package.json"
+        ):
             if (package.get("name"), package.get("version")) != expected:
                 errors.append("engine verifier TypeScript runtime identity drift")
         elif package.get("name") != expected[0] or package.get("type") != expected[1]:
@@ -4350,8 +4477,10 @@ def validate_toolchain_evidence_v2(
                 "node",
                 "source_tree",
                 "dist_tree",
+                "node_types_tree",
                 "files",
                 "typescript_version",
+                "node_types_version",
                 "closure_digest",
             },
             "toolchain v2 engine preverification implementation",
@@ -4364,10 +4493,44 @@ def validate_toolchain_evidence_v2(
             or preverify_implementation.get("kind")
             != "frontend-interaction-engine-implementation-identity"
             or preverify_implementation.get("typescript_version") != "5.9.2"
+            or preverify_implementation.get("node_types_version") != "24.3.0"
             or implementation_digest != v1.canonical_digest(implementation_core)
         ):
             errors.append(
                 "toolchain v2 engine preverification implementation fingerprint drift"
+            )
+        node_types_tree = exact_object(
+            preverify_implementation.get("node_types_tree"),
+            {"root", "file_count", "digest", "files"},
+            "toolchain v2 engine preverification Node types tree",
+            errors,
+        )
+        packed_node_types_tree = engine_verifier_node_types_tree(
+            runtime_ids=[
+                str(item)
+                for item in campaign.get("engine_verifier", {}).get(
+                    "runtime_artifact_ids", []
+                )
+            ],
+            artifacts=artifacts,
+            artifact_files=artifact_files,
+            errors=errors,
+        )
+        if (
+            node_types_tree.get("file_count")
+            != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT
+            or node_types_tree.get("digest")
+            != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256
+            or node_types_tree.get("files") != packed_node_types_tree.get("files")
+            or node_types_tree.get("file_count")
+            != packed_node_types_tree.get("file_count")
+            or node_types_tree.get("digest") != packed_node_types_tree.get("digest")
+            or not str(node_types_tree.get("root", "")).endswith(
+                "/node_modules/.pnpm/@types+node@24.3.0/node_modules/@types/node"
+            )
+        ):
+            errors.append(
+                "toolchain v2 engine preverification Node types tree capture drift"
             )
         preverify_files = exact_object(
             preverify_implementation.get("files"),
@@ -4380,6 +4543,7 @@ def validate_toolchain_evidence_v2(
                 "tsconfig",
                 "lock",
                 "typescript_package",
+                "node_types_package",
             },
             "toolchain v2 engine preverification files",
             errors,
@@ -4442,6 +4606,36 @@ def validate_toolchain_evidence_v2(
                 ) or typescript_identity.get("byte_count") != len(content):
                     errors.append(
                         "toolchain v2 engine preverification TypeScript capture drift"
+                    )
+        node_types_file_ids = [
+            identifier
+            for identifier, reference in artifacts.items()
+            if reference.get("path")
+            == "formal-campaign/engine-verifier/node_modules/@types/node/package.json"
+        ]
+        node_types_identity = exact_object(
+            preverify_files.get("node_types_package"),
+            {"path", "realpath", "sha256", "byte_count"},
+            "toolchain v2 engine preverification Node types package",
+            errors,
+        )
+        if len(node_types_file_ids) != 1:
+            errors.append(
+                "toolchain v2 engine preverification Node types capture is missing"
+            )
+        else:
+            node_types_file = artifact_files.get(node_types_file_ids[0])
+            if node_types_file is None:
+                errors.append(
+                    "toolchain v2 engine preverification Node types capture is missing"
+                )
+            else:
+                content = node_types_file.read_bytes()
+                if node_types_identity.get("sha256") != v1.digest_bytes(
+                    content
+                ) or node_types_identity.get("byte_count") != len(content):
+                    errors.append(
+                        "toolchain v2 engine preverification Node types capture drift"
                     )
         node_identity = exact_object(
             preverify_implementation.get("node"),

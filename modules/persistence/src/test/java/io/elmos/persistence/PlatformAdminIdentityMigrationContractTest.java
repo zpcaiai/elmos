@@ -19,6 +19,7 @@ class PlatformAdminIdentityMigrationContractTest {
             "src/main/resources/db/migration/V79__platform_admin_verified_email_boundary.sql");
     private static final Path ACCOUNT_MIGRATION = Path.of(
             "src/main/resources/db/migration/V55__account_identity_and_organization_self_service.sql");
+    private static final Path CI_WORKFLOW = Path.of("../../.github/workflows/ci.yml");
 
     private static String migration() throws Exception {
         return Files.readString(MIGRATION);
@@ -47,6 +48,14 @@ class PlatformAdminIdentityMigrationContractTest {
                 "V79 must reject whitespace variants that the legacy lower-only index distinguishes");
     }
 
+    @Test void rawPsqlMigrationReplayPreservesFlywayTransactionSemantics() throws Exception {
+        String workflow = Files.readString(CI_WORKFLOW);
+
+        assertTrue(workflow.contains(
+                "psql \"$DATABASE_URL\" --single-transaction -v ON_ERROR_STOP=1 -q -f \"$file\""),
+                "the raw PostgreSQL gate must hold V79 table locks for the complete migration file");
+    }
+
     @Test void authorizationAndResolutionRecheckEligibilityOnEveryUse() throws Exception {
         String sql = migration();
         String authorize = bodyOf(sql, "elmos_platform_authorize");
@@ -60,6 +69,12 @@ class PlatformAdminIdentityMigrationContractTest {
         assertTrue(resolve.contains("administrator.revoked_at IS NULL"));
         assertTrue(resolve.contains(
                 "elmos_platform_admin_identity_eligible(directory.account_id)"));
+        assertTrue(sql.contains(
+                "GRANT EXECUTE ON FUNCTION elmos_platform_authorize(varchar, varchar, "
+                        + "varchar, varchar, varchar) TO elmos_platform_admin_runtime"));
+        assertTrue(sql.contains(
+                "GRANT EXECUTE ON FUNCTION elmos_platform_resolve_admin_account(varchar, varchar) "
+                        + "TO elmos_platform_admin_runtime"));
     }
 
     @Test void grantBootstrapAndDirectWritesCannotMintAnotherAdministrator() throws Exception {
@@ -79,6 +94,24 @@ class PlatformAdminIdentityMigrationContractTest {
         assertTrue(sql.contains("BEFORE INSERT OR UPDATE OF account_id, revoked_at"));
     }
 
+    @Test void accountAndAdministratorWritesSerializeBeforeTakingRowLocks() throws Exception {
+        String sql = migration();
+        String writeLock = bodyOf(sql, "elmos_platform_admin_identity_write_lock");
+
+        assertTrue(writeLock.contains("pg_catalog.pg_advisory_xact_lock(1162628425, 79)"));
+        assertTrue(sql.contains("BEFORE INSERT OR UPDATE OR DELETE ON public.platform_administrators"));
+        assertTrue(sql.contains(
+                "BEFORE UPDATE OF primary_email, email_verified_at, status ON public.accounts"));
+        assertTrue(sql.contains("BEFORE DELETE ON public.accounts"));
+        assertTrue(sql.contains("FOR EACH STATEMENT EXECUTE FUNCTION "
+                + "elmos_platform_admin_identity_write_lock()"));
+        assertFalse(sql.contains("BEFORE TRUNCATE"),
+                "the identity mutex must not add a TRUNCATE/table-lock cycle");
+        assertTrue(sql.contains(
+                "REVOKE ALL ON TABLE public.accounts, public.platform_administrators FROM PUBLIC"),
+                "untrusted runtime roles must not bypass statement serialization with table DML");
+    }
+
     @Test void upgradeRevokesAndAuditsEveryExistingIneligibleLiveRow() throws Exception {
         String sql = migration();
 
@@ -93,6 +126,9 @@ class PlatformAdminIdentityMigrationContractTest {
                 "LOCK TABLE public.platform_administrators IN SHARE ROW EXCLUSIVE MODE"));
         assertTrue(sql.contains(
                 "LOCK TABLE public.accounts IN SHARE ROW EXCLUSIVE MODE"));
+        assertTrue(sql.indexOf("LOCK TABLE public.accounts IN SHARE ROW EXCLUSIVE MODE")
+                        < sql.indexOf("LOCK TABLE public.platform_administrators IN SHARE ROW EXCLUSIVE MODE"),
+                "migration and account-update triggers must acquire accounts before platform administrators");
     }
 
     @Test void LosingVerifiedIdentityAutoRevokesInsteadOfBlockingTheAccountUpdate()
@@ -114,6 +150,7 @@ class PlatformAdminIdentityMigrationContractTest {
 
         for (String function : new String[]{
                 "elmos_platform_admin_identity_eligible",
+                "elmos_platform_admin_identity_write_lock",
                 "elmos_platform_admin_identity_guard",
                 "elmos_platform_admin_revoke_on_identity_loss",
                 "elmos_platform_authorize",

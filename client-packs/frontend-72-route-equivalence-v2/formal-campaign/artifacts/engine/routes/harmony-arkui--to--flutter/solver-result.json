@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "harmony-arkui--to--flutter",
-  "formal_input_digest": "sha256:50593fb69a25ee6b1dc3c50707c62430b0b341ef03de794fa012d0cf43d1e323",
-  "solver_input_digest": "sha256:c4588d741fe817b3bb7a9f1130cc48507ac2f465e7d1898fdc7ef073f6c4052e",
-  "smt2_digest": "sha256:c4588d741fe817b3bb7a9f1130cc48507ac2f465e7d1898fdc7ef073f6c4052e"
+  "formal_input_digest": "sha256:208d379725bb682d3db5c9f3899132ffdec99f4c8280faa2b240394ecbe59eec",
+  "solver_input_digest": "sha256:74427483c300336eb3a2ae2ea777581f632a22e4be46bb498d0d50c3b95880e9",
+  "smt2_digest": "sha256:74427483c300336eb3a2ae2ea777581f632a22e4be46bb498d0d50c3b95880e9"
 }

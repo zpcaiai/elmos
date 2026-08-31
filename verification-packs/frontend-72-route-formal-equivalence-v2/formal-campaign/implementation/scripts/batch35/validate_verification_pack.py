@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
+import os
 import re
 import subprocess
 import sys
@@ -10,8 +12,10 @@ from pathlib import Path
 from _common import load, local_ref_path
 
 try:
+    if os.environ.get("ELMOS_BATCH35_FORCE_LOCAL_JSONSCHEMA") == "true":
+        raise ImportError("local schema validator requested")
     import jsonschema
-except ImportError as exc:
+except ImportError:
     # Batch 35 schemas intentionally use a closed JSON Schema subset.  Keep
     # validation fail-closed without requiring an ambient package install.
     from _local_jsonschema import SchemaError, ValidationError, validate
@@ -210,6 +214,104 @@ def validate_local_evidence_consistency(pack, pack_manifest, evidence, errors):
                 errors.append(
                     f"{record_field} does not match the {role} repository binding: {ref}"
                 )
+        environment_ref = record.get("environment_identity_ref")
+        if environment_ref is not None:
+            environment_path = local_ref_path(pack, environment_ref)
+            if environment_path is None:
+                errors.append(f"environment identity is unsafe or missing: {ref}")
+            else:
+                environment_bytes = environment_path.read_bytes()
+                environment_sha256 = "sha256:" + hashlib.sha256(
+                    environment_bytes
+                ).hexdigest()
+                if environment_sha256 != record.get("environment_digest"):
+                    errors.append(f"environment identity digest drift: {ref}")
+                try:
+                    environment_identity = load(environment_path)
+                except (OSError, ValueError) as exc:
+                    errors.append(f"environment identity is invalid: {ref}: {exc}")
+                    environment_identity = {}
+                if set(environment_identity) != {
+                    "schema_version",
+                    "kind",
+                    "platform",
+                    "node",
+                    "pnpm",
+                    "playwright",
+                    "browser",
+                    "web_console",
+                }:
+                    errors.append(f"environment identity field closure drift: {ref}")
+                if (
+                    environment_identity.get("schema_version") != 1
+                    or environment_identity.get("kind")
+                    != "elmos-local-browser-test-environment"
+                ):
+                    errors.append(f"environment identity contract drift: {ref}")
+                for component_name in ("node", "pnpm"):
+                    component = environment_identity.get(component_name, {})
+                    if (
+                        not isinstance(component, dict)
+                        or not isinstance(component.get("version"), str)
+                        or not isinstance(component.get("realpath"), str)
+                        or not isinstance(component.get("byte_size"), int)
+                        or component.get("byte_size", 0) < 1
+                        or not isinstance(component.get("sha256"), str)
+                        or not re.fullmatch(
+                            r"sha256:[0-9a-f]{64}", component.get("sha256", "")
+                        )
+                    ):
+                        errors.append(
+                            f"environment identity {component_name} is malformed: {ref}"
+                        )
+                playwright = environment_identity.get("playwright", {})
+                browser = environment_identity.get("browser", {})
+                platform = environment_identity.get("platform", {})
+                if (
+                    not isinstance(playwright, dict)
+                    or not re.fullmatch(
+                        r"sha256:[0-9a-f]{64}",
+                        str(playwright.get("package_sha256", "")),
+                    )
+                    or not re.fullmatch(
+                        r"sha256:[0-9a-f]{64}",
+                        str(playwright.get("lock_sha256", "")),
+                    )
+                    or not isinstance(browser, dict)
+                    or not re.fullmatch(
+                        r"sha256:[0-9a-f]{64}", str(browser.get("sha256", ""))
+                    )
+                    or browser.get("project")
+                    != record.get("environment", {}).get(
+                        "configured_browser_project"
+                    )
+                    or browser.get("channel")
+                    != record.get("environment", {}).get(
+                        "configured_browser_channel"
+                    )
+                    or not isinstance(platform, dict)
+                    or any(
+                        not isinstance(platform.get(field), str)
+                        or not platform.get(field)
+                        for field in (
+                            "product_name",
+                            "product_version",
+                            "build_version",
+                            "kernel_release",
+                            "architecture",
+                        )
+                    )
+                ):
+                    errors.append(f"environment browser/OS identity is malformed: {ref}")
+                browser_execution = record.get("environment", {}).get(
+                    "browser_execution"
+                )
+                if browser_execution not in {"PASSED", "NOT_RUN"}:
+                    errors.append(f"browser execution status is invalid: {ref}")
+                if browser_execution == "NOT_RUN" and not record.get(
+                    "environment", {}
+                ).get("browser_execution_reason"):
+                    errors.append(f"browser NOT_RUN reason is missing: {ref}")
     certification_path = local_ref_path(pack, "certification/certification.json")
     if certification_path is not None:
         try:

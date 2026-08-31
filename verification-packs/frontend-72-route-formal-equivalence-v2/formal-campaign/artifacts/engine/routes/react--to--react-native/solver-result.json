@@ -1,12 +1,12 @@
 {
   "schema_version": "1.0",
-  "solver": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
-  "solver_binary_realpath": "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+  "solver": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
+  "solver_binary_realpath": "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
   "solver_binary_sha256": "sha256:537a502af2f4013a8e887beebe525a0dae84918a61ff545991e36dfda07ed6d7",
   "solver_version": "Z3 version 4.16.0 - 64 bit",
   "identity_status": "VERIFIED",
   "invocation": [
-    "/opt/homebrew/Cellar/z3/4.16.0/bin/z3",
+    "/Users/stephen/DevProjects/AIProjects/elmos/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3",
     "-in"
   ],
   "options": {
@@ -27,7 +27,7 @@
   "proof_status": "PROVED_UNDER_ASSUMPTIONS",
   "unconditional_proof": false,
   "route_id": "react--to--react-native",
-  "formal_input_digest": "sha256:19a28ab4644bb75c889331e2aee6f2e51ba55be712b0007deb6805912495f929",
-  "solver_input_digest": "sha256:17f317565270c062a3cde3388ccf82a8b49335c622e876ced10fd912a6748460",
-  "smt2_digest": "sha256:17f317565270c062a3cde3388ccf82a8b49335c622e876ced10fd912a6748460"
+  "formal_input_digest": "sha256:6ea4415764929098cb64f6b30b3fb73ce843ee4c1642c9e8fbcfedaa6db892e0",
+  "solver_input_digest": "sha256:9d4e4127487f9a940a34b53822be954ecc8db6d5eb8e2898615ff2726e507177",
+  "smt2_digest": "sha256:9d4e4127487f9a940a34b53822be954ecc8db6d5eb8e2898615ff2726e507177"
 }

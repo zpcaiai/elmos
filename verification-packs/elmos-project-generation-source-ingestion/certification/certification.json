@@ -9,7 +9,7 @@
     "target_artifact_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
     "workload_key": "multi-format-source-ingestion-security",
     "risk_tier": "P0",
-    "environment_digest": "sha256:de1874216fb08857c9cd2f268397292a1e5b9d27c4f53c5915b022a8b49298d8",
+    "environment_digest": "sha256:03925d98ca7f40f5099d4f703d2e7ec21e24d4321ea05a330675a1c82939daa4",
     "validation_kind": "local-deterministic-parser-security-qualification",
     "source_target_migration_equivalence": "NOT_APPLICABLE",
     "external_solver_or_symbolic_execution": "NOT_RUN",
@@ -34,6 +34,7 @@
   },
   "evidence_refs": [
     "certification/local-test-result.json",
+    "certification/local-test-environment.json",
     "corpus/negative/cases.json",
     "corpus/holdout/cases.json",
     "corpus/representative-workloads/cases.json",

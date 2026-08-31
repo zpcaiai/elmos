@@ -23,13 +23,13 @@ test("administrator login is visibly separate from user login", async ({ page })
 
 test("administrator login reports rejected and unavailable security states", async ({ page }) => {
   await page.goto("/admin/login?error=ADMIN_EMAIL_REQUIRED");
-  await expect(page.getByRole("alert")).toContainText("不是获准的管理员账户");
+  await expect(page.locator(".auth-error[role='alert']")).toContainText("不是获准的管理员账户");
 
   await page.goto("/admin/login?error=ADMIN_LOGIN_ENTRY_REQUIRED");
-  await expect(page.getByRole("alert")).toContainText("管理员账户必须从当前专用入口登录");
+  await expect(page.locator(".auth-error[role='alert']")).toContainText("管理员账户必须从当前专用入口登录");
 
   await page.goto("/admin/login?error=ADMIN_LOGIN_NOTIFICATION_UNAVAILABLE");
-  await expect(page.getByRole("alert")).toContainText("本次未建立管理员会话");
+  await expect(page.locator(".auth-error[role='alert']")).toContainText("本次未建立管理员会话");
 });
 
 test("admin navigation and commands require the server-issued admin session", async ({ page }) => {
@@ -65,6 +65,12 @@ test("admin navigation and commands require the server-issued admin session", as
   await expect(page.getByText("管理员会话", { exact: true })).toHaveCount(0);
   await page.getByRole("button", { name: "打开账户菜单" }).click();
   await expect(page.getByText("管理员会话", { exact: true })).toBeVisible();
+  const mobileNavigationOverlay = page.getByRole("button", { name: "关闭导航遮罩" });
+  if ((page.viewportSize()?.width ?? 0) <= 900) {
+    await expect(mobileNavigationOverlay).toBeVisible();
+    await mobileNavigationOverlay.click();
+    await expect(mobileNavigationOverlay).toBeHidden();
+  }
 
   await page.getByRole("button", { name: "打开全局搜索" }).click();
   await expect(page.getByRole("option", { name: /查看操作日志与性能/ })).toBeVisible();

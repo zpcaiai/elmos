@@ -14,12 +14,21 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod codesign curl find git install mv python3 shasum stat sudo tar; do
+for command_name in brew chmod codesign curl find git install mv python3 realpath shasum stat sudo sw_vers tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
   fi
 done
+readonly REALPATH_PATH="$(command -v realpath)"
+case "${REALPATH_PATH}" in
+  /bin/realpath|/usr/bin/realpath) ;;
+  *) printf 'Required realpath must be a system executable, observed %s\n' "${REALPATH_PATH}" >&2; exit 2 ;;
+esac
+if [[ ! -x "${REALPATH_PATH}" || -L "${REALPATH_PATH}" ]]; then
+  printf 'Required realpath system executable identity is invalid.\n' >&2
+  exit 2
+fi
 
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 readonly REPOSITORY_ROOT
@@ -38,6 +47,15 @@ case "${CI_PROFILE}" in
   full|frontend-formal|java-python|typed-sql) ;;
   *) printf 'Unknown ELMOS_POLYGLOT_ROUTE_CI_PROFILE: %s\n' "${CI_PROFILE}" >&2; exit 2 ;;
 esac
+if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "frontend-formal" ]]; then
+  case "$(sw_vers -productVersion)" in
+    26.*) ;;
+    *)
+      printf 'The pinned Node/ada-url bottle receipt is Tahoe-only.\n' >&2
+      exit 2
+      ;;
+  esac
+fi
 
 cleanup() {
   rm -rf -- "${temporary_root}"
@@ -141,6 +159,54 @@ PY
   fi
 }
 
+verify_pinned_ada_url_abi_link() {
+  local root="$1"
+  local versioned_library="$2"
+  local abi_link="$3"
+  local link_target
+  local resolved_target
+  if [[ ! -L "${abi_link}" ]]; then
+    return 1
+  fi
+  link_target="$(readlink "${abi_link}")" || return 1
+  if [[ "${link_target}" != "libada.3.4.4.dylib" ]]; then
+    return 1
+  fi
+  resolved_target="$("${REALPATH_PATH}" "${abi_link}")" || return 1
+  case "${resolved_target}" in
+    "${root}"/*) ;;
+    *) return 1 ;;
+  esac
+  [[ "${resolved_target}" == "${versioned_library}" ]]
+}
+
+install_pinned_ada_url() {
+  install_pinned_formula \
+    "ada-url" "3.4.4" \
+    "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
+    "Formula/a/ada-url.rb" \
+    "db3cda12f2efe5c488b074bdab022a3a22db56700e8687473c8f6807963b02aa"
+  readonly ADA_URL_ROOT="${HOMEBREW_CELLAR}/ada-url/3.4.4"
+  readonly ADA_URL_LIBRARY="${ADA_URL_ROOT}/lib/libada.3.4.4.dylib"
+  readonly ADA_URL_ABI_LINK="${ADA_URL_ROOT}/lib/libada.3.dylib"
+  if [[ ! -f "${ADA_URL_LIBRARY}" || -L "${ADA_URL_LIBRARY}" \
+    || "$(stat -f '%z' "${ADA_URL_LIBRARY}")" != "616512" \
+    || "$(file_sha256 "${ADA_URL_LIBRARY}")" != "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" \
+    || "$(readlink "${HOMEBREW_PREFIX}/opt/ada-url")" != "../Cellar/ada-url/3.4.4" ]]; then
+    printf 'Pinned ada-url identity does not provide the exact libada.3 closure.\n' >&2
+    exit 3
+  fi
+  if ! verify_pinned_ada_url_abi_link \
+      "${ADA_URL_ROOT}" "${ADA_URL_LIBRARY}" "${ADA_URL_ABI_LINK}"; then
+    printf 'Pinned ada-url ABI link escapes or drifts from the exact library.\n' >&2
+    exit 3
+  fi
+  if ! /usr/bin/codesign --verify --strict "${ADA_URL_LIBRARY}"; then
+    printf 'Pinned ada-url library signature verification failed.\n' >&2
+    exit 3
+  fi
+}
+
 install_pinned_cask() {
   local token="$1"
   local expected_version="$2"
@@ -233,8 +299,9 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
   # dependency closure before the historical bottle so hosted-image updates
   # cannot silently substitute a newer Node binary.
   HOMEBREW_NO_AUTO_UPDATE=1 brew install \
-    ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
+    brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
     libngtcp2 libuv merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+  install_pinned_ada_url
   # Node 26.0.0 was built against llhttp 9.4.1. Homebrew's rolling hosted
   # image currently carries 9.4.2, whose ABI removed the symbol Node loads;
   # install the exact historical bottle from the same signed formula commit
@@ -252,7 +319,7 @@ if [[ "${CI_PROFILE}" == "frontend-formal" ]]; then
   readonly FRONTEND_NODE="${HOMEBREW_CELLAR}/node/26.0.0/bin/node"
   if [[ ! -x "${FRONTEND_NODE}" \
     || "$(stat -f '%z' "${FRONTEND_NODE}")" != "68672" \
-    || "$(file_sha256 "${FRONTEND_NODE}")" != "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9" \
+    || "$(file_sha256 "${FRONTEND_NODE}")" != "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" \
     || "$("${FRONTEND_NODE}" --version)" != "v26.0.0" ]]; then
     printf 'Pinned frontend Node identity does not match the formal receipt: path=%s bytes=%s sha256=%s version=%s\n' \
       "${FRONTEND_NODE}" "$(stat -f '%z' "${FRONTEND_NODE}" 2>/dev/null || true)" \
@@ -319,8 +386,9 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # Install the named closure before the historical Node bottle; the engine
   # hashes every resolved component and fails closed if any formula has drifted.
   HOMEBREW_NO_AUTO_UPDATE=1 brew install \
-    ada-url brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
+    brotli c-ares hdrhistogram_c icu4c@78 libnghttp2 libnghttp3 \
     libngtcp2 libuv merve nbytes openssl@3 simdjson simdutf uvwasi zstd
+  install_pinned_ada_url
   install_pinned_formula \
     "llhttp" "9.4.1" \
     "98aa23ff4d1956be3df92906ff21b7e2b4c7a14b" \
@@ -436,6 +504,7 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   HOME="${PINNED_HOME}" \
   ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
   ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT="${TOOLCHAIN_ROOT}" \
+  ELMOS_JAVA21_DISTRIBUTION="temurin" \
   ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}" \
     bash "${REPOSITORY_ROOT}/scripts/toolchains/install_polyglot_route_toolchains.sh"
 fi

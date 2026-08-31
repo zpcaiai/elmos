@@ -17,8 +17,8 @@ readonly KOTLIN_TREE_DIRECTORY_COUNT="5"
 readonly KOTLIN_TREE_BYTES="85861305"
 readonly KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11)"
 readonly KOTLIN_ARCHIVE_URL="https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"
-readonly PIN_SCRIPT_SHA256="60540ef44a6a8a5a2a65343868951f2dcfc0063b1cd91f1e4db46dff1b86a1ac"
-readonly PIN_SCRIPT_BYTES="21518"
+readonly PIN_SCRIPT_SHA256="70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45"
+readonly PIN_SCRIPT_BYTES="22423"
 
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 readonly REPOSITORY_ROOT

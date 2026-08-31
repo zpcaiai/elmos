@@ -49,8 +49,8 @@ REVOKE ALL ON FUNCTION elmos_platform_admin_identity_eligible(varchar) FROM PUBL
 -- convergence scan and installation of the new triggers/functions. Flyway
 -- applies PostgreSQL migrations transactionally, so these locks are held only
 -- until V79 commits and the new boundary becomes visible atomically.
-LOCK TABLE public.platform_administrators IN SHARE ROW EXCLUSIVE MODE;
 LOCK TABLE public.accounts IN SHARE ROW EXCLUSIVE MODE;
+LOCK TABLE public.platform_administrators IN SHARE ROW EXCLUSIVE MODE;
 
 -- ---------------------------------------------------------------------------
 -- 2. Safely converge installations upgraded from V75
@@ -89,6 +89,36 @@ SELECT 'pal-' || md5(
 -- ---------------------------------------------------------------------------
 -- 3. Guard direct writes and revoke on account-identity loss
 -- ---------------------------------------------------------------------------
+
+-- The two row triggers below touch accounts and platform_administrators in
+-- opposite directions. Serialize their statement entry before either executor
+-- can take a row lock, so every supported INSERT/UPDATE/DELETE path has one
+-- global order and cannot form an accounts-row <-> administrator-row cycle.
+-- This advisory lock is transaction scoped and intentionally covers only this
+-- low-volume security boundary; it is not a general application mutex.
+CREATE OR REPLACE FUNCTION elmos_platform_admin_identity_write_lock()
+RETURNS trigger
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = pg_catalog, public, pg_temp
+AS $$
+BEGIN
+    PERFORM pg_catalog.pg_advisory_xact_lock(1162628425, 79);
+    RETURN NULL;
+END;
+$$;
+
+CREATE TRIGGER "00_platform_administrators_identity_write_lock"
+BEFORE INSERT OR UPDATE OR DELETE ON public.platform_administrators
+FOR EACH STATEMENT EXECUTE FUNCTION elmos_platform_admin_identity_write_lock();
+
+CREATE TRIGGER "00_accounts_platform_admin_identity_update_lock"
+BEFORE UPDATE OF primary_email, email_verified_at, status ON public.accounts
+FOR EACH STATEMENT EXECUTE FUNCTION elmos_platform_admin_identity_write_lock();
+
+CREATE TRIGGER "00_accounts_platform_admin_identity_delete_lock"
+BEFORE DELETE ON public.accounts
+FOR EACH STATEMENT EXECUTE FUNCTION elmos_platform_admin_identity_write_lock();
 
 CREATE OR REPLACE FUNCTION elmos_platform_admin_identity_guard()
 RETURNS trigger
@@ -185,6 +215,8 @@ FOR EACH ROW EXECUTE FUNCTION elmos_platform_admin_revoke_on_identity_loss();
 
 REVOKE ALL ON FUNCTION elmos_platform_admin_identity_guard() FROM PUBLIC;
 REVOKE ALL ON FUNCTION elmos_platform_admin_revoke_on_identity_loss() FROM PUBLIC;
+REVOKE ALL ON FUNCTION elmos_platform_admin_identity_write_lock() FROM PUBLIC;
+REVOKE ALL ON TABLE public.accounts, public.platform_administrators FROM PUBLIC;
 
 -- ---------------------------------------------------------------------------
 -- 4. Re-evaluate identity on every effective use
@@ -373,3 +405,12 @@ REVOKE ALL ON FUNCTION elmos_platform_authorize(varchar, varchar, varchar, varch
 REVOKE ALL ON FUNCTION elmos_platform_resolve_admin_account(varchar, varchar) FROM PUBLIC;
 REVOKE ALL ON FUNCTION elmos_platform_grant_admin(varchar, varchar, varchar, varchar) FROM PUBLIC;
 REVOKE ALL ON FUNCTION elmos_platform_bootstrap_admin(varchar, varchar) FROM PUBLIC;
+
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'elmos_platform_admin_runtime') THEN
+        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_authorize(varchar, varchar, varchar, varchar, varchar) TO elmos_platform_admin_runtime';
+        EXECUTE 'GRANT EXECUTE ON FUNCTION elmos_platform_resolve_admin_account(varchar, varchar) TO elmos_platform_admin_runtime';
+    END IF;
+END;
+$$;

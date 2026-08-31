@@ -6,7 +6,13 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -63,6 +69,8 @@ class FlywayMigrationTest {
                 POSTGRES.getJdbcUrl(), POSTGRES.getUsername(), POSTGRES.getPassword());
         var jdbc=org.springframework.jdbc.core.simple.JdbcClient.create(dataSource);
         verifyPlatformAdminIdentityBoundary(jdbc);
+        verifyPlatformAdminConcurrentWriteOrder(dataSource, jdbc);
+        verifyRuntimeRoleUsesFunctionsButCannotBypassPlatformAdminBoundary(dataSource, jdbc);
         assertEquals(1, jdbc.sql("""
                 SELECT count(*) FROM flyway_schema_history
                  WHERE version = '63' AND success
@@ -521,6 +529,264 @@ class FlywayMigrationTest {
                 SELECT elmos_platform_bootstrap_admin(
                     'acct-platform-target', 'explicitly restore after re-verification')
                 """).query(String.class).single());
+    }
+
+    private static void verifyPlatformAdminConcurrentWriteOrder(
+            DataSource dataSource,
+            org.springframework.jdbc.core.simple.JdbcClient jdbc) {
+        var executor = Executors.newFixedThreadPool(2);
+        jdbc.sql("""
+                CREATE FUNCTION elmos_test_pause_platform_admin_identity_loss()
+                RETURNS trigger LANGUAGE plpgsql AS $$
+                BEGIN
+                    PERFORM pg_catalog.pg_advisory_xact_lock(1162628425, 7901);
+                    RETURN NEW;
+                END;
+                $$
+                """).update();
+        jdbc.sql("""
+                CREATE TRIGGER "00_test_pause_platform_admin_identity_loss"
+                AFTER UPDATE OF primary_email, email_verified_at, status ON accounts
+                FOR EACH ROW EXECUTE FUNCTION elmos_test_pause_platform_admin_identity_loss()
+                """).update();
+        try (Connection barrier = dataSource.getConnection();
+             Connection administrator = dataSource.getConnection();
+             Connection account = dataSource.getConnection()) {
+            barrier.setAutoCommit(false);
+            administrator.setAutoCommit(false);
+            account.setAutoCommit(false);
+            setPlatformAdminConcurrencyTimeouts(administrator);
+            setPlatformAdminConcurrencyTimeouts(account);
+            int accountPid = backendPid(account);
+            int administratorPid = backendPid(administrator);
+
+            // Hold a test-only barrier. The account UPDATE first acquires the
+            // production identity mutex and its account row, then pauses in the
+            // alphabetically earlier AFTER trigger. A concurrent direct admin
+            // UPDATE must wait on the production advisory mutex before it can
+            // acquire the administrator row. Without the production statement
+            // triggers this exact interleaving forms account-row <-> admin-row
+            // and PostgreSQL reports SQLSTATE 40P01 when the pause is released.
+            barrier.createStatement().execute(
+                    "SELECT pg_advisory_xact_lock(1162628425, 7901)");
+            var accountUpdate = executor.submit(() -> {
+                int changed = account.createStatement().executeUpdate("""
+                        UPDATE accounts
+                           SET email_verified_at = NULL, phone_verified_at = now()
+                         WHERE account_id = 'acct-platform-target'
+                        """);
+                account.commit();
+                return changed;
+            });
+            assertTrue(waitingOnPlatformAdminAdvisoryLock(jdbc, accountPid),
+                    "the account transaction must reach the controlled AFTER-trigger barrier");
+            var administratorUpdate = executor.submit(() -> {
+                int changed = administrator.createStatement().executeUpdate("""
+                        UPDATE platform_administrators
+                           SET revoked_at = revoked_at
+                         WHERE account_id = 'acct-platform-target'
+                        """);
+                administrator.commit();
+                return changed;
+            });
+            assertTrue(waitingOnPlatformAdminAdvisoryLock(jdbc, administratorPid),
+                    "the admin statement must wait on the production mutex before its row lock");
+            barrier.commit();
+            assertEquals(1, accountUpdate.get(10, TimeUnit.SECONDS));
+            assertEquals(1, administratorUpdate.get(10, TimeUnit.SECONDS));
+            assertEquals(0, jdbc.sql("""
+                    SELECT count(*) FROM platform_administrators
+                     WHERE account_id = 'acct-platform-target' AND revoked_at IS NULL
+                    """).query(Integer.class).single(),
+                    "the serialized account write must still auto-revoke");
+
+            assertEquals(1, jdbc.sql("""
+                    UPDATE accounts SET email_verified_at = now()
+                     WHERE account_id = 'acct-platform-target'
+                    """).update());
+            assertEquals("ALLOWED", jdbc.sql("""
+                    SELECT elmos_platform_bootstrap_admin(
+                        'acct-platform-target', 'restore for concurrent upsert test')
+                    """).query(String.class).single());
+
+            // Exercise the inverse direction and the real ON CONFLICT UPDATE
+            // shape used by grant/bootstrap. The upsert waits before taking its
+            // row while the account statement owns the same transaction mutex.
+            assertEquals(1, account.createStatement().executeUpdate("""
+                    UPDATE accounts
+                       SET primary_email = primary_email
+                     WHERE account_id = 'acct-platform-target'
+                    """));
+            var administratorUpsert = executor.submit(
+                    () -> {
+                        int changed = administrator.createStatement().executeUpdate("""
+                                INSERT INTO platform_administrators (
+                                    account_id, platform_role, grant_reason)
+                                VALUES (
+                                    'acct-platform-target', 'PLATFORM_APPROVER',
+                                    'concurrent lock-order upsert test')
+                                ON CONFLICT (account_id) DO UPDATE
+                                    SET platform_role = EXCLUDED.platform_role,
+                                        revoked_at = NULL,
+                                        revoked_by = NULL,
+                                        revoke_reason = NULL,
+                                        state_version = platform_administrators.state_version + 1
+                                """);
+                        administrator.commit();
+                        return changed;
+                    });
+            assertTrue(waitingOnPlatformAdminAdvisoryLock(jdbc, administratorPid),
+                    "the administrator upsert must wait before acquiring its row lock");
+            account.commit();
+            assertEquals(1, administratorUpsert.get(10, TimeUnit.SECONDS));
+            assertEquals(1, jdbc.sql("""
+                    SELECT count(*) FROM platform_administrators
+                     WHERE account_id = 'acct-platform-target' AND revoked_at IS NULL
+                    """).query(Integer.class).single());
+        } catch (Exception error) {
+            throw new AssertionError(
+                    "PostgreSQL 17 concurrent platform-admin writes must complete without 40P01",
+                    error);
+        } finally {
+            executor.shutdownNow();
+            jdbc.sql("DROP TRIGGER IF EXISTS \"00_test_pause_platform_admin_identity_loss\" ON accounts")
+                    .update();
+            jdbc.sql("DROP FUNCTION IF EXISTS elmos_test_pause_platform_admin_identity_loss()")
+                    .update();
+        }
+    }
+
+    private static void setPlatformAdminConcurrencyTimeouts(Connection connection)
+            throws Exception {
+        try (var statement = connection.createStatement()) {
+            statement.execute("SET statement_timeout = '10s'");
+            statement.execute("SET lock_timeout = '8s'");
+            statement.execute("SET deadlock_timeout = '100ms'");
+        }
+    }
+
+    private static void verifyRuntimeRoleUsesFunctionsButCannotBypassPlatformAdminBoundary(
+            DataSource dataSource,
+            org.springframework.jdbc.core.simple.JdbcClient jdbc) {
+        String role = "elmos_control_plane_runtime_acl_test";
+        String[] functionSignatures = {
+                "elmos_platform_resolve_admin_account(varchar,varchar)",
+                "elmos_platform_wallet_overview(varchar,varchar,integer)",
+                "elmos_platform_wallet_ledger(varchar,varchar,integer,integer)",
+                "elmos_platform_topup_orders(varchar,varchar,integer)",
+                "elmos_platform_job_overview(varchar,varchar,varchar,integer)",
+                "elmos_platform_wallet_adjust(varchar,varchar,varchar,numeric,varchar,varchar)",
+                "elmos_platform_grant_admin(varchar,varchar,varchar,varchar)",
+                "elmos_platform_revoke_admin(varchar,varchar,varchar)",
+                "elmos_platform_authorize(varchar,varchar,varchar,varchar,varchar)"};
+        jdbc.sql("CREATE ROLE " + role + " LOGIN NOINHERIT NOSUPERUSER NOBYPASSRLS "
+                + "NOCREATEDB NOCREATEROLE NOREPLICATION").update();
+        jdbc.sql("GRANT USAGE ON SCHEMA public TO " + role).update();
+        for (String signature : functionSignatures) {
+            jdbc.sql("GRANT EXECUTE ON FUNCTION " + signature + " TO " + role).update();
+        }
+        try {
+            assertEquals(0, jdbc.sql("""
+                    SELECT count(*) FROM pg_auth_members
+                     WHERE member = (SELECT oid FROM pg_roles WHERE rolname = :role)
+                    """).param("role", role).query(Integer.class).single());
+            for (String signature : functionSignatures) {
+                assertEquals(true, jdbc.sql("""
+                        SELECT has_function_privilege(:role, :signature, 'EXECUTE')
+                        """)
+                        .param("role", role)
+                        .param("signature", signature)
+                        .query(Boolean.class).single(),
+                        () -> "runtime role lacks allowlisted function: " + signature);
+            }
+            assertEquals(false, jdbc.sql("""
+                    SELECT has_function_privilege(
+                        :role,
+                        'elmos_platform_bootstrap_admin(varchar,varchar)',
+                        'EXECUTE')
+                    """).param("role", role).query(Boolean.class).single(),
+                    "the application login must never receive the operator bootstrap path");
+            assertEquals(0, jdbc.sql("""
+                    SELECT count(*)
+                      FROM (VALUES
+                        (has_table_privilege(:role, 'accounts', 'SELECT')),
+                        (has_table_privilege(:role, 'accounts', 'INSERT')),
+                        (has_table_privilege(:role, 'accounts', 'UPDATE')),
+                        (has_table_privilege(:role, 'accounts', 'DELETE')),
+                        (has_table_privilege(:role, 'accounts', 'TRUNCATE')),
+                        (has_table_privilege(:role, 'platform_administrators', 'SELECT')),
+                        (has_table_privilege(:role, 'platform_administrators', 'INSERT')),
+                        (has_table_privilege(:role, 'platform_administrators', 'UPDATE')),
+                        (has_table_privilege(:role, 'platform_administrators', 'DELETE')),
+                        (has_table_privilege(:role, 'platform_administrators', 'TRUNCATE'))
+                      ) privilege(allowed)
+                     WHERE allowed
+                    """).param("role", role).query(Integer.class).single(),
+                    "an ungranted runtime role must have no direct identity-table privilege");
+            try (Connection connection = dataSource.getConnection();
+                 var statement = connection.createStatement()) {
+                statement.execute("SET ROLE " + role);
+                for (String sql : new String[]{
+                        "SELECT elmos_platform_resolve_admin_account('missing-org','missing-actor')",
+                        "SELECT count(*) FROM elmos_platform_wallet_overview('acct-platform-other',NULL,1)",
+                        "SELECT count(*) FROM elmos_platform_wallet_ledger('acct-platform-other','missing-org',1,0)",
+                        "SELECT count(*) FROM elmos_platform_topup_orders('acct-platform-other',NULL,1)",
+                        "SELECT count(*) FROM elmos_platform_job_overview('acct-platform-other',NULL,NULL,1)",
+                        "SELECT count(*) FROM elmos_platform_wallet_adjust('acct-platform-other','missing-org','CREDIT',1,'denied','acl-test')",
+                        "SELECT elmos_platform_grant_admin('acct-platform-other','acct-platform-target','PLATFORM_VIEWER','denied')",
+                        "SELECT elmos_platform_revoke_admin('acct-platform-other','acct-platform-target','denied')",
+                        "SELECT elmos_platform_authorize('acct-platform-other','PLATFORM_VIEWER','V79_RUNTIME_ROLE_ACL_TEST',NULL,NULL)"}) {
+                    assertTrue(statement.execute(sql),
+                            () -> "runtime role could not execute allowlisted function: " + sql);
+                }
+                for (String sql : new String[]{
+                        "SELECT account_id FROM accounts LIMIT 1",
+                        "UPDATE accounts SET status = status WHERE false",
+                        "INSERT INTO platform_administrators "
+                                + "(account_id, platform_role, grant_reason) "
+                                + "VALUES ('denied', 'PLATFORM_VIEWER', 'denied')",
+                        "DELETE FROM platform_administrators WHERE false",
+                        "TRUNCATE TABLE platform_administrators"}) {
+                    SQLException denied = assertThrows(
+                            SQLException.class,
+                            () -> statement.execute(sql),
+                            () -> "runtime role unexpectedly executed: " + sql);
+                    assertEquals("42501", denied.getSQLState(),
+                            "the refusal must be PostgreSQL insufficient_privilege");
+                }
+                statement.execute("RESET ROLE");
+            }
+        } catch (SQLException error) {
+            throw new AssertionError("runtime role ACL negative test failed", error);
+        } finally {
+            jdbc.sql("DROP ROLE IF EXISTS " + role).update();
+        }
+    }
+
+    private static int backendPid(Connection connection) throws Exception {
+        try (var statement = connection.createStatement();
+             var result = statement.executeQuery("SELECT pg_backend_pid()")) {
+            assertTrue(result.next());
+            return result.getInt(1);
+        }
+    }
+
+    private static boolean waitingOnPlatformAdminAdvisoryLock(
+            org.springframework.jdbc.core.simple.JdbcClient jdbc,
+            int backendPid) throws InterruptedException {
+        for (int attempt = 0; attempt < 200; attempt++) {
+            int waiting = jdbc.sql("""
+                    SELECT count(*) FROM pg_stat_activity
+                     WHERE pid = :pid
+                       AND wait_event_type = 'Lock'
+                       AND wait_event = 'advisory'
+                    """).param("pid", backendPid).query(Integer.class).single();
+            if (waiting == 1) {
+                return true;
+            }
+            LockSupport.parkNanos(TimeUnit.MILLISECONDS.toNanos(25));
+        }
+        return false;
     }
 
     private static String sha256(String value) {

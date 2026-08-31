@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { installAdministratorSession } from "./helpers/admin-session";
+import { administratorEmail, installAdministratorSession } from "./helpers/admin-session";
 
 const consoleView = {
   role: "APPROVER",
@@ -86,7 +86,13 @@ test("admin renders tenant-scoped performance and error signals", async ({ page 
     expect(route.request().headers().authorization).toBeUndefined();
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(consoleView) });
   });
+  const sessionResponsePromise = page.waitForResponse((response) =>
+    new URL(response.url()).pathname === "/api/auth/session"
+    && response.request().method() === "GET");
   await page.goto("/admin");
+  const sessionResponse = await sessionResponsePromise;
+  expect(sessionResponse.ok()).toBe(true);
+  await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "读取数据" }).click();
 
   await expect(page.getByRole("navigation", { name: "管理端功能" })).toBeVisible();

@@ -128,6 +128,26 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             frozenset(generator.V2_REPLAY_PATHS),
             validator.REQUIRED_REPLAY_REPOSITORY_PATHS,
         )
+        self.assertEqual(
+            (
+                runtime_runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT,
+                runtime_runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256,
+            ),
+            (
+                generator.LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT,
+                generator.LOCKED_V2_NODE_TYPES_TREE_SHA256,
+            ),
+        )
+        self.assertEqual(
+            (
+                generator.LOCKED_V2_NODE_TYPES_TREE_FILE_COUNT,
+                generator.LOCKED_V2_NODE_TYPES_TREE_SHA256,
+            ),
+            (
+                validator.LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT,
+                validator.LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256,
+            ),
+        )
 
     def test_dimension_closure_schema_reference_is_resolvable(self) -> None:
         if validator.jsonschema is None:
@@ -335,22 +355,28 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
             payload_path = pack / "trust-store-payload.bin"
             signature_path = pack / "trust-store-signature.bin"
             payload_path.write_bytes(unsigned_trust)
-            subprocess.run(
+            node = shutil.which("node")
+            self.assertIsNotNone(node, "Node is required for the Ed25519 forgery fixture")
+            completed = subprocess.run(
                 [
-                    openssl,
-                    "pkeyutl",
-                    "-sign",
-                    "-inkey",
+                    str(node),
+                    "-e",
+                    (
+                        "const fs=require('node:fs');"
+                        "const crypto=require('node:crypto');"
+                        "const [key,input,output]=process.argv.slice(1);"
+                        "fs.writeFileSync(output,crypto.sign(null,"
+                        "fs.readFileSync(input),fs.readFileSync(key)));"
+                    ),
                     str(private_keys["root-key"]),
-                    "-rawin",
-                    "-in",
                     str(payload_path),
-                    "-out",
                     str(signature_path),
                 ],
                 capture_output=True,
-                check=True,
+                text=True,
+                check=False,
             )
+            self.assertEqual(0, completed.returncode, completed.stderr)
             trust["root_authorization"] = {
                 "root_key_id": "root-key",
                 "algorithm": "ed25519",
@@ -2117,6 +2143,37 @@ class FrontendFormalRouteCampaignV2Tests(unittest.TestCase):
                     self.assert_invalid(pack, expected)
                 finally:
                     temporary.cleanup()
+
+    @unittest.skipUnless(
+        frozen_v2_pack_available(
+            ROOT / "client-packs/frontend-72-route-equivalence-v2",
+            "ELMOS_FRONTEND_V2_CLIENT_PACK",
+        ),
+        "frozen block-specific v2 pack has not been staged or published",
+    )
+    def test_fully_rehashed_node_types_dts_mutation_fails_closed(self) -> None:
+        temporary, pack = self.copy_pack()
+        try:
+            _, campaign = self.campaign(pack)
+            declaration = campaign["engine_verifier"]
+            runtime_ids = [str(item) for item in declaration["runtime_artifact_ids"]]
+            target = next(
+                row
+                for row in campaign["artifacts"]
+                if row["id"] in runtime_ids
+                and row["path"].endswith("/node_modules/@types/node/assert.d.ts")
+            )
+            content = (pack / target["path"]).read_bytes() + b"\n// mutation\n"
+            self.rewrite_artifact(pack, campaign, target["id"], content)
+            artifact_map = {row["id"]: row for row in campaign["artifacts"]}
+            declaration["fingerprint"] = validator.v1.bundle_fingerprint(
+                runtime_ids + [str(declaration["node_identity_artifact_id"])],
+                artifact_map,
+            )
+            self.save_campaign(pack, campaign)
+            self.assert_invalid(pack, "Node types tree identity drift")
+        finally:
+            temporary.cleanup()
 
     @unittest.skipUnless(
         frozen_v2_pack_available(

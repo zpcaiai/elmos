@@ -1101,7 +1101,7 @@ export function OperationsAdmin() {
             <option value="CANCELLED">已取消</option>
           </select>
         </label>
-        <button className="primary-button" type="submit" disabled={state === "LOADING"}>
+        <button className="primary-button" type="submit" disabled={state === "LOADING" || account.status === "loading"}>
           <Icon name={state === "LOADING" ? "refresh" : "search"} size={17} />
           {state === "LOADING" ? "读取中…" : "读取数据"}
         </button>
@@ -1319,6 +1319,11 @@ export function OperationsAdmin() {
                 {(account.principal?.memberships.length ?? 0) === 0
                   && <Empty label="外部 IdP 全量用户目录同步尚未执行；不会据当前会话推断其他用户。" />}
               </div>
+              {(account.principal?.memberships.length ?? 0) > 0 && (
+                <p className={styles.boundaryNote}>
+                  当前列表仅来自已验证会话的成员资格；外部 IdP 全量用户目录同步尚未执行，不会据当前会话推断其他用户。
+                </p>
+              )}
               {account.status === "authenticated" && (
                 <AccountOrganizationStudio embedded />
               )}

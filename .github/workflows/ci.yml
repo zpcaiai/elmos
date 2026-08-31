@@ -171,10 +171,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Node.js 24
+      - name: Set up Node.js 26.0.0
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "26.0.0"
       - name: Install locked pnpm tool
         run: npm install --global pnpm@10.12.4
       - name: Set up Python 3.11 schema validator
@@ -759,7 +759,7 @@ jobs:
       - name: 应用全部迁移
         run: |
           for file in $(ls modules/persistence/src/main/resources/db/migration/V*.sql | sort -V); do
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$file"
+            psql "$DATABASE_URL" --single-transaction -v ON_ERROR_STOP=1 -q -f "$file"
           done
 
       - name: 回调台账与幂等
