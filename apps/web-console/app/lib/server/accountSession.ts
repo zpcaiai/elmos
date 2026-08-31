@@ -3,8 +3,20 @@ import {
   createDecipheriv,
   createHash,
   randomBytes,
+  scryptSync,
   timingSafeEqual,
 } from "node:crypto";
+import {
+  chmodSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  unlinkSync,
+  writeFileSync,
+} from "node:fs";
+import { dirname, isAbsolute } from "node:path";
 import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 
 export const accountCookieNames = {
@@ -44,6 +56,8 @@ const maximumTenantMemberships = 32;
 const localCredentialSessionLifetimeMs = 60 * 60_000;
 const localCredentialUsernameDefault = "test";
 const localCredentialPasswordDefault = "test";
+const localPasswordMinimumLength = 8;
+const localAccountStoreVersion = 1;
 
 export type AccountRole = typeof roleNames[number];
 export type AccountPermission =
@@ -228,12 +242,13 @@ export type TokenExchange = {
 };
 
 export class AccountSessionError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string,
-    message: string,
-  ) {
+  readonly status: number;
+  readonly code: string;
+
+  constructor(status: number, code: string, message: string) {
     super(message);
+    this.status = status;
+    this.code = code;
   }
 }
 
@@ -300,6 +315,32 @@ type LocalCredentialConfiguration = {
   organizationId: string;
 };
 
+type LocalCredentialAccount = {
+  username: string;
+  displayName: string;
+  email?: string;
+  organizationId: string;
+  passwordHash: string;
+  passwordSalt: string;
+  failedSignInCount: number;
+  lockedUntil: number | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+type LocalCredentialStore = {
+  version: 1;
+  accounts: LocalCredentialAccount[];
+};
+
+export type LocalRegistrationInput = {
+  username: string;
+  password: string;
+  passwordConfirmation: string;
+  displayName: string;
+  email?: string;
+};
+
 function localCredentialsEnabled(): boolean {
   return process.env.NODE_ENV !== "production"
     && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true";
@@ -343,6 +384,285 @@ export function localCredentialsConfigured(): boolean {
   } catch {
     return false;
   }
+}
+
+function localCredentialStorePath(): string {
+  if (!localCredentialsEnabled()) {
+    throw new AccountSessionError(
+      404,
+      "LOCAL_REGISTRATION_DISABLED",
+      "本地注册只允许在显式启用的非生产环境使用。",
+    );
+  }
+  const configured = process.env.ELMOS_LOCAL_CREDENTIALS_STORE_PATH?.trim() ?? "";
+  if (
+    !configured
+    || !isAbsolute(configured)
+    || configured.length > 4_096
+    || /[\0\r\n]/.test(configured)
+    || configured === "/"
+    || configured.endsWith("/")
+  ) {
+    throw new AccountSessionError(
+      503,
+      "LOCAL_REGISTRATION_STORE_NOT_CONFIGURED",
+      "本地注册存储尚未配置。",
+    );
+  }
+  return configured;
+}
+
+function localRegistrationStoreConfigured(): boolean {
+  try {
+    localCredentialConfiguration();
+    localCredentialStorePath();
+    sessionKey();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function localRegistrationConfigured(): boolean {
+  return localRegistrationStoreConfigured();
+}
+
+function localStoreError(): AccountSessionError {
+  return new AccountSessionError(
+    503,
+    "LOCAL_REGISTRATION_STORE_INVALID",
+    "本地账户存储不可用。",
+  );
+}
+
+function localAccountRecord(value: unknown): LocalCredentialAccount | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  const candidate = value as Record<string, unknown>;
+  const username = typeof candidate.username === "string" ? candidate.username : "";
+  const displayName = typeof candidate.displayName === "string" ? candidate.displayName : "";
+  const organizationId = typeof candidate.organizationId === "string"
+    ? candidate.organizationId
+    : "";
+  const passwordHash = typeof candidate.passwordHash === "string" ? candidate.passwordHash : "";
+  const passwordSalt = typeof candidate.passwordSalt === "string" ? candidate.passwordSalt : "";
+  const failedSignInCount = typeof candidate.failedSignInCount === "number"
+    ? candidate.failedSignInCount
+    : Number.NaN;
+  const lockedUntil = candidate.lockedUntil === null
+    ? null
+    : typeof candidate.lockedUntil === "number"
+      ? candidate.lockedUntil
+      : Number.NaN;
+  const createdAt = typeof candidate.createdAt === "string" ? candidate.createdAt : "";
+  const updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : "";
+  const email = candidate.email;
+  if (
+    !identifierPattern.test(username)
+    || username.length < 3
+    || displayName.length < 2
+    || displayName.length > 160
+    || !organizationPattern.test(organizationId)
+    || !/^[A-Za-z0-9_-]{80,120}$/.test(passwordHash)
+    || !/^[A-Za-z0-9_-]{16,64}$/.test(passwordSalt)
+    || !Number.isInteger(failedSignInCount)
+    || failedSignInCount < 0
+    || failedSignInCount > 5
+    || (lockedUntil !== null && (!Number.isFinite(lockedUntil) || lockedUntil < 0))
+    || !createdAt
+    || !updatedAt
+    || (email !== undefined && (typeof email !== "string" || email.length > 254))
+  ) return null;
+  return {
+    username,
+    displayName,
+    ...(typeof email === "string" ? { email } : {}),
+    organizationId,
+    passwordHash,
+    passwordSalt,
+    failedSignInCount,
+    lockedUntil: lockedUntil as number | null,
+    createdAt,
+    updatedAt,
+  };
+}
+
+function assertLocalStoreFileIsSafe(storePath: string): void {
+  if (!existsSync(/*turbopackIgnore: true*/ storePath)) return;
+  try {
+    const stats = lstatSync(storePath);
+    if (!stats.isFile() || stats.isSymbolicLink() || (stats.mode & 0o077) !== 0) {
+      throw localStoreError();
+    }
+  } catch (error) {
+    if (error instanceof AccountSessionError) throw error;
+    throw localStoreError();
+  }
+}
+
+function writeLocalCredentialStore(storePath: string, store: LocalCredentialStore): void {
+  assertLocalStoreFileIsSafe(storePath);
+  const parent = dirname(storePath);
+  try {
+    mkdirSync(parent, { recursive: true, mode: 0o700 });
+    const temporaryPath = `${storePath}.${process.pid}.${randomBytes(8).toString("hex")}.tmp`;
+    try {
+      writeFileSync(
+        temporaryPath,
+        `${JSON.stringify(store, null, 2)}\n`,
+        { encoding: "utf8", mode: 0o600, flag: "wx" },
+      );
+      chmodSync(temporaryPath, 0o600);
+      renameSync(temporaryPath, storePath);
+    } catch (error) {
+      try { unlinkSync(temporaryPath); } catch { /* best effort cleanup */ }
+      if (error instanceof AccountSessionError) throw error;
+      throw localStoreError();
+    }
+  } catch (error) {
+    if (error instanceof AccountSessionError) throw error;
+    throw localStoreError();
+  }
+}
+
+function passwordHash(password: string, salt: Buffer): string {
+  return scryptSync(password, salt, 64, {
+    N: 16_384,
+    r: 8,
+    p: 1,
+    maxmem: 32 * 1024 * 1024,
+  }).toString("base64url");
+}
+
+function passwordMatches(password: string, account: LocalCredentialAccount): boolean {
+  try {
+    const expected = Buffer.from(account.passwordHash, "base64url");
+    const actual = Buffer.from(passwordHash(password, Buffer.from(account.passwordSalt, "base64url")), "base64url");
+    return expected.length === actual.length && timingSafeEqual(expected, actual);
+  } catch {
+    return false;
+  }
+}
+
+function seededLocalAccount(configuration: LocalCredentialConfiguration): LocalCredentialAccount {
+  const now = new Date().toISOString();
+  const salt = randomBytes(16);
+  return {
+    username: configuration.username,
+    displayName: "Local Test Account",
+    email: "test@localhost",
+    organizationId: configuration.organizationId,
+    passwordHash: passwordHash(configuration.password, salt),
+    passwordSalt: salt.toString("base64url"),
+    failedSignInCount: 0,
+    lockedUntil: null,
+    createdAt: now,
+    updatedAt: now,
+  };
+}
+
+function readLocalCredentialStore(
+  configuration: LocalCredentialConfiguration,
+  seedDefault: boolean,
+): { path: string; store: LocalCredentialStore } {
+  const storePath = localCredentialStorePath();
+  assertLocalStoreFileIsSafe(storePath);
+  let store: LocalCredentialStore;
+  if (!existsSync(/*turbopackIgnore: true*/ storePath)) {
+    store = { version: localAccountStoreVersion, accounts: [] };
+  } else {
+    try {
+      const raw = JSON.parse(readFileSync(/*turbopackIgnore: true*/ storePath, "utf8")) as Record<string, unknown>;
+      const accounts = Array.isArray(raw.accounts)
+        ? raw.accounts.map(localAccountRecord)
+        : null;
+      if (raw.version !== localAccountStoreVersion || !accounts || accounts.some((item) => item === null)) {
+        throw localStoreError();
+      }
+      store = { version: localAccountStoreVersion, accounts: accounts as LocalCredentialAccount[] };
+    } catch (error) {
+      if (error instanceof AccountSessionError) throw error;
+      throw localStoreError();
+    }
+  }
+  if (seedDefault && !store.accounts.some((account) => safeEqual(account.username, configuration.username))) {
+    store.accounts.push(seededLocalAccount(configuration));
+    writeLocalCredentialStore(storePath, store);
+  }
+  return { path: storePath, store };
+}
+
+function localPrincipal(account: LocalCredentialAccount): AccountPrincipal {
+  const roles: AccountRole[] = ["DEVELOPER"];
+  const primaryMembership = membership(account.organizationId, roles, []);
+  return {
+    actorId: `local:${account.username}`,
+    displayName: account.displayName,
+    ...(account.email ? { email: account.email } : {}),
+    organizationId: account.organizationId,
+    roles: primaryMembership.roles,
+    permissions: primaryMembership.permissions,
+    memberships: [primaryMembership],
+  };
+}
+
+function issueLocalSession(account: LocalCredentialAccount): LocalCredentialSession {
+  const principal = localPrincipal(account);
+  const accessToken = base64url(randomBytes(32));
+  const expiresAt = Date.now() + localCredentialSessionLifetimeMs;
+  const session = seal({
+    version: 1,
+    principal,
+    accessTokenHash: hashToken(accessToken),
+    issuedAt: Date.now(),
+    expiresAt,
+  } satisfies SealedSession);
+  return { session, accessToken, expiresAt, principal };
+}
+
+function registrationError(status: number, code: string, message: string): AccountSessionError {
+  return new AccountSessionError(status, code, message);
+}
+
+export function registerLocalAccount(input: LocalRegistrationInput): void {
+  const configuration = localCredentialConfiguration();
+  const { path: storePath, store } = readLocalCredentialStore(configuration, true);
+  const username = input.username.trim();
+  const displayName = input.displayName.trim();
+  const email = input.email?.trim();
+  if (!identifierPattern.test(username) || username.length < 3 || username.length > 200) {
+    throw registrationError(400, "LOCAL_REGISTRATION_USERNAME_INVALID", "用户名需为 3 至 200 个字符。");
+  }
+  if (input.password.length < localPasswordMinimumLength || input.password.length > 1_024) {
+    throw registrationError(400, "LOCAL_REGISTRATION_PASSWORD_WEAK", `密码至少需要 ${localPasswordMinimumLength} 个字符。`);
+  }
+  if (!safeEqual(input.password, input.passwordConfirmation)) {
+    throw registrationError(400, "LOCAL_REGISTRATION_PASSWORD_MISMATCH", "两次输入的密码不一致。");
+  }
+  if (displayName.length < 2 || displayName.length > 160) {
+    throw registrationError(400, "LOCAL_REGISTRATION_DISPLAY_NAME_INVALID", "显示名称需为 2 至 160 个字符。");
+  }
+  if (email && (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+    throw registrationError(400, "LOCAL_REGISTRATION_EMAIL_INVALID", "邮箱地址无效。");
+  }
+  if (store.accounts.some((account) => safeEqual(account.username, username))) {
+    throw registrationError(409, "LOCAL_ACCOUNT_ALREADY_EXISTS", "该用户名已存在。");
+  }
+  const now = new Date().toISOString();
+  const salt = randomBytes(16);
+  const organizationId = `local-${createHash("sha256").update(username, "utf8").digest("hex").slice(0, 16)}`;
+  store.accounts.push({
+    username,
+    displayName,
+    ...(email ? { email } : {}),
+    organizationId,
+    passwordHash: passwordHash(input.password, salt),
+    passwordSalt: salt.toString("base64url"),
+    failedSignInCount: 0,
+    lockedUntil: null,
+    createdAt: now,
+    updatedAt: now,
+  });
+  writeLocalCredentialStore(storePath, store);
 }
 
 export function assertLocalCredentialRequest(request: Request): void {
@@ -391,10 +711,46 @@ export function authenticateLocalCredentials(
   password: string,
 ): LocalCredentialSession {
   const configuration = localCredentialConfiguration();
+  if (username.length > 200 || password.length > 1_024) {
+    throw new AccountSessionError(
+      401,
+      "LOCAL_CREDENTIALS_INVALID",
+      "本地测试账号或密码错误。",
+    );
+  }
+  if (localRegistrationStoreConfigured()) {
+    const loaded = readLocalCredentialStore(configuration, true);
+    const account = loaded.store.accounts.find((candidate) => safeEqual(candidate.username, username));
+    if (account) {
+      if (account.lockedUntil !== null && account.lockedUntil > Date.now()) {
+        throw new AccountSessionError(
+          429,
+          "LOCAL_CREDENTIALS_LOCKED",
+          "本地账户暂时锁定，请稍后重试。",
+        );
+      }
+      if (!passwordMatches(password, account)) {
+        account.failedSignInCount = Math.min(5, account.failedSignInCount + 1);
+        if (account.failedSignInCount >= 5) {
+          account.lockedUntil = Date.now() + 15 * 60_000;
+        }
+        account.updatedAt = new Date().toISOString();
+        writeLocalCredentialStore(loaded.path, loaded.store);
+        throw new AccountSessionError(
+          401,
+          "LOCAL_CREDENTIALS_INVALID",
+          "本地测试账号或密码错误。",
+        );
+      }
+      account.failedSignInCount = 0;
+      account.lockedUntil = null;
+      account.updatedAt = new Date().toISOString();
+      writeLocalCredentialStore(loaded.path, loaded.store);
+      return issueLocalSession(account);
+    }
+  }
   if (
-    username.length > 200
-    || password.length > 1_024
-    || !safeEqual(username, configuration.username)
+    !safeEqual(username, configuration.username)
     || !safeEqual(password, configuration.password)
   ) {
     throw new AccountSessionError(
@@ -403,27 +759,18 @@ export function authenticateLocalCredentials(
       "本地测试账号或密码错误。",
     );
   }
-  const roles: AccountRole[] = ["DEVELOPER"];
-  const primaryMembership = membership(configuration.organizationId, roles, []);
-  const principal: AccountPrincipal = {
-    actorId: "local:test",
+  return issueLocalSession({
+    username: configuration.username,
     displayName: "Local Test Account",
     email: "test@localhost",
     organizationId: configuration.organizationId,
-    roles: primaryMembership.roles,
-    permissions: primaryMembership.permissions,
-    memberships: [primaryMembership],
-  };
-  const accessToken = base64url(randomBytes(32));
-  const expiresAt = Date.now() + localCredentialSessionLifetimeMs;
-  const session = seal({
-    version: 1,
-    principal,
-    accessTokenHash: hashToken(accessToken),
-    issuedAt: Date.now(),
-    expiresAt,
-  } satisfies SealedSession);
-  return { session, accessToken, expiresAt, principal };
+    passwordHash: "",
+    passwordSalt: "",
+    failedSignInCount: 0,
+    lockedUntil: null,
+    createdAt: new Date(0).toISOString(),
+    updatedAt: new Date(0).toISOString(),
+  });
 }
 
 function sessionKey(): Buffer {

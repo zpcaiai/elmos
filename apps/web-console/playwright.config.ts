@@ -368,6 +368,7 @@ export default defineConfig({
           ELMOS_LOCAL_CREDENTIALS_USERNAME: "test",
           ELMOS_LOCAL_CREDENTIALS_PASSWORD: "test",
           ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID: "local-e2e",
+          ELMOS_LOCAL_CREDENTIALS_STORE_PATH: path.join(runnerRoot, "local-accounts.json"),
           ELMOS_SESSION_SECRET: "elmos-local-e2e-session-secret-at-least-32-characters",
           ELMOS_PUBLIC_ORIGIN: baseURL,
         } : {}),

@@ -5,6 +5,7 @@ from __future__ import annotations
 from collections.abc import Mapping
 import hashlib
 import importlib.util
+import json
 import os
 from pathlib import Path
 import shutil
@@ -55,6 +56,18 @@ def _copy_file(source: Path, destination: Path) -> None:
     shutil.copy2(source, destination)
 
 
+def _copy_tree_with_hardlinks(source: Path, destination: Path) -> None:
+    shutil.copytree(source, destination, copy_function=os.link)
+
+
+def _detach_file(path: Path) -> None:
+    content = path.read_bytes()
+    mode = stat.S_IMODE(path.stat().st_mode)
+    path.unlink()
+    path.write_bytes(content)
+    os.chmod(path, mode)
+
+
 def _isolated_repository_view(
     destination: Path,
     importer: ModuleType,
@@ -65,6 +78,10 @@ def _isolated_repository_view(
     shutil.copytree(ROOT / importer.SOURCE_RELATIVE, destination / importer.SOURCE_RELATIVE)
     shutil.copytree(ROOT / importer.DOC_RELATIVE, destination / importer.DOC_RELATIVE)
     _copy_file(
+        ROOT / "docs/semantic-assurance-expansion/installed-manifest.json",
+        destination / "docs/semantic-assurance-expansion/installed-manifest.json",
+    )
+    _copy_file(
         ROOT / importer.ENGINE_RESOURCE_RELATIVE,
         destination / importer.ENGINE_RESOURCE_RELATIVE,
     )
@@ -72,10 +89,26 @@ def _isolated_repository_view(
         ROOT / importer.ENGINE_DIGEST_RELATIVE,
         destination / importer.ENGINE_DIGEST_RELATIVE,
     )
-    for row in catalog["skills"]:
-        name = str(row["name"])
+    catalog_names = {str(row["name"]) for row in catalog["skills"]}
+    for name in sorted(catalog_names):
         for relative_root in (importer.WORKSPACE_RELATIVE, importer.RUNTIME_RELATIVE):
-            shutil.copytree(ROOT / relative_root / name, destination / relative_root / name)
+            _copy_tree_with_hardlinks(
+                ROOT / relative_root / name,
+                destination / relative_root / name,
+            )
+    semantic_manifest = json.loads(
+        (ROOT / "docs/semantic-assurance-expansion/installed-manifest.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    for name in semantic_manifest["installedNames"]:
+        if name in catalog_names:
+            continue
+        for relative_root in (importer.WORKSPACE_RELATIVE, importer.RUNTIME_RELATIVE):
+            _copy_tree_with_hardlinks(
+                ROOT / relative_root / name,
+                destination / relative_root / name,
+            )
 
 
 def _archive_path(root: Path, importer: ModuleType) -> Path:
@@ -89,11 +122,11 @@ def test_installed_catalog_binds_all_wrappers_and_collisions() -> None:
     result = importer.validate_installed_integration(ROOT, snapshot, catalog)
 
     assert catalog["counts"]["skills"] == 300
-    assert catalog["counts"]["repository_owned_wrappers"] == 297
-    assert catalog["counts"]["collision_bindings"] == 3
+    assert catalog["counts"]["repository_owned_wrappers"] == 167
+    assert catalog["counts"]["collision_bindings"] == 133
     assert result == {
-        "repository_owned_wrappers": 297,
-        "collision_bindings": 3,
+        "repository_owned_wrappers": 167,
+        "collision_bindings": 133,
         "dual_root_bytes_equal": True,
         "generated_artifacts_digest_bound": True,
     }
@@ -116,8 +149,24 @@ def test_check_is_zero_write_and_wrapper_drift_fails_closed(tmp_path: Path) -> N
         if row["name"] not in importer.COLLISIONS
     )
     wrapper = isolated / importer.WORKSPACE_RELATIVE / generated_name / "SKILL.md"
+    _detach_file(wrapper)
     wrapper.write_bytes(wrapper.read_bytes() + b"\n")
     with pytest.raises(importer.IntegrationError, match="workspace wrapper tree differs"):
+        importer.check_integration(isolated)
+
+
+def test_check_rejects_semantic_owner_manifest_drift(tmp_path: Path) -> None:
+    importer = _load_importer()
+    isolated = tmp_path / "repository"
+    _, catalog = importer.check_integration(ROOT)
+    _isolated_repository_view(isolated, importer, catalog)
+
+    manifest_path = isolated / "docs/semantic-assurance-expansion/installed-manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["packageId"] = "attacker-controlled-package"
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    with pytest.raises(importer.IntegrationError, match="pinned owner manifest"):
         importer.check_integration(isolated)
 
 
