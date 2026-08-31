@@ -499,10 +499,7 @@ jobs:
         run: |
           make batch32-portable-check
           python scripts/batch32/validate_account_usage_corpora.py
-          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
-            uv run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 \
-              python scripts/batch32/run_client_gate.py --portable "$pack"
-          done
+          make batch32-client-packs-portable-gate
       - name: Install locked pnpm tool for Translation execution
         run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
@@ -815,7 +812,7 @@ jobs:
             make "batch${batch}-check"
           done
           # Batch 32's complete formal replay is intentionally executed in
-          # the macOS Web Console job, where its receipt-bound Node/Z3/browser
+          # the macOS Frontend Client Engine job, where its receipt-bound Node/Z3/browser
           # toolchain exists. This target validates the portable contracts on
           # Ubuntu without pretending that native browser evidence ran here.
           make batch32-portable-check

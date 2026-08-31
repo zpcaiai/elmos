@@ -486,6 +486,17 @@ def certification_evidence_is_real(
     )
 
 
+def decide_certification(
+    *, requested_certified: bool, failures: list[str], portable: bool
+) -> str:
+    """Return a decision without letting portable validation grant status."""
+    if portable:
+        return "NOT_CERTIFIED"
+    if requested_certified:
+        return "BLOCKED" if failures else "CERTIFIED"
+    return "NOT_CERTIFIED"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("pack_dir")
@@ -493,8 +504,8 @@ def main() -> int:
         "--portable",
         action="store_true",
         help=(
-            "validate host-independent contracts and captured evidence without "
-            "claiming receipt-bound native replay"
+            "validate captured evidence without live receipt-bound replay or "
+            "writing gate receipts"
         ),
     )
     args = parser.parse_args()
@@ -550,7 +561,7 @@ def main() -> int:
             "--json",
         ]
         if args.portable:
-            command.append("--no-replay-execute")
+            command[3:3] = ["--no-replay-execute", "--portable-evidence-only"]
         completed = subprocess.run(
             command,
             capture_output=True,
@@ -593,7 +604,7 @@ def main() -> int:
             "--json",
         ]
         if args.portable:
-            command.append("--no-replay-execute")
+            command[3:3] = ["--no-replay-execute", "--portable-evidence-only"]
         completed = subprocess.run(
             command,
             capture_output=True,
@@ -1003,10 +1014,10 @@ def main() -> int:
                     )
 
     structural_status = "FAILED" if failures else "PASSED"
-    certification_decision = (
-        ("BLOCKED" if failures else "CERTIFIED")
-        if requested_certified
-        else "NOT_CERTIFIED"
+    certification_decision = decide_certification(
+        requested_certified=requested_certified,
+        failures=failures,
+        portable=args.portable,
     )
     local_equivalence_status = (
         frontend_campaign.get("local_equivalence_status", "INCOMPLETE")
@@ -1070,7 +1081,8 @@ def main() -> int:
         "runtime_ready": runtime_ready,
         "independent_ready": independent_ready,
         "certification_ready": (
-            frontend_campaign.get("certification_ready") is True
+            not args.portable
+            and frontend_campaign.get("certification_ready") is True
             if frontend_campaign is not None
             else False
         ),
@@ -1107,8 +1119,9 @@ def main() -> int:
                 "scenario_count",
             )
         }
-    result_path = pack / "certification" / "gate-result.json"
-    result_path.write_text(json.dumps(result, indent=2) + "\n")
+    if not args.portable:
+        result_path = pack / "certification" / "gate-result.json"
+        result_path.write_text(json.dumps(result, indent=2) + "\n")
 
     report = [
         f"# Batch 32 gate: {manifest.get('pack_key')}",
@@ -1135,7 +1148,10 @@ def main() -> int:
             "No structural gate failures were detected; the explicit "
             "certification decision above remains authoritative."
         )
-    (pack / "certification" / "gate-report.md").write_text("\n".join(report) + "\n")
+    if not args.portable:
+        (pack / "certification" / "gate-report.md").write_text(
+            "\n".join(report) + "\n"
+        )
 
     if failures:
         print(

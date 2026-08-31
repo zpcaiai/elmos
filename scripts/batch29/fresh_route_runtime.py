@@ -55,6 +55,7 @@ PINNED_UV_CI_BOTTLE_SHA256 = (
     "sha256:96e422f83fd306848446170d97c1d1af8290f00e4aacfa7134e130280d573126"
 )
 PINNED_UV_CI_BOTTLE_BYTES = 46_508_144
+PINNED_UV_CI_PROFILES = frozenset({"full", "java-python"})
 PINNED_UV_VERSION = "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
 PINNED_UV_MODE = 0o555
 PINNED_UV_UID = 501
@@ -1218,10 +1219,16 @@ def _pinned_uv() -> Path:
             before.st_nlink,
             before.st_mtime_ns,
         )
-        authorized_content_receipts = {
-            (PINNED_UV_BYTES, PINNED_UV_SHA256),
-            (PINNED_UV_CI_BOTTLE_BYTES, PINNED_UV_CI_BOTTLE_SHA256),
-        }
+        authorized_content_receipts = {(PINNED_UV_BYTES, PINNED_UV_SHA256)}
+        if (
+            os.environ.get("CI") == "true"
+            and os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("ELMOS_POLYGLOT_ROUTE_CI_PROFILE")
+            in PINNED_UV_CI_PROFILES
+        ):
+            authorized_content_receipts.add(
+                (PINNED_UV_CI_BOTTLE_BYTES, PINNED_UV_CI_BOTTLE_SHA256)
+            )
         if (
             identity
             != (

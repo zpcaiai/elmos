@@ -346,8 +346,10 @@ batch1-55-skills:
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
 batch66-80-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-complete,manifest.json,\
-		python3 tooling/import_batch66_80_assets.py --check; \
-		cd elmos-codex-skills-batch66-80-complete && ./validate.sh)
+		package=elmos-codex-skills-batch66-80-complete; \
+		test -f "$$package/manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch66_80_assets.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch66-80-test-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
@@ -355,8 +357,10 @@ batch66-80-test-skills:
 		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh)
 language-packs-batch81-95:
 	$(call guarded,elmos-language-packs-batch81-95-complete,package-manifest.json,\
-		python3 tooling/import_batch81_95_language_packs.py --check; \
-		cd elmos-language-packs-batch81-95-complete && ./validate.sh)
+		package=elmos-language-packs-batch81-95-complete; \
+		test -f "$$package/package-manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch81_95_language_packs.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch81-95-test-skills:
 	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,manifest.json,\

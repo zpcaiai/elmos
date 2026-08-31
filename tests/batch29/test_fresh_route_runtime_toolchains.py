@@ -13,6 +13,9 @@ import pytest
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 RUNTIME_PATH = REPOSITORY / "scripts" / "batch29" / "fresh_route_runtime.py"
+CI_INSTALLER_PATH = (
+    REPOSITORY / "scripts" / "toolchains" / "install_polyglot_route_ci_toolchains.sh"
+)
 
 
 def _runtime() -> Any:
@@ -158,6 +161,8 @@ def test_pinned_uv_accepts_only_the_explicit_ci_bottle_receipt(
         "sha256:" + hashlib.sha256(content).hexdigest(),
     )
     monkeypatch.setattr(runtime, "PINNED_UV_CI_BOTTLE_BYTES", len(content))
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setattr(
         runtime.subprocess,
         "run",
@@ -166,7 +171,17 @@ def test_pinned_uv_accepts_only_the_explicit_ci_bottle_receipt(
         ),
     )
 
-    assert runtime._pinned_uv() == executable
+    for profile in ("full", "java-python"):
+        monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", profile)
+        assert runtime._pinned_uv() == executable
+
+    for profile in (None, "typed-sql", "frontend-formal", "ten-language"):
+        if profile is None:
+            monkeypatch.delenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE")
+        else:
+            monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", profile)
+        with pytest.raises(RuntimeError, match="bytes/metadata/digest mismatch"):
+            runtime._pinned_uv()
 
 
 def test_pinned_uv_rejects_retargeting(
@@ -218,6 +233,33 @@ def test_python_archive_and_typescript_cache_are_exact_and_read_only() -> None:
         "file_count": runtime.TYPESCRIPT_FILE_COUNT,
         "bytes": runtime.TYPESCRIPT_CLOSURE_BYTES,
     }
+
+
+def test_ci_installer_seals_the_captured_python_runtime_before_use() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    executable_files = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type f -perm -0100 '
+        "-exec chmod 0555 {} +"
+    )
+    data_files = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type f ! -perm -0100 '
+        "-exec chmod 0444 {} +"
+    )
+    directories = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type d -exec chmod 0555 {} +'
+    )
+    persisted_profile = (
+        "printf 'ELMOS_POLYGLOT_ROUTE_CI_PROFILE=%s\\n' \"${CI_PROFILE}\""
+    )
+    python_probe = '"${PYTHON_RUNTIME_TARGET}/bin/python3.12" --version'
+
+    assert executable_files in installer
+    assert data_files in installer
+    assert directories in installer
+    assert persisted_profile in installer
+    assert installer.index(executable_files) < installer.index(python_probe)
+    assert installer.index(data_files) < installer.index(python_probe)
+    assert installer.index(directories) < installer.index(python_probe)
 
 
 def test_python_archive_rejects_same_size_content_drift() -> None:

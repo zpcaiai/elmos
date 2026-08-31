@@ -1317,6 +1317,7 @@ def validate_solver_artifact(
     solver_binary_id: str,
     artifacts: dict[str, dict[str, Any]],
     artifact_files: dict[str, Path],
+    execute_solver_replay: bool,
     errors: list[str],
     vacuity: bool = False,
 ) -> dict[str, Any]:
@@ -1374,8 +1375,8 @@ def validate_solver_artifact(
     ):
         errors.append(f"{label} solver identity/result/linkage drift")
     replay_key = (v1.LOCKED_Z3_BINARY_SHA256, smt_digest)
-    replay = SOLVER_REPLAY_CACHE.get(replay_key)
-    if replay is None:
+    replay = SOLVER_REPLAY_CACHE.get(replay_key) if execute_solver_replay else None
+    if execute_solver_replay and replay is None:
         try:
             completed = subprocess.run(
                 [str(binary_path), "-in"],
@@ -1388,7 +1389,7 @@ def validate_solver_artifact(
             SOLVER_REPLAY_CACHE[replay_key] = replay
         except Exception as exc:
             errors.append(f"{label} locked solver replay failed: {exc}")
-    if replay is not None and replay != (
+    if execute_solver_replay and replay is not None and replay != (
         result.get("exit_code"),
         expected_stdout.encode("utf-8"),
         b"",
@@ -2289,6 +2290,7 @@ def validate_engine_verifier(
     artifacts: dict[str, dict[str, Any]],
     artifact_files: dict[str, Path],
     used: set[str],
+    live_runtime_replay: bool,
     errors: list[str],
 ) -> None:
     declaration = campaign.get("engine_verifier")
@@ -2421,9 +2423,7 @@ def validate_engine_verifier(
     except Exception as exc:
         errors.append(f"engine verifier Node identity is invalid: {exc}")
         return
-    node_command = shutil.which("node")
-    node_realpath = Path(node_command).resolve() if node_command else None
-    if (
+    node_metadata_invalid = (
         set(node)
         != {
             "schema_version",
@@ -2439,25 +2439,45 @@ def validate_engine_verifier(
         or node.get("schema_version") != 2
         or node.get("kind") != "node-environment-identity-v2"
         or node.get("portability") != "PINNED_NODE_ENVIRONMENT_ASSUMPTION"
-        or node_realpath is None
-        or node.get("realpath") != str(node_realpath)
-        or not node_realpath.is_file()
-        or node_realpath.is_symlink()
-        or node.get("sha256") != v1.digest_bytes(node_realpath.read_bytes())
-        or node.get("bytes") != len(node_realpath.read_bytes())
         or node.get("version") != "v26.0.0"
-        or node.get("platform") != sys.platform
-        or node.get("arch") != os.uname().machine
-    ):
+        or node.get("platform") != "darwin"
+        or node.get("arch") != "arm64"
+        or not isinstance(node.get("realpath"), str)
+        or not Path(str(node.get("realpath"))).is_absolute()
+        or not isinstance(node.get("bytes"), int)
+        or isinstance(node.get("bytes"), bool)
+        or int(node.get("bytes", 0)) <= 0
+        or not isinstance(node.get("sha256"), str)
+        or re.fullmatch(r"sha256:[0-9a-f]{64}", str(node.get("sha256"))) is None
+    )
+    node_realpath: Path | None = None
+    if live_runtime_replay:
+        node_command = shutil.which("node")
+        node_realpath = Path(node_command).resolve() if node_command else None
+        live_node_invalid = (
+            node_realpath is None
+            or node.get("realpath") != str(node_realpath)
+            or not node_realpath.is_file()
+            or node_realpath.is_symlink()
+            or node.get("sha256") != v1.digest_bytes(node_realpath.read_bytes())
+            or node.get("bytes") != len(node_realpath.read_bytes())
+            or node.get("platform") != sys.platform
+            or node.get("arch") != os.uname().machine
+        )
+    else:
+        live_node_invalid = False
+    if node_metadata_invalid or live_node_invalid:
         errors.append("engine verifier live Node identity/freshness drift")
         return
-    validate_engine_verifier_emit(
-        node_realpath=node_realpath,
-        runtime_by_path=runtime_by_path,
-        implementation_by_repository_path=implementation_by_repository_path,
-        artifact_files=artifact_files,
-        errors=errors,
-    )
+    if live_runtime_replay:
+        assert node_realpath is not None
+        validate_engine_verifier_emit(
+            node_realpath=node_realpath,
+            runtime_by_path=runtime_by_path,
+            implementation_by_repository_path=implementation_by_repository_path,
+            artifact_files=artifact_files,
+            errors=errors,
+        )
     solver_ids = [
         identifier
         for identifier, reference in artifacts.items()
@@ -2494,6 +2514,12 @@ def validate_engine_verifier(
     if declaration.get("command") != expected_command:
         errors.append("engine verifier command is not canonical")
         return
+    if declaration.get("status") != "PASSED":
+        errors.append("frozen engine verifier captured status is not PASSED")
+        return
+    if not live_runtime_replay:
+        return
+    assert node_realpath is not None
     try:
         completed = subprocess.run(
             [str(node_realpath), *expected_command[1:]],
@@ -2514,7 +2540,6 @@ def validate_engine_verifier(
                 "valid": True,
                 "errors": [],
             }
-            or declaration.get("status") != "PASSED"
         ):
             errors.append(
                 "frozen engine verifier replay failed: "
@@ -6128,6 +6153,7 @@ def validate_route(
     toolchain_artifact_id: str | None,
     toolchain_producer_fingerprint: str | None,
     external_capture: dict[str, Any],
+    execute_solver_replay: bool,
     used: set[str],
     errors: list[str],
 ) -> dict[str, Any]:
@@ -6661,6 +6687,7 @@ def validate_route(
             solver_binary_id=formal_ids["solver_binary_artifact_id"],
             artifacts=artifacts,
             artifact_files=artifact_files,
+            execute_solver_replay=execute_solver_replay,
             errors=errors,
         )
         vacuity_solver = validate_solver_artifact(
@@ -6676,6 +6703,7 @@ def validate_route(
             solver_binary_id=formal_ids["solver_binary_artifact_id"],
             artifacts=artifacts,
             artifact_files=artifact_files,
+            execute_solver_replay=execute_solver_replay,
             errors=errors,
             vacuity=True,
         )
@@ -7419,6 +7447,7 @@ def validate_campaign(
     schema_path: Path | None = None,
     route_schema_path: Path | None = None,
     execute_replay: bool = True,
+    portable_evidence_only: bool = False,
     external_trust_root_path: Path | None = None,
 ) -> dict[str, Any]:
     errors: list[str] = []
@@ -7507,6 +7536,7 @@ def validate_campaign(
         artifacts=artifacts,
         artifact_files=artifact_files,
         used=used,
+        live_runtime_replay=not portable_evidence_only,
         errors=errors,
     )
     engine_id = str(campaign.get("engine_campaign_artifact_id"))
@@ -7733,7 +7763,7 @@ def validate_campaign(
         artifact_files=artifact_files,
         used=used,
         repo_root=repo_root,
-        require_live=not captured_replay,
+        require_live=not captured_replay and not portable_evidence_only,
         errors=errors,
     )
     validate_bundle(
@@ -7745,7 +7775,7 @@ def validate_campaign(
         artifact_files=artifact_files,
         used=used,
         repo_root=repo_root,
-        require_live=not captured_replay,
+        require_live=not captured_replay and not portable_evidence_only,
         errors=errors,
     )
 
@@ -7940,6 +7970,7 @@ def validate_campaign(
                     else None
                 ),
                 external_capture=external_capture,
+                execute_solver_replay=not portable_evidence_only,
                 used=used,
                 errors=errors,
             )
@@ -8166,7 +8197,10 @@ def validate_campaign(
         "native_ready": native_ready,
         "runtime_ready": runtime_ready,
         "independent_ready": independent_ready,
-        "certification_ready": certification_ready,
+        "certification_ready": certification_ready and not portable_evidence_only,
+        "live_engine_verifier_status": (
+            "NOT_RUN" if portable_evidence_only else "PASSED"
+        ),
         "scope_digest": scope_digest,
         "errors": errors,
     }
@@ -8192,6 +8226,7 @@ def readiness_failure(errors: list[str]) -> dict[str, Any]:
         "runtime_ready": False,
         "independent_ready": False,
         "certification_ready": False,
+        "live_engine_verifier_status": "UNKNOWN",
         "errors": errors,
     }
 
@@ -8208,14 +8243,26 @@ def main() -> int:
         help="operator-configured trust anchor kept outside the evidence pack",
     )
     parser.add_argument("--no-replay-execute", action="store_true")
+    parser.add_argument(
+        "--portable-evidence-only",
+        action="store_true",
+        help=(
+            "validate captured, digest-bound evidence without comparing live "
+            "repository bytes or executing receipt-bound solver or Node replay; "
+            "does not confer certification"
+        ),
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
+    if args.portable_evidence_only and not args.no_replay_execute:
+        parser.error("--portable-evidence-only requires --no-replay-execute")
     result = validate_campaign(
         Path(args.pack_dir),
         campaign_relative=args.campaign,
         schema_path=args.schema,
         route_schema_path=args.route_schema,
         execute_replay=not args.no_replay_execute,
+        portable_evidence_only=args.portable_evidence_only,
         external_trust_root_path=(
             args.external_trust_root
             if args.external_trust_root is not None

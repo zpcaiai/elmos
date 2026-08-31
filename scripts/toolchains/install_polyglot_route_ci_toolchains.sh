@@ -14,7 +14,7 @@ if [[ "${GITHUB_ACTIONS:-}" != "true" || "${RUNNER_ENVIRONMENT:-}" != "github-ho
   printf 'Refusing to provision the CI closure outside a GitHub-hosted runner.\n' >&2
   exit 2
 fi
-for command_name in brew chmod curl git install mv python3 shasum stat sudo tar; do
+for command_name in brew chmod curl find git install mv python3 shasum stat sudo tar; do
   if ! command -v "${command_name}" >/dev/null 2>&1; then
     printf 'Required host command is unavailable: %s\n' "${command_name}" >&2
     exit 2
@@ -337,6 +337,17 @@ if [[ ! -e "${PYTHON_RUNTIME_TARGET}" ]]; then
   tar -xzf "${PYTHON_ARCHIVE}" -C "${python_stage}"
   mv "${python_stage}/python" "${PYTHON_RUNTIME_TARGET}"
 fi
+if [[ -L "${PYTHON_RUNTIME_TARGET}" || ! -d "${PYTHON_RUNTIME_TARGET}" ]]; then
+  printf 'Materialized Python runtime root is unavailable or unsafe.\n' >&2
+  exit 3
+fi
+# The captured archive preserves its source modes, while the Batch 29 runtime
+# manifest deliberately accepts only an owner-bound immutable tree.  Seal the
+# disposable CI copy exactly like fresh_route_runtime._extract_python: retain
+# executable intent, remove every write bit, and make all directories 0555.
+find "${PYTHON_RUNTIME_TARGET}" -type f -perm -0100 -exec chmod 0555 {} +
+find "${PYTHON_RUNTIME_TARGET}" -type f ! -perm -0100 -exec chmod 0444 {} +
+find "${PYTHON_RUNTIME_TARGET}" -type d -exec chmod 0555 {} +
 
 readonly TYPESCRIPT_CAPTURE_SHA256="61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 readonly TYPESCRIPT_CAPTURE="${CAPTURE_ROOT}/typescript/sha256-${TYPESCRIPT_CAPTURE_SHA256}"
@@ -376,6 +387,7 @@ fi
   printf 'ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX=%s\n' "${HOMEBREW_PREFIX}"
   printf 'ELMOS_BATCH29_PINNED_UV_PATH=%s\n' "${UV_PATH}"
   printf 'ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR=%s\n' "${PINNED_LOCAL}"
+  printf 'ELMOS_POLYGLOT_ROUTE_CI_PROFILE=%s\n' "${CI_PROFILE}"
 } >>"${GITHUB_ENV}"
 if [[ "${CI_PROFILE}" == "java-python" ]]; then
   printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin" >>"${GITHUB_PATH}"

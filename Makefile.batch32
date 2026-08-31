@@ -1,6 +1,6 @@
 UV ?= uv
 BATCH32_PYTHON ?= $(UV) run --quiet --with jsonschema==4.25.1 --with pyyaml==6.0.2 python
-.PHONY: batch32-validate batch32-test batch32-check batch32-portable-check batch32-score
+.PHONY: batch32-validate batch32-test batch32-check batch32-portable-check batch32-client-packs-portable-gate batch32-score
 batch32-validate:
 	$(BATCH32_PYTHON) scripts/batch32/validate_skill_bundle.py .agents/skills
 batch32-test:
@@ -15,5 +15,7 @@ batch32-portable-check: batch32-validate
 		esac; \
 		$(BATCH32_PYTHON) "$$test_file"; \
 	done
+batch32-client-packs-portable-gate:
+	PYTHONDONTWRITEBYTECODE=1 $(BATCH32_PYTHON) scripts/batch32/validate_portable_client_packs.py
 batch32-score:
 	$(BATCH32_PYTHON) scripts/batch32/score_client_candidates.py templates/batch32/client-candidates.json --output /tmp/batch32-client-candidates-result.json

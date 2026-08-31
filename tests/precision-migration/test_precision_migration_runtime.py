@@ -619,6 +619,14 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
         self.assertGreater(report["file_count"], 0)
 
     def test_exact_batch29_route_adapter_transforms_builds_and_replays_behavior(self) -> None:
+        native_receipt_replay = os.environ.get(
+            "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY", ""
+        )
+        self.assertIn(
+            native_receipt_replay,
+            {"", "NOT_RUN"},
+            "native receipt boundary must be either executed or explicitly NOT_RUN",
+        )
         request = self.base_request("java-to-python-direction-pack", "validate")
         source = ROOT / "engines" / "polyglot-route-engine" / "fixtures" / "java" / "Pricing.java"
         cases = ROOT / "engines" / "polyglot-route-engine" / "fixtures" / "behavior-cases.json"
@@ -638,6 +646,30 @@ class PrecisionMigrationRuntimeTest(unittest.TestCase):
             skill_registry=self.registry,
         )
         report = json.loads((output / "route-execution.json").read_text())
+        if native_receipt_replay == "NOT_RUN":
+            self.assertEqual(
+                "FAILED",
+                result["execution_state"],
+                "a NOT_RUN native receipt boundary must fail closed",
+            )
+            self.assertTrue(
+                report["engine_exit_code"] != 0
+                or report["route_gate_exit_code"] != 0
+            )
+            self.assertEqual("NOT_RUN", report["independent_verification"])
+            self.assertEqual("NOT_RUN", report["external_certification"])
+            self.assertEqual("NOT_CERTIFIED", report["production_certification"])
+            diagnostic = "\n".join(
+                str(report.get(field, ""))
+                for field in ("stdout", "stderr", "gate_stdout", "gate_stderr")
+            )
+            self.assertTrue(
+                "EXACT_TOOLCHAIN_UNAVAILABLE" in diagnostic
+                or "pinned uv" in diagnostic,
+                diagnostic,
+            )
+            self.assertFalse((output / "migration" / "migrated.py").is_file())
+            return
         self.assertEqual(
             "LOCAL_EXECUTED",
             result["execution_state"],
