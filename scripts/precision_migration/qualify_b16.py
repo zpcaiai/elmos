@@ -34,7 +34,7 @@ def passed(skill: str, test_type: str, evidence: dict[str, Any]) -> dict[str, An
     return {**body, "result_digest": canonical_digest(body)}
 
 
-def build(*, execute_gates: bool = True) -> dict[str, Any]:
+def build() -> dict[str, Any]:
     adapters = AdapterRegistry.load()
     entries = sorted(
         (entry for entry in adapters.payload["entries"] if entry["handler_id"].startswith("batch29-route-executor-v1:")),
@@ -73,17 +73,16 @@ def build(*, execute_gates: bool = True) -> dict[str, Any]:
                 {"runs": [file_evidence(path) for path in negative_paths], "fail_closed": True},
             )
         )
-        if execute_gates:
-            completed = subprocess.run(
-                [sys.executable, str(gate_script), str(route)],
-                cwd=ROOT,
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=120,
-            )
-            if completed.returncode:
-                raise ValueError(f"B16 integration gate failed: {route_key}: {(completed.stderr or completed.stdout)[-500:]}")
+        completed = subprocess.run(
+            [sys.executable, str(gate_script), str(route)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=120,
+        )
+        if completed.returncode:
+            raise ValueError(f"B16 integration gate failed: {route_key}: {(completed.stderr or completed.stdout)[-500:]}")
         results.append(
             passed(
                 entry["skill"],
@@ -112,44 +111,16 @@ def build(*, execute_gates: bool = True) -> dict[str, Any]:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--check", action="store_true")
-    parser.add_argument(
-        "--evidence-only",
-        action="store_true",
-        help=(
-            "validate persisted content-addressed local evidence without "
-            "claiming native route replay in this invocation"
-        ),
-    )
     parser.add_argument("--output", type=Path, default=OUTPUT)
     args = parser.parse_args()
-    if args.evidence_only and not args.check:
-        parser.error("--evidence-only requires --check")
-    rendered = json.dumps(
-        build(execute_gates=not args.evidence_only),
-        ensure_ascii=False,
-        indent=2,
-        sort_keys=True,
-    ) + "\n"
+    rendered = json.dumps(build(), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     if args.check:
         if not args.output.is_file() or args.output.read_text(encoding="utf-8") != rendered:
             raise SystemExit("B16 qualification results drifted; regenerate them")
     else:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered, encoding="utf-8")
-    print(
-        json.dumps(
-            {
-                "status": "PASS",
-                "skills": 30,
-                "results": 150,
-                "native_route_replay": (
-                    "NOT_RUN" if args.evidence_only else "PASSED_LOCAL"
-                ),
-                "production_certification": "NOT_CERTIFIED",
-            },
-            sort_keys=True,
-        )
-    )
+    print(json.dumps({"status": "PASS", "skills": 30, "results": 150}, sort_keys=True))
     return 0
 
 
