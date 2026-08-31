@@ -19,10 +19,12 @@
       "name": "criticalVulnerabilityCount",
       "threshold": 0.0,
       "comparator": "max",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 0,
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ],
+      "note": "open critical alerts in the exact GitHub Dependabot snapshot; high and moderate counts are recorded separately"
     },
     {
       "name": "evidenceTraceCoverage",

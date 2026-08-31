@@ -78,6 +78,21 @@ transient, and every retry reuses the exact body and idempotency key. Semantic,
 authorization, protocol, signature, digest, and critical-oracle failures do not
 retry.
 
+The local phase runtime also validates the adapter contract before changing
+run state. Each adapter must implement `prepare`, `baseline`,
+`transform_or_generate`, `build`, `validate`, `score`, `publish`,
+`compensate`, and `cleanup`. A successful phase must return every contract
+output, valid content digests, regular-file artifact references, non-negative
+usage, and JSON-serializable raw data. Raw phase results are persisted before
+their checkpoint is written, and the checkpoint binds the workspace, artifact
+digests, and side-effect receipts. The contract can be checked without
+executing an adapter:
+
+```bash
+PYTHONPATH=engines/etgb-engine/src python3 -m elmos_etgb \
+  --repo-root . harness-contract
+```
+
 ## External evidence boundary
 
 Local protocol tests use ephemeral keys and an in-process simulated transport.

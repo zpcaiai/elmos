@@ -25,6 +25,20 @@
       ],
       "externalOperationExecuted": false,
       "authorizationRefs": []
+    },
+    {
+      "claimId": "b40-dependabot-alert-status",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ],
+      "provenanceRefs": [
+        "batch40-dependabot-alerts-provenance"
+      ],
+      "externalOperationExecuted": true,
+      "authorizationRefs": [
+        "user-request://dependabot-alert-review"
+      ]
     }
   ]
 }

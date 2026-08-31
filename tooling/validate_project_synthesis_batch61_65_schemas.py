@@ -8,9 +8,15 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator, FormatChecker
 
+from source_package_guard import resolve_source_package
+
 
 ROOT = Path(__file__).resolve().parents[1]
-PACKAGE = ROOT / "elmos-project-synthesis-batch61-65"
+PACKAGE = resolve_source_package(
+    Path("elmos-project-synthesis-batch61-65"),
+    Path("package-manifest.json"),
+    root=ROOT,
+) or ROOT / "elmos-project-synthesis-batch61-65"
 PAIRS = {
     "agent-runtime.plan.json": "agent-runtime-v1.schema.json",
     "certification.result.json": "certification-result-v1.schema.json",

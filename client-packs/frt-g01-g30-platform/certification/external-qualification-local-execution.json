@@ -1,26 +1,26 @@
 {
   "schema_version": 1,
   "kind": "FRT_EXTERNAL_QUALIFICATION_LOCAL_EXECUTION",
-  "generated_at": "2026-08-06T02:56:44.339375Z",
+  "generated_at": "2026-08-31T00:51:22.477412Z",
   "plan_sha256": "sha256:1445cff828fee5cecfa89f787c4f03b799171897a78e43d21f5decf9fbf8cddd",
-  "preflight_sha256": "sha256:469f1ddb70e8f7c8d159f1e2caef9b876e28d7c9939b1b13dc7a6c06f5abc121",
+  "preflight_sha256": "sha256:0ec175f480693868de55a019e92399c96b362a4a12c5beea161b6cad50fbcfd0",
   "case_count": 15,
   "cases": [
     {
       "case_id": "FRT-EXT-001-FIREFOX-DESKTOP",
       "adapter_id": "PLAYWRIGHT_FIREFOX_DESKTOP",
       "code_contract_state": "PASSED_LOCAL_TOOLING",
-      "local_execution_state": "READY_FOR_LOCAL_EXECUTION",
+      "local_execution_state": "BLOCKED_TOOLCHAIN",
       "observations": [
         {
           "observation_id": "MANAGED_BROWSER_RUNTIME_LAUNCH",
-          "state": "PASSED",
-          "detail": "exact managed runtime launched"
+          "state": "BLOCKED",
+          "detail": "managed runtime is unavailable; no download attempted"
         },
         {
           "observation_id": "MANAGED_BROWSER_VERSION_MATCH",
-          "state": "PASSED",
-          "detail": "required version 151.0"
+          "state": "BLOCKED",
+          "detail": "required version 151.0 is not available"
         },
         {
           "observation_id": "BROWSER_DOWNLOAD_BOUNDARY",
@@ -28,7 +28,9 @@
           "detail": "probe is launch-only and never downloads a browser"
         }
       ],
-      "blockers": [],
+      "blockers": [
+        "EXACT_FIREFOX_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
@@ -37,17 +39,17 @@
       "case_id": "FRT-EXT-002-WEBKIT-DESKTOP",
       "adapter_id": "PLAYWRIGHT_WEBKIT_DESKTOP",
       "code_contract_state": "PASSED_LOCAL_TOOLING",
-      "local_execution_state": "READY_FOR_LOCAL_EXECUTION",
+      "local_execution_state": "BLOCKED_TOOLCHAIN",
       "observations": [
         {
           "observation_id": "MANAGED_BROWSER_RUNTIME_LAUNCH",
-          "state": "PASSED",
-          "detail": "exact managed runtime launched"
+          "state": "BLOCKED",
+          "detail": "managed runtime is unavailable; no download attempted"
         },
         {
           "observation_id": "MANAGED_BROWSER_VERSION_MATCH",
-          "state": "PASSED",
-          "detail": "required version 26.5"
+          "state": "BLOCKED",
+          "detail": "required version 26.5 is not available"
         },
         {
           "observation_id": "BROWSER_DOWNLOAD_BOUNDARY",
@@ -55,7 +57,9 @@
           "detail": "probe is launch-only and never downloads a browser"
         }
       ],
-      "blockers": [],
+      "blockers": [
+        "EXACT_WEBKIT_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
@@ -64,17 +68,17 @@
       "case_id": "FRT-EXT-003-WEBKIT-IPHONE15",
       "adapter_id": "PLAYWRIGHT_WEBKIT_IPHONE15",
       "code_contract_state": "PASSED_LOCAL_TOOLING",
-      "local_execution_state": "READY_FOR_LOCAL_EXECUTION",
+      "local_execution_state": "BLOCKED_TOOLCHAIN",
       "observations": [
         {
           "observation_id": "MANAGED_BROWSER_RUNTIME_LAUNCH",
-          "state": "PASSED",
-          "detail": "exact managed runtime launched"
+          "state": "BLOCKED",
+          "detail": "managed runtime is unavailable; no download attempted"
         },
         {
           "observation_id": "MANAGED_BROWSER_VERSION_MATCH",
-          "state": "PASSED",
-          "detail": "required version 26.5"
+          "state": "BLOCKED",
+          "detail": "required version 26.5 is not available"
         },
         {
           "observation_id": "BROWSER_DOWNLOAD_BOUNDARY",
@@ -82,7 +86,9 @@
           "detail": "probe is launch-only and never downloads a browser"
         }
       ],
-      "blockers": [],
+      "blockers": [
+        "EXACT_WEBKIT_RUNTIME_UNAVAILABLE"
+      ],
       "external_state": "NOT_RUN",
       "production_operation_authorized": false,
       "certification": "NOT_CERTIFIED"
@@ -398,8 +404,7 @@
     "PASSED_LOCAL_TOOLING": 15
   },
   "local_execution_counts": {
-    "BLOCKED_TOOLCHAIN": 1,
-    "READY_FOR_LOCAL_EXECUTION": 3,
+    "BLOCKED_TOOLCHAIN": 4,
     "REQUIRES_EXTERNAL_AUTHORITY": 11
   },
   "external_state_counts": {

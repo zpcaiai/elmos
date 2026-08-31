@@ -8,13 +8,17 @@ import unittest
 from pathlib import Path
 
 from elmos_etgb.attestation import verify_attestation, unsigned_payload
+from elmos_etgb.budget import BudgetLedger
 from elmos_etgb.canonical import CanonicalizationError, canonical_json, digest_json
+from elmos_etgb.checkpoint import CheckpointStore
 from elmos_etgb.evidence import EvidenceStore, build_evidence_manifest, create_deterministic_bundle, verify_evidence_manifest
 from elmos_etgb.gates import evaluate_gate
+from elmos_etgb.harness import HarnessContractError, HarnessRuntime, PhaseResult, harness_contract_report
 from elmos_etgb.oracles import compare_json, compare_trace
 from elmos_etgb.runner import execute_case, run_cases
 from elmos_etgb.registry import SkillRegistry
 from elmos_etgb.security import ExecutionPolicy, SecurityBoundaryError, parse_command, resolve_within, run_command_sequence
+from elmos_etgb.state_v11 import JsonRunStateStore
 from elmos_etgb.state import StateConflict, StateStore
 from elmos_etgb.corpus import verify_license_reviews
 
@@ -23,7 +27,120 @@ ROOT = Path(__file__).resolve().parents[3]
 PACKAGE = ROOT / "skills/subskills/elmos-etgb-sota-skills-package-v1.1.0"
 
 
+class _ConformantHarnessAdapter:
+    def __init__(self, artifact: Path) -> None:
+        self.artifact = artifact
+        self.calls: list[str] = []
+        self.digest = "sha256:" + "a" * 64
+
+    def _result(self, phase: str, outputs: dict[str, object], *, artifacts: list[Path] | None = None) -> PhaseResult:
+        self.calls.append(phase)
+        return PhaseResult("passed", outputs=outputs, artifacts=artifacts or [])
+
+    def prepare(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("prepare", {"workspace_digest": self.digest, "toolchain_digest": self.digest, "dependency_lock_digest": self.digest})
+
+    def baseline(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("baseline", {"source_build": {"passed": True}, "source_contract": {}, "source_state": {}, "source_trace": [], "source_flake_report": {}})
+
+    def transform_or_generate(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("transform_or_generate", {"target_repository_digest": self.digest, "adaptation_manifest": {}, "unsupported_manifest": [], "machine_usage": {}})
+
+    def build(self, _context: dict[str, object]) -> PhaseResult:
+        artifact_digest = "sha256:" + __import__("hashlib").sha256(self.artifact.read_bytes()).hexdigest()
+        return self._result("build", {"clean_build_result": {"passed": True}, "sbom_digest": self.digest, "provenance_digest": self.digest, "artifact_digests": [artifact_digest]}, artifacts=[self.artifact])
+
+    def validate(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("validate", {"public_test_results": [], "hidden_test_results": [], "oracle_results": [{"passed": True}], "mutation_results": [], "performance_results": {}})
+
+    def score(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("score", {"score_document": {"score": 1.0}, "failure_classifications": [], "silent_semantic_error_claims": []})
+
+    def publish(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("publish", {"evidence_manifest_digest": self.digest, "evidence_signature": {"status": "signed-by-provider"}, "report_uris": []})
+
+    def compensate(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("compensate", {"compensation_receipts": [], "unresolved_side_effects": []})
+
+    def cleanup(self, _context: dict[str, object]) -> PhaseResult:
+        return self._result("cleanup", {"workspace_cleanup_receipt": {"status": "clean"}, "retained_artifact_refs": []})
+
+
 class RuntimeTests(unittest.TestCase):
+    def test_harness_contract_is_digest_bound_and_registry_exposed(self) -> None:
+        report = harness_contract_report(PACKAGE / "integrations/harness/adapter-contract.yaml")
+        self.assertTrue(report["valid"], report["errors"])
+        self.assertEqual(report["required_phases"], ["prepare", "baseline", "transform_or_generate", "build", "validate", "score", "publish", "compensate", "cleanup"])
+        self.assertTrue(report["contract_digest"].startswith("sha256:"))
+        registry = SkillRegistry(PACKAGE)
+        self.assertEqual(registry.dispatch("production-harness-integration", "contract_report")["valid"], True)
+
+    def test_harness_runtime_enforces_phases_and_persists_raw_phase_evidence(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            build_artifact = root / "build.log"
+            build_artifact.write_text("build passed\n", encoding="utf-8")
+            candidate_digest = "sha256:" + "b" * 64
+            plan_digest = "sha256:" + "c" * 64
+            state_store = JsonRunStateStore(root / "state")
+            state_store.create(run_id="run-1", owner_id="worker-1", tenant_id="tenant-1", candidate_digest=candidate_digest, plan_digest=plan_digest)
+            BudgetLedger(root / "budget.json").reserve(run_id="run-1", tenant_id="tenant-1", owner_id="worker-1", max_input_tokens=1000, max_output_tokens=1000, max_credit_usd=10, max_wall_clock_ms=100000)
+            capabilities = [f"harness.{phase}" for phase in ("prepare", "baseline", "transform_or_generate", "build", "validate", "score", "publish", "compensate", "cleanup")]
+            authority = {
+                "schema_version": "1.0", "authority_id": "authority-1", "environment_id": "environment-1", "owner_type": "environment", "owner_id": "worker-1", "tenant_id": "tenant-1", "capabilities": capabilities,
+                "filesystem": {"read_roots": [str(root)], "write_roots": [str(root)]}, "network": {"mode": "deny", "allowlist": []}, "secrets": {"allowed_refs": []}, "hidden_tests": {}, "fencing_token": 1,
+            }
+            context = {
+                "tenant_id": "tenant-1", "project_id": "project-1", "task_id": "task-1", "case_run_id": "case-run-1", "candidate_digest": candidate_digest, "plan_digest": plan_digest, "case_digest": "sha256:" + "d" * 64,
+                "environment_id": "environment-1", "authority_id": "authority-1", "idempotency_key": "tenant-1:run-1:case-run-1:prepare:1", "checkpoint_digest": "sha256:" + "e" * 64,
+            }
+            adapter = _ConformantHarnessAdapter(build_artifact)
+            evidence = EvidenceStore(root / "evidence")
+            result = HarnessRuntime(
+                state_store=state_store,
+                checkpoint_store=CheckpointStore(root / "checkpoints"),
+                budget_ledger=BudgetLedger(root / "budget.json"),
+                evidence_store=evidence,
+            ).execute(run_id="run-1", adapter=adapter, context=context, authority=authority, owner_id="worker-1", fencing_token=1)
+            self.assertEqual(result["status"], "COMPLETED")
+            self.assertEqual(adapter.calls, ["prepare", "baseline", "transform_or_generate", "build", "validate", "score", "publish"])
+            self.assertTrue(all(record["raw_result_artifact"]["sha256"] for record in result["phases"]))
+            checkpoint = CheckpointStore(root / "checkpoints").load("run-1")
+            self.assertEqual(checkpoint["workspace_digest"], adapter.digest)
+            self.assertTrue(checkpoint["resume_payload"]["raw_result_artifact"]["sha256"])
+            self.assertTrue(CheckpointStore(root / "checkpoints").verify("run-1")["valid"])
+            self.assertTrue(evidence.verify()["valid"])
+            self.assertTrue(evidence.verify()["sealed"])
+
+    def test_harness_runtime_rejects_missing_required_phase_output_before_checkpoint(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            state_store = JsonRunStateStore(root / "state")
+            candidate_digest = "sha256:" + "b" * 64
+            plan_digest = "sha256:" + "c" * 64
+            state_store.create(run_id="run-1", owner_id="worker-1", tenant_id="tenant-1", candidate_digest=candidate_digest, plan_digest=plan_digest)
+            BudgetLedger(root / "budget.json").reserve(run_id="run-1", tenant_id="tenant-1", owner_id="worker-1", max_input_tokens=1000, max_output_tokens=1000, max_credit_usd=10, max_wall_clock_ms=100000)
+            capabilities = [f"harness.{phase}" for phase in ("prepare", "baseline", "transform_or_generate", "build", "validate", "score", "publish", "compensate", "cleanup")]
+            authority = {
+                "schema_version": "1.0", "authority_id": "authority-1", "environment_id": "environment-1", "owner_type": "environment", "owner_id": "worker-1", "tenant_id": "tenant-1", "capabilities": capabilities,
+                "filesystem": {"read_roots": [str(root)], "write_roots": [str(root)]}, "network": {"mode": "deny", "allowlist": []}, "secrets": {"allowed_refs": []}, "hidden_tests": {}, "fencing_token": 1,
+            }
+            context = {
+                "tenant_id": "tenant-1", "project_id": "project-1", "task_id": "task-1", "case_run_id": "case-run-1", "candidate_digest": candidate_digest, "plan_digest": plan_digest, "case_digest": "sha256:" + "d" * 64,
+                "environment_id": "environment-1", "authority_id": "authority-1", "idempotency_key": "tenant-1:run-1:case-run-1:prepare:1", "checkpoint_digest": "sha256:" + "e" * 64,
+            }
+            adapter = _ConformantHarnessAdapter(root / "missing.log")
+            adapter.prepare = lambda _context: PhaseResult("passed", outputs={})  # type: ignore[method-assign]
+            with self.assertRaises(HarnessContractError):
+                HarnessRuntime(
+                    state_store=state_store,
+                    checkpoint_store=CheckpointStore(root / "checkpoints"),
+                    budget_ledger=BudgetLedger(root / "budget.json"),
+                    evidence_store=EvidenceStore(root / "evidence"),
+                ).execute(run_id="run-1", adapter=adapter, context=context, authority=authority, owner_id="worker-1", fencing_token=1)
+            self.assertEqual(state_store.load("run-1")["state"], "FAILED")
+            self.assertFalse((root / "checkpoints/run-1.checkpoint.json").exists())
+
     def test_canonical_json_is_stable_and_rejects_nan(self) -> None:
         self.assertEqual(canonical_json({"b": 2, "a": 1}), b'{"a":1,"b":2}')
         self.assertEqual(digest_json({"a": 1}), digest_json({"a": 1}))

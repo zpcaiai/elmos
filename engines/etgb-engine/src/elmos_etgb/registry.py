@@ -27,7 +27,7 @@ from .attestation import load_json_object
 from .corpus import build_license_review_request, verify_license_reviews, verify_lock
 from .evidence import EvidenceStore
 from .external_harness import ExternalExecutionContext, ExternalHarnessRouter
-from .harness import phase_plan
+from .harness import harness_contract_report, phase_plan
 from .incidents import regression_from_incident
 from .materializer import materialize
 from .oracles import compare_json, compare_trace
@@ -65,7 +65,7 @@ class SkillRegistry:
         "metamorphic-fuzz-mutation": ("metamorphic", "mutation_summary", "property_campaign"),
         "corpus-governance": ("verify", "review_request", "review_verify"),
         "release-certification": ("gate", "preflight", "attestation_request"),
-        "production-harness-integration": ("phase_plan", "harness_preflight", "campaign_preflight"),
+        "production-harness-integration": ("phase_plan", "contract_report", "harness_preflight", "campaign_preflight"),
         "environment-authority-sandbox": ("authorize", "authority_digest", "hidden_boundary"),
         "checkpoint-resume-recovery": ("verify_checkpoint", "resume_contract"),
         "evidence-provenance-ledger": ("verify_evidence",),
@@ -332,6 +332,9 @@ class SkillRegistry:
             return cluster_failures(self._results(data))
         if operation == "phase_plan":
             return [{"from": source.value, "phase": phase, "to": target.value} for source, phase, target in phase_plan(data)]
+        if operation == "contract_report":
+            contract_path = Path(str(data["contract_path"])) if data.get("contract_path") else self.package_root / "integrations/harness/adapter-contract.yaml"
+            return harness_contract_report(contract_path)
         if operation == "harness_preflight":
             if not data.get("config_path"):
                 raise ValueError("harness_preflight requires config_path")

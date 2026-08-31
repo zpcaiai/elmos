@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountSessionFromRequest,
+  localCredentialsConfigured,
   oidcConfigured,
 } from "../../../lib/server/accountSession";
 
@@ -28,7 +29,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         authenticated: false,
-        configured: oidcConfigured(),
+        configured: oidcConfigured() || localCredentialsConfigured(),
         principal: null,
         expiresAt: null,
       },

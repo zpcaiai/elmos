@@ -5,6 +5,8 @@ import sys
 import unittest
 from pathlib import Path
 
+from tooling.source_package_guard import resolve_source_package
+
 
 ROOT = Path(__file__).resolve().parents[1]
 GUARD = ROOT / "tooling" / "source_package_guard.py"
@@ -28,6 +30,17 @@ class SourcePackageGuardTest(unittest.TestCase):
         )
         self.assertEqual(0, result.returncode, result.stderr)
         self.assertEqual("", result.stdout)
+
+    def test_resolver_returns_relocated_skills_package(self) -> None:
+        package = resolve_source_package(
+            Path("elmos-project-synthesis-batch61-65"),
+            Path("package-manifest.json"),
+            root=ROOT,
+        )
+        self.assertEqual(
+            ROOT / "skills" / "elmos-project-synthesis-batch61-65",
+            package,
+        )
 
     def test_absent_package_is_explicit_and_non_success(self) -> None:
         result = self.run_guard(

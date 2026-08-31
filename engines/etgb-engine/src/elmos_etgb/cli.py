@@ -17,6 +17,7 @@ from .campaign import merge_release_results
 from .evidence import create_deterministic_bundle
 from .corpus import build_license_review_request, verify_license_reviews
 from .external_harness import ExternalExecutionContext, ExternalHarnessRouter
+from .harness import harness_contract_report
 from .orchestrator import build_plan, external_campaign_preflight, gate_profile, release_attestation_request, release_preflight, run_profile, select_cases
 from .package import PACKAGE_ROOT_NAME
 from .planner import build_external_canary_plan, select_plan_shard, validate_plan, validate_plan_scope
@@ -176,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
     harness_preflight.add_argument("--plan", type=Path)
     harness_preflight.add_argument("--production", action="store_true")
     harness_preflight.add_argument("--output", type=Path)
+    harness_contract = sub.add_parser("harness-contract")
+    harness_contract.add_argument("--contract", type=Path)
     campaign_preflight = sub.add_parser("campaign-preflight")
     campaign_preflight.add_argument("--config", type=Path, required=True)
     campaign_preflight.add_argument("--candidate", type=Path, required=True)
@@ -467,6 +470,11 @@ def main(argv: list[str] | None = None) -> int:
             _write_json(args.output, result)
         print(json.dumps(result, ensure_ascii=False, indent=2))
         return 0 if result["status"] == "READY_FOR_EXTERNAL_EXECUTION_CONFIG" else 2
+    if args.command == "harness-contract":
+        contract_path = args.contract if args.contract else package_root / "integrations/harness/adapter-contract.yaml"
+        result = harness_contract_report(contract_path)
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+        return 0 if result["valid"] else 2
     if args.command == "campaign-preflight":
         result = external_campaign_preflight(
             package_root,

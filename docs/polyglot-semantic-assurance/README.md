@@ -5,15 +5,17 @@ repository-owned runtime boundary. The authoritative generated artifacts are:
 
 - `COMPILED_CATALOG.json`: exact source identities, dependency graph, route
   matrix, operation families, and maximum local capability modes;
-- `COLLISION_BINDINGS.json`: three exact-name bindings whose installed Skill
-  trees remain owned by other packages;
+- `COLLISION_BINDINGS.json`: exact-name bindings whose installed Skill trees
+  remain owned by other packages, including the 130 names owned by the
+  Semantic Assurance package;
 - `QUALIFICATION_RECEIPT.json`: structural integration status and explicit
   evidence gaps.
 
-Each of the 297 non-colliding Skills has the same repository-owned wrapper in
-`.agents/skills/<name>/` and `agent-skills/runtime/<name>/`. Wrappers point to a
-unique allowlisted runtime handler and never embed the source package's
-imperative content.
+Each of the 167 repository-owned Skills has the same repository-owned wrapper
+in `.agents/skills/<name>/` and `agent-skills/runtime/<name>/`. The remaining
+133 exact-name bindings preserve the existing owner recorded by its package
+manifest and ledger. Wrappers point to a unique allowlisted runtime handler
+and never embed the source package's imperative content.
 
 ## Evidence model
 
