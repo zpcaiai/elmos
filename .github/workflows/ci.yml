@@ -223,6 +223,9 @@ jobs:
             "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
           test "${image_os}" = "macos15"
           test "${image_version}" = "20260727.0256.1"
+          test "${openssl_stat}" = "555:501:80:1:878752"
+          test "${openssl_sha256}" = \
+            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8"
           /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
           probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-probe.XXXXXX")"
           trap '/bin/rm -rf -- "${probe_root}"' EXIT
@@ -251,6 +254,9 @@ jobs:
             "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
           test "${image_os}" = "macos15"
           test "${image_version}" = "20260727.0256.1"
+          test "${openssl_stat}" = "555:501:80:1:878752"
+          test "${openssl_sha256}" = \
+            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8"
           /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
           probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-path-probe.XXXXXX")"
           trap '/bin/rm -rf -- "${probe_root}"' EXIT

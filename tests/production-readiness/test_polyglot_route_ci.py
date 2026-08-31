@@ -11,7 +11,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
     def test_frontend_ci_binds_exact_openssl_ed25519_runtime(self) -> None:
         workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         frontend_job = workflow.split("  frontend-client-engine:", 1)[1].split(
-            "  polyglot-routes:", 1
+            "  polyglot-route-pack-contracts:", 1
         )[0]
 
         bind_runtime = frontend_job.index("- name: Bind OpenSSL 3 Ed25519 runtime")
@@ -50,6 +50,16 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertEqual(frontend_job.count('test "${image_os}" = "macos15"'), 2)
         self.assertEqual(
             frontend_job.count('test "${image_version}" = "20260727.0256.1"'),
+            2,
+        )
+        self.assertEqual(
+            frontend_job.count('test "${openssl_stat}" = "555:501:80:1:878752"'),
+            2,
+        )
+        self.assertEqual(
+            frontend_job.count(
+                "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8"
+            ),
             2,
         )
         self.assertEqual(frontend_job.count("/usr/bin/stat -f"), 2)
