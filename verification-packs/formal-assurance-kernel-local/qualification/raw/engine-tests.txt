@@ -511,9 +511,11 @@ test_unpinned_or_implicit_environment_fails_closed (test_assurance_claim_boundar
 test_generation_is_deterministic_and_never_reports_native_proof (test_assurance_claim_boundaries.ProofBridgeClaimBoundaryTests.test_generation_is_deterministic_and_never_reports_native_proof) ... ok
 test_missing_sources_and_proof_bodies_stay_explicit (test_assurance_claim_boundaries.ProofBridgeClaimBoundaryTests.test_missing_sources_and_proof_bodies_stay_explicit) ... ok
 test_unknown_context_and_unsafe_identifiers_fail_closed (test_assurance_claim_boundaries.ProofBridgeClaimBoundaryTests.test_unknown_context_and_unsafe_identifiers_fail_closed) ... ok
+test_cli_accepts_encrypted_durable_artifact_store (test_cli.FormalAssuranceCliTests.test_cli_accepts_encrypted_durable_artifact_store) ... ok
 test_cli_loads_digest_pinned_registry_and_private_permit_key (test_cli.FormalAssuranceCliTests.test_cli_loads_digest_pinned_registry_and_private_permit_key) ... ok
 test_cli_rejects_permit_key_readable_by_group_or_others (test_cli.FormalAssuranceCliTests.test_cli_rejects_permit_key_readable_by_group_or_others) ... ok
 test_cli_rejects_symlinked_key_and_unpaired_registry_options (test_cli.FormalAssuranceCliTests.test_cli_rejects_symlinked_key_and_unpaired_registry_options) ... ok
+test_operator_examples_include_required_artifact_encryption_options (test_cli.FormalAssuranceCliTests.test_operator_examples_include_required_artifact_encryption_options) ... ok
 test_artifact_paths_are_tenant_safe_and_retention_is_enforced (test_executor_and_security.ExecutorAndSecurityTests.test_artifact_paths_are_tenant_safe_and_retention_is_enforced) ... ok
 test_concurrency_and_active_owner_limits_fail_closed (test_executor_and_security.ExecutorAndSecurityTests.test_concurrency_and_active_owner_limits_fail_closed) ... ok
 test_local_executor_commits_bounded_evidence_and_refutation (test_executor_and_security.ExecutorAndSecurityTests.test_local_executor_commits_bounded_evidence_and_refutation) ... ok
@@ -565,6 +567,6 @@ test_p0_security_cannot_be_waived (test_store_and_gate.StoreAndGateTests.test_p0
 test_tenant_scoped_cache_and_event_queries (test_store_and_gate.StoreAndGateTests.test_tenant_scoped_cache_and_event_queries) ... ok
 
 ----------------------------------------------------------------------
-Ran 565 tests in 1.972s
+Ran 567 tests in 3.324s
 
 OK

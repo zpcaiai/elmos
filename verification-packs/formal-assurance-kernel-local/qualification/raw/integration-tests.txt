@@ -4,6 +4,6 @@ test_immutable_source_mirror_has_no_drift_or_symlink (test_integration.Integrati
 test_pinned_archive_and_internal_checksums (test_integration.IntegrationTests.test_pinned_archive_and_internal_checksums) ... ok
 
 ----------------------------------------------------------------------
-Ran 4 tests in 6.311s
+Ran 4 tests in 10.674s
 
 OK

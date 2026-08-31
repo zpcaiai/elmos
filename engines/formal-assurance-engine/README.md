@@ -76,14 +76,16 @@ make formal-assurance-kernel-qualify
 ```
 
 For an operator-managed CLI deployment, provide durable state/artifact roots,
-a private (mode `0600`) permit key file, and a complete digest-pinned toolchain
-registry. A separate private key may be supplied for local evidence-bundle
-signing:
+a private (mode `0600`) artifact-encryption key and key identifier, a private
+(mode `0600`) permit key file, and a complete digest-pinned toolchain registry.
+A separate private key may be supplied for local evidence-bundle signing:
 
 ```sh
 elmos-formal-assurance \
   --state /var/lib/elmos/formal-assurance.sqlite3 \
   --artifact-root /var/lib/elmos/formal-artifacts \
+  --artifact-encryption-key-file /run/secrets/elmos-formal-artifact-encryption-key \
+  --artifact-encryption-key-id local-artifact-kek-v1 \
   --execution-root /var/lib/elmos/formal-executions \
   --permit-key-file /run/secrets/elmos-formal-permit-key \
   --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \

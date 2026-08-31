@@ -46,14 +46,18 @@ as inert declarative requirements. Broad work starts with
 installed Skill. The importer rejects collisions, symlinks and dual-root drift.
 
 Native execution is fail closed. A deployment must provide a complete
-digest-pinned toolchain registry and a private permit key. The CLI refuses a
-registry without its SHA-256, follows neither registry nor key symlinks, and
-rejects permit keys readable by group or others. Example operator wiring:
+digest-pinned toolchain registry, a private permit key and a separate private
+artifact-encryption key whenever durable artifact storage is enabled. The CLI
+refuses a registry without its SHA-256, follows neither registry nor key
+symlinks, and rejects secret keys readable by group or others. Example operator
+wiring:
 
 ```sh
 elmos-formal-assurance \
   --state /var/lib/elmos/formal-assurance.sqlite3 \
   --artifact-root /var/lib/elmos/formal-artifacts \
+  --artifact-encryption-key-file /run/secrets/elmos-formal-artifact-encryption-key \
+  --artifact-encryption-key-id local-artifact-kek-v1 \
   --execution-root /var/lib/elmos/formal-executions \
   --permit-key-file /run/secrets/elmos-formal-permit-key \
   --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \

@@ -26,7 +26,7 @@
   "integrity_manifest": "qualification/evidence-manifest.json",
   "metrics": {
     "local_test_pass_rate": 1.0,
-    "local_tests": 569
+    "local_tests": 571
   },
   "notes": [
     "Code completeness and local execution are recorded separately from external evidence and certification.",
