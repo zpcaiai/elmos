@@ -267,20 +267,6 @@ class ExactToolchain:
     auxiliary_sha256: str | None = None
 
 
-@dataclass(frozen=True)
-class _JavaContract:
-    home: Path
-    java_sha256: str
-    javac_sha256: str
-    modules_sha256: str
-    jvm_sha256: str
-    release_sha256: str
-    bundle_cdhash_full: str
-    team_identifier: str
-    java_version: str
-    distribution: str
-
-
 def _output(
     command: list[str],
     *,
@@ -341,29 +327,6 @@ _EXPECTED_JAVA_VERSION = (
     "OpenJDK 64-Bit Server VM Homebrew (build 21.0.11, mixed mode, sharing)"
 )
 _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
-
-# GitHub's macOS arm64 hosted image supplies the exact Temurin build through
-# actions/setup-java.  It is a separate contract from the Homebrew route
-# bundle above: the bytes, release metadata, and signed bundle identity all
-# differ.  Keeping both contracts explicit prevents CI from silently accepting
-# an arbitrary JAVA_HOME merely because it prints the right version.
-_TEMURIN_JAVA_HOME_SUFFIX = (
-    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
-)
-_TEMURIN_JAVA_SHA256 = "afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
-_TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"
-_TEMURIN_JAVA_MODULES_SHA256 = "915c525cd0b9d4db404cdc2368bfb4f3e0ab2a6a598b2d6a76d932de19dd2d33"
-_TEMURIN_JAVA_JVM_SHA256 = "34bc0bc23d87abb85147409ccdbf604ccd3d2fe8b83ac567a966a5df8a81eded"
-_TEMURIN_JAVA_RELEASE_SHA256 = "5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
-_TEMURIN_JAVA_BUNDLE_CDHASH_FULL = (
-    "e392fdd40bd00e2e6a6986716901ee08ad1e0200e65bdafab50f70554364a5a2"
-)
-_TEMURIN_JAVA_TEAM_IDENTIFIER = "JCDTMS22B4"
-_TEMURIN_JAVA_VERSION = (
-    'openjdk version "21.0.11" 2026-04-21 LTS\n'
-    "OpenJDK Runtime Environment Temurin-21.0.11+10 (build 21.0.11+10-LTS)\n"
-    "OpenJDK 64-Bit Server VM Temurin-21.0.11+10 (build 21.0.11+10-LTS, mixed mode, sharing)"
-)
 
 _EXPECTED_DOTNET_VERSION = "10.0.301"
 _EXPECTED_DOTNET_RUNTIME_VERSION = "10.0.9"
@@ -1073,62 +1036,13 @@ def _java_bundle_signature(bundle: Path) -> str:
         ) from error
 
 
-def _java_contract() -> _JavaContract:
-    """Select one fully pinned Java contract for this execution environment."""
-
-    distribution = os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "").strip().lower()
-    if not distribution:
-        distribution = "homebrew"
-    if distribution == "homebrew":
-        expected_home = _EXPECTED_JAVA_HOME.resolve(strict=True)
-        return _JavaContract(
-            home=expected_home,
-            java_sha256=_EXPECTED_JAVA_SHA256,
-            javac_sha256=_EXPECTED_JAVAC_SHA256,
-            modules_sha256=_EXPECTED_JAVA_MODULES_SHA256,
-            jvm_sha256=_EXPECTED_JAVA_JVM_SHA256,
-            release_sha256=_EXPECTED_JAVA_RELEASE_SHA256,
-            bundle_cdhash_full=_EXPECTED_JAVA_BUNDLE_CDHASH_FULL,
-            team_identifier="not set",
-            java_version=_EXPECTED_JAVA_VERSION,
-            distribution="Homebrew-openjdk@21",
-        )
-    if distribution != "temurin":
-        raise RouteError(f"EXACT_TOOLCHAIN_DISTRIBUTION_UNSUPPORTED:java:{distribution}")
-    configured = os.environ.get("ELMOS_JAVA21_HOME", "").strip()
-    if not configured:
-        raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin")
-    try:
-        expected_home = Path(configured).resolve(strict=True)
-    except OSError as error:
-        raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin") from error
-    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIX):
-        raise RouteError(
-            "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin:"
-            f"expected_suffix={_TEMURIN_JAVA_HOME_SUFFIX}"
-        )
-    return _JavaContract(
-        home=expected_home,
-        java_sha256=_TEMURIN_JAVA_SHA256,
-        javac_sha256=_TEMURIN_JAVAC_SHA256,
-        modules_sha256=_TEMURIN_JAVA_MODULES_SHA256,
-        jvm_sha256=_TEMURIN_JAVA_JVM_SHA256,
-        release_sha256=_TEMURIN_JAVA_RELEASE_SHA256,
-        bundle_cdhash_full=_TEMURIN_JAVA_BUNDLE_CDHASH_FULL,
-        team_identifier=_TEMURIN_JAVA_TEAM_IDENTIFIER,
-        java_version=_TEMURIN_JAVA_VERSION,
-        distribution="Temurin-21.0.11+10",
-    )
-
-
 def _java() -> ExactToolchain:
     try:
-        contract = _java_contract()
+        expected_home = _EXPECTED_JAVA_HOME.resolve(strict=True)
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:java:expected-home") from error
-    expected_home = contract.home
     configured = os.environ.get("ELMOS_JAVA21_HOME", "").strip()
-    if configured and contract.distribution == "Homebrew-openjdk@21":
+    if configured:
         try:
             configured_home = Path(configured).resolve(strict=True)
         except OSError as error:
@@ -1155,20 +1069,20 @@ def _java() -> ExactToolchain:
     signature = _java_bundle_signature(bundle)
     signature_lines = set(signature.splitlines())
     if (
-        java_digest != contract.java_sha256
-        or javac_digest != contract.javac_sha256
-        or modules_digest != contract.modules_sha256
-        or jvm_digest != contract.jvm_sha256
-        or release_digest != contract.release_sha256
-        or observed_java != contract.java_version
+        java_digest != _EXPECTED_JAVA_SHA256
+        or javac_digest != _EXPECTED_JAVAC_SHA256
+        or modules_digest != _EXPECTED_JAVA_MODULES_SHA256
+        or jvm_digest != _EXPECTED_JAVA_JVM_SHA256
+        or release_digest != _EXPECTED_JAVA_RELEASE_SHA256
+        or observed_java != _EXPECTED_JAVA_VERSION
         or observed_javac != _EXPECTED_JAVAC_VERSION
         or "Identifier=net.java.openjdk.jdk" not in signature_lines
-        or ("TeamIdentifier=" + contract.team_identifier not in signature_lines)
-        or ("CandidateCDHashFull sha256=" + contract.bundle_cdhash_full not in signature_lines)
+        or "TeamIdentifier=not set" not in signature_lines
+        or ("CandidateCDHashFull sha256=" + _EXPECTED_JAVA_BUNDLE_CDHASH_FULL not in signature_lines)
     ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11/"
-            f"java-sha256={contract.java_sha256}/javac-sha256={contract.javac_sha256}:"
+            f"java-sha256={_EXPECTED_JAVA_SHA256}/javac-sha256={_EXPECTED_JAVAC_SHA256}:"
             f"observed-java-sha256={java_digest}/observed-javac-sha256={javac_digest}"
         )
     return ExactToolchain(
@@ -1178,9 +1092,9 @@ def _java() -> ExactToolchain:
         str(javac),
         profile=(
             "platform=Darwin/arm64",
-            f"distribution={contract.distribution}",
+            "distribution=Homebrew-openjdk@21",
             f"jdk-home={expected_home}",
-            f"jdk-cdhash-full={contract.bundle_cdhash_full}",
+            f"jdk-cdhash-full={_EXPECTED_JAVA_BUNDLE_CDHASH_FULL}",
             f"jdk-modules-sha256={modules_digest}",
             f"libjvm-sha256={jvm_digest}",
             f"release-sha256={release_digest}",
@@ -4419,7 +4333,6 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
     return (
         os.environ.get("PATH", ""),
         os.environ.get("ELMOS_JAVA21_HOME", ""),
-        os.environ.get("ELMOS_JAVA21_DISTRIBUTION", ""),
         os.environ.get("ELMOS_CLANG_HOME", ""),
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),

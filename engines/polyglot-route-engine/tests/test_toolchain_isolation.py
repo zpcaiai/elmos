@@ -323,57 +323,14 @@ def test_java_codesign_receipt_reports_the_exact_failed_stage(
     assert "exit=1:diagnostic=strict verification failed" in str(caught.value)
 
 
-def test_temurin_contract_is_explicitly_selected_for_ci_home(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    home = (
-        tmp_path
-        / "hostedtoolcache"
-        / "Java_Temurin-Hotspot_jdk"
-        / "21.0.11-10.0"
-        / "arm64"
-        / "Contents"
-        / "Home"
-    )
-    home.mkdir(parents=True)
-    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
-    monkeypatch.setenv("ELMOS_JAVA21_HOME", str(home))
-
-    contract = toolchains._java_contract()
-
-    assert contract.home == home.resolve()
-    assert contract.distribution == "Temurin-21.0.11+10"
-    assert contract.java_sha256 == toolchains._TEMURIN_JAVA_SHA256
-    assert contract.team_identifier == toolchains._TEMURIN_JAVA_TEAM_IDENTIFIER
-    assert contract.bundle_cdhash_full == toolchains._TEMURIN_JAVA_BUNDLE_CDHASH_FULL
-
-
-def test_temurin_contract_rejects_an_unpinned_setup_java_home(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    home = tmp_path / "java" / "Contents" / "Home"
-    home.mkdir(parents=True)
-    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
-    monkeypatch.setenv("ELMOS_JAVA21_HOME", str(home))
-
-    with pytest.raises(
-        RouteError,
-        match="EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin",
-    ):
-        toolchains._java_contract()
-
-
 def test_java_toolchain_binds_launchers_runtime_modules_and_bundle_signature() -> None:
-    contract = toolchains._java_contract()
     selected = toolchains.exact_toolchain("java")
 
-    assert selected.executable_sha256 == contract.java_sha256
-    assert selected.auxiliary_sha256 == contract.javac_sha256
-    assert f"jdk-cdhash-full={contract.bundle_cdhash_full}" in selected.profile
-    assert f"jdk-modules-sha256={contract.modules_sha256}" in selected.profile
-    assert f"libjvm-sha256={contract.jvm_sha256}" in selected.profile
+    assert selected.executable_sha256 == toolchains._EXPECTED_JAVA_SHA256
+    assert selected.auxiliary_sha256 == toolchains._EXPECTED_JAVAC_SHA256
+    assert f"jdk-cdhash-full={toolchains._EXPECTED_JAVA_BUNDLE_CDHASH_FULL}" in selected.profile
+    assert f"jdk-modules-sha256={toolchains._EXPECTED_JAVA_MODULES_SHA256}" in selected.profile
+    assert f"libjvm-sha256={toolchains._EXPECTED_JAVA_JVM_SHA256}" in selected.profile
 
 
 def test_python_runtime_identity_is_root_portable_and_path_confined(
@@ -488,7 +445,6 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    contract = toolchains._java_contract()
     monkeypatch.setenv("JAVA_TOOL_OPTIONS", "-javaagent:/does/not/exist.jar")
     monkeypatch.setenv("_JAVA_OPTIONS", "-Xbootclasspath/a:/does/not/exist")
     monkeypatch.setenv("JDK_JAVA_OPTIONS", "--class-path=/does/not/exist")
@@ -508,8 +464,8 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     )
 
     assert report["status"] == "PASSED"
-    assert report["toolchain"]["executable_sha256"] == contract.java_sha256
-    assert report["toolchain"]["auxiliary_sha256"] == contract.javac_sha256
+    assert report["toolchain"]["executable_sha256"] == toolchains._EXPECTED_JAVA_SHA256
+    assert report["toolchain"]["auxiliary_sha256"] == toolchains._EXPECTED_JAVAC_SHA256
 
 
 @pytest.mark.skipif(os.uname().sysname != "Darwin", reason="exact Swift evidence is Darwin-only")
