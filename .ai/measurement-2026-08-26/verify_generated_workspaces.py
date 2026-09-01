@@ -103,6 +103,40 @@ def stage_table(evidence: dict[str, Any]) -> dict[str, dict[str, int]]:
     return {kind: dict(counts) for kind, counts in sorted(table.items())}
 
 
+#: A build that could not REACH its dependency repository says nothing about
+#: the generated project. In a network-restricted environment (this container
+#: cannot reach Maven Central or the Gradle plugin repository) such a run would
+#: otherwise be published as a product failure. The engine's own retry is
+#: deliberately narrow -- `uv sync --locked` only, because `--locked` is what
+#: makes a retry safe -- so the DEMOTION happens here, in the measurement, and
+#: the marker that triggered it is always recorded.
+_UNREACHABLE_DEPENDENCY_MARKERS = (
+    "could not resolve plugin artifact",
+    "could not resolve all dependencies",
+    "could not resolve all files for configuration",
+    "plugin repositories (could not resolve",
+    "connection refused",
+    "network is unreachable",
+    "temporary failure in name resolution",
+    "could not get resource",
+    "failed to fetch",
+    "unable to access",
+)
+
+
+def unreachable_dependency_marker(evidence: dict[str, Any]) -> str | None:
+    """The marker proving a FAILED stage failed on the network, not the code."""
+
+    for result in evidence.get("results", []):
+        if result.get("status") != "FAILED":
+            continue
+        lowered = str(result.get("output", "")).lower()
+        for marker in _UNREACHABLE_DEPENDENCY_MARKERS:
+            if marker in lowered:
+                return marker
+    return None
+
+
 def failures(evidence: dict[str, Any], limit: int = 3) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
     for result in evidence.get("results", []):
@@ -154,7 +188,15 @@ def run_cell(language: str, persistence: str, auth_mode: str, entity_count: int,
         cell["seconds"] = round(time.monotonic() - started, 1)
         return cell
 
-    cell["outcome"] = str(evidence.get("status", "UNKNOWN"))
+    outcome = str(evidence.get("status", "UNKNOWN"))
+    marker = unreachable_dependency_marker(evidence) if outcome == "FAILED" else None
+    if marker is not None:
+        # NOT a pass and NOT a failure: an absent measurement, same as a
+        # missing toolchain. Counting it either way publishes a wrong number.
+        outcome = "NOT_RUN_UNREACHABLE_DEPENDENCIES"
+        cell["environment_marker"] = marker
+    cell["outcome"] = outcome
+    cell["engine_status"] = str(evidence.get("status", "UNKNOWN"))
     cell["stages"] = stage_table(evidence)
     cell["exact_toolchain_match"] = evidence.get("environment", {}).get("exact_toolchain_match", {})
     cell["failures"] = failures(evidence)
