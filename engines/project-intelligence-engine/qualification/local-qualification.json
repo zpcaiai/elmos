@@ -64,22 +64,22 @@
       "sha256": "sha256:126f555ad6ff97a062df3c949e7b9813af2a5e089c609c4e38e9298ae585d630"
     },
     {
-      "bytes": 14759,
+      "bytes": 16779,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/diagram_layout.py",
-      "sha256": "sha256:d818418a9bce1afb76e5eeb2430a1d972d8b5727ed36aa8f8505c51f4aa518d3"
+      "sha256": "sha256:9beec047c2cd546cd96f807a69804588e5a653aebdeea64c1acbc47a2da2fe43"
     },
     {
-      "bytes": 4623,
+      "bytes": 5089,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/diagram_svg.py",
-      "sha256": "sha256:60c18ef3ec01d6e1ebef5f97f5bad4c1469ee2e899fb262c69db05801a41822b"
+      "sha256": "sha256:099636e02a8261d822ce0d137aca0ca0df945478b1484b7e52ce6d5a61bdbe39"
     },
     {
-      "bytes": 103034,
+      "bytes": 105442,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/domain.py",
-      "sha256": "sha256:1fd9cf9f2584db04a8a112724fe989e88fde08831bda4915f6eb14eee18b38cc"
+      "sha256": "sha256:d4daa0938683e05e52f455195ac33fbcfe5036c4047a56156627e83e11d8258d"
     },
     {
       "bytes": 6906,
@@ -88,10 +88,16 @@
       "sha256": "sha256:3be7b715f0441dd91667b7587da554e39e30d572c888b5d8150b221d8b803585"
     },
     {
-      "bytes": 14205,
+      "bytes": 17805,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/flowgraph.py",
-      "sha256": "sha256:2d20a58f9d7993cabf2d40ca3b67a5bba38f21fc4f3ec845b0a54c62774e0b4c"
+      "sha256": "sha256:13b8f33cba04cfe979b383e464025b7a8128a3b823487fac9fdd52fa4dc64064"
+    },
+    {
+      "bytes": 8249,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/java_structure.py",
+      "sha256": "sha256:2830e7de6d56aa1c5f3d40550a1f52c23f1f2a2ba6710ec67f9287891631a1b8"
     },
     {
       "bytes": 23599,
@@ -160,16 +166,22 @@
       "sha256": "sha256:b038b6082c07b44aed4d1fc8bf771a239cb8759de2f7e2a3d22b112913905396"
     },
     {
-      "bytes": 16709,
+      "bytes": 28926,
       "mode": "0644",
       "path": "tests/test_diagram_export.py",
-      "sha256": "sha256:7d5287d32db5bb034f7d84f9086162946fd3a1c69b0f5ceb94ab9897b4764e11"
+      "sha256": "sha256:58436038b7c1afc33e80cec150415420dd583e67cf1ee2f218d8e6b281433b88"
     },
     {
       "bytes": 20468,
       "mode": "0644",
       "path": "tests/test_flowgraph.py",
       "sha256": "sha256:fa6d3cb9a944654e0ae66e4e76fcd47827328fe07a82d2fe0e87b3bf5009eb02"
+    },
+    {
+      "bytes": 3121,
+      "mode": "0644",
+      "path": "tests/test_java_structure.py",
+      "sha256": "sha256:b4563a71fb612ca71d2145904cb647abe5c307fb0a962e636c1aed524c9bf523"
     },
     {
       "bytes": 8981,
@@ -190,6 +202,12 @@
       "sha256": "sha256:19a43ca311b07f0bbb369b5545e40b0627315a4f5e653d2b620126347a1de5cf"
     },
     {
+      "bytes": 21064,
+      "mode": "0644",
+      "path": "tests/test_self_analysis.py",
+      "sha256": "sha256:67befb3181d7402ce7076cc45d60b4d28ff87a99f67bf49eec66f87c821e0a77"
+    },
+    {
       "bytes": 14691,
       "mode": "0644",
       "path": "tests/test_service.py",
@@ -208,7 +226,7 @@
       "sha256": "sha256:2f5707153f6384f7d16ffcec51f2bda2ff84e47d5815ca35908ed2838b1853f5"
     }
   ],
-  "engine_tree_sha256": "sha256:dd4262f908fa97616df1dab7b76a85d2d6508e1662d36d96f1259458a623677f",
+  "engine_tree_sha256": "sha256:bd3a398e3ba1ce3bda74d30ed516a3c5c5f8261480e97fa253f4a231762ecd6f",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -218,8 +236,8 @@
   "qualification_scope": "bounded-local-fixture-handlers",
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
-  "qualifier_sha256": "sha256:d737818d48d863a95c4527025b5dea6d80c50f261ae9d64d034a280696720532",
-  "receipt_digest": "sha256:157392f0f7391d24c1bc6b3f8e0faa7c58a2f116019e3b14ccec4c215f6247ca",
+  "qualifier_sha256": "sha256:eaa5c2daa613d48b8a5a213418a6ef8f0843fc27c0d3f9231f3724fec8c2591c",
+  "receipt_digest": "sha256:8d8369e449a3458e55d7b9ac0c44fafc62b9e03b5d1d7d72253c4b83ad1473bd",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {
@@ -1650,13 +1668,14 @@
             "project_id": "project-a",
             "revision_id": "abc123",
             "schema_version": 1,
+            "title": "Project Intelligence artifacts",
             "type": "component"
           },
-          "digest": "sha256:6ed80101cff72188aeb3c5f58a651fb0cd58787b566d17401f8bfbf37d28f7b1"
+          "digest": "sha256:0fc94437ccac3001e881e31d2938a3181cd4d384dc571c85db8bfb0bff5de060"
         },
         "project_id": "project-a",
         "request_id": "request-1",
-        "result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
+        "result_digest": "sha256:93056ffbc7a8964803e6eb49a1e84fd83a449e142c08c64fe6f18cb93f97d816",
         "revision": "abc123",
         "schema_version": "elmos.project-intelligence.result.v1",
         "skill": "elmos-diagram-spec-engine",
@@ -1665,7 +1684,7 @@
         "unavailable": [],
         "warnings": []
       },
-      "result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
+      "result_digest": "sha256:93056ffbc7a8964803e6eb49a1e84fd83a449e142c08c64fe6f18cb93f97d816",
       "skill": "elmos-diagram-spec-engine",
       "status": "PASSED"
     },

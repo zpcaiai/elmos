@@ -593,7 +593,7 @@
       "name": "elmos-diagram-spec-engine",
       "ordinal": 19,
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
+      "qualification_result_digest": "sha256:93056ffbc7a8964803e6eb49a1e84fd83a449e142c08c64fe6f18cb93f97d816",
       "skill_interface_status": "INSTALLED",
       "test_paths": [
         "engines/project-intelligence-engine/tests/test_runtime.py",

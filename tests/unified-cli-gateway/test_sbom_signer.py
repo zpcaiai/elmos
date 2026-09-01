@@ -53,7 +53,12 @@ class SbomAttestationSignerTests(unittest.TestCase):
             build_type="https://elmos.local/build/v1",
             invocation_digest="sha256:" + "1" * 64,
             environment_digest="sha256:" + "2" * 64,
-            materials=[],
+            materials=[
+                {
+                    "uri": "pkg:generic/payment-gateway@1.0.0",
+                    "sha256": "sha256:" + "0" * 64,
+                }
+            ],
             issued_at=self.timestamp,
         )
         self.assertEqual(stmt.statement["_type"], "https://in-toto.io/Statement/v1")

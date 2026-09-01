@@ -609,7 +609,7 @@ class ExportCliTests(unittest.TestCase):
 
     def test_cli_writes_svg_report_and_pptx_deterministically(self) -> None:
         with tempfile.TemporaryDirectory() as raw_directory:
-            directory = Path(raw_directory)
+            directory = Path(raw_directory).resolve()
             spec_path = self._write(directory, "spec.json", simple_spec())
             manifest = dispatch_skill("elmos-presentation-generation", request())
             manifest_path = self._write(directory, "manifest.json", manifest)
@@ -644,7 +644,7 @@ class ExportCliTests(unittest.TestCase):
 
     def test_cli_rejects_a_document_without_a_diagram_spec(self) -> None:
         with tempfile.TemporaryDirectory() as raw_directory:
-            directory = Path(raw_directory)
+            directory = Path(raw_directory).resolve()
             bad = self._write(directory, "bad.json", {"unrelated": True})
             code, _ = self._run(
                 [
@@ -660,7 +660,7 @@ class ExportCliTests(unittest.TestCase):
 
     def test_cli_refuses_to_follow_a_symlinked_output_path(self) -> None:
         with tempfile.TemporaryDirectory() as raw_directory:
-            directory = Path(raw_directory)
+            directory = Path(raw_directory).resolve()
             spec_path = self._write(directory, "spec.json", simple_spec())
             target = directory / "target.svg"
             target.write_text("original", encoding="utf-8")

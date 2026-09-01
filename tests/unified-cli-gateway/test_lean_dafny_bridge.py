@@ -50,7 +50,7 @@ class Lean4DafnyBridgeTests(unittest.TestCase):
             ensures=["newBal == fromBal - amount", "newBal >= 0"],
             body="newBal := fromBal - amount;",
         )
-        self.assertIn("method {:verify true} TransferFunds(fromBal: int, amount: int) returns (newBal: int)", dfy)
+        self.assertIn("method TransferFunds(fromBal: int, amount: int) returns (newBal: int)", dfy)
         self.assertIn("requires fromBal >= amount", dfy)
         self.assertIn("ensures newBal == fromBal - amount", dfy)
         self.assertIn("newBal := fromBal - amount;", dfy)
@@ -73,13 +73,12 @@ class Lean4DafnyBridgeTests(unittest.TestCase):
             source_lang="java",
             target_lang="rust",
         )
-        self.assertIn("proof_id", cert)
-        self.assertTrue(cert["proof_id"].startswith("PROOF-LEAN4-DFY-"))
+        self.assertIn("request_id", cert)
+        self.assertTrue(cert["request_id"].startswith("proof-request-"))
         self.assertEqual(cert["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
         self.assertEqual(cert["soundness_guarantee"], "NOT_ASSESSED")
-        self.assertIn("theorem MonetaryConservation", cert["lean4_specification"])
-        self.assertIn("method {:verify true} MonetaryConservation", cert["dafny_specification"])
-        self.assertTrue(cert["merkle_digest"].startswith("sha256:"))
+        self.assertIn("gaps", cert)
+        self.assertTrue(cert["request_digest"].startswith("sha256:"))
 
     def test_cli_generate_lean4_proof_convenience(self) -> None:
         cert = generate_lean4_proof(

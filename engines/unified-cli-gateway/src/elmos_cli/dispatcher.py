@@ -545,7 +545,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 materials = [
                     {
                         "uri": f"pkg:generic/{artifact_name}@1.0.0",
-                        "digest": {"sha256": art_digest.removeprefix("sha256:")},
+                        "sha256": art_digest,
                     }
                 ]
                 result_data = sign_artifact_sbom(

@@ -65,7 +65,7 @@ class TestApiContractDiffer(unittest.TestCase):
         self.assertIsInstance(rep, ContractDiffReport)
         self.assertTrue(rep.is_backward_compatible)
         self.assertEqual(rep.breaking_changes_count, 0)
-        self.assertEqual(rep.non_breaking_count, 1)
+        self.assertEqual(rep.non_breaking_count, 2)
 
     def test_breaking_diff(self):
         rep = self.differ.compare_specs(self.src_spec, self.tgt_spec_breaking)

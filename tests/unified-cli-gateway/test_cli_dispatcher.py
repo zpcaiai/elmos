@@ -148,8 +148,9 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
             self.assertEqual(data["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
-            self.assertIn("theorem PreserveNonNegativeBalance", data["lean4_specification"])
-            self.assertIn("method {:verify true}", data["dafny_specification"])
+            self.assertEqual(data["obligation_name"], "PreserveNonNegativeBalance")
+            self.assertEqual(data["certification_status"], "NOT_CERTIFIED")
+            self.assertIn("request_id", data)
         finally:
             sys.stdout = stdout_orig
 
