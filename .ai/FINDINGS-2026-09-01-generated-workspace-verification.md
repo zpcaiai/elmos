@@ -4,20 +4,43 @@
 证据：`cloud-generation-evidence.json`（3 实体）、`cloud-generation-evidence-1entity.json`（1 实体）。
 **本轮只在云端跑，构建/启动/CRUD/RLS 仍是 `NOT_RUN`——那部分只有 Mac 能出。**
 
-## 为什么要做这个
+## 更正在前：我起初的前提是错的
 
-整个测量从「生成中小型项目的准确度、完整度究竟能达到多少」开始。
-现有的 `generation-surface` 证据回答了**生成器接受什么**：24/48 组合、8 语言、
-最多 20 实体、每格文件数。但它自己在最要紧的那个字段里写着：
+我最初写这份报告时的说法是「**没有人验过生成出来的项目能不能构建、能不能起来、
+CRUD 通不通**」。**这句话是错的，仓库里一直有那份证据：**
 
-```json
-"verification_status": {"status": "NOT_RUN",
- "reason": "verification.verify_workspace needs the pinned macOS toolchains;
-            build/startup/CRUD/RLS results are not produced by this run."}
+`docs/project-synthesis/local-production-profile-matrix.json`
+
+```
+observed_at   2026-07-28T06:10:28+00:00
+environment   macOS-26.5.2-arm64 / Python 3.12.9
+case_count    16（8 语言 × jwt/oidc）   status PASSED   failures []
+每例覆盖      生成 + 精确工具链构建 + 启动探针 + CRUD + RLS 跨租户隔离 + 清理
+exact_toolchain_match  16/16 全 true
+entity_shape  single-entity 12 / multi-entity 4
+evidence_class LOCAL_ENGINEERING   certification_status NOT_CERTIFIED
 ```
 
-**没有人验过生成出来的项目能不能构建、能不能起来、CRUD 通不通。**
-`pytest` 165 通过也不是这个答案——它测的是生成器，不是产物。
+我怎么错的：我读了 `generation-surface` 证据里的
+`verification_status: NOT_RUN`，就断定**从来没有过**执行验证。那个字段说的只是
+「**这一次**没跑」。**「这次没测」不等于「从没测过」**——这正是我自己在别处反复强调的
+`NOT_RUN` 与 `REJECTED` 的区分，我在自己的前提上犯了它。
+同样地，「24 组合必须带 1 实体限定」这条规则是对的，但我暗示它没被写过也是错的：
+`FINDINGS-2026-08-21-accuracy-completeness-measurement.md` 第 22 行的汇总表里，
+「24/48 组合」和「6/8 语言只能生成单实体」本来就写在同一格。
+
+## 那这一轮还值什么
+
+三条，都不是「第一次验证」：
+
+1. **那份证据已经 5 周了，而且横跨了一次整线停摆。** 08-26 发现
+   `PROJECT_STRUCTURE_UNCLASSIFIED_ROOT:scripts` 让**每一次** `render_workspace`
+   失败——生成线在某段时间里对所有语言、所有 profile 产出为零，直到 `8e0b441da` 修好。
+   **07-28 的 16/16 描述的是一个此后曾经死掉又被修复的引擎。** 它需要重跑，
+   不是因为没跑过，而是因为它旧了。
+2. **它是一份静态 JSON，不是一个可重跑的测量。** 本轮交付的是仪器：
+   接受集现问引擎、逐格落盘、可 `--resume`、可只跑子集。
+3. **07-28 那轮的实体数是 1 或 2，从没探过 3。** 本轮探了，见下——接受矩阵在 3 实体时腰斩。
 
 ## 仪器的三条硬规矩
 
@@ -114,5 +137,6 @@ uv --directory engines/project-synthesis-engine run --locked python \
   --out /tmp/elmos-ws --json /tmp/elmos-gen-evidence.json
 ```
 
-**在那份证据出来之前，这条线的「准确度、完整度」仍然只有生成侧的数，没有执行侧的数。**
-本报告没有改变这一点，它只是把生成侧的数说准了：**24 是 1 实体下的数，多实体是 12。**
+**执行侧现有的唯一证据是 07-28 那份 16/16**，而它早于一次整线停摆，且从未探过 3 实体。
+本报告没有替代它，只做了两件事：把生成侧的数说准（**24 是 1 实体下的数，多实体是 12**），
+并把「重跑它」变成一条可以随时执行的命令。
