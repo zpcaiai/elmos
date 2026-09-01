@@ -1228,3 +1228,299 @@ def test_a_budget_the_bridge_cannot_read_is_not_treated_as_no_budget(runtime):
     served = kernel_bridge.serve(
         "phase-aware-model-router", _route(budget={"remaining": "100.00", "currency": "USD"}))
     assert served.served is True
+
+
+# --- prefix-stable-context-planner -------------------------------------------
+
+
+def _plan_payload(**over):
+    payload = {
+        "task_spec": {"id": "spec-1", "objective": "ship"},
+        "current_step": {"id": "step-1", "action": "edit"},
+        "skill_metadata": {"id": "skill-1", "version": "2.0.0"},
+        "repository_index": {"id": "idx-1", "symbols": []},
+        "token_budget": 8000,
+    }
+    payload.update(over)
+    return payload
+
+
+def test_the_stable_prefix_survives_a_change_to_the_volatile_step(runtime):
+    """The property the skill is named for, and the field that hides it.
+
+    ``context_bundle.prefixDigest`` is documented as the address of the *whole
+    ordered plan*, so it covers the volatile step block and changes every step.
+    In a skill called prefix-**stable** the field named ``prefixDigest`` is the
+    one that is not stable, and a caller using it as a prompt-cache key would
+    miss every time while believing they had one.
+
+    So the cumulative digest at the stable boundary is surfaced under a name
+    that says which of the two it is.
+    """
+
+    first = runtime.execute("prefix-stable-context-planner", _plan_payload())
+    later = runtime.execute("prefix-stable-context-planner",
+                            _plan_payload(current_step={"id": "step-2", "action": "test"}))
+
+    assert "ENGINE:kernel" in first.reasons
+    one, two = first.output["context_bundle"], later.output["context_bundle"]
+
+    assert one["stablePrefixDigest"] == two["stablePrefixDigest"]
+    assert one["prefixDigest"] != two["prefixDigest"]
+    assert "Cache on stablePrefixDigest" in one["prefixDigestNote"]
+
+
+def test_an_unmeasured_token_cost_is_never_an_optimistic_within_budget(runtime):
+    """Legacy asserts the fit by assuming every block costs 500 tokens.
+
+    `selected = ranked[: max(1, token_budget // 500)]` - nothing is measured, so
+    "fits the budget" is a constant wearing an answer. The core reports
+    ``withinBudget: null`` when no cost was measured.
+    """
+
+    result = runtime.execute("prefix-stable-context-planner", _plan_payload())
+    plan = result.output["context_plan"]
+
+    assert plan["tokenCostMeasured"] is False
+    assert plan["withinBudget"] is None
+    assert result.output["compaction_snapshot"]["gates"]["within-token-budget"] is None
+
+
+def test_every_block_that_went_in_is_traced_not_only_the_selected_ones(runtime):
+    """A block that vanished between retrieval and prompt is the invisible bug."""
+
+    result = runtime.execute("prefix-stable-context-planner", _plan_payload())
+    trace = result.output["retrieval_trace"]
+
+    assert len(trace) == 4
+    assert all("disposition" in entry and "reason" in entry for entry in trace)
+    assert result.output["compaction_snapshot"]["gates"]["retrieval-trace-complete"] is True
+
+
+def test_a_block_without_an_id_keeps_the_legacy_engine(runtime):
+    """Minting an id from the content digest would defeat the whole skill.
+
+    The id would change whenever the content changed, so no block would match
+    itself across two steps and the prefix could never be stable - which is
+    exactly what is being sought.
+    """
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    outcome = kernel_bridge.serve(
+        "prefix-stable-context-planner", _plan_payload(task_spec={"objective": "ship"}))
+    assert outcome.served is False
+    assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",)
+
+
+def test_a_token_cost_is_forwarded_only_when_the_caller_measured_it(runtime):
+    """Estimating it would put a fabricated number into a budget-fitting plan."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    spec = kernel_bridge.BRIDGES["prefix-stable-context-planner"]
+    without = spec.request_for(_plan_payload())
+    assert "tokenCost" not in without["task_spec"]
+
+    with_cost = spec.request_for(
+        _plan_payload(task_spec={"id": "spec-1", "objective": "ship", "tokenCost": 1200}))
+    assert with_cost["task_spec"]["tokenCost"] == 1200
+
+
+def test_the_block_body_never_reaches_the_kernel(runtime):
+    """The core's ledger is content-free, and the descriptor is how that holds."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    request = kernel_bridge.BRIDGES["prefix-stable-context-planner"].request_for(
+        _plan_payload(task_spec={"id": "spec-1", "objective": "a secret objective"}))
+
+    assert set(request["task_spec"]) <= {"taskSpecId", "digest", "tokenCost", "snapshotSha"}
+    assert "objective" not in request["task_spec"]
+
+    result = runtime.execute("prefix-stable-context-planner", _plan_payload())
+    assert result.output["context_ledger"]["contentFree"] is True
+
+
+def test_a_blocks_identity_is_the_callers_id_and_not_its_content_digest(runtime):
+    """The mutation that survived the first pass, so it gets its own test.
+
+    Minting the block id from the content digest looks harmless while content
+    is static. It fails the moment a block's content changes for an ordinary
+    reason - a spec version bump, a re-serialised index - because the same
+    logical block then appears under a new id, matches nothing from the previous
+    step, and every downstream comparison (evictions, retained ids, "did this
+    block move") is against a stranger.
+    """
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    spec = kernel_bridge.BRIDGES["prefix-stable-context-planner"]
+    first = spec.request_for(_plan_payload(
+        task_spec={"id": "spec-1", "objective": "ship"}))
+    edited = spec.request_for(_plan_payload(
+        task_spec={"id": "spec-1", "objective": "ship it faster"}))
+
+    # Same identity, different content: the id holds, the digest moves.
+    assert first["task_spec"]["taskSpecId"] == "spec-1"
+    assert edited["task_spec"]["taskSpecId"] == "spec-1"
+    assert first["task_spec"]["digest"] != edited["task_spec"]["digest"]
+
+    # And it is the caller's string, not anything derived from the content.
+    assert "sha256" not in first["task_spec"]["taskSpecId"]
+
+    plan = runtime.execute("prefix-stable-context-planner", _plan_payload())
+    assert "spec:spec-1" in plan.output["context_bundle"]["blockIds"]
+
+
+# --- lazy-tool-loader --------------------------------------------------------
+
+
+_LOADER_SHA = "sha256:" + "1" * 64
+
+
+def _tool(tool_id, cost, capabilities):
+    return {"toolId": tool_id, "version": "1",
+            "capabilities": capabilities, "tokenCost": cost}
+
+
+_CATALOGUE = [
+    _tool("echo", 100, ["run"]),
+    _tool("grep", 300, ["search"]),
+    _tool("write-file", 900, ["write"]),
+    _tool("huge", 5000, ["run"]),
+]
+
+
+def _minted_context(runtime, granted=("echo", "grep", "huge")):
+    from elmos_repository_autonomy.dispatcher import DispatchContext
+
+    context = DispatchContext(tenant_id="t", store=runtime.store,
+                              tool_runtime=runtime.tool_runtime)
+    runtime.execute("execution-authority-kernel", {
+        "environment": {
+            "environmentId": "env-1", "workspaceId": "ws-1",
+            "policySnapshotHash": _LOADER_SHA, "ttlSeconds": 3600,
+            "grantedTools": list(granted), "pathScopes": ["src"],
+            "networkScopes": [], "secretBindings": [],
+        },
+        "workspace": {"id": "ws-1"},
+        "permission_profile": {"id": "profile-1", "tools": list(granted),
+                               "pathScopes": ["src"]},
+        "fencing_token": 4,
+    }, context=context)
+    return context
+
+
+def test_a_deferred_tool_is_not_reported_as_denied(runtime):
+    """The disposition v2 has no field for, and folding it would misreport.
+
+    ``huge`` is authorised and capable; it is left out because 5000 tokens do
+    not fit a 500-token ceiling. Reporting that in ``denied_tool_set`` would
+    claim an authorisation failure for a budget decision, and dropping it would
+    make a tool the caller expected vanish with no record. Legacy cannot express
+    it at all: with no budget it loads everything it is allowed to.
+    """
+
+    context = _minted_context(runtime)
+    result = runtime.execute("lazy-tool-loader", {
+        "tool_catalogue": _CATALOGUE,
+        "task_profile": {"requiredCapabilities": ["run", "search"], "tokenBudget": 500},
+    }, context=context)
+
+    assert "ENGINE:kernel" in result.reasons
+    assert result.output["loaded_tool_set"] == ["echo", "grep"]
+    assert result.output["tool_load_plan"]["deferredTools"] == ["huge"]
+    assert result.output["denied_tool_set"] == ["write-file"]
+
+
+def test_a_schema_is_published_only_for_a_tool_that_was_loaded(runtime):
+    """Metadata is cheap and always available; the schema is paid for on load."""
+
+    context = _minted_context(runtime)
+    result = runtime.execute("lazy-tool-loader", {
+        "tool_catalogue": _CATALOGUE,
+        "task_profile": {"requiredCapabilities": ["run", "search"], "tokenBudget": 500},
+    }, context=context)
+
+    assert sorted(result.output["tool_schema_bundle"]) == ["echo", "grep"]
+
+
+def test_the_context_authority_wins_over_a_wider_claim_in_the_payload(runtime):
+    """The same fall-through that made typed-tool-runtime consult a wider authority.
+
+    The kernel minted an authority granting `echo` only. The payload then
+    presents one granting `write-file` too, and the step requires the `write`
+    capability that only `write-file` provides.
+
+    With the payload's authority the plan would succeed and load `write-file`.
+    With the context's - the one the kernel actually minted and narrowed - no
+    authorised tool covers `write`, and the core refuses the plan. The refusal
+    *is* the evidence that the narrowed authority was the one consulted.
+    """
+
+    context = _minted_context(runtime, granted=("echo",))
+    result = runtime.execute("lazy-tool-loader", {
+        "tool_catalogue": _CATALOGUE,
+        "task_profile": {"requiredCapabilities": ["run", "write"], "tokenBudget": 5000},
+        "execution_authority": {
+            "environmentId": "env-1", "workspaceId": "ws-1", "fencingToken": 4,
+            "allowedTools": ["echo", "write-file"], "networkScopes": [],
+            "secretBindings": [], "policySnapshotHash": _LOADER_SHA,
+        },
+    }, context=context)
+
+    assert result.error is not None
+    assert result.error.code == "TOOL_NOT_AUTHORIZED"
+    # A domain rejection stands: the shallower engine does not get to overturn it.
+    assert "ENGINE:legacy" not in result.reasons
+
+
+def test_an_uncovered_required_capability_is_a_refusal_not_a_plan_with_a_hole(runtime):
+    """A behaviour change worth stating: legacy returned validated-with-denials.
+
+    Legacy answers `LOCAL_ENGINEERING_VALIDATED` with `TOOL_NOT_AUTHORIZED` in
+    the reasons and a plan that simply lacks the tool. That plan is not usable -
+    the step runs without a capability it declared it needs - so the core
+    refuses instead. The refusal fires only for a *required* capability: a
+    denied tool nobody asked for still yields a plan, which the test above
+    relies on.
+    """
+
+    context = _minted_context(runtime)
+    fine = runtime.execute("lazy-tool-loader", {
+        "tool_catalogue": _CATALOGUE,
+        "task_profile": {"requiredCapabilities": ["run"], "tokenBudget": 5000},
+    }, context=context)
+
+    assert fine.error is None
+    assert "write-file" in fine.output["denied_tool_set"]
+
+
+def test_an_unpriced_catalogue_keeps_the_legacy_loader(runtime):
+    """Defaulting a per-tool cost would pick which tools get deferred."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    context = _minted_context(runtime)
+    outcome = kernel_bridge.serve("lazy-tool-loader", {
+        "tool_catalog": [{"tool_id": "echo", "version": "1", "capabilities": ["run"]}],
+        "task_profile": {"requiredCapabilities": ["run"], "tokenBudget": 500},
+    }, context)
+
+    assert outcome.served is False
+    assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",)
+
+
+def test_a_catalogue_with_no_budget_keeps_the_legacy_loader(runtime):
+    """With no ceiling there is nothing to trade off, and the trade-off is the point."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    context = _minted_context(runtime)
+    outcome = kernel_bridge.serve("lazy-tool-loader", {
+        "tool_catalogue": _CATALOGUE, "step_requirements": ["run"],
+    }, context)
+
+    assert outcome.served is False
+    assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",)

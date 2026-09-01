@@ -36,12 +36,20 @@ def package_registry(manifest: Mapping[str, Any], components: Any, lock: Any, si
         wildcard = any("*" in str(value) for value in permissions.values())
         catalog.append({"id": require_string(row.get("id"), "components[].id"), "path": path, "digest": row.get("digest"), "permissions": dict(permissions), "wildcard_permission": wildcard})
     dependency_lock = require_mapping(lock or {}, "dependency_lock") if lock is not None else {}
-    signature_valid = isinstance(signature, Mapping) and bool(signature.get("valid")) and bool(signature.get("key_id"))
+    # NOTHING IS VERIFIED HERE. This reads the caller's own `valid` boolean: a
+    # package is "signed" because its payload says so. On a supply-chain surface
+    # that is the whole failure - the point of a signature is that the verifier
+    # recomputes it, and here the claim is the verdict. There is no signature
+    # material in a v2 payload to recompute from, which is why the kernel path
+    # requires a real signature string instead. Reported as
+    # `signature_verified: false` below so a reader cannot mistake this for a check.
+    signature_claimed = isinstance(signature, Mapping) and bool(signature.get("valid")) and bool(signature.get("key_id"))
+    signature_valid = signature_claimed
     test_rows = tests if isinstance(tests, list) else []
     tests_pass = bool(test_rows) and all(_status(item.get("status")) in {"PASS", "PASSED"} for item in test_rows if isinstance(item, Mapping))
     permission_pass = not any(item["wildcard_permission"] for item in catalog)
     state = "REGISTERED" if signature_valid and tests_pass and permission_pass else "BLOCKED"
-    package = {"package_id": f"{name}@{version}", "name": name, "version": version, "content_hash": digest({"manifest": manifest, "components": catalog, "lock": dependency_lock}), "state": state, "immutable": True, "registered_at": utc_now()}
+    package = {"package_id": f"{name}@{version}", "name": name, "version": version, "content_hash": digest({"manifest": manifest, "components": catalog, "lock": dependency_lock}), "state": state, "immutable": True, "registered_at": utc_now(), "signature_verified": False, "signature_claimed": signature_claimed, "signature_note": "signature.valid is the caller's own assertion and was not recomputed; no signing key was consulted and no signature material was present to verify", "tests_verified": False, "tests_note": "test rows are read as reported; nothing was executed"}
     return {"registered_package": package, "component_catalog": catalog, "install_plan": {"status": "READY" if state == "REGISTERED" else "NOT_READY", "order": [item["id"] for item in catalog]}, "permission_review": {"status": "PASS" if permission_pass else "FAIL", "wildcards": [item["id"] for item in catalog if item["wildcard_permission"]]}, "upgrade_plan": {"status": "PLANNED", "rollback_version": manifest.get("previous_version"), "dependency_lock_hash": digest(dependency_lock)}}
 
 

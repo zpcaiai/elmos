@@ -289,8 +289,23 @@ def main() -> int:
 def diff_matrices(old_path: Path, new_path: Path) -> int:
     """Case-by-case diff of two `run_production_matrix.py` evidence files."""
 
-    old = json.loads(old_path.read_text(encoding="utf-8"))
-    new = json.loads(new_path.read_text(encoding="utf-8"))
+    # A measurement tool that answers a missing input with a stack trace has
+    # told the operator nothing. Name the file, say which side it was, stop.
+    loaded = {}
+    for side, path in (("OLD", old_path), ("NEW", new_path)):
+        if not path.is_file():
+            print(f"REFUSED: {side} matrix does not exist: {path}\n"
+                  f"         Produce it first with:\n"
+                  f"           uv --directory engines/project-synthesis-engine run --locked \\\n"
+                  f"             python scripts/run_production_matrix.py --output <absolute path>",
+                  file=sys.stderr)
+            return 2
+        try:
+            loaded[side] = json.loads(path.read_text(encoding="utf-8"))
+        except ValueError as error:
+            print(f"REFUSED: {side} matrix is not valid JSON ({path}): {error}", file=sys.stderr)
+            return 2
+    old, new = loaded["OLD"], loaded["NEW"]
     index = {(c["language"], c["auth_mode"]): c for c in old.get("cases", [])}
     rows, verdicts = [], Counter()
     for case in new.get("cases", []):

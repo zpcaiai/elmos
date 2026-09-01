@@ -283,8 +283,28 @@ Four rules, enforced in `kernel_bridge.serve`:
   What is done: `tests/test_persistence_split.py` pins both lists by name so
   neither can move without the other, `V001`'s header says plainly that these
   tables stay empty, and the README says where data actually goes.
-- **10 of 31 skills answer from the legacy engine, and every one now has a
-  written reason.** `elmos-autonomy engines` prints both tables:
+- **4 of 31 skills answer from the legacy engine, and every one has a written
+  reason.** Three are `blocked: true` (below); the fourth,
+  `semantic-ir-compiler`, is a different operation rather than a shape gap — the
+  core compiles one Python `sourceUnit.source` into typed IR and refuses any
+  other language, while v2 compiles a whole semantic index across framework
+  profiles. Its legacy path now reports PARTIAL with a status note instead of
+  claiming COMPILED, which was the actual defect.
+
+  Every other translation gap has been closed. The rule that closed them is the
+  same one each time: **promote only a caller who states what the core needs,
+  never a bridge that invents it.** What each row refused to invent —
+
+  | row | refused to invent | because |
+  | --- | --- | --- |
+  | `model-state-continuity` | the checkpoint instant | `Checkpoint.digest` covers `createdAt`, so wall time makes the same request produce a different digest every run |
+  | `phase-aware-model-router` | per-Mtok prices, a reliability prior | they are the numbers the reproducible ranking rests on; a made-up one yields a decision that is deterministic, hashed and auditable, and computed from fiction |
+  | `prefix-stable-context-planner` | a block id, a token cost | a digest-derived id changes with content, so no block matches itself across steps — the exact stability being sought |
+  | `lazy-tool-loader` | a token budget, per-tool costs | defaulting the budget sets the caller's context ceiling; defaulting a cost picks which tools get deferred |
+  | `capability-package-registry` | a signature | signing the caller's package with the deployment's key makes every verification pass and certifies only that this process trusts itself |
+  | `multi-agent-worktree-coordinator` | an agent role | the role match decides which agent may write where; a synthesised one hands that back to list position while looking checked |
+
+  (Superseded: the earlier note said 10 legacy rows.) `elmos-autonomy engines` prints both tables:
   `rationales` for the 21 routed rows, `legacyRationales` for the 10 that are
   not. Three of the ten are marked `blocked: true` — promoting them would make
   the package *worse*, and that only counts if it is recorded where an operator

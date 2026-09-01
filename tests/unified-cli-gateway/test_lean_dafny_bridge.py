@@ -24,8 +24,8 @@ class Lean4DafnyBridgeTests(unittest.TestCase):
             tactics=["intro h", "exact h"],
         )
         self.assertIn("theorem NonNegativeBalance", thm)
-        self.assertIn("(h0: balance : Int)", thm)
-        self.assertIn("(h1: h_pos : balance >= 0)", thm)
+        self.assertIn("(h0 : balance : Int)", thm)
+        self.assertIn("(h1 : h_pos : balance >= 0)", thm)
         self.assertIn("intro h", thm)
         self.assertIn("exact h", thm)
 
@@ -75,11 +75,11 @@ class Lean4DafnyBridgeTests(unittest.TestCase):
         )
         self.assertIn("proof_id", cert)
         self.assertTrue(cert["proof_id"].startswith("PROOF-LEAN4-DFY-"))
-        self.assertEqual(cert["verification_status"], "PROVED_VERIFIED")
-        self.assertEqual(cert["soundness_guarantee"], "MACHINE_CHECKED_MATHEMATICAL_PROOF")
+        self.assertEqual(cert["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
+        self.assertEqual(cert["soundness_guarantee"], "NOT_ASSESSED")
         self.assertIn("theorem MonetaryConservation", cert["lean4_specification"])
         self.assertIn("method {:verify true} MonetaryConservation", cert["dafny_specification"])
-        self.assertEqual(len(cert["merkle_digest"]), 64)
+        self.assertTrue(cert["merkle_digest"].startswith("sha256:"))
 
     def test_cli_generate_lean4_proof_convenience(self) -> None:
         cert = generate_lean4_proof(
@@ -90,8 +90,9 @@ class Lean4DafnyBridgeTests(unittest.TestCase):
         )
         self.assertEqual(cert["source_lang"], "csharp")
         self.assertEqual(cert["target_lang"], "go")
-        self.assertEqual(cert["verification_status"], "PROVED_VERIFIED")
+        self.assertEqual(cert["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
 
 
 if __name__ == "__main__":
     unittest.main()
+

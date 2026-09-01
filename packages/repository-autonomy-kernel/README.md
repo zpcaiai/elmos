@@ -54,7 +54,7 @@ Three rules keep the delegation safe, enforced in `kernel_bridge.serve`:
 ## Running it
 
 ```bash
-python3 -m pytest tests -q                       # 1,602 tests
+python3 -m pytest tests -q                       # 1,651 tests
 elmos-autonomy engines                           # routing table + why each row routes there
 elmos-autonomy catalog                           # the 31 declared capabilities
 elmos-autonomy serve --port 8080                 # HTTP control plane

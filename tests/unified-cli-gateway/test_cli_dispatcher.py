@@ -42,7 +42,7 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             exit_code = main(["polyglot", "status"])
             output = sys.stdout.getvalue()
             self.assertEqual(exit_code, 0)
-            self.assertIn("ready", output.lower())
+            self.assertIn("control_plane", output.lower())
         finally:
             sys.stdout = stdout_orig
 
@@ -130,7 +130,8 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             code = main(["assurance", "status", "--json"])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertIn("status", data)
+            self.assertIn("engine", data)
+            self.assertEqual(data["certificationStatus"], "NOT_CERTIFIED")
         finally:
             sys.stdout = stdout_orig
 
@@ -146,7 +147,7 @@ class UnifiedCliGatewayTests(unittest.TestCase):
             ])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["verification_status"], "PROVED_VERIFIED")
+            self.assertEqual(data["verification_status"], "NATIVE_VERIFICATION_NOT_RUN")
             self.assertIn("theorem PreserveNonNegativeBalance", data["lean4_specification"])
             self.assertIn("method {:verify true}", data["dafny_specification"])
         finally:

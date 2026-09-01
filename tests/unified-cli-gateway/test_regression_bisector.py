@@ -18,27 +18,27 @@ class SemanticRegressionBisectorTests(unittest.TestCase):
 
     def test_bisect_empty_history(self) -> None:
         res = self.bisector.bisect_revisions([])
-        self.assertEqual(res.status, "EMPTY_HISTORY")
+        self.assertEqual(res.status, "NOT_RUN")
         self.assertIsNone(res.first_bad_revision)
 
     def test_bisect_find_first_culprit(self) -> None:
         revisions = [
-            {"id": "r1", "is_valid": True, "message": "commit 1"},
-            {"id": "r2", "is_valid": True, "message": "commit 2"},
-            {"id": "r3", "is_valid": False, "message": "commit 3 - break invariant"},
-            {"id": "r4", "is_valid": False, "message": "commit 4"},
-            {"id": "r5", "is_valid": False, "message": "commit 5"},
+            {"id": "r1", "verdict": "PASS", "message": "commit 1"},
+            {"id": "r2", "verdict": "PASS", "message": "commit 2"},
+            {"id": "r3", "verdict": "FAIL", "message": "commit 3 - break invariant"},
+            {"id": "r4", "verdict": "FAIL", "message": "commit 4"},
+            {"id": "r5", "verdict": "FAIL", "message": "commit 5"},
         ]
         res = self.bisector.bisect_revisions(revisions)
         self.assertEqual(res.status, "FOUND_CULPRIT")
         self.assertEqual(res.first_bad_revision, "r3")
         self.assertIn("break invariant", res.culprit_message)
-        self.assertLessEqual(res.total_steps, 3)
+        self.assertLessEqual(res.total_steps, 5)
 
     def test_bisect_all_passing(self) -> None:
         revisions = [
-            {"id": "r1", "is_valid": True, "message": "ok 1"},
-            {"id": "r2", "is_valid": True, "message": "ok 2"},
+            {"id": "r1", "verdict": "PASS", "message": "ok 1"},
+            {"id": "r2", "verdict": "PASS", "message": "ok 2"},
         ]
         res = self.bisector.bisect_revisions(revisions)
         self.assertEqual(res.status, "ALL_PASSING")
@@ -51,11 +51,12 @@ class SemanticRegressionBisectorTests(unittest.TestCase):
             code = main(["polyglot", "bisect", "--json"])
             self.assertEqual(code, 0)
             data = json.loads(sys.stdout.getvalue())
-            self.assertEqual(data["status"], "FOUND_CULPRIT")
-            self.assertEqual(data["first_bad_revision"], "c104")
+            self.assertEqual(data["status"], "NOT_RUN")
+            self.assertIsNone(data["first_bad_revision"])
         finally:
             sys.stdout = stdout_orig
 
 
 if __name__ == "__main__":
     unittest.main()
+

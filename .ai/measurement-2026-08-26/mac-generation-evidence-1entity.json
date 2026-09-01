@@ -1,0 +1,51 @@
+{
+  "kind": "elmos.generated-workspace-execution-verification",
+  "schema_version": "1.0.0",
+  "instrument": "verify_generated_workspaces.py",
+  "method": "generate_workspace() then the engine's own verify_workspace() (build -> startup -> CRUD -> RLS). NOT_RUN is reported as an absent measurement, never as a pass or a failure.",
+  "entity_count": 1,
+  "outcome_summary": {
+    "PASSED": 1
+  },
+  "stage_summary": {
+    "build-analysis": {
+      "PASSED": 1
+    },
+    "startup-probe": {
+      "PASSED": 1
+    },
+    "toolchain": {
+      "PASSED": 2
+    }
+  },
+  "comparison_with_stored_evidence": null,
+  "cells": [
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "relation_count": 0,
+      "file_count": 52,
+      "outcome": "PASSED",
+      "engine_status": "PASSED",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 1
+        },
+        "startup-probe": {
+          "PASSED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "java": true
+      },
+      "failures": [],
+      "seconds": 135.7,
+      "key": "in-memory|none|java"
+    }
+  ]
+}

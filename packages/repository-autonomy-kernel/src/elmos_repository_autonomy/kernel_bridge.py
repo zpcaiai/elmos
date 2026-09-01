@@ -1917,6 +1917,629 @@ def _router_outputs(payload: Mapping[str, Any],
     return {name: _walk(value) for name, value in outputs.items()}
 
 
+#: v2 input name -> the id field the core's block descriptor requires.
+_CONTEXT_BLOCKS: tuple[tuple[str, str], ...] = (
+    ("skill_metadata", "skillId"),
+    ("task_spec", "taskSpecId"),
+    ("repository_index", "indexId"),
+    ("previous_ledger", "ledgerId"),
+    ("current_step", "stepId"),
+)
+
+
+def _context_descriptor(value: Any, id_field: str) -> Mapping[str, Any] | None:
+    """Turn one v2 object into a content-free block descriptor, or refuse.
+
+    The core takes descriptors, not objects: ``{<idField>, digest, tokenCost?,
+    snapshotSha?}`` and nothing else. That is deliberate - the ledger it builds
+    is content-free, so the block's body never enters an output.
+
+    ``digest`` is *derived* from the object the caller supplied. That is a
+    reading of their own data: the digest of X is determined by X, and it is
+    what lets the planner see that a block's content changed between steps.
+
+    ``<idField>`` is *not* derived. An id is an identity, and the obvious
+    shortcut - minting one from the content digest - would give the same task
+    spec a different id whenever its content changed, so no block would ever
+    match itself across two steps and the prompt prefix would never be stable.
+    That is the one property this skill is named for. A caller who supplies an
+    object without an id keeps the legacy engine.
+
+    ``tokenCost`` is not derived either, and that one is a measurement rather
+    than an identity: it depends on a tokenizer nobody named. Estimating it -
+    characters over four, say - would put a fabricated number into a plan whose
+    whole job is fitting a budget. Left absent, the core reports
+    ``tokenCostMeasured: false`` and ``withinBudget: null`` rather than an
+    optimistic true, which is the honest state.
+    """
+
+    if value is None:
+        return None
+    if not isinstance(value, Mapping):
+        return {}
+    identifier = value.get(id_field)
+    if identifier is None:
+        identifier = value.get("id")
+    if not isinstance(identifier, str) or not identifier:
+        return {}
+
+    descriptor: dict[str, Any] = {id_field: identifier, "digest": kernel_digest(value)}
+    snapshot = value.get("snapshotSha") or value.get("repository_snapshot_sha")
+    if isinstance(snapshot, str) and snapshot:
+        descriptor["snapshotSha"] = snapshot
+    cost = value.get("tokenCost")
+    if isinstance(cost, int) and not isinstance(cost, bool) and cost >= 0:
+        # Forwarded only when the caller measured it. Never inferred.
+        descriptor["tokenCost"] = cost
+    return descriptor
+
+
+def _contextplan_request(payload: Mapping[str, Any],
+                         context: Any = None) -> Mapping[str, Any]:
+    """Promote when every supplied context input carries its own identity.
+
+    **What legacy does.** ``selected = ranked[: max(1, token_budget // 500)]``.
+    Every block is assumed to cost 500 tokens, nothing is measured, and "fits
+    the budget" is therefore asserted by a constant. Its ``retrieval_trace``
+    lists only the blocks it *selected*, so a block that was retrieved and then
+    dropped never appears - which the core's docstring calls the hardest kind of
+    context bug to see from the outside. Its relevance ranking puts a symbol
+    whose ``name`` is empty first, because ``"" in step_text`` is always true.
+    And nothing orders blocks by stability class, so the prompt prefix is not
+    actually stable across steps - the property the skill is named for.
+
+    **What the core does.** It orders blocks stability-first, reports a prefix
+    digest and the length of the stable prefix, traces *every* block that went
+    in - included or evicted, with the reason - and answers "within budget" with
+    ``null`` when no cost was measured rather than an optimistic true.
+
+    Promotion needs each supplied input to carry an id, for the reason in
+    ``_context_descriptor``: a digest-derived id would change with the content
+    and no block would match itself across steps, which is precisely the
+    stability being sought.
+    """
+
+    request: dict[str, Any] = {}
+    for name, id_field in _CONTEXT_BLOCKS:
+        descriptor = _context_descriptor(payload.get(name), id_field)
+        if descriptor is None:
+            continue
+        if not descriptor:
+            return {}
+        request[name] = descriptor
+
+    if "task_spec" not in request:
+        return {}
+
+    budget = payload.get("token_budget")
+    if budget is not None:
+        # v2 states a bare integer; the core takes {totalTokens}. Renaming a
+        # value the caller stated is a translation, not an invention.
+        if isinstance(budget, Mapping):
+            total = budget.get("totalTokens")
+        else:
+            total = budget
+        if not isinstance(total, int) or isinstance(total, bool) or total < 0:
+            return {}
+        request["token_budget"] = {"totalTokens": total}
+
+    for optional in ("blocks", "max_breakpoints", "must_include"):
+        value = payload.get(optional)
+        if value is not None:
+            request[optional] = value
+    return request
+
+
+def _contextplan_outputs(payload: Mapping[str, Any],
+                         outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Map onto the five declared v2 fields.
+
+    ``eviction_report`` and ``gates`` have no v2 field and are folded into
+    ``compaction_snapshot`` rather than dropped. They are the two that say what
+    was *lost*: which blocks were evicted and why, and whether a required block
+    was among them. A compaction that silently dropped a required block and
+    reported only a ledger hash is the legacy behaviour being replaced.
+
+    ``context_bundle`` gains ``stablePrefixDigest``, and this one is a trap
+    worth closing. The bundle publishes ``prefixDigest``, documented as the
+    address of *the whole ordered plan* - so it covers the volatile step block
+    and changes on every step. In a skill called prefix-**stable**, the field
+    named ``prefixDigest`` is the one that is not stable, and a caller who used
+    it as a prompt-cache key would miss every single time while believing they
+    had one.
+
+    The number they actually want is the cumulative digest at the stable
+    boundary: ``prefixDigests[stablePrefixLength - 1]``. The core already
+    computes it - it is verifiably unchanged across two plans that differ only
+    in their volatile blocks - so this surfaces a value rather than inventing
+    one, under a name that says which of the two it is.
+    """
+
+    snapshot = dict(outputs.get("compaction_snapshot") or {})
+    snapshot["evictionReport"] = outputs.get("eviction_report")
+    snapshot["gates"] = outputs.get("gates")
+
+    bundle = dict(outputs.get("context_bundle") or {})
+    plan = outputs.get("context_plan") or {}
+    cumulative = plan.get("prefixDigests") if isinstance(plan, Mapping) else None
+    stable_length = bundle.get("stablePrefixLength")
+    if (isinstance(cumulative, Sequence) and not isinstance(cumulative, (str, bytes))
+            and isinstance(stable_length, int) and not isinstance(stable_length, bool)
+            and 0 < stable_length <= len(cumulative)):
+        bundle["stablePrefixDigest"] = cumulative[stable_length - 1]
+    else:
+        # No stable block at all, so there is no reusable prefix. Reporting
+        # ``None`` says that; omitting the field would let a reader assume the
+        # value simply was not computed.
+        bundle["stablePrefixDigest"] = None
+    bundle["prefixDigestNote"] = (
+        "prefixDigest addresses the whole ordered plan and changes whenever any "
+        "block does, volatile ones included. Cache on stablePrefixDigest."
+    )
+
+    return {
+        "context_plan": outputs.get("context_plan"),
+        "context_bundle": bundle,
+        "context_ledger": outputs.get("context_ledger"),
+        "retrieval_trace": outputs.get("retrieval_trace"),
+        "compaction_snapshot": snapshot,
+    }
+
+
+def _core_authority_payload(authority: Any) -> Mapping[str, Any] | None:
+    """Render a legacy ``ExecutionAuthority`` in the shape the core reads.
+
+    A pure rename of the fields the authority already holds - ``allowed_tools``
+    to ``allowedTools`` and so on. Nothing is widened: ``pathScopes`` is left
+    absent when the legacy authority has no path scopes, because an empty list
+    and "this authority does not constrain paths" are different claims and only
+    the authority itself may make either.
+    """
+
+    if authority is None:
+        return None
+    try:
+        return {
+            "environmentId": authority.environment_id,
+            "workspaceId": authority.workspace_id,
+            "fencingToken": authority.fencing_token,
+            "allowedTools": sorted(authority.allowed_tools),
+            "networkScopes": sorted(authority.network_scopes),
+            "secretBindings": sorted(authority.secret_scopes),
+            "policySnapshotHash": authority.policy_snapshot_hash,
+        }
+    except AttributeError:
+        return None
+
+
+def _toolloader_request(payload: Mapping[str, Any], context: Any) -> Mapping[str, Any]:
+    """Promote when the catalogue is priced and a token ceiling is stated.
+
+    **What legacy does.** It walks the catalogue and keeps every tool whose id
+    is in ``authority.allowed_tools``, filtered by whether its capabilities
+    intersect ``step_requirements``. There is no budget, so it loads every
+    authorised matching tool - "lazy" describes the name, not the behaviour -
+    and there is no deferral: a tool is loaded or denied, never held back for
+    cost. It also publishes the full schema bundle for everything it loads.
+
+    **What the core does.** It loads the fewest tools that cover the required
+    capabilities within a token ceiling, defers the rest with a reason, keeps
+    metadata cheap and publishes a tool's full schema only once that tool is
+    actually loaded, and reports the plan's digest.
+
+    **The token cost is the missing half, and it is a measurement.** Every
+    catalogue entry needs ``tokenCost`` and the profile needs ``tokenBudget``;
+    neither has a v2 counterpart. They are not a renaming problem - with no
+    ceiling stated there is nothing to trade off, and the core's entire
+    contribution is the trade-off. Defaulting a budget would set the caller's
+    context ceiling on their behalf, and defaulting a per-tool cost would pick
+    which tools get deferred. So a caller who states neither keeps the legacy
+    loader, which loads everything it is allowed to and does not pretend to be
+    choosing.
+
+    **The authority comes from the context first.** ``ctx.authority`` is the one
+    the dispatcher authenticated - and, since the authority row was bridged, the
+    one the kernel minted and narrowed. The payload's ``execution_authority`` is
+    a caller-supplied claim, and preferring it would repeat exactly the
+    fall-through that made ``typed-tool-runtime`` consult a wider authority than
+    the one just minted. It is used only when the context holds none, which is
+    the standalone call the legacy handler answers with an empty allow-set.
+    """
+
+    catalogue = payload.get("tool_catalogue")
+    if catalogue is None:
+        catalogue = payload.get("tool_catalog")
+    if not isinstance(catalogue, Sequence) or isinstance(catalogue, (str, bytes)):
+        return {}
+    if not catalogue:
+        return {}
+
+    entries: list[dict[str, Any]] = []
+    for item in catalogue:
+        if not isinstance(item, Mapping):
+            return {}
+        tool_id = item.get("toolId") or item.get("tool_id")
+        cost = item.get("tokenCost")
+        if not isinstance(tool_id, str) or not tool_id:
+            return {}
+        if not isinstance(cost, int) or isinstance(cost, bool) or cost < 0:
+            return {}
+        entry: dict[str, Any] = {
+            "toolId": tool_id,
+            "version": str(item.get("version", "")),
+            "capabilities": list(item.get("capabilities") or ()),
+            "tokenCost": cost,
+        }
+        for optional, source in (("usagePrior", "usagePrior"), ("remote", "remote"),
+                                 ("schema", "schema")):
+            if item.get(source) is not None:
+                entry[optional] = item[source]
+        if not entry["version"]:
+            return {}
+        entries.append(entry)
+
+    profile_raw = payload.get("task_profile")
+    if isinstance(profile_raw, Mapping):
+        budget = profile_raw.get("tokenBudget")
+        capabilities = profile_raw.get("requiredCapabilities")
+        max_tools = profile_raw.get("maxTools")
+    else:
+        budget = payload.get("token_budget")
+        capabilities = payload.get("step_requirements")
+        max_tools = None
+    if not isinstance(budget, int) or isinstance(budget, bool) or budget < 0:
+        return {}
+    if capabilities is None:
+        capabilities = ()
+    if not isinstance(capabilities, Sequence) or isinstance(capabilities, (str, bytes)):
+        return {}
+    if not all(isinstance(item, str) for item in capabilities):
+        return {}
+
+    profile: dict[str, Any] = {
+        "requiredCapabilities": list(capabilities),
+        "tokenBudget": budget,
+    }
+    if isinstance(max_tools, int) and not isinstance(max_tools, bool) and max_tools >= 1:
+        profile["maxTools"] = max_tools
+
+    authority = _core_authority_payload(getattr(context, "authority", None))
+    if authority is None:
+        claimed = payload.get("execution_authority")
+        if not isinstance(claimed, Mapping) or not claimed:
+            return {}
+        authority = dict(claimed)
+
+    request: dict[str, Any] = {
+        "tool_catalogue": entries,
+        "task_profile": profile,
+        "execution_authority": authority,
+    }
+    snapshot = payload.get("policy_snapshot")
+    if snapshot is not None:
+        request["policy_snapshot"] = snapshot
+    return request
+
+
+def _toolloader_outputs(payload: Mapping[str, Any],
+                        outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Map onto the five declared v2 fields.
+
+    ``deferred_tools`` has no v2 field and is the one that must not be dropped.
+    v2 has ``loaded_tool_set`` and ``denied_tool_set`` - loaded, or refused -
+    with no way to say "authorised, capable, and left out for cost". Folding
+    deferrals into ``denied_tool_set`` would report an authorisation failure for
+    a budget decision; dropping them would make a tool the caller expected
+    vanish with no record. They ride in ``tool_load_plan`` with their reasons,
+    beside the plan digest.
+    """
+
+    plan = dict(outputs.get("tool_load_plan") or {})
+    plan["deferredTools"] = outputs.get("deferred_tools")
+    plan["planDigest"] = outputs.get("digest")
+    return {
+        "tool_load_plan": plan,
+        "loaded_tool_set": outputs.get("loaded_tools"),
+        "tool_schema_bundle": outputs.get("tool_schema_bundle"),
+        "denied_tool_set": outputs.get("denied_tools"),
+        "load_metrics": outputs.get("load_metrics"),
+    }
+
+
+def _packreg_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
+    """Promote only a caller who supplies a real signature to verify.
+
+    **The defect this row exists for.** Legacy computes
+    ``signature_valid = signature.get("valid") and signature.get("key_id")`` -
+    it reads the caller's own boolean. A package is signed because its payload
+    says it is signed. On a supply-chain surface that is the whole failure: the
+    point of a signature is that the verifier recomputes it, and here the claim
+    *is* the verdict. (That path now stamps ``signature_verified: false`` so a
+    reader cannot mistake it for a check.)
+
+    The core takes ``package.signature`` as a *string* and recomputes
+    ``hmac-sha256`` over the package's content digest with a key bound out of
+    band. It refuses rather than trusting.
+
+    **So a v2 payload can never promote, and that is the correct outcome.** v2
+    carries ``{valid, key_id}`` and no signature material at all - there is
+    nothing to recompute from. Manufacturing a signature here with the
+    deployment's own key would be the bridge signing the caller's package: every
+    verification would pass, and the check would certify that this process
+    trusts itself.
+    """
+
+    package = payload.get("package")
+    if not isinstance(package, Mapping):
+        return {}
+    if not isinstance(package.get("signature"), str) or not package["signature"]:
+        return {}
+    for required in ("packageId", "version", "skills", "contractsDigest"):
+        if package.get(required) is None:
+            return {}
+
+    request: dict[str, Any] = {"package": dict(package)}
+    for optional in ("promotion_request", "evaluation_report", "requirements",
+                     "installation_id", "revocation_request"):
+        value = payload.get(optional)
+        if value is not None:
+            request[optional] = value
+    return request
+
+
+@contextmanager
+def _call_scoped_package_registry(context: Any, request: Mapping[str, Any]) -> Iterator[None]:
+    """Bind a registry for the duration of one call, and only one call.
+
+    The core fails closed with ``REGISTRY_UNCONFIGURED`` when none is bound.
+    Binding nothing fails every call; binding a process-wide one makes every
+    tenant's packages visible to every other, and a registry is exactly the
+    thing where that matters.
+
+    ``PackageRegistry`` holds its state in instance dicts with no port behind
+    it, so there is no durable implementation to bind - making one is work in
+    the core, not the bridge. What a per-call registry *does* give is the whole
+    of the verification: the signature is recomputed, the version parsed, the
+    permissions reviewed, and dependency conflicts resolved, all within the
+    call. What it does not give is memory of previously published packages, and
+    ``_packreg_outputs`` says so rather than letting an empty
+    ``requires_action`` read as "nothing outstanding".
+
+    The clock is pinned to the request digest for the same reason as
+    ``model-state-continuity``: a registry entry stamped with wall time makes
+    two identical publishes produce two different entries.
+    """
+
+    from elmos_autonomy_kernel.packreg import (
+        PackageRegistry,
+        bind_registry,
+        default_signing_key,
+    )
+
+    try:
+        key = default_signing_key()
+    except CoreKernelError:
+        # No key bound: leave the registry unbound so the core reports
+        # REGISTRY_UNCONFIGURED rather than this adapter inventing one. A
+        # registry with a bridge-chosen key would verify signatures against a
+        # secret the operator never configured.
+        yield
+        return
+
+    registry = PackageRegistry(clock=_SystemClock(), signing_key=key)
+    bind_registry(registry)
+    try:
+        yield
+    finally:
+        bind_registry(None)
+
+
+def _packreg_outputs(payload: Mapping[str, Any],
+                     outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Map onto the five declared v2 fields, and say what the registry remembers.
+
+    ``registry_entry``, ``promotion_decision``, ``revocation`` and
+    ``requires_action`` have no v2 field. The first three fold into
+    ``registered_package``; ``requires_action`` needs a caveat rather than a
+    home.
+
+    The registry is bound for one call, so it has never seen another package.
+    ``requires_action: []`` therefore means "this registry knows of nothing
+    outstanding", not "nothing is outstanding" - and an empty list that reads as
+    an all-clear is the shape this merge has spent the session removing.
+    ``component_catalog`` has the same scope. Both are labelled.
+    """
+
+    entry = dict(outputs.get("registered_package") or {})
+    entry["registryEntry"] = outputs.get("registry_entry")
+    entry["promotionDecision"] = outputs.get("promotion_decision")
+    entry["revocation"] = outputs.get("revocation")
+    entry["signature_verified"] = True
+    entry["registryScope"] = "single-call"
+    entry["registryScopeNote"] = (
+        "the registry is constructed for this call, so requires_action and "
+        "component_catalog describe this package only. An empty requires_action "
+        "means this registry knows of nothing outstanding, not that nothing is."
+    )
+    entry["requiresAction"] = outputs.get("requires_action")
+
+    upgrade = dict(outputs.get("upgrade_plan") or {})
+    return {
+        "registered_package": entry,
+        "component_catalog": outputs.get("component_catalog"),
+        "install_plan": outputs.get("install_plan"),
+        "permission_review": outputs.get("permission_review"),
+        "upgrade_plan": upgrade,
+    }
+
+
+def _worktree_request(payload: Mapping[str, Any], context: Any) -> Mapping[str, Any]:
+    """Promote a worktree plan, injecting the durable store as the kernel's ports.
+
+    **What legacy does.** Agent assignment is
+    ``contracts[index % len(contracts)]`` - round robin by position in the
+    array. Nothing matches an agent's declared role or path scope to the task it
+    is given; an agent gets a task because of where it sat in a list.
+    ``agent_runs`` and ``artifact_handoffs`` are hardcoded empty, and
+    ``merge_plan`` is a constant. Its one real check is pairwise write-set
+    overlap, which is genuine but has no read/write distinction and no notion of
+    two tasks sharing one checkout.
+
+    **What the core does.** It plans waves against declared dependencies, leases
+    each worktree through a live ``LeaseStore`` (two tasks sharing a
+    ``worktreeId`` share a lease and cannot run concurrently even when their
+    claims are disjoint - the honest model of a single checkout), enforces each
+    agent contract as a *ceiling* where an empty collection denies rather than
+    permits, verifies artifact handoffs, and refuses a merge that would land
+    half a change.
+
+    **Ports are injected, not invented.** Like the lease kernel: a coordinator
+    with a private in-memory lease store hands out worktrees it does not own.
+    The store from the dispatch context is the one the rest of the platform
+    reads.
+
+    **``role`` must be stated per task.** The core will not give a task to an
+    agent whose declared roles do not include it, and an agent with no declared
+    role takes nothing. Synthesising a role would make that match succeed by
+    construction - the same tautology as every other invented field here, and on
+    the surface that decides which agent may write where.
+
+    ``owned_paths`` *is* translated into claims: v2 defines them as the task's
+    write set, so reading them as ``{pathGlob, mode: write}`` is that definition
+    restated, not a new fact. A ``read_only`` task's paths become ``read``.
+    """
+
+    store = _from_context(context, "store")
+    if store is None:
+        return {}
+
+    dag = payload.get("task_dag")
+    if not isinstance(dag, Mapping):
+        return {}
+    raw_tasks = dag.get("tasks")
+    if not isinstance(raw_tasks, Sequence) or isinstance(raw_tasks, (str, bytes)):
+        return {}
+    if not raw_tasks:
+        return {}
+
+    tasks: list[dict[str, Any]] = []
+    for item in raw_tasks:
+        if not isinstance(item, Mapping):
+            return {}
+        task_id = item.get("taskId") or item.get("id")
+        role = item.get("role")
+        if not isinstance(task_id, str) or not task_id:
+            return {}
+        if not isinstance(role, str) or not role:
+            return {}
+
+        claims = item.get("claims")
+        if claims is None:
+            owned = item.get("owned_paths")
+            if not isinstance(owned, Sequence) or isinstance(owned, (str, bytes)):
+                return {}
+            mode = "read" if item.get("read_only") is True else "write"
+            claims = [{"pathGlob": path, "mode": mode}
+                      for path in owned if isinstance(path, str)]
+        if not isinstance(claims, Sequence) or isinstance(claims, (str, bytes)) or not claims:
+            return {}
+
+        task: dict[str, Any] = {"taskId": task_id, "role": role,
+                                "claims": [dict(claim) for claim in claims]}
+        for optional, source in (("dependsOn", "dependsOn"), ("worktreeId", "worktreeId"),
+                                 ("requiredTools", "requiredTools"),
+                                 ("produces", "produces"), ("consumes", "consumes")):
+            if item.get(source) is not None:
+                task[optional] = item[source]
+        tasks.append(task)
+
+    topology = payload.get("workspace_topology")
+    if not isinstance(topology, Mapping):
+        return {}
+    agents = topology.get("agents")
+    if not isinstance(agents, Sequence) or isinstance(agents, (str, bytes)) or not agents:
+        return {}
+
+    contracts = payload.get("agent_contracts")
+    if not isinstance(contracts, Sequence) or isinstance(contracts, (str, bytes)):
+        return {}
+    for contract in contracts:
+        if not isinstance(contract, Mapping) or not isinstance(contract.get("agentId"), str):
+            return {}
+
+    task_dag: dict[str, Any] = {"tasks": tasks}
+    if isinstance(dag.get("snapshotSha"), str):
+        task_dag["snapshotSha"] = dag["snapshotSha"]
+
+    tenant_id = str(_from_context(context, "tenant_id", "local"))
+    account_id = str(_from_context(context, "account_id", "local"))
+    request: dict[str, Any] = {
+        "task_dag": task_dag,
+        "agent_contracts": [dict(item) for item in contracts],
+        "workspace_topology": dict(topology),
+        "ports": {
+            "lease_store": DurableStoreLeaseStore(store, tenant_id=tenant_id),
+            "clock": _SystemClock(),
+            "event_store": DurableStoreEventStore(
+                store, tenant_id=tenant_id, account_id=account_id),
+        },
+    }
+    for optional in ("budget", "artifact_contracts", "agent_runs",
+                     "artifact_handoffs", "produced_artifacts"):
+        value = payload.get(optional)
+        if value is not None:
+            request[optional] = value
+    return request
+
+
+def _worktree_outputs(payload: Mapping[str, Any],
+                      outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Map onto the five declared v2 fields.
+
+    ``wave_plan`` has no v2 field and folds into ``agent_assignments``. It is
+    the part worth keeping: it says which tasks may run *at the same time*,
+    which is the question a coordinator exists to answer and which a flat
+    assignment list cannot express.
+
+    The handler's top-level ``status`` key is deliberately *not* folded in, and
+    the reason is sharper than it first looks. The kernel registry reads that
+    key to set the ``SkillResult``'s status and strips it from the outputs, so
+    ``outputs["status"]`` is always ``None`` by the time an adapter runs.
+    Folding it into ``agent_assignments`` did not merely add a null field: the
+    assignment result *already carries its own* ``status``, computed from
+    whether every wave member was dispatched, and the fold overwrote it with
+    ``None``. The dispatch-level status reaches the caller on the result itself,
+    with ``KERNEL_PARTIAL`` in the reasons when a wave member went undispatched.
+    """
+
+    assignments = dict(outputs.get("agent_assignments") or {})
+    assignments["wavePlan"] = outputs.get("wave_plan")
+    return {
+        "agent_assignments": assignments,
+        "agent_runs": outputs.get("agent_runs"),
+        "artifact_handoffs": outputs.get("artifact_handoffs"),
+        "conflict_report": outputs.get("conflict_report"),
+        "merge_plan": outputs.get("merge_plan"),
+    }
+
+
+def _worktree_blocked(outputs: Mapping[str, Any]) -> str | None:
+    """Preserve the legacy AGENT_CONFLICT verdict.
+
+    Legacy returns BLOCKED when any two tasks overlap; the core reports the
+    conflicting pairs in ``conflict_report`` and returns SUCCEEDED for the
+    planning. Without this, a plan whose tasks would write over each other comes
+    back LOCAL_ENGINEERING_VALIDATED - the cross-engine downgrade again, on the
+    surface that decides whether two agents may run at once.
+    """
+
+    conflicts = outputs.get("conflict_report")
+    if isinstance(conflicts, Sequence) and not isinstance(conflicts, (str, bytes)):
+        if conflicts:
+            return "AGENT_CONFLICT"
+    return None
+
+
 def _continuity_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
     """Promote a caller who states a real ledger and a real binding.
 
@@ -2936,6 +3559,98 @@ _ROWS: tuple[BridgeSpec, ...] = (
         "detector the one string already known to be well-formed.",
     ),
     _spec(
+        "multi-agent-worktree-coordinator",
+        build_request_with_context=_worktree_request,
+        map_outputs=_worktree_outputs,
+        blocked_when=_worktree_blocked,
+        rationale="legacy assigns agents by list position - "
+        "`contracts[index % len(contracts)]` - so an agent gets a task because of "
+        "where it sat in an array, with nothing matching its declared role or path "
+        "scope to the work. `agent_runs` and `artifact_handoffs` are hardcoded empty "
+        "and `merge_plan` is a constant. Its one real check, pairwise write-set "
+        "overlap, has no read/write distinction and no model of two tasks sharing one "
+        "checkout. The core plans waves from declared dependencies, leases each "
+        "worktree through the live store the rest of the platform reads, treats every "
+        "agent contract as a ceiling where an empty collection denies rather than "
+        "permits, and refuses a merge that would land half a change. `role` must be "
+        "stated per task: the core will not give a task to an agent whose roles do not "
+        "include it, and synthesising one would make that match succeed by "
+        "construction - on the surface that decides which agent may write where. "
+        "`owned_paths` is translated to write claims because v2 defines them as the "
+        "write set, which is that definition restated rather than a new fact.",
+    ),
+    _spec(
+        "capability-package-registry",
+        build_request=_packreg_request,
+        bind_stores=_call_scoped_package_registry,
+        map_outputs=_packreg_outputs,
+        rationale="legacy verifies nothing. `signature_valid` is "
+        "`signature.get('valid') and signature.get('key_id')` - the caller's own "
+        "boolean - so a package is signed because its payload says so. On a "
+        "supply-chain surface that is the whole failure: a signature means the "
+        "verifier recomputed it, and here the claim is the verdict. Its `tests_pass` "
+        "reads reported statuses the same way. The core recomputes hmac-sha256 over "
+        "the package content digest with a key bound out of band, parses semantic "
+        "versions, resolves dependency constraints and raises DEPENDENCY_CONFLICT "
+        "rather than guessing, reviews wildcard permissions, and gates promotion on "
+        "stage evidence with a named approver. A v2 payload can never promote because "
+        "it carries no signature material to recompute from - and manufacturing one "
+        "with the deployment's own key would have the bridge sign the caller's "
+        "package, so every verification would pass and the check would certify only "
+        "that this process trusts itself. LIMIT: the registry is bound per call, so "
+        "requires_action and component_catalog cover this package alone; both are "
+        "labelled `registryScope: single-call` in the output. "
+        "BEHAVIOUR CHANGE: an unapproved wildcard permission raises "
+        "PERMISSION_REVIEW_FAILED where legacy returned a result carrying "
+        "`permission_review.status: FAIL`. Both refuse to register, but only one can "
+        "be read past; the review itself travels in the error details so nothing is "
+        "lost.",
+    ),
+    _spec(
+        "lazy-tool-loader",
+        build_request_with_context=_toolloader_request,
+        map_outputs=_toolloader_outputs,
+        rationale="legacy loads every authorised tool whose capabilities intersect the "
+        "step requirements - there is no budget and no deferral, so 'lazy' describes "
+        "the name rather than the behaviour, and it publishes the full schema for "
+        "everything it loads. The core loads the fewest tools that cover the required "
+        "capabilities within a token ceiling, defers the rest with a reason, keeps "
+        "metadata cheap and pays for a schema only when its tool is actually loaded. "
+        "Promotion needs a priced catalogue and a stated tokenBudget: with no ceiling "
+        "there is nothing to trade off, and the trade-off is the whole contribution - "
+        "defaulting a budget would set the caller's context ceiling for them and "
+        "defaulting a per-tool cost would pick which tools get deferred. The authority "
+        "is taken from the dispatch context before the payload, because preferring the "
+        "payload's claim is exactly the fall-through that made typed-tool-runtime "
+        "consult a wider authority than the one just minted. "
+        "BEHAVIOUR CHANGE: when a *required* capability is covered by no authorised "
+        "tool, the core raises TOOL_NOT_AUTHORIZED where legacy returned "
+        "LOCAL_ENGINEERING_VALIDATED with the tool listed in denied_tool_set. That "
+        "plan was not usable - the step would run without a capability it declared it "
+        "needs - so the refusal is the right answer, but it is a change a caller can "
+        "see. A denied tool nobody required still yields a plan.",
+    ),
+    _spec(
+        "prefix-stable-context-planner",
+        build_request=_contextplan_request,
+        map_outputs=_contextplan_outputs,
+        rationale="legacy fits the budget by assuming every block costs 500 tokens - "
+        "`selected = ranked[: max(1, token_budget // 500)]` - so nothing is measured "
+        "and 'within budget' is asserted by a constant. Its retrieval trace lists only "
+        "the blocks it selected, so one that was retrieved and then dropped never "
+        "appears, which is the hardest kind of context bug to see from outside. Its "
+        "relevance ranking sorts a symbol with an empty `name` first, because "
+        "'' in step_text is always true. And nothing orders blocks by stability class, "
+        "so the prompt prefix is not stable across steps - the property the skill is "
+        "named for. The core orders stability-first, publishes a prefix digest and "
+        "stable-prefix length, traces every block that went in with its disposition "
+        "and reason, and answers withinBudget with null when no token cost was "
+        "measured rather than an optimistic true. Promotion needs each supplied input "
+        "to carry its own id: minting one from the content digest would change it "
+        "whenever the content changed, so no block would match itself across two steps "
+        "and the prefix could never be stable.",
+    ),
+    _spec(
         "phase-aware-model-router",
         build_request=_router_request,
         map_outputs=_router_outputs,
@@ -3197,52 +3912,6 @@ LEGACY_RATIONALES: Mapping[str, Mapping[str, Any]] = {
             "whole semantic index across framework profiles. The legacy path now "
             "reports PARTIAL with a status note rather than claiming COMPILED, which "
             "was the actual defect here and is fixed."
-        ),
-    },
-    "prefix-stable-context-planner": {
-        "blocked": False,
-        "reason": (
-            "translation gap. The core wants each named input as a block descriptor "
-            "carrying a digest and a token cost; v2 passes the objects themselves. The "
-            "digest is derivable from the object, the token cost is not - it depends on "
-            "a tokenizer nobody named, and an estimate would be a fabricated "
-            "measurement in a planner whose whole job is fitting a budget."
-            " Legacy takes an integer `token_budget` and plans against it without ever "
-            "measuring a block, so its plan fits the budget by assertion."
-        ),
-    },
-    "lazy-tool-loader": {
-        "blocked": False,
-        "reason": (
-            "translation gap: the core wants `tool_catalogue` plus a `task_profile` "
-            "with requiredCapabilities, tokenBudget and maxTools; v2 sends "
-            "`tool_catalog` and a flat `step_requirements` list with no budget. The "
-            "budget is the missing half rather than a missing name - the core's job is "
-            "to load the fewest tools that cover the required capabilities within a "
-            "token ceiling, and with no ceiling stated there is nothing to trade off. "
-            "Defaulting one would set the caller's context budget on their behalf."
-        ),
-    },
-    "capability-package-registry": {
-        "blocked": False,
-        "reason": (
-            "translation gap: the core is a lifecycle - package, promotion request, "
-            "evaluation report, installation, revocation - while v2 sends a manifest "
-            "with components, a lock, a signature and test results in one call. "
-            "Collapsing the lifecycle into that single call means choosing which stage "
-            "the caller meant, and the stages differ in what they are allowed to do: "
-            "registering is not promoting, and promoting is what the evidence and the "
-            "approver exist to gate."
-        ),
-    },
-    "multi-agent-worktree-coordinator": {
-        "blocked": False,
-        "reason": (
-            "translation gap plus live ports, like the lease kernel: the core requires "
-            "a `ports` mapping because a coordinator with its own in-memory lease store "
-            "would hand out worktrees it does not own. Needs a store adapter of the same "
-            "shape as the leasing row, which is the reason it is last rather than the "
-            "reason it cannot be done."
         ),
     },
 }

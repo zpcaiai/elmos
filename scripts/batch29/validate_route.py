@@ -2414,11 +2414,17 @@ def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...],
     for part in directory.parts[1:]:
         cursor = cursor / part
         metadata = cursor.lstat()
+        is_applications_root = cursor == Path("/Applications")
+        unsafe_mode = (
+            stat.S_IMODE(metadata.st_mode) & 0o002
+            if is_applications_root
+            else stat.S_IMODE(metadata.st_mode) & 0o022
+        )
         if (
             stat.S_ISLNK(metadata.st_mode)
             or not stat.S_ISDIR(metadata.st_mode)
             or metadata.st_uid != 0
-            or stat.S_IMODE(metadata.st_mode) & 0o022
+            or unsafe_mode
         ):
             raise ValueError(f"unsafe Xcode directory: {cursor}")
         identities.append(

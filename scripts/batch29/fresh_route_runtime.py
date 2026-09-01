@@ -263,9 +263,18 @@ TYPESCRIPT_LIBRARY_FILES = (
 TYPESCRIPT_FILES = tuple(sorted((*TYPESCRIPT_CORE_FILES, *TYPESCRIPT_LIBRARY_FILES)))
 PROJECT_ENVIRONMENT_ENV = "UV_PROJECT_ENVIRONMENT"
 CHILD_PROGRAM = r"""
+import builtins
 import runpy
 import sys
 from pathlib import Path
+
+# Discover and register z3 native library directories for fresh venvs
+for _path_entry in sys.path:
+    _candidate = Path(_path_entry) / "z3" / "lib"
+    if _candidate.is_dir():
+        _dirs = getattr(builtins, "Z3_LIB_DIRS", [])
+        if str(_candidate) not in _dirs:
+            builtins.Z3_LIB_DIRS = [*_dirs, str(_candidate)]
 
 script = Path(sys.argv[1]).resolve(strict=True)
 arguments = sys.argv[2:]

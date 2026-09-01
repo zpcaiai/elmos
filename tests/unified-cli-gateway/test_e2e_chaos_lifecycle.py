@@ -106,10 +106,12 @@ public class AccountLedger {
         self.assertEqual(res1["evidence_bundle_digest"], res2["evidence_bundle_digest"])
 
     def test_smt_solver_proof_soundness(self) -> None:
-        # Valid invariant
+        # Without native solver, check_smt_formula reports fail-closed NOT_RUN
         res = check_smt_formula("forall x . (x > 0) ==> (x + 1 > 1)")
-        self.assertEqual(res["status"].lower(), "proved")
-        self.assertEqual(res["counterexamples"], 0)
+        self.assertEqual(res["status"], "NOT_RUN")
+        self.assertFalse(res["solver_executed"])
+        self.assertEqual(res["certification"], "NOT_CERTIFIED")
+        self.assertIn("missing_evidence", res)
 
     def test_full_18_batch_route_certification(self) -> None:
         cert_run = self.service.certify_route(
@@ -118,11 +120,12 @@ public class AccountLedger {
             source_code="class Foo { static int Add(int a, int b) { return a + b; } }",
             target_code="class Foo { static int Add(int a, int b) => a + b; }",
         )
-        self.assertEqual(cert_run.overall_verdict, VerdictStatus.EQUIVALENT)
+        self.assertEqual(cert_run.overall_verdict, VerdictStatus.UNDETERMINED)
         self.assertEqual(cert_run.counterexamples_found, 0)
         self.assertEqual(len(cert_run.batch_coverage), 18)
-        self.assertEqual(cert_run.proved_obligations, cert_run.total_obligations)
+        self.assertEqual(cert_run.total_obligations, 300)
 
 
 if __name__ == "__main__":
     unittest.main()
+
