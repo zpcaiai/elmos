@@ -27,6 +27,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -44,6 +45,7 @@ class ProductionWorkerRestartRecoveryTest {
     private final AtomicInteger executions = new AtomicInteger();
     private final AtomicInteger reconciliations = new AtomicInteger();
     private final AtomicInteger completions = new AtomicInteger();
+    private final AtomicReference<String> completionPayload = new AtomicReference<>();
 
     @AfterEach
     void stop() {
@@ -98,6 +100,9 @@ class ProductionWorkerRestartRecoveryTest {
                 "restarted UNKNOWN work must use reconciliation, never a second execute");
         assertTrue(reconciliations.get() >= 1);
         awaitCounter(completions, Duration.ofSeconds(3));
+        assertTrue(completionPayload.get().contains("\"outputVerification\""));
+        assertTrue(completionPayload.get().contains("\"artifactSha256\":\""
+                + "a".repeat(64) + "\""));
     }
 
     private ProductionWorkerAttemptService service(
@@ -181,17 +186,19 @@ class ProductionWorkerRestartRecoveryTest {
                     } catch (InterruptedException ex) {
                         Thread.currentThread().interrupt();
                     }
-                    respond(exchange, 200, "{\"status\":\"SUCCEEDED\"}");
+                    respond(exchange, 200, successfulEngineResponse());
                 } else if ("/v1/reconcile".equals(path)) {
                     reconciliations.incrementAndGet();
                     exchange.getRequestBody().readAllBytes();
-                    respond(exchange, 200, "{\"status\":\"SUCCEEDED\"}");
+                    respond(exchange, 200, successfulEngineResponse());
                 } else if (path.endsWith("/heartbeat")) {
                     exchange.getRequestBody().readAllBytes();
                     respond(exchange, 200, "{\"status\":\"LEASE_EXTENDED\"}");
                 } else if (path.endsWith("/completions")) {
                     completions.incrementAndGet();
-                    exchange.getRequestBody().readAllBytes();
+                    completionPayload.set(new String(
+                            exchange.getRequestBody().readAllBytes(),
+                            StandardCharsets.UTF_8));
                     respond(exchange, 200, "{\"status\":\"COMMITTED\"}");
                 } else {
                     respond(exchange, 404, "{\"status\":\"NOT_FOUND\"}");
@@ -201,6 +208,32 @@ class ProductionWorkerRestartRecoveryTest {
             }
         });
         server.start();
+    }
+
+    private static String successfulEngineResponse() {
+        return """
+                {
+                  "status":"SUCCEEDED",
+                  "outputVerification":{
+                    "schemaVersion":"elmos.production-output-verification/v1",
+                    "packId":"multilingual-project-generation-v1",
+                    "jobType":"PROJECT_GENERATION",
+                    "workType":"synthesize",
+                    "artifactUri":"cas://sha256/%s",
+                    "artifactSha256":"%s",
+                    "verifier":"repository-owned-output-gate",
+                    "verificationStatus":"PASSED",
+                    "certificationStatus":"NOT_CERTIFIED",
+                    "checks":{
+                      "target_build_pass":true,
+                      "target_test_pass":true,
+                      "security_gate_pass":true,
+                      "runnable_smoke_pass":true,
+                      "unresolved_p0_defects":0
+                    }
+                  }
+                }
+                """.formatted("a".repeat(64), "a".repeat(64));
     }
 
     private static void awaitStatus(

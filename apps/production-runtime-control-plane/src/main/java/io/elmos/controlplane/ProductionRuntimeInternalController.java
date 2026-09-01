@@ -4,7 +4,9 @@ import io.elmos.productionruntime.ProductionRuntimeCoordinator;
 import io.elmos.productionruntime.ProductionRuntimeModels.Checkpoint;
 import io.elmos.productionruntime.ProductionRuntimeModels.Completion;
 import io.elmos.productionruntime.ProductionRuntimeModels.FinalUsage;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
 import io.elmos.productionruntime.ProductionRuntimeModels.WorkerRegistration;
+import io.elmos.productionruntime.ProductionRuntimeException;
 import io.elmos.productionruntime.ProductionRuntimeStore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
@@ -90,7 +92,25 @@ class ProductionRuntimeInternalController {
             @RequestBody CompletionRequest request
     ) {
         authenticator.require(authorization);
-        coordinator.complete(request.completion(), request.usage(), request.failureReason());
+        if (request.completion().status()
+                == io.elmos.productionruntime.ProductionRuntimeModels.AttemptStatus.SUCCEEDED) {
+            if (request.outputVerification() == null) {
+                throw new ProductionRuntimeException(
+                        "OUTPUT_VERIFICATION_REQUIRED",
+                        "successful production completion requires output verification");
+            }
+            coordinator.completeVerified(
+                    request.completion(), request.outputVerification(),
+                    request.usage(), request.failureReason());
+        } else {
+            if (request.outputVerification() != null) {
+                throw new ProductionRuntimeException(
+                        "OUTPUT_VERIFICATION_ON_FAILURE",
+                        "failed completion cannot attach passing output verification");
+            }
+            coordinator.complete(
+                    request.completion(), request.usage(), request.failureReason());
+        }
         return Map.of("status", "COMMITTED", "attemptId", request.completion().attemptId());
     }
 
@@ -109,6 +129,7 @@ class ProductionRuntimeInternalController {
 
     record CompletionRequest(
             Completion completion,
+            OutputVerificationReceipt outputVerification,
             FinalUsage usage,
             String failureReason
     ) {}

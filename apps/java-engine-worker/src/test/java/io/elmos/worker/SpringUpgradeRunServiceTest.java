@@ -18,7 +18,10 @@ import java.time.ZoneOffset;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.elmos.worker.SpringUpgradeModels.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -181,6 +184,72 @@ class SpringUpgradeRunServiceTest {
         RunView stopped = service.stopRuntime("org-a", completed.runId());
         assertEquals(RuntimeStatus.STOPPED, stopped.runtimeStatus());
         assertTrue(transformer.stopped.get());
+    }
+
+    @Test void remoteRuntimeExplicitStopIsIdempotent() {
+        RemoteLifecycleTransformer transformer = new RemoteLifecycleTransformer(false);
+        service = service(transformer, new PassingVerifier());
+        RunView completed = awaitTerminal(
+                service.create("org-a", request("remote-stop")).runId(), "org-a");
+
+        service.startRuntime("org-a", completed.runId());
+        awaitRuntime(completed.runId(), RuntimeStatus.HEALTHY);
+        assertEquals(RuntimeStatus.STOPPED,
+                service.stopRuntime("org-a", completed.runId()).runtimeStatus());
+        assertEquals(RuntimeStatus.STOPPED,
+                service.stopRuntime("org-a", completed.runId()).runtimeStatus());
+
+        assertEquals(1, transformer.stopCalls.get());
+    }
+
+    @Test void failedRemoteStopRetainsHandleForIdempotentRetry() {
+        RemoteLifecycleTransformer transformer = new RemoteLifecycleTransformer(false);
+        transformer.failNextStop.set(true);
+        service = service(transformer, new PassingVerifier());
+        RunView completed = awaitTerminal(
+                service.create("org-a", request("remote-stop-retry")).runId(), "org-a");
+        service.startRuntime("org-a", completed.runId());
+        awaitRuntime(completed.runId(), RuntimeStatus.HEALTHY);
+
+        BlockedException failure = assertThrows(BlockedException.class,
+                () -> service.stopRuntime("org-a", completed.runId()));
+        assertEquals("ISOLATED_RUNTIME_STOP_FAILED", failure.code());
+        assertEquals(RuntimeStatus.UNHEALTHY,
+                service.get("org-a", completed.runId()).runtimeStatus());
+
+        assertEquals(RuntimeStatus.STOPPED,
+                service.stopRuntime("org-a", completed.runId()).runtimeStatus());
+        service.stopRuntime("org-a", completed.runId());
+        assertEquals(2, transformer.stopCalls.get());
+    }
+
+    @Test void cancellationStopsRemoteHandleReturnedAfterCancellation() throws Exception {
+        RemoteLifecycleTransformer transformer = new RemoteLifecycleTransformer(true);
+        service = service(transformer, new PassingVerifier());
+        StartRequest request = request("remote-cancel", true);
+        RunView run = service.create("org-a", request);
+        assertTrue(transformer.startEntered.await(3, TimeUnit.SECONDS));
+
+        assertEquals(RunStatus.CANCELLED,
+                service.cancel("org-a", run.runId()).status());
+        assertTrue(transformer.stopped.await(3, TimeUnit.SECONDS));
+        assertEquals(1, transformer.stopCalls.get());
+        assertEquals(RunStatus.CANCELLED,
+                awaitTerminal(run.runId(), "org-a").status());
+    }
+
+    @Test void preDestroyStopsEveryRemoteHandleOnce() {
+        RemoteLifecycleTransformer transformer = new RemoteLifecycleTransformer(false);
+        service = service(transformer, new PassingVerifier());
+        RunView completed = awaitTerminal(
+                service.create("org-a", request("remote-close")).runId(), "org-a");
+        service.startRuntime("org-a", completed.runId());
+        awaitRuntime(completed.runId(), RuntimeStatus.HEALTHY);
+
+        service.close();
+        service.close();
+
+        assertEquals(1, transformer.stopCalls.get());
     }
 
     @Test void completedRunAndIdempotencyRecoverAfterWorkerRestartAndTamperingFailsClosed() throws Exception {
@@ -364,6 +433,10 @@ class SpringUpgradeRunServiceTest {
     }
 
     private static StartRequest request(String key) {
+        return request(key, false);
+    }
+
+    private static StartRequest request(String key, boolean startAfterVerification) {
         return new StartRequest(
                 "org-a",
                 SourceMode.PUBLIC_GIT,
@@ -372,7 +445,7 @@ class SpringUpgradeRunServiceTest {
                 null,
                 null,
                 null,
-                false,
+                startAfterVerification,
                 key
         );
     }
@@ -558,5 +631,52 @@ class SpringUpgradeRunServiceTest {
 
         @Override public boolean runtimeConfigured() { return true; }
         @Override public String runtimeConfigurationReason() { return "test runtime"; }
+    }
+
+    private static final class RemoteLifecycleTransformer extends SuccessfulTransformer {
+        private final boolean blockUntilInterrupted;
+        private final AtomicInteger stopCalls = new AtomicInteger();
+        private final AtomicBoolean failNextStop = new AtomicBoolean();
+        private final CountDownLatch startEntered = new CountDownLatch(1);
+        private final CountDownLatch stopped = new CountDownLatch(1);
+
+        private RemoteLifecycleTransformer(boolean blockUntilInterrupted) {
+            this.blockUntilInterrupted = blockUntilInterrupted;
+        }
+
+        @Override public RuntimeHandle start(
+                ExecutionResult result,
+                StartRequest request,
+                Path runRoot,
+                Control control
+        ) {
+            startEntered.countDown();
+            if (blockUntilInterrupted) {
+                try {
+                    new CountDownLatch(1).await();
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            return new RuntimeHandle(
+                    null,
+                    runRoot.getFileName().toString(),
+                    request.organizationId(),
+                    8080,
+                    "/actuator/health");
+        }
+
+        @Override public void stop(RuntimeHandle handle, Control control) {
+            stopCalls.incrementAndGet();
+            if (failNextStop.compareAndSet(true, false)) {
+                throw new BlockedException(
+                        "ISOLATED_RUNTIME_STOP_FAILED",
+                        "remote runtime stop outcome is unknown");
+            }
+            stopped.countDown();
+        }
+
+        @Override public boolean runtimeConfigured() { return true; }
+        @Override public String runtimeConfigurationReason() { return "remote test runtime"; }
     }
 }

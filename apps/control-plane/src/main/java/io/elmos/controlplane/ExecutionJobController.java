@@ -314,7 +314,8 @@ public class ExecutionJobController {
     ResponseEntity<?> executionError(ExecutionJobPort.ExecutionStateException ex) {
         HttpStatus status = switch (ex.code()) {
             case "ELMOS_EXECUTION_JOB_UNKNOWN" -> HttpStatus.NOT_FOUND;
-            case "ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT" -> HttpStatus.CONFLICT;
+            case "ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT",
+                 "ELMOS_EXECUTION_STORAGE_CONFLICT" -> HttpStatus.CONFLICT;
             case "ELMOS_EXECUTION_NO_ACTIVE_ENTITLEMENT",
                  "ELMOS_EXECUTION_QUEUE_DEPTH_EXCEEDED" -> HttpStatus.TOO_MANY_REQUESTS;
             default -> HttpStatus.BAD_REQUEST;

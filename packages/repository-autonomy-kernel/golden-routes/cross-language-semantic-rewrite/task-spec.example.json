@@ -1,0 +1,42 @@
+{
+  "taskSpecId": "cross-language-semantic-rewrite-example",
+  "version": "1.0.0",
+  "goal": "Source language/framework to target language/framework through Semantic IR and differential runtime",
+  "acceptanceCriteria": [
+    {
+      "id": "source-baseline",
+      "mandatory": true,
+      "verifierType": "source-baseline"
+    },
+    {
+      "id": "ir-validation",
+      "mandatory": true,
+      "verifierType": "ir-validation"
+    },
+    {
+      "id": "target-build",
+      "mandatory": true,
+      "verifierType": "target-build"
+    },
+    {
+      "id": "contract-equivalence",
+      "mandatory": true,
+      "verifierType": "contract-equivalence"
+    },
+    {
+      "id": "differential-runtime",
+      "mandatory": true,
+      "verifierType": "differential-runtime"
+    },
+    {
+      "id": "performance-envelope",
+      "mandatory": true,
+      "verifierType": "performance-envelope"
+    },
+    {
+      "id": "rollback",
+      "mandatory": true,
+      "verifierType": "rollback"
+    }
+  ]
+}

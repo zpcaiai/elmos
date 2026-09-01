@@ -10,6 +10,12 @@
   "effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "engine_files": [
     {
+      "bytes": 6148,
+      "mode": "0644",
+      "path": ".DS_Store",
+      "sha256": "sha256:ebb50a63bfa6e9d13253fb6521f428486dc06f6b78459377ebc0868c6d5d51f9"
+    },
+    {
       "bytes": 2503,
       "mode": "0644",
       "path": "README.md",
@@ -40,10 +46,10 @@
       "sha256": "sha256:9d1403bbe34d88ffb1faff98e24a11c74085b634edd5a1a37d406a34b7afe57e"
     },
     {
-      "bytes": 4726,
+      "bytes": 6611,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/cli.py",
-      "sha256": "sha256:d95a175373fe048f452ce04f59b53a57b1ecc4136d1a760af73c8905fdcafde6"
+      "sha256": "sha256:0eeeba1d635397e1146d0fd72ec027cdbaf86f18708657342fd89297180bf67d"
     },
     {
       "bytes": 18601,
@@ -52,20 +58,50 @@
       "sha256": "sha256:d7e00ffc2ba6b44fcb335afe9a181dbb12468a7baa489edc39ec8f668931fcbc"
     },
     {
+      "bytes": 4808,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/diagram_html.py",
+      "sha256": "sha256:126f555ad6ff97a062df3c949e7b9813af2a5e089c609c4e38e9298ae585d630"
+    },
+    {
+      "bytes": 14759,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/diagram_layout.py",
+      "sha256": "sha256:d818418a9bce1afb76e5eeb2430a1d972d8b5727ed36aa8f8505c51f4aa518d3"
+    },
+    {
+      "bytes": 4623,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/diagram_svg.py",
+      "sha256": "sha256:60c18ef3ec01d6e1ebef5f97f5bad4c1469ee2e899fb262c69db05801a41822b"
+    },
+    {
       "bytes": 103034,
       "mode": "0644",
       "path": "src/elmos_project_intelligence/domain.py",
       "sha256": "sha256:1fd9cf9f2584db04a8a112724fe989e88fde08831bda4915f6eb14eee18b38cc"
     },
     {
+      "bytes": 6906,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/export_cli.py",
+      "sha256": "sha256:3be7b715f0441dd91667b7587da554e39e30d572c888b5d8150b221d8b803585"
+    },
+    {
       "bytes": 14205,
-      "mode": "0600",
+      "mode": "0644",
       "path": "src/elmos_project_intelligence/flowgraph.py",
       "sha256": "sha256:2d20a58f9d7993cabf2d40ca3b67a5bba38f21fc4f3ec845b0a54c62774e0b4c"
     },
     {
+      "bytes": 23599,
+      "mode": "0644",
+      "path": "src/elmos_project_intelligence/pptx_export.py",
+      "sha256": "sha256:cb52b064d42403783eadb2f471b122dc46fd6c042894fe3caa191688c1f9c080"
+    },
+    {
       "bytes": 6031,
-      "mode": "0600",
+      "mode": "0644",
       "path": "src/elmos_project_intelligence/python_structure.py",
       "sha256": "sha256:cc8d19773417a369fc8006c2e6e5771d5c3bfc43829ccf21b79f7690ad6ab7e5"
     },
@@ -124,8 +160,14 @@
       "sha256": "sha256:b038b6082c07b44aed4d1fc8bf771a239cb8759de2f7e2a3d22b112913905396"
     },
     {
+      "bytes": 16709,
+      "mode": "0644",
+      "path": "tests/test_diagram_export.py",
+      "sha256": "sha256:7d5287d32db5bb034f7d84f9086162946fd3a1c69b0f5ceb94ab9897b4764e11"
+    },
+    {
       "bytes": 20468,
-      "mode": "0600",
+      "mode": "0644",
       "path": "tests/test_flowgraph.py",
       "sha256": "sha256:fa6d3cb9a944654e0ae66e4e76fcd47827328fe07a82d2fe0e87b3bf5009eb02"
     },
@@ -166,7 +208,7 @@
       "sha256": "sha256:2f5707153f6384f7d16ffcec51f2bda2ff84e47d5815ca35908ed2838b1853f5"
     }
   ],
-  "engine_tree_sha256": "sha256:547a314ae6d26a2449978b0ab17d1154cb463ccc20088776a83bc92c9587bd5e",
+  "engine_tree_sha256": "sha256:dd4262f908fa97616df1dab7b76a85d2d6508e1662d36d96f1259458a623677f",
   "executor": "repository-local-self-attested",
   "external_evidence": "NOT_RUN",
   "fixture_path": "engines/project-intelligence-engine/tests/test_runtime.py",
@@ -177,7 +219,7 @@
   "qualification_status": "PASSED",
   "qualifier_path": "tooling/qualify_project_intelligence_runtime.py",
   "qualifier_sha256": "sha256:d737818d48d863a95c4527025b5dea6d80c50f261ae9d64d034a280696720532",
-  "receipt_digest": "sha256:c6766c810daec85ecff749de7be92829cc8c28d5473e8402c8e5592f5f70ca55",
+  "receipt_digest": "sha256:157392f0f7391d24c1bc6b3f8e0faa7c58a2f116019e3b14ccec4c215f6247ca",
   "replay_command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/project-intelligence-engine/src python3 tooling/qualify_project_intelligence_runtime.py --check",
   "results": [
     {

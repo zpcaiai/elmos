@@ -10,6 +10,11 @@ import stat
 import sys
 from typing import Any
 
+from .export_cli import (
+    render_pptx_command,
+    render_report_command,
+    render_svg_command,
+)
 from .runtime import SkillRuntimeError, capability_manifest, dispatch_skill
 from .safe_paths import open_file_no_symlinks, verify_file_path_binding
 
@@ -99,6 +104,24 @@ def _write_json(value: Any) -> None:
     )
 
 
+def _export(args: argparse.Namespace) -> dict[str, Any]:
+    """Run one offline export.
+
+    Exports read a handler result that dispatch already produced and write one
+    file.  They never call ``dispatch_skill``, so no contract-pinned handler
+    output is widened and no filesystem write happens under the dispatch-time
+    audit guard.
+    """
+
+    documents = [_read_request(item) for item in (args.spec or [])]
+    if args.command == "render-svg":
+        return render_svg_command(documents, args.output)
+    if args.command == "report":
+        return render_report_command(documents, args.output, title=args.title)
+    manifest = _read_request(args.manifest) if args.manifest else None
+    return render_pptx_command(documents, manifest, args.output, title=args.title)
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subcommands = parser.add_subparsers(dest="command", required=True)
@@ -110,12 +133,32 @@ def main(argv: list[str] | None = None) -> int:
     dispatch.add_argument(
         "--request", default="-", help="JSON request file or - for stdin"
     )
+    render = subcommands.add_parser(
+        "render-svg", help="render one compiled Diagram Spec to deterministic SVG"
+    )
+    render.add_argument("--spec", action="append", required=True)
+    render.add_argument("--output", required=True)
+    report = subcommands.add_parser(
+        "report", help="render Diagram Specs into one static HTML report"
+    )
+    report.add_argument("--spec", action="append", required=True)
+    report.add_argument("--output", required=True)
+    report.add_argument("--title", default="Project Intelligence report")
+    presentation = subcommands.add_parser(
+        "pptx", help="write a real PPTX with vector diagram slides"
+    )
+    presentation.add_argument("--spec", action="append", default=[])
+    presentation.add_argument("--manifest", default=None)
+    presentation.add_argument("--output", required=True)
+    presentation.add_argument("--title", default="Project Intelligence")
     args = parser.parse_args(argv)
     try:
         if args.command == "manifest":
             result = capability_manifest()
-        else:
+        elif args.command == "dispatch":
             result = dispatch_skill(args.skill, _read_request(args.request))
+        else:
+            result = _export(args)
     except (
         OSError,
         UnicodeError,

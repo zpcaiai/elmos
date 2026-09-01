@@ -39,7 +39,33 @@ def create_artifact(payload: Mapping[str, Any], *, store: DurableStore | None = 
     evidence = {"evidence_id": str(__import__("uuid").uuid4()), "claim": f"artifact {artifact['content_hash']} is content-addressed", "evidence_type": "artifact-integrity", "source": {"artifact_id": artifact["artifact_id"], "content_hash": artifact["content_hash"], "byte_count": len(content)}, "confidence": 1.0, "captured_at": utc_now()}
     if store is not None:
         evidence = store.put_evidence(tenant_id=tenant_id, claim=evidence["claim"], evidence_type=evidence["evidence_type"], source=evidence["source"], run_id=run_id, confidence=1.0, snapshot_sha=payload.get("repo_snapshot"))
-    return {"artifact": artifact, "evidence": evidence, "provenance_edge": {"from": producer, "to": artifact["content_hash"], "relation": "produced"}, "retention_decision": {"security_label": security_label, "retention": "policy-bound"}, "integrity_record": {"algorithm": "SHA-256", "verified": bytes_digest(content) == artifact["content_hash"], "byte_count": len(content)}}
+    # The record below attests that the bytes hash to the recorded address.  It
+    # is not a binding: nothing ties this artifact to the inputs it was produced
+    # from, so evidence minted against one snapshot is byte-identical in
+    # structure to evidence minted against another and can be cited for either.
+    # The kernel engine binds `inputDigests`; supply `repo_snapshot.inputDigests`
+    # to route this Skill there.  An unqualified "verified": true in a field
+    # called integrity_record is a claim a reader will take for provenance.
+    integrity_record = {
+        "algorithm": "SHA-256",
+        "verified": bytes_digest(content) == artifact["content_hash"],
+        "byte_count": len(content),
+        "binding": "content-address-only",
+        "input_digests_bound": False,
+        "method_note": (
+            "the content address was recomputed over the supplied bytes; the "
+            "evidence is not bound to the input digests it was produced from, so "
+            "it cannot show which snapshot it is evidence about"
+        ),
+    }
+    return {
+        "artifact": artifact,
+        "evidence": evidence,
+        "provenance_edge": {"from": producer, "to": artifact["content_hash"],
+                            "relation": "produced"},
+        "retention_decision": {"security_label": security_label, "retention": "policy-bound"},
+        "integrity_record": integrity_record,
+    }
 
 
 def verification_mesh(change_set: Any, validation: Any, task_spec: Mapping[str, Any], snapshot: Mapping[str, Any], policies: Any) -> dict[str, Any]:
@@ -54,7 +80,42 @@ def verification_mesh(change_set: Any, validation: Any, task_spec: Mapping[str, 
     high = [finding for finding in findings if finding["severity"] in {"P0", "P1"}]
     high_verified = all(bool(item.get("independent_verification")) for item in high)
     gate = "PASS" if not high and all(str(item.get("status", "NOT_RUN")).upper() in {"PASS", "PASSED"} for item in validations) else "BLOCKED" if any(str(item.get("status", "NOT_RUN")).upper() == "NOT_RUN" for item in validations) else "FAIL"
-    return {"verification_run": {"status": "COMPLETED", "validator_count": len(validations), "snapshot_sha": snapshot.get("sha256") or digest(snapshot)}, "findings": findings, "finding_validations": [{"finding_id": item["id"], "independent": bool(item.get("independent_verification")), "status": "VALIDATED" if item.get("independent_verification") else "PENDING"} for item in high], "coverage_report": {"criteria": len(task_spec.get("acceptance_criteria", [])) if isinstance(task_spec.get("acceptance_criteria", []), list) else 0, "validators": len(validations), "high_severity_independent": high_verified}, "release_recommendation": {"status": gate if high_verified else "BLOCKED", "reason": "all required validators passed" if gate == "PASS" and high_verified else "high-severity findings require independent verification" if not high_verified else "validation incomplete"}}
+    # A validation row in this input shape is a self-reported status.  It names
+    # no verifier, so nothing here can check that the thing which checked the
+    # change is independent of the thing that produced it - and there is no
+    # second opinion to disagree with, so there is no dissent to preserve
+    # either.  `high_severity_independent` reads as a measurement and is not
+    # one: `independent_verification` is never set on a finding built here, so
+    # the flag is False whenever a P0/P1 finding exists and vacuously True when
+    # none does.  A PASS from this engine means "no row reported a failure",
+    # which is a weaker fact than the field name suggests.
+    honesty = {
+        "independence_checked": False,
+        "dissent_preserved": False,
+        "verdict_replication": "UNREPLICATED",
+    }
+    declared = task_spec.get("acceptance_criteria", [])
+    coverage = {
+        "criteria": len(declared) if isinstance(declared, list) else 0,
+        "validators": len(validations),
+        "high_severity_independent": high_verified,
+        "high_severity_independent_vacuous": not high,
+        **honesty,
+    }
+    recommendation = {
+        "status": gate if high_verified else "BLOCKED",
+        "reason": "all required validators passed" if gate == "PASS" and high_verified
+        else "high-severity findings require independent verification" if not high_verified
+        else "validation incomplete",
+        **honesty,
+        "method_note": (
+            "validation rows carry no verifier identity or independence class, so "
+            "no verifier was checked against verifying its own output and no "
+            "minority verdict was recorded; supply verdicts with verifiers and a "
+            "quorum policy to route this Skill to the verification-mesh engine"
+        ),
+    }
+    return {"verification_run": {"status": "COMPLETED", "validator_count": len(validations), "snapshot_sha": snapshot.get("sha256") or digest(snapshot)}, "findings": findings, "finding_validations": [{"finding_id": item["id"], "independent": bool(item.get("independent_verification")), "status": "VALIDATED" if item.get("independent_verification") else "PENDING"} for item in high], "coverage_report": coverage, "release_recommendation": recommendation}
 
 
 def release_gate(payload: Mapping[str, Any]) -> dict[str, Any]:
@@ -113,7 +174,32 @@ def release_gate(payload: Mapping[str, Any]) -> dict[str, Any]:
         decision = Status.REJECTED.value
     else:
         decision = Status.BLOCKED.value
-    acceptance = {"decision": decision, "independent": True, "decided_at": utc_now(), "reasons": missing, "completion_claim_ignored_for_acceptance": True}
+    # A gate that never produced a verdict is neither a pass nor a failure, and
+    # `reasons` alone flattens the two into "all-mandatory-gates-pass": a reader
+    # cannot tell "two gates failed" from "two gates never ran", which are
+    # different incidents with different next actions.  Artifact integrity is the
+    # sharper case: `artifact_valid` is `all()` over the supplied artifacts, so an
+    # empty list satisfies it vacuously and "artifact-integrity" is then absent
+    # from `reasons` because nothing was checked, not because anything passed.
+    observed = {"PASS", "FAIL", "FAILED", "REJECTED"}
+    unobserved_gates = [row["id"] for row in gate_results if row["status"] not in observed]
+    acceptance = {
+        "decision": decision,
+        "independent": True,
+        "decided_at": utc_now(),
+        "reasons": missing,
+        "completion_claim_ignored_for_acceptance": True,
+        "unobserved_gates": unobserved_gates,
+        "gate_statuses": {row["id"]: row["status"] for row in gate_results},
+        "artifact_integrity_checked": bool(artifacts) if isinstance(artifacts, list) else False,
+        "method_note": (
+            "a gate listed in unobserved_gates (NOT_RUN, SKIPPED, or any other "
+            "non-verdict) blocks acceptance but is not a failure; "
+            "artifact_integrity_checked is false when no artifacts were supplied, "
+            "in which case the artifact-integrity requirement is absent from "
+            "reasons because nothing was checked, not because it was satisfied"
+        ),
+    }
     ready_for_external_gate = set(missing) == {"trusted-certification-engine-required"}
     return {"acceptance_decision": acceptance, "gate_results": gate_results, "release_bundle": {"status": "READY_FOR_EXTERNAL_GATE" if ready_for_external_gate else "NOT_READY", "artifact_hashes": [item.get("content_hash") for item in artifacts if isinstance(item, Mapping)]}, "rollback_bundle": {"status": "READY" if rollback_ready else "NOT_READY", "required": True}, "deployment_complete_attestation": {"status": decision, "attested": False, "gate": "P05_DEPLOYMENT_COMPLETE_NOT_ISSUED"}}
 

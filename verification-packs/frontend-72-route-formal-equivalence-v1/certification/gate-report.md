@@ -1,10 +1,16 @@
 # Batch 35 gate: frontend-72-route-formal-equivalence-v1
 
 - Pack status: `experimental`
-- Structural gate status: `passed`
-- Certification decision: `NOT_CERTIFIED`
+- Structural gate status: `failed`
+- Certification decision: `BLOCKED`
 - Certification readiness: `BLOCKED`
 - Evaluated pack digest: `sha256:0e5397290f93f51dd22c036c4e595b7b17930d1001f0cd12bc97f82372b8c189`
+
+## Failures
+- frontend formal route campaign invalid: stale implementation live repository capture: scripts/batch32/run_client_gate.py
+- frontend formal route campaign invalid: stale implementation live repository capture: tooling/generate_frontend_formal_verification_pack.py
+- frontend formal route campaign invalid: stale implementation live repository capture: tooling/run_frontend_formal_toolchains.py
+- frontend formal route campaign invalid: stale replay live repository capture: scripts/batch32/validate_frontend_formal_route_campaign.py
 
 ## Certification blockers
 - pack and certification status must both request certified

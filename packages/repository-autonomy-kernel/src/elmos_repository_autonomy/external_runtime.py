@@ -40,7 +40,6 @@ from .models import (
     utc_now,
 )
 
-
 _BINDING_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,127}$")
 _ENV_NAME = re.compile(r"^[A-Z][A-Z0-9_]{0,127}$")
 _PROTOCOL = re.compile(r"^elmos\.[a-z0-9][a-z0-9.-]*\.v2$")
@@ -212,7 +211,7 @@ class CommandBinding:
     max_output_bytes: int = 1024 * 1024
 
     @classmethod
-    def from_mapping(cls, value: Mapping[str, Any]) -> "CommandBinding":
+    def from_mapping(cls, value: Mapping[str, Any]) -> CommandBinding:
         record = require_mapping(value, "command binding")
         _require_exact_fields(record, _COMMAND_BINDING_FIELDS, "command binding")
         binding_id = require_string(record.get("binding_id"), "command binding.binding_id")

@@ -488,7 +488,7 @@ EXACT_TOOLCHAIN_RECORD_SHA256: dict[str, str] = {
     "objc": "fbb108ab8528c620f48ec4a12bcde14d284d625b6667493f78ef20ecda63463d",
     "swift": "4f672b92ce63ea95cb8b4cc115f6ca496b3f06aac8de21020e548373ac4a4057",
     "php": "afcfdfd6ee3cfbe5b94eae687b35b86ee63de868e29e70769200aa9c2f4e9bdb",
-    "kotlin": "5798779eb5d7de33e6eb76a925f467d683b51da85cde37724ae4504d18a2aae2",
+    "kotlin": "71be41a8096b4c35bf41a7438a4b8bef2be1217905bf94ba25e2c3b69f0ddd7b",
     "react": "e36637f8e855a4e7b4c64275ab0d1995368318c0e14572fef87a8e652b865884",
     "flutter": "9da3d455a7d37a42acc7f709b9843def354de5e2277763f4b69cfc215ea6e160",
 }
@@ -535,7 +535,7 @@ def exact_toolchain_contract_sha256() -> str:
 # edits to any version, record hash, language order, or deprecated language fail
 # closed until the complete contract is intentionally re-pinned.
 EXACT_TOOLCHAIN_CONTRACT_SHA256 = (
-    "3e62e8500c6c041315fdec52eeafd3cc2a3d6a82da1b7ae7862c741d381eedbd"
+    "e6f62f8d7766e219a0926ce1ae3c542e02f7e823859b59ff6e27421c5d51e46f"
 )
 
 

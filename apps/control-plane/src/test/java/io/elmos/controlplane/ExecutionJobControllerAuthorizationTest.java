@@ -127,6 +127,18 @@ class ExecutionJobControllerAuthorizationTest {
     }
 
     @Test
+    void storageIdentityCollisionIsAnOpaqueConflict() {
+        var response = controller.executionError(
+                new ExecutionJobPort.ExecutionStateException(
+                        "ELMOS_EXECUTION_STORAGE_CONFLICT"));
+
+        assertEquals(409, response.getStatusCode().value());
+        assertEquals(Map.of(
+                "status", "ERROR",
+                "code", "ELMOS_EXECUTION_STORAGE_CONFLICT"), response.getBody());
+    }
+
+    @Test
     void tenantListRejectsInvalidLimitsBeforeQueryingTheStore() {
         authenticatePlatformAdministrator();
 

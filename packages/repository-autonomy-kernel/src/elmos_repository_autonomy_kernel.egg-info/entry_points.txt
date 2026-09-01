@@ -1,0 +1,3 @@
+[console_scripts]
+elmos-autonomy = elmos_repository_autonomy.cli:main
+elmos-autonomy-core = elmos_autonomy_kernel.cli:main

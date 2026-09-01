@@ -30,7 +30,7 @@ class QualificationError(RuntimeError):
 
 
 _IGNORED_ENGINE_GENERATED_PARTS = frozenset(
-    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache"}
+    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache"}
 )
 
 

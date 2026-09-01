@@ -58,13 +58,16 @@ A/B 线才抢 Mac。所以 **A/B 与 C 可以真正并行，不互相排队**。
 | A1 | | | |
 | A2 | | | |
 | A3 | | | |
+| A4 | Claude/Cowork | 2026-09-01 | `DONE` —— `.ai/DEMO-2026-09-01-runbook.md`（19 步真跑通 / 3 步需 Mac 或 Office） |
 | B1 | | | |
 | B2 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
-| B3 | | | |
+| B3 | Claude/Cowork | 2026-09-01 | `DONE` —— 口径重量为 **44 条**（上游 30 / 可规避 14），6 个可上报缺陷带最小复现；**分诊的覆盖率收益实测 = 0**。见 `FINDINGS-2026-09-01-b3.md` |
+| B4 | Claude/Cowork | 2026-09-01 | `DONE` —— 选 Matrix Synapse（重量 **89.93%**，schema 口径 94.46%）；结论不变但理由已换 |
 | C1 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
-| C2 | | | |
-| C3 | | | |
-| C4 | | | |
+| C2 | Claude/Cowork | 2026-09-01 | `DONE` —— 定自绘 SVG（不做 Mermaid）；确定性与横向滚动均已实测闭合 |
+| C3 | Claude/Cowork | 2026-09-01 | `DONE` —— 纯标准库 OOXML，矢量三重机器验证已闭合；**Mac 上真打开过：5 页齐、未报修复**。缩放/选中两项渲染细节未逐项核，记为已知边界 |
+| C4 | | | 本轮不做（C0 已定 CLI + 静态报告） |
+| C5 | Claude/Cowork | 2026-09-01 | `IN-PROGRESS` |
 
 ---
 
@@ -138,7 +141,12 @@ certification_status      NOT_CERTIFIED
   （pg_dump 的 `public.` 前缀）。
 - 语料反差极大：Matrix Synapse 真实 schema **87.8%**，ELMOS 自己的迁移只有 **18.9%**。
 
-### B1 · 模式限定名（160 条）—— `NEEDS-DECISION` → 之后 `READY` —— 云端 —— 5–8 天
+### B1 · 模式限定名（160 条）—— ⚠️ `NEEDS-RETRIAGE`（2026-09-01：前提已过期）—— 云端
+
+> **2026-09-01 两条线程独立实测：`CERTIFIED_DDL_QUALIFIED_TABLE_NAME` 出现 0 次**，
+> 已被 `NAMESPACE_MAPPING_REQUIRED`（370 条）取代，且 `--namespace-map` 实测可解并留 digest。
+> 「160 条」和「四方言含义分歧需先定失败关闭规则」这两个前提都要重新量过再定级。
+> 见 `FINDINGS-2026-09-01-b3.md` §1、`FINDINGS-2026-09-01-a4-b4.md`、`FINDINGS-2026-09-01-crosscheck.md` §3。
 
 - **需要你先拍板**：`public.orders` 在四个方言里含义确实有分歧
   （PG 的 schema、MySQL 的 database、Oracle 的 user、SQL Server 的三段式）。
@@ -205,7 +213,10 @@ certification_status      NOT_CERTIFIED
 它比转写子集宽得多 —— 转写准入率 1/16046，但 inventory 能枚举整个文件的
 namespace / class / method / 属性 / 语句。**画图走这层，不要走 route/equivalence 层。**
 
-### C0 · 归属决定 —— `NEEDS-DECISION` —— 1 天
+### C0 · 归属决定 —— `DONE`（2026-09-01 已拍板）—— 1 天
+
+> **决定（Ethan，2026-09-01）：先做 CLI + 静态 HTML 报告，不做 web-console 新页面。**
+> 因此 **C4 Web UI 本轮不做**；C2 的渲染产物直接喂这份静态报告。
 
 - 这条线是 **web-console 的新页面**，还是先做 **CLI + 静态 HTML 报告**？
   后者能把 C4 从 EPIC 降成小活，先演示先反馈。**建议先 CLI + 报告。**

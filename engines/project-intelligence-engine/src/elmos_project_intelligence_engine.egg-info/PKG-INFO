@@ -34,3 +34,5 @@ make project-intelligence-skills
 ```
 
 Static validation and guarded local fixture execution are engineering evidence only. The audit guard is not an OS sandbox or independent verifier. These checks do not establish remote Git ingestion, native parsers for every language, browser/UI behavior, model quality, runtime trace collection, production topology, external verification, customer acceptance, E1-E5 certification, deployment, billing, or release authorization.
+
+Filesystem defenses reject symlinks, path rebinding, public state files, and hard-linked immutable objects at the local engine boundary. A malicious process running concurrently as the same operating-system user is outside this bounded engine's isolation model; production isolation requires a separate account or sandbox and an independently controlled storage boundary.

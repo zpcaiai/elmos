@@ -4,6 +4,7 @@ import io.elmos.productionruntime.ProductionRuntimeModels.Completion;
 import io.elmos.productionruntime.ProductionRuntimeModels.DispatchEnvelope;
 import io.elmos.productionruntime.ProductionRuntimeModels.DispatchIntent;
 import io.elmos.productionruntime.ProductionRuntimeModels.FinalUsage;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
 import io.elmos.productionruntime.ProductionRuntimeModels.ReservationResult;
 
 import java.math.BigDecimal;
@@ -64,6 +65,28 @@ public final class ProductionRuntimeCoordinator {
 
     public void complete(Completion completion, FinalUsage usage, String failureReason) {
         runtime.complete(completion);
+        settleOrRelease(completion, usage, failureReason);
+    }
+
+    /**
+     * Production worker success boundary.  The durable runtime validates and
+     * records the output receipt before the work item can become SUCCEEDED.
+     */
+    public void completeVerified(
+            Completion completion,
+            OutputVerificationReceipt receipt,
+            FinalUsage usage,
+            String failureReason
+    ) {
+        runtime.completeVerified(completion, receipt);
+        settleOrRelease(completion, usage, failureReason);
+    }
+
+    private void settleOrRelease(
+            Completion completion,
+            FinalUsage usage,
+            String failureReason
+    ) {
         if (completion.status() == ProductionRuntimeModels.AttemptStatus.SUCCEEDED && usage != null) {
             runtime.applyFinalUsage(completion.tenantId(), completion.workItemId(), usage);
             billing.settle(usage);

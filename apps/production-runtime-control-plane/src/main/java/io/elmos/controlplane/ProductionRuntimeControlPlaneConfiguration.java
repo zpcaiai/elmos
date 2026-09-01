@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 import java.nio.file.Path;
 import java.net.URI;
@@ -33,6 +34,31 @@ import java.time.Duration;
 @ConditionalOnProperty(prefix = "elmos.production-runtime", name = "enabled", havingValue = "true")
 @ConditionalOnExpression("'${component:scheduler}' != 'migration'")
 class ProductionRuntimeControlPlaneConfiguration {
+    @Bean("productionDispatchTaskScheduler")
+    ThreadPoolTaskScheduler productionDispatchTaskScheduler() {
+        return taskScheduler("production-dispatch-loop-", 1);
+    }
+
+    @Bean("productionRecoveryTaskScheduler")
+    ThreadPoolTaskScheduler productionRecoveryTaskScheduler() {
+        return taskScheduler("production-recovery-loop-", 1);
+    }
+
+    @Bean("productionMaintenanceTaskScheduler")
+    ThreadPoolTaskScheduler productionMaintenanceTaskScheduler() {
+        return taskScheduler("production-maintenance-loop-", 2);
+    }
+
+    private static ThreadPoolTaskScheduler taskScheduler(String prefix, int poolSize) {
+        ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+        scheduler.setPoolSize(poolSize);
+        scheduler.setThreadNamePrefix(prefix);
+        scheduler.setRemoveOnCancelPolicy(true);
+        scheduler.setWaitForTasksToCompleteOnShutdown(true);
+        scheduler.setAwaitTerminationSeconds(15);
+        return scheduler;
+    }
+
     @Bean
     ProductionRuntimeControlPlaneMetrics productionRuntimeControlPlaneMetrics(
             MeterRegistry meters
@@ -206,14 +232,18 @@ class ProductionRuntimeControlPlaneConfiguration {
             this.leaseGrace = leaseGrace;
         }
 
-        @Scheduled(fixedDelayString = "${elmos.production-runtime.scheduler-interval-ms:1000}")
+        @Scheduled(
+                fixedDelayString = "${elmos.production-runtime.scheduler-interval-ms:1000}",
+                scheduler = "productionDispatchTaskScheduler")
         void schedule() {
             if ("scheduler".equals(component)) {
                 metrics.record(component, "schedule", () -> scheduling.schedule(batchSize, workers));
             }
         }
 
-        @Scheduled(fixedDelayString = "${elmos.production-runtime.recovery-interval-ms:5000}")
+        @Scheduled(
+                fixedDelayString = "${elmos.production-runtime.recovery-interval-ms:5000}",
+                scheduler = "productionRecoveryTaskScheduler")
         void recover() {
             if (!"scheduler".equals(component)) return;
             metrics.record(component, "recover", () -> {
@@ -222,7 +252,9 @@ class ProductionRuntimeControlPlaneConfiguration {
             });
         }
 
-        @Scheduled(fixedDelayString = "${elmos.production-runtime.billing-recovery-interval-ms:5000}")
+        @Scheduled(
+                fixedDelayString = "${elmos.production-runtime.billing-recovery-interval-ms:5000}",
+                scheduler = "productionMaintenanceTaskScheduler")
         void recoverBilling() {
             if (!"billing".equals(component)) return;
             metrics.record(component, "billing-recovery", () -> {
@@ -234,7 +266,9 @@ class ProductionRuntimeControlPlaneConfiguration {
             });
         }
 
-        @Scheduled(fixedDelayString = "${elmos.production-runtime.projector-interval-ms:1000}")
+        @Scheduled(
+                fixedDelayString = "${elmos.production-runtime.projector-interval-ms:1000}",
+                scheduler = "productionMaintenanceTaskScheduler")
         void rebuildProjections() {
             if (!"projector".equals(component)) return;
             metrics.record(component, "projection", () -> {
@@ -244,7 +278,9 @@ class ProductionRuntimeControlPlaneConfiguration {
             });
         }
 
-        @Scheduled(fixedDelayString = "${elmos.production-runtime.outbox.interval-ms:1000}")
+        @Scheduled(
+                fixedDelayString = "${elmos.production-runtime.outbox.interval-ms:1000}",
+                scheduler = "productionMaintenanceTaskScheduler")
         void publishOutbox() {
             if (!"projector".equals(component) || outboxPublisher == null) return;
             metrics.record(component, "outbox", () ->

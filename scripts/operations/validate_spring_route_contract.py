@@ -119,15 +119,49 @@ BOOT_4_1_LOCAL_EVIDENCE = {
     "boot-2.7-maven-to-boot-4.1.0-java-21": {
         "source_boot": "2.7.18",
         "source_java": "17",
+        "target_boot": "4.1.0",
+        "target_java": "21",
         "evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-4.1.0-java-21.json",
     },
     "boot-3.5-maven-to-boot-4.1.0-java-21": {
         "source_boot": "3.5.3",
         "source_java": "21",
+        "target_boot": "4.1.0",
+        "target_java": "21",
         "evidence_path": "evidence/spring-routes/boot-3.5-maven-to-boot-4.1.0-java-21.json",
         "matrix_evidence_path": "certification/local-reference-evidence.json",
         "matrix_evidence_file": "framework-packs/spring-to-boot-4-1-0/certification/local-reference-evidence.json",
+    },
+}
+BOOT_3_5_LOCAL_EVIDENCE = {
+    "boot-1.5-java-8-maven-to-boot-3.5.3-java-21": {
+        "source_boot": "1.5.22.RELEASE",
+        "source_java": "8",
+        "target_boot": "3.5.3",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-1.5-java-8-maven-to-boot-3.5.3-java-21.json",
+    },
+    "boot-2.0-2.6-maven-to-boot-3.5.3-java-21": {
+        "source_boot": "2.3.12.RELEASE",
+        "source_java": "11",
+        "target_boot": "3.5.3",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-2.0-2.6-maven-to-boot-3.5.3-java-21.json",
+    },
+    "boot-2.7-maven-to-boot-3.5.3-java-21": {
+        "source_boot": "2.7.18",
+        "source_java": "17",
+        "target_boot": "3.5.3",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-2.7-maven-to-boot-3.5.3-java-21.json",
+    },
+    "boot-3.0-3.4-maven-to-boot-3.5.3-java-21": {
+        "source_boot": "3.4.1",
+        "source_java": "17",
+        "target_boot": "3.5.3",
+        "target_java": "21",
+        "evidence_path": "evidence/spring-routes/boot-3.0-3.4-maven-to-boot-3.5.3-java-21.json",
     },
 }
 REQUIRED_BOOT_3_2_COMPOSITIONS = {
@@ -178,6 +212,71 @@ class ContractError(RuntimeError):
 def require(condition: bool, reason: str) -> None:
     if not condition:
         raise ContractError(reason)
+
+
+def check_local_evidence_payload(
+    route_id: str,
+    evidence: dict[str, object],
+    expectation: dict[str, str],
+    prefix: str,
+) -> None:
+    """Fail closed when a recorded local evidence file drifts from its tuple.
+
+    2026-09-01: the 4.1.0 routes were field-checked; mutating
+    ``recorded_tuple.target_boot`` on a 3.5.3 file still passed the gate.
+    """
+
+    require(
+        evidence.get("route_id") == route_id,
+        f"{prefix}_ROUTE_DRIFT:{route_id}",
+    )
+    require(
+        evidence.get("execution_status") == "PASSED_LOCAL"
+        and evidence.get("behavioral_parity") is True,
+        f"{prefix}_EXECUTION_DRIFT:{route_id}",
+    )
+    require(
+        evidence.get("recorded_tuple")
+        == {
+            "source_boot": expectation["source_boot"],
+            "source_java": expectation["source_java"],
+            "target_boot": expectation["target_boot"],
+            "target_java": expectation["target_java"],
+        },
+        f"{prefix}_TUPLE_DRIFT:{route_id}",
+    )
+    require(
+        evidence.get("certification_status") == "NOT_CERTIFIED"
+        and evidence.get("external_evidence_status") == "NOT_RUN"
+        and evidence.get("independent_verification") == "NOT_RUN"
+        and evidence.get("rootless_runner") == "NOT_RUN"
+        and evidence.get("authorized_customer_repository") == "NOT_RUN",
+        f"{prefix}_BOUNDARY_DRIFT:{route_id}",
+    )
+    family = prefix.removesuffix("_EVIDENCE")
+    for side in ("source", "target"):
+        execution = evidence.get(side)
+        expected_boot = (
+            expectation["source_boot"] if side == "source" else expectation["target_boot"]
+        )
+        require(
+            isinstance(execution, dict)
+            and execution.get("boot") == expected_boot
+            and execution.get("build") == "PASSED"
+            and execution.get("runtime", {}).get("health", {}).get("status") == "UP",
+            f"{family}_{side.upper()}_EVIDENCE_INCOMPLETE:{route_id}",
+        )
+
+
+def load_local_evidence(route_id: str, evidence_path: Path, prefix: str) -> dict[str, object]:
+    require(evidence_path.is_file(), f"{prefix}_MISSING:{route_id}")
+    try:
+        evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ContractError(f"{prefix}_INVALID:{route_id}") from exc
+    if not isinstance(evidence, dict):
+        raise ContractError(f"{prefix}_INVALID:{route_id}")
+    return evidence
 
 
 def version_key(value: str) -> tuple[int, ...]:
@@ -567,49 +666,17 @@ def check_catalog_shape(routes: list[dict[str, object]], constants: dict[str, st
             and edge["verified_java"] == local_expectation["source_java"],
             f"BOOT_4_1_LOCAL_TUPLE_DRIFT:{route_id}",
         )
-        evidence_path = ROOT / str(local_expectation["evidence_path"])
-        require(evidence_path.is_file(), f"BOOT_4_1_LOCAL_EVIDENCE_MISSING:{route_id}")
-        try:
-            evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
-        except (OSError, json.JSONDecodeError) as exc:
-            raise ContractError(f"BOOT_4_1_LOCAL_EVIDENCE_INVALID:{route_id}") from exc
-        require(
-            evidence.get("route_id") == route_id,
-            f"BOOT_4_1_LOCAL_EVIDENCE_ROUTE_DRIFT:{route_id}",
+        evidence = load_local_evidence(
+            route_id,
+            ROOT / str(local_expectation["evidence_path"]),
+            "BOOT_4_1_LOCAL_EVIDENCE",
         )
-        require(
-            evidence.get("execution_status") == "PASSED_LOCAL"
-            and evidence.get("behavioral_parity") is True,
-            f"BOOT_4_1_LOCAL_EVIDENCE_EXECUTION_DRIFT:{route_id}",
+        check_local_evidence_payload(
+            route_id,
+            evidence,
+            local_expectation,
+            "BOOT_4_1_LOCAL_EVIDENCE",
         )
-        require(
-            evidence.get("recorded_tuple")
-            == {
-                "source_boot": local_expectation["source_boot"],
-                "source_java": local_expectation["source_java"],
-                "target_boot": "4.1.0",
-                "target_java": "21",
-            },
-            f"BOOT_4_1_LOCAL_EVIDENCE_TUPLE_DRIFT:{route_id}",
-        )
-        require(
-            evidence.get("certification_status") == "NOT_CERTIFIED"
-            and evidence.get("external_evidence_status") == "NOT_RUN"
-            and evidence.get("independent_verification") == "NOT_RUN"
-            and evidence.get("rootless_runner") == "NOT_RUN"
-            and evidence.get("authorized_customer_repository") == "NOT_RUN",
-            f"BOOT_4_1_LOCAL_EVIDENCE_BOUNDARY_DRIFT:{route_id}",
-        )
-        for side in ("source", "target"):
-            execution = evidence.get(side)
-            require(
-                isinstance(execution, dict)
-                and execution.get("boot")
-                == (local_expectation["source_boot"] if side == "source" else "4.1.0")
-                and execution.get("build") == "PASSED"
-                and execution.get("runtime", {}).get("health", {}).get("status") == "UP",
-                f"BOOT_4_1_LOCAL_{side.upper()}_EVIDENCE_INCOMPLETE:{route_id}",
-            )
 
 
 def check_boot_4_1_version_matrix(routes: list[dict[str, object]]) -> None:
@@ -1039,10 +1106,47 @@ def check_console(routes: list[dict[str, object]], constants: dict[str, str]) ->
         require(needle in studio, f"STUDIO_NOT_CONTRACT_BOUND:{needle}")
 
 
+def check_boot_3_5_local_evidence(routes: list[dict[str, object]]) -> None:
+    """Field-check Boot 3.5.3 local evidence the same way 4.1.0 routes are.
+
+    Catalog membership is not enough: a tampered ``recorded_tuple`` must
+    fail the gate. 2026-09-01 measured that it did not.
+    """
+
+    by_id = {str(route["route_id"]): route for route in routes}
+    for route_id, expectation in BOOT_3_5_LOCAL_EVIDENCE.items():
+        edge = by_id.get(route_id)
+        require(edge is not None, f"BOOT_3_5_LOCAL_EDGE_MISSING:{route_id}")
+        assert edge is not None
+        require(
+            edge["evidence"] == "PASSED_LOCAL",
+            f"BOOT_3_5_LOCAL_EDGE_NOT_RECORDED:{route_id}",
+        )
+        require(
+            edge["verified_boot"] == expectation["source_boot"]
+            and edge["verified_java"] == expectation["source_java"]
+            and edge["target_boot"] == expectation["target_boot"]
+            and edge["target_java"] == expectation["target_java"],
+            f"BOOT_3_5_LOCAL_TUPLE_DRIFT:{route_id}",
+        )
+        evidence = load_local_evidence(
+            route_id,
+            ROOT / str(expectation["evidence_path"]),
+            "BOOT_3_5_LOCAL_EVIDENCE",
+        )
+        check_local_evidence_payload(
+            route_id,
+            evidence,
+            expectation,
+            "BOOT_3_5_LOCAL_EVIDENCE",
+        )
+
+
 def main() -> int:
     constants = catalog_constants()
     routes = parse_catalog()
     check_catalog_shape(routes, constants)
+    check_boot_3_5_local_evidence(routes)
     check_boot_4_1_version_matrix(routes)
     check_feature_catalog()
     check_spring_verification_plan()

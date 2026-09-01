@@ -18,7 +18,7 @@ from sqlglot import exp
 
 from elmos_sql_dialect.models import Dialect
 from elmos_sql_dialect.scan import _classify, discover_sql_files
-from elmos_sql_dialect.statement_splitter import split_statements
+from elmos_sql_dialect.statement_splitter import looks_like_client_directive, split_statements
 
 DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Truncate")
 
@@ -40,8 +40,8 @@ def statements_of(path: Path, dialect: Dialect):
         return
     except Exception:
         pass
-    for raw in split_statements(text):
-        if raw.text.lstrip().startswith("\\"):
+    for raw in split_statements(text, dialect=dialect):
+        if looks_like_client_directive(raw.text, dialect):
             continue
         try:
             parsed = [
