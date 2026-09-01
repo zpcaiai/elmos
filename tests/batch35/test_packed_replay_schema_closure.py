@@ -684,6 +684,14 @@ def test_packed_replay_constants_bind_all_identifier_schemas() -> None:
     assert set(SCHEMA_RELATIVES) <= set(specialized_generator.PACKED_REPLAY_FILES)
 
 
+def test_reference_pack_preserves_frozen_swift_component_read_bound() -> None:
+    captured_validator = (
+        REFERENCE_ENGINE_SOURCES / "scripts/batch29/validate_route.py"
+    ).read_text(encoding="utf-8")
+    assert "if total > 250_000_000:" in captured_validator
+    assert "SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES" not in captured_validator
+
+
 def test_private_locked_interpreter_rejects_repository_venv(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -712,55 +720,98 @@ def test_private_locked_interpreter_rejects_repository_venv(
         _private_locked_interpreter()
 
 
-def test_private_typescript_identity_canonicalizes_cross_user_ownership() -> None:
-    launcher = _load(PACKED_LAUNCHER, "packed_cross_user_typescript_launcher")
-    private_root = Path("/private/elmos-packed-typescript/typescript-5.9.2")
+def _private_typescript_identity_fixture(
+    root: Path,
+) -> tuple[Path, dict[str, object]]:
+    private_root = root / "typescript-5.9.2"
+    binary = private_root / "bin"
+    library = private_root / "lib"
+    binary.mkdir(parents=True)
+    library.mkdir()
+    parser = library / "typescript.js"
+    content = b"parser-private-closure\n"
+    parser.write_bytes(content)
+    parser.chmod(0o444)
+    binary.chmod(0o555)
+    library.chmod(0o555)
+    private_root.chmod(0o555)
+    package_metadata = private_root.lstat()
     manifest: dict[str, object] = {
         "schema_version": 2,
         "kind": "elmos.typescript-5.9.2-full-stdlib-compiler-closure",
         "package_root": {
             "root": str(private_root),
             "mode": "0555",
-            "uid": 1000,
-            "gid": 1000,
-            "nlink": 4,
+            "uid": package_metadata.st_uid,
+            "gid": package_metadata.st_gid,
+            "nlink": package_metadata.st_nlink,
         },
         "directories": [
             {
                 "relative_path": relative,
                 "resolved_path": str(private_root / relative),
                 "mode": "0555",
-                "uid": 1000,
-                "gid": 1000,
-                "nlink": 2,
+                "uid": (private_root / relative).lstat().st_uid,
+                "gid": (private_root / relative).lstat().st_gid,
+                "nlink": (private_root / relative).lstat().st_nlink,
             }
             for relative in ("bin", "lib")
         ],
         "files": [
             {
                 "role": "parser",
-                "resolved_path": str(private_root / "lib/typescript.js"),
-                "bytes": 9_111_680,
-                "sha256": "e5f1f6b3" + "0" * 56,
+                "resolved_path": str(parser),
+                "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
                 "mode": "0444",
-                "uid": 1000,
-                "gid": 1000,
-                "nlink": 1,
+                "uid": parser.lstat().st_uid,
+                "gid": parser.lstat().st_gid,
+                "nlink": parser.lstat().st_nlink,
             }
         ],
         "semantic_soundness": "NOT_RUN",
     }
+    return private_root, manifest
+
+
+def _restore_private_typescript_fixture(private_root: Path) -> None:
+    parser = private_root / "lib/typescript.js"
+    if parser.exists() and not parser.is_symlink():
+        parser.chmod(0o644)
+    for directory in (private_root / "bin", private_root / "lib", private_root):
+        if directory.exists() and not directory.is_symlink():
+            directory.chmod(0o755)
+
+
+def test_private_typescript_identity_canonicalizes_live_private_ownership(
+    tmp_path: Path,
+) -> None:
+    launcher = _load(PACKED_LAUNCHER, "packed_cross_user_typescript_launcher")
+    private_root, manifest = _private_typescript_identity_fixture(tmp_path)
     observed: dict[str, object] = {}
 
     def identity(canonical: dict[str, object]) -> dict[str, object]:
         observed.update(canonical)
-        return {"sha256": "canonical", "file_count": 1, "bytes": 9_111_680}
+        encoded = json.dumps(
+            canonical, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        files = canonical["files"]
+        assert isinstance(files, list)
+        return {
+            "manifest": canonical,
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+            "file_count": len(files),
+            "bytes": sum(int(item["bytes"]) for item in files),
+        }
 
-    result = launcher._canonical_private_typescript_identity(
-        identity,
-        private_root,
-        manifest,
-    )
+    try:
+        result = launcher._canonical_private_typescript_identity(
+            identity,
+            private_root,
+            manifest,
+        )
+    finally:
+        _restore_private_typescript_fixture(private_root)
 
     package = observed["package_root"]
     directories = observed["directories"]
@@ -774,10 +825,50 @@ def test_private_typescript_identity_canonicalizes_cross_user_ownership() -> Non
         (501, 20, 107),
     ]
     assert (files[0]["uid"], files[0]["gid"], files[0]["nlink"]) == (501, 20, 1)
-    assert result["sha256"] == "canonical"
+    assert result["sha256"] == hashlib.sha256(
+        json.dumps(observed, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     original_package = manifest["package_root"]
     assert isinstance(original_package, dict)
-    assert original_package["uid"] == 1000
+    assert original_package["uid"] == os.getuid()
+
+
+@pytest.mark.parametrize("forgery", ["package", "directory", "file"])
+def test_private_typescript_identity_rejects_forged_live_manifest(
+    tmp_path: Path,
+    forgery: str,
+) -> None:
+    launcher = _load(PACKED_LAUNCHER, f"packed_forged_typescript_{forgery}")
+    private_root, manifest = _private_typescript_identity_fixture(tmp_path)
+    package = manifest["package_root"]
+    directories = manifest["directories"]
+    files = manifest["files"]
+    assert isinstance(package, dict)
+    assert isinstance(directories, list)
+    assert isinstance(files, list)
+    if forgery == "package":
+        package["nlink"] = int(package["nlink"]) + 1
+    elif forgery == "directory":
+        directories[0]["uid"] = int(directories[0]["uid"]) + 1
+    else:
+        files[0]["sha256"] = "0" * 64
+    callback_called = False
+
+    def identity(_canonical: dict[str, object]) -> dict[str, object]:
+        nonlocal callback_called
+        callback_called = True
+        return {}
+
+    try:
+        with pytest.raises(ValueError, match="private TypeScript"):
+            launcher._canonical_private_typescript_identity(
+                identity,
+                private_root,
+                manifest,
+            )
+    finally:
+        _restore_private_typescript_fixture(private_root)
+    assert callback_called is False
 
 
 def test_isolated_packed_module_replay_binds_all_schemas(tmp_path: Path) -> None:

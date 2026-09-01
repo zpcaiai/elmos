@@ -124,6 +124,8 @@ _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES = 100_000
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES = 512 * 1024 * 1024
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES = 64 * 1024 * 1024
 _SWIFT_ANALYZER_BINARY_MAX_BYTES = 100_000_000
+_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000
+_SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES = 1_000_000_000
 _SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS = 3_600
 _SWIFT_BUILD_TERMINATION_GRACE_SECONDS = 1.0
 _SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS = 5.0
@@ -1022,10 +1024,31 @@ def _stable_read_regular_file(
     permitted_uids = allowed_uids if allowed_uids is not None else frozenset({os.getuid()})
     try:
         before = path.lstat()
-        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_size < minimum_bytes
+            or before.st_size > maximum_bytes
+        ):
+            raise RouteError(failure)
+        # A path can be replaced after lstat() but before open(). O_NOFOLLOW
+        # rejects a symlink swap, while O_NONBLOCK prevents a FIFO/device swap
+        # from blocking this verifier before fstat() can reject non-regular
+        # descriptors.
+        flags = (
+            os.O_RDONLY
+            | os.O_NONBLOCK
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+        )
         descriptor = os.open(path, flags)
         try:
             opened_before = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(opened_before.st_mode)
+                or opened_before.st_size < minimum_bytes
+                or opened_before.st_size > maximum_bytes
+            ):
+                raise RouteError(failure)
             chunks: list[bytes] = []
             total = 0
             while chunk := os.read(descriptor, 1024 * 1024):
@@ -3581,14 +3604,11 @@ def _verify_swift_xcode_directory_chain(directory: Path, failure: str) -> tuple[
         for part in directory.parts[1:]:
             cursor = cursor / part
             metadata = cursor.lstat()
-            applications_exception = cursor == Path("/Applications") and (
-                stat.S_IMODE(metadata.st_mode) == 0o775 and metadata.st_uid == 0 and metadata.st_gid == 80
-            )
             if (
                 stat.S_ISLNK(metadata.st_mode)
                 or not stat.S_ISDIR(metadata.st_mode)
                 or metadata.st_uid != 0
-                or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+                or stat.S_IMODE(metadata.st_mode) & 0o022
             ):
                 raise RouteError(failure)
             identities.append(
@@ -3654,7 +3674,7 @@ def _swift_build_component_receipt(
             content_cache[resolved] = _stable_read_regular_file(
                 resolved,
                 failure=failure,
-                maximum_bytes=250_000_000,
+                maximum_bytes=_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
                 allowed_uids=frozenset({0}),
             )
         content = content_cache[resolved]
@@ -3690,6 +3710,23 @@ def _swift_build_component_receipt(
     return observed
 
 
+def _checked_swift_tree_byte_total(
+    current: int,
+    additional: int,
+    *,
+    failure: str,
+) -> int:
+    if (
+        type(current) is not int
+        or type(additional) is not int
+        or current < 0
+        or additional < 0
+        or additional > _SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES - current
+    ):
+        raise RouteError(failure)
+    return current + additional
+
+
 def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
     role_value, lexical_value, resolved_value, sha256_value, count_value, bytes_value = spec
     role = str(role_value)
@@ -3708,6 +3745,7 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
 
     def discover() -> list[Path]:
         files: list[Path] = []
+        declared_total = 0
         try:
             candidates = sorted(resolved.rglob("*"), key=lambda item: item.relative_to(resolved).as_posix())
             if len(candidates) > 10_000:
@@ -3723,6 +3761,11 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
                 ):
                     raise RouteError(failure)
                 if stat.S_ISREG(metadata.st_mode):
+                    declared_total = _checked_swift_tree_byte_total(
+                        declared_total,
+                        metadata.st_size,
+                        failure=failure,
+                    )
                     files.append(item)
         except OSError as error:
             raise RouteError(failure) from error
@@ -3736,11 +3779,15 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
         content = _stable_read_regular_file(
             item,
             failure=f"{failure}:{relative}",
-            maximum_bytes=100_000_000,
+            maximum_bytes=_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
             minimum_bytes=0,
             allowed_uids=frozenset({0}),
         )
-        total += len(content)
+        total = _checked_swift_tree_byte_total(
+            total,
+            len(content),
+            failure=failure,
+        )
         files.append(
             {
                 "path": relative,

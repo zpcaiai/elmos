@@ -171,6 +171,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Root-seal OpenSSL 3 Ed25519 runtime
+        run: |
+          # Run before repository code. stdin prevents sudo from reopening a
+          # runner-writable checkout path, and /usr/bin/python3 is root-owned.
+          test -x /usr/bin/python3
+          test "$(/usr/bin/uname -m)" = "arm64"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          /usr/bin/sudo -- /usr/bin/python3 -I -B - \
+            --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
+            <scripts/toolchains/verify_openssl3_ci_runtime.py
       - name: Set up Node.js 26.0.0
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -196,14 +207,11 @@ jobs:
       - name: Bind OpenSSL 3 Ed25519 runtime
         run: |
           openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
-          openssl_libssl="/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib"
-          openssl_libcrypto="/opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib"
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
-          image_os="${ImageOS:-UNSET}"
-          image_version="${ImageVersion:-UNSET}"
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion | /usr/bin/cut -d. -f1)" = "15"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"
@@ -214,81 +222,16 @@ jobs:
           test "$(python3.11 -I -B -c \
             'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
             "${openssl_opt_bin}")" = "${openssl_bin}"
-          test "$("${openssl_bin}" version)" = \
-            "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
           python3.11 -I -B -c \
             'import json, pathlib, sys; value=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")); source=value.get("source"); assert value.get("arch") == "arm64"; assert value.get("built_as_bottle") is True; assert value.get("poured_from_bottle") is True; assert isinstance(source, dict); assert source.get("tap") == "homebrew/core"; assert source.get("spec") == "stable"; assert source.get("versions", {}).get("stable") == "3.6.3"; assert pathlib.Path(str(source.get("path"))).name == "packages.arm64_sequoia.jws.json"' \
             "${openssl_receipt}"
-          openssl_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${openssl_bin}")"
-          openssl_sha256="$(/usr/bin/shasum -a 256 "${openssl_bin}" | /usr/bin/awk '{print $1}')"
-          printf 'OPENSSL3_RUNNER_RECEIPT image_os=%s image_version=%s stat=%s sha256=%s\n' \
-            "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
-          for component in \
-            "libssl:${openssl_libssl}" \
-            "libcrypto:${openssl_libcrypto}"; do
-            role="${component%%:*}"
-            component_path="${component#*:}"
-            test -f "${component_path}"
-            test ! -L "${component_path}"
-            test "$(python3.11 -I -B -c \
-              'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
-              "${component_path}")" = "${component_path}"
-            component_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${component_path}")"
-            component_sha256="$(/usr/bin/shasum -a 256 "${component_path}" | /usr/bin/awk '{print $1}')"
-            printf 'OPENSSL3_COMPONENT_RECEIPT role=%s path=%s stat=%s sha256=%s\n' \
-              "${role}" "${component_path}" "${component_stat}" "${component_sha256}"
-            /usr/bin/codesign --verify --strict --verbose=2 "${component_path}"
-            /usr/bin/codesign -d --verbose=4 "${component_path}" 2>&1
-          done
-          /usr/bin/otool -L "${openssl_bin}"
-          test "${image_os}" = "macos15"
-          test "${image_version}" = "20260727.0256.1"
-          test "${openssl_stat}" = "555:501:80:1:878752"
-          test "${openssl_sha256}" = \
-            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8"
-          /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
-          probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-probe.XXXXXX")"
-          trap '/bin/rm -rf -- "${probe_root}"' EXIT
-          printf 'elmos-openssl3-ed25519-probe\n' >"${probe_root}/payload"
-          "${openssl_bin}" genpkey -algorithm ed25519 \
-            -out "${probe_root}/private.pem"
-          "${openssl_bin}" pkey -in "${probe_root}/private.pem" -pubout \
-            -out "${probe_root}/public.pem"
-          "${openssl_bin}" pkeyutl -sign -inkey "${probe_root}/private.pem" \
-            -rawin -in "${probe_root}/payload" -out "${probe_root}/signature"
-          "${openssl_bin}" pkeyutl -verify -pubin \
-            -inkey "${probe_root}/public.pem" -rawin \
-            -in "${probe_root}/payload" -sigfile "${probe_root}/signature"
+          python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
           printf '%s\n' "/opt/homebrew/Cellar/openssl@3/3.6.3/bin" >>"${GITHUB_PATH}"
       - name: Verify bound OpenSSL runtime
         run: |
           openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
-          image_os="${ImageOS:-UNSET}"
-          image_version="${ImageVersion:-UNSET}"
           test "$(command -v openssl)" = "${openssl_bin}"
-          test "$(openssl version)" = \
-            "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
-          openssl_stat="$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${openssl_bin}")"
-          openssl_sha256="$(/usr/bin/shasum -a 256 "${openssl_bin}" | /usr/bin/awk '{print $1}')"
-          printf 'OPENSSL3_RUNNER_RECEIPT image_os=%s image_version=%s stat=%s sha256=%s\n' \
-            "${image_os}" "${image_version}" "${openssl_stat}" "${openssl_sha256}"
-          test "${image_os}" = "macos15"
-          test "${image_version}" = "20260727.0256.1"
-          test "${openssl_stat}" = "555:501:80:1:878752"
-          test "${openssl_sha256}" = \
-            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8"
-          /usr/bin/codesign --verify --strict --verbose=2 "${openssl_bin}"
-          probe_root="$(/usr/bin/mktemp -d "${RUNNER_TEMP}/elmos-openssl3-path-probe.XXXXXX")"
-          trap '/bin/rm -rf -- "${probe_root}"' EXIT
-          printf 'elmos-openssl3-path-ed25519-probe\n' >"${probe_root}/payload"
-          openssl genpkey -algorithm ed25519 -out "${probe_root}/private.pem"
-          openssl pkey -in "${probe_root}/private.pem" -pubout \
-            -out "${probe_root}/public.pem"
-          openssl pkeyutl -sign -inkey "${probe_root}/private.pem" -rawin \
-            -in "${probe_root}/payload" -out "${probe_root}/signature"
-          openssl pkeyutl -verify -pubin -inkey "${probe_root}/public.pem" \
-            -rawin -in "${probe_root}/payload" \
-            -sigfile "${probe_root}/signature"
+          python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
       - name: Replay complete Batch 32 and Batch 35 formal gates
         run: |
           make batch32-check
@@ -330,6 +273,8 @@ jobs:
           go-version: "1.25.0"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
       - name: Provision digest-bound route toolchains
         run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked route-pack tools
@@ -358,15 +303,16 @@ jobs:
             python scripts/batch29/run_route_gate.py "$route"
           done
 
-  polyglot-route-engine:
-    name: Directed route engine qualification
+  polyglot-route-engine-core:
+    name: Directed route engine core qualification
     # Objective-C target execution requires the real Foundation framework.
     # Linux clang can parse the bounded source subset, but cannot provide that
-    # runtime contract, so the complete 9-language matrix runs on macOS.
+    # runtime contract, so the compiler-backed core runs on macOS.
     runs-on: macos-26
-    # The frozen 223-node engine qualification took about 5h28m locally.
-    # Keep its exact selectors and native-toolchain checks intact.
-    timeout-minutes: 360
+    # The 312 repository-matrix cases run in independently bounded source
+    # shards below.  Keeping them out of this worker prevents an outdated
+    # aggregate runtime estimate from hiding a timeout.
+    timeout-minutes: 240
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -397,6 +343,15 @@ jobs:
           go-version: "1.25.0"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
+      - name: Capture non-certifying Apple route host identity
+        run: |
+          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
+          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            | tee "${diagnostic}"
+          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            --verify-jsonl "${diagnostic}"
       - name: Provision digest-bound route toolchains
         run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked tools
@@ -426,114 +381,161 @@ jobs:
           test "${UV_PROJECT_ENVIRONMENT}" = \
             "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
-          # This receipt is diagnostic-only until every value is promoted to
-          # an immutable repository pin.  It cannot authorize or weaken any
-          # exact-toolchain check below.
-          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
-          import json
-          from pathlib import Path
-
-          from elmos_polyglot_route import toolchains
-
-          topology_identity = toolchains._discover_node_topology()
-          topology = topology_identity["topology"]
-          print(
-              "NODE26_TOPOLOGY_DIAGNOSTIC "
-              + json.dumps(topology_identity, sort_keys=True, separators=(",", ":"))
-          )
-          components = [
-              toolchains._node_file_binding(
-                  Path(path),
-                  "EXACT_TOOLCHAIN_NODE_COMPONENT_UNSAFE",
-              )
-              for path in topology["component_paths"]
-          ]
-          closure = toolchains._node_closure_identity(
-              {
-                  "schema_version": 1,
-                  "kind": "elmos.node26-homebrew-macho-closure",
-                  "install_root": str(toolchains._EXPECTED_NODE_ROOT),
-                  "discovery": {
-                      "tool": str(toolchains._EXPECTED_NODE_OTOOL),
-                      "commands": ["-L", "-D", "-l"],
-                      "system_tool_content_soundness": "NOT_RUN",
-                  },
-                  "components": sorted(
-                      components, key=lambda item: str(item["resolved_path"])
-                  ),
-                  "edges": topology["edges"],
-                  "system_edges": topology["system_edges"],
-                  "system_content_boundary": {
-                      "scope": "dyld-shared-cache-and-system-libraries",
-                      "status": "NOT_RUN",
-                  },
-              }
-          )
-          closure_summary = {
-              key: closure[key]
-              for key in (
-                  "sha256",
-                  "component_count",
-                  "edge_count",
-                  "system_edge_count",
-                  "bytes",
-                  "system_edge_sha256",
-              )
-          }
-          closure_summary["components"] = components
-          print(
-              "NODE26_CLOSURE_DIAGNOSTIC "
-              + json.dumps(closure_summary, sort_keys=True, separators=(",", ":"))
-          )
-          typescript = toolchains._typescript_compiler_closure()
-          print(
-              "TYPESCRIPT592_CLOSURE_DIAGNOSTIC "
-              + json.dumps(
-                  {
-                      "sha256": typescript["sha256"],
-                      "file_count": typescript["file_count"],
-                      "bytes": typescript["bytes"],
-                      "package_root": typescript["manifest"]["package_root"],
-                      "directories": typescript["manifest"]["directories"],
-                  },
-                  sort_keys=True,
-                  separators=(",", ":"),
-              )
-          )
-          PY
-          printf 'APPLE_ROUTE_HOST_DIAGNOSTIC xcode=%q sdk_version=%q sdk_path=%q\n' \
-            "$(/usr/bin/xcodebuild -version)" \
-            "$(/usr/bin/xcrun --sdk macosx --show-sdk-version)" \
-            "$(/usr/bin/xcrun --sdk macosx --show-sdk-path)"
-          for tool_name in clang clang++ swiftc swift; do
-            tool_path="$(/usr/bin/xcrun --find "${tool_name}")"
-            printf 'APPLE_ROUTE_TOOL_DIAGNOSTIC name=%s path=%s stat=%s sha256=%s\n' \
-              "${tool_name}" "${tool_path}" \
-              "$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${tool_path}")" \
-              "$(/usr/bin/shasum -a 256 "${tool_path}" | /usr/bin/awk '{print $1}')"
-            "${tool_path}" --version 2>&1
-          done
-          for system_tool in /usr/bin/sandbox-exec /usr/bin/codesign; do
-            printf 'APPLE_SYSTEM_TOOL_DIAGNOSTIC path=%s stat=%s sha256=%s\n' \
-              "${system_tool}" \
-              "$(/usr/bin/stat -f '%Lp:%u:%g:%l:%z' "${system_tool}")" \
-              "$(/usr/bin/shasum -a 256 "${system_tool}" | /usr/bin/awk '{print $1}')"
-            /usr/bin/codesign -d --verbose=4 "${system_tool}" 2>&1
-          done
-          /bin/ls -ld \
-            /Applications \
-            /Applications/Xcode.app \
-            /Applications/Xcode.app/Contents \
-            /Applications/Xcode.app/Contents/Developer \
-            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs \
-            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
-          /usr/bin/readlink \
-            /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
           uv --directory engines/polyglot-route-engine run --locked pytest \
             "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
-          uv --directory engines/polyglot-route-engine run --locked pytest
+          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          tests_root = (
+              Path(os.environ["GITHUB_WORKSPACE"])
+              / "engines/polyglot-route-engine/tests"
+          )
+          matrix_file = tests_root / "test_repository_pipeline_language_matrix.py"
+          all_test_files = sorted(tests_root.rglob("test_*.py"))
+          if matrix_file not in all_test_files:
+              raise SystemExit("repository language matrix test file is missing")
+          core_test_files = [path for path in all_test_files if path != matrix_file]
+          if not core_test_files or len(core_test_files) + 1 != len(all_test_files):
+              raise SystemExit("route engine core test partition is incomplete")
+          completed = subprocess.run(
+              [sys.executable, "-m", "pytest", *map(str, core_test_files)],
+              check=False,
+          )
+          raise SystemExit(completed.returncode)
+          PY
+          uv --directory engines/polyglot-route-engine run --locked pytest \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_directed_language_pair_matrix_contains_every_ordered_pair_once" \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_medium_language_ring_covers_every_source_and_target_once" \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_repository_pending_languages_are_refused_by_the_repository_surface"
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
           uv --directory engines/polyglot-route-engine run --locked mypy src
+
+  polyglot-route-engine-matrix:
+    name: Directed route engine matrix (${{ matrix.source_language }})
+    runs-on: macos-26
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        source_language:
+          - java
+          - python
+          - csharp
+          - typescript
+          - go
+          - rust
+          - cpp
+          - objc
+          - swift
+          - php
+          - kotlin
+          - react
+          - flutter
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up bootstrap Python 3.12.10
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+          architecture: arm64
+      - name: Set up Java 21.0.11
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21.0.11"
+      - name: Set up .NET 10.0.301
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "10.0.301"
+      - name: Set up Node.js 26.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked tools
+        run: |
+          python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-matrix-${{ matrix.source_language }}-venv" \
+            >>"${GITHUB_ENV}"
+          npm install --global pnpm@10.12.4
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          cargo fetch \
+            --locked \
+            --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+      - name: Verify exact source-language matrix shard
+        env:
+          ELMOS_ROUTE_SOURCE_LANGUAGE: ${{ matrix.source_language }}
+        run: |
+          if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
+            export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-matrix-${ELMOS_ROUTE_SOURCE_LANGUAGE}-venv"
+          uv --directory engines/polyglot-route-engine sync --locked
+          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          from elmos_polyglot_route.models import SUPPORTED_LANGUAGES
+
+          source = os.environ["ELMOS_ROUTE_SOURCE_LANGUAGE"]
+          if source not in SUPPORTED_LANGUAGES:
+              raise SystemExit(f"unsupported matrix source shard: {source}")
+          test_file = (
+              Path(os.environ["GITHUB_WORKSPACE"])
+              / "engines/polyglot-route-engine/tests"
+              / "test_repository_pipeline_language_matrix.py"
+          )
+          functions = (
+              "test_repository_pipeline_converts_three_file_repository_for_every_directed_pair",
+              "test_repository_pipeline_converts_medium_repository_for_every_directed_pair",
+          )
+          selectors = [
+              f"{test_file}::{function}[{source}-{target}]"
+              for function in functions
+              for target in SUPPORTED_LANGUAGES
+              if target != source
+          ]
+          if len(selectors) != 24 or len(set(selectors)) != 24:
+              raise SystemExit("matrix shard must contain exactly 24 unique nodes")
+          completed = subprocess.run(
+              [sys.executable, "-m", "pytest", *selectors],
+              check=False,
+          )
+          raise SystemExit(completed.returncode)
+          PY
+
+  polyglot-route-engine:
+    name: Directed route engine qualification
+    needs:
+      - polyglot-route-engine-core
+      - polyglot-route-engine-matrix
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every route-engine worker
+        run: |
+          test "${{ needs.polyglot-route-engine-core.result }}" = "success"
+          test "${{ needs.polyglot-route-engine-matrix.result }}" = "success"
 
   polyglot-routes:
     name: Directed language route contracts

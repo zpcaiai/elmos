@@ -886,6 +886,135 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
 
 
 class ToolkitTests(unittest.TestCase):
+    def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
+        validator = load_route_validator()
+        maximum = validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+        self.assertEqual(maximum, 400_000_000)
+        self.assertLessEqual(290_664_032, maximum)
+        self.assertIn(
+            "SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES",
+            validator._stable_read_swift_closure_file.__code__.co_names,
+        )
+
+        with tempfile.TemporaryDirectory() as td:
+            oversized = Path(td) / "oversized-clang"
+            with oversized.open("wb") as stream:
+                stream.truncate(maximum + 1)
+            with self.assertRaisesRegex(
+                ValueError,
+                "Swift closure component exceeds maximum size",
+            ):
+                validator._stable_read_swift_closure_file(oversized)
+
+            race_candidate = Path(td) / "lstat-open-race"
+            race_candidate.touch()
+            original_open = os.open
+            nonblocking = getattr(os, "O_NONBLOCK", 0)
+            self.assertNotEqual(nonblocking, 0)
+            observed_flags: list[int] = []
+
+            def replace_with_fifo(path: object, flags: int) -> int:
+                observed_flags.append(flags)
+                if not flags & nonblocking:
+                    raise AssertionError("Swift closure open omitted O_NONBLOCK")
+                self.assertEqual(Path(os.fspath(path)), race_candidate)
+                race_candidate.unlink()
+                os.mkfifo(race_candidate, 0o600)
+                return original_open(path, flags)
+
+            with (
+                mock.patch.object(
+                    validator.os,
+                    "open",
+                    side_effect=replace_with_fifo,
+                ),
+                self.assertRaisesRegex(
+                    ValueError,
+                    "Swift closure component exceeds maximum size",
+                ),
+            ):
+                validator._stable_read_swift_closure_file(race_candidate)
+            self.assertEqual(len(observed_flags), 1)
+            self.assertTrue(observed_flags[0] & nonblocking)
+
+    def test_swift_build_closure_tree_aggregate_limit_fails_closed(self):
+        validator = load_route_validator()
+        maximum = validator.SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES
+        self.assertEqual(maximum, 1_000_000_000)
+        first = validator._checked_swift_tree_byte_total(
+            0,
+            maximum // 2,
+            role="fixture",
+        )
+        self.assertEqual(
+            validator._checked_swift_tree_byte_total(
+                first,
+                maximum - first,
+                role="fixture",
+            ),
+            maximum,
+        )
+        with self.assertRaisesRegex(ValueError, "aggregate byte bound"):
+            validator._checked_swift_tree_byte_total(
+                maximum,
+                1,
+                role="fixture",
+            )
+
+    def test_swift_tree_regular_file_boundary_allows_zero_and_rejects_over_400m(self):
+        validator = load_route_validator()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            empty = root / "empty"
+            empty.touch()
+            local_metadata = empty.lstat()
+            hosted_metadata = os.stat_result(
+                (
+                    stat.S_IFREG | 0o444,
+                    local_metadata.st_ino,
+                    local_metadata.st_dev,
+                    1,
+                    0,
+                    0,
+                    0,
+                    local_metadata.st_atime,
+                    local_metadata.st_mtime,
+                    local_metadata.st_ctime,
+                )
+            )
+            root_owned_empty = mock.MagicMock(spec=Path)
+            root_owned_empty.__fspath__.return_value = str(empty)
+            root_owned_empty.lstat.return_value = hosted_metadata
+            with mock.patch.object(
+                validator.os,
+                "fstat",
+                return_value=hosted_metadata,
+            ):
+                content, metadata = validator._stable_read_swift_closure_file(
+                    root_owned_empty
+                )
+            self.assertEqual(content, b"")
+            self.assertEqual(metadata.st_size, 0)
+
+            oversized = root / "oversized-tree-file"
+            with oversized.open("wb") as stream:
+                stream.truncate(
+                    validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES + 1
+                )
+            with self.assertRaisesRegex(
+                ValueError,
+                "Swift closure component exceeds maximum size",
+            ):
+                validator._stable_read_swift_closure_file(oversized)
+
+    def test_swift_xcode_directory_chain_has_no_writable_applications_exception(self):
+        validator = load_route_validator()
+        names = validator._swift_closure_directory_chain.__code__.co_names
+        constants = validator._swift_closure_directory_chain.__code__.co_consts
+        self.assertNotIn("applications_exception", names)
+        self.assertNotIn(0o775, constants)
+        self.assertNotIn(80, constants)
+
     def test_skill_bundle(self):
         subprocess.run(
             [

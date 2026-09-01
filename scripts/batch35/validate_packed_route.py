@@ -492,7 +492,16 @@ def _stable_file_identity(
 ) -> dict[str, str | int]:
     try:
         before = path.lstat()
-        if path.resolve(strict=True) != path:
+        if (
+            path.resolve(strict=True) != path
+            or path.is_symlink()
+            or not stat.S_ISREG(before.st_mode)
+            or before.st_uid
+            not in ({os.getuid()} if private else {0, os.getuid()})
+            or before.st_nlink != 1
+            or f"{stat.S_IMODE(before.st_mode):04o}" != expected_mode
+            or before.st_size != expected_bytes
+        ):
             raise ValueError("TypeScript closure file path is unsafe")
         descriptor = os.open(
             path,
@@ -540,6 +549,203 @@ def _stable_file_identity(
         "inode": after.st_ino,
         "mtime_ns": after.st_mtime_ns,
         "ctime_ns": after.st_ctime_ns,
+    }
+
+
+def _private_typescript_directory_binding(
+    path: Path,
+    *,
+    relative_path: str | None = None,
+) -> tuple[dict[str, str | int], tuple[int, ...]]:
+    identity = _directory_identity(path, mode=0o555)
+    if identity[4] != os.getuid():
+        raise ValueError("private TypeScript directory owner is invalid")
+    binding: dict[str, str | int] = {
+        "resolved_path": str(path),
+        "mode": f"{stat.S_IMODE(identity[2]):04o}",
+        "uid": identity[4],
+        "gid": identity[5],
+        "nlink": identity[6],
+    }
+    if relative_path is None:
+        binding["root"] = binding.pop("resolved_path")
+    else:
+        binding["relative_path"] = relative_path
+    return binding, identity
+
+
+def _private_typescript_manifest_seal(
+    private_root: Path,
+    manifest: dict[str, object],
+) -> dict[str, object]:
+    """Bind an unprojected private manifest to its complete live closure."""
+
+    if (
+        set(manifest)
+        != {
+            "schema_version",
+            "kind",
+            "package_root",
+            "directories",
+            "files",
+            "semantic_soundness",
+        }
+        or manifest.get("schema_version") != 2
+        or manifest.get("kind")
+        != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
+        or manifest.get("semantic_soundness") != "NOT_RUN"
+        or not private_root.is_absolute()
+        or private_root != Path(os.path.normpath(str(private_root)))
+    ):
+        raise ValueError("private TypeScript manifest is invalid")
+
+    package = manifest.get("package_root")
+    directories = manifest.get("directories")
+    files = manifest.get("files")
+    if (
+        not isinstance(package, dict)
+        or set(package) != {"root", "mode", "uid", "gid", "nlink"}
+        or not isinstance(directories, list)
+        or not isinstance(files, list)
+        or not files
+        or len(files) > TYPESCRIPT_FILE_COUNT
+    ):
+        raise ValueError("private TypeScript manifest is invalid")
+
+    live_package, package_identity = _private_typescript_directory_binding(
+        private_root
+    )
+    live_directories: list[dict[str, str | int]] = []
+    directory_identities: dict[str, tuple[int, ...]] = {".": package_identity}
+    for relative in ("bin", "lib"):
+        binding, identity = _private_typescript_directory_binding(
+            private_root / relative,
+            relative_path=relative,
+        )
+        live_directories.append(binding)
+        directory_identities[relative] = identity
+    if package != live_package or directories != live_directories:
+        raise ValueError("private TypeScript manifest metadata is invalid")
+
+    package_uid = package.get("uid")
+    package_gid = package.get("gid")
+    roles: set[str] = set()
+    resolved_paths: set[str] = set()
+    manifest_paths: set[str] = set()
+    file_seal: dict[str, dict[str, str | int]] = {}
+    declared_bytes = 0
+    for item in files:
+        if (
+            not isinstance(item, dict)
+            or set(item)
+            != {
+                "role",
+                "resolved_path",
+                "bytes",
+                "sha256",
+                "mode",
+                "uid",
+                "gid",
+                "nlink",
+            }
+            or not isinstance(item.get("role"), str)
+            or not item.get("role")
+            or not isinstance(item.get("resolved_path"), str)
+            or type(item.get("bytes")) is not int
+            or not isinstance(item.get("sha256"), str)
+            or item.get("mode") not in {"0444", "0555"}
+            or type(item.get("uid")) is not int
+            or type(item.get("gid")) is not int
+            or type(item.get("nlink")) is not int
+        ):
+            raise ValueError("private TypeScript file manifest is invalid")
+        role = str(item["role"])
+        resolved_path = str(item["resolved_path"])
+        path = Path(resolved_path)
+        try:
+            file_relative = path.relative_to(private_root)
+        except ValueError as exc:
+            raise ValueError("private TypeScript file binding escapes") from exc
+        relative_text = file_relative.as_posix()
+        byte_count = int(item["bytes"])
+        digest = str(item["sha256"])
+        if (
+            role in roles
+            or resolved_path in resolved_paths
+            or not path.is_absolute()
+            or str(path) != resolved_path
+            or not file_relative.parts
+            or any(part in {"", ".", ".."} for part in file_relative.parts)
+            or (
+                file_relative.parts[0] not in {"bin", "lib"}
+                and len(file_relative.parts) != 1
+            )
+            or byte_count < 0
+            or byte_count > TYPESCRIPT_CLOSURE_BYTES
+            or len(digest) != 64
+            or any(character not in "0123456789abcdef" for character in digest)
+            or item["uid"] != package_uid
+            or item["gid"] != package_gid
+            or item["nlink"] != 1
+        ):
+            raise ValueError("private TypeScript file manifest is invalid")
+        roles.add(role)
+        resolved_paths.add(resolved_path)
+        manifest_paths.add(relative_text)
+        declared_bytes += byte_count
+        if declared_bytes > TYPESCRIPT_CLOSURE_BYTES:
+            raise ValueError("private TypeScript closure byte count is invalid")
+        try:
+            observed = _stable_file_identity(
+                path,
+                expected_sha256=digest,
+                expected_bytes=byte_count,
+                expected_mode=str(item["mode"]),
+                private=True,
+            )
+        except ValueError as exc:
+            raise ValueError("private TypeScript file identity is invalid") from exc
+        if any(
+            item[field] != observed[field]
+            for field in ("sha256", "bytes", "mode", "uid", "gid", "nlink")
+        ):
+            raise ValueError("private TypeScript file metadata is invalid")
+        file_seal[relative_text] = observed
+
+    observed_files: set[str] = set()
+    observed_directories: set[str] = set()
+    try:
+        descendant_count = 0
+        for path in private_root.rglob("*"):
+            descendant_count += 1
+            if descendant_count > len(files) + 2:
+                raise ValueError("private TypeScript closure inventory is not exact")
+            relative = path.relative_to(private_root).as_posix()
+            metadata = path.lstat()
+            if stat.S_ISREG(metadata.st_mode) and not path.is_symlink():
+                observed_files.add(relative)
+            elif stat.S_ISDIR(metadata.st_mode) and not path.is_symlink():
+                observed_directories.add(relative)
+            else:
+                raise ValueError(
+                    "private TypeScript closure contains an unsafe entry"
+                )
+    except OSError as exc:
+        raise ValueError("private TypeScript closure inventory is unavailable") from exc
+    if (
+        observed_files != manifest_paths
+        or observed_directories != {"bin", "lib"}
+        or {
+            ".": _directory_identity(private_root, mode=0o555),
+            "bin": _directory_identity(private_root / "bin", mode=0o555),
+            "lib": _directory_identity(private_root / "lib", mode=0o555),
+        }
+        != directory_identities
+    ):
+        raise ValueError("private TypeScript closure inventory is not exact")
+    return {
+        "directories": directory_identities,
+        "files": file_seal,
     }
 
 
@@ -796,6 +1002,7 @@ def _canonical_private_typescript_identity(
     private_root: Path,
     manifest: dict[str, object],
 ) -> dict[str, object]:
+    live_seal = _private_typescript_manifest_seal(private_root, manifest)
     copied = json.loads(json.dumps(manifest, sort_keys=True))
     if not isinstance(copied, dict):
         raise ValueError("private TypeScript manifest is invalid")
@@ -841,8 +1048,19 @@ def _canonical_private_typescript_identity(
         item["uid"] = TYPESCRIPT_CANONICAL_UID
         item["gid"] = TYPESCRIPT_CANONICAL_GID
         item["nlink"] = 1
+    canonical = json.dumps(copied, sort_keys=True, separators=(",", ":"))
     identity = original(copied)
-    if not isinstance(identity, dict):
+    if (
+        not isinstance(identity, dict)
+        or json.dumps(copied, sort_keys=True, separators=(",", ":")) != canonical
+        or identity.get("manifest") is not copied
+        or identity.get("sha256")
+        != hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        or identity.get("file_count") != len(files)
+        or identity.get("bytes")
+        != sum(int(item["bytes"]) for item in files if isinstance(item, dict))
+        or _private_typescript_manifest_seal(private_root, manifest) != live_seal
+    ):
         raise ValueError("private TypeScript canonical identity is invalid")
     return {
         "manifest": manifest,
@@ -918,6 +1136,13 @@ def _configure_captured_typescript_runtime(
     original_identity = getattr(toolchains, "_typescript_closure_identity", None)
     if not callable(original_identity):
         raise ValueError("captured TypeScript identity function is unavailable")
+    raw_identity = getattr(
+        toolchains,
+        "_raw_typescript_closure_identity",
+        original_identity,
+    )
+    if not callable(raw_identity):
+        raise ValueError("captured TypeScript raw identity function is unavailable")
     configured_paths = {
         "_EXPECTED_TYPESCRIPT_CACHE_ANCHOR": closure.private_root,
         "_EXPECTED_TYPESCRIPT_ROOT": closure.compiler_root,
@@ -935,7 +1160,7 @@ def _configure_captured_typescript_runtime(
 
     def canonical_identity(manifest: dict[str, object]) -> dict[str, object]:
         return _canonical_private_typescript_identity(
-            original_identity,
+            raw_identity,
             closure.compiler_root,
             manifest,
         )
