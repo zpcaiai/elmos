@@ -67,7 +67,7 @@ A/B 线才抢 Mac。所以 **A/B 与 C 可以真正并行，不互相排队**。
 | C2 | Claude/Cowork | 2026-09-01 | `DONE` —— 定自绘 SVG（不做 Mermaid）；确定性与横向滚动均已实测闭合 |
 | C3 | Claude/Cowork | 2026-09-01 | `DONE` —— 纯标准库 OOXML，矢量三重机器验证已闭合；**Mac 上真打开过：5 页齐、未报修复**。缩放/选中两项渲染细节未逐项核，记为已知边界 |
 | C4 | | | 本轮不做（C0 已定 CLI + 静态报告） |
-| C5 | Claude/Cowork | 2026-09-01 | `IN-PROGRESS` |
+| C5 | Claude/Cowork | 2026-09-01 | `DONE` —— 全链跑通（flow-discovery→spec→svg/report/pptx），被分析对象换成 `engines/uir-java-python`（sql-dialect-engine 正被改写）；判定标签 3/20→**20/20**；结构比对 20 if/1 while/40 分支边/可达 79/79 全对。见 `FINDINGS-2026-09-01-c5.md` |
 
 ---
 
@@ -221,7 +221,15 @@ namespace / class / method / 属性 / 语句。**画图走这层，不要走 rou
 - 这条线是 **web-console 的新页面**，还是先做 **CLI + 静态 HTML 报告**？
   后者能把 C4 从 EPIC 降成小活，先演示先反馈。**建议先 CLI + 报告。**
 
-### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `READY` —— 云端 —— 12–18 天
+### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `IN-PROGRESS`（只做完一半）—— 云端
+
+> **2026-09-01 实测状态**：Python 侧是**真 `ast` 解析器**（`origin=PARSED`，控制流与 import 边都是，
+> 08-31 已在树上）。**Java 及其余 12 门语言仍是正则**；`derive_data_lineage` 与
+> `reconcile_api_event_topology` 仍是纯正则**且输出没有 `origin` 字段**，那两条线上解析与推断仍混着。
+> ⚠️ **另一并行会话 09:46–09:47 正在把 origin 标注扩到 Java**（新增 `java_structure.py` +
+> `test_java_structure.py`）。**待答**：那份实现是「4 条 `re.compile` + 注释/字符串遮蔽 + 花括号深度」，
+> 不是 `ast`，却与 `ast` 产出共用同一个 `ORIGIN_PARSED` 标记——这与本条验收原文
+> 「『解析器给出的』与『推断的』两种明确来源，**不能混**」有张力。见 `FINDINGS-2026-09-01-c5.md` 追加节。
 
 - **做什么**：在 analyzer / `inventory_module` 之上产出函数级结构（声明、分支、循环、返回），
   喂给 `compile_diagram_spec`。先做 **1–2 门语言**（建议 Python + Java，两者 analyzer 最成熟）。

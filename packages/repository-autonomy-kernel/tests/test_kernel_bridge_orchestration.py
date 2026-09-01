@@ -974,3 +974,257 @@ def test_the_router_says_an_unpriced_model_outranked_a_priced_one(runtime):
     assert decision["unpriced_models"] == ["no-price"]
     assert decision["reproducible"] is False
     assert "outranks every priced model" in decision["scoring_note"]
+
+
+# --- model-state-continuity --------------------------------------------------
+
+
+_LEDGER = {
+    "ledgerId": "led-1",
+    "observations": [
+        {"kind": "ENTITY_OBSERVED", "subjectId": "s1"},
+        {"kind": "DECISION_TAKEN", "subjectId": "s2"},
+    ],
+}
+_BINDING = {
+    "taskSpecVersion": "1.0.0", "repoSnapshotSha": "sha256:" + "a" * 64,
+    "workflowVersion": "wf-1", "policySnapshotHash": "sha256:" + "b" * 64,
+    "workspaceId": "ws-1", "environmentId": "env-1", "permissionProfileId": "p-1",
+}
+_AT = "2026-09-01T00:00:00.000000Z"
+
+
+def _continuity(**over):
+    payload = {"context_ledger": _LEDGER, "binding": _BINDING, "captured_at": _AT}
+    payload.update(over)
+    return payload
+
+
+def test_the_checkpoint_digest_is_the_same_for_two_identical_requests(runtime):
+    """The property the pinned clock exists to preserve.
+
+    ``Checkpoint.digest`` is taken over a payload that includes ``createdAt``,
+    so binding a system clock would make two runs of an identical request
+    produce two different digests - and `bound_clock`'s own docstring says that
+    destroys the reproducibility this module exists for. Binding nothing fails
+    every call instead. So the clock is pinned to an instant the caller states.
+    """
+
+    first = runtime.execute("model-state-continuity", _continuity())
+    second = runtime.execute("model-state-continuity", _continuity())
+
+    assert "ENGINE:kernel" in first.reasons
+    digest = first.output["continuity_report"]["checkpointDigest"]
+    assert digest.startswith("sha256:")
+    assert digest == second.output["continuity_report"]["checkpointDigest"]
+
+
+def test_an_unstated_instant_is_never_taken_from_the_wall_clock(runtime):
+    """"When was this checkpoint taken" is a fact only the caller holds."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    payload = _continuity()
+    del payload["captured_at"]
+    outcome = kernel_bridge.serve("model-state-continuity", payload)
+
+    assert outcome.served is False
+    assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",)
+
+
+def test_resume_equivalence_is_not_claimed_when_nothing_was_replayed(runtime):
+    """The unfireable-check-reported-as-passed shape, caught before shipping.
+
+    A divergence raises, so any report a caller can read is one where
+    equivalence held - but it only held over the decisions actually replayed,
+    and a caller who supplied none had nothing replayed. Reporting that as
+    "resume verified" is what the legacy engine's echo already does.
+    """
+
+    result = runtime.execute("model-state-continuity", _continuity())
+    report = result.output["continuity_report"]
+
+    assert report["decisionsReplayed"] == 0
+    assert report["resume_equivalence_checked"] is False
+    assert report["resume_equivalence"] is None
+    assert "not exercised" in report["resume_equivalence_note"]
+
+
+def test_a_failover_that_would_change_the_permission_profile_is_refused(runtime):
+    """Fail over the model, never the authority - and the refusal is not downgraded."""
+
+    result = runtime.execute("model-state-continuity", _continuity(
+        provider_event={"fromProvider": "a", "toProvider": "b",
+                        "permissionProfileId": "p-WIDE"},
+    ))
+
+    assert result.error is not None
+    assert result.error.code == "PROVIDER_FAILOVER_FAILED"
+    assert "ENGINE:legacy" not in result.reasons
+
+
+def test_a_v2_provider_event_keeps_the_legacy_engine_rather_than_being_filtered(runtime):
+    """Forwarding a filtered copy would run the check against a subset.
+
+    v2's provider event carries `previous_state`, `sequence_no`, `diverged` and
+    `unknown_side_effect`; the core reads three different fields. Dropping the
+    event would skip the failover check while still answering, and filtering it
+    would check less than the caller described. Neither is acceptable, so the
+    call stays where it can be answered whole.
+    """
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    outcome = kernel_bridge.serve(
+        "model-state-continuity", _continuity(provider_event={"diverged": False}))
+
+    assert outcome.served is False
+    assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",)
+
+
+def test_a_free_form_v2_ledger_stays_with_legacy(runtime):
+    """A synthesised hash chain would verify against itself and prove nothing."""
+
+    result = runtime.execute("model-state-continuity", {
+        "context_ledger": {"objective": "ship", "completed": [], "next_step": "x"},
+        "run_state": {"state": "EXECUTING"}, "agent_state": {}, "provider_event": {},
+    })
+
+    assert "ENGINE:legacy" in result.reasons
+    # And the legacy path keeps saying it never verified anything.
+    assert result.output["continuity_report"]["resume_equivalence_checked"] is False
+
+
+def test_a_bridge_private_key_never_reaches_the_kernel(runtime):
+    """`_captured_at` configures the binder and must not be dispatched.
+
+    The kernel rejects unknown request fields, correctly - a silently ignored
+    field is a caller who thinks they configured something. Stripping the
+    underscore-prefixed keys in `serve` is what makes a request-configured
+    binder possible at all, so it is pinned here rather than left implicit.
+    """
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    request = kernel_bridge.BRIDGES["model-state-continuity"].request_for(_continuity())
+    assert request["_captured_at"] == _AT
+
+    # And the call still succeeds, which it cannot do if the key is dispatched.
+    result = runtime.execute("model-state-continuity", _continuity())
+    assert result.error is None
+    assert "ENGINE:kernel" in result.reasons
+
+
+# --- phase-aware-model-router ------------------------------------------------
+
+
+def _model(model_id, price, tier):
+    return {"modelId": model_id, "tier": tier, "provider": "acme",
+            "contextWindow": 200000, "maxOutput": 8192,
+            "priceInputPerMtok": price, "priceOutputPerMtok": price,
+            "capabilities": ["code"], "reliabilityPrior": "0.99", "deprecated": False}
+
+
+def _route(**over):
+    payload = {
+        "step_profile": {
+            "phase": "execute", "riskClass": "high",
+            "candidateModelIds": ["cheap", "frontier"],
+            "requiredCapabilities": ["code"],
+            "estimatedInputTokens": 10000, "estimatedOutputTokens": 2000,
+        },
+        "model_registry": [_model("cheap", "1.00", "standard"),
+                           _model("frontier", "15.00", "frontier")],
+        "routing_policy": {"rules": [{
+            "phase": "execute", "riskClass": "high", "minTier": "frontier",
+            "requiredCapabilities": ["code"], "allowedProviders": ["acme"],
+            "costCeiling": "5.00",
+        }]},
+    }
+    payload.update(over)
+    return payload
+
+
+def test_money_crosses_the_bridge_as_an_exact_string_not_a_float(runtime):
+    """Found by the result failing to serialise at all.
+
+    The core prices in ``Decimal`` so two hosts cannot disagree about the same
+    model, and three fields carry one out. ``Decimal`` is not JSON-serialisable,
+    so a promoted result raised ``TypeError`` the moment anything serialised it.
+
+    ``float()`` is the wrong repair twice over: it discards the exactness the
+    ``Decimal`` exists for - a promotion made *for* reproducibility ending by
+    making the number irreproducible - and this package's ``canonical_json``
+    encodes floats whose repr is platform-dependent at the last digit.
+    """
+
+    import json
+    from decimal import Decimal
+
+    result = runtime.execute("phase-aware-model-router", _route())
+
+    assert "ENGINE:kernel" in result.reasons
+    json.dumps(result.to_dict())  # must not raise
+
+    amount = result.output["estimated_cost"]["amount"]
+    assert isinstance(amount, str)
+    assert Decimal(amount) == Decimal("0.18000000")
+    assert isinstance(result.output["routing_decision"]["projectedCost"], str)
+    assert isinstance(result.output["usage_record"]["projectedCost"], str)
+
+
+def test_the_policy_floor_decides_and_the_cheaper_model_loses(runtime):
+    """A min-tier floor the legacy engine has no way to express."""
+
+    result = runtime.execute("phase-aware-model-router", _route())
+
+    assert result.output["routing_decision"]["modelId"] == "frontier"
+
+
+def test_a_v2_profile_is_never_converted_into_core_units(runtime):
+    """`cost_per_call` is a different unit and `eval_status` is a gate, not a prior.
+
+    Those are the numbers the reproducible ranking rests on. Fabricating them
+    would produce a decision that is deterministic, hashed and auditable, and
+    computed from figures the bridge made up - worse than the float ranking it
+    replaced, because it looks rigorous.
+    """
+
+    result = runtime.execute("phase-aware-model-router", {
+        "step_profile": {"required_context": 1000},
+        "model_capability_profiles": [
+            {"model_id": "a", "eval_status": "PASS", "max_context": 8000, "quality": 0.9},
+        ],
+        "risk_profile": {}, "budget": {}, "provider_policy": {},
+    })
+
+    assert "ENGINE:legacy" in result.reasons
+    assert result.output["routing_decision"]["reproducible"] is False
+
+
+def test_a_profile_missing_one_load_bearing_number_stays_with_legacy(runtime):
+    """Checked in the adapter so the caller gets an answer, not a decode error."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    for missing in ("tier", "maxOutput", "priceInputPerMtok", "reliabilityPrior"):
+        profile = _model("frontier", "15.00", "frontier")
+        del profile[missing]
+        payload = _route(model_registry=[_model("cheap", "1.00", "standard"), profile])
+        outcome = kernel_bridge.serve("phase-aware-model-router", payload)
+        assert outcome.served is False, missing
+        assert outcome.reasons == ("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",), missing
+
+
+def test_a_budget_the_bridge_cannot_read_is_not_treated_as_no_budget(runtime):
+    """An absent budget is not an unlimited budget - same rule as validation-dag."""
+
+    from elmos_repository_autonomy import kernel_bridge
+
+    outcome = kernel_bridge.serve("phase-aware-model-router", _route(budget={"cap": 5}))
+    assert outcome.served is False
+
+    # Stated in the core's own shape, it is honoured.
+    served = kernel_bridge.serve(
+        "phase-aware-model-router", _route(budget={"remaining": "100.00", "currency": "USD"}))
+    assert served.served is True

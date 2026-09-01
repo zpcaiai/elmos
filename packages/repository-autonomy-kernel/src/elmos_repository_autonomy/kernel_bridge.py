@@ -36,6 +36,7 @@ from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import AbstractContextManager, contextmanager, nullcontext
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from decimal import Decimal
 from typing import Any
 
 from elmos_autonomy_kernel import _bind_all_capabilities
@@ -1785,6 +1786,335 @@ def _taskspec_outputs(payload: Mapping[str, Any],
     }
 
 
+#: The only fields the core's provider-failover check reads. A v2 payload's
+#: ``provider_event`` carries different ones - see ``_continuity_request``.
+_PROVIDER_EVENT_FIELDS = frozenset({"fromProvider", "toProvider", "permissionProfileId"})
+
+
+def _router_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
+    """Promote only a caller who states model profiles in the core's own units.
+
+    **This row is the one the cross-package survey reversed.** Everywhere else
+    the question was "does the core beat the v2 handler"; here it also had to be
+    "does it beat what elmos already has", and
+    ``packages/execution-intelligence/routing.py`` ranks on binary floats. The
+    core ranks on ``Decimal`` prices per million tokens with a hashed decision,
+    specifically so two hosts cannot order the same two models differently. So
+    this promotion is worth making rather than wiring away - see
+    docs/EXISTING_CAPABILITY_OVERLAP.md.
+
+    **Nothing about a v2 profile converts.** It carries ``cost_per_call``,
+    ``eval_status``, ``max_context``, ``quality`` and ``latency_ms``. The core
+    needs ``priceInputPerMtok`` / ``priceOutputPerMtok`` (a *different unit* -
+    converting needs a token count nobody supplies), ``reliabilityPrior`` (a
+    Decimal in [0,1], where ``eval_status`` is a PASS/FAIL gate and mapping PASS
+    to 1.0 invents a confidence nobody measured), plus ``tier`` and ``maxOutput``,
+    which have no v2 counterpart at all.
+
+    Those are precisely the numbers the reproducible ranking rests on.
+    Fabricating them would produce a decision that is deterministic, hashed,
+    auditable - and computed from figures the bridge made up. That is worse than
+    the float ranking it replaced, because it looks rigorous.
+
+    So a v2 payload keeps the legacy engine, whose own defects are now stamped
+    on its output instead (float scoring, and an unpriced model scored as free
+    and therefore ranked above every priced one).
+
+    **A budget that cannot be read blocks promotion.** The core treats an absent
+    budget as "no budget was stated" and an unreadable one would silently become
+    the same thing - and an absent budget is not an unlimited budget. Same rule
+    as ``validation-dag``.
+    """
+
+    step = payload.get("step_profile")
+    if not isinstance(step, Mapping):
+        return {}
+    # The core's own required trio. `phase` and `riskClass` are closed
+    # vocabularies it validates; `candidateModelIds` must be non-empty, because
+    # "route among no candidates" and "route among all models" are different
+    # instructions and only one of them is safe to guess.
+    if not isinstance(step.get("phase"), str) or not isinstance(step.get("riskClass"), str):
+        return {}
+    candidates = step.get("candidateModelIds")
+    if not isinstance(candidates, Sequence) or isinstance(candidates, (str, bytes)):
+        return {}
+    if not candidates or not all(isinstance(item, str) for item in candidates):
+        return {}
+
+    registry = payload.get("model_registry")
+    if registry is None:
+        registry = payload.get("model_capability_profiles")
+    if not isinstance(registry, Sequence) or isinstance(registry, (str, bytes)) or not registry:
+        return {}
+    for item in registry:
+        if not isinstance(item, Mapping) or not isinstance(item.get("modelId"), str):
+            return {}
+        # The four that cannot be derived. Checked here rather than left to the
+        # core so the call routes to legacy instead of failing: a caller sending
+        # v2 profiles gets an answer, not a decode error about a field their
+        # dialect has never had.
+        for required in ("tier", "contextWindow", "maxOutput",
+                         "priceInputPerMtok", "priceOutputPerMtok", "reliabilityPrior"):
+            if item.get(required) is None:
+                return {}
+
+    policy = payload.get("routing_policy")
+    if policy is None:
+        policy = payload.get("provider_policy")
+    if not isinstance(policy, Mapping):
+        return {}
+    rules = policy.get("rules")
+    if not isinstance(rules, Sequence) or isinstance(rules, (str, bytes)):
+        return {}
+
+    request: dict[str, Any] = {
+        "step_profile": dict(step),
+        "model_registry": [dict(item) for item in registry],
+        "routing_policy": {"rules": [dict(rule) for rule in rules]},
+    }
+
+    budget = payload.get("budget")
+    if budget is not None:
+        if not isinstance(budget, Mapping) or budget.get("remaining") is None:
+            return {}
+        request["budget"] = dict(budget)
+    return request
+
+
+def _router_outputs(payload: Mapping[str, Any],
+                    outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Render the core's ``Decimal`` money as exact strings, never floats.
+
+    The core prices in ``Decimal`` on purpose - two hosts must not disagree
+    about the same model - and three fields carry one out:
+    ``routing_decision.projectedCost``, ``estimated_cost.amount`` and
+    ``usage_record.projectedCost``. A ``Decimal`` is not JSON-serialisable, so
+    without this the dispatcher raises ``TypeError`` the moment a caller
+    serialises a promoted result. That is how this was found.
+
+    The tempting fix is ``float(value)``, and it is wrong twice over. It throws
+    away the exact thing the ``Decimal`` exists to protect, so a promotion made
+    for reproducibility would end by making the number irreproducible. And this
+    package's ``canonical_json`` sets ``allow_nan=False`` over a float encoding
+    whose repr is platform-dependent at the last digit - the reason the
+    capability core's own canonical form rejects floats outright.
+
+    A decimal string is exact, JSON-safe, and round-trips through
+    ``Decimal(text)`` unchanged. The field keeps its name; only its rendering
+    changes, and ``currency`` beside it says what the number means.
+    """
+
+    def _render(value: Any) -> Any:
+        return str(value) if isinstance(value, Decimal) else value
+
+    def _walk(value: Any) -> Any:
+        if isinstance(value, Mapping):
+            return {key: _walk(item) for key, item in value.items()}
+        if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
+            return [_walk(item) for item in value]
+        return _render(value)
+
+    return {name: _walk(value) for name, value in outputs.items()}
+
+
+def _continuity_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
+    """Promote a caller who states a real ledger and a real binding.
+
+    **What legacy does.** It builds a snapshot dict, hashes it, and computes
+    ``state_diff`` by comparing that snapshot against
+    ``provider_event.previous_state`` - the caller's own supplied previous
+    state. Nothing is compacted, nothing is restored, and
+    ``continuity_report.resume_equivalence`` echoes the caller's own
+    ``provider_event.diverged`` flag. That last one is already stamped
+    ``resume_equivalence_checked: false`` with a note saying no decision was
+    replayed against a restored checkpoint, so the legacy path is at least
+    honest about being an echo.
+
+    **What the core does.** It compacts a hash-chained ledger into a checkpoint,
+    restores from it against the checkpoint's own digest, replays the supplied
+    decisions against *both* the live and the restored state, and raises
+    ``RESUME_DIVERGED`` naming the first decision that differs - rather than
+    reporting divergence in an output field, because a caller reading outputs
+    would otherwise resume on a state already shown to be different.
+
+    **Two things must be stated, and neither is derivable.**
+
+    ``context_ledger`` must be the core's append-only observation ledger
+    (``ledgerId`` plus sequenced observations), not v2's free-form dict of
+    objective/completed/next_step. There is no way to manufacture a hash chain
+    from a dict that never had one; a synthesised chain would verify against
+    itself and prove nothing.
+
+    ``binding`` must name all seven identities - task spec version, repo
+    snapshot, workflow version, policy snapshot hash, workspace, environment,
+    permission profile. The permission profile is the one that matters: the
+    core's failover check refuses an event that would move the run to a
+    different profile, on the rule *fail over the model, never the authority*.
+    Deriving the binding's profile from the provider event would make that check
+    compare the request to itself, and every authority-changing failover would
+    pass.
+
+    **``captured_at`` must be stated too, and this is the subtle one.** The core
+    fails closed with ``CONTINUITY_UNCONFIGURED`` when no clock is bound, and
+    ``bound_clock``'s docstring says why: falling back to ``datetime.now`` would
+    make every checkpoint digest depend on when it was taken, destroying the
+    reproducibility the module exists for. That is not hypothetical here -
+    ``Checkpoint.digest`` is taken over a payload that includes ``createdAt``,
+    so a wall clock makes two runs of an identical request produce two different
+    digests.
+
+    So the bridge cannot bind a system clock, and it cannot bind nothing (that
+    fails every call - the same guard-that-always-fires trap as the cache
+    fabric's placeholder snapshot). It binds a clock pinned to an instant the
+    caller states. "When was this checkpoint taken" is a fact only the caller
+    holds, and the core is explicit that inventing it is the failure.
+
+    **A non-core ``provider_event`` blocks promotion rather than being dropped.**
+    v2's carries ``previous_state``, ``sequence_no``, ``diverged`` and
+    ``unknown_side_effect``; the core reads only ``fromProvider``,
+    ``toProvider`` and ``permissionProfileId``. Forwarding a filtered copy would
+    run the failover check against a subset of what the caller described, and
+    dropping the event entirely would skip the check while still answering - so
+    a caller who supplied a failover the core cannot read keeps the legacy
+    engine, and the gap is recorded.
+    """
+
+    ledger = payload.get("context_ledger")
+    if not isinstance(ledger, Mapping):
+        return {}
+    if not isinstance(ledger.get("ledgerId"), str) or not ledger.get("ledgerId"):
+        return {}
+    observations = ledger.get("observations")
+    if not isinstance(observations, Sequence) or isinstance(observations, (str, bytes)):
+        return {}
+
+    binding = payload.get("binding")
+    if not isinstance(binding, Mapping) or not binding:
+        return {}
+
+    # The instant the checkpoint was taken. Stated, never taken from the wall
+    # clock - see ``_pinned_continuity_clock``.
+    if not isinstance(payload.get("captured_at"), str) or not payload["captured_at"]:
+        return {}
+
+    request: dict[str, Any] = {
+        "context_ledger": dict(ledger),
+        "binding": dict(binding),
+    }
+
+    event = payload.get("provider_event")
+    if event is not None:
+        if not isinstance(event, Mapping):
+            return {}
+        if event and not set(event) <= _PROVIDER_EVENT_FIELDS:
+            return {}
+        if event:
+            request["provider_event"] = dict(event)
+
+    for optional in ("compaction_policy", "decisions", "checkpoint_id"):
+        value = payload.get(optional)
+        if value is not None:
+            request[optional] = value
+
+    # Carried for ``_pinned_continuity_clock`` and stripped before dispatch by
+    # ``serve``: the core rejects unknown request fields, and rightly so.
+    request["_captured_at"] = payload["captured_at"]
+    return request
+
+
+@contextmanager
+def _pinned_continuity_clock(context: Any, request: Mapping[str, Any]) -> Iterator[None]:
+    """Bind a clock pinned to the caller's stated instant, for one call.
+
+    Not a system clock: ``Checkpoint.digest`` covers ``createdAt``, so wall time
+    would make the same request produce a different digest every run and a
+    replay would never reproduce its checkpoint. Not nothing either: the core
+    then raises ``CONTINUITY_UNCONFIGURED`` on every call, which is a check that
+    refuses everything rather than a strict one.
+
+    ``monotonic_ns`` returns a constant. Nothing on this path measures a
+    duration - the checkpoint records an instant, not an elapsed time - and a
+    real monotonic reading would reintroduce exactly the run-to-run variation
+    the pinned instant removes.
+
+    Restored on the exception path too: a leaked clock would leave one request's
+    instant installed as the process default, so the *next* caller's checkpoint
+    would be stamped with a time from someone else's request.
+    """
+
+    from elmos_autonomy_kernel.continuity import bind_clock
+    from elmos_autonomy_kernel.contracts import parse_timestamp
+
+    raw = request.get("_captured_at")
+    if not isinstance(raw, str):
+        yield
+        return
+    try:
+        instant = parse_timestamp(raw, "captured_at")
+    except CoreKernelError:
+        # Left unbound so the core reports CONTINUITY_UNCONFIGURED rather than
+        # this adapter inventing a fallback instant.
+        yield
+        return
+
+    class _PinnedClock:
+        def now(self):
+            return instant
+
+        def monotonic_ns(self) -> int:
+            return 0
+
+    bind_clock(_PinnedClock())
+    try:
+        yield
+    finally:
+        bind_clock(None)
+
+
+def _continuity_outputs(payload: Mapping[str, Any],
+                        outputs: Mapping[str, Any]) -> Mapping[str, Any]:
+    """Map onto the five declared v2 fields, and say whether resume was proven.
+
+    v2's ``continuity_report`` carries ``resume_equivalence`` and
+    ``resume_equivalence_checked``; the legacy engine sets the first from the
+    caller's own flag and the second to ``false``. The core has no such field
+    because for it the question does not arise - a divergence raises, so any
+    report a caller can read is one where equivalence held.
+
+    But it only held *over the decisions that were replayed*, and a caller who
+    supplied none had nothing replayed. Emitting a report that a v2 consumer
+    reads as "resume verified" when zero decisions were exercised is the
+    unfireable-check-reported-as-passed shape this merge has now hit four times.
+    So the count is carried explicitly and ``resume_equivalence_checked`` is
+    true only when it is above zero.
+    """
+
+    report = dict(outputs.get("continuity_report") or {})
+    replayed = outputs.get("decisions")
+    count = len(replayed) if isinstance(replayed, Sequence) else 0
+    report["decisionsReplayed"] = count
+    report["resume_equivalence_checked"] = count > 0
+    report["resume_equivalence"] = True if count > 0 else None
+    if count == 0:
+        report["resume_equivalence_note"] = (
+            "the checkpoint was compacted and restored against its own digest, but no "
+            "decision was supplied, so nothing was replayed and resume equivalence was "
+            "not exercised. Supply 'decisions' to have it proven."
+        )
+    report["checkpointDigest"] = outputs.get("checkpointDigest")
+
+    snapshot = dict(outputs.get("model_state_snapshot") or {})
+    snapshot["restored_state"] = outputs.get("restored_state")
+
+    return {
+        "model_state_snapshot": snapshot,
+        "continuation_prompt": outputs.get("continuation_prompt"),
+        "resume_cursor": outputs.get("resume_cursor"),
+        "state_diff": outputs.get("state_diff"),
+        "continuity_report": report,
+    }
+
+
 def _census_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
     """Promote when the snapshot carries real file text.
 
@@ -2606,6 +2936,49 @@ _ROWS: tuple[BridgeSpec, ...] = (
         "detector the one string already known to be well-formed.",
     ),
     _spec(
+        "phase-aware-model-router",
+        build_request=_router_request,
+        map_outputs=_router_outputs,
+        rationale="legacy ranks candidates by quality/(cost + latency/100000) in binary "
+        "floating point, so two hosts can order the same two models differently - and "
+        "`cost_per_call` defaults to 0, so a profile that declares no price is scored "
+        "as free and outranks every priced model (measured: 50000 against 31 for a "
+        "better priced one, which then loses). Its `policy_hash` covers the provider "
+        "policy only, not the registry the decision was made against, so it does not "
+        "bind the decision to those candidates. It has no min-tier, no de-escalation "
+        "control, no escalate-after-attempts and no deprecation field. The core ranks "
+        "on Decimal prices per million tokens with a hashed decision. Promotion needs "
+        "core-shaped profiles because none of the four load-bearing numbers converts: "
+        "cost_per_call is a different unit, eval_status is a gate not a prior, and "
+        "tier and maxOutput have no v2 counterpart - fabricating them would produce a "
+        "decision that is deterministic, hashed and auditable, computed from figures "
+        "the bridge made up. NOTE: this is the one row the cross-package survey "
+        "reversed - `packages/execution-intelligence/routing.py` also ranks on floats, "
+        "so this promotion is worth making rather than wiring away. See "
+        "docs/EXISTING_CAPABILITY_OVERLAP.md.",
+    ),
+    _spec(
+        "model-state-continuity",
+        build_request=_continuity_request,
+        bind_stores=_pinned_continuity_clock,
+        map_outputs=_continuity_outputs,
+        rationale="legacy never restores anything. It hashes a snapshot dict and computes "
+        "`state_diff` against `provider_event.previous_state` - the caller's own "
+        "supplied previous state - while `continuity_report.resume_equivalence` echoes "
+        "the caller's own `diverged` flag (already stamped "
+        "`resume_equivalence_checked: false`, so it is at least honest about being an "
+        "echo). The core compacts a hash-chained ledger into a checkpoint, restores "
+        "from it against the checkpoint's own digest, replays the supplied decisions "
+        "against both live and restored state, and raises RESUME_DIVERGED naming the "
+        "first decision that differs rather than reporting divergence in a field a "
+        "caller might resume past. It also refuses a provider failover that would move "
+        "the run to a different permission profile: fail over the model, never the "
+        "authority. Promotion needs a real observation ledger and all seven binding "
+        "identities, because a synthesised hash chain verifies against itself and a "
+        "binding profile derived from the failover event makes that refusal compare "
+        "the request to itself.",
+    ),
+    _spec(
         "repository-census",
         build_request=_census_request,
         map_outputs=_census_outputs,
@@ -2826,21 +3199,6 @@ LEGACY_RATIONALES: Mapping[str, Mapping[str, Any]] = {
             "was the actual defect here and is fixed."
         ),
     },
-    "phase-aware-model-router": {
-        "blocked": False,
-        "reason": (
-            "a translation gap that cannot be closed without fabricating numbers. The "
-            "core ranks on Decimal prices per million tokens, an explicit tier, a max "
-            "output and a reliability prior in [0,1], and hashes the decision so two "
-            "hosts cannot disagree. A v2 profile has `cost_per_call` (a different unit, "
-            "convertible only with a token count nobody supplies), `eval_status` (a "
-            "PASS/FAIL gate, not a prior) and no tier or max output at all. Inventing "
-            "those is inventing the very numbers the ranking's reproducibility rests "
-            "on. Legacy's own defects are now stamped on its output instead: float "
-            "scoring that two hosts can order differently, and an unpriced model scored "
-            "as free and therefore ranked above every priced one."
-        ),
-    },
     "prefix-stable-context-planner": {
         "blocked": False,
         "reason": (
@@ -2851,19 +3209,6 @@ LEGACY_RATIONALES: Mapping[str, Mapping[str, Any]] = {
             "measurement in a planner whose whole job is fitting a budget."
             " Legacy takes an integer `token_budget` and plans against it without ever "
             "measuring a block, so its plan fits the budget by assertion."
-        ),
-    },
-    "model-state-continuity": {
-        "blocked": False,
-        "reason": (
-            "translation gap: the core reads `compaction_policy`, `binding`, "
-            "`decisions` and `checkpoint_id`; v2 sends `run_state`, `agent_state`, "
-            "`tool_results` and `open_findings`. The two describe the same situation "
-            "from opposite ends - the core asks what may be dropped and what must "
-            "survive a provider switch, v2 hands over the state itself - so the adapter "
-            "has to decide which v2 fields are load-bearing rather than rename them. "
-            "Legacy already reports `resume_equivalence_checked: false`, so it is not "
-            "claiming the guarantee the core would add. Adaptable, not yet adapted."
         ),
     },
     "lazy-tool-loader": {
@@ -2988,8 +3333,14 @@ def serve(skill: str, payload: Mapping[str, Any], context: Any = None) -> Bridge
         return BridgeOutcome(served=False, reasons=("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",))
 
     binding = spec.bind_stores(context, request) if spec.bind_stores is not None else nullcontext()
+    # Keys prefixed with ``_`` are bridge-private: an adapter puts them on the
+    # request so ``bind_stores`` can read them, and they never reach the kernel.
+    # The kernel rejects unknown request fields - correctly, since a silently
+    # ignored field is a caller who thinks they configured something - so
+    # stripping here is what lets a binder be configured from the request at all.
+    dispatched = {key: value for key, value in request.items() if not key.startswith("_")}
     with binding:
-        result = kernel_dispatch(skill, request)
+        result = kernel_dispatch(skill, dispatched)
 
     if result.status is KernelStatus.NOT_APPLICABLE:
         return BridgeOutcome(served=False, reasons=("KERNEL_NOT_APPLICABLE",))
