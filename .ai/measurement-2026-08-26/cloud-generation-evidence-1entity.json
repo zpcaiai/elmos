@@ -1,0 +1,827 @@
+{
+  "kind": "elmos.generated-workspace-execution-verification",
+  "schema_version": "1.0.0",
+  "instrument": "verify_generated_workspaces.py",
+  "method": "generate_workspace() then the engine's own verify_workspace() (build -> startup -> CRUD -> RLS). NOT_RUN is reported as an absent measurement, never as a pass or a failure.",
+  "entity_count": 1,
+  "outcome_summary": {
+    "REFUSED_BY_INTAKE": 24,
+    "PARTIAL": 21,
+    "FAILED": 3
+  },
+  "stage_summary": {
+    "build-analysis": {
+      "PASSED": 18,
+      "FAILED": 3
+    },
+    "toolchain": {
+      "PASSED": 9,
+      "NOT_RUN": 38
+    }
+  },
+  "cells": [
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 52,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "PASSED": 1,
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "java": false
+      },
+      "failures": [],
+      "seconds": 0.8,
+      "key": "in-memory|none|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 50,
+      "outcome": "PARTIAL",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 6
+        },
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "python": false
+      },
+      "failures": [],
+      "seconds": 10.2,
+      "key": "in-memory|none|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 54,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "in-memory|none|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 51,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "in-memory|none|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 47,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "go": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "in-memory|none|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 50,
+      "outcome": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/opt/gradle/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "- Included Builds (No included builds contain this plugin)",
+            "- Plugin Repositories (could not resolve plugin artifact 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.2.20')",
+            "  Searched in the following repositories:",
+            "    Gradle Central Plugin Repository",
+            "",
+            "* Try:",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 18s"
+          ]
+        }
+      ],
+      "seconds": 22.5,
+      "key": "in-memory|none|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 48,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "php": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "in-memory|none|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "file_count": 49,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "in-memory|none|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:jwt",
+      "seconds": 0.0,
+      "key": "in-memory|jwt|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|java"
+    },
+    {
+      "language": "python",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "in-memory",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:in-memory:oidc",
+      "seconds": 0.0,
+      "key": "in-memory|oidc|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "none",
+      "entity_count": 1,
+      "outcome": "REFUSED_BY_INTAKE",
+      "detail": "ValueError:PROFILE_COMBINATION_UNSUPPORTED:postgresql:none",
+      "seconds": 0.0,
+      "key": "postgresql|none|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 63,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2,
+          "PASSED": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "java": false
+      },
+      "failures": [],
+      "seconds": 0.8,
+      "key": "postgresql|jwt|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 59,
+      "outcome": "PARTIAL",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 6
+        },
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "python": false
+      },
+      "failures": [],
+      "seconds": 12.4,
+      "key": "postgresql|jwt|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 62,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|jwt|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 57,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|jwt|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 55,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "go": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|jwt|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 58,
+      "outcome": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "NOT_RUN": 1,
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/opt/gradle/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "- Included Builds (No included builds contain this plugin)",
+            "- Plugin Repositories (could not resolve plugin artifact 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.2.20')",
+            "  Searched in the following repositories:",
+            "    Gradle Central Plugin Repository",
+            "",
+            "* Try:",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 15s"
+          ]
+        }
+      ],
+      "seconds": 19.4,
+      "key": "postgresql|jwt|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 55,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "php": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|jwt|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "jwt",
+      "entity_count": 1,
+      "file_count": 59,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|jwt|rust"
+    },
+    {
+      "language": "java",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 63,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2,
+          "PASSED": 1
+        }
+      },
+      "exact_toolchain_match": {
+        "java": false
+      },
+      "failures": [],
+      "seconds": 0.7,
+      "key": "postgresql|oidc|java"
+    },
+    {
+      "language": "python",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 59,
+      "outcome": "PARTIAL",
+      "stages": {
+        "build-analysis": {
+          "PASSED": 6
+        },
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "python": false
+      },
+      "failures": [],
+      "seconds": 12.5,
+      "key": "postgresql|oidc|python"
+    },
+    {
+      "language": "csharp",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 62,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "csharp": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|oidc|csharp"
+    },
+    {
+      "language": "typescript",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 57,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "typescript": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|oidc|typescript"
+    },
+    {
+      "language": "go",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 55,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "go": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|oidc|go"
+    },
+    {
+      "language": "kotlin",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 58,
+      "outcome": "FAILED",
+      "stages": {
+        "build-analysis": {
+          "FAILED": 1
+        },
+        "toolchain": {
+          "NOT_RUN": 1,
+          "PASSED": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "kotlin": true
+      },
+      "failures": [
+        {
+          "kind": "build-analysis",
+          "command": [
+            "/opt/gradle/bin/gradle",
+            "-Djava.net.useSystemProxies=false",
+            "-Dhttp.proxyHost=",
+            "-Dhttps.proxyHost=",
+            "--no-daemon",
+            "test",
+            "build"
+          ],
+          "exit_code": 1,
+          "output_tail": [
+            "- Included Builds (No included builds contain this plugin)",
+            "- Plugin Repositories (could not resolve plugin artifact 'org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin:2.2.20')",
+            "  Searched in the following repositories:",
+            "    Gradle Central Plugin Repository",
+            "",
+            "* Try:",
+            "> Run with --stacktrace option to get the stack trace.",
+            "> Run with --info or --debug option to get more log output.",
+            "> Run with --scan to get full insights.",
+            "> Get more help at https://help.gradle.org.",
+            "",
+            "BUILD FAILED in 15s"
+          ]
+        }
+      ],
+      "seconds": 19.4,
+      "key": "postgresql|oidc|kotlin"
+    },
+    {
+      "language": "php",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 55,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "php": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|oidc|php"
+    },
+    {
+      "language": "rust",
+      "persistence": "postgresql",
+      "auth_mode": "oidc",
+      "entity_count": 1,
+      "file_count": 59,
+      "outcome": "PARTIAL",
+      "stages": {
+        "toolchain": {
+          "NOT_RUN": 2
+        }
+      },
+      "exact_toolchain_match": {
+        "rust": false
+      },
+      "failures": [],
+      "seconds": 0.1,
+      "key": "postgresql|oidc|rust"
+    }
+  ]
+}

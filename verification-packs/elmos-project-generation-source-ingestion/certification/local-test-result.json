@@ -1,22 +1,27 @@
 {
   "schema_version": 1,
   "status": "passed",
-  "executed_at": "2026-08-14T03:47:40Z",
+  "executed_at": "2026-08-31T14:05:49Z",
   "executor": "local-codex-session",
   "environment": {
     "node": "v26.0.0",
     "pnpm": "10.12.4",
     "playwright": "1.61.1",
-    "browser_project": "chromium"
+    "test_runner": "playwright-test",
+    "configured_browser_project": "chromium",
+    "configured_browser_channel": "chrome",
+    "browser_execution": "NOT_RUN",
+    "browser_execution_reason": "the selected parser-security suite does not request a page or browser fixture"
   },
-  "command": "ELMOS_E2E_PORT=3462 ELMOS_E2E_GITHUB_PORT=3562 ELMOS_E2E_OUTPUT_DIR=./test-results/pr30-source-b35 ELMOS_E2E_REPORT_DIR=./test-results/pr30-source-b35-report pnpm --dir apps/web-console exec playwright test --project=chromium --workers=1 e2e/generation-source-ingestion.spec.ts",
+  "environment_identity_ref": "certification/local-test-environment.json",
+  "command": "ELMOS_UV_PATH=/opt/homebrew/bin/uv ELMOS_E2E_PORT=3463 ELMOS_E2E_GITHUB_PORT=3563 ELMOS_E2E_CHROMIUM_CHANNEL=chrome ELMOS_E2E_OUTPUT_DIR=/private/tmp/elmos-source-ingestion-results.JtBR9W ELMOS_E2E_REPORT_DIR=/private/tmp/elmos-source-ingestion-report.JtBR9W pnpm --dir apps/web-console exec playwright test --project=chromium --workers=1 e2e/generation-source-ingestion.spec.ts",
   "tests": 10,
   "passed": 10,
   "failed": 0,
-  "duration_seconds": 12.2,
+  "duration_seconds": 8.9,
   "source_digest": "sha256:d9b2dae38cd583a3521729f05cc3be022338c4dd07c3d9e51a2d71904263c5b1",
   "test_digest": "sha256:54aa5faddc9cc05390997c55af8ee90509c76cb7937fbe259db79e304f036563",
-  "environment_digest": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448",
+  "environment_digest": "sha256:03925d98ca7f40f5099d4f703d2e7ec21e24d4321ea05a330675a1c82939daa4",
   "repository_bindings": [
     {
       "role": "source",
@@ -32,9 +37,9 @@
     },
     {
       "role": "environment",
-      "path": "apps/web-console/package.json",
-      "byte_size": 3113,
-      "sha256": "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
+      "path": "verification-packs/elmos-project-generation-source-ingestion/certification/local-test-environment.json",
+      "byte_size": 1662,
+      "sha256": "sha256:03925d98ca7f40f5099d4f703d2e7ec21e24d4321ea05a330675a1c82939daa4"
     }
   ],
   "coverage": {
@@ -54,6 +59,7 @@
   },
   "limitations": [
     "Local execution only",
+    "The Playwright test runner executed parser-security tests without launching a browser; browser execution remains NOT_RUN",
     "No independent verifier",
     "No controlled public DNS rebinding host"
   ]

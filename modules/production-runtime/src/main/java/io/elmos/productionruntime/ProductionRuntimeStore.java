@@ -12,6 +12,7 @@ import io.elmos.productionruntime.ProductionRuntimeModels.WorkItemRequest;
 import io.elmos.productionruntime.ProductionRuntimeModels.WorkerRegistration;
 import io.elmos.productionruntime.ProductionRuntimeModels.FinalUsage;
 import io.elmos.productionruntime.ProductionRuntimeModels.OutboxMessage;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
 import io.elmos.productionruntime.ProductionRuntimeModels.ReadyWorkItem;
 
 import java.time.Duration;
@@ -39,7 +40,10 @@ public interface ProductionRuntimeStore {
     void heartbeat(UUID tenantId, UUID attemptId, UUID workerId, long fencingToken, Duration leaseDuration);
     void checkpoint(Checkpoint checkpoint);
     void checkpoint(Checkpoint checkpoint, UUID workerId, long fencingToken);
+    /** Trusted recovery/internal compatibility path. Production worker success uses completeVerified. */
     void complete(Completion completion);
+    /** Atomically bind a successful worker completion to a durable, checked output receipt. */
+    void completeVerified(Completion completion, OutputVerificationReceipt receipt);
     void applyFinalUsage(UUID tenantId, UUID workItemId, FinalUsage usage);
     List<ProductionRuntimeModels.SettlementRequest> pendingSettlementRequests(UUID tenantId, int limit);
     void markSettlementSettled(UUID tenantId, UUID workItemId);
@@ -53,6 +57,8 @@ public interface ProductionRuntimeStore {
     List<UUID> pendingSettlementTenants(int limit);
     List<ProductionRuntimeModels.JobProjectionCandidate> projectionCandidates(int limit);
     Duration projectionFreshness(UUID tenantId, UUID jobId);
+    Optional<ProductionRuntimeModels.WorkloadOutputStatus> workloadOutputStatus(
+            UUID tenantId, UUID jobId, UUID workItemId);
     ProgressSnapshot rebuildProgress(UUID tenantId, UUID jobId);
     List<OutboxMessage> claimOutbox(int limit, Duration claimDuration);
     void markOutboxPublished(UUID claimToken, long eventId);

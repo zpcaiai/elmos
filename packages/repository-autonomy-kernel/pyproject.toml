@@ -4,17 +4,21 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "elmos-repository-autonomy-kernel"
-version = "2.0.0"
-description = "Fail-closed durable runtime for the Elmos Repository Autonomy Kernel"
+version = "2.1.0"
+description = "Fail-closed durable runtime and capability core for the Elmos Repository Autonomy Kernel"
 requires-python = ">=3.11"
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "ruff>=0.6"]
 postgres = ["psycopg[binary]>=3.2,<4"]
 
 [project.scripts]
+# The platform CLI is the entry point: it owns the server, the store and the
+# certification surface, and reaches the capability core through the dispatcher.
+# The core's own CLI stays available for running one capability in isolation.
 elmos-autonomy = "elmos_repository_autonomy.cli:main"
+elmos-autonomy-core = "elmos_autonomy_kernel.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
@@ -25,7 +29,44 @@ where = ["src"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+# `tests` is on the path because the bridge suites reuse each other's payload
+# builders rather than duplicating a second, drifting copy of them.
+pythonpath = ["src", "tests"]
 
 [tool.ruff]
 target-version = "py311"
+# 120 is the platform half's existing limit and the capability core is written
+# to 100, so one setting covers both without reflowing code that is already
+# reviewed. New code should stay at 100.
 line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "S"]
+ignore = ["S101"]
+
+[tool.ruff.lint.per-file-ignores]
+# The platform half predates this rule set: it was linted with ruff's defaults,
+# where E501 is not enabled, and it is written in a deliberate one-line-per-
+# return style that produces 427 long lines. Reflowing another author's reviewed
+# code to satisfy a rule it was never written against is churn with a real
+# chance of introducing a defect, so the debt is scoped to the files that
+# actually carry it and named here rather than switched off globally. Files
+# added after the merge - the capability core and every bridge module - are NOT
+# in this list and are held to the 100-column limit.
+"src/elmos_repository_autonomy/*.py" = ["E501"]
+"tests/test_kernel.py" = ["E501", "B011", "S310"]
+"tests/test_external_runtime.py" = ["E501"]
+"tests/test_external_boundaries.py" = ["E501"]
+"tests/test_certification_deployment.py" = ["E501"]
+# Three call sites shell out on purpose and audit their own argv: the Kubernetes
+# adapter, the git SCM adapter and the pg_dump runner. Each takes a list, never
+# a string, and none interpolates caller input into the executable name.
+"src/elmos_repository_autonomy/deployment.py" = ["E501", "S603"]
+"src/elmos_repository_autonomy/external.py" = ["E501", "S603", "S607"]
+"src/elmos_repository_autonomy/postgres.py" = ["E501", "S603"]
+# S101 assert is the point of a test file.  S105/S106 fire on fixture values
+# deliberately named "secret" so that the scrubbing tests have something
+# secret-shaped to scrub; S108 on a "/tmp/..." string that is an *input to a
+# path-escape check*, never a file that gets opened.  B008 on a fixture builder
+# used as a default argument, which is intentional in test factories.
+"tests/*" = ["S101", "S105", "S106", "S108", "S603", "S607", "B008"]

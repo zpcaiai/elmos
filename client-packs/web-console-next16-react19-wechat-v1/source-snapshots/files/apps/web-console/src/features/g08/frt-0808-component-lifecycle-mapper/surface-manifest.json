@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0808",
+  "skill_name": "frt-0808-component-lifecycle-mapper",
+  "batch": "G08",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g08/frt-0808-component-lifecycle-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "test_automation",
+  "capability_key": "frt.g08.component-lifecycle-mapper",
+  "execution_contract_sha256": "sha256:a8e8dce8d4ec8e4dd997e6fde38d70bdf3b4b67113b46181abb71b3e41df0990",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "components"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:5f56781c56c73717c1ef8ea76e608fce352a8f7fab56eca79645168494c4879f",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

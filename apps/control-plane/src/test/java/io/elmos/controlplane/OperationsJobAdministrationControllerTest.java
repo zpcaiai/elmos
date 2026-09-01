@@ -138,7 +138,7 @@ class OperationsJobAdministrationControllerTest {
 
     @Test
     void oidcAdministratorCanReadButCannotSelectAnotherTenant() {
-        authenticate(List.of("OPERATOR"), List.of());
+        authenticatePlatformAdministrator();
         when(jobs.list(ORGANIZATION, null, 10, 0)).thenReturn(List.of());
 
         assertEquals(0, controller.list(
@@ -151,8 +151,8 @@ class OperationsJobAdministrationControllerTest {
     }
 
     @Test
-    void oidcOperatorCannotCancelOrProbeAnotherTenantsJob() {
-        authenticate(List.of("OPERATOR"), List.of());
+    void platformAdministratorCannotCancelOrProbeAnotherTenantsJob() {
+        authenticatePlatformAdministrator();
 
         assertThrows(SecurityException.class, () -> controller.cancel(
                 null, "org-2", ACTOR, "OPERATOR", "job-1"));
@@ -172,7 +172,7 @@ class OperationsJobAdministrationControllerTest {
 
     @Test
     void operatorCanRequestCancellationOfAnActiveJob() {
-        authenticate(List.of("OPERATOR"), List.of());
+        authenticatePlatformAdministrator();
         when(jobs.find(ORGANIZATION, "job-1")).thenReturn(Optional.of(
                 job("job-1", ExecutionJobPort.Status.RUNNING, false)));
         when(jobs.requestCancel(ORGANIZATION, "job-1", ACTOR))
@@ -189,7 +189,7 @@ class OperationsJobAdministrationControllerTest {
 
     @Test
     void repeatedCancellationReturnsTheExistingIntentWithoutAnotherMutation() {
-        authenticate(List.of("OPERATOR"), List.of());
+        authenticatePlatformAdministrator();
         when(jobs.find(ORGANIZATION, "job-1")).thenReturn(Optional.of(
                 job("job-1", ExecutionJobPort.Status.RUNNING, true)));
 
@@ -207,7 +207,7 @@ class OperationsJobAdministrationControllerTest {
             value = ExecutionJobPort.Status.class,
             names = {"SUCCEEDED", "PARTIAL", "FAILED", "CANCELLED", "LOST"})
     void terminalJobsCannotBeCancelled(ExecutionJobPort.Status terminal) {
-        authenticate(List.of("OPERATOR"), List.of());
+        authenticatePlatformAdministrator();
         when(jobs.find(ORGANIZATION, "job-1")).thenReturn(Optional.of(
                 job("job-1", terminal, false)));
 
@@ -222,7 +222,7 @@ class OperationsJobAdministrationControllerTest {
 
     @Test
     void databaseTerminalRaceIsNotConvertedIntoSuccess() {
-        authenticate(List.of("OPERATOR"), List.of());
+        authenticatePlatformAdministrator();
         when(jobs.find(ORGANIZATION, "job-1")).thenReturn(Optional.of(
                 job("job-1", ExecutionJobPort.Status.RUNNING, false)));
         when(jobs.requestCancel(ORGANIZATION, "job-1", ACTOR)).thenThrow(
@@ -263,15 +263,32 @@ class OperationsJobAdministrationControllerTest {
     }
 
     private static void authenticate(List<String> roles, List<String> permissions) {
-        Jwt token = Jwt.withTokenValue("verified-operations-job-token")
+        authenticate(roles, permissions, false);
+    }
+
+    private static void authenticatePlatformAdministrator() {
+        authenticate(List.of("OPERATOR"), List.of(), true);
+    }
+
+    private static void authenticate(
+            List<String> roles,
+            List<String> permissions,
+            boolean platformAdministrator
+    ) {
+        var tokenBuilder = Jwt.withTokenValue("verified-operations-job-token")
                 .header("alg", "RS256")
                 .subject(ACTOR)
                 .issuedAt(NOW.minusSeconds(60))
                 .expiresAt(NOW.plusSeconds(3600))
                 .claim("organization_id", ORGANIZATION)
                 .claim("roles", roles)
-                .claim("permissions", permissions)
-                .build();
+                .claim("permissions", permissions);
+        if (platformAdministrator) {
+            tokenBuilder
+                    .claim("email", ControlPlanePrincipal.PLATFORM_ADMINISTRATOR_EMAIL)
+                    .claim("email_verified", true);
+        }
+        Jwt token = tokenBuilder.build();
         SecurityContextHolder.getContext().setAuthentication(
                 new JwtAuthenticationToken(
                         token,

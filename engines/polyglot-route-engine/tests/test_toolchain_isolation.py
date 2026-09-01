@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import json
 import os
 import stat
 from dataclasses import replace
@@ -268,14 +269,180 @@ def test_java_declared_home_cannot_replace_the_pinned_distribution(
         toolchains.exact_toolchain("java")
 
 
+def test_java_codesign_receipt_keeps_strict_verify_and_display_separate(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    bundle = Path("/fixed/openjdk.jdk")
+    commands: list[list[str]] = []
+
+    def output(command: list[str], **_: object) -> str:
+        commands.append(command)
+        return "Identifier=net.java.openjdk.jdk"
+
+    monkeypatch.setattr(toolchains, "_output", output)
+
+    assert toolchains._java_bundle_signature(bundle) == (
+        "Identifier=net.java.openjdk.jdk"
+    )
+    assert commands == [
+        [
+            "/usr/bin/codesign",
+            "--verify",
+            "--deep",
+            "--strict",
+            str(bundle),
+        ],
+        ["/usr/bin/codesign", "-d", "--verbose=4", str(bundle)],
+    ]
+
+
+@pytest.mark.parametrize(
+    ("failed_flag", "diagnostic"),
+    [
+        ("--verify", "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify"),
+        ("-d", "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display"),
+    ],
+)
+def test_java_codesign_receipt_reports_the_exact_failed_stage(
+    monkeypatch: pytest.MonkeyPatch,
+    failed_flag: str,
+    diagnostic: str,
+) -> None:
+    def output(command: list[str], **_: object) -> str:
+        if failed_flag in command:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_UNAVAILABLE:/usr/bin/codesign:"
+                "exit=1:diagnostic=strict verification failed"
+            )
+        return ""
+
+    monkeypatch.setattr(toolchains, "_output", output)
+
+    with pytest.raises(RouteError, match=diagnostic) as caught:
+        toolchains._java_bundle_signature(Path("/fixed/openjdk.jdk"))
+    assert "exit=1:diagnostic=strict verification failed" in str(caught.value)
+
+
+def test_temurin_contract_is_explicitly_selected_for_ci_home(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    home = (
+        tmp_path
+        / "hostedtoolcache"
+        / "Java_Temurin-Hotspot_jdk"
+        / "21.0.11-10.0"
+        / "arm64"
+        / "Contents"
+        / "Home"
+    )
+    home.mkdir(parents=True)
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv("ELMOS_JAVA21_HOME", str(home))
+
+    contract = toolchains._java_contract()
+
+    assert contract.home == home.resolve()
+    assert contract.distribution == "Temurin-21.0.11+10"
+    assert contract.java_sha256 == toolchains._TEMURIN_JAVA_SHA256
+    assert contract.team_identifier == toolchains._TEMURIN_JAVA_TEAM_IDENTIFIER
+    assert contract.bundle_cdhash_full == toolchains._TEMURIN_JAVA_BUNDLE_CDHASH_FULL
+
+
+def test_temurin_contract_rejects_an_unpinned_setup_java_home(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    home = tmp_path / "java" / "Contents" / "Home"
+    home.mkdir(parents=True)
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv("ELMOS_JAVA21_HOME", str(home))
+
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin",
+    ):
+        toolchains._java_contract()
+
+
+@pytest.mark.parametrize(
+    ("distribution", "expected"),
+    (
+        ("homebrew", "kotlinc-jvm 2.2.20 (JRE 21.0.11)"),
+        ("temurin", "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)"),
+    ),
+)
+def test_kotlin_banner_contract_is_exact_for_the_selected_java_distribution(
+    distribution: str,
+    expected: str,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", distribution)
+
+    assert toolchains._kotlin_version_contract() == (distribution, expected)
+
+
+def test_kotlin_banner_contract_rejects_an_unknown_java_distribution(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "untrusted")
+
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:untrusted",
+    ):
+        toolchains._kotlin_version_contract()
+
+
 def test_java_toolchain_binds_launchers_runtime_modules_and_bundle_signature() -> None:
+    contract = toolchains._java_contract()
     selected = toolchains.exact_toolchain("java")
 
-    assert selected.executable_sha256 == toolchains._EXPECTED_JAVA_SHA256
-    assert selected.auxiliary_sha256 == toolchains._EXPECTED_JAVAC_SHA256
-    assert f"jdk-cdhash-full={toolchains._EXPECTED_JAVA_BUNDLE_CDHASH_FULL}" in selected.profile
-    assert f"jdk-modules-sha256={toolchains._EXPECTED_JAVA_MODULES_SHA256}" in selected.profile
-    assert f"libjvm-sha256={toolchains._EXPECTED_JAVA_JVM_SHA256}" in selected.profile
+    assert selected.executable_sha256 == contract.java_sha256
+    assert selected.auxiliary_sha256 == contract.javac_sha256
+    assert f"jdk-cdhash-full={contract.bundle_cdhash_full}" in selected.profile
+    assert f"jdk-modules-sha256={contract.modules_sha256}" in selected.profile
+    assert f"libjvm-sha256={contract.jvm_sha256}" in selected.profile
+
+
+def test_python_runtime_identity_is_root_portable_and_path_confined(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    raw = toolchains._output(
+        [
+            str(toolchains._EXPECTED_PYTHON_EXECUTABLE),
+            "-I",
+            "-B",
+            "-c",
+            toolchains._PYTHON_RUNTIME_IDENTITY_SCRIPT,
+        ]
+    )
+    identity = json.loads(raw)
+    canonical = toolchains._canonical_python_runtime_identity(identity)
+    assert hashlib.sha256(canonical.encode("utf-8")).hexdigest() == (
+        toolchains._EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
+    )
+
+    local_root = str(toolchains._EXPECTED_PYTHON_ROOT)
+    runner_root = "/Users/runner/.local/share/elmos/toolchains/python-build-standalone/" + (
+        local_root.split("/python-build-standalone/", 1)[1]
+    )
+    runner_identity = dict(identity)
+    for field in toolchains._PYTHON_RUNTIME_PATH_FIELDS:
+        runner_identity[field] = runner_identity[field].replace(
+            local_root,
+            runner_root,
+            1,
+        )
+    monkeypatch.setattr(toolchains, "_EXPECTED_PYTHON_ROOT", Path(runner_root))
+    assert toolchains._canonical_python_runtime_identity(runner_identity) == canonical
+
+    runner_identity["executable"] = "/private/tmp/forged-python"
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:executable",
+    ):
+        toolchains._canonical_python_runtime_identity(runner_identity)
 
 
 def test_typescript_toolchain_resolves_pinned_node_in_minimal_environment() -> None:
@@ -350,6 +517,7 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    contract = toolchains._java_contract()
     monkeypatch.setenv("JAVA_TOOL_OPTIONS", "-javaagent:/does/not/exist.jar")
     monkeypatch.setenv("_JAVA_OPTIONS", "-Xbootclasspath/a:/does/not/exist")
     monkeypatch.setenv("JDK_JAVA_OPTIONS", "--class-path=/does/not/exist")
@@ -369,8 +537,8 @@ def test_java_analysis_and_native_replay_ignore_ambient_vm_options(
     )
 
     assert report["status"] == "PASSED"
-    assert report["toolchain"]["executable_sha256"] == toolchains._EXPECTED_JAVA_SHA256
-    assert report["toolchain"]["auxiliary_sha256"] == toolchains._EXPECTED_JAVAC_SHA256
+    assert report["toolchain"]["executable_sha256"] == contract.java_sha256
+    assert report["toolchain"]["auxiliary_sha256"] == contract.javac_sha256
 
 
 @pytest.mark.skipif(os.uname().sysname != "Darwin", reason="exact Swift evidence is Darwin-only")

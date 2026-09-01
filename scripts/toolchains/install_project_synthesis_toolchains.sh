@@ -16,6 +16,7 @@ readonly RUSTUP_SHA256="aeb4105778ca1bd3c6b0e75768f581c656633cd51368fa61289b6a71
 readonly TOOLCHAIN_ROOT="${ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT:-${HOME}/.local/share/elmos/toolchains}"
 readonly LOCAL_BIN="${ELMOS_PROJECT_SYNTHESIS_LOCAL_BIN:-${HOME}/.local/bin}"
 readonly BUILD_JOBS="${ELMOS_PROJECT_SYNTHESIS_BUILD_JOBS:-2}"
+readonly INSTALL_ONLY="${ELMOS_PROJECT_SYNTHESIS_INSTALL_ONLY:-go,gradle,php,rust}"
 
 case "${TOOLCHAIN_ROOT}" in
   /*) ;;
@@ -29,6 +30,21 @@ case "${BUILD_JOBS}" in
   [1-8]) ;;
   *) printf 'ELMOS_PROJECT_SYNTHESIS_BUILD_JOBS must be an integer from 1 through 8\n' >&2; exit 2 ;;
 esac
+case ",${INSTALL_ONLY}," in
+  *,go,*|*,gradle,*|*,php,*|*,rust,*) ;;
+  *) printf 'ELMOS_PROJECT_SYNTHESIS_INSTALL_ONLY must select at least one known tool\n' >&2; exit 2 ;;
+esac
+if [[ ",${INSTALL_ONLY}," == *',,'* ]]; then
+  printf 'ELMOS_PROJECT_SYNTHESIS_INSTALL_ONLY contains an empty selector\n' >&2
+  exit 2
+fi
+IFS=',' read -r -a selected_tools <<<"${INSTALL_ONLY}"
+for selected_tool in "${selected_tools[@]}"; do
+  case "${selected_tool}" in
+    go|gradle|php|rust) ;;
+    *) printf 'Unknown project-synthesis tool selector: %s\n' "${selected_tool}" >&2; exit 2 ;;
+  esac
+done
 if [[ "$(uname -s)" != "Darwin" || "$(uname -m)" != "arm64" ]]; then
   printf 'This exact installer currently supports only Darwin arm64\n' >&2
   exit 2
@@ -140,7 +156,7 @@ resolve_libpq_prefix() {
     fi
   done
   printf 'Cannot build PHP with pdo_pgsql: no libpq prefix containing bin/pg_config was found.\n' >&2
-  printf 'Install it first, e.g. `brew install libpq`.\n' >&2
+  printf '%s\n' "Install it first, e.g. \`brew install libpq\`." >&2
   return 1
 }
 
@@ -161,7 +177,7 @@ resolve_openssl_prefix() {
     fi
   done
   printf 'Cannot build PHP with openssl: no prefix containing lib/pkgconfig/openssl.pc was found.\n' >&2
-  printf 'Install it first, e.g. `brew install openssl@3`.\n' >&2
+  printf '%s\n' "Install it first, e.g. \`brew install openssl@3\`." >&2
   return 1
 }
 
@@ -279,14 +295,21 @@ install_rust() {
   link_if_available "rustup" "${target}/bin/rustup"
 }
 
-install_go
-install_gradle
-install_php
-install_rust
-
-"${TOOLCHAIN_ROOT}/go/${GO_VERSION}/bin/go" version
-"${TOOLCHAIN_ROOT}/gradle/${GRADLE_VERSION}/bin/gradle" --version | sed -n '1,6p'
-"${TOOLCHAIN_ROOT}/php/${PHP_VERSION}/bin/php" --version | sed -n '1,2p'
-"${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}/bin/rustc" --version
-"${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}/bin/cargo" --version
+if [[ ",${INSTALL_ONLY}," == *',go,'* ]]; then
+  install_go
+  "${TOOLCHAIN_ROOT}/go/${GO_VERSION}/bin/go" version
+fi
+if [[ ",${INSTALL_ONLY}," == *',gradle,'* ]]; then
+  install_gradle
+  "${TOOLCHAIN_ROOT}/gradle/${GRADLE_VERSION}/bin/gradle" --version | sed -n '1,6p'
+fi
+if [[ ",${INSTALL_ONLY}," == *',php,'* ]]; then
+  install_php
+  "${TOOLCHAIN_ROOT}/php/${PHP_VERSION}/bin/php" --version | sed -n '1,2p'
+fi
+if [[ ",${INSTALL_ONLY}," == *',rust,'* ]]; then
+  install_rust
+  "${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}/bin/rustc" --version
+  "${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}/bin/cargo" --version
+fi
 printf 'Exact Project Synthesis toolchains are installed under %s\n' "${TOOLCHAIN_ROOT}"

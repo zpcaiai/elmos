@@ -13,6 +13,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 from pathlib import Path
@@ -27,7 +28,7 @@ import emit_one_click_runner  # noqa: E402
 import scaffold_smoke_pack  # noqa: E402
 import synthesize_seed_data  # noqa: E402
 import validate_smoke_pack  # noqa: E402
-from smoke_common import SEED_KEY_BASE  # noqa: E402
+from smoke_common import SEED_KEY_BASE, read_json, write_json  # noqa: E402
 
 SCHEMA_SQL = """
 CREATE TABLE customers (
@@ -339,6 +340,50 @@ class LeaseTestCase(unittest.TestCase):
             smoke_lease.extend(self.tmp, 60, "", "ethan")
         with self.assertRaises(SystemExit):
             smoke_lease.extend(self.tmp, 60, "debugging", "")
+
+    def test_atomic_json_publish_never_exposes_a_partial_document(self) -> None:
+        status_path = self.tmp / "smoke" / "runtime" / "status.json"
+        write_json(status_path, {"sequence": 0, "payload": "x" * 32_768})
+        completed = threading.Event()
+        failures: list[str] = []
+
+        def writer() -> None:
+            try:
+                for sequence in range(1, 51):
+                    write_json(
+                        status_path,
+                        {"sequence": sequence, "payload": str(sequence) * 32_768},
+                    )
+            finally:
+                completed.set()
+
+        def reader() -> None:
+            while not completed.is_set():
+                try:
+                    value = read_json(status_path)
+                    if not isinstance(value.get("sequence"), int):
+                        failures.append("sequence was not an integer")
+                        return
+                    if not isinstance(value.get("payload"), str):
+                        failures.append("payload was not a string")
+                        return
+                except (OSError, ValueError, json.JSONDecodeError) as error:
+                    failures.append(str(error))
+                    return
+
+        readers = [threading.Thread(target=reader) for _ in range(4)]
+        publishing = threading.Thread(target=writer)
+        for thread in readers:
+            thread.start()
+        publishing.start()
+        publishing.join(timeout=20)
+        for thread in readers:
+            thread.join(timeout=20)
+
+        self.assertFalse(publishing.is_alive(), "atomic publisher did not finish")
+        self.assertFalse(failures, failures)
+        self.assertEqual(50, read_json(status_path)["sequence"])
+        self.assertEqual([], list(status_path.parent.glob(".status.json.*.tmp")))
 
     def test_extension_beyond_free_quota_is_metered(self) -> None:
         import smoke_lease

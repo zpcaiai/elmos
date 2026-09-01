@@ -32,6 +32,7 @@ CASES = [
 
 def test_kotlin_uses_the_exact_standalone_2_2_20_jdk21_tuple() -> None:
     toolchain = exact_toolchain("kotlin")
+    active_java_home = Path(exact_toolchain("java").executable).parents[1]
 
     assert toolchain.language == "kotlin"
     assert toolchain.version == "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
@@ -50,10 +51,7 @@ def test_kotlin_uses_the_exact_standalone_2_2_20_jdk21_tuple() -> None:
         "kotlin-stdlib-jar-sha256="
         "8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7"
     ) in toolchain.profile
-    assert (
-        "kotlin-jvm-home="
-        "/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
-    ) in toolchain.profile
+    assert f"kotlin-jvm-home={active_java_home}" in toolchain.profile
     # Exact availability and real local execution are not a proof of the
     # compiler/runtime implementation itself.
     assert "kotlin-runtime-semantic-soundness=NOT_RUN" in toolchain.profile

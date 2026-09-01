@@ -46,7 +46,7 @@ from sqlglot import exp  # noqa: E402
 from elmos_sql_dialect import emitter, parser  # noqa: E402
 from elmos_sql_dialect.models import Dialect, DialectError  # noqa: E402
 from elmos_sql_dialect.scan import _classify, discover_sql_files  # noqa: E402
-from elmos_sql_dialect.statement_splitter import split_statements  # noqa: E402
+from elmos_sql_dialect.statement_splitter import looks_like_client_directive, split_statements  # noqa: E402
 
 DDL_TYPES = ("Create", "Alter", "Drop", "Index", "Comment", "Truncate")
 
@@ -60,8 +60,8 @@ def statements_of(path: Path, dialect: Dialect):
         return
     except Exception:
         pass
-    for raw in split_statements(text):
-        if raw.text.lstrip().startswith("\\"):
+    for raw in split_statements(text, dialect=dialect):
+        if looks_like_client_directive(raw.text, dialect):
             continue
         try:
             parsed = [s for s in sqlglot.parse(raw.text, read=dialect.value) if s is not None]

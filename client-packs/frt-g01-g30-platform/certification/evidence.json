@@ -38,8 +38,9 @@
   "unapproved_dependency_changes": 0,
   "evidence_refs": [
     "certification/local-validation-evidence.json",
-    "../../docs/frt-g01-g30/installed-manifest.json",
-    "../../engines/frontend-client-engine/test/frt-runtime.test.ts",
-    "../../apps/web-console/e2e/frt-frontend-transformation.spec.ts"
+    "repository-evidence/files/docs/frt-g01-g30/installed-manifest.json",
+    "repository-evidence/files/engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "repository-evidence/files/apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "repository-evidence/manifest.json"
   ]
 }

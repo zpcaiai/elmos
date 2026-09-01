@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAccountSession } from "../components/AccountSessionProvider";
 import { useUiPreferences } from "../components/UiPreferencesProvider";
 
 const businessLines = [
@@ -44,8 +45,12 @@ const readiness = [
 ] as const;
 
 export function HelpCenter() {
+  const account = useAccountSession();
   const { locale } = useUiPreferences();
   const english = locale === "en";
+  const hasAdminAccess = account.status === "authenticated"
+    && account.principal?.isPlatformAdmin === true
+    && account.principal.permissions.includes("admin:read");
 
   return (
     <div className="page-stack help-center">
@@ -147,7 +152,11 @@ export function HelpCenter() {
               : "管理端按租户展示用户/会话上下文、任务、仓库、审计、告警、用量与脱敏配置。"}
           </p>
         </div>
-        <Link className="button button-primary" href="/admin">{english ? "Open operations admin" : "打开运营管理端"}</Link>
+        <Link className={`button ${hasAdminAccess ? "button-primary" : "admin-entry-button"}`} href={hasAdminAccess ? "/admin" : "/admin/login"}>
+          {hasAdminAccess
+            ? (english ? "Open operations admin" : "打开运营管理端")
+            : (english ? "Administrator sign in" : "前往管理员登录")}
+        </Link>
       </section>
     </div>
   );

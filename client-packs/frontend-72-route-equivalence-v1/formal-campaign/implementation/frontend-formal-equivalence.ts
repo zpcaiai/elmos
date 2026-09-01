@@ -588,6 +588,10 @@ const generatedConsumerPaths: Readonly<Record<UiFrameworkId, readonly string[]>>
   vue3: ["src/routes.ts", "src/router.ts", "src/views/GeneratedPage.vue", "src/App.vue", "src/main.ts"],
 };
 
+export function boundedNavigationGeneratedConsumerPaths(profile: UiFrameworkId): readonly string[] {
+  return generatedConsumerPaths[profile];
+}
+
 function generatedProjectName(profile: UiFrameworkId, files: Readonly<Record<string, string>>): string {
   const manifest = files["package.json"];
   if (manifest === undefined) return `formal-${profile.replaceAll("-", "")}`;
@@ -676,12 +680,20 @@ function expectedConsumerContext(
   };
 }
 
+export function expectedBoundedNavigationConsumerFiles(
+  profile: UiFrameworkId,
+  model: BoundedNavigationSemanticModel,
+  files: Readonly<Record<string, string>>,
+): Readonly<Record<string, string>> {
+  return renderTargetProject(expectedConsumerContext(profile, model, files));
+}
+
 function validateGeneratedConsumerGrammar(
   profile: UiFrameworkId,
   model: BoundedNavigationSemanticModel,
   files: Readonly<Record<string, string>>,
 ): void {
-  const expected = renderTargetProject(expectedConsumerContext(profile, model, files));
+  const expected = expectedBoundedNavigationConsumerFiles(profile, model, files);
   for (const path of generatedConsumerPaths[profile]) {
     if (files[path] === undefined) throw new Error(`reachable generated consumer is missing: ${profile}:${path}`);
     if (expected[path] === undefined || files[path] !== expected[path]) {

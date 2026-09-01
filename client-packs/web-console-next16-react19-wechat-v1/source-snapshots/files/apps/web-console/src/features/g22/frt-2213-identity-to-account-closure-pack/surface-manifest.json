@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2213",
+  "skill_name": "frt-2213-identity-to-account-closure-pack",
+  "batch": "G22",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g22/frt-2213-identity-to-account-closure-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g22.identity-to-account-closure-pack",
+  "execution_contract_sha256": "sha256:b625412d3d33e4d1d2729ab00c7341cde89de52fcc38a3489105dd37dc90afc5",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a4dcb26b422701c325a2182eab4b8cba5e8a51337281f29e4d7fd01995311254",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -208,7 +208,7 @@ polyglot-semantic-assurance-skills:
 
 .PHONY: unified-cli-gateway
 unified-cli-gateway:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/unified-cli-gateway/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --project engines/database-data-engine/sql-transpiler --locked --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m pytest tests/unified-cli-gateway/ -v
 
 
 
@@ -346,8 +346,10 @@ batch1-55-skills:
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
 batch66-80-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-complete,manifest.json,\
-		python3 tooling/import_batch66_80_assets.py --check; \
-		cd elmos-codex-skills-batch66-80-complete && ./validate.sh)
+		package=elmos-codex-skills-batch66-80-complete; \
+		test -f "$$package/manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch66_80_assets.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch66-80-test-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
@@ -355,8 +357,10 @@ batch66-80-test-skills:
 		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh)
 language-packs-batch81-95:
 	$(call guarded,elmos-language-packs-batch81-95-complete,package-manifest.json,\
-		python3 tooling/import_batch81_95_language_packs.py --check; \
-		cd elmos-language-packs-batch81-95-complete && ./validate.sh)
+		package=elmos-language-packs-batch81-95-complete; \
+		test -f "$$package/package-manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch81_95_language_packs.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch81-95-test-skills:
 	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,manifest.json,\
@@ -390,9 +394,9 @@ product-closure-convergence-skills:
 		PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_product_closure_convergence_installed.py && \
 		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_product_closure_convergence_installed; \
 	fi
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_convergence_complete.py
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/product-convergence/validate_repository_convergence_bundle.py product-convergence
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml --with jsonschema python -m unittest discover -s tests/product-closure-convergence -p 'test_*.py'
@@ -528,9 +532,9 @@ sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 sql-dialect:
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev pytest
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev mypy --ignore-missing-imports src
 
 # What the polyglot engine actually does right now, by running it rather than
 # by reading it. Every capability question here had been answered by reading

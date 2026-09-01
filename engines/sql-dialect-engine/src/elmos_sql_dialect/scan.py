@@ -88,7 +88,7 @@ from .parser import (
 )
 from .profiles import NamespaceProfile, resolve_namespace_profile
 from .routine import parse_create_routine, parse_routine_identity
-from .statement_splitter import split_statements
+from .statement_splitter import looks_like_client_directive, split_statements
 from .static_do import parse_static_do
 
 FindingStatus = Literal["IN_SUBSET", "OUT_OF_SUBSET", "SCAN_ERROR"]
@@ -136,8 +136,9 @@ BlockerFamily = Literal[
 BLOCKER_CATALOG: dict[str, tuple[BlockerFamily, str]] = {
     "CERTIFIED_DDL_CLIENT_DIRECTIVE": (
         "source-format",
-        "a psql client directive such as `\\c` or `\\i` -- it never reaches a server, so it "
-        "is neither in nor out of the SQL subset; it has to be handled before translation",
+        "a client directive such as psql `\\c`/`\\i` or mysql `source`/`DELIMITER` -- it "
+        "never reaches a server, so it is neither in nor out of the SQL subset; it has to "
+        "be handled before translation",
     ),
     "CERTIFIED_DDL_UNSUPPORTED_STATEMENT": (
         "statement-kind",
@@ -1058,15 +1059,17 @@ def _recover_statements(
     only the ones it cannot are reported as unreadable -- with their own line
     number, so they can be found.
 
-    psql client directives (``\\c``, ``\\i``, ``\\.``) get their own code. They are
-    not SQL, never reach a server, and calling them a parse failure would
-    misattribute a client-side construct to the dialect grammar.
+    Client directives (psql ``\\c``/``\\i``/``\\set``, mysql ``source`` /
+    ``DELIMITER``) get their own code. They are not SQL, never reach a server,
+    and calling them a parse failure would misattribute a client-side
+    construct to the dialect grammar. Leading comments are stripped before the
+    check: a ``--`` header must not hide ``\\set``.
     """
 
     findings: list[ScanFinding] = []
-    for index, raw in enumerate(split_statements(text), start=1):
+    for index, raw in enumerate(split_statements(text, dialect=source_dialect), start=1):
         excerpt = raw.text.strip().replace("\n", " ")[:110]
-        if raw.text.lstrip().startswith("\\"):
+        if looks_like_client_directive(raw.text, source_dialect):
             findings.append(
                 ScanFinding(
                     relative,
@@ -1074,7 +1077,7 @@ def _recover_statements(
                     "OUT_OF_SUBSET",
                     None,
                     "CERTIFIED_DDL_CLIENT_DIRECTIVE",
-                    f"line {raw.start_line}: psql client directive, not a SQL statement",
+                    f"line {raw.start_line}: client directive, not a SQL statement",
                     "source-format",
                     excerpt,
                     "SOURCE_FORMAT_REVIEW",
@@ -1193,7 +1196,7 @@ def scan_repository(
             continue
 
         index = 0
-        raw_statements = list(split_statements(text))
+        raw_statements = list(split_statements(text, dialect=source_dialect))
         raw_by_index = raw_statements if len(raw_statements) == len(statements) else []
         for statement in statements:
             if statement is None:

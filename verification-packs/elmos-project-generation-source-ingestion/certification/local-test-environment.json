@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "kind": "elmos-local-browser-test-environment",
+  "platform": {
+    "product_name": "macOS",
+    "product_version": "26.6.2",
+    "build_version": "25G83",
+    "kernel_release": "25.6.0",
+    "architecture": "arm64"
+  },
+  "node": {
+    "version": "v26.0.0",
+    "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+    "byte_size": 68672,
+    "sha256": "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb"
+  },
+  "pnpm": {
+    "version": "10.12.4",
+    "realpath": "/opt/homebrew/Cellar/pnpm/10.12.4/libexec/lib/node_modules/pnpm/bin/pnpm.cjs",
+    "byte_size": 1102,
+    "sha256": "sha256:b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"
+  },
+  "playwright": {
+    "version": "1.61.1",
+    "package_path": "apps/web-console/node_modules/@playwright/test/package.json",
+    "package_byte_size": 754,
+    "package_sha256": "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e",
+    "lock_path": "apps/web-console/pnpm-lock.yaml",
+    "lock_byte_size": 35393,
+    "lock_sha256": "sha256:92de83a9244292f011ef88fd6d1838febf79951b10881c859bf36846fd9ce6e6"
+  },
+  "browser": {
+    "project": "chromium",
+    "channel": "chrome",
+    "version": "Google Chrome 152.0.7977.64",
+    "realpath": "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "byte_size": 367696,
+    "sha256": "sha256:ead0d8b749f9d1930c1fb5f9ae5c24ad7c4c8a542cc277f0353e946a934113e4"
+  },
+  "web_console": {
+    "package_path": "apps/web-console/package.json",
+    "package_byte_size": 3672,
+    "package_sha256": "sha256:684fe37e2fe3936382459a4df51d39c570eb3cfd9454313921a9fa80e96f5f80"
+  }
+}

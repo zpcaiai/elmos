@@ -27,7 +27,8 @@ EXPECTED_ASSETS = {
     "typescript.js",
 }
 NODE_SHA256 = "1" * 64
-CLOSURE_SHA256 = "2" * 64
+CLOSURE_SHA256 = "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b"
+CLOSURE_PROFILE = "homebrew-node26-libada-77917065434c-616512"
 
 
 def _toolchain() -> ExactToolchain:
@@ -38,6 +39,7 @@ def _toolchain() -> ExactToolchain:
         profile=(
             "node-toolchain-closure-schema=v1",
             f"node-closure-sha256={CLOSURE_SHA256}",
+            f"node-closure-profile={CLOSURE_PROFILE}",
             "platform=Darwin/arm64",
             "module=ESM",
         ),
@@ -228,3 +230,25 @@ def test_toolchain_binding_rejects_ambiguous_node_closure_profiles() -> None:
 
     with pytest.raises(RouteError, match="^JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID$"):
         native._javascript_toolchain_binding(ambiguous)
+
+
+@pytest.mark.parametrize("profile_value", [None, "mismatched-profile"])
+def test_toolchain_binding_requires_matching_node_closure_profile(
+    profile_value: str | None,
+) -> None:
+    toolchain = _toolchain()
+    profile = tuple(
+        item for item in toolchain.profile if not item.startswith("node-closure-profile=")
+    )
+    if profile_value is not None:
+        profile = (*profile, f"node-closure-profile={profile_value}")
+    candidate = ExactToolchain(
+        language=toolchain.language,
+        version=toolchain.version,
+        executable=toolchain.executable,
+        profile=profile,
+        executable_sha256=toolchain.executable_sha256,
+    )
+
+    with pytest.raises(RouteError, match="^JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID$"):
+        native._javascript_toolchain_binding(candidate)

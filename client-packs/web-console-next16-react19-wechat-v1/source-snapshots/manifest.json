@@ -3912,6 +3912,19 @@
       "bytes": 82
     }
   ],
-  "snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
-  "boundary": "References exact tracked source bytes at source_revision; source scripts are not executed by this generator."
+  "snapshot_digest": "sha256:67b44b68d3c6065d8199f2f01297e6968db49d9cb9957be1b12f51f629f27497",
+  "boundary": "Pack-local files are exact copies of the complete regular-file Git tree at source_revision; no source script is executed during materialization.",
+  "source_root": "source-snapshots/files",
+  "total_bytes": 6181440,
+  "aggregate_digest": "sha256:67b44b68d3c6065d8199f2f01297e6968db49d9cb9957be1b12f51f629f27497",
+  "digest_algorithm": "sha256-lf-records-v1:path-nul-digest-nul-bytes",
+  "materialization": {
+    "state": "MATERIALIZED_FROM_GIT",
+    "git_object_verification": "PASSED",
+    "source_revision": "f734a4d9a2dd9253d975b998eb5bbe5a7c624dff",
+    "file_count": 781,
+    "total_bytes": 6181440,
+    "external_runtime_evidence": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
 }

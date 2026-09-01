@@ -40,10 +40,9 @@ Schema 和指标分别见 `telemetry/policy.json`、`events.schema.json` 与
 所有业务线、高频错误和最近操作，并管理 18 条业务线 SLO、告警、事件、负责人、
 通知 outbox、快修提案、保留运行及外部证据状态。
 
-生产优先使用企业 OIDC 会话的 `admin:read`、`admin:operate`、`admin:approve`
-权限，并将所选租户和真实 Actor 传给 control-plane。浏览器不能选择或提升可信
-角色。短期令牌只作为显式启用的 break-glass/本地回退，只保存在当前页面内存，
-不进入 URL、localStorage 或日志。所有状态变更要求 `expectedVersion`；陈旧/
+管理端只接受已验证邮箱精确等于 `zpchoney@gmail.com` 的企业 OIDC 会话，并将
+所选租户和真实 Actor 传给 control-plane。其他邮箱携带的管理角色会在服务端被
+移除，浏览器也不接受共享 Bearer 管理令牌。所有状态变更要求 `expectedVersion`；陈旧/
 并发写入返回 409。审批和执行者权限分离，未配置或过期凭证、身份绑定不一致、
 权限不足或 control-plane 不可用均明确失败，不以空数据伪装健康。
 
@@ -81,10 +80,9 @@ Web 与 control-plane 共享：
 
 - 企业 OIDC 配置与会话密钥见账户登录文档/对应 `ELMOS_OIDC_*`、
   `ELMOS_SESSION_SECRET` 环境；
-- `ELMOS_ADMIN_OBSERVABILITY_TOKEN`、`_EXPIRES_AT`；
-- `ELMOS_ADMIN_OBSERVABILITY_TENANT_ID`、`_ACTOR_ID`；
-- `ELMOS_ADMIN_OBSERVABILITY_ROLE`：`VIEWER`、`OPERATOR` 或 `APPROVER`。
-- `ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK`：生产 break-glass 显式开关，默认关闭。
+- `ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED=true`；
+- `ELMOS_ADMIN_LOGIN_EMAIL_FROM`；
+- `ELMOS_RESEND_API_KEY_FILE`（推荐）或 `ELMOS_RESEND_API_KEY`，二选一。
 
 自动化与保留：
 

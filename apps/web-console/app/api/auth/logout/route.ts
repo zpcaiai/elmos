@@ -5,6 +5,8 @@ import {
   accountSessionErrorResponse,
   assertSameOriginMutation,
   oidcConfiguration,
+  localAccountCookieDeletionOptions,
+  localAccountCookieNames,
   revokeToken,
   trustedPublicOrigin,
   unsafeCookieValue,
@@ -46,6 +48,9 @@ export async function POST(request: NextRequest) {
   const response = NextResponse.json({ loggedOut: true, revocationConfirmed, endSessionUrl });
   for (const name of Object.values(accountCookieNames)) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
+  }
+  for (const name of Object.values(localAccountCookieNames)) {
+    response.cookies.set(name, "", localAccountCookieDeletionOptions(request));
   }
   response.headers.set("Cache-Control", "no-store, private");
   return response;

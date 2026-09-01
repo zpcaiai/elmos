@@ -85,6 +85,8 @@ final class OidcTenantMembershipFilter extends OncePerRequestFilter {
                     ControlPlanePrincipal.databaseBound(
                             requestedOrganization,
                             subject,
+                            ControlPlanePrincipal.isPlatformAdministratorEmail(
+                                    normalized.normalized(), true),
                             organizations.organizations(accountId)));
         } catch (AccessDeniedException
                  | JdbcOrganizationSelfServiceStore.OrganizationStoreException rejected) {

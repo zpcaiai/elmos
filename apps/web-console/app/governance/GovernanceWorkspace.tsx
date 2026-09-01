@@ -20,7 +20,7 @@ interface ContractDiffItem {
   description: string;
 }
 
-const mockMutants: MutantItem[] = [
+const sampleMutants: MutantItem[] = [
   {
     id: "MUT-001",
     operator: "CONDITION_NEGATION",
@@ -55,7 +55,7 @@ const mockMutants: MutantItem[] = [
   },
 ];
 
-const mockDiffs: ContractDiffItem[] = [
+const sampleDiffs: ContractDiffItem[] = [
   {
     endpoint: "POST /api/v1/orders",
     category: "FIELD_REMOVED",
@@ -82,6 +82,7 @@ export function GovernanceWorkspace() {
     "public int calculateDiscount(int price) {\n  if (price > 100) {\n    return price - 20;\n  }\n  return price;\n}"
   );
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [mutationResults, setMutationResults] = useState<MutantItem[] | null>(null);
   const [cacheStats, setCacheStats] = useState({
     l1Items: 14,
     totalEntries: 240,
@@ -93,6 +94,7 @@ export function GovernanceWorkspace() {
   const handleRunMutation = () => {
     setIsAnalyzing(true);
     setTimeout(() => {
+      setMutationResults(sampleMutants);
       setIsAnalyzing(false);
     }, 400);
   };
@@ -113,27 +115,37 @@ export function GovernanceWorkspace() {
           <h1 className={styles.title}>契约治理、变异测试与多级缓存中心</h1>
         </div>
         <p className={styles.subtitle}>
-          提供基于 AST 的代码变异杀伤率分析、跨语言 API 契约向后兼容性漂移差分以及多级 CAS 缓存命中率监控。
+          展示变异、API 差分和缓存治理的交互形态；本页面未连接真实 Runner，所有示例均不构成执行证据。
         </p>
+
+        <div className={styles.notice} role="status">
+          SAMPLE_ONLY · Runner execution NOT_RUN · Independent verification NOT_RUN · Certification NOT_CERTIFIED
+        </div>
 
         <div className={styles.tabBar}>
           <button
+            type="button"
             className={`${styles.tabBtn} ${activeTab === "mutation" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("mutation")}
+            aria-pressed={activeTab === "mutation"}
           >
             <Icon name="test" size={16} />
             变异测试充分性分析 (Mutation Testing)
           </button>
           <button
+            type="button"
             className={`${styles.tabBtn} ${activeTab === "api-diff" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("api-diff")}
+            aria-pressed={activeTab === "api-diff"}
           >
             <Icon name="route" size={16} />
             API 契约向后兼容漂移差分 (API Diff)
           </button>
           <button
+            type="button"
             className={`${styles.tabBtn} ${activeTab === "cas-cache" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("cas-cache")}
+            aria-pressed={activeTab === "cas-cache"}
           >
             <Icon name="database" size={16} />
             多级 CAS 缓存网络 (CAS Cache & Bloom)
@@ -146,29 +158,30 @@ export function GovernanceWorkspace() {
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
               <h2>待测业务逻辑 (Source Code)</h2>
-              <button className={styles.runBtn} onClick={handleRunMutation} disabled={isAnalyzing}>
+              <button type="button" className={styles.runBtn} onClick={handleRunMutation} disabled={isAnalyzing}>
                 <Icon name="play" size={14} />
-                {isAnalyzing ? "变异执行中..." : "执行变异测试 (elmos qa mutate)"}
+                {isAnalyzing ? "生成示例中..." : "生成变异结果示例（不执行 Runner）"}
               </button>
             </div>
             <textarea
+              aria-label="待测业务逻辑示例"
               className={styles.editor}
               value={codeSnippet}
               onChange={(e) => setCodeSnippet(e.target.value)}
               rows={8}
             />
 
-            <div className={styles.scoreBoard}>
+            <div className={styles.scoreBoard} aria-label="变异测试示例状态">
               <div className={styles.scoreItem}>
-                <span className={styles.scoreVal}>75.0%</span>
+                <span className={styles.scoreVal}>{mutationResults ? "75.0%" : "NOT_RUN"}</span>
                 <span className={styles.scoreLbl}>变异杀伤率 (Kill Score)</span>
               </div>
               <div className={styles.scoreItem}>
-                <span className={styles.scoreVal}>3 / 4</span>
+                <span className={styles.scoreVal}>{mutationResults ? "3 / 4" : "—"}</span>
                 <span className={styles.scoreLbl}>已击杀变异体 (Killed Mutants)</span>
               </div>
               <div className={styles.scoreItem}>
-                <span className={styles.scoreVal}>1</span>
+                <span className={styles.scoreVal}>{mutationResults ? "1" : "—"}</span>
                 <span className={styles.scoreLbl}>存活变异体 (Survived)</span>
               </div>
             </div>
@@ -176,11 +189,13 @@ export function GovernanceWorkspace() {
 
           <div className={styles.panel}>
             <div className={styles.panelHeader}>
-              <h2>合成变异体列表 (Synthesized Mutants)</h2>
-              <span className={styles.metaTag}>4 Operators Active</span>
+              <h2>变异体示例 (Illustrative Mutants)</h2>
+              <span className={styles.metaTag}>{mutationResults ? "SAMPLE_ONLY" : "NOT_RUN"}</span>
             </div>
             <div className={styles.mutantList}>
-              {mockMutants.map((m) => (
+              {!mutationResults ? (
+                <p className={styles.emptyState}>尚未生成示例；真实变异测试、编译与测试回放均为 NOT_RUN。</p>
+              ) : mutationResults.map((m) => (
                 <div key={m.id} className={styles.mutantCard}>
                   <div className={styles.mutantHeader}>
                     <span className={styles.mutantId}>{m.id}</span>
@@ -207,12 +222,12 @@ export function GovernanceWorkspace() {
       {activeTab === "api-diff" && (
         <div className={styles.fullPanel}>
           <div className={styles.panelHeader}>
-            <h2>API 契约漂移与向后兼容性报告 (elmos polyglot api-diff)</h2>
-            <span className={styles.dangerTag}>1 处破坏性变更 (Breaking Change)</span>
+            <h2>API 契约差分静态示例</h2>
+            <span className={styles.dangerTag}>SAMPLE_ONLY · NOT_RUN</span>
           </div>
 
           <div className={styles.diffList}>
-            {mockDiffs.map((d, i) => (
+            {sampleDiffs.map((d, i) => (
               <div key={i} className={styles.diffCard}>
                 <div className={styles.diffCardHeader}>
                   <span className={styles.endpointName}>{d.endpoint}</span>
@@ -240,9 +255,9 @@ export function GovernanceWorkspace() {
       {activeTab === "cas-cache" && (
         <div className={styles.fullPanel}>
           <div className={styles.panelHeader}>
-            <h2>多级 CAS 内容寻址缓存状态 (elmos cache inspect)</h2>
-            <button className={styles.purgeBtn} onClick={handlePurgeL1}>
-              <Icon name="refresh" size={14} /> 清空 L1 内存缓存 (Purge L1)
+            <h2>浏览器内缓存状态示例</h2>
+            <button type="button" className={styles.purgeBtn} onClick={handlePurgeL1}>
+              <Icon name="refresh" size={14} /> 清空页面示例 L1 状态
             </button>
           </div>
 

@@ -1,0 +1,42 @@
+{
+  "taskSpecId": "repository-scale-refactor-example",
+  "version": "1.0.0",
+  "goal": "Large repository architecture refactor with ChangeGraph, worktrees, validation DAG and evidence gate",
+  "acceptanceCriteria": [
+    {
+      "id": "repository-census",
+      "mandatory": true,
+      "verifierType": "repository-census"
+    },
+    {
+      "id": "changegraph-traceability",
+      "mandatory": true,
+      "verifierType": "changegraph-traceability"
+    },
+    {
+      "id": "parallel-write-isolation",
+      "mandatory": true,
+      "verifierType": "parallel-write-isolation"
+    },
+    {
+      "id": "full-validation-dag",
+      "mandatory": true,
+      "verifierType": "full-validation-dag"
+    },
+    {
+      "id": "security",
+      "mandatory": true,
+      "verifierType": "security"
+    },
+    {
+      "id": "chaos-recovery",
+      "mandatory": true,
+      "verifierType": "chaos-recovery"
+    },
+    {
+      "id": "deployment-complete",
+      "mandatory": true,
+      "verifierType": "deployment-complete"
+    }
+  ]
+}

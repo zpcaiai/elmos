@@ -58,13 +58,16 @@ A/B 线才抢 Mac。所以 **A/B 与 C 可以真正并行，不互相排队**。
 | A1 | | | |
 | A2 | | | |
 | A3 | | | |
+| A4 | Claude/Cowork | 2026-09-01 | `DONE` —— `.ai/DEMO-2026-09-01-runbook.md`（19 步真跑通 / 3 步需 Mac 或 Office） |
 | B1 | | | |
 | B2 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
-| B3 | | | |
+| B3 | Claude/Cowork | 2026-09-01 | `DONE` —— 口径重量为 **44 条**（上游 30 / 可规避 14），6 个可上报缺陷带最小复现；**分诊的覆盖率收益实测 = 0**。见 `FINDINGS-2026-09-01-b3.md` |
+| B4 | Claude/Cowork | 2026-09-01 | `DONE` —— 选 Matrix Synapse（重量 **89.93%**，schema 口径 94.46%）；结论不变但理由已换 |
 | C1 | Claude/Cowork | 2026-08-25 | `IN-PROGRESS` |
-| C2 | | | |
-| C3 | | | |
-| C4 | | | |
+| C2 | Claude/Cowork | 2026-09-01 | `DONE` —— 定自绘 SVG（不做 Mermaid）；确定性与横向滚动均已实测闭合 |
+| C3 | Claude/Cowork | 2026-09-01 | `DONE` —— 纯标准库 OOXML，矢量三重机器验证已闭合；**Mac 上真打开过：5 页齐、未报修复**。缩放/选中两项渲染细节未逐项核，记为已知边界 |
+| C4 | | | 本轮不做（C0 已定 CLI + 静态报告） |
+| C5 | Claude/Cowork | 2026-09-01 | `DONE` —— 全链跑通（flow-discovery→spec→svg/report/pptx），被分析对象换成 `engines/uir-java-python`（sql-dialect-engine 正被改写）；判定标签 3/20→**20/20**；结构比对 20 if/1 while/40 分支边/可达 79/79 全对。见 `FINDINGS-2026-09-01-c5.md` |
 
 ---
 
@@ -138,7 +141,12 @@ certification_status      NOT_CERTIFIED
   （pg_dump 的 `public.` 前缀）。
 - 语料反差极大：Matrix Synapse 真实 schema **87.8%**，ELMOS 自己的迁移只有 **18.9%**。
 
-### B1 · 模式限定名（160 条）—— `NEEDS-DECISION` → 之后 `READY` —— 云端 —— 5–8 天
+### B1 · 模式限定名（160 条）—— ⚠️ `NEEDS-RETRIAGE`（2026-09-01：前提已过期）—— 云端
+
+> **2026-09-01 两条线程独立实测：`CERTIFIED_DDL_QUALIFIED_TABLE_NAME` 出现 0 次**，
+> 已被 `NAMESPACE_MAPPING_REQUIRED`（370 条）取代，且 `--namespace-map` 实测可解并留 digest。
+> 「160 条」和「四方言含义分歧需先定失败关闭规则」这两个前提都要重新量过再定级。
+> 见 `FINDINGS-2026-09-01-b3.md` §1、`FINDINGS-2026-09-01-a4-b4.md`、`FINDINGS-2026-09-01-crosscheck.md` §3。
 
 - **需要你先拍板**：`public.orders` 在四个方言里含义确实有分歧
   （PG 的 schema、MySQL 的 database、Oracle 的 user、SQL Server 的三段式）。
@@ -205,12 +213,23 @@ certification_status      NOT_CERTIFIED
 它比转写子集宽得多 —— 转写准入率 1/16046，但 inventory 能枚举整个文件的
 namespace / class / method / 属性 / 语句。**画图走这层，不要走 route/equivalence 层。**
 
-### C0 · 归属决定 —— `NEEDS-DECISION` —— 1 天
+### C0 · 归属决定 —— `DONE`（2026-09-01 已拍板）—— 1 天
+
+> **决定（Ethan，2026-09-01）：先做 CLI + 静态 HTML 报告，不做 web-console 新页面。**
+> 因此 **C4 Web UI 本轮不做**；C2 的渲染产物直接喂这份静态报告。
 
 - 这条线是 **web-console 的新页面**，还是先做 **CLI + 静态 HTML 报告**？
   后者能把 C4 从 EPIC 降成小活，先演示先反馈。**建议先 CLI + 报告。**
 
-### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `READY` —— 云端 —— 12–18 天
+### C1 · 用 analyzer/inventory 层替换 `discover_flows` 的正则 —— `IN-PROGRESS`（只做完一半）—— 云端
+
+> **2026-09-01 实测状态**：Python 侧是**真 `ast` 解析器**（`origin=PARSED`，控制流与 import 边都是，
+> 08-31 已在树上）。**Java 及其余 12 门语言仍是正则**；`derive_data_lineage` 与
+> `reconcile_api_event_topology` 仍是纯正则**且输出没有 `origin` 字段**，那两条线上解析与推断仍混着。
+> ⚠️ **另一并行会话 09:46–09:47 正在把 origin 标注扩到 Java**（新增 `java_structure.py` +
+> `test_java_structure.py`）。**待答**：那份实现是「4 条 `re.compile` + 注释/字符串遮蔽 + 花括号深度」，
+> 不是 `ast`，却与 `ast` 产出共用同一个 `ORIGIN_PARSED` 标记——这与本条验收原文
+> 「『解析器给出的』与『推断的』两种明确来源，**不能混**」有张力。见 `FINDINGS-2026-09-01-c5.md` 追加节。
 
 - **做什么**：在 analyzer / `inventory_module` 之上产出函数级结构（声明、分支、循环、返回），
   喂给 `compile_diagram_spec`。先做 **1–2 门语言**（建议 Python + Java，两者 analyzer 最成熟）。

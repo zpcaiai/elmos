@@ -92,7 +92,12 @@ uv run --locked python -m pytest tests/test_php_target.py tests/test_native_modu
 - 阻塞点：Mac 上没有 kotlinc，`.sdkmanrc` 只有 java+maven
 - 另需 `validation.py` 的 kotlin harness 才能做行为验证
 
-## #3 + #4 React / Flutter 的归属 — `NEEDS-DECISION`（原定级错误）
+## #3 + #4 React / Flutter 的归属 — `DONE`（2026-09-01 已拍板：移出语言矩阵）
+
+> **决定（Ethan，2026-09-01）：react / flutter 移出语言矩阵，13 → 11。**
+> 二者两端均未实现（`IDENTIFIER_POLICY_UNSUPPORTED`），留在矩阵里只让对外数字虚高。
+> 连带影响：全矩阵 156 条与 `research_route_count` 66 条都要重算。
+> **改数前先跑 `scripts/operations/validate_translation_route_matrix.py` 取当场的值，不要手算。**
 
 **原「#3 React 分析器 READY」是错的。** 详见 `FINDINGS-2026-08-19-kotlin-react-flutter-placement.md`。
 
@@ -199,6 +204,8 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 6d egress 默认拒绝的真实强制 · 6e secret broker 与租约撤销 · 6f 签名任务信封验证
 
 ## #7 六个骨架引擎 — `READY`（逐个补）
+
+> **决定（Ethan，2026-09-01）：先不合并，逐个补。** 合并问题不再阻塞本条。
 
 | 引擎 | 现状 |
 |---|---|

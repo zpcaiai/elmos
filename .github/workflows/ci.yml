@@ -162,29 +162,157 @@ jobs:
 
   frontend-client-engine:
     name: Frontend Client Engine
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    # The locked frontend formal profile is a macOS arm64 Z3 4.16.0
+    # artifact. Running this contract on Linux would correctly return
+    # MISSING and make the fail-closed solver tests fail before they exercise
+    # the engine.
+    runs-on: macos-15
+    timeout-minutes: 35
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Node.js 24
+      - name: Root-seal OpenSSL 3 Ed25519 runtime
+        run: |
+          # Run before repository code. stdin prevents sudo from reopening a
+          # runner-writable checkout path, and /usr/bin/python3 is root-owned.
+          test -x /usr/bin/python3
+          test "$(/usr/bin/uname -m)" = "arm64"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          /usr/bin/sudo -- /usr/bin/python3 -I -B - \
+            --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
+            <scripts/toolchains/verify_openssl3_ci_runtime.py
+      - name: Set up Node.js 26.0.0
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "24"
+          node-version: "26.0.0"
       - name: Install locked pnpm tool
         run: npm install --global pnpm@10.12.4
+      - name: Set up Python 3.11 schema validator
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.11"
+      - name: Install locked Python validation tools
+        run: >-
+          python3.11 -m pip install --disable-pip-version-check
+          'jsonschema==4.25.1' 'uv==0.11.16'
       - name: Install locked dependencies
         run: pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+      - name: Bind locked Z3 solver
+        run: |
+          chmod +x client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3
+          echo "ELMOS_FRONTEND_Z3=$GITHUB_WORKSPACE/client-packs/frontend-72-route-equivalence-v2/formal-campaign/environment/z3" >> "$GITHUB_ENV"
       - name: Test Frontend Client Engine
         run: pnpm --dir engines/frontend-client-engine check
+      - name: Bind OpenSSL 3 Ed25519 runtime
+        run: |
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
+          openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
+          test "$(/usr/bin/uname -m)" = "arm64"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test -f "${openssl_bin}"
+          test -x "${openssl_bin}"
+          test -f "${openssl_receipt}"
+          test ! -L "${openssl_receipt}"
+          test "$(python3.11 -I -B -c \
+            'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
+            "${openssl_bin}")" = "${openssl_bin}"
+          test "$(python3.11 -I -B -c \
+            'import os, sys; print(os.path.realpath(sys.argv[1], strict=True))' \
+            "${openssl_opt_bin}")" = "${openssl_bin}"
+          python3.11 -I -B -c \
+            'import json, pathlib, sys; value=json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")); source=value.get("source"); assert value.get("arch") == "arm64"; assert value.get("built_as_bottle") is True; assert value.get("poured_from_bottle") is True; assert isinstance(source, dict); assert source.get("tap") == "homebrew/core"; assert source.get("spec") == "stable"; assert source.get("versions", {}).get("stable") == "3.6.3"; assert pathlib.Path(str(source.get("path"))).name == "packages.arm64_sequoia.jws.json"' \
+            "${openssl_receipt}"
+          python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
+          printf '%s\n' "/opt/homebrew/Cellar/openssl@3/3.6.3/bin" >>"${GITHUB_PATH}"
+      - name: Verify bound OpenSSL runtime
+        run: |
+          openssl_bin="/opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl"
+          test "$(command -v openssl)" = "${openssl_bin}"
+          python3.11 -I -B scripts/toolchains/verify_openssl3_ci_runtime.py
+      - name: Replay complete Batch 32 and Batch 35 formal gates
+        run: |
+          make batch32-check
+          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
+            python3.11 scripts/batch32/run_client_gate.py "$pack"
+          done
+          make batch35-check
 
-  polyglot-routes:
-    name: Directed language route contracts
+  polyglot-route-pack-contracts:
+    name: Directed route pack contract prerequisites
+    # Keep the complete Batch 29 suite and all 176 route directories outside
+    # the engine worker's independent six-hour execution budget.
+    runs-on: macos-26
+    timeout-minutes: 360
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up bootstrap Python 3.12.10
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+          architecture: arm64
+      - name: Set up Java 21.0.11
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21.0.11"
+      - name: Set up .NET 10.0.301
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "10.0.301"
+      - name: Set up Node.js 26.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked route-pack tools
+        run: |
+          python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-pack-venv" \
+            >>"${GITHUB_ENV}"
+          npm install --global pnpm@10.12.4
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          cargo fetch \
+            --locked \
+            --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+      - name: Run complete Batch 29 and route-pack contracts
+        run: |
+          if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
+            export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-pack-venv"
+          uv --directory engines/polyglot-route-engine sync --locked
+          make b29-skills-test
+          python scripts/operations/validate_translation_route_matrix.py
+          for route in routes/*/; do
+            python scripts/batch29/run_route_gate.py "$route"
+          done
+
+  polyglot-route-engine-core:
+    name: Directed route engine core qualification
     # Objective-C target execution requires the real Foundation framework.
     # Linux clang can parse the bounded source subset, but cannot provide that
-    # runtime contract, so the complete 9-language matrix runs on macOS.
-    runs-on: macos-15
-    timeout-minutes: 60
+    # runtime contract, so the compiler-backed core runs on macOS.
+    runs-on: macos-26
+    # The 312 repository-matrix cases run in independently bounded source
+    # shards below.  Keeping them out of this worker prevents an outdated
+    # aggregate runtime estimate from hiding a timeout.
+    timeout-minutes: 240
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -215,12 +343,24 @@ jobs:
           go-version: "1.25.0"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
-        with:
-          toolchain: "1.89.0"
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
+      - name: Capture non-certifying Apple route host identity
+        run: |
+          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
+          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            | tee "${diagnostic}"
+          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            --verify-jsonl "${diagnostic}"
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked tools
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv" \
+            >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           # The native Rust analyzer executes with --offline --locked so a
@@ -232,23 +372,187 @@ jobs:
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
       - name: Verify compiler-backed route engine
         run: |
-          export ELMOS_JAVA21_HOME="$JAVA_HOME"
-          # The hosted Xcode image is the native toolchain artifact for this
-          # engineering run. Bind its exact observed identities into every
-          # report; this remains local evidence and never upgrades a route to
-          # externally certified status.
-          export ELMOS_CLANG_VERSION="$(clang --version | head -n 1)"
-          export ELMOS_SWIFT_VERSION="$(swiftc --version | head -n 1)"
+          # The installer and route engine independently bind exact versions,
+          # file/tree digests, native dependency closures, and Xcode identity.
+          # This remains local evidence and never upgrades external status.
+          if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
+            export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
-          uv --directory engines/polyglot-route-engine run --locked pytest
+          uv --directory engines/polyglot-route-engine run --locked pytest \
+            "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
+          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          tests_root = (
+              Path(os.environ["GITHUB_WORKSPACE"])
+              / "engines/polyglot-route-engine/tests"
+          )
+          matrix_file = tests_root / "test_repository_pipeline_language_matrix.py"
+          all_test_files = sorted(tests_root.rglob("test_*.py"))
+          if matrix_file not in all_test_files:
+              raise SystemExit("repository language matrix test file is missing")
+          core_test_files = [path for path in all_test_files if path != matrix_file]
+          if not core_test_files or len(core_test_files) + 1 != len(all_test_files):
+              raise SystemExit("route engine core test partition is incomplete")
+          completed = subprocess.run(
+              [sys.executable, "-m", "pytest", *map(str, core_test_files)],
+              check=False,
+          )
+          raise SystemExit(completed.returncode)
+          PY
+          uv --directory engines/polyglot-route-engine run --locked pytest \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_directed_language_pair_matrix_contains_every_ordered_pair_once" \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_medium_language_ring_covers_every_source_and_target_once" \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_repository_pipeline_language_matrix.py::test_repository_pending_languages_are_refused_by_the_repository_surface"
           uv --directory engines/polyglot-route-engine run --locked ruff check src tests
           uv --directory engines/polyglot-route-engine run --locked mypy src
-      - name: Verify all route packs and console contracts
+
+  polyglot-route-engine-matrix:
+    name: Directed route engine matrix (${{ matrix.source_language }})
+    # Establish the exact hosted compiler/runtime identity once before
+    # consuming scarce macOS workers for the 13 source-language shards.
+    needs: polyglot-route-engine-core
+    runs-on: macos-26
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        source_language:
+          - java
+          - python
+          - csharp
+          - typescript
+          - go
+          - rust
+          - cpp
+          - objc
+          - swift
+          - php
+          - kotlin
+          - react
+          - flutter
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Set up bootstrap Python 3.12.10
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12.10"
+          architecture: arm64
+      - name: Set up Java 21.0.11
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
+        with:
+          distribution: temurin
+          java-version: "21.0.11"
+      - name: Set up .NET 10.0.301
+        uses: actions/setup-dotnet@26b0ec14cb23fa6904739307f278c14f94c95bf1 # v5.4.0
+        with:
+          dotnet-version: "10.0.301"
+      - name: Set up Node.js 26.0.0
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "26.0.0"
+      - name: Set up Go 1.25.0
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.25.0"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+      - name: Prepare exact Apple route host
+        run: scripts/toolchains/prepare_apple_route_ci_host.sh
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked tools
         run: |
-          python scripts/operations/validate_translation_route_matrix.py
-          for route in routes/*/; do
-            python scripts/batch29/run_route_gate.py "$route"
-          done
+          python -m pip install --disable-pip-version-check uv==0.11.16
+          uv python install 3.12.12
+          printf '%s\n' \
+            "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-matrix-${{ matrix.source_language }}-venv" \
+            >>"${GITHUB_ENV}"
+          npm install --global pnpm@10.12.4
+          pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          cargo fetch \
+            --locked \
+            --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+      - name: Verify exact source-language matrix shard
+        env:
+          ELMOS_ROUTE_SOURCE_LANGUAGE: ${{ matrix.source_language }}
+        run: |
+          if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
+            export ELMOS_JAVA21_HOME="$JAVA_HOME"
+          fi
+          test "${UV_PROJECT_ENVIRONMENT}" = \
+            "${RUNNER_TEMP}/elmos-polyglot-route-matrix-${ELMOS_ROUTE_SOURCE_LANGUAGE}-venv"
+          uv --directory engines/polyglot-route-engine sync --locked
+          uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
+          import os
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          from elmos_polyglot_route.models import SUPPORTED_LANGUAGES
+
+          source = os.environ["ELMOS_ROUTE_SOURCE_LANGUAGE"]
+          if source not in SUPPORTED_LANGUAGES:
+              raise SystemExit(f"unsupported matrix source shard: {source}")
+          test_file = (
+              Path(os.environ["GITHUB_WORKSPACE"])
+              / "engines/polyglot-route-engine/tests"
+              / "test_repository_pipeline_language_matrix.py"
+          )
+          functions = (
+              "test_repository_pipeline_converts_three_file_repository_for_every_directed_pair",
+              "test_repository_pipeline_converts_medium_repository_for_every_directed_pair",
+          )
+          selectors = [
+              f"{test_file}::{function}[{source}-{target}]"
+              for function in functions
+              for target in SUPPORTED_LANGUAGES
+              if target != source
+          ]
+          if len(selectors) != 24 or len(set(selectors)) != 24:
+              raise SystemExit("matrix shard must contain exactly 24 unique nodes")
+          completed = subprocess.run(
+              [sys.executable, "-m", "pytest", *selectors],
+              check=False,
+          )
+          raise SystemExit(completed.returncode)
+          PY
+
+  polyglot-route-engine:
+    name: Directed route engine qualification
+    needs:
+      - polyglot-route-engine-core
+      - polyglot-route-engine-matrix
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every route-engine worker
+        run: |
+          test "${{ needs.polyglot-route-engine-core.result }}" = "success"
+          test "${{ needs.polyglot-route-engine-matrix.result }}" = "success"
+
+  polyglot-routes:
+    name: Directed language route contracts
+    needs:
+      - polyglot-route-pack-contracts
+      - polyglot-route-engine
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every directed-route worker
+        run: |
+          test "${{ needs.polyglot-route-pack-contracts.result }}" = "success"
+          test "${{ needs.polyglot-route-engine.result }}" = "success"
 
   sql-dialect-engine:
     name: SQL Dialect Engine
@@ -273,18 +577,19 @@ jobs:
 
   typed-sql-transpiler:
     name: Typed SQL transpiler exact-runtime qualification
-    runs-on: macos-15
+    runs-on: macos-26
     timeout-minutes: 20
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up CPython 3.14.6 arm64
-        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
-        with:
-          python-version: "3.14.6"
-          architecture: arm64
-      - name: Install locked uv tool
-        run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Install exact CPython and SQLite runtime
+        env:
+          ELMOS_POLYGLOT_ROUTE_CI_PROFILE: typed-sql
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Verify locked uv tool
+        run: >-
+          test "$(uv --version)" =
+          "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
       - name: Verify typed SQL transpiler exact-runtime qualification
         working-directory: engines/database-data-engine/sql-transpiler
         run: |
@@ -422,7 +727,6 @@ jobs:
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
         with:
-          toolchain: "1.89.0"
           components: clippy,rustfmt
       - name: Set up Gradle 8.14.3
         uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
@@ -450,6 +754,10 @@ jobs:
 
   web-console:
     name: Web Console
+    # Receipt-bound Batch 32 replay was captured on a different macOS point
+    # release and remains a distinct NOT_RUN/NOT_CERTIFIED native gate here.
+    # This job validates its captured evidence portably and still executes the
+    # real web build and browser journeys on the hosted Linux runtime.
     runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
@@ -458,7 +766,7 @@ jobs:
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: "22"
+          node-version: "22.23.1"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -472,25 +780,25 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
+      - name: Build frontend client engine
+        run: pnpm --dir engines/frontend-client-engine build
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
-      - name: Verify every Batch 32 client pack
+      - name: Verify translation Runner evidence and cancellation invariants
+        run: pnpm --dir apps/web-console check:evidence
+      - name: Verify every Batch 32 client pack with portable evidence boundary
         run: |
+          make batch32-portable-check
           python scripts/batch32/validate_account_usage_corpora.py
-          find client-packs -mindepth 1 -maxdepth 1 -type d -print | sort | while IFS= read -r pack; do
-            python scripts/batch32/run_client_gate.py "$pack"
-          done
-      - name: Set up Node.js 26.0.0 for exact Translation execution
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "26.0.0"
+          make batch32-client-packs-portable-gate
       - name: Install locked pnpm tool for Translation execution
         run: npm install --global pnpm@10.12.4
       - name: Install Chromium for browser journeys
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify desktop and mobile browser journeys
+        id: browser-journeys
         env:
           ELMOS_E2E_PORT: "3210"
           ELMOS_E2E_WEB_SERVER_MODE: development
@@ -502,15 +810,19 @@ jobs:
           --project=mobile-chromium
           e2e/console-usability.spec.ts
           e2e/core-business-lines-ui.spec.ts
+          e2e/admin-billing-reconciliation.spec.ts
+          e2e/admin-jobs-runner.spec.ts
+          e2e/admin-login-ui.spec.ts
           e2e/experience-quality.spec.ts
           e2e/maturity-status-ui.spec.ts
           e2e/operations-admin-ui.spec.ts
           e2e/pricing-ui.spec.ts
           e2e/repository-workspace-ui.spec.ts
           e2e/runtime-deployment-guide.spec.ts
+          e2e/truthful-workbench-ui.spec.ts
           e2e/usage-meter-ui.spec.ts
       - name: Preserve browser journey evidence
-        if: always()
+        if: ${{ always() && steps.browser-journeys.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: web-console-browser-evidence-${{ github.sha }}-${{ github.run_attempt }}
@@ -522,33 +834,37 @@ jobs:
 
   precision-migration-b01-44:
     name: Precision Migration trust and coverage
-    runs-on: ubuntu-24.04
-    timeout-minutes: 25
+    runs-on: macos-26
+    timeout-minutes: 35
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python 3.12.12
+      - name: Set up Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12.12"
+          # The exact captured 3.12.12 runtime is installed by the route
+          # closure installer; this interpreter only bootstraps the scripts.
+          python-version: "3.12.10"
+          architecture: arm64
+      - name: Set up Node.js 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
       - name: Set up Java 21.0.11
         uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5
         with:
           distribution: temurin
           java-version: "21.0.11"
-      - name: Set up Node.js 22
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: "22"
+      - name: Provision exact Java and Python route closure
+        env:
+          ELMOS_POLYGLOT_ROUTE_CI_PROFILE: java-python
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
       - name: Install locked tools and web dependencies
         run: |
-          python -m pip install --disable-pip-version-check uv==0.11.16
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
-        env:
-          ELMOS_JAVA21_HOME: ${{ env.JAVA_HOME }}
         run: make precision-migration-b01-44-check
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
@@ -723,7 +1039,7 @@ jobs:
       - name: 应用全部迁移
         run: |
           for file in $(ls modules/persistence/src/main/resources/db/migration/V*.sql | sort -V); do
-            psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -q -f "$file"
+            psql "$DATABASE_URL" --single-transaction -v ON_ERROR_STOP=1 -q -f "$file"
           done
 
       - name: 回调台账与幂等
@@ -750,10 +1066,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python 3.12.12
+      - name: Set up Python 3.14.6
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12.12"
+          python-version: "3.14.6"
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -762,11 +1078,6 @@ jobs:
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           npm install --global pnpm@10.12.4
-      - name: Install exact SQL toolchain Python runtime
-        # business-line-contracts traverses the SQL transpiler, whose lockfile
-        # requires CPython 3.14.6. Keep this explicit on the non-macOS runner;
-        # setup-python above intentionally remains the orchestration runtime.
-        run: uv python install 3.14.6
       - name: No Makefile may bake in a machine-specific tool path
         run: make makefile-portability-check
       - name: Certification path is traversable and fail-closed
@@ -789,10 +1100,21 @@ jobs:
           done
       - name: Batch 29-45 check targets run through make
         run: |
-          make b29-skills-test b30-skills-test b31-skills-test
-          for batch in 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do
+          # The complete Batch 29 suite runs in the macOS polyglot-routes job.
+          # This Ubuntu target is an additional portable contract check; it is
+          # not a substitute for that native suite.
+          make b29-portable-skills-test b30-skills-test b31-skills-test
+          for batch in 33 34 36 37 38 39 40 41 42 43 44 45; do
             make "batch${batch}-check"
           done
+          # Batch 32's complete formal replay runs in the macOS Frontend Client
+          # Engine job, where its receipt-bound Node/Z3 toolchain exists. This
+          # target adds portable validation without claiming native replay.
+          make batch32-portable-check
+          # Batch 35's complete immutable Mach-O Z3 and TypeScript receipt
+          # replay also runs in the macOS Frontend Client Engine job. This
+          # Ubuntu target adds portable/static and negative coverage only.
+          make batch35-portable-check
       - name: Optional-source-package guard holds in both directions
         run: |
           make batch97-104-skills product-batch56-skills batch66-80-skills

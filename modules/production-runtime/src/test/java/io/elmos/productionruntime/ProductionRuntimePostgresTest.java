@@ -72,9 +72,13 @@ class ProductionRuntimePostgresTest {
         Path migration = locateMigration();
         Flyway flyway = Flyway.configure().dataSource(dataSource).locations("filesystem:" + migration.getParent().toAbsolutePath())
                 .baselineOnMigrate(false).baselineVersion("76").baselineDescription("existing ELMOS schema")
-                .outOfOrder(false).load();
+                .target("78").outOfOrder(false).load();
         flyway.baseline();
-        flyway.migrate();
+        var migrationResult = flyway.migrate();
+        assertEquals(2, migrationResult.migrationsExecuted,
+                "the production-runtime fixture must execute exactly V77 and V78");
+        assertEquals("78", flyway.info().current().getVersion().toString(),
+                "the fixture target must not silently narrow below V78");
         jdbc = JdbcClient.create(dataSource);
         transactions = new TransactionTemplate(new DataSourceTransactionManager(dataSource));
         ObjectMapper objectMapper = new ObjectMapper();

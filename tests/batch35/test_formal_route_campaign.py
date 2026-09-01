@@ -6,6 +6,7 @@ import importlib.util
 import io
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -20,6 +21,11 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts" / "batch35"
 sys.path.insert(0, str(ROOT / "engines" / "polyglot-route-engine" / "src"))
+EXACT_DARWIN_ARM64_REPLAY_ENABLED = (
+    os.environ.get("ELMOS_BATCH35_PORTABLE_ONLY") != "true"
+    and sys.platform == "darwin"
+    and platform.machine() == "arm64"
+)
 LANGUAGES = ("csharp", "go", "java", "python", "rust", "typescript")
 PACKED_REPLAY_COMMAND = [
     "python3",
@@ -1749,17 +1755,25 @@ class FormalRouteCampaignTests(unittest.TestCase):
     def test_specialized_packed_replay_rejects_path_shadow_uv(self) -> None:
         validator = load_formal_campaign_validator()
         with tempfile.TemporaryDirectory() as directory:
-            shadow = Path(directory) / "uv"
+            trusted = Path(directory) / "trusted" / "uv"
+            trusted.parent.mkdir()
+            trusted.write_bytes(b"trusted uv fixture\n")
+            trusted.chmod(0o555)
+            shadow = Path(directory) / "shadow" / "uv"
+            shadow.parent.mkdir()
             shadow.write_text(
                 "#!/bin/sh\nprintf '%s\\n' 'forged packed replay'\n",
                 encoding="utf-8",
             )
             shadow.chmod(0o755)
             errors: list[str] = []
-            with mock.patch.dict(
-                os.environ,
-                {"PATH": str(shadow.parent) + os.pathsep + os.defpath},
-                clear=False,
+            with (
+                mock.patch.object(validator, "PINNED_UV_PATH", trusted),
+                mock.patch.dict(
+                    os.environ,
+                    {"PATH": str(shadow.parent) + os.pathsep + os.defpath},
+                    clear=False,
+                ),
             ):
                 observed = validator.pinned_uv_runtime("shadow test", errors)
             self.assertIsNone(observed)
@@ -1768,6 +1782,30 @@ class FormalRouteCampaignTests(unittest.TestCase):
                 errors,
             )
             self.assertTrue(any(str(shadow) in error for error in errors), errors)
+
+    def test_specialized_packed_replay_rejects_missing_pinned_uv_origin(
+        self,
+    ) -> None:
+        validator = load_formal_campaign_validator()
+        with tempfile.TemporaryDirectory() as directory:
+            ambient = Path(directory) / "ambient-uv"
+            ambient.write_bytes(b"ambient uv fixture\n")
+            ambient.chmod(0o555)
+            missing = Path(directory) / "missing" / "uv"
+            errors: list[str] = []
+            with (
+                mock.patch.object(validator.shutil, "which", return_value=str(ambient)),
+                mock.patch.object(validator, "PINNED_UV_PATH", missing),
+            ):
+                observed = validator.pinned_uv_runtime("missing test", errors)
+            self.assertIsNone(observed)
+            self.assertTrue(
+                any("pinned uv origin cannot be resolved" in error for error in errors),
+                errors,
+            )
+            self.assertTrue(
+                any(str(missing.parent) in error for error in errors), errors
+            )
 
     def test_specialized_packed_replay_uses_private_sanitized_environment(self) -> None:
         validator = load_formal_campaign_validator()
@@ -2065,7 +2103,10 @@ class FormalRouteCampaignTests(unittest.TestCase):
         self,
     ) -> None:
         launcher = load_packed_route_launcher()
-        with tempfile.TemporaryDirectory() as directory:
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            tempfile.TemporaryDirectory() as source_directory,
+        ):
             route = Path(directory).resolve()
             relative = (
                 launcher.ENGINE_SOURCE_ROOT_RELATIVE
@@ -2084,29 +2125,70 @@ class FormalRouteCampaignTests(unittest.TestCase):
                     "bytes": source.stat().st_size,
                 }
             ]
-            python_source = Path(
-                "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/"
-                "archives/sha256-" + launcher.PYTHON_ARCHIVE_SHA256 + ".tar.gz"
+            source_route = ROOT / "routes" / "cpp-to-java"
+            source_manifest = load(
+                source_route
+                / "certification/formal-artifacts/engine-source-manifest.json"
             )
-            from elmos_polyglot_route.toolchains import (
-                typescript_compiler_capture_receipt,
+            source_receipts = source_manifest["runtime_source_receipts"]
+            python_receipt = source_receipts["python_source_archive"]
+            typescript_receipt = source_receipts["typescript_compiler_closure"]
+            self.assertEqual(
+                python_receipt["capture_relative_path"],
+                launcher.PYTHON_ARCHIVE_RELATIVE,
             )
-
-            typescript_receipt = typescript_compiler_capture_receipt()
-            runtime_sources = {
-                launcher.PYTHON_ARCHIVE_RELATIVE: python_source,
-                **{
-                    f"{launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{record['path']}": Path(
-                        str(record["source_path"])
+            self.assertEqual(
+                typescript_receipt["capture_relative_path"],
+                launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE,
+            )
+            source_capture_root = (
+                source_route / "certification/formal-artifacts/engine-sources"
+            )
+            python_source = source_capture_root / launcher.PYTHON_ARCHIVE_RELATIVE
+            self.assertTrue(python_source.is_file())
+            self.assertFalse(python_source.is_symlink())
+            self.assertEqual(python_source.stat().st_size, python_receipt["bytes"])
+            self.assertEqual(
+                launcher.sha256_file(python_source),
+                "sha256:" + python_receipt["sha256"],
+            )
+            typescript_source_root = (
+                source_capture_root / launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE
+            )
+            typescript_sources: dict[str, tuple[Path, str]] = {}
+            for record in typescript_receipt["files"]:
+                record_path = str(record["path"])
+                source_path = typescript_source_root / record_path
+                if record_path == "bin/tsc":
+                    source_path = Path(source_directory) / record_path
+                    source_path.parent.mkdir(parents=True)
+                    source_path.write_bytes(
+                        b"#!/usr/bin/env node\nrequire('../lib/tsc.js')\n"
                     )
-                    for record in typescript_receipt["files"]
-                },
+                    source_path.chmod(0o555)
+                self.assertTrue(source_path.is_file())
+                self.assertFalse(source_path.is_symlink())
+                self.assertEqual(source_path.stat().st_size, record["bytes"])
+                self.assertEqual(
+                    launcher.sha256_file(source_path), "sha256:" + record["sha256"]
+                )
+                typescript_sources[
+                    f"{launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{record_path}"
+                ] = (source_path, str(record["mode"]))
+            self.assertEqual(len(typescript_sources), launcher.TYPESCRIPT_FILE_COUNT)
+            runtime_sources = {
+                launcher.PYTHON_ARCHIVE_RELATIVE: (
+                    python_source,
+                    str(python_receipt["mode"]),
+                ),
+                **typescript_sources,
             }
-            for repository_path, runtime_source in runtime_sources.items():
+            for repository_path, (runtime_source, mode) in runtime_sources.items():
                 captured_relative = launcher.ENGINE_SOURCE_PREFIX + repository_path
                 captured = route / captured_relative
                 captured.parent.mkdir(parents=True, exist_ok=True)
                 shutil.copy2(runtime_source, captured)
+                captured.chmod(int(mode, 8))
                 entries.append(
                     {
                         "repository_path": repository_path,
@@ -2122,18 +2204,21 @@ class FormalRouteCampaignTests(unittest.TestCase):
                 "files": entries,
                 "runtime_source_receipts": {
                     "python_source_archive": {
-                        "schema_version": 1,
-                        "capture_relative_path": launcher.PYTHON_ARCHIVE_RELATIVE,
-                        "sha256": launcher.PYTHON_ARCHIVE_SHA256,
-                        "bytes": launcher.PYTHON_ARCHIVE_BYTES,
-                        "mode": "0444",
-                        "uid": 501,
-                        "gid": 20,
-                        "nlink": 1,
-                        "source_tree_sha256": launcher.PYTHON_SOURCE_TREE_SHA256,
-                        "source_tree_record_count": 1_899,
-                        "source_tree_file_count": 1_890,
-                        "source_tree_bytes": 47_880_708,
+                        key: python_receipt[key]
+                        for key in (
+                            "schema_version",
+                            "capture_relative_path",
+                            "sha256",
+                            "bytes",
+                            "mode",
+                            "uid",
+                            "gid",
+                            "nlink",
+                            "source_tree_sha256",
+                            "source_tree_record_count",
+                            "source_tree_file_count",
+                            "source_tree_bytes",
+                        )
                     },
                     "typescript_compiler_closure": {
                         "schema_version": 1,
@@ -2146,9 +2231,7 @@ class FormalRouteCampaignTests(unittest.TestCase):
                         "runtime_manifest_sha256": (
                             launcher.TYPESCRIPT_RUNTIME_MANIFEST_SHA256
                         ),
-                        "compiler_closure_sha256": (
-                            launcher.TYPESCRIPT_CLOSURE_SHA256
-                        ),
+                        "compiler_closure_sha256": (launcher.TYPESCRIPT_CLOSURE_SHA256),
                         "file_count": launcher.TYPESCRIPT_FILE_COUNT,
                         "bytes": launcher.TYPESCRIPT_CLOSURE_BYTES,
                         "files": [

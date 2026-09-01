@@ -66,7 +66,7 @@ from elmos_sql_dialect.scan import (
     discover_sql_files,
     scan_repository,
 )
-from elmos_sql_dialect.statement_splitter import split_statements
+from elmos_sql_dialect.statement_splitter import looks_like_client_directive, split_statements
 from elmos_sql_dialect.static_do import emit_static_do, parse_static_do
 
 DDL_TYPES = (
@@ -142,7 +142,7 @@ def statements_of(path: Path, dialect: Dialect):
     text = path.read_text(encoding="utf-8")
     try:
         statements = list(_parse_source_statements(text, dialect))
-        raw_statements = list(split_statements(text))
+        raw_statements = list(split_statements(text, dialect=dialect))
         if len(raw_statements) == len(statements):
             for statement, raw in zip(statements, raw_statements, strict=True):
                 if isinstance(statement, exp.Command):
@@ -160,8 +160,8 @@ def statements_of(path: Path, dialect: Dialect):
         return
     except Exception:  # noqa: S110 - bounded parser fallback for mixed-dialect corpus files
         pass
-    for raw in split_statements(text):
-        if raw.text.lstrip().startswith("\\"):
+    for raw in split_statements(text, dialect=dialect):
+        if looks_like_client_directive(raw.text, dialect):
             continue
         try:
             parsed = [
@@ -325,7 +325,9 @@ def main() -> int:
             # source-format failures are still discovered units with an
             # explicit disposition, not silently removed from the target
             # reachability denominator.
-            discovered += len(split_statements(file.read_text(encoding="utf-8")))
+            discovered += len(
+                split_statements(file.read_text(encoding="utf-8"), dialect=source)
+            )
             for statement in statements_of(file, source):
                 if type(statement).__name__ not in DDL_TYPES:
                     continue

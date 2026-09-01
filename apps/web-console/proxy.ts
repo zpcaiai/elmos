@@ -14,6 +14,31 @@ const protectedPrefixes = [
   "/admin",
 ];
 
+function trustedRedirectOrigin(request: NextRequest): string | null {
+  const configured = process.env.ELMOS_PUBLIC_ORIGIN?.trim() ?? "";
+  if (!configured) {
+    return process.env.NODE_ENV === "production" ? null : request.nextUrl.origin;
+  }
+  try {
+    const parsed = new URL(configured);
+    const localDevelopment = process.env.NODE_ENV !== "production"
+      && ["127.0.0.1", "localhost"].includes(parsed.hostname);
+    if (
+      (parsed.protocol !== "https:" && !(localDevelopment && parsed.protocol === "http:"))
+      || parsed.username
+      || parsed.password
+      || parsed.pathname !== "/"
+      || parsed.search
+      || parsed.hash
+    ) {
+      return null;
+    }
+    return parsed.origin;
+  } catch {
+    return null;
+  }
+}
+
 function businessLine(path: string): string {
   if (path.startsWith("/api/spring-upgrades")) return "SPRING_MODERNIZATION";
   if (path.startsWith("/api/translation")) return "LANGUAGE_TRANSLATION";
@@ -176,6 +201,9 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
 export async function proxy(request: NextRequest) {
   const auditFailure = await auditApiAttempt(request);
   if (auditFailure) return auditFailure;
+  if (request.nextUrl.pathname === "/admin/login") {
+    return NextResponse.next();
+  }
   const protectedRoute = protectedPrefixes.some(
     (prefix) => request.nextUrl.pathname === prefix
       || request.nextUrl.pathname.startsWith(`${prefix}/`),
@@ -183,16 +211,30 @@ export async function proxy(request: NextRequest) {
   if (!protectedRoute) return NextResponse.next();
   const localCredentialMode = process.env.NODE_ENV !== "production"
     && process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true";
-  const approvedAdminFallback = request.nextUrl.pathname === "/admin"
-    && process.env.ELMOS_ADMIN_ALLOW_TOKEN_FALLBACK === "true";
+  const adminRoute = request.nextUrl.pathname === "/admin"
+    || request.nextUrl.pathname.startsWith("/admin/");
   if (
-    localCredentialMode
-    || approvedAdminFallback
+    (localCredentialMode && !adminRoute)
     || request.cookies.has("__Host-elmos_session")
   ) {
     return NextResponse.next();
   }
-  const target = new URL("/login", request.url);
+  const redirectOrigin = trustedRedirectOrigin(request);
+  if (!redirectOrigin) {
+    return NextResponse.json(
+      {
+        errorCode: "PUBLIC_ORIGIN_NOT_CONFIGURED",
+        message: "登录重定向的可信公开源尚未配置。",
+      },
+      { status: 503, headers: { "Cache-Control": "no-store" } },
+    );
+  }
+  const target = new URL(
+    adminRoute
+      ? "/admin/login"
+      : "/login",
+    redirectOrigin,
+  );
   target.searchParams.set(
     "returnTo",
     `${request.nextUrl.pathname}${request.nextUrl.search}`,

@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import {
+  administratorEmail,
+  installAdministratorSession,
+} from "./helpers/admin-session";
 
 const tenantId = "tenant-operations-a";
 const actorId = "operations-approver-1";
@@ -12,7 +16,9 @@ const accountSession = {
   principal: {
     actorId,
     displayName: "Operations Approver",
-    email: "operations-approver@example.test",
+    email: administratorEmail,
+    emailVerified: true,
+    isPlatformAdmin: true,
     organizationId: tenantId,
     roles: ["APPROVER"],
     permissions: ["admin:read", "admin:operate", "admin:approve"],
@@ -56,6 +62,7 @@ const operationsView = {
 };
 
 test("admin closes the durable job and Runner Fleet operation loop", async ({ page }) => {
+  await installAdministratorSession(page);
   let jobCancelled = false;
   let runnerStatus: "REGISTERED" | "READY" | "DRAINING" = "REGISTERED";
   let cancelCalls = 0;
@@ -186,7 +193,7 @@ test("admin closes the durable job and Runner Fleet operation loop", async ({ pa
   });
 
   await page.goto("/admin");
-  await expect(page.getByLabel("短期管理令牌")).toBeDisabled();
+  await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "读取数据" }).click();
   await page.getByRole("button", { name: "任务队列" }).click();
 

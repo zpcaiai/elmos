@@ -44,6 +44,7 @@ class DependabotAlertEvidenceTest(unittest.TestCase):
             root = Path(temporary)
             source = root / "alerts.json"
             output = root / "report.json"
+            raw_output = root / "raw-output.json"
             raw = json.dumps(payload, separators=(",", ":")).encode()
             source.write_bytes(raw)
             result = subprocess.run(
@@ -62,11 +63,14 @@ class DependabotAlertEvidenceTest(unittest.TestCase):
                     QUERIED_AT,
                     "--output",
                     str(output),
+                    "--raw-output",
+                    str(raw_output),
                 ],
                 capture_output=True,
                 text=True,
                 check=False,
             )
+            self.assertEqual(raw, raw_output.read_bytes())
             return result.returncode, json.loads(output.read_text())
 
     def test_paginated_snapshot_with_no_open_alerts_passes(self) -> None:
@@ -88,6 +92,20 @@ class DependabotAlertEvidenceTest(unittest.TestCase):
         self.assertEqual(1, report["openBySeverity"]["high"])
         self.assertEqual("GHSA-example-3", report["openAlerts"][0]["ghsaId"])
         self.assertEqual(1, len(report["blockers"]))
+
+    def test_open_medium_alert_uses_current_github_severity_name(self) -> None:
+        code, report = self.run_cli([alert(31, "open", "medium")])
+        self.assertEqual(3, code)
+        self.assertEqual("BLOCKED", report["status"])
+        self.assertEqual(1, report["openBySeverity"]["medium"])
+        self.assertEqual(1, report["openCount"])
+
+    def test_legacy_moderate_severity_normalizes_to_medium(self) -> None:
+        code, report = self.run_cli([alert(32, "open", "moderate")])
+        self.assertEqual(3, code)
+        self.assertEqual("BLOCKED", report["status"])
+        self.assertEqual(1, report["openBySeverity"]["medium"])
+        self.assertNotIn("moderate", report["openBySeverity"])
 
     def test_open_alert_without_severity_fails_closed(self) -> None:
         code, report = self.run_cli([alert(4, "open")])

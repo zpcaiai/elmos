@@ -99,10 +99,11 @@
     }
   },
   "evidence_refs": [
-    "../../docs/frt-g01-g30/installed-manifest.json",
-    "../../engines/frontend-client-engine/test/frt-runtime.test.ts",
-    "../../apps/web-console/e2e/frt-frontend-transformation.spec.ts",
-    "certification/local-validation-evidence.json"
+    "repository-evidence/files/docs/frt-g01-g30/installed-manifest.json",
+    "repository-evidence/files/engines/frontend-client-engine/test/frt-runtime.test.ts",
+    "repository-evidence/files/apps/web-console/e2e/frt-frontend-transformation.spec.ts",
+    "certification/local-validation-evidence.json",
+    "repository-evidence/manifest.json"
   ],
   "recertification_triggers": [
     "source package or generated Runtime Skill digest change",

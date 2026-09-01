@@ -18,6 +18,45 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 _GO_TELEMETRY_MODE = b"off\n"
 
 
+def _installer_bound_toolchain_root() -> Path:
+    """Resolve the exact toolchain root selected by the CI installer.
+
+    The byte/tree digests below are immutable route-contract inputs.  The
+    filesystem location is deliberately relocatable so a GitHub-hosted runner
+    does not inherit the developer's home directory from a captured receipt.
+    """
+
+    raw = os.environ.get("ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT", "").strip()
+    if not raw:
+        raw = os.environ.get("ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT", "").strip()
+    candidate = Path(raw).expanduser() if raw else Path.home() / ".local/share/elmos/toolchains"
+    normalized = Path(os.path.normpath(str(candidate)))
+    if (
+        not candidate.is_absolute()
+        or candidate != normalized
+        or candidate in {Path("/"), Path.home()}
+        or any(part in {".", ".."} for part in candidate.parts)
+    ):
+        raise RouteError(f"EXACT_TOOLCHAIN_ROOT_UNSAFE:{candidate}")
+    return candidate
+
+
+_EXPECTED_TOOLCHAIN_ROOT = _installer_bound_toolchain_root()
+_EXPECTED_HOMEBREW_PREFIX = Path(
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+).expanduser()
+if (
+    not _EXPECTED_HOMEBREW_PREFIX.is_absolute()
+    or _EXPECTED_HOMEBREW_PREFIX
+    != Path(os.path.normpath(str(_EXPECTED_HOMEBREW_PREFIX)))
+    or _EXPECTED_HOMEBREW_PREFIX in {Path("/"), Path.home()}
+):
+    raise RouteError(
+        f"EXACT_TOOLCHAIN_HOMEBREW_PREFIX_UNSAFE:{_EXPECTED_HOMEBREW_PREFIX}"
+    )
+_EXPECTED_HOMEBREW_CELLAR = _EXPECTED_HOMEBREW_PREFIX / "Cellar"
+
+
 def _disabled_go_telemetry_directory(home: Path) -> Path:
     """Create a private Go telemetry directory that cannot spawn a sidecar."""
 
@@ -228,11 +267,26 @@ class ExactToolchain:
     auxiliary_sha256: str | None = None
 
 
+@dataclass(frozen=True)
+class _JavaContract:
+    home: Path
+    java_sha256: str
+    javac_sha256: str
+    modules_sha256: str
+    jvm_sha256: str
+    release_sha256: str
+    bundle_cdhash_full: str
+    team_identifier: str
+    java_version: str
+    distribution: str
+
+
 def _output(
     command: list[str],
     *,
     executable_dirs: tuple[Path, ...] = (),
     include_stderr: bool = True,
+    include_failure_diagnostic: bool = False,
 ) -> str:
     try:
         with tempfile.TemporaryDirectory(prefix="elmos-toolchain-env-") as temporary:
@@ -256,11 +310,25 @@ def _output(
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error
     if completed.returncode != 0:
-        raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}")
+        detail = ""
+        if include_failure_diagnostic:
+            diagnostic = (completed.stderr or completed.stdout).strip()
+            diagnostic = "".join(
+                character if character.isprintable() else "?"
+                for character in diagnostic[-1000:]
+            )
+            detail = f":diagnostic={diagnostic or 'EMPTY'}"
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}:"
+            f"exit={completed.returncode}{detail}"
+        )
     return (completed.stdout + (completed.stderr if include_stderr else "")).strip()
 
 
-_EXPECTED_JAVA_HOME = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
+_EXPECTED_JAVA_HOME = (
+    _EXPECTED_HOMEBREW_CELLAR
+    / "openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"
+)
 _EXPECTED_JAVA_SHA256 = "2c2aca8d8796794fd92ad9ca0c544e91dfd77487b34dd7f2b1ba0b29d6e57d42"
 _EXPECTED_JAVAC_SHA256 = "c4a7ba406f2c6d4f11723954b0070509606b6f016433975d3283105c9acb43db"
 _EXPECTED_JAVA_MODULES_SHA256 = "5c27cfb52071cf24c5dbd9823027143c235bcb2e182dce708fd58c4ea49bfbee"
@@ -274,10 +342,33 @@ _EXPECTED_JAVA_VERSION = (
 )
 _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
 
+# GitHub's macOS arm64 hosted image supplies the exact Temurin build through
+# actions/setup-java.  It is a separate contract from the Homebrew route
+# bundle above: the bytes, release metadata, and signed bundle identity all
+# differ.  Keeping both contracts explicit prevents CI from silently accepting
+# an arbitrary JAVA_HOME merely because it prints the right version.
+_TEMURIN_JAVA_HOME_SUFFIX = (
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+)
+_TEMURIN_JAVA_SHA256 = "afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
+_TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"
+_TEMURIN_JAVA_MODULES_SHA256 = "915c525cd0b9d4db404cdc2368bfb4f3e0ab2a6a598b2d6a76d932de19dd2d33"
+_TEMURIN_JAVA_JVM_SHA256 = "34bc0bc23d87abb85147409ccdbf604ccd3d2fe8b83ac567a966a5df8a81eded"
+_TEMURIN_JAVA_RELEASE_SHA256 = "5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
+_TEMURIN_JAVA_BUNDLE_CDHASH_FULL = (
+    "e392fdd40bd00e2e6a6986716901ee08ad1e0200e65bdafab50f70554364a5a2"
+)
+_TEMURIN_JAVA_TEAM_IDENTIFIER = "JCDTMS22B4"
+_TEMURIN_JAVA_VERSION = (
+    'openjdk version "21.0.11" 2026-04-21 LTS\n'
+    "OpenJDK Runtime Environment Temurin-21.0.11+10 (build 21.0.11+10-LTS)\n"
+    "OpenJDK 64-Bit Server VM Temurin-21.0.11+10 (build 21.0.11+10-LTS, mixed mode, sharing)"
+)
+
 _EXPECTED_DOTNET_VERSION = "10.0.301"
 _EXPECTED_DOTNET_RUNTIME_VERSION = "10.0.9"
-_EXPECTED_DOTNET_SHIM = Path("/opt/homebrew/bin/dotnet")
-_EXPECTED_DOTNET_CELLAR = Path("/opt/homebrew/Cellar/dotnet/10.0.301")
+_EXPECTED_DOTNET_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin/dotnet"
+_EXPECTED_DOTNET_CELLAR = _EXPECTED_HOMEBREW_CELLAR / "dotnet/10.0.301"
 _EXPECTED_DOTNET_WRAPPER = _EXPECTED_DOTNET_CELLAR / "bin" / "dotnet"
 _EXPECTED_DOTNET_ROOT = _EXPECTED_DOTNET_CELLAR / "libexec"
 _EXPECTED_DOTNET_MUXER = _EXPECTED_DOTNET_ROOT / "dotnet"
@@ -950,13 +1041,94 @@ def verify_csharp_toolchain(toolchain: ExactToolchain) -> dict[str, object]:
     return identity
 
 
+def _java_bundle_signature(bundle: Path) -> str:
+    """Strictly verify and then display the pinned JDK bundle signature.
+
+    Keep verification and receipt display as distinct fail-closed stages so a
+    hosted-runner diagnostic cannot be mistaken for an identity mismatch.  The
+    verification flags are part of the native receipt contract and must not be
+    relaxed to make a runner pass.
+    """
+
+    codesign = Path("/usr/bin/codesign")
+    try:
+        _output(
+            [str(codesign), "--verify", "--deep", "--strict", str(bundle)],
+            include_failure_diagnostic=True,
+        )
+    except RouteError as error:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-verify:"
+            f"{error}"
+        ) from error
+    try:
+        return _output(
+            [str(codesign), "-d", "--verbose=4", str(bundle)],
+            include_failure_diagnostic=True,
+        )
+    except RouteError as error:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_UNAVAILABLE:java:codesign-display:"
+            f"{error}"
+        ) from error
+
+
+def _java_contract() -> _JavaContract:
+    """Select one fully pinned Java contract for this execution environment."""
+
+    distribution = os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "").strip().lower()
+    if not distribution:
+        distribution = "homebrew"
+    if distribution == "homebrew":
+        expected_home = _EXPECTED_JAVA_HOME.resolve(strict=True)
+        return _JavaContract(
+            home=expected_home,
+            java_sha256=_EXPECTED_JAVA_SHA256,
+            javac_sha256=_EXPECTED_JAVAC_SHA256,
+            modules_sha256=_EXPECTED_JAVA_MODULES_SHA256,
+            jvm_sha256=_EXPECTED_JAVA_JVM_SHA256,
+            release_sha256=_EXPECTED_JAVA_RELEASE_SHA256,
+            bundle_cdhash_full=_EXPECTED_JAVA_BUNDLE_CDHASH_FULL,
+            team_identifier="not set",
+            java_version=_EXPECTED_JAVA_VERSION,
+            distribution="Homebrew-openjdk@21",
+        )
+    if distribution != "temurin":
+        raise RouteError(f"EXACT_TOOLCHAIN_DISTRIBUTION_UNSUPPORTED:java:{distribution}")
+    configured = os.environ.get("ELMOS_JAVA21_HOME", "").strip()
+    if not configured:
+        raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin")
+    try:
+        expected_home = Path(configured).resolve(strict=True)
+    except OSError as error:
+        raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin") from error
+    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIX):
+        raise RouteError(
+            "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin:"
+            f"expected_suffix={_TEMURIN_JAVA_HOME_SUFFIX}"
+        )
+    return _JavaContract(
+        home=expected_home,
+        java_sha256=_TEMURIN_JAVA_SHA256,
+        javac_sha256=_TEMURIN_JAVAC_SHA256,
+        modules_sha256=_TEMURIN_JAVA_MODULES_SHA256,
+        jvm_sha256=_TEMURIN_JAVA_JVM_SHA256,
+        release_sha256=_TEMURIN_JAVA_RELEASE_SHA256,
+        bundle_cdhash_full=_TEMURIN_JAVA_BUNDLE_CDHASH_FULL,
+        team_identifier=_TEMURIN_JAVA_TEAM_IDENTIFIER,
+        java_version=_TEMURIN_JAVA_VERSION,
+        distribution="Temurin-21.0.11+10",
+    )
+
+
 def _java() -> ExactToolchain:
     try:
-        expected_home = _EXPECTED_JAVA_HOME.resolve(strict=True)
+        contract = _java_contract()
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:java:expected-home") from error
+    expected_home = contract.home
     configured = os.environ.get("ELMOS_JAVA21_HOME", "").strip()
-    if configured:
+    if configured and contract.distribution == "Homebrew-openjdk@21":
         try:
             configured_home = Path(configured).resolve(strict=True)
         except OSError as error:
@@ -980,25 +1152,23 @@ def _java() -> ExactToolchain:
     observed_java = _output([str(java), "-version"])
     observed_javac = _output([str(javac), "-version"])
     bundle = expected_home.parents[1]
-    codesign = Path("/usr/bin/codesign")
-    _output([str(codesign), "--verify", "--deep", "--strict", str(bundle)])
-    signature = _output([str(codesign), "-d", "--verbose=4", str(bundle)])
+    signature = _java_bundle_signature(bundle)
     signature_lines = set(signature.splitlines())
     if (
-        java_digest != _EXPECTED_JAVA_SHA256
-        or javac_digest != _EXPECTED_JAVAC_SHA256
-        or modules_digest != _EXPECTED_JAVA_MODULES_SHA256
-        or jvm_digest != _EXPECTED_JAVA_JVM_SHA256
-        or release_digest != _EXPECTED_JAVA_RELEASE_SHA256
-        or observed_java != _EXPECTED_JAVA_VERSION
+        java_digest != contract.java_sha256
+        or javac_digest != contract.javac_sha256
+        or modules_digest != contract.modules_sha256
+        or jvm_digest != contract.jvm_sha256
+        or release_digest != contract.release_sha256
+        or observed_java != contract.java_version
         or observed_javac != _EXPECTED_JAVAC_VERSION
         or "Identifier=net.java.openjdk.jdk" not in signature_lines
-        or "TeamIdentifier=not set" not in signature_lines
-        or ("CandidateCDHashFull sha256=" + _EXPECTED_JAVA_BUNDLE_CDHASH_FULL not in signature_lines)
+        or ("TeamIdentifier=" + contract.team_identifier not in signature_lines)
+        or ("CandidateCDHashFull sha256=" + contract.bundle_cdhash_full not in signature_lines)
     ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:java:expected=21.0.11/"
-            f"java-sha256={_EXPECTED_JAVA_SHA256}/javac-sha256={_EXPECTED_JAVAC_SHA256}:"
+            f"java-sha256={contract.java_sha256}/javac-sha256={contract.javac_sha256}:"
             f"observed-java-sha256={java_digest}/observed-javac-sha256={javac_digest}"
         )
     return ExactToolchain(
@@ -1008,9 +1178,9 @@ def _java() -> ExactToolchain:
         str(javac),
         profile=(
             "platform=Darwin/arm64",
-            "distribution=Homebrew-openjdk@21",
+            f"distribution={contract.distribution}",
             f"jdk-home={expected_home}",
-            f"jdk-cdhash-full={_EXPECTED_JAVA_BUNDLE_CDHASH_FULL}",
+            f"jdk-cdhash-full={contract.bundle_cdhash_full}",
             f"jdk-modules-sha256={modules_digest}",
             f"libjvm-sha256={jvm_digest}",
             f"release-sha256={release_digest}",
@@ -1020,17 +1190,18 @@ def _java() -> ExactToolchain:
     )
 
 
-_EXPECTED_PYTHON_LOCAL_ANCHOR = Path("/Users/stephen/.local")
-_EXPECTED_PYTHON_ROOT = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/"
-    "runtimes/3.12.12+20260211-aarch64-apple-darwin/"
+_EXPECTED_PYTHON_LOCAL_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
+_EXPECTED_PYTHON_ROOT = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "python-build-standalone/runtimes/3.12.12+20260211-aarch64-apple-darwin/"
     "sha256-1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154/python"
 )
 _EXPECTED_PYTHON_EXECUTABLE = _EXPECTED_PYTHON_ROOT / "bin" / "python3.12"
 _EXPECTED_PYTHON_STDLIB = _EXPECTED_PYTHON_ROOT / "lib" / "python3.12"
 _EXPECTED_PYTHON_LIBPYTHON = _EXPECTED_PYTHON_ROOT / "lib" / "libpython3.12.dylib"
-_EXPECTED_PYTHON_ARCHIVE = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/archives/"
+_EXPECTED_PYTHON_ARCHIVE = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "python-build-standalone/archives/"
     "sha256-22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84.tar.gz"
 )
 _EXPECTED_PYTHON_EXECUTABLE_SHA256 = "3874a935f7242b660e652d35c25a1b87415fcfea3ee191ff262fcca5c50102c5"
@@ -1060,7 +1231,14 @@ _EXPECTED_PYTHON_SYMLINKS = {
     "lib/pkgconfig/python3.pc": "python-3.12.pc",
     "share/man/man1/python3.1": "python3.12.1",
 }
-_EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256 = "07be3b00a639caff021e966cccbfe8d52b943e4aabe9630fcaa62c777610acfa"
+_EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256 = "8776314c1c57bbf83332a98d947144d329c8e6e57d2fe1cd850875f27d807d0a"
+_PYTHON_RUNTIME_PATH_FIELDS = (
+    "executable",
+    "prefix",
+    "base_prefix",
+    "stdlib",
+    "platstdlib",
+)
 _PYTHON_RUNTIME_IDENTITY_SCRIPT = (
     "import importlib.util,json,platform,sys,sysconfig;"
     "print(json.dumps({'version':platform.python_version(),'sys_version':sys.version,"
@@ -1073,6 +1251,28 @@ _PYTHON_RUNTIME_IDENTITY_SCRIPT = (
     "'config_args':sysconfig.get_config_var('CONFIG_ARGS'),"
     "'math_origin':importlib.util.find_spec('math').origin},sort_keys=True,separators=(',',':')))"
 )
+
+
+def _canonical_python_runtime_identity(runtime: dict[str, object]) -> str:
+    """Bind the exact runtime identity without binding the account home path."""
+
+    normalized = dict(runtime)
+    root = str(_EXPECTED_PYTHON_ROOT)
+    for field in _PYTHON_RUNTIME_PATH_FIELDS:
+        value = normalized.get(field)
+        if not isinstance(value, str):
+            raise RouteError(
+                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
+            )
+        if value == root:
+            normalized[field] = "@PYTHON_ROOT@"
+        elif value.startswith(root + os.sep):
+            normalized[field] = "@PYTHON_ROOT@" + value[len(root) :]
+        else:
+            raise RouteError(
+                f"EXACT_TOOLCHAIN_PYTHON_IDENTITY_PATH_MISMATCH:{field}"
+            )
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":"))
 
 
 def python_source_archive_receipt() -> dict[str, object]:
@@ -1263,6 +1463,9 @@ def _python() -> ExactToolchain:
         runtime = json.loads(observed)
     except json.JSONDecodeError as error:
         raise RouteError("EXACT_TOOLCHAIN_PYTHON_IDENTITY_INVALID") from error
+    if not isinstance(runtime, dict):
+        raise RouteError("EXACT_TOOLCHAIN_PYTHON_IDENTITY_INVALID")
+    canonical_runtime = _canonical_python_runtime_identity(runtime)
     libpython_after = _qualified_file_record(
         _EXPECTED_PYTHON_LIBPYTHON,
         _EXPECTED_PYTHON_ROOT,
@@ -1284,28 +1487,51 @@ def _python() -> ExactToolchain:
         "EXACT_TOOLCHAIN_PYTHON_ARCHIVE_UNSAFE",
     )
     tree_after = _python_runtime_tree()
+    mismatch_fields: list[str] = []
+    if tree_before != tree_after:
+        mismatch_fields.append("tree_changed")
+    if archive_before != archive_after:
+        mismatch_fields.append("archive_changed")
+    if archive_chain_before != archive_chain_after:
+        mismatch_fields.append("archive_chain_changed")
+    if executable_before != executable_after:
+        mismatch_fields.append("executable_changed")
+    if libpython_before != libpython_after:
+        mismatch_fields.append("libpython_changed")
+    if executable_after.get("sha256") != _EXPECTED_PYTHON_EXECUTABLE_SHA256:
+        mismatch_fields.append("executable_sha256")
+    if executable_after.get("bytes") != _EXPECTED_PYTHON_EXECUTABLE_BYTES:
+        mismatch_fields.append("executable_bytes")
+    if libpython_after.get("sha256") != _EXPECTED_PYTHON_LIBPYTHON_SHA256:
+        mismatch_fields.append("libpython_sha256")
+    if libpython_after.get("bytes") != _EXPECTED_PYTHON_LIBPYTHON_BYTES:
+        mismatch_fields.append("libpython_bytes")
+    if archive_after.get("sha256") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256:
+        mismatch_fields.append("archive_sha256")
+    if archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES:
+        mismatch_fields.append("archive_bytes")
     if (
-        tree_before != tree_after
-        or archive_before != archive_after
-        or archive_chain_before != archive_chain_after
-        or executable_before != executable_after
-        or libpython_before != libpython_after
-        or executable_after.get("sha256") != _EXPECTED_PYTHON_EXECUTABLE_SHA256
-        or executable_after.get("bytes") != _EXPECTED_PYTHON_EXECUTABLE_BYTES
-        or libpython_after.get("sha256") != _EXPECTED_PYTHON_LIBPYTHON_SHA256
-        or libpython_after.get("bytes") != _EXPECTED_PYTHON_LIBPYTHON_BYTES
-        or archive_after.get("sha256") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_SHA256
-        or archive_after.get("bytes") != _EXPECTED_PYTHON_SOURCE_ARCHIVE_BYTES
-        or hashlib.sha256(observed.encode("utf-8")).hexdigest() != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
-        or runtime.get("version") != "3.12.12"
-        or runtime.get("implementation") != "cpython"
-        or runtime.get("executable") != str(_EXPECTED_PYTHON_EXECUTABLE)
-        or runtime.get("prefix") != str(_EXPECTED_PYTHON_ROOT)
-        or runtime.get("base_prefix") != str(_EXPECTED_PYTHON_ROOT)
-        or runtime.get("stdlib") != str(_EXPECTED_PYTHON_STDLIB)
-        or runtime.get("math_origin") != "built-in"
+        hashlib.sha256(canonical_runtime.encode("utf-8")).hexdigest()
+        != _EXPECTED_PYTHON_RUNTIME_IDENTITY_SHA256
     ):
-        raise RouteError("EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211")
+        mismatch_fields.append("runtime_identity_sha256")
+    for key, expected in (
+        ("version", "3.12.12"),
+        ("implementation", "cpython"),
+        ("executable", str(_EXPECTED_PYTHON_EXECUTABLE)),
+        ("prefix", str(_EXPECTED_PYTHON_ROOT)),
+        ("base_prefix", str(_EXPECTED_PYTHON_ROOT)),
+        ("stdlib", str(_EXPECTED_PYTHON_STDLIB)),
+        ("platstdlib", str(_EXPECTED_PYTHON_STDLIB)),
+        ("math_origin", "built-in"),
+    ):
+        if runtime.get(key) != expected:
+            mismatch_fields.append(f"runtime_{key}")
+    if mismatch_fields:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_MISMATCH:python:expected=3.12.12+20260211:"
+            + ",".join(mismatch_fields)
+        )
     return ExactToolchain(
         "python",
         "3.12.12+20260211",
@@ -1384,19 +1610,22 @@ def _csharp() -> ExactToolchain:
 def _typescript() -> ExactToolchain:
     shim_before = _node_shim_identity()
     node_before = _node_dependency_closure()
-    _verify_node_dependency_closure(node_before)
+    node_profile_before = _verify_node_dependency_closure(node_before)
     compiler_before = _typescript_compiler_closure()
     _verify_typescript_compiler_closure(compiler_before)
-    _node_runtime_identity()
+    runtime_identity = _node_runtime_identity(node_profile_before)
     typescript_version = _output([str(_EXPECTED_NODE_EXECUTABLE), str(_EXPECTED_TYPESCRIPT_LAUNCHER), "--version"])
     compiler_after = _typescript_compiler_closure()
     _verify_typescript_compiler_closure(compiler_after)
     node_after = _node_dependency_closure()
-    _verify_node_dependency_closure(node_after)
+    node_profile_after = _verify_node_dependency_closure(node_after)
     shim_after = _node_shim_identity()
+    selected_node_profile = _node_profile(node_profile_after)
     if (
         shim_before != shim_after
         or node_before != node_after
+        or node_profile_before != node_profile_after
+        or runtime_identity["profile"] != node_profile_after
         or compiler_before != compiler_after
         or typescript_version != "Version 5.9.2"
     ):
@@ -1425,6 +1654,8 @@ def _typescript() -> ExactToolchain:
             f"typescript-package-json-sha256={_EXPECTED_TYPESCRIPT_PACKAGE_SHA256}",
             f"typescript-license-sha256={_EXPECTED_TYPESCRIPT_LICENSE_SHA256}",
             f"node-closure-sha256={node_after['sha256']}",
+            f"node-closure-profile={node_profile_after}",
+            f"node-topology-sha256={node_after['topology_sha256']}",
             f"node-closure-component-count={node_after['component_count']}",
             f"node-closure-edge-count={node_after['edge_count']}",
             f"node-closure-system-edge-count={node_after['system_edge_count']}",
@@ -1432,38 +1663,21 @@ def _typescript() -> ExactToolchain:
             "dyld-system-library-content-soundness=NOT_RUN",
             "typescript-compiler-runtime-semantic-soundness=NOT_RUN",
         ),
-        executable_sha256=_EXPECTED_NODE_SHA256,
+        executable_sha256=str(selected_node_profile["node_sha256"]),
         auxiliary_sha256=_EXPECTED_TYPESCRIPT_LAUNCHER_SHA256,
     )
 
 
-_EXPECTED_HOMEBREW_PREFIX = Path("/opt/homebrew")
-_EXPECTED_HOMEBREW_CELLAR = _EXPECTED_HOMEBREW_PREFIX / "Cellar"
 _EXPECTED_NODE_ROOT = _EXPECTED_HOMEBREW_CELLAR / "node" / "26.0.0"
 _EXPECTED_NODE_SHIM = _EXPECTED_HOMEBREW_PREFIX / "bin" / "node"
 _EXPECTED_NODE_EXECUTABLE = _EXPECTED_NODE_ROOT / "bin" / "node"
 _EXPECTED_NODE_LIBNODE = _EXPECTED_NODE_ROOT / "lib" / "libnode.147.dylib"
+_EXPECTED_NODE_LIBADA = (
+    _EXPECTED_HOMEBREW_CELLAR / "ada-url" / "3.4.4" / "lib" / "libada.3.4.4.dylib"
+)
 _EXPECTED_NODE_OTOOL = Path("/usr/bin/otool")
 _EXPECTED_NODE_SHIM_TARGET = "../Cellar/node/26.0.0/bin/node"
-_EXPECTED_NODE_SHA256 = "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb"
-_EXPECTED_NODE_BYTES = 68_672
-_EXPECTED_NODE_LIBNODE_SHA256 = "24ff9dcc3d953532fde1e5270fab9331279fb60fcc5747bbb5cf1537cba20d47"
-_EXPECTED_NODE_LIBNODE_BYTES = 70_843_136
-# This digest is over the canonical recursive ``otool`` manifest, including
-# every non-system component's resolved path, bytes, SHA-256, mode, uid, gid,
-# and link count; every loader/load-path/resolved-path edge; and every declared
-# system-library edge.  It is intentionally a fixed repository expectation,
-# not a digest copied from the observed closure at runtime.
-_EXPECTED_NODE_CLOSURE_SHA256 = "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b"
-_EXPECTED_NODE_CLOSURE_COMPONENT_COUNT = 25
-_EXPECTED_NODE_CLOSURE_EDGE_COUNT = 49
-_EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT = 43
-_EXPECTED_NODE_CLOSURE_BYTES = 120_513_104
-_EXPECTED_NODE_SYSTEM_EDGE_SHA256 = "74106326c0673ff63a85e6fbc892c55a7c7f329eaad0fd715817beae4ba2b6c4"
-_EXPECTED_NODE_TOPOLOGY_SHA256 = (
-    "2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd"
-)
-_EXPECTED_NODE_PROCESS_VERSIONS = (
+_NODE26_PROCESS_VERSIONS = (
     '{"acorn":"8.16.0","ada":"3.4.4","amaro":"1.1.8","ares":"1.34.6",'
     '"brotli":"1.2.0","cldr":"48.0","icu":"78.3","lief":"0.17.0",'
     '"llhttp":"9.4.1","merve":"1.2.2","modules":"147","napi":"10",'
@@ -1473,13 +1687,238 @@ _EXPECTED_NODE_PROCESS_VERSIONS = (
     '"unicode":"17.0","uv":"1.52.1","uvwasi":"0.0.23",'
     '"v8":"14.6.202.33-node.19","zlib":"1.2.12","zstd":"1.5.7"}'
 )
-_EXPECTED_NODE_PROCESS_VERSIONS_SHA256 = "3d1c55b1d3598ed3740b8d5461151069351d53495649a1efb718f6f858b48d52"
+_NODE26_PROCESS_VERSIONS_SHA256 = (
+    "3d1c55b1d3598ed3740b8d5461151069351d53495649a1efb718f6f858b48d52"
+)
+_NODE26_LEGACY_PROFILE_FIELDS: dict[str, str | int] = {
+    "qualification_host": "legacy-homebrew-darwin-arm64",
+    "node_version": "v26.0.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "topology_sha256": "2a77ac1d4bcf11286a97e403060b6a6490d21127857b6d1ba21806f026451bfd",
+    "component_count": 25,
+    "edge_count": 49,
+    "system_edge_count": 43,
+    "system_edge_sha256": "74106326c0673ff63a85e6fbc892c55a7c7f329eaad0fd715817beae4ba2b6c4",
+    "node_sha256": "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+    "node_bytes": 68_672,
+    "libnode_sha256": "24ff9dcc3d953532fde1e5270fab9331279fb60fcc5747bbb5cf1537cba20d47",
+    "libnode_bytes": 70_843_136,
+    "process_versions": _NODE26_PROCESS_VERSIONS,
+    "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
+}
+# Each record is a complete, coherent Node runtime identity.  The first three
+# preserve the previously qualified Homebrew closures.  The fourth is the
+# independently observed GitHub macOS 26 image 20260728.0273.1 closure.  Image
+# provenance names the host on which those bytes were measured; acceptance is
+# still based on the complete content/topology/process record below, never on
+# an environment label alone.
+_EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
+    {
+        **_NODE26_LEGACY_PROFILE_FIELDS,
+        "profile": "homebrew-node26-libada-77917065434c-616512",
+        "sha256": "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "bytes": 120_513_104,
+        "closure_sha256": "bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+        "closure_bytes": 120_513_104,
+        "libada_sha256": "77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c",
+        "libada_bytes": 616_512,
+    },
+    {
+        **_NODE26_LEGACY_PROFILE_FIELDS,
+        "profile": "homebrew-node26-libada-e4b04b323411-613248",
+        "sha256": "3139bcc0851234d404144c824707a1e7d17c2841ff8af0dac05d37ce36dccf4f",
+        "bytes": 120_509_840,
+        "closure_sha256": "3139bcc0851234d404144c824707a1e7d17c2841ff8af0dac05d37ce36dccf4f",
+        "closure_bytes": 120_509_840,
+        "libada_sha256": "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4",
+        "libada_bytes": 613_248,
+    },
+    {
+        **_NODE26_LEGACY_PROFILE_FIELDS,
+        "profile": "homebrew-node26-libada-b39ba5c76cfa-598704",
+        "sha256": "81c23d23750fdd04240bc4debddd6044d6466a7f1fb2993f34087b12162319b7",
+        "bytes": 120_495_296,
+        "closure_sha256": "81c23d23750fdd04240bc4debddd6044d6466a7f1fb2993f34087b12162319b7",
+        "closure_bytes": 120_495_296,
+        "libada_sha256": "b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8",
+        "libada_bytes": 598_704,
+    },
+    {
+        "profile": "github-macos26-20260728-node26-b39ba5c76cfa-598704",
+        "sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "bytes": 119_975_888,
+        "qualification_host": "github-macos-26-arm64@20260728.0273.1",
+        "node_version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "topology_sha256": "4d2426eac17276f2bc4ec386d85660ecf5896cb4746fc1de87fbe4d7f2551e82",
+        "component_count": 25,
+        "edge_count": 49,
+        "system_edge_count": 43,
+        "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
+        "closure_sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "closure_bytes": 119_975_888,
+        "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
+        "node_bytes": 50_672,
+        "libnode_sha256": "980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88",
+        "libnode_bytes": 70_661_840,
+        "libada_sha256": "b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8",
+        "libada_bytes": 598_704,
+        "process_versions": _NODE26_PROCESS_VERSIONS,
+        "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
+    },
+)
+
+
+def node_closure_profile_id(closure_sha256: str) -> str | None:
+    matches = [
+        str(profile["profile"])
+        for profile in _validated_node_profiles()
+        if profile["closure_sha256"] == closure_sha256
+    ]
+    return matches[0] if len(matches) == 1 else None
+
+# Backward-compatible aliases name the original local profile only.  Runtime
+# selection below never uses these aliases; it uses the selected complete
+# profile record so a hosted Node binary cannot be combined with legacy dylibs.
+_EXPECTED_NODE_SHA256 = str(_EXPECTED_NODE_CLOSURE_PROFILES[0]["node_sha256"])
+_EXPECTED_NODE_BYTES = int(_EXPECTED_NODE_CLOSURE_PROFILES[0]["node_bytes"])
+_EXPECTED_NODE_LIBNODE_SHA256 = str(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_sha256"]
+)
+_EXPECTED_NODE_LIBNODE_BYTES = int(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["libnode_bytes"]
+)
+_EXPECTED_NODE_CLOSURE_COMPONENT_COUNT = int(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["component_count"]
+)
+_EXPECTED_NODE_CLOSURE_EDGE_COUNT = int(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["edge_count"]
+)
+_EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT = int(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_count"]
+)
+_EXPECTED_NODE_SYSTEM_EDGE_SHA256 = str(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["system_edge_sha256"]
+)
+_EXPECTED_NODE_TOPOLOGY_SHA256 = str(
+    _EXPECTED_NODE_CLOSURE_PROFILES[0]["topology_sha256"]
+)
+_EXPECTED_NODE_PROCESS_VERSIONS = _NODE26_PROCESS_VERSIONS
+_EXPECTED_NODE_PROCESS_VERSIONS_SHA256 = _NODE26_PROCESS_VERSIONS_SHA256
 _NODE_TOPOLOGY_CACHE: dict[str, object] | None = None
 
+_NODE26_PROFILE_FIELDS = frozenset(
+    {
+        "profile",
+        "sha256",
+        "bytes",
+        "qualification_host",
+        "node_version",
+        "platform",
+        "arch",
+        "topology_sha256",
+        "component_count",
+        "edge_count",
+        "system_edge_count",
+        "system_edge_sha256",
+        "closure_sha256",
+        "closure_bytes",
+        "node_sha256",
+        "node_bytes",
+        "libnode_sha256",
+        "libnode_bytes",
+        "libada_sha256",
+        "libada_bytes",
+        "process_versions",
+        "process_versions_sha256",
+    }
+)
+_NODE26_PROFILE_HASH_FIELDS = frozenset(
+    {
+        "topology_sha256",
+        "system_edge_sha256",
+        "closure_sha256",
+        "sha256",
+        "node_sha256",
+        "libnode_sha256",
+        "libada_sha256",
+        "process_versions_sha256",
+    }
+)
+_NODE26_PROFILE_INTEGER_FIELDS = frozenset(
+    {
+        "component_count",
+        "edge_count",
+        "system_edge_count",
+        "closure_bytes",
+        "bytes",
+        "node_bytes",
+        "libnode_bytes",
+        "libada_bytes",
+    }
+)
 
-_EXPECTED_TYPESCRIPT_CACHE_ANCHOR = Path("/Users/stephen/.local")
-_EXPECTED_TYPESCRIPT_ROOT = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/"
+
+def _validated_node_profiles() -> tuple[dict[str, str | int], ...]:
+    """Return the exact profile registry after validating its own closure."""
+
+    profiles = _EXPECTED_NODE_CLOSURE_PROFILES
+    profile_ids: set[str] = set()
+    closure_ids: set[str] = set()
+    for profile in profiles:
+        if set(profile) != _NODE26_PROFILE_FIELDS:
+            raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+        if any(
+            not isinstance(profile[field], str) or not str(profile[field])
+            for field in _NODE26_PROFILE_FIELDS - _NODE26_PROFILE_INTEGER_FIELDS
+        ) or any(
+            type(profile[field]) is not int or int(profile[field]) <= 0
+            for field in _NODE26_PROFILE_INTEGER_FIELDS
+        ):
+            raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+        if any(
+            len(str(profile[field])) != 64
+            or any(character not in "0123456789abcdef" for character in str(profile[field]))
+            for field in _NODE26_PROFILE_HASH_FIELDS
+        ):
+            raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+        process_versions = str(profile["process_versions"])
+        if (
+            hashlib.sha256(process_versions.encode("ascii")).hexdigest()
+            != profile["process_versions_sha256"]
+            or profile["sha256"] != profile["closure_sha256"]
+            or profile["bytes"] != profile["closure_bytes"]
+            or profile["node_version"] != "v26.0.0"
+            or profile["platform"] != "darwin"
+            or profile["arch"] != "arm64"
+        ):
+            raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+        profile_id = str(profile["profile"])
+        closure_id = str(profile["closure_sha256"])
+        if profile_id in profile_ids or closure_id in closure_ids:
+            raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+        profile_ids.add(profile_id)
+        closure_ids.add(closure_id)
+    return profiles
+
+
+def _node_profile(profile_id: str) -> dict[str, str | int]:
+    matches = [
+        profile
+        for profile in _validated_node_profiles()
+        if profile["profile"] == profile_id
+    ]
+    if len(matches) != 1:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_PROFILE_REGISTRY_INVALID")
+    return matches[0]
+
+
+_EXPECTED_TYPESCRIPT_CACHE_ANCHOR = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
+_EXPECTED_TYPESCRIPT_ROOT = (
+    _EXPECTED_TOOLCHAIN_ROOT
+    / "typescript/5.9.2/"
     "sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 )
 _EXPECTED_TYPESCRIPT_LAUNCHER = _EXPECTED_TYPESCRIPT_ROOT / "bin" / "tsc"
@@ -1509,6 +1948,20 @@ _EXPECTED_TYPESCRIPT_RUNTIME_MANIFEST_SHA256 = (
 _EXPECTED_TYPESCRIPT_CAPTURE_RELATIVE = (
     "runtime/typescript/sha256-" + _EXPECTED_TYPESCRIPT_SOURCE_MANIFEST_SHA256
 )
+# The compiler closure is relocatable, but its content identity predates that
+# property and was captured at this path/owner on macOS.  Live manifests are
+# still validated against the installer-selected root and the filesystem
+# metadata observed there.  Only these host-placement fields are projected to
+# their historical values before hashing; content, modes, roles, byte counts,
+# and semantic status remain byte-for-byte identity inputs.
+_TYPESCRIPT_IDENTITY_CANONICAL_ROOT = Path(
+    "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/"
+    "sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
+)
+_TYPESCRIPT_IDENTITY_CANONICAL_UID = 501
+_TYPESCRIPT_IDENTITY_CANONICAL_GID = 20
+_TYPESCRIPT_IDENTITY_CANONICAL_PACKAGE_NLINK = 6
+_TYPESCRIPT_IDENTITY_CANONICAL_DIRECTORY_NLINKS = {"bin": 3, "lib": 107}
 _EXPECTED_TYPESCRIPT_CLOSURE_SHA256 = (
     "aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9"
 )
@@ -1689,7 +2142,11 @@ def _typescript_package_root_binding() -> dict[str, str | int]:
     }
 
 
-def _typescript_closure_identity(manifest: dict[str, object]) -> dict[str, object]:
+def _canonical_typescript_closure_manifest(
+    manifest: dict[str, object],
+) -> dict[str, object]:
+    """Validate a live closure and return its host-independent identity view."""
+
     try:
         if set(manifest) != {
             "schema_version",
@@ -1700,8 +2157,265 @@ def _typescript_closure_identity(manifest: dict[str, object]) -> dict[str, objec
             "semantic_soundness",
         }:
             raise ValueError
+        if (
+            manifest["schema_version"] != 2
+            or manifest["kind"]
+            != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
+            or manifest["semantic_soundness"] != "NOT_RUN"
+        ):
+            raise ValueError
+        package = manifest["package_root"]
+        directories = manifest["directories"]
+        files = manifest["files"]
+        if (
+            not isinstance(package, dict)
+            or set(package) != {"root", "mode", "uid", "gid", "nlink"}
+            or not isinstance(directories, list)
+            or not isinstance(files, list)
+        ):
+            raise ValueError
+        directory_names: set[str] = set()
+        directory_paths: set[str] = set()
+        for item in directories:
+            if (
+                not isinstance(item, dict)
+                or set(item)
+                != {
+                    "relative_path",
+                    "resolved_path",
+                    "mode",
+                    "uid",
+                    "gid",
+                    "nlink",
+                }
+                or not isinstance(item.get("relative_path"), str)
+                or not isinstance(item.get("resolved_path"), str)
+                or not isinstance(item.get("mode"), str)
+                or any(
+                    type(item.get(field)) is not int
+                    for field in ("uid", "gid", "nlink")
+                )
+                or cast(str, item["relative_path"]) in directory_names
+                or cast(str, item["resolved_path"]) in directory_paths
+            ):
+                raise ValueError
+            directory_names.add(cast(str, item["relative_path"]))
+            directory_paths.add(cast(str, item["resolved_path"]))
+
+        # Re-run the root and directory safety bindings before discarding host
+        # placement from the digest.  This makes relocation portable without
+        # allowing a caller to forge a path, owner, group, or link count.
+        if package != _typescript_package_root_binding():
+            raise ValueError
+        expected_directories = [
+            _typescript_package_directory_binding(relative)
+            for relative in ("bin", "lib")
+        ]
+        if directories != expected_directories:
+            raise ValueError
+
+        roles: set[str] = set()
+        paths: set[Path] = set()
+        package_uid = cast(int, package["uid"])
+        package_gid = cast(int, package["gid"])
+        if any(
+            directory["uid"] != package_uid or directory["gid"] != package_gid
+            for directory in expected_directories
+        ):
+            raise ValueError
+        for item in files:
+            if (
+                not isinstance(item, dict)
+                or set(item)
+                != {
+                    "role",
+                    "resolved_path",
+                    "bytes",
+                    "sha256",
+                    "mode",
+                    "uid",
+                    "gid",
+                    "nlink",
+                }
+                or not isinstance(item.get("role"), str)
+                or not isinstance(item.get("resolved_path"), str)
+                or type(item.get("bytes")) is not int
+                or not isinstance(item.get("sha256"), str)
+                or not isinstance(item.get("mode"), str)
+                or type(item.get("uid")) is not int
+                or type(item.get("gid")) is not int
+                or type(item.get("nlink")) is not int
+            ):
+                raise ValueError
+            role = cast(str, item["role"])
+            path = Path(cast(str, item["resolved_path"]))
+            if (
+                role in roles
+                or path in paths
+                or not path.is_absolute()
+                or str(path) != item["resolved_path"]
+            ):
+                raise ValueError
+            roles.add(role)
+            paths.add(path)
+            relative = path.relative_to(_EXPECTED_TYPESCRIPT_ROOT)
+            if not relative.parts or any(
+                part in {"", ".", ".."} for part in relative.parts
+            ):
+                raise ValueError
+            rebound = _typescript_file_binding(path, role)
+            if (
+                item != rebound
+                or item["uid"] != package_uid
+                or item["gid"] != package_gid
+                or len(cast(str, item["sha256"])) != 64
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in cast(str, item["sha256"])
+                )
+            ):
+                raise ValueError
+
+        # Bind the enclosing directories again after every file has been
+        # opened and hashed.  A caller cannot swap a root between the first
+        # placement check and the last content read and still receive a
+        # portable identity.
+        if (
+            _typescript_package_root_binding() != package
+            or [
+                _typescript_package_directory_binding(relative)
+                for relative in ("bin", "lib")
+            ]
+            != directories
+        ):
+            raise ValueError
+
+        copied = json.loads(json.dumps(manifest, sort_keys=True))
+        if not isinstance(copied, dict):
+            raise ValueError
+        canonical_package = copied["package_root"]
+        canonical_directories = copied["directories"]
+        canonical_files = copied["files"]
+        if (
+            not isinstance(canonical_package, dict)
+            or not isinstance(canonical_directories, list)
+            or not isinstance(canonical_files, list)
+        ):
+            raise ValueError
+        canonical_package["root"] = str(_TYPESCRIPT_IDENTITY_CANONICAL_ROOT)
+        canonical_package["uid"] = _TYPESCRIPT_IDENTITY_CANONICAL_UID
+        canonical_package["gid"] = _TYPESCRIPT_IDENTITY_CANONICAL_GID
+        canonical_package["nlink"] = _TYPESCRIPT_IDENTITY_CANONICAL_PACKAGE_NLINK
+        for item in canonical_directories:
+            if not isinstance(item, dict):
+                raise ValueError
+            directory_relative = cast(str, item["relative_path"])
+            item["resolved_path"] = str(
+                _TYPESCRIPT_IDENTITY_CANONICAL_ROOT / directory_relative
+            )
+            item["uid"] = _TYPESCRIPT_IDENTITY_CANONICAL_UID
+            item["gid"] = _TYPESCRIPT_IDENTITY_CANONICAL_GID
+            item["nlink"] = _TYPESCRIPT_IDENTITY_CANONICAL_DIRECTORY_NLINKS[
+                directory_relative
+            ]
+        for item in canonical_files:
+            if not isinstance(item, dict):
+                raise ValueError
+            path = Path(cast(str, item["resolved_path"]))
+            file_relative = path.relative_to(_EXPECTED_TYPESCRIPT_ROOT)
+            item["resolved_path"] = str(
+                _TYPESCRIPT_IDENTITY_CANONICAL_ROOT / file_relative
+            )
+            item["uid"] = _TYPESCRIPT_IDENTITY_CANONICAL_UID
+            item["gid"] = _TYPESCRIPT_IDENTITY_CANONICAL_GID
+            item["nlink"] = 1
+        return cast(dict[str, object], copied)
+    except (KeyError, OSError, TypeError, ValueError) as error:
+        raise RouteError("EXACT_TOOLCHAIN_TYPESCRIPT_CLOSURE_INVALID") from error
+
+
+def _raw_typescript_closure_identity(
+    manifest: dict[str, object],
+) -> dict[str, object]:
+    """Hash an already validated/canonical manifest without filesystem access.
+
+    Packed replay first rebinds its private extracted files and projects those
+    bindings to the historical canonical placement.  Calling the live
+    canonicalizer again would incorrectly interpret those projected paths as
+    host files.  This deliberately narrow pure boundary avoids that second
+    projection while retaining strict schema and scalar validation.
+    """
+
+    try:
+        if set(manifest) != {
+            "schema_version",
+            "kind",
+            "package_root",
+            "directories",
+            "files",
+            "semantic_soundness",
+        }:
+            raise ValueError
+        if (
+            manifest["schema_version"] != 2
+            or manifest["kind"]
+            != "elmos.typescript-5.9.2-full-stdlib-compiler-closure"
+            or manifest["semantic_soundness"] != "NOT_RUN"
+        ):
+            raise ValueError
+        package = manifest["package_root"]
+        directories = manifest["directories"]
         files = cast(list[dict[str, object]], manifest["files"])
-        canonical = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        if (
+            not isinstance(package, dict)
+            or set(package) != {"root", "mode", "uid", "gid", "nlink"}
+            or not isinstance(package.get("root"), str)
+            or not isinstance(package.get("mode"), str)
+            or any(type(package.get(field)) is not int for field in ("uid", "gid", "nlink"))
+            or not isinstance(directories, list)
+            or not isinstance(files, list)
+        ):
+            raise ValueError
+        roles: set[str] = set()
+        resolved_paths: set[str] = set()
+        for item in files:
+            if (
+                not isinstance(item, dict)
+                or set(item)
+                != {
+                    "role",
+                    "resolved_path",
+                    "bytes",
+                    "sha256",
+                    "mode",
+                    "uid",
+                    "gid",
+                    "nlink",
+                }
+                or not isinstance(item.get("role"), str)
+                or not isinstance(item.get("resolved_path"), str)
+                or type(item.get("bytes")) is not int
+                or not isinstance(item.get("sha256"), str)
+                or not isinstance(item.get("mode"), str)
+                or any(
+                    type(item.get(field)) is not int
+                    for field in ("uid", "gid", "nlink")
+                )
+                or cast(int, item["bytes"]) < 0
+                or len(cast(str, item["sha256"])) != 64
+                or any(
+                    character not in "0123456789abcdef"
+                    for character in cast(str, item["sha256"])
+                )
+                or cast(str, item["role"]) in roles
+                or cast(str, item["resolved_path"]) in resolved_paths
+            ):
+                raise ValueError
+            roles.add(cast(str, item["role"]))
+            resolved_paths.add(cast(str, item["resolved_path"]))
+        canonical = json.dumps(
+            manifest, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
         return {
             "manifest": manifest,
             "sha256": hashlib.sha256(canonical).hexdigest(),
@@ -1710,6 +2424,17 @@ def _typescript_closure_identity(manifest: dict[str, object]) -> dict[str, objec
         }
     except (KeyError, TypeError, ValueError) as error:
         raise RouteError("EXACT_TOOLCHAIN_TYPESCRIPT_CLOSURE_INVALID") from error
+
+
+def _typescript_closure_identity(manifest: dict[str, object]) -> dict[str, object]:
+    canonical_manifest = _canonical_typescript_closure_manifest(manifest)
+    canonical_identity = _raw_typescript_closure_identity(canonical_manifest)
+    return {
+        "manifest": manifest,
+        "sha256": canonical_identity["sha256"],
+        "file_count": canonical_identity["file_count"],
+        "bytes": canonical_identity["bytes"],
+    }
 
 
 def _typescript_package_directory_binding(relative: str) -> dict[str, str | int]:
@@ -2326,11 +3051,24 @@ def _node_closure_identity(manifest: dict[str, object]) -> dict[str, object]:
         components = cast(list[dict[str, object]], manifest["components"])
         edges = cast(list[dict[str, object]], manifest["edges"])
         system_edges = cast(list[dict[str, object]], manifest["system_edges"])
+        topology = {
+            "schema_version": 1,
+            "kind": "elmos.node26-homebrew-macho-topology",
+            "install_root": manifest["install_root"],
+            "component_paths": sorted(
+                cast(str, component["resolved_path"])
+                for component in components
+            ),
+            "edges": edges,
+            "system_edges": system_edges,
+        }
+        topology_identity = _node_topology_identity(topology)
         canonical = json.dumps(manifest, sort_keys=True, separators=(",", ":")).encode("utf-8")
         system_canonical = json.dumps({"edges": system_edges}, sort_keys=True, separators=(",", ":")).encode("utf-8")
         return {
             "manifest": manifest,
             "sha256": hashlib.sha256(canonical).hexdigest(),
+            "topology_sha256": topology_identity["sha256"],
             "component_count": len(components),
             "edge_count": len(edges),
             "system_edge_count": len(system_edges),
@@ -2407,7 +3145,7 @@ def _node_topology_identity(topology: dict[str, object]) -> dict[str, object]:
         raise RouteError("EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_INVALID") from error
 
 
-def _verify_node_topology_identity(identity: dict[str, object]) -> None:
+def _verify_node_topology_identity(identity: dict[str, object]) -> tuple[str, ...]:
     try:
         topology = cast(dict[str, object], identity["topology"])
         recomputed = _node_topology_identity(topology)
@@ -2416,14 +3154,17 @@ def _verify_node_topology_identity(identity: dict[str, object]) -> None:
     for field in ("sha256", "component_count", "edge_count", "system_edge_count"):
         if recomputed[field] != identity.get(field):
             raise RouteError("EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_INVALID")
-    if (
-        recomputed["sha256"] != _EXPECTED_NODE_TOPOLOGY_SHA256
-        or recomputed["component_count"] != _EXPECTED_NODE_CLOSURE_COMPONENT_COUNT
-        or recomputed["edge_count"] != _EXPECTED_NODE_CLOSURE_EDGE_COUNT
-        or recomputed["system_edge_count"]
-        != _EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT
-    ):
+    matching_profiles = tuple(
+        str(profile["profile"])
+        for profile in _validated_node_profiles()
+        if recomputed["sha256"] == profile["topology_sha256"]
+        and recomputed["component_count"] == profile["component_count"]
+        and recomputed["edge_count"] == profile["edge_count"]
+        and recomputed["system_edge_count"] == profile["system_edge_count"]
+    )
+    if not matching_profiles:
         raise RouteError("EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_MISMATCH")
+    return matching_profiles
 
 
 def _discover_node_topology() -> dict[str, object]:
@@ -2532,24 +3273,25 @@ def _node_dependency_closure() -> dict[str, object]:
             "status": "NOT_RUN",
         },
     }
-    return _node_closure_identity(manifest)
+    identity = _node_closure_identity(manifest)
+    if identity["topology_sha256"] != topology_identity["sha256"]:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_TOPOLOGY_CACHE_MISMATCH")
+    return identity
 
 
-def _verify_node_dependency_closure(identity: dict[str, object]) -> None:
+def _verify_node_dependency_closure(identity: dict[str, object]) -> str:
     try:
         manifest = cast(dict[str, object], identity["manifest"])
         recomputed = _node_closure_identity(manifest)
         components = cast(list[dict[str, object]], manifest["components"])
         executable = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_EXECUTABLE))
         libnode = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_LIBNODE))
+        libada = next(item for item in components if item.get("resolved_path") == str(_EXPECTED_NODE_LIBADA))
     except (KeyError, StopIteration, TypeError) as error:
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_INVALID") from error
-    if executable.get("sha256") != _EXPECTED_NODE_SHA256 or executable.get("bytes") != _EXPECTED_NODE_BYTES:
-        raise RouteError("EXACT_TOOLCHAIN_NODE_EXECUTABLE_MISMATCH")
-    if libnode.get("sha256") != _EXPECTED_NODE_LIBNODE_SHA256 or libnode.get("bytes") != _EXPECTED_NODE_LIBNODE_BYTES:
-        raise RouteError("EXACT_TOOLCHAIN_NODE_LIBNODE_MISMATCH")
     for field in (
         "sha256",
+        "topology_sha256",
         "component_count",
         "edge_count",
         "system_edge_count",
@@ -2558,16 +3300,46 @@ def _verify_node_dependency_closure(identity: dict[str, object]) -> None:
     ):
         if recomputed[field] != identity.get(field):
             raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_IDENTITY_INVALID")
-    expected = {
-        "sha256": _EXPECTED_NODE_CLOSURE_SHA256,
-        "component_count": _EXPECTED_NODE_CLOSURE_COMPONENT_COUNT,
-        "edge_count": _EXPECTED_NODE_CLOSURE_EDGE_COUNT,
-        "system_edge_count": _EXPECTED_NODE_CLOSURE_SYSTEM_EDGE_COUNT,
-        "bytes": _EXPECTED_NODE_CLOSURE_BYTES,
-        "system_edge_sha256": _EXPECTED_NODE_SYSTEM_EDGE_SHA256,
-    }
-    if any(recomputed[field] != value for field, value in expected.items()):
+
+    executable_profiles = [
+        profile
+        for profile in _validated_node_profiles()
+        if executable.get("sha256") == profile["node_sha256"]
+        and executable.get("bytes") == profile["node_bytes"]
+    ]
+    if not executable_profiles:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_EXECUTABLE_MISMATCH")
+    libnode_profiles = [
+        profile
+        for profile in executable_profiles
+        if libnode.get("sha256") == profile["libnode_sha256"]
+        and libnode.get("bytes") == profile["libnode_bytes"]
+    ]
+    if not libnode_profiles:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_LIBNODE_MISMATCH")
+    libada_profiles = [
+        profile
+        for profile in libnode_profiles
+        if libada.get("sha256") == profile["libada_sha256"]
+        and libada.get("bytes") == profile["libada_bytes"]
+    ]
+    if not libada_profiles:
+        raise RouteError("EXACT_TOOLCHAIN_NODE_LIBADA_MISMATCH")
+
+    matching_profiles = [
+        profile
+        for profile in libada_profiles
+        if recomputed["sha256"] == profile["closure_sha256"]
+        and recomputed["topology_sha256"] == profile["topology_sha256"]
+        and recomputed["component_count"] == profile["component_count"]
+        and recomputed["edge_count"] == profile["edge_count"]
+        and recomputed["system_edge_count"] == profile["system_edge_count"]
+        and recomputed["bytes"] == profile["closure_bytes"]
+        and recomputed["system_edge_sha256"] == profile["system_edge_sha256"]
+    ]
+    if len(matching_profiles) != 1:
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_MISMATCH")
+    return str(matching_profiles[0]["profile"])
 
 
 def _node_shim_identity() -> tuple[object, ...]:
@@ -2615,7 +3387,8 @@ def _node_shim_identity() -> tuple[object, ...]:
     return (str(declared), str(target_before), str(resolved), *identity)
 
 
-def _node_runtime_identity() -> dict[str, object]:
+def _node_runtime_identity(profile_id: str) -> dict[str, object]:
+    selected_profile = _node_profile(profile_id)
     observed_version = _output([str(_EXPECTED_NODE_EXECUTABLE), "--version"])
     observed_identity = _output(
         [
@@ -2632,23 +3405,26 @@ def _node_runtime_identity() -> dict[str, object]:
         raise RouteError("EXACT_TOOLCHAIN_NODE_IDENTITY_INVALID") from error
     observed_versions = json.dumps(identity.get("versions"), separators=(",", ":"), ensure_ascii=True)
     if (
-        observed_version != "v26.0.0"
+        observed_version != selected_profile["node_version"]
         or identity.get("execPath") != str(_EXPECTED_NODE_EXECUTABLE)
-        or identity.get("platform") != "darwin"
-        or identity.get("arch") != "arm64"
-        or observed_versions != _EXPECTED_NODE_PROCESS_VERSIONS
-        or hashlib.sha256(observed_versions.encode("ascii")).hexdigest() != _EXPECTED_NODE_PROCESS_VERSIONS_SHA256
+        or identity.get("platform") != selected_profile["platform"]
+        or identity.get("arch") != selected_profile["arch"]
+        or observed_versions != selected_profile["process_versions"]
+        or hashlib.sha256(observed_versions.encode("ascii")).hexdigest()
+        != selected_profile["process_versions_sha256"]
     ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:node-runtime:"
             "expected=Node26.0.0/darwin-arm64/"
-            f"sha256={_EXPECTED_NODE_SHA256}:observed={observed_version}/"
+            f"profile={profile_id}/sha256={selected_profile['node_sha256']}:"
+            f"observed={observed_version}/"
             f"{identity.get('platform')}-{identity.get('arch')}"
         )
     return {
+        "profile": profile_id,
         "version": observed_version,
         "process": identity,
-        "process_versions_sha256": _EXPECTED_NODE_PROCESS_VERSIONS_SHA256,
+        "process_versions_sha256": selected_profile["process_versions_sha256"],
     }
 
 
@@ -2664,12 +3440,18 @@ def _javascript() -> ExactToolchain:
 
     shim_before = _node_shim_identity()
     closure_before = _node_dependency_closure()
-    _verify_node_dependency_closure(closure_before)
-    _node_runtime_identity()
+    closure_profile_before = _verify_node_dependency_closure(closure_before)
+    runtime_identity = _node_runtime_identity(closure_profile_before)
     closure_after = _node_dependency_closure()
-    _verify_node_dependency_closure(closure_after)
+    closure_profile_after = _verify_node_dependency_closure(closure_after)
     shim_after = _node_shim_identity()
-    if closure_before != closure_after or shim_before != shim_after:
+    selected_profile = _node_profile(closure_profile_after)
+    if (
+        closure_before != closure_after
+        or closure_profile_before != closure_profile_after
+        or runtime_identity["profile"] != closure_profile_after
+        or shim_before != shim_after
+    ):
         raise RouteError("EXACT_TOOLCHAIN_NODE_CLOSURE_CHANGED_DURING_PROBE")
     return ExactToolchain(
         "javascript",
@@ -2683,25 +3465,27 @@ def _javascript() -> ExactToolchain:
             "syntax-check=node--check",
             "integer=IEEE-754-safe-integer-subset",
             "number=finite-binary64",
-            f"process-versions-sha256={_EXPECTED_NODE_PROCESS_VERSIONS_SHA256}",
+            f"process-versions-sha256={selected_profile['process_versions_sha256']}",
             f"node-install-root={_EXPECTED_NODE_ROOT}",
             f"node-closure-sha256={closure_after['sha256']}",
+            f"node-closure-profile={closure_profile_after}",
+            f"node-topology-sha256={closure_after['topology_sha256']}",
             f"node-closure-component-count={closure_after['component_count']}",
             f"node-closure-edge-count={closure_after['edge_count']}",
             f"node-closure-system-edge-count={closure_after['system_edge_count']}",
             f"node-closure-bytes={closure_after['bytes']}",
             f"node-system-edge-sha256={closure_after['system_edge_sha256']}",
-            f"libnode-sha256={_EXPECTED_NODE_LIBNODE_SHA256}",
-            f"libnode-bytes={_EXPECTED_NODE_LIBNODE_BYTES}",
+            f"libnode-sha256={selected_profile['libnode_sha256']}",
+            f"libnode-bytes={selected_profile['libnode_bytes']}",
             "otool-system-tool-content-soundness=NOT_RUN",
             "dyld-system-library-content-soundness=NOT_RUN",
             "compiler-runtime-semantic-soundness=NOT_RUN",
         ),
-        executable_sha256=_EXPECTED_NODE_SHA256,
+        executable_sha256=str(selected_profile["node_sha256"]),
     )
 
 
-_EXPECTED_USER_LOCAL = Path("/Users/stephen/.local")
+_EXPECTED_USER_LOCAL = _EXPECTED_TOOLCHAIN_ROOT.parents[2]
 
 _EXPECTED_GO_ROOT = _EXPECTED_USER_LOCAL / "share" / "elmos" / "toolchains" / "go" / "1.25.0"
 _EXPECTED_GO_PUBLIC = _EXPECTED_USER_LOCAL / "bin" / "go"
@@ -3152,8 +3936,8 @@ def _swift() -> ExactToolchain:
 # `php` happens to be on PATH.
 _PHP_VERSION_VARIABLE = "ELMOS_PHP_VERSION"
 _EXPECTED_PHP_VERSION = 'PHP 8.5.9 (cli) (built: Jul 28 2026 13:06:52) (NTS)'
-_EXPECTED_PHP_ROOT = Path('/opt/homebrew/Cellar/php/8.5.9')
-_EXPECTED_PHP_ANCHOR = Path('/opt/homebrew/Cellar/php')
+_EXPECTED_PHP_ROOT = _EXPECTED_HOMEBREW_CELLAR / "php/8.5.9"
+_EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
@@ -3607,7 +4391,10 @@ def _php() -> ExactToolchain:
 # they are pinned the probe fails closed with EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED
 # rather than accepting whatever `kotlinc` happens to be on PATH.
 _KOTLIN_VERSION_VARIABLE = "ELMOS_KOTLIN_VERSION"
-_EXPECTED_KOTLIN_VERSION = "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+_EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION = {
+    "homebrew": "kotlinc-jvm 2.2.20 (JRE 21.0.11)",
+    "temurin": "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+}
 
 
 def configured_polyglot_toolchain_root() -> Path:
@@ -3801,6 +4588,20 @@ def _kotlin_jvm_binding() -> tuple[Path, str]:
     return home, release_digest
 
 
+def _kotlin_version_contract() -> tuple[str, str]:
+    """Select the one exact Kotlin banner for the already pinned JDK distribution."""
+    distribution = os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "").strip().lower()
+    if not distribution:
+        distribution = "homebrew"
+    expected = _EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION.get(distribution)
+    if expected is None:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:"
+            f"{distribution}"
+        )
+    return distribution, expected
+
+
 def _kotlin_version_banner(jvm_home: Path) -> str:
     """The `kotlinc -version` banner, run against the pinned JDK.
 
@@ -3868,7 +4669,7 @@ def _kotlin() -> ExactToolchain:
             f"observed={platform.system()}/{platform.machine()}"
         )
     if not (
-        _EXPECTED_KOTLIN_VERSION
+        _EXPECTED_KOTLIN_VERSION_BY_JAVA_DISTRIBUTION
         and _EXPECTED_KOTLINC_EXECUTABLE_SHA256
         and _EXPECTED_KOTLIN_COMPILER_JAR_SHA256
         and _EXPECTED_KOTLIN_STDLIB_JAR_SHA256
@@ -3879,9 +4680,10 @@ def _kotlin() -> ExactToolchain:
         raise RouteError(
             "EXACT_TOOLCHAIN_KOTLIN_NOT_PINNED:run tools/pin_kotlin_toolchain.py on the pinning host"
         )
-    expected_version = _pinned(_KOTLIN_VERSION_VARIABLE, "kotlin", _EXPECTED_KOTLIN_VERSION)
     _kotlin_classpath_binding()
     jvm_home, jvm_release_digest = _kotlin_jvm_binding()
+    jvm_distribution, repository_version = _kotlin_version_contract()
+    expected_version = _pinned(_KOTLIN_VERSION_VARIABLE, "kotlin", repository_version)
     tree_before = _kotlin_tree_identity()
     records_before = _kotlin_file_records()
     build_number = _kotlin_build_number()
@@ -3930,6 +4732,7 @@ def _kotlin() -> ExactToolchain:
             # interpreter, and `_toolchain_executable_dirs` has nothing to read to
             # put that JVM on PATH for the emit-time runs.
             f"kotlin-jvm-home={jvm_home}",
+            f"kotlin-jvm-distribution={jvm_distribution}",
             f"kotlin-jvm-release-sha256={jvm_release_digest}",
             "integer=int64",
             "number=binary64",
@@ -3939,7 +4742,7 @@ def _kotlin() -> ExactToolchain:
     )
 
 
-_EXPECTED_FLUTTER_ROOT = Path("/opt/homebrew/share/flutter")
+_EXPECTED_FLUTTER_ROOT = _EXPECTED_HOMEBREW_PREFIX / "share/flutter"
 _EXPECTED_FLUTTER_EXECUTABLE = _EXPECTED_FLUTTER_ROOT / "bin" / "flutter"
 _EXPECTED_FLUTTER_EXECUTABLE_SHA256 = "7d486c33b30a0cf1ea5146231c68bb8f966cdb4e087c5cd8b37e14513f536e7d"
 _EXPECTED_FLUTTER_EXECUTABLE_BYTES = 2_385
@@ -4194,6 +4997,7 @@ def _toolchain_fingerprint() -> tuple[str, ...]:
     return (
         os.environ.get("PATH", ""),
         os.environ.get("ELMOS_JAVA21_HOME", ""),
+        os.environ.get("ELMOS_JAVA21_DISTRIBUTION", ""),
         os.environ.get("ELMOS_CLANG_HOME", ""),
         os.environ.get(_CLANG_VERSION_VARIABLE, ""),
         os.environ.get(_SWIFT_VERSION_VARIABLE, ""),

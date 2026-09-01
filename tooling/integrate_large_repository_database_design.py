@@ -55,6 +55,14 @@ INSTALL_MANIFEST_NAME = "installed-manifest.json"
 EXPECTED_ARCHIVE_SHA256 = (
     "624de461a0a7a3a295b6c3ebcd1ffd6e3a45f80bdf33aad0d7e3cb0d8c430e88"
 )
+ALLOWED_PREVIOUS_INSTALL_MANIFEST_SHA256 = frozenset(
+    {
+        # Repository-owned v1 manifest before the claim_ready_task ambiguity
+        # was recorded. This permits one exact, auditable metadata migration;
+        # arbitrary or user-owned manifest drift still fails closed.
+        "fbe49b8f20dff983656eb5ebd1d1357fa2197d552d0ddead25a0d63825d0c872",
+    }
+)
 EXPECTED_ARCHIVE_BYTES = 158_461
 EXPECTED_ARCHIVE_ENTRIES = 59
 EXPECTED_SOURCE_FILES = 42
@@ -827,6 +835,77 @@ def build_expected(repository_root: Path = ROOT) -> dict[str, Any]:
             "canonical_source_mutated": False,
             "production_resolution": "NOT_APPROVED",
         },
+        "postgresql_account_slot_uniqueness_defect": {
+            "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+            "source_migration": (
+                SOURCE_RELATIVE
+                / "database/migrations/V010__tenancy_projects_jobs_and_admission.sql"
+            ).as_posix(),
+            "source_sha256": (
+                "sha256:ca02afa6f4df7881ad85b1139faf137732a0146dbcf247abf4e40205bca53829"
+            ),
+            "affected_table": "core.account_task_slot",
+            "source_constraint": (
+                "UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id)"
+            ),
+            "runtime_requirement": (
+                "three unclaimed slots per account and at most one claimed slot "
+                "per tenant and run"
+            ),
+            "compatibility_overlay": (
+                "UNIQUE (tenant_id, claimed_by_run_id)"
+            ),
+            "canonical_source_mutated": False,
+            "production_resolution": "NOT_APPROVED",
+        },
+        "postgresql_temporal_identity_uniqueness_defect": {
+            "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+            "source_migration": (
+                SOURCE_RELATIVE
+                / "database/migrations/V020__runs_tasks_sessions_and_recovery.sql"
+            ).as_posix(),
+            "source_sha256": (
+                "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e"
+            ),
+            "affected_table": "exec.run",
+            "source_constraint": (
+                "UNIQUE NULLS NOT DISTINCT "
+                "(tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)"
+            ),
+            "runtime_requirement": (
+                "multiple non-Temporal runs per tenant while preserving uniqueness "
+                "when a complete Temporal identity is present"
+            ),
+            "compatibility_overlay": (
+                "UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)"
+            ),
+            "canonical_source_mutated": False,
+            "production_resolution": "NOT_APPROVED",
+        },
+        "postgresql_claim_ready_task_ambiguity_defect": {
+            "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+            "source_migration": (
+                SOURCE_RELATIVE
+                / "database/migrations/V090__transactional_runtime_functions.sql"
+            ).as_posix(),
+            "source_sha256": (
+                "sha256:8eb1646c5c0200a81769edc542b26fd6beb3d515bf122b570b140a6c797a6ddf"
+            ),
+            "affected_function": "exec.claim_ready_task",
+            "source_query": (
+                "unqualified run_attempt id, tenant_id, run_id, status, and attempt_no "
+                "inside a RETURNS TABLE function"
+            ),
+            "runtime_requirement": (
+                "claim one ready task while preserving tenant, run-attempt, lease, "
+                "and fencing-token identities"
+            ),
+            "compatibility_overlay": (
+                "qualify the run_attempt relation as ra and every referenced column"
+            ),
+            "canonical_source_mutated": False,
+            "production_resolution": "NOT_APPROVED",
+        },
         "installation": {
             "runtime_root": RUNTIME_RELATIVE.as_posix(),
             "workspace_root": WORKSPACE_RELATIVE.as_posix(),
@@ -1021,8 +1100,37 @@ def write_install(repository_root: Path = ROOT) -> dict[str, Any]:
         "installed manifest",
     )
     if owned:
-        # A pinned installation is immutable.  Re-running --write is a no-op
-        # only when every previously owned byte still matches exactly.
+        # Installed Skill bytes remain immutable. Permit only an explicitly
+        # pinned predecessor manifest to migrate to the current deterministic
+        # schema; any other drift remains a hard failure.
+        current_manifest = manifest_path.read_bytes()
+        if current_manifest == expected["manifest_bytes"]:
+            return check_install(repository_root)
+        current_manifest_sha256 = digest(current_manifest).removeprefix("sha256:")
+        if current_manifest_sha256 not in ALLOWED_PREVIOUS_INSTALL_MANIFEST_SHA256:
+            fail(
+                "refusing to migrate an unrecognized installed manifest: "
+                f"sha256:{current_manifest_sha256}"
+            )
+        for destination in destinations:
+            if read_installed_tree(destination) != expected["tree"]:
+                fail(
+                    "refusing manifest migration while installed Skill bytes drifted: "
+                    f"{destination}"
+                )
+            validate_skill_root(destination)
+        manifest_stage = manifest_path.parent / (
+            f".{INSTALL_MANIFEST_NAME}.stage.{uuid.uuid4().hex}"
+        )
+        try:
+            manifest_stage.write_bytes(expected["manifest_bytes"])
+            manifest_stage.chmod(INSTALLED_FILE_MODE)
+            if manifest_stage.read_bytes() != expected["manifest_bytes"]:
+                fail("staged installed manifest bytes differ")
+            os.replace(manifest_stage, manifest_path)
+        finally:
+            if manifest_stage.exists() or manifest_stage.is_symlink():
+                manifest_stage.unlink()
         return check_install(repository_root)
 
     for destination in destinations:

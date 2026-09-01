@@ -2,7 +2,7 @@
   "schemaVersion": "1.0",
   "parser": {
     "name": "sqlglot",
-    "version": "30.13.0",
+    "version": "30.14.0",
     "unsupportedLevel": "RAISE"
   },
   "profiles": [

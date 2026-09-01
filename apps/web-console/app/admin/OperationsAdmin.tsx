@@ -272,7 +272,6 @@ function isRunnerFleetNode(value: unknown): value is RunnerFleetNodeView {
 
 export function OperationsAdmin() {
   const account = useAccountSession();
-  const [token, setToken] = useState("");
   const [hours, setHours] = useState("24");
   const [businessLine, setBusinessLine] = useState("ALL");
   const [result, setResult] = useState("ALL");
@@ -407,8 +406,8 @@ export function OperationsAdmin() {
    * no artifact.
    */
   async function downloadAuditExport() {
-    if (account.status !== "authenticated" && token.trim().length < 24) {
-      setExportError("请输入至少 24 字符的短期管理令牌。");
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+      setExportError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setExportBusy(true);
@@ -434,7 +433,6 @@ export function OperationsAdmin() {
           query.set("afterEventId", cursor.id);
         }
         const response = await fetch(`/api/admin/audit-export?${query}`, {
-          headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
           credentials: "same-origin",
           cache: "no-store",
         });
@@ -482,8 +480,8 @@ export function OperationsAdmin() {
       setReplayError("请输入迁移运行 ID。");
       return;
     }
-    if (account.status !== "authenticated" && token.trim().length < 24) {
-      setReplayError("请输入至少 24 字符的短期管理令牌。");
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+      setReplayError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setReplayBusy(true);
@@ -491,7 +489,6 @@ export function OperationsAdmin() {
     setReplay(null);
     try {
       const response = await fetch(`/api/admin/run-replay/${encodeURIComponent(runId)}`, {
-        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -523,8 +520,8 @@ export function OperationsAdmin() {
    * other to zero.
    */
   async function loadQuota() {
-    if (account.status !== "authenticated" && token.trim().length < 24) {
-      setQuotaError("请输入至少 24 字符的短期管理令牌。");
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+      setQuotaError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setQuotaBusy(true);
@@ -532,7 +529,6 @@ export function OperationsAdmin() {
     setQuotaNotice("");
     try {
       const response = await fetch("/api/admin/tenant-quota", {
-        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -568,7 +564,6 @@ export function OperationsAdmin() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token.trim() ? { Authorization: `Bearer ${token.trim()}` } : {}),
         },
         credentials: "same-origin",
         cache: "no-store",
@@ -601,8 +596,8 @@ export function OperationsAdmin() {
   }
 
   async function loadOperationsJobs() {
-    if (account.status !== "authenticated" && token.trim().length < 24) {
-      setOperationsJobsError("请输入至少 24 字符的短期管理令牌。");
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+      setOperationsJobsError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setOperationsJobsBusy(true);
@@ -617,7 +612,6 @@ export function OperationsAdmin() {
       }
       if (operationsJobStatus !== "ALL") query.set("status", operationsJobStatus);
       const response = await fetch(`/api/admin/jobs?${query}`, {
-        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -664,7 +658,6 @@ export function OperationsAdmin() {
     try {
       response = await fetch(`/api/admin/jobs/${encodeURIComponent(job.jobId)}/cancel`, {
         method: "POST",
-        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -721,8 +714,8 @@ export function OperationsAdmin() {
   }
 
   async function loadRunnerFleet() {
-    if (account.status !== "authenticated" && token.trim().length < 24) {
-      setRunnerFleetError("请输入至少 24 字符的短期管理令牌。");
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
+      setRunnerFleetError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setRunnerFleetBusy(true);
@@ -734,7 +727,6 @@ export function OperationsAdmin() {
       const query = new URLSearchParams({ limit: "100" });
       if (runnerFleetStatus !== "ALL") query.set("status", runnerFleetStatus);
       const response = await fetch(`/api/admin/runners?${query}`, {
-        headers: token.trim() ? { Authorization: `Bearer ${token.trim()}` } : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -772,7 +764,7 @@ export function OperationsAdmin() {
   ) {
     if (account.status !== "authenticated") {
       setRunnerFleetError(
-        "Runner 证明和排空只接受已验证的企业 OIDC 会话；break-glass 只能查看。",
+        "Runner 证明和排空只接受已验证的管理员企业 OIDC 会话。",
       );
       return;
     }
@@ -840,7 +832,7 @@ export function OperationsAdmin() {
     if (account.status !== "authenticated") {
       setFinancialCases([]);
       setFinancialLoaded(false);
-      setFinancialError("财务对账只接受企业 OIDC 会话；短期 break-glass 令牌不授予财务权限。");
+      setFinancialError("财务对账只接受已验证的管理员企业 OIDC 会话。");
       return;
     }
     setFinancialLoadBusy(true);
@@ -980,9 +972,9 @@ export function OperationsAdmin() {
   }
 
   async function loadData() {
-    if (account.status !== "authenticated" && token.trim().length < 24) {
+    if (account.status !== "authenticated" || !account.principal?.isPlatformAdmin) {
       setState("ERROR");
-      setError("请输入至少 24 字符的短期管理令牌。");
+      setError("请先通过独立管理员入口登录已验证的管理员账户。");
       return;
     }
     setState("LOADING");
@@ -990,9 +982,6 @@ export function OperationsAdmin() {
     try {
       const query = new URLSearchParams({ hours, businessLine, result, limit: "60" });
       const response = await fetch(`/api/admin/operations?${query}`, {
-        headers: token.trim()
-          ? { Authorization: `Bearer ${token.trim()}` }
-          : undefined,
         credentials: "same-origin",
         cache: "no-store",
       });
@@ -1020,7 +1009,6 @@ export function OperationsAdmin() {
       const response = await fetch("/api/admin/operations", {
         method: "POST",
         headers: {
-          ...(token.trim() ? { Authorization: `Bearer ${token.trim()}` } : {}),
           "Content-Type": "application/json",
         },
         credentials: "same-origin",
@@ -1039,7 +1027,6 @@ export function OperationsAdmin() {
   }
 
   function lock() {
-    setToken("");
     setView(null);
     setOperationsJobs([]);
     setOperationsJobsLoaded(false);
@@ -1085,18 +1072,11 @@ export function OperationsAdmin() {
       </section>
 
       <form className={styles.accessBar} onSubmit={load} data-telemetry-ignore="true">
-        <label className={styles.tokenField}>
-          <span>短期管理令牌</span>
-          <input
-            type="password"
-            autoComplete="off"
-            value={token}
-            onChange={(event) => setToken(event.target.value)}
-            placeholder={account.status === "authenticated" ? "已使用企业账户，无需填写" : "仅保存在当前页面内存"}
-            aria-label="短期管理令牌"
-            disabled={account.status === "authenticated"}
-          />
-        </label>
+        <div className={styles.tokenField}>
+          <span>管理员身份</span>
+          <strong>{account.principal?.email ?? "未登录"}</strong>
+          <small>仅接受已验证的管理员企业账户会话</small>
+        </div>
         <label>
           <span>时间范围</span>
           <select value={hours} onChange={(event) => setHours(event.target.value)} aria-label="时间范围">
@@ -1121,7 +1101,7 @@ export function OperationsAdmin() {
             <option value="CANCELLED">已取消</option>
           </select>
         </label>
-        <button className="primary-button" type="submit" disabled={state === "LOADING"}>
+        <button className="primary-button" type="submit" disabled={state === "LOADING" || account.status === "loading"}>
           <Icon name={state === "LOADING" ? "refresh" : "search"} size={17} />
           {state === "LOADING" ? "读取中…" : "读取数据"}
         </button>
@@ -1279,7 +1259,7 @@ export function OperationsAdmin() {
       {state === "LOCKED" && (
         <section className={styles.locked}>
           <span><Icon name="lock" size={24} /></span>
-          <div><strong>管理数据默认锁定</strong><p>生产优先使用企业账户的 admin 权限；本地或获批 break-glass 才使用短期令牌。角色均由服务端决定，页面不能自行提升。</p></div>
+          <div><strong>管理数据默认锁定</strong><p>仅已验证的指定管理员邮箱可建立管理会话；角色由服务端决定，页面不能自行提升。</p></div>
         </section>
       )}
 
@@ -1326,7 +1306,7 @@ export function OperationsAdmin() {
                 <article>
                   <span>权限</span>
                   <strong>{account.principal?.permissions.length ?? 0}</strong>
-                  <small>{account.principal?.permissions.join(" · ") || "由短期管理凭据决定"}</small>
+                  <small>{account.principal?.permissions.join(" · ") || "需要已验证的管理员企业会话"}</small>
                 </article>
               </div>
               <div className={styles.membershipList}>
@@ -1339,14 +1319,16 @@ export function OperationsAdmin() {
                 {(account.principal?.memberships.length ?? 0) === 0
                   && <Empty label="外部 IdP 全量用户目录同步尚未执行；不会据当前会话推断其他用户。" />}
               </div>
+              {(account.principal?.memberships.length ?? 0) > 0 && (
+                <p className={styles.boundaryNote}>
+                  当前列表仅来自已验证会话的成员资格；外部 IdP 全量用户目录同步尚未执行，不会据当前会话推断其他用户。
+                </p>
+              )}
               {account.status === "authenticated" && (
                 <AccountOrganizationStudio embedded />
               )}
               {account.status !== "authenticated" && (
-                <p className={styles.boundaryNote}>
-                  Break-glass 只开放当前租户的运营处置，不授予用户目录、邀请或成员角色管理能力；
-                  这些动作必须使用已验证的企业账户会话。
-                </p>
+                <p className={styles.boundaryNote}>这些动作必须使用已验证的指定管理员企业会话。</p>
               )}
             </section>
           )}
@@ -1611,7 +1593,7 @@ export function OperationsAdmin() {
                   </div>
                 )}
                 <p className={styles.boundaryNote}>
-                  列表可由 VIEWER 或获批的短期 break-glass 凭据读取；独立证明确认与排空是生产操作，
+                  列表仅允许已验证的指定管理员账户读取；独立证明确认与排空是生产操作，
                   只接受企业 OIDC 会话的 APPROVER / OPERATOR，结果未知时不自动重试。
                 </p>
               </section>
@@ -1680,7 +1662,7 @@ export function OperationsAdmin() {
                 </button>
               </div>
               <p className={styles.boundaryNote}>
-                Break-glass 明确不具备财务权限。切换租户后，Web 会比较已验证会话的所选组织与 JWT
+                管理端不接受共享 Bearer 凭据。切换租户后，Web 会比较已验证会话的所选组织与 JWT
                 organization_id；不一致时拒绝转发并要求重新取得租户授权。未知写入结果不会自动重试。
               </p>
               {financialError && <p className={styles.bad} role="alert">{financialError}</p>}
@@ -1690,7 +1672,7 @@ export function OperationsAdmin() {
               {!financialLoaded ? (
                 <Empty label={account.status === "authenticated"
                   ? "选择状态后读取真实对账案件；页面不会使用样例财务数据。"
-                  : "请先使用企业 OIDC 账户登录；break-glass 不能读取财务案件。"} />
+                  : "请先通过独立管理员入口登录已验证的管理员企业账户。"} />
               ) : financialCases.length === 0 ? (
                 <Empty label={`当前租户没有 ${financialStatus} 对账案件`} />
               ) : (

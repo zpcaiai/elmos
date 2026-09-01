@@ -1,0 +1,4886 @@
+{
+  "instrument": "method_profile_headroom.py",
+  "method": "lift a receiver-free method to module level inside its own module, then the REAL analyze_python decides",
+  "methods_by_kind": {
+    "instance-method": 2402,
+    "dunder": 1410,
+    "property": 209,
+    "classmethod": 79,
+    "staticmethod": 60
+  },
+  "liftable_by_kind": {
+    "instance-method": 333,
+    "dunder": 101,
+    "staticmethod": 60,
+    "classmethod": 15,
+    "property": 13
+  },
+  "outcomes": {
+    "USES_RECEIVER_OR_UNCONVENTIONAL": 3638,
+    "BLOCKED_AFTER_LIFT": 501,
+    "READY_AFTER_LIFT": 21
+  },
+  "blockers_after_lift": {
+    "PYTHON_PARAMETER_TYPE_REQUIRED": 347,
+    "PYTHON_RETURN_TYPE_REQUIRED": 122,
+    "PYTHON_UNSUPPORTED_STATEMENT": 11,
+    "PYTHON_UNSUPPORTED_EXPRESSION": 9,
+    "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET": 6,
+    "PYTHON_FUNCTION_BODY_IS_ONLY_DOCUMENTATION": 3,
+    "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET": 2,
+    "UNDECLARED_NAME": 1
+  },
+  "ready_by_kind": {
+    "dunder": 15,
+    "instance-method": 6
+  },
+  "ready_after_lift": [
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "UnprocessedParamType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "StringParamType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "DateTime",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "IntParamType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "FloatParamType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "BoolParamType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "UUIDParameterType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "join_path",
+      "kind": "instance-method"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "Expr",
+      "method": "can_assign",
+      "kind": "instance-method"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "NSRef",
+      "method": "can_assign",
+      "kind": "instance-method"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__str__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__len__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__bool__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "_MissingType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "_MissingType",
+      "method": "__reduce__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/_structures.py",
+      "class": "InfinityType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/_structures.py",
+      "class": "NegativeInfinityType",
+      "method": "__repr__",
+      "kind": "dunder"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Empty",
+      "method": "_generateDefaultName",
+      "kind": "instance-method"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_ErrorStop",
+      "method": "_generateDefaultName",
+      "kind": "instance-method"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "MockRequest",
+      "method": "is_unverifiable",
+      "kind": "instance-method"
+    }
+  ],
+  "records": [
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/_make.py",
+      "class": "_Nothing",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/_make.py",
+      "class": "_Nothing",
+      "method": "__bool__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/_make.py",
+      "class": "_CacheHashWrapper",
+      "method": "__reduce__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_none_constructor"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/_make.py",
+      "class": "Attribute",
+      "method": "__setattr__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:name"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/_make.py",
+      "class": "Converter",
+      "method": "_get_global_name",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:JoinedStr"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/validators.py",
+      "class": "_IsCallableValidator",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:inst"
+    },
+    {
+      "repository": "attrs-26.1.0",
+      "path": "src/attr/validators.py",
+      "class": "_IsCallableValidator",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "_DefaultSize",
+      "method": "__getitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_key"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "_DefaultSize",
+      "method": "__setitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_key"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "_DefaultSize",
+      "method": "pop",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_key"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "_DefaultSize",
+      "method": "clear",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "Cache",
+      "method": "__missing__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:key"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "Cache",
+      "method": "getsizeof",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/__init__.py",
+      "class": "_TimedCache",
+      "method": "expire",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:time"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/_cachedmethod.py",
+      "class": "_WrapperBase",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/_cachedmethod.py",
+      "class": "_WrapperBase",
+      "method": "cache_clear",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/_cachedmethod.py",
+      "class": "Wrapper",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/_cachedmethod.py",
+      "class": "Wrapper",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/func.py",
+      "class": "_UnboundTTLCache",
+      "method": "maxsize",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "cachetools-7.1.7",
+      "path": "src/cachetools/keys.py",
+      "class": "_HashedTuple",
+      "method": "__getstate__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_termui_impl.py",
+      "class": "Editor",
+      "method": "edit",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:text"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_termui_impl.py",
+      "class": "Editor",
+      "method": "edit",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:text"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_winconsole.py",
+      "class": "_WindowsConsoleRawIOBase",
+      "method": "isatty",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_winconsole.py",
+      "class": "_WindowsConsoleReader",
+      "method": "readable",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_winconsole.py",
+      "class": "_WindowsConsoleWriter",
+      "method": "writable",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/_winconsole.py",
+      "class": "_WindowsConsoleWriter",
+      "method": "_get_error_message",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Context",
+      "method": "lookup_default",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:call"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Context",
+      "method": "lookup_default",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:call"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Context",
+      "method": "abort",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Context",
+      "method": "invoke",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Context",
+      "method": "invoke",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Command",
+      "method": "main",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:args"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Command",
+      "method": "main",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:args"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Group",
+      "method": "command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:__func"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Group",
+      "method": "command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Group",
+      "method": "group",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:__func"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Group",
+      "method": "group",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Group",
+      "method": "shell_complete",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "_parse_decls",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:decls"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "get_default",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "get_default",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "add_to_parser",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parser"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "get_help_record",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Parameter",
+      "method": "get_usage_pieces",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Option",
+      "method": "_parse_decls",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:decls"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Argument",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:param_decls"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/core.py",
+      "class": "Argument",
+      "method": "_parse_decls",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:decls"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/exceptions.py",
+      "class": "NoArgsIsHelpError",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "ShellComplete",
+      "method": "get_completion_args",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "ShellComplete",
+      "method": "format_completion",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "BashComplete",
+      "method": "_check_version",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "BashComplete",
+      "method": "get_completion_args",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "BashComplete",
+      "method": "format_completion",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "ZshComplete",
+      "method": "get_completion_args",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "ZshComplete",
+      "method": "format_completion",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "FishComplete",
+      "method": "get_completion_args",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/shell_completion.py",
+      "class": "FishComplete",
+      "method": "format_completion",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/testing.py",
+      "class": "_NamedTextIOWrapper",
+      "method": "close",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/testing.py",
+      "class": "CliRunner",
+      "method": "get_default_prog_name",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:cli"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/testing.py",
+      "class": "CliRunner",
+      "method": "isolated_filesystem",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:temp_dir"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "ParamType",
+      "method": "get_metavar",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:param"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "ParamType",
+      "method": "get_missing_message",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:param"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "ParamType",
+      "method": "convert",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "ParamType",
+      "method": "fail",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:param"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "ParamType",
+      "method": "shell_complete",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "CompositeParamType",
+      "method": "arity",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "UnprocessedParamType",
+      "method": "convert",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "UnprocessedParamType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "StringParamType",
+      "method": "convert",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "StringParamType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "DateTime",
+      "method": "_try_to_convert_date",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "DateTime",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "_NumberRangeBase",
+      "method": "_clamp",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bound"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "IntParamType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "IntRange",
+      "method": "_clamp",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dir"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "FloatParamType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "FloatRange",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:min"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "FloatRange",
+      "method": "_clamp",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dir"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "BoolParamType",
+      "method": "str_to_bool",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "BoolParamType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "UUIDParameterType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/types.py",
+      "class": "File",
+      "method": "shell_complete",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ctx"
+    },
+    {
+      "repository": "click-8.4.2",
+      "path": "src/click/utils.py",
+      "class": "KeepOpenFile",
+      "method": "__exit__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:exc_type"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/app.py",
+      "class": "Flask",
+      "method": "get_send_file_max_age",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:filename"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/app.py",
+      "class": "Flask",
+      "method": "async_to_sync",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:func"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/blueprints.py",
+      "class": "Blueprint",
+      "method": "get_send_file_max_age",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:filename"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/cli.py",
+      "class": "AppGroup",
+      "method": "group",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/config.py",
+      "class": "ConfigAttribute",
+      "method": "__get__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/config.py",
+      "class": "ConfigAttribute",
+      "method": "__get__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/debughelpers.py",
+      "class": "FormDataRoutingRedirect",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:request"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/debughelpers.py",
+      "class": "newcls",
+      "method": "__getitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/provider.py",
+      "class": "JSONProvider",
+      "method": "dumps",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/provider.py",
+      "class": "JSONProvider",
+      "method": "loads",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/provider.py",
+      "class": "JSONProvider",
+      "method": "_prepare_response_obj",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:args"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/provider.py",
+      "class": "DefaultJSONProvider",
+      "method": "loads",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "JSONTag",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "JSONTag",
+      "method": "to_json",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "JSONTag",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagDict",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "PassDict",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagTuple",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagTuple",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "PassList",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagBytes",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagBytes",
+      "method": "to_json",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagBytes",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagMarkup",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagMarkup",
+      "method": "to_json",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagMarkup",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagUUID",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagUUID",
+      "method": "to_json",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagUUID",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagDateTime",
+      "method": "check",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagDateTime",
+      "method": "to_json",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/json/tag.py",
+      "class": "TagDateTime",
+      "method": "to_python",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/app.py",
+      "class": "App",
+      "method": "create_jinja_environment",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/app.py",
+      "class": "App",
+      "method": "select_jinja_autoescape",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:filename"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/app.py",
+      "class": "App",
+      "method": "should_ignore_error",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:error"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/scaffold.py",
+      "class": "Scaffold",
+      "method": "_check_setup_finished",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/scaffold.py",
+      "class": "Scaffold",
+      "method": "add_url_rule",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:endpoint"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sansio/scaffold.py",
+      "class": "Scaffold",
+      "method": "_get_exc_class_and_code",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:exc_class_or_code"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "NullSession",
+      "method": "_fail",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_name",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_domain",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_path",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_httponly",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_secure",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_samesite",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_cookie_partitioned",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "get_expiration_time",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "should_set_cookie",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "open_session",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/sessions.py",
+      "class": "SessionInterface",
+      "method": "save_session",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:app"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/views.py",
+      "class": "View",
+      "method": "dispatch_request",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/wrappers.py",
+      "class": "Request",
+      "method": "on_json_loading_failed",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:e"
+    },
+    {
+      "repository": "flask-3.1.3",
+      "path": "src/flask/wrappers.py",
+      "class": "Response",
+      "method": "max_cookie_size",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Subscript"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "docs/examples/cache_extension.py",
+      "class": "FragmentCacheExtension",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:environment"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "docs/examples/inline_gettext_extension.py",
+      "class": "InlineGettext",
+      "method": "filter_stream",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stream"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "BytecodeCache",
+      "method": "load_bytecode",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bucket"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "BytecodeCache",
+      "method": "dump_bytecode",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bucket"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "BytecodeCache",
+      "method": "clear",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "BytecodeCache",
+      "method": "get_cache_key",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:filename"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "BytecodeCache",
+      "method": "get_source_checksum",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "FileSystemBytecodeCache",
+      "method": "_get_default_cache_dir",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:FunctionDef"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "_MemcachedClient",
+      "method": "get",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/bccache.py",
+      "class": "_MemcachedClient",
+      "method": "set",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "DependencyFinderVisitor",
+      "method": "visit_Block",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "UndeclaredNameVisitor",
+      "method": "visit_Block",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "CodeGenerator",
+      "method": "dump_local_context",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:frame"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "CodeGenerator",
+      "method": "_default_finalize",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "CodeGenerator",
+      "method": "_output_const_repr",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:group"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/compiler.py",
+      "class": "CodeGenerator",
+      "method": "_output_child_to_const",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "_compile",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "compile",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:source"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "compile",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:source"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "handle_exception",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:source"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/environment.py",
+      "class": "Environment",
+      "method": "join_path",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/exceptions.py",
+      "class": "TemplateError",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:message"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "Extension",
+      "method": "preprocess",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:name"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "Extension",
+      "method": "filter_stream",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stream"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "Extension",
+      "method": "parse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parser"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "InternationalizationExtension",
+      "method": "_trim_whitespace",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_ws_re"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "InternationalizationExtension",
+      "method": "_parse_block",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parser"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "ExprStmtExtension",
+      "method": "parse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parser"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "LoopControlExtension",
+      "method": "parse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parser"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "_TranslationsBasic",
+      "method": "gettext",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "_TranslationsBasic",
+      "method": "ngettext",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Pass"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "_TranslationsContext",
+      "method": "pgettext",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/ext.py",
+      "class": "_TranslationsContext",
+      "method": "npgettext",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/filters.py",
+      "class": "HasHTML",
+      "method": "__html__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Pass"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/idtracking.py",
+      "class": "RootVisitor",
+      "method": "generic_visit",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/idtracking.py",
+      "class": "FrameSymbolVisitor",
+      "method": "visit_Scope",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/idtracking.py",
+      "class": "FrameSymbolVisitor",
+      "method": "visit_Block",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/idtracking.py",
+      "class": "FrameSymbolVisitor",
+      "method": "visit_OverlayScope",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/loaders.py",
+      "class": "BaseLoader",
+      "method": "list_templates",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/loaders.py",
+      "class": "ModuleLoader",
+      "method": "get_template_key",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/loaders.py",
+      "class": "ModuleLoader",
+      "method": "get_module_filename",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/meta.py",
+      "class": "TrackingCodeGenerator",
+      "method": "write",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nativetypes.py",
+      "class": "NativeCodeGenerator",
+      "method": "_default_finalize",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nativetypes.py",
+      "class": "NativeCodeGenerator",
+      "method": "_output_const_repr",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:group"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nativetypes.py",
+      "class": "NativeCodeGenerator",
+      "method": "_output_child_to_const",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "Expr",
+      "method": "as_const",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:eval_ctx"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "Expr",
+      "method": "can_assign",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "NSRef",
+      "method": "can_assign",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/nodes.py",
+      "class": "InternalName",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/parser.py",
+      "class": "Parser",
+      "method": "parse_assign_target",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:name_only"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/parser.py",
+      "class": "Parser",
+      "method": "parse_assign_target",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:extra_end_rules"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "LoopContext",
+      "method": "_to_iterator",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "AsyncLoopContext",
+      "method": "_to_iterator",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__str__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__len__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__iter__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__aiter__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__bool__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "Undefined",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/runtime.py",
+      "class": "LoopRenderFunc",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:reciter"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/sandbox.py",
+      "class": "SandboxedEnvironment",
+      "method": "is_safe_attribute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/sandbox.py",
+      "class": "SandboxedEnvironment",
+      "method": "is_safe_callable",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/sandbox.py",
+      "class": "ImmutableSandboxedEnvironment",
+      "method": "is_safe_attribute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "_MissingType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "_MissingType",
+      "method": "__reduce__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "_PassArg",
+      "method": "from_obj",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/utils.py",
+      "class": "Namespace",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "jinja2-3.1.6",
+      "path": "src/jinja2/visitor.py",
+      "class": "VisitCallable",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:node"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "BlockProcessor",
+      "method": "lastChild",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "BlockProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "BlockProcessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "SetextHeaderProcessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "EmptyBlockProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "ReferenceProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/blockprocessors.py",
+      "class": "ParagraphProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/core.py",
+      "class": "Markdown",
+      "method": "build_extension",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:configs"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/abbr.py",
+      "class": "AbbrTreeprocessor",
+      "method": "create_element",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/abbr.py",
+      "class": "AbbrBlockprocessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/codehilite.py",
+      "class": "HiliteTreeprocessor",
+      "method": "code_unescape",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/def_list.py",
+      "class": "DefListExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/fenced_code.py",
+      "class": "FencedBlockPreprocessor",
+      "method": "_escape",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/footnotes.py",
+      "class": "FootnoteBlockProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/footnotes.py",
+      "class": "FootnoteBlockProcessor",
+      "method": "detab",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/legacy_attrs.py",
+      "class": "LegacyAttrs",
+      "method": "handleAttributes",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:el"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/legacy_attrs.py",
+      "class": "LegacyAttrExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/legacy_em.py",
+      "class": "LegacyEmExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/md_in_html.py",
+      "class": "MarkdownInHtmlProcessor",
+      "method": "test",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/md_in_html.py",
+      "class": "MarkdownInHtmlExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/nl2br.py",
+      "class": "Nl2BrExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/sane_lists.py",
+      "class": "SaneListExtension",
+      "method": "extendMarkdown",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:md"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/extensions/tables.py",
+      "class": "TableProcessor",
+      "method": "_build_empty_row",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parent"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "Pattern",
+      "method": "handleMatch",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "InlineProcessor",
+      "method": "handleMatch",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "SimpleTextPattern",
+      "method": "handleMatch",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "SimpleTextInlineProcessor",
+      "method": "handleMatch",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "LinkInlineProcessor",
+      "method": "getText",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "ReferenceInlineProcessor",
+      "method": "makeTag",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "ShortReferenceInlineProcessor",
+      "method": "evalId",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/inlinepatterns.py",
+      "class": "ShortImageReferenceInlineProcessor",
+      "method": "evalId",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/postprocessors.py",
+      "class": "Postprocessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Pass"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/postprocessors.py",
+      "class": "RawHtmlPostprocessor",
+      "method": "stash_to_string",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/postprocessors.py",
+      "class": "AndSubstitutePostprocessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/postprocessors.py",
+      "class": "UnescapePostprocessor",
+      "method": "unescape",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/preprocessors.py",
+      "class": "Preprocessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:lines"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/treeprocessors.py",
+      "class": "Treeprocessor",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:root"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/treeprocessors.py",
+      "class": "UnescapeTreeprocessor",
+      "method": "_unescape",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:m"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/util.py",
+      "class": "HtmlStash",
+      "method": "get_placeholder",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "UNDECLARED_NAME:HTML_PLACEHOLDER"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/util.py",
+      "class": "Registry",
+      "method": "__getitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:key"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "markdown/util.py",
+      "class": "Registry",
+      "method": "__getitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:key"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "scripts/griffe_extensions.py",
+      "class": "DeprecatedExtension",
+      "method": "_insert_message",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:obj"
+    },
+    {
+      "repository": "markdown-3.10.3",
+      "path": "scripts/griffe_extensions.py",
+      "class": "PriorityTableExtension",
+      "method": "linked_obj",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:JoinedStr"
+    },
+    {
+      "repository": "more_itertools-11.1.0",
+      "path": "more_itertools/more.py",
+      "class": "run_length",
+      "method": "encode",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "more_itertools-11.1.0",
+      "path": "more_itertools/more.py",
+      "class": "run_length",
+      "method": "decode",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/__init__.py",
+      "class": "_MPMathModule",
+      "method": "_helper",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/calculus/inverselaplace.py",
+      "class": "InverseLaplaceTransform",
+      "method": "calc_laplace_parameter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:t"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/calculus/inverselaplace.py",
+      "class": "InverseLaplaceTransform",
+      "method": "calc_time_domain_solution",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fp"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/calculus/quadrature.py",
+      "class": "QuadratureRule",
+      "method": "calc_nodes",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:degree"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/ctx_iv.py",
+      "class": "ivmpf",
+      "method": "_compare",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "mpmath-1.4.1",
+      "path": "mpmath/libmp/libmpf.py",
+      "class": "h_mask_big",
+      "method": "__getitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:n"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/_parser.py",
+      "class": "Node",
+      "method": "serialize",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Raise"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/_structures.py",
+      "class": "InfinityType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/_structures.py",
+      "class": "NegativeInfinityType",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/direct_url.py",
+      "class": "_FromMappingProtocol",
+      "method": "_from_dict",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:d"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/direct_url.py",
+      "class": "_DirectUrlRequiredKeyError",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/metadata.py",
+      "class": "RFC822Policy",
+      "method": "header_store_parse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/metadata.py",
+      "class": "RFC822Message",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/pylock.py",
+      "class": "_FromMappingProtocol",
+      "method": "_from_dict",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:d"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/pylock.py",
+      "class": "_PylockRequiredKeyError",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/ranges.py",
+      "class": "VersionRange",
+      "method": "__new__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/ranges.py",
+      "class": "VersionRange",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/ranges.py",
+      "class": "VersionRange",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "__str__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_FUNCTION_BODY_IS_ONLY_DOCUMENTATION"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "__hash__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_FUNCTION_BODY_IS_ONLY_DOCUMENTATION"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "__eq__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:other"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "prereleases",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "prereleases",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "contains",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:prereleases"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "BaseSpecifier",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "Specifier",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "Specifier",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "SpecifierSet",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/specifiers.py",
+      "class": "SpecifierSet",
+      "method": "filter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:iterable"
+    },
+    {
+      "repository": "packaging-26.3",
+      "path": "src/packaging/version.py",
+      "class": "_TrimmedRelease",
+      "method": "release",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "dest/inv_regex.py",
+      "class": "DotEmitter",
+      "method": "make_generator",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/TAP.py",
+      "class": "TAPTest",
+      "method": "bailedTest",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:num"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "Exit",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "Exit",
+      "method": "enter",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "Command",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "Command",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "MoveCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "TakeCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "DropCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "InventoryCommand",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:quals"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "InventoryCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "InventoryCommand",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "LookCommand",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:quals"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "LookCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "LookCommand",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "ExamineCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "DoorsCommand",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:quals"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "DoorsCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "DoorsCommand",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "UseCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "OpenCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "CloseCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "QuitCommand",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:quals"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "QuitCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "QuitCommand",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "HelpCommand",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:quals"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "HelpCommand",
+      "method": "help_description",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "HelpCommand",
+      "method": "_do_command",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:player"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/adventureEngine.py",
+      "class": "Parser",
+      "method": "validate_item_name",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testOptionsSpec",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testTokensSpec",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testBlock",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testRule",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testLexerRule",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/antlr_grammar_tests.py",
+      "class": "Test",
+      "method": "testLexerRule2",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "Instruction",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "IncrPtr",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "DecrPtr",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "IncrPtrValue",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "DecrPtrValue",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "OutputPtrValue",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bf.py",
+      "class": "InputPtrValue",
+      "method": "execute",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:bf_engine"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bigquery_view_parser.py",
+      "class": "BigQueryViewParser",
+      "method": "_parse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:sql_stmt"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bigquery_view_parser.py",
+      "class": "BigQueryViewParser",
+      "method": "lowercase_of_tuple",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tuple_to_lowercase"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/bigquery_view_parser.py",
+      "class": "BigQueryViewParser",
+      "method": "lowercase_set_of_tuples",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:set_of_tuples"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/booleansearchparser.py",
+      "class": "BooleanSearchParser",
+      "method": "parser",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/booleansearchparser.py",
+      "class": "BooleanSearchParser",
+      "method": "GetNot",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:not_set"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/booleansearchparser.py",
+      "class": "BooleanSearchParser",
+      "method": "_split_words",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:text"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/inv_regex.py",
+      "class": "DotEmitter",
+      "method": "make_generator",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/regex_inverter/inv_regex.py",
+      "class": "DotEmitter",
+      "method": "make_generator",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchParserAppDemo.py",
+      "class": "FruitSearchParser",
+      "method": "GetWord",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:word"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchParserAppDemo.py",
+      "class": "FruitSearchParser",
+      "method": "GetWordWildcard",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:word"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchParserAppDemo.py",
+      "class": "FruitSearchParser",
+      "method": "GetQuotes",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:search_string"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchParserAppDemo.py",
+      "class": "FruitSearchParser",
+      "method": "GetNot",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:not_set"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchparser.py",
+      "class": "SearchQueryParser",
+      "method": "parser",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchparser.py",
+      "class": "SearchQueryParser",
+      "method": "GetWord",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:word"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchparser.py",
+      "class": "SearchQueryParser",
+      "method": "GetWordWildcard",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:word"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchparser.py",
+      "class": "SearchQueryParser",
+      "method": "GetQuotes",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:search_string"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/searchparser.py",
+      "class": "SearchQueryParser",
+      "method": "GetNot",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:not_set"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/shapes.py",
+      "class": "Shape",
+      "method": "area",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/statemachine/statemachine.py",
+      "class": "SuffixImporter",
+      "method": "process_filedata",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:module"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/statemachine/statemachine.py",
+      "class": "PystateImporter",
+      "method": "process_filedata",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:module"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/tiny/tiny_ast.py",
+      "class": "TinyNode",
+      "method": "from_parsed",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:parsed"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/tiny/tiny_ast.py",
+      "class": "TinyNode",
+      "method": "body_statements",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stmts"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/tiny/tiny_engine.py",
+      "class": "TinyEngine",
+      "method": "_default_for",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/tiny/tiny_engine.py",
+      "class": "TinyEngine",
+      "method": "_infer_type_from_value",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "examples/tiny/tiny_engine.py",
+      "class": "TinyEngine",
+      "method": "_coerce",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "convert_to_integer",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "convert_to_float",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:_"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "convert_to_date",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "convert_to_datetime",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "as_datetime",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "strip_html_tags",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tokens"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "upcase_tokens",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/common.py",
+      "class": "pyparsing_common",
+      "method": "downcase_tokens",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "set_default_whitespace_chars",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "inline_literals_using",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "parseImpl",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "postParse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "reset_cache",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "disable_memoization",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "enable_left_recursion",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:cache_size_limit"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "enable_packrat",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:cache_size_limit"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "_generateDefaultName",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_FUNCTION_BODY_IS_ONLY_DOCUMENTATION"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "ParserElement",
+      "method": "recurse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_PendingSkip",
+      "method": "parseImpl",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Token",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Empty",
+      "method": "_generateDefaultName",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Empty",
+      "method": "parseImpl",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Keyword",
+      "method": "set_default_keyword_chars",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:chars"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "CaselessKeyword",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:ident_chars"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Char",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:exclude_chars"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "AtStringStart",
+      "method": "parseImpl",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "AtLineStart",
+      "method": "parseImpl",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_NullToken",
+      "method": "__bool__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_NullToken",
+      "method": "__str__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Suppress",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:expr"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "Suppress",
+      "method": "postParse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:instring"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_CacheType",
+      "method": "get",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_CacheType",
+      "method": "set",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_CacheType",
+      "method": "clear",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "NullCache",
+      "method": "get",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "NullCache",
+      "method": "set",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "NullCache",
+      "method": "clear",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/core.py",
+      "class": "_ErrorStop",
+      "method": "_generateDefaultName",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/diagram/__init__.py",
+      "class": "AnnotatedItem",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/diagram/__init__.py",
+      "class": "EditablePartial",
+      "method": "from_call",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:func"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/exceptions.py",
+      "class": "ParseBaseException",
+      "method": "explain_exception",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:exc"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/testing.py",
+      "class": "pyparsing_test",
+      "method": "with_line_numbers",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:start_line"
+    },
+    {
+      "repository": "pyparsing-3.3.2",
+      "path": "pyparsing/util.py",
+      "class": "UnboundedMemo",
+      "method": "__delitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:key"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "setup.py",
+      "class": "Unsupported",
+      "method": "run",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "_timelex",
+      "method": "isword",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:nextchar"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "_timelex",
+      "method": "isnum",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:nextchar"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "_timelex",
+      "method": "isspace",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:nextchar"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parserinfo",
+      "method": "_convert",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:lst"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_find_hms_idx",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:idx"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_ampm_valid",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:hour"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_adjust_ampm",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:hour"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_parse_min_sec",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_parse_hms",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:idx"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_parsems",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_to_decimal",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:val"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_build_tzinfo",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tzinfos"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_build_naive",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:res"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_assign_tzname",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/_parser.py",
+      "class": "parser",
+      "method": "_recombine_skipped",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tokens"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/parser/isoparser.py",
+      "class": "isoparser",
+      "method": "_calculate_weekdate",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:year"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/rrule.py",
+      "class": "_rrulestr",
+      "method": "_handle_int",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:rrkwargs"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/rrule.py",
+      "class": "_rrulestr",
+      "method": "_handle_int_list",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:rrkwargs"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/rrule.py",
+      "class": "_rrulestr",
+      "method": "_handle_UNTIL",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:rrkwargs"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/rrule.py",
+      "class": "_rrulestr",
+      "method": "_parse_date_value",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:date_value"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/_common.py",
+      "class": "_tzinfo",
+      "method": "_fold",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/_common.py",
+      "class": "_tzinfo",
+      "method": "_fromutc",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/_common.py",
+      "class": "tzrangebase",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/_common.py",
+      "class": "tzrangebase",
+      "method": "_naive_isdst",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/_common.py",
+      "class": "_DatetimeWithFold",
+      "method": "fold",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "utcoffset",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "dst",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "tzname",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "is_ambiguous",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "fromutc",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzutc",
+      "method": "__eq__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:other"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzoffset",
+      "method": "dst",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzoffset",
+      "method": "is_ambiguous",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzlocal",
+      "method": "_naive_is_dst",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzfile",
+      "method": "_read_tzfile",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fileobj"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "tzical",
+      "method": "_parse_offset",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "GettzFunc",
+      "method": "nocache",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:name"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/tz.py",
+      "class": "_nullcontext",
+      "method": "__exit__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/win.py",
+      "class": "tzwinbase",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/win.py",
+      "class": "tzwinbase",
+      "method": "list",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "python-dateutil-2.9.0.post0",
+      "path": "src/dateutil/tz/win.py",
+      "class": "tzwinlocal",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/_types.py",
+      "class": "SupportsRead",
+      "method": "read",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/_types.py",
+      "class": "SupportsItems",
+      "method": "items",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "BaseAdapter",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "BaseAdapter",
+      "method": "send",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:request"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "BaseAdapter",
+      "method": "close",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "HTTPAdapter",
+      "method": "cert_verify",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:conn"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "HTTPAdapter",
+      "method": "request_url",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:request"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "HTTPAdapter",
+      "method": "add_headers",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:request"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/adapters.py",
+      "class": "HTTPAdapter",
+      "method": "proxy_headers",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/auth.py",
+      "class": "AuthBase",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:r"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/auth.py",
+      "class": "HTTPBasicAuth",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/auth.py",
+      "class": "HTTPBasicAuth",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:username"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/auth.py",
+      "class": "HTTPDigestAuth",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/auth.py",
+      "class": "HTTPDigestAuth",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:username"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "MockRequest",
+      "method": "is_unverifiable",
+      "kind": "instance-method",
+      "outcome": "READY_AFTER_LIFT",
+      "blocked_by": ""
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "MockRequest",
+      "method": "add_header",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "RequestsCookieJar",
+      "method": "__iter__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "RequestsCookieJar",
+      "method": "__contains__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:name"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/cookies.py",
+      "class": "RequestsCookieJar",
+      "method": "set_cookie",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:cookie"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_params",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Expr"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_params",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:data"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_params",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:data"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_params",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:data"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_params",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:data"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "RequestEncodingMixin",
+      "method": "_encode_files",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:files"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "PreparedRequest",
+      "method": "_get_idna_encoded_host",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_STATEMENT:Import"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "Response",
+      "method": "iter_content",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:chunk_size"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "Response",
+      "method": "iter_content",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:chunk_size"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "Response",
+      "method": "iter_lines",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:decode_unicode"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/models.py",
+      "class": "Response",
+      "method": "iter_lines",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/sessions.py",
+      "class": "SessionRedirectMixin",
+      "method": "send",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:request"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/sessions.py",
+      "class": "SessionRedirectMixin",
+      "method": "get_redirect_target",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:resp"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/sessions.py",
+      "class": "SessionRedirectMixin",
+      "method": "should_strip_auth",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/sessions.py",
+      "class": "SessionRedirectMixin",
+      "method": "rebuild_method",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:prepared_request"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/structures.py",
+      "class": "LookupDict",
+      "method": "get",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:default"
+    },
+    {
+      "repository": "requests-2.34.2",
+      "path": "src/requests/structures.py",
+      "class": "LookupDict",
+      "method": "get",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:default"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "docs/advanced/semverwithvprefix.py",
+      "class": "SemVerWithVPrefix",
+      "method": "parse",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "docs/advanced/semverwithvprefix.py",
+      "class": "SemVerWithVPrefix",
+      "method": "__str__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNSUPPORTED_EXPRESSION:Call"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "_nat_cmp",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:a"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "major",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "minor",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "patch",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "prerelease",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "build",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "semver-3.0.4",
+      "path": "src/semver/version.py",
+      "class": "Version",
+      "method": "_increment_string",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sorteddict.py",
+      "class": "SortedKeysView",
+      "method": "_from_iterable",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:it"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sorteddict.py",
+      "class": "SortedItemsView",
+      "method": "_from_iterable",
+      "kind": "classmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:it"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sorteddict.py",
+      "class": "_NotGiven",
+      "method": "__repr__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "key",
+      "kind": "property",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "__setitem__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:index"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "reverse",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "append",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:value"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "extend",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:values"
+    },
+    {
+      "repository": "sortedcontainers-2.4.0",
+      "path": "sortedcontainers/sortedlist.py",
+      "class": "SortedList",
+      "method": "insert",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:index"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/others.py",
+      "class": "StripCommentsFilter",
+      "method": "_process",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tlist"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/others.py",
+      "class": "StripWhitespaceFilter",
+      "method": "_stripws_default",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tlist"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/others.py",
+      "class": "SpacesAroundOperatorsFilter",
+      "method": "_process",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:tlist"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/others.py",
+      "class": "StripTrailingSemicolonFilter",
+      "method": "process",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stmt"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/others.py",
+      "class": "SerializerUnicode",
+      "method": "process",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stmt"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/output.py",
+      "class": "OutputFilter",
+      "method": "_process",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:stream"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/filters/right_margin.py",
+      "class": "RightMarginFilter",
+      "method": "process",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:group"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/sql.py",
+      "class": "TokenList",
+      "method": "get_alias",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "sqlparse-0.6.0",
+      "path": "sqlparse/sql.py",
+      "class": "TokenList",
+      "method": "get_real_name",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "tabulate-0.10.0",
+      "path": "tabulate/__init__.py",
+      "class": "_CustomTextWrap",
+      "method": "_len",
+      "kind": "staticmethod",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:item"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "AttemptManager",
+      "method": "__enter__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "BaseRetrying",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fn"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "_AsyncRetryDecorator",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fn"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "_AsyncRetryDecorator",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fn"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "_AsyncRetryDecorator",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fn"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/__init__.py",
+      "class": "_AsyncRetryDecorator",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:fn"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/_utils.py",
+      "class": "LoggerProtocol",
+      "method": "log",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/asyncio/__init__.py",
+      "class": "AsyncRetrying",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:sleep"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/asyncio/__init__.py",
+      "class": "AsyncRetrying",
+      "method": "__iter__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/asyncio/retry.py",
+      "class": "async_retry_base",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/retry.py",
+      "class": "retry_base",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/retry.py",
+      "class": "_retry_never",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/retry.py",
+      "class": "_retry_always",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/stop.py",
+      "class": "stop_base",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/stop.py",
+      "class": "_stop_never",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/wait.py",
+      "class": "wait_base",
+      "method": "__call__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:retry_state"
+    },
+    {
+      "repository": "tenacity-9.1.4",
+      "path": "tenacity/wait.py",
+      "class": "wait_none",
+      "method": "__init__",
+      "kind": "dunder",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_RETURN_TYPE_REQUIRED"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/decoder.py",
+      "class": "TomlDecoder",
+      "method": "_get_split_on_quotes",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:line"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/decoder.py",
+      "class": "TomlDecoder",
+      "method": "bounded_string",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:s"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/decoder.py",
+      "class": "TomlDecoder",
+      "method": "_load_array_isstrarray",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:a"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/decoder.py",
+      "class": "TomlDecoder",
+      "method": "preserve_comment",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:line_no"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/decoder.py",
+      "class": "TomlDecoder",
+      "method": "embed_comments",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:idx"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/encoder.py",
+      "class": "TomlNumpyEncoder",
+      "method": "_dump_int",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:v"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/encoder.py",
+      "class": "TomlPathlibEncoder",
+      "method": "_dump_pathlib_path",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:v"
+    },
+    {
+      "repository": "toml-0.10.2",
+      "path": "toml/tz.py",
+      "class": "TomlTz",
+      "method": "dst",
+      "kind": "instance-method",
+      "outcome": "BLOCKED_AFTER_LIFT",
+      "blocked_by": "PYTHON_PARAMETER_TYPE_REQUIRED:dt"
+    }
+  ]
+}

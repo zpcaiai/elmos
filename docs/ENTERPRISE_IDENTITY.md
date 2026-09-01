@@ -27,6 +27,9 @@ ELMOS_OIDC_AUDIENCE=elmos-api
 ELMOS_OIDC_SCOPES=openid profile email offline_access
 ELMOS_SESSION_SECRET=<at-least-32-random-characters>
 ELMOS_PUBLIC_ORIGIN=https://elmos.example.com
+ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED=true
+ELMOS_ADMIN_LOGIN_EMAIL_FROM=ELMOS Security <security@example.com>
+ELMOS_RESEND_API_KEY_FILE=/run/secrets/elmos/resend-api-key
 ```
 
 `ELMOS_OIDC_CLIENT_SECRET` and `ELMOS_SESSION_SECRET` must be injected through
@@ -41,6 +44,7 @@ headers instead of trusting a reverse proxy's rewritten request URL.
 ## Required claims
 
 - `sub`: stable user subject.
+- `email` and `email_verified: true`: required for administrator authorization.
 - `organization_id`: active tenant. A request cannot override it with headers.
 - `roles`: zero or more of `VIEWER`, `DEVELOPER`, `MAINTAINER`, `OPERATOR`,
   `APPROVER`, `TENANT_ADMIN`.
@@ -48,6 +52,15 @@ headers instead of trusting a reverse proxy's rewritten request URL.
   ignored.
 - `elmos_tenants`: optional array of objects with `organization_id`, `roles`
   and `permissions`. Tenant switching is limited to these verified memberships.
+
+For an administrator login, both the ID token and the access token must be
+signed JWTs from the configured issuer and JWKS. The ID token is validated for
+the Web client audience; the access token is independently validated for
+`ELMOS_OIDC_AUDIENCE`, because that exact token is forwarded to the Java control
+plane. Both tokens must contain the same `sub`, the normalized exact
+`zpchoney@gmail.com` email and boolean `email_verified: true`. An opaque access
+token, a missing claim, or any mismatch rejects the initial callback or refresh,
+revokes the issued token set and creates no replacement session.
 
 The recognized permissions are:
 
@@ -73,18 +86,40 @@ Client-side hiding is only a usability control. The Next.js BFF and Java
 control plane independently enforce authorization. Missing, expired, tampered,
 cross-tenant or under-privileged sessions fail closed.
 
+## Administrator login boundary
+
+The ordinary `/login` flow and the privileged `/admin/login` flow are separate.
+Only the case-normalized, IdP-verified exact address `zpchoney@gmail.com` can
+receive `admin:*` and `configuration:manage`; aliases, unverified addresses,
+locally registered accounts and privileged role claims on any other address are
+stripped of administrator authority. The administrator address is rejected by
+local self-registration and must use the OIDC administrator flow.
+
+Every successful administrator token exchange sends a security notice to the
+fixed administrator mailbox before session cookies are written. The Web Console
+uses the fixed Resend HTTPS endpoint and requires exactly one of
+`ELMOS_RESEND_API_KEY` or an absolute, owner-only
+`ELMOS_RESEND_API_KEY_FILE`. If notification is disabled, misconfigured,
+times out, is rate limited or is rejected, the application writes no admin
+session and best-effort revokes the newly exchanged OIDC tokens.
+Access-token JWT and identity validation occurs before this notice, so a failed
+access-token gate cannot trigger an administrator-login email.
+For the production Compose profile, the host secret must be readable by numeric
+UID `10001` while its group/other permission bits remain unset.
+
 ## Local fallback
 
-Existing short-lived bearer credentials remain available only outside
-production for isolated development and browser fixtures. Production Web
-Console routes require an enterprise session; a static shared browser token is
-not an accepted production identity.
+Loopback-only ordinary-user credentials remain available outside production
+for isolated development and browser fixtures. Administrator routes never
+accept a static shared browser Bearer token in development or production.
 
 For a loopback-only browser test account, start the Web Console with
 `ELMOS_ALLOW_LOCAL_CREDENTIALS=true` and a 32-character-or-longer
-`ELMOS_SESSION_SECRET`. The default local credentials are `test` / `test` and
+`ELMOS_SESSION_SECRET`. The default local credentials are
+`test@example.test` / `test` and
 the default tenant is `local-test`; they can be overridden with
-`ELMOS_LOCAL_CREDENTIALS_USERNAME`, `ELMOS_LOCAL_CREDENTIALS_PASSWORD` and
+`ELMOS_LOCAL_CREDENTIALS_USERNAME`, `ELMOS_LOCAL_CREDENTIALS_EMAIL`,
+`ELMOS_LOCAL_CREDENTIALS_PASSWORD` and
 `ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID`. The login endpoint rejects
 production requests and non-loopback hosts, and the account receives only the
 `DEVELOPER` role. Never enable this mode in a deployed or production

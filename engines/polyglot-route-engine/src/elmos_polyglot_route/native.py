@@ -37,6 +37,7 @@ from .repository import javascript_esm_descriptor
 from .toolchains import (
     ExactToolchain,
     exact_toolchain,
+    node_closure_profile_id,
     sanitized_subprocess_env,
     typescript_parser_receipt,
     verify_csharp_toolchain,
@@ -123,6 +124,8 @@ _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_ENTRIES = 100_000
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_FILE_BYTES = 512 * 1024 * 1024
 _SWIFT_DEPENDENCY_OBJECT_STORE_MAXIMUM_BYTES = 64 * 1024 * 1024
 _SWIFT_ANALYZER_BINARY_MAX_BYTES = 100_000_000
+_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000
+_SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES = 1_000_000_000
 _SWIFT_ANALYZER_COLD_BUILD_TIMEOUT_SECONDS = 3_600
 _SWIFT_BUILD_TERMINATION_GRACE_SECONDS = 1.0
 _SWIFT_BUILD_CLEANUP_TIMEOUT_SECONDS = 5.0
@@ -1021,10 +1024,31 @@ def _stable_read_regular_file(
     permitted_uids = allowed_uids if allowed_uids is not None else frozenset({os.getuid()})
     try:
         before = path.lstat()
-        flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or before.st_size < minimum_bytes
+            or before.st_size > maximum_bytes
+        ):
+            raise RouteError(failure)
+        # A path can be replaced after lstat() but before open(). O_NOFOLLOW
+        # rejects a symlink swap, while O_NONBLOCK prevents a FIFO/device swap
+        # from blocking this verifier before fstat() can reject non-regular
+        # descriptors.
+        flags = (
+            os.O_RDONLY
+            | os.O_NONBLOCK
+            | getattr(os, "O_CLOEXEC", 0)
+            | getattr(os, "O_NOFOLLOW", 0)
+        )
         descriptor = os.open(path, flags)
         try:
             opened_before = os.fstat(descriptor)
+            if (
+                not stat.S_ISREG(opened_before.st_mode)
+                or opened_before.st_size < minimum_bytes
+                or opened_before.st_size > maximum_bytes
+            ):
+                raise RouteError(failure)
             chunks: list[bytes] = []
             total = 0
             while chunk := os.read(descriptor, 1024 * 1024):
@@ -1953,6 +1977,16 @@ def _stable_secure_directory_chain_identity(
     return tuple(identity[:-2] for identity in chain)
 
 
+def _secure_directory_chain_with_root_timestamps(
+    chain: tuple[tuple[object, ...], ...],
+) -> tuple[tuple[object, ...], ...]:
+    """Ignore ancestor timestamp churn while retaining the target directory timestamps."""
+
+    if not chain:
+        return ()
+    return (*tuple(identity[:-2] for identity in chain[:-1]), chain[-1])
+
+
 def _bounded_swift_object_store_paths(objects: Path) -> list[Path]:
     """Discover at most the configured object-store entry count plus one."""
 
@@ -2401,7 +2435,10 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE") from error
         return files
 
-    def capture() -> tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]:
+    def capture() -> (
+        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
+        | None
+    ):
         root_before = _verify_secure_directory_chain(
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_UNSAFE",
@@ -2439,17 +2476,17 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             metadata_root,
             "SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED",
         )
-        # The chain is walked from / down, so it includes the per-user temporary
-        # directory, whose mtime every other process on the machine moves. Only
-        # the two timestamps are dropped: dev, ino, mode, uid, gid and the path
-        # still have to match, and every capture re-checks that no component is
-        # a symlink, a non-directory or group/world-writable. This is the
-        # comparison _verify_swift_git_repository already makes on the same kind
-        # of chain.
+        # The chain is walked from / down, so it includes shared temporary
+        # ancestors whose timestamps unrelated processes can move. Their
+        # timestamps are excluded, but dev, ino, mode, uid, gid and path still
+        # have to match. The metadata root itself retains both timestamps so an
+        # empty-directory mutation cannot escape the manifest stability check.
         if _stable_secure_directory_chain_identity(
             root_after
         ) != _stable_secure_directory_chain_identity(root_before):
             raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+        if not root_before or root_after[-1] != root_before[-1]:
+            return None
         return (
             {
                 "sha256": _canonical_digest({"files": files}),
@@ -2460,19 +2497,31 @@ def _swift_git_metadata_manifest(repository: Path, *, require_worktree: bool) ->
             after_identities,
         )
 
-    # Two captures that have to agree. The three-attempt budget existed only to
-    # absorb a capture voided by timestamp churn; now that churn cannot void
-    # one, a third attempt could not observe anything the second did not.
-    previous_receipt, previous_root, previous_files = capture()
-    receipt, root_identity, file_identities = capture()
-    if (
-        receipt != previous_receipt
-        or file_identities != previous_files
-        or _stable_secure_directory_chain_identity(root_identity)
-        != _stable_secure_directory_chain_identity(previous_root)
-    ):
-        raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
-    return receipt
+    # Require two agreeing captures, with one bounded retry available when the
+    # metadata root itself changes timestamps during a capture. Persistent root
+    # churn remains a hard failure; ancestor-only timestamp churn is harmless.
+    previous: (
+        tuple[dict[str, Any], tuple[tuple[object, ...], ...], tuple[tuple[object, ...], ...]]
+        | None
+    ) = None
+    for _attempt in range(3):
+        captured = capture()
+        if captured is None:
+            continue
+        if previous is None:
+            previous = captured
+            continue
+        previous_receipt, previous_root, previous_files = previous
+        receipt, root_identity, file_identities = captured
+        if (
+            receipt != previous_receipt
+            or file_identities != previous_files
+            or _secure_directory_chain_with_root_timestamps(root_identity)
+            != _secure_directory_chain_with_root_timestamps(previous_root)
+        ):
+            raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
+        return receipt
+    raise RouteError("SWIFT_ANALYZER_DEPENDENCY_GIT_METADATA_CHANGED")
 
 
 def _swift_dependency_tree_identity(value: dict[str, Any]) -> dict[str, Any]:
@@ -3555,14 +3604,11 @@ def _verify_swift_xcode_directory_chain(directory: Path, failure: str) -> tuple[
         for part in directory.parts[1:]:
             cursor = cursor / part
             metadata = cursor.lstat()
-            applications_exception = cursor == Path("/Applications") and (
-                stat.S_IMODE(metadata.st_mode) == 0o775 and metadata.st_uid == 0 and metadata.st_gid == 80
-            )
             if (
                 stat.S_ISLNK(metadata.st_mode)
                 or not stat.S_ISDIR(metadata.st_mode)
                 or metadata.st_uid != 0
-                or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+                or stat.S_IMODE(metadata.st_mode) & 0o022
             ):
                 raise RouteError(failure)
             identities.append(
@@ -3628,7 +3674,7 @@ def _swift_build_component_receipt(
             content_cache[resolved] = _stable_read_regular_file(
                 resolved,
                 failure=failure,
-                maximum_bytes=250_000_000,
+                maximum_bytes=_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
                 allowed_uids=frozenset({0}),
             )
         content = content_cache[resolved]
@@ -3664,6 +3710,23 @@ def _swift_build_component_receipt(
     return observed
 
 
+def _checked_swift_tree_byte_total(
+    current: int,
+    additional: int,
+    *,
+    failure: str,
+) -> int:
+    if (
+        type(current) is not int
+        or type(additional) is not int
+        or current < 0
+        or additional < 0
+        or additional > _SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES - current
+    ):
+        raise RouteError(failure)
+    return current + additional
+
+
 def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
     role_value, lexical_value, resolved_value, sha256_value, count_value, bytes_value = spec
     role = str(role_value)
@@ -3682,6 +3745,7 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
 
     def discover() -> list[Path]:
         files: list[Path] = []
+        declared_total = 0
         try:
             candidates = sorted(resolved.rglob("*"), key=lambda item: item.relative_to(resolved).as_posix())
             if len(candidates) > 10_000:
@@ -3697,6 +3761,11 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
                 ):
                     raise RouteError(failure)
                 if stat.S_ISREG(metadata.st_mode):
+                    declared_total = _checked_swift_tree_byte_total(
+                        declared_total,
+                        metadata.st_size,
+                        failure=failure,
+                    )
                     files.append(item)
         except OSError as error:
             raise RouteError(failure) from error
@@ -3710,11 +3779,15 @@ def _swift_build_tree_receipt(spec: tuple[object, ...]) -> dict[str, Any]:
         content = _stable_read_regular_file(
             item,
             failure=f"{failure}:{relative}",
-            maximum_bytes=100_000_000,
+            maximum_bytes=_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
             minimum_bytes=0,
             allowed_uids=frozenset({0}),
         )
-        total += len(content)
+        total = _checked_swift_tree_byte_total(
+            total,
+            len(content),
+            failure=failure,
+        )
         files.append(
             {
                 "path": relative,
@@ -6132,16 +6205,21 @@ def _javascript_toolchain_binding(toolchain: ExactToolchain) -> dict[str, str]:
     closure_items = [
         (key, value) for key, value in profile.items() if re.fullmatch(r"node(?:-toolchain)?-closure-sha256", key)
     ]
+    closure_sha256 = closure_items[0][1] if len(closure_items) == 1 else ""
+    expected_profile = node_closure_profile_id(closure_sha256)
     if (
         len(closure_items) != 1
-        or re.fullmatch(r"[0-9a-f]{64}", closure_items[0][1]) is None
+        or re.fullmatch(r"[0-9a-f]{64}", closure_sha256) is None
         or profile.get("node-toolchain-closure-schema") != "v1"
+        or expected_profile is None
+        or profile.get("node-closure-profile") != expected_profile
     ):
         raise RouteError("JAVASCRIPT_ANALYZER_TOOLCHAIN_POLICY_INVALID")
     profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
     return {
         "closure_field": closure_items[0][0],
-        "closure_sha256": closure_items[0][1],
+        "closure_sha256": closure_sha256,
+        "closure_profile": expected_profile,
         "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
     }
 
@@ -6377,6 +6455,8 @@ def _typescript_toolchain_binding(
         if not separator or not key or not value or key in profile:
             raise RouteError(failure)
         profile[key] = value
+    node_closure_sha256 = profile.get("node-closure-sha256", "")
+    expected_node_profile = node_closure_profile_id(node_closure_sha256)
     if (
         toolchain.language != "typescript"
         or toolchain.version != "5.9.2 / Node 26.0.0"
@@ -6395,7 +6475,9 @@ def _typescript_toolchain_binding(
         or profile.get("typescript-closure-bytes") != str(parser_receipt["compiler_closure_bytes"])
         or profile.get("typescript-parser-sha256") != parser_receipt["sha256"]
         or profile.get("typescript-compiler-runtime-semantic-soundness") != "NOT_RUN"
-        or re.fullmatch(r"[0-9a-f]{64}", profile.get("node-closure-sha256", "")) is None
+        or re.fullmatch(r"[0-9a-f]{64}", node_closure_sha256) is None
+        or expected_node_profile is None
+        or profile.get("node-closure-profile") != expected_node_profile
     ):
         raise RouteError(failure)
     for key in (
@@ -6411,7 +6493,8 @@ def _typescript_toolchain_binding(
     profile_bytes = json.dumps(list(toolchain.profile), ensure_ascii=True, separators=(",", ":")).encode("ascii")
     return {
         "typescript_closure_sha256": str(parser_receipt["compiler_closure_sha256"]),
-        "node_closure_sha256": profile["node-closure-sha256"],
+        "node_closure_sha256": node_closure_sha256,
+        "node_closure_profile": expected_node_profile,
         "profile_sha256": hashlib.sha256(profile_bytes).hexdigest(),
     }
 

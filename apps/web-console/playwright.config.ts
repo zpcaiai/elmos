@@ -4,6 +4,7 @@ import {
   createHash,
   createPrivateKey,
   generateKeyPairSync,
+  randomBytes,
   X509Certificate,
 } from "node:crypto";
 import {
@@ -11,9 +12,9 @@ import {
   cpSync,
   existsSync,
   mkdirSync,
+  mkdtempSync,
   readFileSync,
   realpathSync,
-  rmSync,
   writeFileSync,
 } from "node:fs";
 import { homedir, tmpdir } from "node:os";
@@ -47,33 +48,79 @@ if (!uvPath || !existsSync(uvPath)) {
 const canonicalUvPath = realpathSync(uvPath);
 const webPort = Number.parseInt(process.env.ELMOS_E2E_PORT ?? "3200", 10);
 const canonicalTemporaryRoot = realpathSync(tmpdir());
-const translationFixtureRoot = path.join(
-  canonicalTemporaryRoot,
-  `elmos-web-console-e2e-translation-fixtures-${webPort}`,
+const inheritedTranslationFixtureRoot =
+  process.env.ELMOS_E2E_EFFECTIVE_TRANSLATION_FIXTURE_ROOT?.trim();
+const inheritedTranslationFixtureOwner =
+  process.env.ELMOS_E2E_TRANSLATION_FIXTURE_OWNER_TOKEN?.trim();
+const ownsTranslationFixture = !inheritedTranslationFixtureRoot;
+const translationFixtureRoot = inheritedTranslationFixtureRoot
+  ? realpathSync(path.resolve(inheritedTranslationFixtureRoot))
+  : realpathSync(mkdtempSync(path.join(
+      canonicalTemporaryRoot,
+      `elmos-web-console-e2e-translation-fixtures-${webPort}-`,
+    )));
+if (
+  path.dirname(translationFixtureRoot) !== canonicalTemporaryRoot
+  || !path.basename(translationFixtureRoot).startsWith(
+    `elmos-web-console-e2e-translation-fixtures-${webPort}-`,
+  )
+) {
+  throw new Error("ELMOS_E2E_TRANSLATION_FIXTURE_ROOT_INVALID");
+}
+const translationFixtureOwner = ownsTranslationFixture
+  ? randomBytes(32).toString("hex")
+  : inheritedTranslationFixtureOwner;
+if (!translationFixtureOwner || !/^[0-9a-f]{64}$/.test(translationFixtureOwner)) {
+  throw new Error("ELMOS_E2E_TRANSLATION_FIXTURE_OWNER_INVALID");
+}
+const translationFixtureOwnerMarker = path.join(
+  translationFixtureRoot,
+  ".elmos-translation-fixture-owner",
 );
+if (ownsTranslationFixture) {
+  writeFileSync(translationFixtureOwnerMarker, `${translationFixtureOwner}\n`, {
+    mode: 0o600,
+    flag: "wx",
+  });
+} else if (readFileSync(translationFixtureOwnerMarker, "utf8") !== `${translationFixtureOwner}\n`) {
+  throw new Error("ELMOS_E2E_TRANSLATION_FIXTURE_OWNER_MISMATCH");
+}
+// The Playwright coordinator and its workers all evaluate this config. Export
+// the unique root before workers are spawned so they reuse the completed
+// fixture instead of deleting or rebuilding each other's files.
+process.env.ELMOS_E2E_EFFECTIVE_TRANSLATION_FIXTURE_ROOT = translationFixtureRoot;
+process.env.ELMOS_E2E_TRANSLATION_FIXTURE_OWNER_TOKEN = translationFixtureOwner;
+process.env.ELMOS_E2E_AUTO_TRANSLATION_FIXTURE_ROOT = ownsTranslationFixture
+  ? "true"
+  : "false";
 const translationSourceRoot = path.join(translationFixtureRoot, "sources");
 const translationCasesRoot = path.join(translationFixtureRoot, "cases");
-rmSync(translationFixtureRoot, { recursive: true, force: true });
-mkdirSync(translationFixtureRoot, { recursive: true, mode: 0o700 });
-cpSync(translationSourceFixtureRoot, translationSourceRoot, { recursive: true });
-cpSync(translationCasesFixtureRoot, translationCasesRoot, { recursive: true });
 const shardedTranslationSource = path.join(translationSourceRoot, "sharded-python");
 const shardedTranslationCases = path.join(translationCasesRoot, "sharded-python-empty");
-mkdirSync(shardedTranslationSource, { recursive: true, mode: 0o700 });
-mkdirSync(shardedTranslationCases, { recursive: true, mode: 0o700 });
-writeFileSync(
-  path.join(shardedTranslationSource, "many_functions.py"),
-  `${Array.from({ length: 2_001 }, (_, index) => {
-    const name = `function_${String(index + 1).padStart(5, "0")}`;
-    return `def ${name}(value: int) -> int:\n    return value\n`;
-  }).join("\n")}\n`,
-  { mode: 0o600 },
-);
-writeFileSync(
-  path.join(shardedTranslationCases, "README.md"),
-  "This empty case bundle forces a bounded two-shard diagnostic report.\n",
-  { mode: 0o600 },
-);
+if (ownsTranslationFixture) {
+  cpSync(translationSourceFixtureRoot, translationSourceRoot, { recursive: true });
+  cpSync(translationCasesFixtureRoot, translationCasesRoot, { recursive: true });
+  mkdirSync(shardedTranslationSource, { recursive: true, mode: 0o700 });
+  mkdirSync(shardedTranslationCases, { recursive: true, mode: 0o700 });
+  writeFileSync(
+    path.join(shardedTranslationSource, "many_functions.py"),
+    `${Array.from({ length: 2_001 }, (_, index) => {
+      const name = `function_${String(index + 1).padStart(5, "0")}`;
+      return `def ${name}(value: int) -> int:\n    return value\n`;
+    }).join("\n")}\n`,
+    { mode: 0o600 },
+  );
+  writeFileSync(
+    path.join(shardedTranslationCases, "README.md"),
+    "This empty case bundle forces a bounded two-shard diagnostic report.\n",
+    { mode: 0o600 },
+  );
+} else if (
+  !existsSync(path.join(shardedTranslationSource, "many_functions.py"))
+  || !existsSync(path.join(shardedTranslationCases, "README.md"))
+) {
+  throw new Error("ELMOS_E2E_TRANSLATION_FIXTURE_INCOMPLETE");
+}
 const githubPort = Number.parseInt(
   process.env.ELMOS_E2E_GITHUB_PORT ?? String(webPort + 99),
   10,

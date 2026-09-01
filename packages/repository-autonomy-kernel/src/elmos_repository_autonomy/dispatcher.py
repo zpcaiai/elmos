@@ -6,6 +6,7 @@ from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Any
 
+from . import kernel_bridge
 from .adapters import ConformanceHarness
 from .analysis import census, change_graph, compile_ir, contract_diff, semantic_index, validation_plan
 from .catalog import SKILL_NAMES, SKILL_SPECS
@@ -107,7 +108,13 @@ class AutonomyRuntime:
         if ctx.schema_registry is None:
             ctx.schema_registry = self.schema_registry
         try:
-            status, output, reasons, side_effects = self._handlers[skill](value, ctx)
+            served = kernel_bridge.serve(skill, value, ctx)
+            if served.served:
+                status, output, reasons = served.status, dict(served.output or {}), list(served.reasons)
+                side_effects = False
+            else:
+                status, output, reasons, side_effects = self._handlers[skill](value, ctx)
+                reasons = [*reasons, *served.reasons, "ENGINE:legacy"]
             unknown_outputs = sorted(set(output) - set(SKILL_SPECS[skill].outputs))
             if unknown_outputs:
                 raise ContractError("SCHEMA_MISMATCH", f"handler emitted undeclared output fields: {unknown_outputs}")

@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2702",
+  "skill_name": "frt-2702-concurrency-correctness-validator",
+  "batch": "G27",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g27/frt-2702-concurrency-correctness-validator/",
+  "status": "shared_implementation",
+  "handler_kind": "performance_capacity",
+  "capability_key": "frt.g27.concurrency-correctness-validator",
+  "execution_contract_sha256": "sha256:5af53b49500c12e960529624191b47da07e146204233fe446c2ac3aa8e50f1c7",
+  "execution_class": "AUTHORIZED_EXTERNAL_ASSURANCE",
+  "input_contract": {
+    "required": [
+      "workload",
+      "budgets"
+    ],
+    "optional": [
+      "samples",
+      "throughputPerSecond"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:58b3c3a608c78e9149890ecac9c9e681dc583003840c709db4f12f15115dd5a4",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

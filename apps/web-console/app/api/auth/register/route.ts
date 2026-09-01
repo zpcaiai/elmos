@@ -6,6 +6,8 @@ import {
   assertLocalCredentialRequest,
   assertSameOriginMutation,
   authenticateLocalCredentials,
+  localAccountCookieNames,
+  localAccountCookieOptions,
   registerLocalAccount,
   sessionCookieMaxAge,
   trustedPublicOrigin,
@@ -18,7 +20,8 @@ function safeReturnTo(value: unknown): string {
   return typeof value === "string"
     && value.startsWith("/")
     && !value.startsWith("//")
-    && !/[\r\n\0]/.test(value)
+    && !value.startsWith("/admin")
+    && !/[\\\r\n\0]/.test(value)
     ? value
     : "/";
 }
@@ -34,29 +37,21 @@ function registrationError(request: NextRequest, code: string): NextResponse {
 }
 
 function setLocalSessionCookies(
+  request: NextRequest,
   response: NextResponse,
   result: ReturnType<typeof authenticateLocalCredentials>,
 ): void {
   const maxAge = sessionCookieMaxAge(result.expiresAt);
-  response.cookies.set(accountCookieNames.session, result.session, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+  const options = localAccountCookieOptions(request);
+  response.cookies.set(localAccountCookieNames.session, result.session, {
+    ...options,
     maxAge,
   });
-  response.cookies.set(accountCookieNames.accessToken, result.accessToken, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "lax",
-    path: "/",
+  response.cookies.set(localAccountCookieNames.accessToken, result.accessToken, {
+    ...options,
     maxAge,
   });
-  for (const name of [
-    accountCookieNames.refreshToken,
-    accountCookieNames.authorizationFlow,
-    accountCookieNames.tenant,
-  ]) {
+  for (const name of Object.values(accountCookieNames)) {
     response.cookies.set(name, "", accountCookieDeletionOptions(name));
   }
 }
@@ -66,7 +61,7 @@ async function registrationFields(request: NextRequest): Promise<{
   password: string;
   passwordConfirmation: string;
   displayName: string;
-  email?: string;
+  email: string;
   returnTo: string;
 }> {
   const contentLength = Number(request.headers.get("content-length") ?? "");
@@ -82,7 +77,7 @@ async function registrationFields(request: NextRequest): Promise<{
         ? body.passwordConfirmation
         : "",
       displayName: typeof body.displayName === "string" ? body.displayName : "",
-      email: typeof body.email === "string" ? body.email : undefined,
+      email: typeof body.email === "string" ? body.email : "",
       returnTo: safeReturnTo(body.returnTo),
     };
   }
@@ -98,7 +93,7 @@ async function registrationFields(request: NextRequest): Promise<{
     password: typeof password === "string" ? password : "",
     passwordConfirmation: typeof passwordConfirmation === "string" ? passwordConfirmation : "",
     displayName: typeof displayName === "string" ? displayName : "",
-    email: typeof email === "string" && email ? email : undefined,
+    email: typeof email === "string" ? email : "",
     returnTo: safeReturnTo(returnTo),
   };
 }
@@ -110,7 +105,7 @@ export async function POST(request: NextRequest) {
     assertLocalCredentialRequest(request);
     const fields = await registrationFields(request);
     registerLocalAccount(fields);
-    const result = authenticateLocalCredentials(fields.username, fields.password);
+    const result = authenticateLocalCredentials(fields.email, fields.password);
     const response = jsonResponse
       ? NextResponse.json({
         registered: true,
@@ -123,7 +118,7 @@ export async function POST(request: NextRequest) {
         new URL(fields.returnTo, trustedPublicOrigin(request)),
         303,
       );
-    setLocalSessionCookies(response, result);
+    setLocalSessionCookies(request, response, result);
     response.headers.set("Cache-Control", "no-store, private");
     return response;
   } catch (error) {

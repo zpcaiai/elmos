@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -14,6 +15,11 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[2]
 GATE = ROOT / "scripts/batch35/run_verification_gate.py"
 GATE_TEST_TIMEOUT_SECONDS = 600
+EXACT_DARWIN_ARM64_REPLAY_ENABLED = (
+    os.environ.get("ELMOS_BATCH35_PORTABLE_ONLY") != "true"
+    and sys.platform == "darwin"
+    and platform.machine() == "arm64"
+)
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -45,6 +51,10 @@ def frozen_v2_pack_available(default: Path, environment_name: str) -> bool:
     )
 
 
+@unittest.skipUnless(
+    EXACT_DARWIN_ARM64_REPLAY_ENABLED,
+    "frontend formal receipt replay requires Darwin arm64",
+)
 class FrontendFormalRouteGateV2Tests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:

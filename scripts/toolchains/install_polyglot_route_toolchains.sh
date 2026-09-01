@@ -15,10 +15,23 @@ readonly KOTLIN_TREE_RECORD_COUNT="123"
 readonly KOTLIN_TREE_FILE_COUNT="118"
 readonly KOTLIN_TREE_DIRECTORY_COUNT="5"
 readonly KOTLIN_TREE_BYTES="85861305"
-readonly KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+readonly KOTLIN_JAVA_DISTRIBUTION="${ELMOS_JAVA21_DISTRIBUTION:-homebrew}"
+case "${KOTLIN_JAVA_DISTRIBUTION}" in
+  homebrew)
+    readonly KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+    ;;
+  temurin)
+    readonly KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)"
+    ;;
+  *)
+    printf 'Unsupported Java distribution for the exact Kotlin route: %s\n' \
+      "${KOTLIN_JAVA_DISTRIBUTION}" >&2
+    exit 2
+    ;;
+esac
 readonly KOTLIN_ARCHIVE_URL="https://github.com/JetBrains/kotlin/releases/download/v${KOTLIN_VERSION}/kotlin-compiler-${KOTLIN_VERSION}.zip"
-readonly PIN_SCRIPT_SHA256="60540ef44a6a8a5a2a65343868951f2dcfc0063b1cd91f1e4db46dff1b86a1ac"
-readonly PIN_SCRIPT_BYTES="21518"
+readonly PIN_SCRIPT_SHA256="70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45"
+readonly PIN_SCRIPT_BYTES="22423"
 
 REPOSITORY_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)"
 readonly REPOSITORY_ROOT
@@ -101,6 +114,23 @@ pin_has_exact_line() {
   grep -Fqx -- "${expected}" <<<"${pin_output}"
 }
 
+pin_requires_exact_line() {
+  local pin_output="$1"
+  local field="$2"
+  local expected="$3"
+  local observed
+  if pin_has_exact_line "${pin_output}" "${expected}"; then
+    return 0
+  fi
+  observed="$(grep -F -- "${field} = " <<<"${pin_output}" || true)"
+  if [[ -z "${observed}" ]]; then
+    observed="<missing>"
+  fi
+  printf 'Kotlin route pin mismatch for %s: expected %s; observed %s\n' \
+    "${field}" "${expected}" "${observed}" >&2
+  return 1
+}
+
 verify_exact_install() {
   local target="$1"
   local pin_output
@@ -119,20 +149,32 @@ verify_exact_install() {
   # enforced by toolchains._kotlin. Matching its emitted facts proves the whole
   # extracted tree, not only the three named files above.
   verify_pin_script_identity || return 1
-  if ! pin_output="$(python3.12 "${PIN_SCRIPT}" "${target}" 2>/dev/null)"; then
+  if ! pin_output="$(python3.12 "${PIN_SCRIPT}" "${target}" 2>&1)"; then
+    printf 'Kotlin route pin verifier failed for %s: %.4000s\n' \
+      "${target}" "${pin_output}" >&2
     return 1
   fi
   verify_pin_script_identity || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_VERSION = '${KOTLIN_VERSION_BANNER}'" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = '${KOTLINC_SHA256}'" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = '${KOTLIN_COMPILER_JAR_SHA256}'" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = '${KOTLIN_STDLIB_JAR_SHA256}'" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_SHA256 = '${KOTLIN_TREE_SHA256}'" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_RECORD_COUNT = ${KOTLIN_TREE_RECORD_COUNT}" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_FILE_COUNT = ${KOTLIN_TREE_FILE_COUNT}" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = ${KOTLIN_TREE_DIRECTORY_COUNT}" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_BYTES = ${KOTLIN_TREE_BYTES}" || return 1
-  pin_has_exact_line "${pin_output}" "_EXPECTED_KOTLIN_BUILD_NUMBER = '${KOTLIN_BUILD_NUMBER}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_VERSION" \
+    "_EXPECTED_KOTLIN_VERSION = '${KOTLIN_VERSION_BANNER}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLINC_EXECUTABLE_SHA256" \
+    "_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = '${KOTLINC_SHA256}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_COMPILER_JAR_SHA256" \
+    "_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = '${KOTLIN_COMPILER_JAR_SHA256}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_STDLIB_JAR_SHA256" \
+    "_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = '${KOTLIN_STDLIB_JAR_SHA256}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_SHA256" \
+    "_EXPECTED_KOTLIN_TREE_SHA256 = '${KOTLIN_TREE_SHA256}'" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_RECORD_COUNT" \
+    "_EXPECTED_KOTLIN_TREE_RECORD_COUNT = ${KOTLIN_TREE_RECORD_COUNT}" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_FILE_COUNT" \
+    "_EXPECTED_KOTLIN_TREE_FILE_COUNT = ${KOTLIN_TREE_FILE_COUNT}" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT" \
+    "_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = ${KOTLIN_TREE_DIRECTORY_COUNT}" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_TREE_BYTES" \
+    "_EXPECTED_KOTLIN_TREE_BYTES = ${KOTLIN_TREE_BYTES}" || return 1
+  pin_requires_exact_line "${pin_output}" "_EXPECTED_KOTLIN_BUILD_NUMBER" \
+    "_EXPECTED_KOTLIN_BUILD_NUMBER = '${KOTLIN_BUILD_NUMBER}'" || return 1
 }
 
 download_verified() {

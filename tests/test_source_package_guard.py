@@ -10,6 +10,8 @@ from tooling.source_package_guard import resolve_source_package
 
 ROOT = Path(__file__).resolve().parents[1]
 GUARD = ROOT / "tooling" / "source_package_guard.py"
+BATCH66_IMPORTER = ROOT / "tooling" / "import_batch66_80_assets.py"
+BATCH81_IMPORTER = ROOT / "tooling" / "import_batch81_95_language_packs.py"
 
 
 class SourcePackageGuardTest(unittest.TestCase):
@@ -41,6 +43,28 @@ class SourcePackageGuardTest(unittest.TestCase):
             ROOT / "skills" / "elmos-project-synthesis-batch61-65",
             package,
         )
+
+    def test_batch66_importer_checks_the_relocated_source_package(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(BATCH66_IMPORTER), "--check"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr or result.stdout)
+        self.assertIn('"status": "verified"', result.stdout)
+
+    def test_batch81_importer_checks_the_relocated_source_package(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(BATCH81_IMPORTER), "--check"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        self.assertEqual(0, result.returncode, result.stderr or result.stdout)
+        self.assertIn('"status": "verified"', result.stdout)
 
     def test_absent_package_is_explicit_and_non_success(self) -> None:
         result = self.run_guard(

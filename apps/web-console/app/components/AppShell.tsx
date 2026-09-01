@@ -74,11 +74,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const commandInput = useRef<HTMLInputElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const accountPermissions = new Set(account.principal?.permissions ?? []);
+  const hasAdminAccess = account.status === "authenticated"
+    && account.principal?.isPlatformAdmin === true
+    && accountPermissions.has("admin:read");
   const visibleNavigation = navigation.filter((item) =>
     item.href !== "/admin"
-    || account.status !== "authenticated"
-    || accountPermissions.has("admin:read"),
+    || hasAdminAccess,
   );
+  const adminSurface = pathname.startsWith("/admin");
   const current = navigation.find((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ?? navigation[0];
   const navLabel = (item: (typeof navigation)[number]) =>
     english ? item.enLabel : item.label;
@@ -89,8 +92,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     : navLabel(current);
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
-    return commands.filter((item) => !needle || `${item.label} ${item.hint} ${item.keywords}`.toLocaleLowerCase("zh-CN").includes(needle));
-  }, [commandQuery]);
+    return commands
+      .filter((item) => item.href !== "/admin" || hasAdminAccess)
+      .filter((item) => !needle || `${item.label} ${item.hint} ${item.keywords}`.toLocaleLowerCase("zh-CN").includes(needle));
+  }, [commandQuery, hasAdminAccess]);
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -197,20 +202,43 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     window.dispatchEvent(new CustomEvent("elmos:telemetry-preference", { detail: { enabled } }));
   }
 
+  function closeSidebar() {
+    setMobileOpen(false);
+    setProfileOpen(false);
+  }
+
+  function toggleTopProfileMenu() {
+    const nextOpen = !profileOpen;
+    setProfileOpen(nextOpen);
+    if (nextOpen && window.matchMedia("(max-width: 900px)").matches) {
+      setMobileOpen(true);
+    }
+  }
+
+  async function logout() {
+    await account.logout();
+    closeSidebar();
+  }
+
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${adminSurface ? "admin-shell" : ""}`}>
       <aside className={`sidebar ${mobileOpen ? "sidebar-open" : ""}`} aria-label={english ? "Primary navigation" : "主导航"}>
         <div className="brand-row">
           <Link className="brand-mark" href="/" onClick={() => setMobileOpen(false)}>E</Link>
-          <div><strong>ELMOS</strong><span>{english ? "Control center" : "控制中心"}</span></div>
-          <button className="icon-button sidebar-close" aria-label={english ? "Close navigation" : "关闭导航"} onClick={() => setMobileOpen(false)}><Icon name="close" /></button>
+          <div>
+            <strong>ELMOS</strong>
+            <span>{adminSurface
+              ? (english ? "Administrator center" : "管理员中心")
+              : (english ? "Control center" : "控制中心")}</span>
+          </div>
+          <button className="icon-button sidebar-close" aria-label={english ? "Close navigation" : "关闭导航"} onClick={closeSidebar}><Icon name="close" /></button>
         </div>
         <nav className="primary-nav">
           <span className="nav-label">{english ? "Workspaces" : "工作空间"}</span>
           {visibleNavigation.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
-              <Link className={`nav-item ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={() => setMobileOpen(false)} aria-current={active ? "page" : undefined}>
+              <Link className={`nav-item ${item.href === "/admin" ? "admin-nav-item" : ""} ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={closeSidebar} aria-current={active ? "page" : undefined}>
                 <Icon name={item.icon} size={19} />
                 <span><strong>{navLabel(item)}</strong><small>{item.hint}</small></span>
               </Link>
@@ -240,10 +268,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             aria-controls="account-profile-menu"
             onClick={() => setProfileOpen((open) => !open)}
           >
-            <span className="avatar">{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
+            <span className={`avatar ${hasAdminAccess ? "admin-avatar" : ""}`}>{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
             <div>
               <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? (english ? "Local development" : "本地开发模式") : (english ? "Signed out" : "未登录"))}</strong>
-              <small>{account.principal?.organizationId ?? (english ? "No enterprise session" : "无企业会话")}</small>
+              <small>{account.principal
+                ? `${hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}${account.principal.organizationId}`
+                : (english ? "No enterprise session" : "无企业会话")}</small>
             </div>
             <Icon name="chevron" size={16} />
           </button>
@@ -254,8 +284,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <div className="profile-menu-summary">
                     <strong>{account.principal.displayName}</strong>
                     <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
+                    {hasAdminAccess && <span className="admin-session-badge">管理员会话</span>}
                   </div>
-                  <Link href="/account" onClick={() => setProfileOpen(false)}>
+                  <Link href="/account" onClick={closeSidebar}>
                     {english ? "Account and organizations" : "账户与组织"}
                   </Link>
                   {account.principal.memberships.length > 1 && (
@@ -273,16 +304,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       </select>
                     </label>
                   )}
-                  <button type="button" onClick={() => void account.logout()}>{english ? "Sign out securely" : "安全退出"}</button>
+                  <button type="button" onClick={() => void logout()}>{english ? "Sign out securely" : "安全退出"}</button>
                 </>
               ) : (
-                <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>{english ? "Sign in with enterprise account" : "使用企业账户登录"}</Link>
+                <>
+                  <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`} onClick={closeSidebar}>
+                    {english ? "User sign in" : "用户登录"}
+                  </Link>
+                  <Link className="profile-admin-login-link" href="/admin/login" onClick={closeSidebar}>
+                    {english ? "Administrator entry" : "管理员入口"}
+                  </Link>
+                </>
               )}
             </div>
           )}
         </div>
       </aside>
-      {mobileOpen && <button className="sidebar-scrim" aria-label={english ? "Close navigation overlay" : "关闭导航遮罩"} onClick={() => setMobileOpen(false)} />}
+      {mobileOpen && <button className="sidebar-scrim" aria-label={english ? "Close navigation overlay" : "关闭导航遮罩"} onClick={closeSidebar} />}
       <div className="content-shell">
         <header className="topbar">
           <button className="icon-button mobile-menu" aria-label={english ? "Open navigation" : "打开导航"} onClick={() => setMobileOpen(true)}><Icon name="menu" /></button>
@@ -312,15 +350,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <button className="icon-button" aria-label="重新载入当前页面（会清除未保存输入）" onClick={reloadPage}><Icon name="refresh" size={18} /></button>
             {account.status === "authenticated" ? (
               <button
-                className="top-avatar"
+                className={`top-avatar ${hasAdminAccess ? "admin-avatar" : ""}`}
                 type="button"
                 aria-label="打开账户菜单"
-                onClick={() => setProfileOpen((open) => !open)}
+                onClick={toggleTopProfileMenu}
               >
                 {account.principal?.displayName.slice(0, 1) ?? "企"}
               </button>
             ) : (
-              <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>{english ? "Sign in" : "登录"}</Link>
+              <div className="anonymous-login-actions">
+                <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>
+                  {english ? "User sign in" : "用户登录"}
+                </Link>
+                <Link className="top-login-link top-admin-login-link" href="/admin/login">
+                  {english ? "Admin" : "管理员入口"}
+                </Link>
+              </div>
             )}
           </div>
         </header>

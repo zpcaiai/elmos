@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.simple.JdbcClient;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,12 +36,11 @@ import java.util.Map;
  * filter, and may be any of them. Reading that header as "the tenant to act on"
  * is the mistake this paragraph exists to prevent.
  *
- * <p>Authorization is therefore not "does this actor belong to the tenant they
- * named" but "is this account on the platform administrator list", and that
- * question is answered in the database. This controller deliberately contains
- * no authorization logic of its own: a second opinion in Java would be a second
- * thing to keep in step, and the one in the database is the one that also
- * writes the audit row.
+ * <p>The headers are selectors, not authentication assertions. The resolved
+ * database-bound OIDC principal must match the actor header and the single
+ * verified platform-administrator email before the database administrator list
+ * is consulted. The database remains the audited second gate for cross-tenant
+ * operations.
  */
 @RestController
 @RequestMapping("/api/v1/platform-admin")
@@ -208,7 +208,17 @@ public class PlatformAdminController {
     }
 
     private String resolve(String organizationId, String actorId) {
-        return platform.resolveAdminAccount(organizationId, actorId);
+        try {
+            ControlPlanePrincipal principal = ControlPlanePrincipal.requireDatabaseBound(
+                    organizationId, "admin:read");
+            if (!principal.platformAdministrator()) {
+                return null;
+            }
+            principal.require(organizationId, actorId, "admin:read");
+            return platform.resolveAdminAccount(organizationId, principal.actorId());
+        } catch (AccessDeniedException rejected) {
+            return null;
+        }
     }
 
     private static String blankToNull(String value) {

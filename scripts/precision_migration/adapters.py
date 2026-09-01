@@ -14,6 +14,7 @@ import hashlib
 import importlib
 import json
 import os
+import shutil
 import subprocess
 import sys
 import time
@@ -353,26 +354,49 @@ def execute_batch29_route(
     started = time.monotonic()
     environment = os.environ.copy()
     environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    completed = subprocess.run(
-        command,
-        cwd=ROOT / "engines" / "polyglot-route-engine",
-        env=environment,
-        check=False,
-        capture_output=True,
-        timeout=int(entry.get("timeout_seconds", 120)),
+    native_receipt_replay = environment.get(
+        "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY", ""
     )
-    gate = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "batch29" / "run_route_gate.py"), str(route_dir)],
-        cwd=ROOT,
-        env=environment,
-        check=False,
-        capture_output=True,
-        timeout=int(entry.get("timeout_seconds", 120)),
-    )
+    if native_receipt_replay not in {"", "NOT_RUN"}:
+        raise AdapterError(
+            "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY must be empty or NOT_RUN"
+        )
+    gate_command = [
+        sys.executable,
+        str(ROOT / "scripts" / "batch29" / "run_route_gate.py"),
+        str(route_dir),
+    ]
+    if native_receipt_replay == "NOT_RUN":
+        diagnostic = (
+            b"EXACT_TOOLCHAIN_UNAVAILABLE: native receipt replay explicitly NOT_RUN\n"
+        )
+        completed = subprocess.CompletedProcess(command, 125, b"", diagnostic)
+        gate = subprocess.CompletedProcess(gate_command, 125, b"", diagnostic)
+    else:
+        completed = subprocess.run(
+            command,
+            cwd=ROOT / "engines" / "polyglot-route-engine",
+            env=environment,
+            check=False,
+            capture_output=True,
+            timeout=int(entry.get("timeout_seconds", 120)),
+        )
+        gate = subprocess.run(
+            gate_command,
+            cwd=ROOT,
+            env=environment,
+            check=False,
+            capture_output=True,
+            timeout=int(entry.get("timeout_seconds", 120)),
+        )
     captured = completed.stdout + completed.stderr + gate.stdout + gate.stderr
     if len(captured) > MAX_CAPTURE_BYTES:
         raise AdapterError("B16 route output exceeded the capture budget")
     passed = completed.returncode == 0 and gate.returncode == 0
+    if not passed and migration_output.exists():
+        if migration_output.is_symlink() or not migration_output.is_dir():
+            raise AdapterError("failed B16 migration output is not a safe directory")
+        shutil.rmtree(migration_output)
     report = {
         "schema_version": 1,
         "skill": entry["skill"],

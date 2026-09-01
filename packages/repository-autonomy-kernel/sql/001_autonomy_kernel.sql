@@ -522,3 +522,79 @@ create policy autonomy_secret_leases_tenant_isolation on autonomy_secret_leases 
 create policy autonomy_certification_evidence_tenant_isolation on autonomy_certification_evidence using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
 create policy autonomy_certification_runs_tenant_isolation on autonomy_certification_runs using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
 create policy autonomy_customer_acceptance_tenant_isolation on autonomy_customer_acceptance using (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid) with check (tenant_id = nullif(current_setting('app.tenant_id', true), '')::uuid);
+
+-- V007: capability-core stream tables
+--
+-- 001 is the whole schema in one file - it is exactly the union of the
+-- migrations, and a database bootstrapped from it must be usable by everything
+-- in the package. Leaving these out would hand the capability core a database it
+-- cannot write to, which is the kind of gap that only shows up in production.
+
+create table if not exists autonomy_kernel_event (
+  stream_id       text        not null,
+  sequence        bigint      not null,
+  event_id        text        not null,
+  payload         jsonb       not null,
+  hash_chain      text        not null,
+  idempotency_key text,
+  fencing_token   bigint,
+  recorded_at     timestamptz not null default now(),
+  primary key (stream_id, sequence),
+  -- Sequences start at 1 and the adapter derives each from the previous head,
+  -- so a gap or a zero means someone wrote around the adapter.
+  constraint autonomy_kernel_event_sequence_positive check (sequence >= 1),
+  constraint autonomy_kernel_event_id_unique unique (event_id),
+  constraint autonomy_kernel_event_chain_shape check (hash_chain like 'sha256:%')
+);
+
+-- One event per (stream, idempotency key). This is the constraint that makes a
+-- duplicate delivery return the original event instead of applying a side effect
+-- twice; enforcing it only in Python would leave two concurrent workers free to
+-- both "win".
+create unique index if not exists autonomy_kernel_event_idempotency
+  on autonomy_kernel_event (stream_id, idempotency_key)
+  where idempotency_key is not null;
+
+create index if not exists autonomy_kernel_event_recorded_at
+  on autonomy_kernel_event (stream_id, recorded_at);
+
+create table if not exists autonomy_kernel_kv (
+  key        text        not null primary key,
+  value      jsonb       not null,
+  version    bigint      not null,
+  updated_at timestamptz not null default now(),
+  constraint autonomy_kernel_kv_version_positive check (version >= 1)
+);
+
+create table if not exists autonomy_kernel_artifact (
+  digest     text        not null primary key,
+  media_type text        not null,
+  byte_count bigint      not null,
+  body       bytea       not null,
+  stored_at  timestamptz not null default now(),
+  -- The primary key IS the content address: 'sha256:' plus 64 hex characters.
+  -- A row whose key does not have that shape was not written by this adapter.
+  constraint autonomy_kernel_artifact_digest_shape
+    check (digest ~ '^sha256:[0-9a-f]{64}$'),
+  constraint autonomy_kernel_artifact_length_agrees check (byte_count = length(body))
+);
+
+create table if not exists autonomy_kernel_lease (
+  resource_id   text        not null primary key,
+  owner_id      text        not null,
+  fencing_token bigint      not null,
+  expires_at    timestamptz not null,
+  acquired_at   timestamptz not null default now(),
+  constraint autonomy_kernel_lease_token_positive check (fencing_token >= 1)
+);
+
+-- Tokens must be monotonic per resource FOREVER, including across a release and
+-- a re-acquire, so the high-water mark outlives the lease row itself. Deleting
+-- the lease on release and re-deriving the token from the (now absent) row would
+-- hand a new owner a token a stale worker still holds - the exact failure
+-- fencing exists to prevent.
+create table if not exists autonomy_kernel_lease_watermark (
+  resource_id  text   not null primary key,
+  issued_token bigint not null,
+  constraint autonomy_kernel_lease_watermark_positive check (issued_token >= 1)
+);

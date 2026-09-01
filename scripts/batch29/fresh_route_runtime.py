@@ -19,11 +19,43 @@ from contextlib import contextmanager
 from pathlib import Path, PurePosixPath
 from typing import cast
 
-PINNED_UV_PATH = Path("/opt/homebrew/Cellar/uv/0.11.16/bin/uv")
+def _configured_absolute_path(environment_name: str, default: Path) -> Path:
+    """Read one installer-bound path without allowing relative traversal."""
+
+    raw = os.environ.get(environment_name, "").strip()
+    candidate = Path(raw) if raw else default
+    normalized = Path(os.path.normpath(str(candidate)))
+    if (
+        not candidate.is_absolute()
+        or candidate != normalized
+        or candidate in {Path("/"), Path.home()}
+        or any(part in {".", ".."} for part in candidate.parts)
+    ):
+        raise RuntimeError(f"{environment_name} is unsafe")
+    return candidate
+
+
+_HOMEBREW_PREFIX = _configured_absolute_path(
+    "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", Path("/opt/homebrew")
+)
+PINNED_UV_PATH = _configured_absolute_path(
+    "ELMOS_BATCH29_PINNED_UV_PATH",
+    _HOMEBREW_PREFIX / "Cellar" / "uv" / "0.11.16" / "bin" / "uv",
+)
 PINNED_UV_SHA256 = (
     "sha256:d4182a7bba32f331b2c5a74568cf1c88aa50f31fe643a2c56118c6610db0aff0"
 )
 PINNED_UV_BYTES = 46_541_136
+# GitHub's macOS 26 arm64 image pours the immutable Tahoe bottle without the
+# workstation-local rebuild/re-signing represented by the evidence receipt
+# above.  Keep that supply-chain receipt separate and explicit: accepting the
+# exact bottle bytes permits CI execution, but never rewrites the captured
+# evidence identity or upgrades its NOT_CERTIFIED boundary.
+PINNED_UV_CI_BOTTLE_SHA256 = (
+    "sha256:96e422f83fd306848446170d97c1d1af8290f00e4aacfa7134e130280d573126"
+)
+PINNED_UV_CI_BOTTLE_BYTES = 46_508_144
+PINNED_UV_CI_PROFILES = frozenset({"full", "java-python"})
 PINNED_UV_VERSION = "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
 PINNED_UV_MODE = 0o555
 PINNED_UV_UID = 501
@@ -56,7 +88,9 @@ PYTHON_TREE_SYMLINKS = {
     "lib/pkgconfig/python3.pc": "python-3.12.pc",
     "share/man/man1/python3.1": "python3.12.1",
 }
-TOOLCHAIN_CACHE_ANCHOR = Path("/Users/stephen/.local")
+TOOLCHAIN_CACHE_ANCHOR = _configured_absolute_path(
+    "ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR", Path.home() / ".local"
+)
 TOOLCHAIN_CACHE = TOOLCHAIN_CACHE_ANCHOR / "share" / "elmos" / "toolchains"
 PYTHON_CACHE = TOOLCHAIN_CACHE / "python-build-standalone"
 PYTHON_ARCHIVE_CACHE = (
@@ -1135,8 +1169,8 @@ def _pinned_uv() -> Path:
                 cursor = cursor / part
                 metadata = cursor.lstat()
                 below_cellar = cursor.is_relative_to(
-                    Path("/opt/homebrew/Cellar")
-                ) and cursor != Path("/opt/homebrew/Cellar")
+                    _HOMEBREW_PREFIX / "Cellar"
+                ) and cursor != _HOMEBREW_PREFIX / "Cellar"
                 if (
                     stat.S_ISLNK(metadata.st_mode)
                     or not stat.S_ISDIR(metadata.st_mode)
@@ -1185,6 +1219,16 @@ def _pinned_uv() -> Path:
             before.st_nlink,
             before.st_mtime_ns,
         )
+        authorized_content_receipts = {(PINNED_UV_BYTES, PINNED_UV_SHA256)}
+        if (
+            os.environ.get("CI") == "true"
+            and os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("ELMOS_POLYGLOT_ROUTE_CI_PROFILE")
+            in PINNED_UV_CI_PROFILES
+        ):
+            authorized_content_receipts.add(
+                (PINNED_UV_CI_BOTTLE_BYTES, PINNED_UV_CI_BOTTLE_SHA256)
+            )
         if (
             identity
             != (
@@ -1224,8 +1268,8 @@ def _pinned_uv() -> Path:
             or after.st_uid != PINNED_UV_UID
             or after.st_gid != PINNED_UV_GID
             or after.st_nlink != PINNED_UV_NLINK
-            or byte_count != PINNED_UV_BYTES
-            or "sha256:" + digest.hexdigest() != PINNED_UV_SHA256
+            or (byte_count, "sha256:" + digest.hexdigest())
+            not in authorized_content_receipts
         ):
             raise RuntimeError("Batch29 pinned uv bytes/metadata/digest mismatch")
         return (*chain, str(expected), *identity, byte_count, digest.hexdigest())
@@ -1283,7 +1327,18 @@ def run_in_fresh_locked_runtime(
         project_environment = runtime_root / ".venv"
         environment = {
             key: os.environ[key]
-            for key in ("HOME", "TMPDIR", "TZ")
+            for key in (
+                "HOME",
+                "TMPDIR",
+                "TZ",
+                "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT",
+                "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT",
+                "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX",
+                "ELMOS_JAVA21_HOME",
+                "ELMOS_JAVA21_DISTRIBUTION",
+                "ELMOS_BATCH29_PINNED_UV_PATH",
+                "ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR",
+            )
             if key in os.environ
         }
         environment.update(
@@ -1294,6 +1349,8 @@ def run_in_fresh_locked_runtime(
                 "PYTHONNOUSERSITE": "1",
                 "UV_NO_CONFIG": "1",
                 "UV_OFFLINE": "1",
+                "UV_NO_DEFAULT_GROUPS": "1",
+                "UV_NO_DEV": "1",
                 "UV_PYTHON_DOWNLOADS": "never",
                 PROJECT_ENVIRONMENT_ENV: str(project_environment),
             }
@@ -1304,6 +1361,8 @@ def run_in_fresh_locked_runtime(
                 "--project",
                 str(project),
                 "run",
+                "--no-dev",
+                "--no-default-groups",
                 "--locked",
                 "--offline",
                 "--no-python-downloads",

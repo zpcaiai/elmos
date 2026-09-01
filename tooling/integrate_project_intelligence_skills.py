@@ -109,7 +109,7 @@ EXPECTED_SCRIPT_SUPPORT_FILES = 7
 EXPECTED_TEST_SUPPORT_FILES = 2
 
 _IGNORED_ENGINE_GENERATED_PARTS = frozenset(
-    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache"}
+    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache"}
 )
 
 

@@ -11,4 +11,5 @@ Status: `BLOCKED`
 - metric supplyChainCoverageRate below 0.95
 - metric signaturePassRate below 1.0
 - claim b40-credential-scan-triage is not PASS
+- claim b40-dependabot-alert-status is not PASS
 - evidence manifest is invalid: [Errno 2] No such file or directory: 'mature-product-packs/batch40/elmos-platform-supply-chain/evidence-manifest.json'

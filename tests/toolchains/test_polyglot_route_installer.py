@@ -3,10 +3,13 @@ from __future__ import annotations
 import hashlib
 import importlib.util
 import os
+import shlex
 import stat
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[2]
 RUNTIME_ENVIRONMENT = ROOT / "scripts" / "toolchains" / "runtime_environment.py"
@@ -36,6 +39,19 @@ def _load_runtime_environment():
 runtime_environment = _load_runtime_environment()
 
 
+def _load_kotlin_pin_verifier():
+    spec = importlib.util.spec_from_file_location(
+        "elmos_kotlin_pin_verifier_test",
+        PIN_VERIFIER,
+    )
+    if spec is None or spec.loader is None:
+        raise RuntimeError("Kotlin pin verifier module could not be loaded")
+    module = importlib.util.module_from_spec(spec)
+    sys.modules[spec.name] = module
+    spec.loader.exec_module(module)
+    return module
+
+
 def _write_fake_uname(directory: Path) -> None:
     executable = directory / "uname"
     executable.write_text(
@@ -57,10 +73,19 @@ def _write_fake_command(directory: Path, name: str, content: str) -> Path:
     return executable
 
 
-def _run_installer(toolchain_root: Path, fake_bin: Path) -> subprocess.CompletedProcess[str]:
+def _run_installer(
+    toolchain_root: Path,
+    fake_bin: Path,
+    *,
+    java_distribution: str | None = "homebrew",
+) -> subprocess.CompletedProcess[str]:
     environment = dict(os.environ)
     environment["PATH"] = os.pathsep.join((str(fake_bin), environment.get("PATH", "")))
     environment["ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT"] = str(toolchain_root)
+    if java_distribution is None:
+        environment.pop("ELMOS_JAVA21_DISTRIBUTION", None)
+    else:
+        environment["ELMOS_JAVA21_DISTRIBUTION"] = java_distribution
     return subprocess.run(
         [str(INSTALLER)],
         cwd=ROOT,
@@ -69,6 +94,50 @@ def _run_installer(toolchain_root: Path, fake_bin: Path) -> subprocess.Completed
         capture_output=True,
         text=True,
         timeout=60,
+    )
+
+
+def _prepare_existing_kotlin_fixture(toolchain_root: Path, fake_bin: Path) -> Path:
+    target = toolchain_root / "kotlin" / "2.2.20"
+    (target / "bin").mkdir(parents=True)
+    (target / "lib").mkdir()
+    (target / "bin" / "kotlinc").write_text("fixture\n", encoding="utf-8")
+    (target / "bin" / "kotlin").write_text("fixture\n", encoding="utf-8")
+    (target / "lib" / "kotlin-compiler.jar").write_text("fixture\n", encoding="utf-8")
+    (target / "lib" / "kotlin-stdlib.jar").write_text("fixture\n", encoding="utf-8")
+    (target / "build.txt").write_text("2.2.20-release-333\n", encoding="utf-8")
+    _write_fake_command(
+        fake_bin,
+        "shasum",
+        "#!/bin/sh\n"
+        "path=''\n"
+        "for argument in \"$@\"; do path=$argument; done\n"
+        "case \"$path\" in\n"
+        "  *pin_kotlin_toolchain.py) digest=70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45 ;;\n"
+        "  */bin/kotlinc) digest=90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d ;;\n"
+        "  */lib/kotlin-compiler.jar) digest=8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496 ;;\n"
+        "  */lib/kotlin-stdlib.jar) digest=8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7 ;;\n"
+        "  *) exit 9 ;;\n"
+        "esac\n"
+        "printf '%s  %s\\n' \"$digest\" \"$path\"\n",
+    )
+    return target
+
+
+def _kotlin_pin_facts(banner: str, *, tree_bytes: int = 85_861_305) -> str:
+    return "\n".join(
+        (
+            f"_EXPECTED_KOTLIN_VERSION = '{banner}'",
+            "_EXPECTED_KOTLINC_EXECUTABLE_SHA256 = '90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d'",
+            "_EXPECTED_KOTLIN_COMPILER_JAR_SHA256 = '8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496'",
+            "_EXPECTED_KOTLIN_STDLIB_JAR_SHA256 = '8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7'",
+            "_EXPECTED_KOTLIN_TREE_SHA256 = '0f6e2cea7d2dd94f63e84a3f4be5c8252cb3a53f2abbd19fa4165fc2665082b8'",
+            "_EXPECTED_KOTLIN_TREE_RECORD_COUNT = 123",
+            "_EXPECTED_KOTLIN_TREE_FILE_COUNT = 118",
+            "_EXPECTED_KOTLIN_TREE_DIRECTORY_COUNT = 5",
+            f"_EXPECTED_KOTLIN_TREE_BYTES = {tree_bytes}",
+            "_EXPECTED_KOTLIN_BUILD_NUMBER = '2.2.20-release-333'",
+        )
     )
 
 
@@ -120,20 +189,27 @@ def test_route_installer_is_executable_digest_pinned_and_tree_verifying() -> Non
     verifier = PIN_VERIFIER.read_bytes()
 
     assert mode == 0o755
-    assert len(verifier) == 21_518
+    assert len(verifier) == 22_423
     assert hashlib.sha256(verifier).hexdigest() == (
-        "60540ef44a6a8a5a2a65343868951f2dcfc0063b1cd91f1e4db46dff1b86a1ac"
+        "70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45"
     )
     assert "kotlin-compiler-${KOTLIN_VERSION}.zip" in content
     assert "81f0264c9073b5cbbdb3ff8418cf2c5dac076879fc156fa1a6462f5a5acc4420" in content
     assert "78709601" in content
-    assert "60540ef44a6a8a5a2a65343868951f2dcfc0063b1cd91f1e4db46dff1b86a1ac" in content
-    assert 'readonly PIN_SCRIPT_BYTES="21518"' in content
+    assert "70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45" in content
+    assert 'readonly PIN_SCRIPT_BYTES="22423"' in content
+    assert "_kotlin_jvm_binding" in PIN_VERIFIER.read_text(encoding="utf-8")
     assert "verify_pin_script_identity" in content
     assert "verify_archive_paths" in content
     assert 'unzip -Z1 "${archive}"' in content
     assert "verify_exact_install" in content
     assert "_EXPECTED_KOTLIN_TREE_SHA256" in content
+    assert 'homebrew)' in content
+    assert 'temurin)' in content
+    assert 'KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11)"' in content
+    assert 'KOTLIN_VERSION_BANNER="kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)"' in content
+    assert "Kotlin route pin mismatch for %s" in content
+    assert 'python3.12 "${PIN_SCRIPT}" "${target}" 2>&1' in content
     assert ".install-lock" in content
     assert 'mktemp -d "${KOTLIN_PARENT}/.elmos-polyglot-route-toolchains.XXXXXX"' in content
     assert "${TMPDIR:-/tmp}/elmos-polyglot-route-toolchains" not in content
@@ -143,6 +219,147 @@ def test_route_installer_is_executable_digest_pinned_and_tree_verifying() -> Non
     assert 'rm -rf -- "${KOTLIN_TARGET}"' not in content
     assert "Refusing to overwrite a non-matching Kotlin route target" in content
     assert "install_project_synthesis_toolchains.sh" not in content
+
+
+@pytest.mark.parametrize(
+    ("java_distribution", "banner"),
+    (
+        ("homebrew", "kotlinc-jvm 2.2.20 (JRE 21.0.11)"),
+        ("temurin", "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)"),
+    ),
+)
+def test_route_installer_accepts_only_the_banner_for_the_selected_jdk(
+    tmp_path: Path,
+    java_distribution: str,
+    banner: str,
+) -> None:
+    fake_bin = tmp_path / "fake-bin"
+    fake_bin.mkdir()
+    _write_fake_uname(fake_bin)
+    toolchain_root = tmp_path / "toolchains"
+    target = _prepare_existing_kotlin_fixture(toolchain_root, fake_bin)
+    facts = _kotlin_pin_facts(banner)
+    _write_fake_command(
+        fake_bin,
+        "python3.12",
+        "#!/bin/sh\n" f"printf '%s\\n' {shlex.quote(facts)}\n",
+    )
+
+    completed = _run_installer(
+        toolchain_root,
+        fake_bin,
+        java_distribution=java_distribution,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert f"already installed and exact at {target}" in completed.stdout
+
+
+def test_route_installer_rejects_an_unknown_jdk_before_download(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "fake-bin"
+    fake_bin.mkdir()
+    curl_marker = tmp_path / "curl-was-called"
+    _write_fake_command(
+        fake_bin,
+        "curl",
+        "#!/bin/sh\n" f"touch {shlex.quote(str(curl_marker))}\nexit 99\n",
+    )
+
+    completed = _run_installer(
+        tmp_path / "toolchains",
+        fake_bin,
+        java_distribution="untrusted",
+    )
+
+    assert completed.returncode == 2
+    assert "Unsupported Java distribution for the exact Kotlin route: untrusted" in (
+        completed.stderr
+    )
+    assert not curl_marker.exists()
+
+
+def test_route_installer_bounds_a_failed_pin_verifier_diagnostic(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "fake-bin"
+    fake_bin.mkdir()
+    _write_fake_uname(fake_bin)
+    toolchain_root = tmp_path / "toolchains"
+    _prepare_existing_kotlin_fixture(toolchain_root, fake_bin)
+    verifier_output = "X" * 5_000 + "UNBOUNDED_TAIL"
+    _write_fake_command(
+        fake_bin,
+        "python3.12",
+        "#!/bin/sh\n"
+        f"printf '%s\\n' {shlex.quote(verifier_output)} >&2\n"
+        "exit 17\n",
+    )
+
+    completed = _run_installer(toolchain_root, fake_bin)
+
+    assert completed.returncode == 3
+    assert "Kotlin route pin verifier failed" in completed.stderr
+    assert "UNBOUNDED_TAIL" not in completed.stderr
+    assert len(completed.stderr) < 4_500
+
+
+def test_route_installer_reports_the_exact_mismatched_pin_field(tmp_path: Path) -> None:
+    fake_bin = tmp_path / "fake-bin"
+    fake_bin.mkdir()
+    _write_fake_uname(fake_bin)
+    toolchain_root = tmp_path / "toolchains"
+    _prepare_existing_kotlin_fixture(toolchain_root, fake_bin)
+    facts = _kotlin_pin_facts(
+        "kotlinc-jvm 2.2.20 (JRE 21.0.11)",
+        tree_bytes=1,
+    )
+    _write_fake_command(
+        fake_bin,
+        "python3.12",
+        "#!/bin/sh\n" f"printf '%s\\n' {shlex.quote(facts)}\n",
+    )
+
+    completed = _run_installer(toolchain_root, fake_bin)
+
+    assert completed.returncode == 3
+    assert "Kotlin route pin mismatch for _EXPECTED_KOTLIN_TREE_BYTES" in (
+        completed.stderr
+    )
+    assert "expected _EXPECTED_KOTLIN_TREE_BYTES = 85861305" in completed.stderr
+    assert "observed _EXPECTED_KOTLIN_TREE_BYTES = 1" in completed.stderr
+
+
+def test_kotlin_pin_version_drops_ambient_jvm_launcher_and_option_hooks(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    verifier = _load_kotlin_pin_verifier()
+    java_home = tmp_path / "jdk"
+    compiler_home = tmp_path / "kotlin"
+    (java_home / "bin").mkdir(parents=True)
+    (compiler_home / "bin").mkdir(parents=True)
+    expected_java_home = str(java_home)
+    kotlinc = _write_fake_command(
+        compiler_home / "bin",
+        "kotlinc",
+        "#!/bin/sh\n"
+        f"test \"${{JAVA_HOME}}\" = {shlex.quote(expected_java_home)} || exit 81\n"
+        "for name in JAVACMD JAVA_TOOL_OPTIONS _JAVA_OPTIONS JDK_JAVA_OPTIONS KOTLIN_OPTS; do\n"
+        "  eval 'test -z \"${'\"$name\"'+x}\"' || exit 82\n"
+        "done\n"
+        "printf '%s\\n' 'info: kotlinc-jvm fixture (JRE 21.0.11)' >&2\n",
+    )
+    monkeypatch.setattr(verifier, "_kotlin_jvm_binding", lambda: (java_home, "fixture"))
+    for name in (
+        "JAVACMD",
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "KOTLIN_OPTS",
+    ):
+        monkeypatch.setenv(name, str(tmp_path / "hostile" / name))
+    version, printed = verifier._kotlinc_version(kotlinc)
+
+    assert version == "kotlinc-jvm fixture (JRE 21.0.11)"
+    assert "info: kotlinc-jvm fixture" in printed
 
 
 def test_route_installer_rejects_conflicting_toolchain_roots(tmp_path: Path) -> None:
@@ -253,7 +470,7 @@ def test_route_installer_rolls_back_only_its_promoted_directory_on_postcheck_fai
         "path=''\n"
         "for argument in \"$@\"; do path=$argument; done\n"
         "case \"$path\" in\n"
-        "  *pin_kotlin_toolchain.py) digest=60540ef44a6a8a5a2a65343868951f2dcfc0063b1cd91f1e4db46dff1b86a1ac ;;\n"
+        "  *pin_kotlin_toolchain.py) digest=70be00069851fcf5170c387489b3382b21e1d436fac2dca08aef3f70f36d7e45 ;;\n"
         "  */bin/kotlinc) digest=90750c977cc043dd2b05c69dd4e052c10377554925dd5a155e74ef732be28c7d ;;\n"
         "  */lib/kotlin-compiler.jar) digest=8546feb440ec2d59e00d475936523fcd3f528e21c7e8eb8a95e6de5044a6d496 ;;\n"
         "  */lib/kotlin-stdlib.jar) digest=8836ccffd3585fadda9901244b20d42901d2f3cd581058d8434e2ffabcf3a3e7 ;;\n"

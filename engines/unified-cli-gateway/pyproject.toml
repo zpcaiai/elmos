@@ -7,8 +7,10 @@ name = "elmos-unified-cli-gateway"
 version = "3.0.0"
 description = "ELMOS Enterprise Unified CLI Gateway & Multi-Engine Dispatcher"
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.12,<3.15"
 dependencies = [
+    "elmos-sql-transpiler",
+    "elmos-sql-dialect",
     "pyyaml>=6.0.0",
     "jsonschema>=4.0.0",
 ]
@@ -18,3 +20,7 @@ elmos = "elmos_cli.dispatcher:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.uv.sources]
+elmos-sql-transpiler = { path = "../database-data-engine/sql-transpiler" }
+elmos-sql-dialect = { path = "../sql-dialect-engine" }

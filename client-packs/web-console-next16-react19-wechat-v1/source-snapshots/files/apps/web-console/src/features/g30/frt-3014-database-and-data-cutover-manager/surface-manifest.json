@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-3014",
+  "skill_name": "frt-3014-database-and-data-cutover-manager",
+  "batch": "G30",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g30/frt-3014-database-and-data-cutover-manager/",
+  "status": "shared_implementation",
+  "handler_kind": "production_readiness",
+  "capability_key": "frt.g30.database-and-data-cutover-manager",
+  "execution_contract_sha256": "sha256:25c3d1bf5b9727b80d3e9c66610fdd9c679af8eee843c46181439173374688de",
+  "execution_class": "EXTERNAL_PRODUCTION_AUTHORITY",
+  "input_contract": {
+    "required": [
+      "slos",
+      "runbooks"
+    ],
+    "optional": [
+      "alerts",
+      "releases"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:cf3ba172662b94b02f901317834c3771b180af95e1d8b67be23915723fe72d19",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

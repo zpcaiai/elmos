@@ -124,23 +124,40 @@ function git(...args) {
 }
 
 function sourceManifest(sourceRevision, observedAt) {
-  const tracked = git("ls-files", "apps/web-console").split("\n").filter(Boolean).sort();
+  const dirty = git("status", "--porcelain=v1", "--untracked-files=all", "--", "apps/web-console");
+  if (dirty) throw new Error(`SOURCE_WORKTREE_NOT_REVISION_EXACT:\n${dirty}`);
+  const tracked = git("ls-tree", "-r", "--name-only", sourceRevision, "--", "apps/web-console").split("\n").filter(Boolean).sort();
   const files = tracked.map((relative) => {
     const full = path.join(root, relative);
-    if (!fs.existsSync(full) || !fs.statSync(full).isFile()) throw new Error(`PINNED_SOURCE_FILE_MISSING: ${relative}`);
-    return { path: relative, sha256: hashBytes(fs.readFileSync(full)), bytes: fs.statSync(full).size };
+    if (!fs.existsSync(full) || fs.lstatSync(full).isSymbolicLink() || !fs.statSync(full).isFile()) throw new Error(`PINNED_SOURCE_FILE_MISSING_OR_UNSAFE: ${relative}`);
+    const live = fs.readFileSync(full);
+    return { path: relative, sha256: hashBytes(live), bytes: live.length };
   });
-  const snapshotDigest = canonicalDigest(files.map(({ path: file, sha256 }) => ({ path: file, sha256 })));
+  const serialized = files.map(({ path: file, sha256, bytes }) => `${file}\0${sha256}\0${bytes}`).join("\n");
+  const snapshotDigest = hashBytes(Buffer.from(serialized, "utf8"));
   return {
     schema_version: 1,
     kind: "elmos.git-source-snapshot-manifest",
     source_revision: sourceRevision,
     observed_at: observedAt,
     repository_relative_root: "apps/web-console",
+    source_root: "source-snapshots/files",
     file_count: files.length,
+    total_bytes: files.reduce((total, file) => total + file.bytes, 0),
     files,
     snapshot_digest: snapshotDigest,
-    boundary: "References exact tracked source bytes at source_revision; source scripts are not executed by this generator.",
+    aggregate_digest: snapshotDigest,
+    digest_algorithm: "sha256-lf-records-v1:path-nul-digest-nul-bytes",
+    materialization: {
+      state: "MATERIALIZED_FROM_GIT",
+      git_object_verification: "PASSED",
+      source_revision: sourceRevision,
+      file_count: files.length,
+      total_bytes: files.reduce((total, file) => total + file.bytes, 0),
+      external_runtime_evidence: "NOT_RUN",
+      certification: "NOT_CERTIFIED",
+    },
+    boundary: "Pack-local files are exact copies of the complete regular-file Git tree at source_revision; no source script is executed during materialization.",
   };
 }
 
@@ -422,6 +439,11 @@ async function main() {
     };
     writeJson("transformations/component-migration-closure.json", closure);
     writeJson("source-snapshots/manifest.json", snapshot);
+    execFileSync(
+      process.env.PYTHON || "python3",
+      [path.join(root, "scripts", "batch32", "materialize_git_source_snapshot.py"), "materialize", packDir, "--repo-root", root, "--force"],
+      { cwd: root, stdio: "inherit" },
+    );
     writeJson("source-fingerprint/fingerprint.json", {
       schema_version: 1,
       pack_key: PACK_KEY,

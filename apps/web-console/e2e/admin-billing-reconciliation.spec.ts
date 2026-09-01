@@ -1,4 +1,8 @@
 import { expect, test } from "@playwright/test";
+import {
+  administratorEmail,
+  installAdministratorSession,
+} from "./helpers/admin-session";
 
 const accountSession = {
   authenticated: true,
@@ -7,7 +11,9 @@ const accountSession = {
   principal: {
     actorId: "finance-approver-1",
     displayName: "Finance Approver",
-    email: "approver@example.test",
+    email: administratorEmail,
+    emailVerified: true,
+    isPlatformAdmin: true,
     organizationId: "tenant-finance-a",
     roles: ["APPROVER"],
     permissions: ["admin:read", "admin:operate", "admin:approve"],
@@ -67,6 +73,7 @@ function reconciliation(status: "OPEN" | "REJECTED") {
 }
 
 test("finance admin lists filtered cases and never auto-retries an unknown write", async ({ page }) => {
+  await installAdministratorSession(page);
   const requestedStatuses: string[] = [];
   const mutationKeys: string[] = [];
   const mutationBodies: unknown[] = [];
@@ -126,7 +133,7 @@ test("finance admin lists filtered cases and never auto-retries an unknown write
   });
 
   await page.goto("/admin");
-  await expect(page.getByLabel("短期管理令牌")).toBeDisabled();
+  await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "读取数据" }).click();
   await page.getByRole("button", { name: "财务对账" }).click();
 

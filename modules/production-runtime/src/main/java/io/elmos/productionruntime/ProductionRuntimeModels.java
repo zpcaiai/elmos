@@ -268,6 +268,80 @@ public final class ProductionRuntimeModels {
 
     public record ToolCallReceipt(UUID toolCallId, ToolCallStatus status, String providerRequestId, UUID responseArtifactId) {}
 
+    /**
+     * Digest-bound evidence that an engine output satisfied the workload-pack
+     * completion contract.  This is deliberately an engineering gate receipt,
+     * not a production certification claim.
+     */
+    public record OutputVerificationReceipt(
+            String schemaVersion,
+            String packId,
+            String jobType,
+            String workType,
+            String artifactUri,
+            String artifactSha256,
+            String verifier,
+            String verificationStatus,
+            String certificationStatus,
+            Map<String, Object> checks
+    ) {
+        public static final String SCHEMA_VERSION = "elmos.production-output-verification/v1";
+
+        public OutputVerificationReceipt {
+            requireText(schemaVersion, "schemaVersion", 120);
+            requireText(packId, "packId", 160);
+            requireText(jobType, "jobType", 80);
+            requireText(workType, "workType", 120);
+            requireText(artifactUri, "artifactUri", 2_000);
+            requireText(artifactSha256, "artifactSha256", 128);
+            requireText(verifier, "verifier", 240);
+            requireText(verificationStatus, "verificationStatus", 40);
+            requireText(certificationStatus, "certificationStatus", 40);
+            if (!SCHEMA_VERSION.equals(schemaVersion)) {
+                throw new IllegalArgumentException("unsupported output verification schemaVersion");
+            }
+            if (!artifactSha256.matches("[0-9a-fA-F]{64}")) {
+                throw new IllegalArgumentException("artifactSha256 must be a SHA-256 digest");
+            }
+            artifactSha256 = artifactSha256.toLowerCase(java.util.Locale.ROOT);
+            java.net.URI parsed;
+            try {
+                parsed = java.net.URI.create(artifactUri);
+            } catch (IllegalArgumentException ex) {
+                throw new IllegalArgumentException("artifactUri must be a valid absolute URI", ex);
+            }
+            if (!parsed.isAbsolute() || parsed.getScheme() == null
+                    || !java.util.Set.of("cas", "s3", "gs", "azblob", "https")
+                            .contains(parsed.getScheme().toLowerCase(java.util.Locale.ROOT))) {
+                throw new IllegalArgumentException("artifactUri must use an approved immutable/object-store scheme");
+            }
+            if (!"PASSED".equals(verificationStatus)) {
+                throw new IllegalArgumentException("verificationStatus must be PASSED");
+            }
+            if (!"NOT_CERTIFIED".equals(certificationStatus)) {
+                throw new IllegalArgumentException("output gate receipt cannot claim certification");
+            }
+            if (checks == null || checks.isEmpty() || checks.size() > 100) {
+                throw new IllegalArgumentException("checks must contain bounded output-gate results");
+            }
+            var canonicalChecks = new java.util.LinkedHashMap<String, Object>();
+            checks.forEach((name, value) -> {
+                requireText(name, "check name", 120);
+                if (!name.matches("[a-z][a-z0-9_]{0,119}")) {
+                    throw new IllegalArgumentException("check name must be a lower_snake_case identifier");
+                }
+                if (!(value instanceof Boolean || value instanceof Byte
+                        || value instanceof Short || value instanceof Integer
+                        || value instanceof Long || value instanceof java.math.BigInteger
+                        || value instanceof String)) {
+                    throw new IllegalArgumentException("check values must be scalar booleans, integers, or strings");
+                }
+                canonicalChecks.put(name, value);
+            });
+            checks = Map.copyOf(canonicalChecks);
+        }
+    }
+
     public record Completion(
             UUID tenantId,
             UUID workItemId,
@@ -315,6 +389,20 @@ public final class ProductionRuntimeModels {
     }
 
     public record ProgressSnapshot(UUID tenantId, UUID projectId, UUID jobId, long total, long ready, long running, long completed, long failed, BigDecimal progress, long tokensConsumed, BigDecimal creditsConsumed, Instant updatedAt) {}
+
+    /** Read-only status used by the authorized external workload-output gate. */
+    public record WorkloadOutputStatus(
+            UUID jobId,
+            UUID workItemId,
+            String jobType,
+            String workType,
+            String jobStatus,
+            String workItemStatus,
+            String artifactSha256,
+            String verificationStatus,
+            String certificationStatus,
+            Instant verifiedAt
+    ) {}
 
     /** Tenant-owned hard admission ceilings enforced under a PostgreSQL row lock. */
     public record AdmissionPolicy(

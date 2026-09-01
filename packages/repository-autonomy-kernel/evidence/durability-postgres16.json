@@ -1,0 +1,33 @@
+{
+  "generatedAt": "2026-09-01T09:40:32.752084+00:00",
+  "server": "PostgreSQL 16.13 (Ubuntu 16.13-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+  "childExitCode": 9,
+  "crashedAtIntent": true,
+  "eventsDurableAfterCrash": 10,
+  "hashChainVerifies": true,
+  "recoveredState": "EXECUTING",
+  "recoveredStateIsNotSucceeded": true,
+  "unresolvedSideEffects": [
+    {
+      "idempotencyKey": "sha256:ad70dd44c94867cbd38dc48aa9f793f1e1bd79041e1c0c9b140fc0d86143b289",
+      "stepId": "publish",
+      "attempt": 1,
+      "intentSequence": 10,
+      "observed": false,
+      "observationDigest": null,
+      "reconciled": false,
+      "reconciliationVerdict": null,
+      "unresolved": true
+    }
+  ],
+  "rollbackPlanComplete": false,
+  "rollbackPlanUnresolved": [
+    "publish"
+  ],
+  "keyedAppendsDelivered": 2,
+  "eventsBeforeRedelivery": 10,
+  "eventsAfterRedelivery": 11,
+  "firstAppendSequence": 11,
+  "secondAppendSequence": 11,
+  "redeliveryDeduped": true
+}

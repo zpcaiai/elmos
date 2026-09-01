@@ -14,10 +14,14 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+from source_package_guard import resolve_source_package
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "elmos-codex-skills-batch66-80-complete"
-PACKAGE_ROOT = ROOT / PACKAGE_NAME
+PACKAGE_ROOT = resolve_source_package(
+    Path(PACKAGE_NAME), Path("manifest.json"), root=ROOT
+) or ROOT / PACKAGE_NAME
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 SKILL_GENERATOR = (
     Path("/Users/stephen/.codex/skills/.system/skill-creator/scripts/generate_openai_yaml.py")

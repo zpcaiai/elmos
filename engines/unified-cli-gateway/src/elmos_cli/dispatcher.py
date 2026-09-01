@@ -231,6 +231,14 @@ def main(argv: Sequence[str] | None = None) -> int:
     sql_trans_p = sql_sub.add_parser("transpile", help="Transpile SQL across dialects", parents=[common_parser])
     sql_trans_p.add_argument("--src-dialect", default="oracle", help="Source dialect (e.g. oracle, sqlserver, mysql)")
     sql_trans_p.add_argument("--tgt-dialect", default="postgres", help="Target dialect (e.g. postgres, dm8, tidb, kingbasees)")
+    sql_trans_p.add_argument(
+        "--src-profile",
+        help="Exact source profile ID (for example oracle-26ai-ee); required before target SQL can be emitted",
+    )
+    sql_trans_p.add_argument(
+        "--tgt-profile",
+        help="Exact target profile ID (for example postgresql-18.4); required before target SQL can be emitted",
+    )
     sql_trans_p.add_argument("--sql", default="SELECT NVL(col, 'DEFAULT'), SYSDATE FROM t", help="SQL query")
     sql_diff_p = sql_sub.add_parser("diff-ddl", help="Compare two DDL schema definitions", parents=[common_parser])
     sql_diff_p.add_argument("--source-ddl", default="CREATE TABLE orders (id INT, amount DECIMAL);", help="Source DDL")
@@ -296,6 +304,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         output_format = "yaml"
 
     result_data: dict | list | str = {}
+    exit_code = 0
 
     if parsed.command == "interactive":
         return run_interactive_wizard()
@@ -573,17 +582,31 @@ def main(argv: Sequence[str] | None = None) -> int:
         if act == "dialects":
             result_data = get_supported_dialects()
         elif act == "transpile":
-            res = gw.transpile(parsed.sql, parsed.src_dialect, parsed.tgt_dialect)
+            res = gw.transpile(
+                parsed.sql,
+                parsed.src_dialect,
+                parsed.tgt_dialect,
+                source_profile=parsed.src_profile,
+                target_profile=parsed.tgt_profile,
+            )
             result_data = {
+                "status": res.status,
                 "source_dialect": res.source_dialect,
                 "target_dialect": res.target_dialect,
+                "source_profile": res.source_profile,
+                "target_profile": res.target_profile,
                 "source_sql": res.source_sql,
                 "target_sql": res.target_sql,
                 "transformed_constructs": res.transformed_constructs,
                 "warnings": res.warnings,
                 "semantic_equivalence": res.semantic_equivalence,
+                "reason_code": res.reason_code,
+                "reason": res.reason,
+                "verification": res.verification,
                 "merkle_receipt": res.merkle_receipt,
             }
+            if res.status != "SYNTAX_READY":
+                exit_code = 2
         elif act == "diff-ddl":
             result_data = gw.diff_schemas(parsed.source_ddl, parsed.target_ddl)
 
@@ -651,7 +674,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     else:
         print(format_output(result_data, output_format))
 
-    return 0
+    return exit_code
 
 
 if __name__ == "__main__":

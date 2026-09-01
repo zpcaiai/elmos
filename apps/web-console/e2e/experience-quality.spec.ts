@@ -45,5 +45,9 @@ test("help remains usable at 200 percent zoom and mobile width", async ({ page }
   const overflow = await page.evaluate(() =>
     document.documentElement.scrollWidth - document.documentElement.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
-  await expect(page.getByRole("link", { name: "打开运营管理端" })).toBeVisible();
+  const administratorLogin = page.getByRole("link", { name: "前往管理员登录" });
+  await expect(administratorLogin).toBeVisible();
+  await expect(administratorLogin).toHaveAttribute(
+    "href", "/admin/login",
+  );
 });

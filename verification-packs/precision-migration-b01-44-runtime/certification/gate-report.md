@@ -3,5 +3,63 @@
 - Pack status: `experimental`
 - Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
+- Certification readiness: `BLOCKED`
+- Evaluated pack digest: `sha256:d0d653200dd58f866fa674b80c0948de974fa41aacd3fc504cb1dafc56e388f0`
 
-The pack is structurally valid but is not certified.
+## Certification blockers
+- pack and certification status must both request certified
+- unknown required verification technique: coverage
+- unknown required verification technique: representative-workload
+- unknown required verification technique: security-negative
+- representative_workload_pass_rate below 1.0
+- source_map_coverage below 0.95
+- evidence_trace_coverage below 0.95
+- assurance_claim_support_rate below 1.0
+- p0_contract_pass_rate below 1.0
+- counterexample_replay_pass_rate below 1.0
+- metamorphic_pass_rate below 1.0
+- model_transition_coverage below 0.95
+- mutation_score below 0.8
+- property_pass_rate below 1.0
+- security_property_pass_rate below 1.0
+- fuzz_campaign_pass_rate below 1.0
+- critical_fuzz_crashes must be explicitly zero
+- critical_unknown_obligations must be explicitly zero
+- security_property_violations must be explicitly zero
+- surviving_critical_mutants must be explicitly zero
+- test_integrity_violations must be explicitly zero
+- unapproved_oracle_changes must be explicitly zero
+- unapproved_tolerance_changes must be explicitly zero
+- unreplayed_counterexamples must be explicitly zero
+- unresolved_oracle_conflicts must be explicitly zero
+- unsupported_p0_claims must be explicitly zero
+- negative corpus status must be passed
+- negative corpus source_digest is not exact SHA-256
+- negative corpus dataset_digest is not exact SHA-256
+- negative corpus evidence_refs empty
+- holdout corpus status must be passed
+- holdout corpus source_digest is not exact SHA-256
+- holdout corpus dataset_digest is not exact SHA-256
+- holdout corpus evidence_refs empty
+- holdout corpus is not independently verified
+- holdout corpus executor missing
+- representative-workloads corpus status must be passed
+- representative-workloads corpus source_digest is not exact SHA-256
+- representative-workloads corpus dataset_digest is not exact SHA-256
+- representative-workloads corpus evidence_refs empty
+- representative workload corpus is not production-derived
+- representative workload authorization record is missing, invalid, or not content-bound locally
+- assurance claim claim.evidence-integrity is not fully supported
+- assurance claim claim.trust-decisions is not fully supported
+- assurance case approvals empty
+- validation profile approvals empty
+- oracle registry approvals empty
+- certification approval timestamp missing
+- P0 claim claim.evidence-integrity has no independent external oracle evidence
+- P0 claim claim.trust-decisions has no independent external oracle evidence
+- P0 claim claim.maturity-honesty has no independent external oracle evidence
+- scope controlled_public_dns_rebinding_campaign must be passed (found None)
+- scope independent_holdout must be passed (found None)
+- scope representative_production_workload must be passed (found None)
+- content-addressed evidence manifest is required
+- repository binding records are required for readiness
