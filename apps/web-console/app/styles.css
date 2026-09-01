@@ -91,6 +91,7 @@ html[data-theme="dark"] {
 .nav-item strong { font-size: 13px; font-weight: 650; }
 .nav-item small { color: #8ca2a5; font-size: 10px; letter-spacing: .02em; }
 .nav-item.active small { color: #91aaad; }
+.nav-label-operations { margin-top: 16px; padding-top: 13px; border-top: 1px solid rgba(232,177,111,.2); color: #e0ab72; }
 .admin-nav-item { margin-top: 7px; border: 1px solid rgba(232,177,111,.26); background: rgba(148,80,15,.13); color: #f1c58f; }
 .admin-nav-item:hover { border-color: rgba(232,177,111,.42); background: rgba(148,80,15,.22); }
 .admin-nav-item.active { background: #553216; color: #fff5e8; box-shadow: inset 3px 0 0 #f1bd7d; }
@@ -162,6 +163,11 @@ a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,2
 .auth-not-configured span { color: var(--ink-soft); font-size: 10px; }
 .auth-success { width: 100%; padding: 12px; border: 1px solid #b9ded8; border-radius: 9px; background: var(--cyan-soft); color: var(--cyan-dark); font-size: 11px; line-height: 1.5; }
 .auth-links { width: 100%; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
+.user-scope-notice, .admin-scope-notice { display: flex; flex-direction: column; gap: 5px; margin: 4px 0 2px; padding: 13px 15px; border: 1px solid rgba(124,205,198,.26); border-radius: 12px; background: rgba(124,205,198,.07); text-align: left; }
+.user-scope-notice strong, .admin-scope-notice strong { font-size: 12.5px; font-weight: 700; }
+.user-scope-notice span, .admin-scope-notice span { font-size: 12px; line-height: 1.6; opacity: .92; }
+.user-scope-notice small, .admin-scope-notice small { font-size: 11px; line-height: 1.55; opacity: .72; }
+.admin-scope-notice { border-color: rgba(232,177,111,.3); background: rgba(148,80,15,.11); }
 .admin-entry-callout { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px; border: 1px solid #e2c7a9; border-radius: 11px; background: var(--amber-soft); }
 .admin-entry-callout > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
 .admin-entry-callout strong { color: var(--amber); font-size: 11px; }

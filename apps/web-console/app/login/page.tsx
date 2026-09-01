@@ -47,6 +47,12 @@ export default async function LoginPage({
         <span className="eyebrow">USER ACCESS · EMAIL</span>
         <h1 id="login-title">用户登录</h1>
         <p>使用已注册邮箱进入 ELMOS 用户控制中心。租户、角色和权限只由服务端已验证的账户会话决定。</p>
+
+        <div className="user-scope-notice" role="note">
+          <strong>登录后可以使用的功能</strong>
+          <span>Spring 老项目翻新、全库跨语言转换、多模态输入、多语言项目生成、前端转换工厂、代码仓库工作区、任务编排与模型路由、迁移工坊、功能能力中心、套餐与用量、账户与组织。</span>
+          <small>平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放。</small>
+        </div>
         {error && <div className="auth-error" role="alert">{error}</div>}
         {parameters.registered === "1" && (
           <div className="auth-success" role="status">账户已创建，请使用新账户登录。</div>
@@ -93,7 +99,7 @@ export default async function LoginPage({
         <div className="admin-entry-callout" aria-label="管理员专用入口">
           <div>
             <strong>管理员专用入口</strong>
-            <span>管理员登录与普通用户登录使用独立页面和受控会话。</span>
+            <span>管理员登录与普通用户登录使用独立页面和受控会话，可见页面也完全不同。</span>
           </div>
           <a className="button admin-entry-button" href="/admin/login">进入管理员登录</a>
         </div>

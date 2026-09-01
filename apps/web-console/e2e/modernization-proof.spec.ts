@@ -1,5 +1,13 @@
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
+// /proof-loop is a platform operations surface: it is only reachable with a
+// verified administrator session established at /admin/login.
+test.beforeEach(async ({ page }) => {
+  await installAdministratorSession(page);
+});
+
 const digest = `sha256:${"a".repeat(64)}`;
 
 test("submits one idempotent proof mutation and polls to a fail-closed result", async ({ page }) => {

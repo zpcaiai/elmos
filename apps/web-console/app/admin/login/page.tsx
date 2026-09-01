@@ -3,6 +3,7 @@ import {
   ADMINISTRATOR_EMAIL,
   oidcConfigured,
 } from "../../lib/server/accountSession";
+import { safeOperationsReturnTo } from "../../lib/surfaceAudience";
 
 export const metadata: Metadata = { title: "管理员登录" };
 export const dynamic = "force-dynamic";
@@ -39,14 +40,14 @@ const errorMessages: Record<string, string> = {
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; returnTo?: string }>;
 }) {
   const parameters = await searchParams;
   const configured = oidcConfigured();
   const error = parameters.error
     ? errorMessages[parameters.error] ?? "管理员登录未完成，未建立管理员会话。"
     : null;
-  const adminReturnTo = "/admin";
+  const adminReturnTo = safeOperationsReturnTo(parameters.returnTo);
 
   return (
     <section className="auth-page admin-auth-page" aria-labelledby="admin-login-title">
@@ -55,6 +56,12 @@ export default async function AdminLoginPage({
         <span className="eyebrow">PRIVILEGED ACCESS</span>
         <h1 id="admin-login-title">管理员登录</h1>
         <p>此入口与普通用户登录独立。管理员权限只由服务端验证后的精确邮箱、登录模式和账户会话授予。</p>
+
+        <div className="admin-scope-notice" role="note">
+          <strong>管理员端可见页面</strong>
+          <span>运营管理端、全链路观测与存证、契约治理与变异、商业化控制面、现代化证据闭环、转换验证沙箱、一键冒烟运行。</span>
+          <small>普通用户账户即使拿到链接也无法打开这些页面；服务端会重定向回本入口。</small>
+        </div>
 
         <div className="admin-identity-notice" role="note">
           <span>唯一管理员邮箱</span>
@@ -90,7 +97,7 @@ export default async function AdminLoginPage({
 
         <div className="auth-links admin-auth-links">
           <span>不是管理员？</span>
-          <a className="text-link" href="/login">返回用户登录</a>
+          <a className="text-link" href="/login">返回用户登录，使用产品功能</a>
         </div>
         <small>管理员页面不会通过客户端字段、链接或隐藏表单提升权限；最终授权始终由服务端决定。</small>
       </div>

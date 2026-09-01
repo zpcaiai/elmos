@@ -32,7 +32,7 @@ function businessLine(pathname: string): string {
   if (pathname.startsWith("/migration")) return "MIGRATION_GOVERNANCE";
   if (pathname.startsWith("/commercialization")) return "COMMERCIALIZATION";
   if (pathname.startsWith("/pricing")) return "PRICING_USAGE";
-  if (pathname.startsWith("/skills")) return "SKILLS_QUALIFICATION";
+  if (pathname.startsWith("/capabilities") || pathname.startsWith("/skills")) return "SKILLS_QUALIFICATION";
   if (pathname.startsWith("/admin")) return "ADMIN_OPERATIONS";
   return "PRODUCT_OVERVIEW";
 }

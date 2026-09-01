@@ -37,7 +37,7 @@ const lines = [
   ["DELIVERY_GOVERNANCE", "交付治理"],
   ["COMMERCIALIZATION", "商业化控制面"],
   ["PRICING_USAGE", "套餐与用量"],
-  ["SKILLS_QUALIFICATION", "Skills 与验证"],
+  ["SKILLS_QUALIFICATION", "功能能力与验证"],
   ["ENTERPRISE_MODERNIZATION", "企业现代化"],
   ["MAINFRAME_MODERNIZATION", "主机现代化"],
   ["SYSTEM_INTEGRATION", "系统集成"],

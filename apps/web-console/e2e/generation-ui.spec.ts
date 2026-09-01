@@ -178,7 +178,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "一键生成、验证并归档" })).toBeDisabled();
   });
 
-  test("简述、TXT、Markdown、Word、HTML、PDF 与 Skill 可合并为哈希绑定来源包", async ({
+  test("简述、TXT、Markdown、Word、HTML、PDF 与能力模块可合并为哈希绑定来源包", async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "多格式解析的代表旅程只执行一次");
@@ -189,7 +189,7 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByLabel("项目说明").fill(
       "实体: order; order字段: reference:string:required; 权限: admin:create/read/update/delete:order",
     );
-    await page.getByLabel("仓库 Skills").fill("elmos-project-synthesis");
+    await page.getByLabel("仓库能力模块").fill("elmos-project-synthesis");
     await page.getByLabel("上传需求文件").setInputFiles([
       { name: "requirements.txt", mimeType: "text/plain", buffer: Buffer.from("Order query requirement") },
       { name: "rules.md", mimeType: "text/markdown", buffer: Buffer.from("# Rules\nOrder status is reviewable.") },

@@ -148,7 +148,7 @@ export function PrecisionMigrationJobs() {
     <div className="card-heading"><div><span className="overline">TENANT-ISOLATED RUNNER</span><h2 id="precision-job-title">精密迁移作业</h2></div><StatusChip status={job?.status ?? "NOT_RUN"} compact /></div>
     <p>作业身份来自企业会话；服务端实施租户隔离、活动/存储配额、非覆盖输出、取消、重试、哈希链审计和可恢复归档。</p>
     <div className="form-stack precision-job-form">
-      <label><span>Runtime Skill</span><input value={skill} onChange={(event) => setSkill(event.target.value)} required pattern="pm-[a-z0-9-]+" /></label>
+      <label><span>运行时功能标识</span><input value={skill} onChange={(event) => setSkill(event.target.value)} required pattern="pm-[a-z0-9-]+" /></label>
       <div className="form-grid">
         <label><span>模式</span><select value={mode} onChange={(event) => setMode(event.target.value)}><option value="assess">assess</option><option value="validate">validate</option><option value="certify">certify</option><option value="transform">transform</option><option value="repair">repair</option></select></label>
         <label><span>只读工作区路径</span><input value={workspacePath} onChange={(event) => setWorkspacePath(event.target.value)} placeholder="评估 handler 必填；必须位于批准根目录" /></label>

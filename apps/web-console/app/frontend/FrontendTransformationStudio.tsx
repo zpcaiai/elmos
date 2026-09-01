@@ -207,16 +207,16 @@ export function FrontendTransformationStudio() {
     try {
       if (action === "VERIFY" && (!run || run.skillId !== selectedSkill.id
         || ["QUEUED", "RUNNING"].includes(run.state))) {
-        throw new Error("VERIFY 需要当前 Skill 在同一资源作用域内已有终态 Run。");
+        throw new Error("VERIFY 需要当前功能在同一资源作用域内已有终态 Run。");
       }
       let parsedInput: unknown;
       try {
         parsedInput = JSON.parse(inputJson) as unknown;
       } catch {
-        throw new Error("Skill 输入必须是有效 JSON。");
+        throw new Error("功能输入必须是有效 JSON。");
       }
       if (!parsedInput || typeof parsedInput !== "object" || Array.isArray(parsedInput)) {
-        throw new Error("Skill 输入必须是 JSON object。");
+        throw new Error("功能输入必须是 JSON object。");
       }
       const typedInput: Record<string, unknown> = { ...(parsedInput as Record<string, unknown>) };
       if (acceptsFiles && Object.keys(sourceFiles).length) typedInput.files = sourceFiles;
@@ -322,19 +322,19 @@ export function FrontendTransformationStudio() {
     <div className={styles.page}>
       <section className={styles.hero} aria-labelledby="frt-title">
         <div className={styles.heroCopy}>
-          <span className={styles.eyebrow}><Icon name="workflow" size={15} /> FRT G01–G30</span>
+          <span className={styles.eyebrow}><Icon name="workflow" size={15} /> 前端转换 · 30 个生成阶段</span>
           <h1 id="frt-title">{t("前端仓库转换工厂", "Frontend repository transformation factory")}</h1>
           <p>{t("从仓库发现、类型化语义 IR 和 30 条方向路线，一直编排到产品闭环与生产就绪门禁。所有未知语义和未运行证据保持显式。", "Orchestrate repository discovery, typed UI semantics, 30 directed routes, product closure, and production-readiness gates. Unknown semantics and unexecuted evidence remain explicit.")}</p>
           <div className={styles.heroActions}>
             <a className={styles.primaryAction} href="#route-planner">{t("选择转换路线", "Choose a directed route")} <Icon name="arrow" size={15} /></a>
-            <a className={styles.secondaryAction} href="#frt-skill-catalog">{t("浏览全部 Skills", "Browse every Skill")}</a>
+            <a className={styles.secondaryAction} href="#frt-capability-catalog">{t("浏览全部功能", "Browse every capability")}</a>
           </div>
         </div>
-        <div className={styles.heroMetrics} aria-label="FRT 能力规模" tabIndex={0}>
-          <article><strong>30</strong><span>Generation Batches</span><small>线性依赖与失效传播</small></article>
-          <article><strong>472</strong><span>Runtime Skills</span><small>全部可发现、可计划、可验证</small></article>
-          <article><strong>30</strong><span>Directed routes</span><small>六类技术栈两两有向转换</small></article>
-          <article className={styles.boundaryMetric}><strong>NOT_RUN</strong><span>Production evidence</span><small>真实设备、性能与生产门禁未冒充通过</small></article>
+        <div className={styles.heroMetrics} aria-label="前端转换能力规模" tabIndex={0}>
+          <article><strong>30</strong><span>生成阶段</span><small>线性依赖与失效传播</small></article>
+          <article><strong>472</strong><span>运行时功能</span><small>全部可发现、可计划、可验证</small></article>
+          <article><strong>30</strong><span>有向转换路线</span><small>六类技术栈两两有向转换</small></article>
+          <article className={styles.boundaryMetric}><strong>NOT_RUN</strong><span>生产证据</span><small>真实设备、性能与生产门禁未冒充通过</small></article>
         </div>
       </section>
 
@@ -391,18 +391,18 @@ export function FrontendTransformationStudio() {
               <div><dt>浏览器 / 设备</dt><dd data-state="not-run">NOT_RUN</dd></div>
               <div><dt>认证</dt><dd data-state="blocked">NOT_CERTIFIED</dd></div>
             </dl>
-            <button type="button" onClick={openRouteSkill}>查看 Route Skill <Icon name="arrow" size={15} /></button>
+            <button type="button" onClick={openRouteSkill}>查看该路线的功能 <Icon name="arrow" size={15} /></button>
           </article>
         ) : <p className={styles.routeUnavailable}>源技术栈和目标技术栈必须不同。</p>}
       </section>
 
-      <section className={styles.catalogSection} id="frt-skill-catalog" aria-labelledby="catalog-title">
+      <section className={styles.catalogSection} id="frt-capability-catalog" aria-labelledby="catalog-title">
         <div className={styles.sectionHeading}>
-          <div><span className={styles.kicker}>Runtime Catalog</span><h2 id="catalog-title">{t("472 个实现级 Skill", "472 implementation-level Skills")}</h2></div>
-          <p>每个 Skill 共用同一受治理 Runtime、Scope、幂等与 Evidence 协议，避免建立 472 套平行子系统。</p>
+          <div><span className={styles.kicker}>运行时功能目录</span><h2 id="catalog-title">{t("472 个实现级功能", "472 implementation-level capabilities")}</h2></div>
+          <p>每个功能共用同一受治理 Runtime、Scope、幂等与 Evidence 协议，避免建立 472 套平行子系统。</p>
         </div>
         <div className={styles.catalogLayout}>
-          <nav className={styles.batchRail} aria-label="按 Batch 筛选 Skill">
+          <nav className={styles.batchRail} aria-label="按阶段筛选功能">
             <button className={batch === "ALL" ? styles.activeBatch : ""} type="button" onClick={() => setBatch("ALL")}>
               <span>ALL</span><strong>全部能力</strong><small>{frtCatalog.skillCount}</small>
             </button>
@@ -416,7 +416,7 @@ export function FrontendTransformationStudio() {
             <div className={styles.catalogToolbar}>
               <label className={styles.searchBox}>
                 <Icon name="search" size={17} />
-                <span className="sr-only">搜索 Skill</span>
+                <span className="sr-only">搜索功能</span>
                 <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索 ID、名称或能力…" />
                 {query && <button type="button" aria-label="清空搜索" onClick={() => setQuery("")}><Icon name="close" size={14} /></button>}
               </label>
@@ -439,8 +439,8 @@ export function FrontendTransformationStudio() {
                   </button>
                 ))}
               </div>
-            ) : <div className={styles.emptyState}><Icon name="search" size={24} /><strong>没有匹配的 Skill</strong><p>尝试更换 Batch 或缩短搜索词。</p></div>}
-            {filteredSkills.length > visibleSkills.length && <p className={styles.limitNote}>为保持页面响应速度，当前最多展示 72 项；请继续按 Batch 或关键词缩小范围。</p>}
+            ) : <div className={styles.emptyState}><Icon name="search" size={24} /><strong>没有匹配的功能</strong><p>尝试更换阶段或缩短搜索词。</p></div>}
+            {filteredSkills.length > visibleSkills.length && <p className={styles.limitNote}>为保持页面响应速度，当前最多展示 72 项；请继续按阶段或关键词缩小范围。</p>}
           </div>
           <aside className={styles.skillInspector} aria-live="polite">
             {selectedSkill ? (
@@ -451,7 +451,7 @@ export function FrontendTransformationStudio() {
                 <p>{selectedSkill.description}</p>
                 <dl>
                   <div><dt>风险</dt><dd>{selectedSkill.risk}</dd></div>
-                  <div><dt>Capability</dt><dd>{selectedSkill.executionContract.capabilityKey}</dd></div>
+                  <div><dt>能力标识</dt><dd>{selectedSkill.executionContract.capabilityKey}</dd></div>
                   <div><dt>执行级别</dt><dd>{selectedSkill.executionContract.executionClass}</dd></div>
                   <div><dt>前置证书</dt><dd>{selectedSkill.requiresCertificate ?? "System charter inputs"}</dd></div>
                   <div><dt>版本</dt><dd>{selectedSkill.version}</dd></div>
@@ -462,7 +462,7 @@ export function FrontendTransformationStudio() {
                 </div>
                 <small className={styles.inspectorNote}>* EXECUTE 只准备受限提案；客户代码、真实 Provider、设备与生产操作需要外部 Runner 和授权。</small>
               </>
-            ) : <p>选择一个 Skill 查看契约。</p>}
+            ) : <p>选择一个功能查看契约。</p>}
           </aside>
         </div>
         <section className={styles.operationConsole} aria-labelledby="operation-title" id="frt-operation-console">
@@ -489,7 +489,7 @@ export function FrontendTransformationStudio() {
             </fieldset>
 
             <fieldset>
-              <legend>2. Skill 类型化输入</legend>
+              <legend>2. 功能类型化输入</legend>
               <div className={styles.contractSummary}>
                 <span>必需</span>
                 {selectedInputContract?.required.length
@@ -505,7 +505,7 @@ export function FrontendTransformationStudio() {
                   <label className={styles.filePicker}>
                     <Icon name="repository" size={18} />
                     <span><strong>选择仓库文本文件</strong><small>最多 512 个、总计 ≤ 16 MB、单字段 ≤ 1 MB；安全相对路径和内容共同计算 Snapshot Digest。</small></span>
-                    <input aria-label="选择 FRT 仓库文件" type="file" multiple onChange={event => void chooseRepositoryFiles(event.target.files)} />
+                    <input aria-label="选择前端仓库文件" type="file" multiple onChange={event => void chooseRepositoryFiles(event.target.files)} />
                   </label>
                   <div className={styles.fileSummary} aria-live="polite">
                     <strong>{Object.keys(sourceFiles).length}</strong> 个文件已绑定
@@ -517,7 +517,7 @@ export function FrontendTransformationStudio() {
               <label className={styles.jsonInput}>
                 <span>输入 JSON（`files` 由上方选择器安全合并）</span>
                 <textarea
-                  aria-label="FRT Skill 类型化输入 JSON"
+                  aria-label="前端转换功能类型化输入 JSON"
                   spellCheck={false}
                   value={inputJson}
                   onChange={event => setInputJson(event.target.value)}

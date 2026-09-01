@@ -82,6 +82,23 @@ _STATUS_MAP = {
 }
 
 
+def _is_stated(value: Any) -> bool:
+    """Did the caller actually say something with this field?
+
+    ``None`` and empty containers are slots left open, not information. A
+    number, a bool - including ``False`` - and a non-empty container are
+    statements. ``0`` and ``False`` count: this package's own rule is that zero
+    is a legal business value, and treating it as absence here would be the
+    silent-zero defect wearing a different hat.
+    """
+
+    if value is None:
+        return False
+    if isinstance(value, (str, bytes, Mapping, Sequence, set, frozenset)):
+        return len(value) > 0
+    return True
+
+
 def _identity(payload: Mapping[str, Any]) -> Mapping[str, Any]:
     return dict(payload)
 
@@ -162,6 +179,37 @@ class BridgeSpec:
             [Any, Mapping[str, Any], Mapping[str, Any]], tuple[Mapping[str, Any], str]
         ] | None
     ) = None
+    #: The v2-declared input names this adapter actually reads - directly, or by
+    #: translating into a differently-named kernel field.
+    #:
+    #: This exists because of a defect this bridge shipped. ``_packreg_request``
+    #: promoted on the presence of a core-shaped ``package`` and forwarded only
+    #: the kernel's own fields, so a caller who also sent
+    #: ``test_results: [{"status": "FAIL"}]`` got LOCAL_ENGINEERING_VALIDATED
+    #: where the legacy path returns BLOCKED. The gate did not weaken; the field
+    #: was never read. An adapter that quietly ignores an input the catalogue
+    #: declares is a caller who believes they configured something.
+    #:
+    #: ``serve`` refuses to promote when the payload *carries* a declared input
+    #: this set does not name. It costs nothing for a caller who does not send
+    #: one, and turns a silent drop into a countable routing decision.
+    consumes: frozenset[str] = frozenset()
+    #: Declared inputs that **no engine in this package reads** - not the kernel,
+    #: and not the legacy handler either.
+    #:
+    #: The ``consumes`` check exists to stop an adapter answering while ignoring
+    #: what the caller said. That reasoning only holds if the *other* engine
+    #: would have read it. For these fields it would not: the catalogue declares
+    #: them, and both implementations drop them on the floor. Refusing to
+    #: promote on one sends the call to an engine that ignores it too - the
+    #: better engine lost, no information preserved, nothing gained.
+    #:
+    #: Membership is a factual claim, not an exemption for convenience, and
+    #: ``tests/test_unconsumed_inputs.py`` proves each one behaviourally: the
+    #: legacy engine's output must be byte-identical with and without the field.
+    #: If someone later makes legacy read one, that test fails and the entry has
+    #: to go.
+    declared_but_unimplemented: frozenset[str] = frozenset()
     #: Publishes something the kernel produced back onto the ``DispatchContext``
     #: so the *next* skill in the same dispatch can see it.
     #:
@@ -217,12 +265,14 @@ class BridgeSpec:
 def _spec(skill_id: str, rationale: str, *, build_request=_identity,
           map_outputs=None, build_request_with_context=None,
           persist_outputs=None, bind_stores=None, blocked_when=None,
-          publish_context=None) -> BridgeSpec:
+          publish_context=None, consumes=(), declared_but_unimplemented=()) -> BridgeSpec:
     return BridgeSpec(skill_id=skill_id, rationale=rationale,
                       build_request=build_request, map_outputs=map_outputs,
                       build_request_with_context=build_request_with_context,
                       persist_outputs=persist_outputs, bind_stores=bind_stores,
-                      blocked_when=blocked_when, publish_context=publish_context)
+                      blocked_when=blocked_when, publish_context=publish_context,
+                      consumes=frozenset(consumes),
+                      declared_but_unimplemented=frozenset(declared_but_unimplemented))
 
 
 # --- input adapters ----------------------------------------------------------
@@ -2246,6 +2296,13 @@ def _toolloader_outputs(payload: Mapping[str, Any],
     }
 
 
+#: v2's declared inputs for this skill. None has a home on the core's publish
+#: path, so their presence means part of what the caller said would go unread.
+_V2_PACKREG_FIELDS = frozenset({
+    "package_manifest", "components", "dependency_lock", "signature", "test_results",
+})
+
+
 def _packreg_request(payload: Mapping[str, Any], context: Any = None) -> Mapping[str, Any]:
     """Promote only a caller who supplies a real signature to verify.
 
@@ -2267,6 +2324,23 @@ def _packreg_request(payload: Mapping[str, Any], context: Any = None) -> Mapping
     deployment's own key would be the bridge signing the caller's package: every
     verification would pass, and the check would certify that this process
     trusts itself.
+
+    **A mixed dialect is refused, and that fix came from a defect this adapter
+    shipped with.** The first version promoted on the presence of a core-shaped
+    ``package`` and forwarded only the core's own fields - so a caller who sent
+    that package *alongside* ``test_results: [{"status": "FAIL"}]`` got
+    LOCAL_ENGINEERING_VALIDATED, where the legacy path returns BLOCKED /
+    PACKAGE_INVALID. The test gate did not move or weaken; the field was simply
+    never read. That is precisely the failure written up one row over - "a
+    silently ignored field is a caller who thinks they configured something" -
+    committed here.
+
+    The core has nowhere to apply self-reported test results on a publish (its
+    ``evaluation_report`` gates a *promotion*), so this path cannot honour that
+    gate. It therefore declines the call rather than answering without it. Any
+    v2-only input present means the caller is speaking a dialect where part of
+    what they said would go unread, and the call goes where it can be answered
+    whole.
     """
 
     package = payload.get("package")
@@ -2277,6 +2351,8 @@ def _packreg_request(payload: Mapping[str, Any], context: Any = None) -> Mapping
     for required in ("packageId", "version", "skills", "contractsDigest"):
         if package.get(required) is None:
             return {}
+    if any(field in payload for field in _V2_PACKREG_FIELDS):
+        return {}
 
     request: dict[str, Any] = {"package": dict(package)}
     for optional in ("promotion_request", "evaluation_report", "requirements",
@@ -2355,6 +2431,15 @@ def _packreg_outputs(payload: Mapping[str, Any],
     entry["promotionDecision"] = outputs.get("promotion_decision")
     entry["revocation"] = outputs.get("revocation")
     entry["signature_verified"] = True
+    # v2 callers branch on `state`, and the core's entry has no such key - it has
+    # `stage` (draft / promoted), which means something different. Leaving it
+    # absent gives them `None`, which is neither REGISTERED nor BLOCKED and
+    # compares equal to neither. A package that reached this point had its
+    # signature recomputed and its permissions reviewed (both raise otherwise),
+    # and `_packreg_request` refuses the call when a v2 test gate was stated, so
+    # REGISTERED is the honest value here rather than a convenient one. `stage`
+    # stays visible beside it so draft and promoted remain distinguishable.
+    entry["state"] = "REGISTERED"
     entry["registryScope"] = "single-call"
     entry["registryScopeNote"] = (
         "the registry is constructed for this call, so requires_action and "
@@ -3431,6 +3516,13 @@ class _SystemClock:
 _ROWS: tuple[BridgeSpec, ...] = (
     _spec(
         "repository-model-elo",
+        declared_but_unimplemented=(
+            "model_cost_latency",
+        ),
+        consumes=(
+            "arena_results",
+            "task_taxonomy",
+        ),
         build_request=_elo_request,
         rationale="legacy computes 1000 + (win_rate - 0.5) * 400 in floating point: a "
         "win-rate rescale, not a rating system. No pairwise updates, no K "
@@ -3441,6 +3533,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "agent-arena",
+        consumes=(
+            "arena_task_set",
+            "agent_candidates",
+            "fixed_environments",
+            "budgets",
+            "evaluation_protocol",
+        ),
         build_request=_arena_request,
         rationale="legacy reads each contestant's own declared `quality` field as its "
         "score - nothing is executed or graded, and there is no isolation "
@@ -3450,6 +3549,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "durable-run-orchestrator",
+        consumes=(
+            "task_spec",
+            "workflow_definition",
+            "repository_snapshot",
+            "budget",
+            "policy_snapshot",
+        ),
         build_request_with_context=_orchestrator_request,
         persist_outputs=_persist_durable_run,
         rationale="both are real, and this is the one row where the legacy side owns "
@@ -3465,6 +3571,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "execution-authority-kernel",
+        consumes=(
+            "environment",
+            "workspace",
+            "permission_profile",
+            "tool_request",
+            "fencing_token",
+        ),
         build_request_with_context=_authority_request,
         publish_context=_publish_authority,
         rationale="legacy validates an authority mapping; the kernel mints it, refuses a "
@@ -3477,6 +3590,12 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "policy-hook-kernel",
+        consumes=(
+            "hook_event",
+            "policy_layers",
+            "run_context",
+            "tool_or_step_context",
+        ),
         build_request_with_context=_policy_request,
         persist_outputs=_persist_policy_decision,
         blocked_when=_policy_blocked,
@@ -3488,6 +3607,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "workspace-lease-fencing",
+        consumes=(
+            "workspace",
+            "worker_identity",
+            "lease_policy",
+            "checkpoint",
+            "side_effect_ledger",
+        ),
         build_request_with_context=_lease_request,
         rationale="the legacy handler acquires a lease and returns it: it never refuses a "
         "second live owner, never re-validates before a write, and has no "
@@ -3501,6 +3627,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "artifact-evidence-protocol",
+        consumes=(
+            "producer_step",
+            "content",
+            "repo_snapshot",
+            "task_spec_version",
+            "security_label",
+        ),
         build_request=_artifact_request,
         bind_stores=_durable_artifact_store,
         rationale="the kernel binds evidence to the exact input digests it was produced "
@@ -3509,6 +3642,14 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "evidence-release-gate",
+        consumes=(
+            "completion_claim",
+            "acceptance_criteria",
+            "validation_results",
+            "artifacts",
+            "approvals",
+            "deployment_results",
+        ),
         map_outputs=_release_gate_outputs,
         build_request=_release_gate_request,
         rationale="the kernel treats NOT_RUN and SKIPPED as blocking, requires a complete "
@@ -3517,6 +3658,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "independent-verification-mesh",
+        consumes=(
+            "change_set",
+            "validation_dag",
+            "task_spec",
+            "repository_snapshot",
+            "policies",
+        ),
         build_request=_verification_mesh_request,
         rationale="the kernel enforces verifier independence structurally, preserves "
         "dissent instead of averaging it, and refuses to let evidence-free "
@@ -3524,6 +3672,14 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "cost-eta-observability",
+        consumes=(
+            "run_events",
+            "historical_runs",
+            "repo_features",
+            "model_tool_usage",
+            "cache_metrics",
+            "pricing_profile",
+        ),
         build_request=_cost_eta_request,
         rationale="the kernel keeps machine wall-clock, human-equivalent effort and HITL "
         "wait in three types that cannot be summed, and reports an unmeasured "
@@ -3532,6 +3688,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "repository-gym-golden-routes",
+        consumes=(
+            "benchmark_repositories",
+            "golden_task_specs",
+            "fixed_images",
+            "expected_contracts",
+            "chaos_scenarios",
+        ),
         build_request=_gym_request,
         rationale="legacy emits every run as NOT_RUN with 'native runner not supplied'. "
         "The kernel freezes the acceptance digest at registration and refuses "
@@ -3539,6 +3702,12 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "task-spec-delta-compiler",
+        consumes=(
+            "requirements",
+            "repository_snapshot",
+            "previous_task_spec",
+            "policy_profile",
+        ),
         build_request=_taskspec_request,
         map_outputs=_taskspec_outputs,
         blocked_when=_taskspec_blocked,
@@ -3560,6 +3729,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "multi-agent-worktree-coordinator",
+        consumes=(
+            "task_dag",
+            "agent_contracts",
+            "workspace_topology",
+            "budget",
+            "artifact_contracts",
+        ),
         build_request_with_context=_worktree_request,
         map_outputs=_worktree_outputs,
         blocked_when=_worktree_blocked,
@@ -3581,6 +3757,7 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "capability-package-registry",
+        consumes=(),
         build_request=_packreg_request,
         bind_stores=_call_scoped_package_registry,
         map_outputs=_packreg_outputs,
@@ -3608,6 +3785,15 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "lazy-tool-loader",
+        declared_but_unimplemented=(
+            "agent_contract",
+        ),
+        consumes=(
+            "step_requirements",
+            "tool_catalog",
+            "execution_authority",
+            "policy_snapshot",
+        ),
         build_request_with_context=_toolloader_request,
         map_outputs=_toolloader_outputs,
         rationale="legacy loads every authorised tool whose capabilities intersect the "
@@ -3632,6 +3818,14 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "prefix-stable-context-planner",
+        consumes=(
+            "task_spec",
+            "repository_index",
+            "current_step",
+            "skill_metadata",
+            "token_budget",
+            "previous_ledger",
+        ),
         build_request=_contextplan_request,
         map_outputs=_contextplan_outputs,
         rationale="legacy fits the budget by assuming every block costs 500 tokens - "
@@ -3652,6 +3846,15 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "phase-aware-model-router",
+        declared_but_unimplemented=(
+            "recent_evals",
+        ),
+        consumes=(
+            "step_profile",
+            "model_capability_profiles",
+            "budget",
+            "provider_policy",
+        ),
         build_request=_router_request,
         map_outputs=_router_outputs,
         rationale="legacy ranks candidates by quality/(cost + latency/100000) in binary "
@@ -3674,6 +3877,10 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "model-state-continuity",
+        consumes=(
+            "context_ledger",
+            "provider_event",
+        ),
         build_request=_continuity_request,
         bind_stores=_pinned_continuity_clock,
         map_outputs=_continuity_outputs,
@@ -3695,6 +3902,14 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "repository-census",
+        declared_but_unimplemented=(
+            "api_schemas",
+            "coverage",
+            "optional_runtime_traces",
+        ),
+        consumes=(
+            "immutable_repository_snapshot",
+        ),
         build_request=_census_request,
         map_outputs=_census_outputs,
         rationale="two defects that fire on this route, and one that does not. "
@@ -3717,6 +3932,15 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "layered-cache-fabric",
+        consumes=(
+            "snapshot_hash",
+            "task_spec_hash",
+            "workflow_version",
+            "skill_versions",
+            "policy_hash",
+            "tool_schema_versions",
+            "model_profile",
+        ),
         build_request_with_context=_cache_request,
         bind_stores=_durable_cache_fabric,
         map_outputs=_cache_outputs,
@@ -3742,6 +3966,12 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "contract-compatibility-engine",
+        consumes=(
+            "baseline_contracts",
+            "candidate_contracts",
+            "consumer_inventory",
+            "compatibility_policy",
+        ),
         build_request=_compat_request,
         map_outputs=_compat_outputs,
         blocked_when=_compat_blocked,
@@ -3762,6 +3992,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "validation-dag",
+        declared_but_unimplemented=(
+            "change_graph",
+        ),
+        consumes=(
+            "task_spec",
+            "test_catalog",
+        ),
         build_request=_validation_request,
         map_outputs=_validation_outputs,
         blocked_when=_validation_blocked,
@@ -3775,6 +4012,11 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "incremental-semantic-index",
+        consumes=(
+            "repository_snapshot",
+            "previous_index",
+            "change_set",
+        ),
         build_request=_semantic_index_request,
         map_outputs=_semantic_index_outputs,
         rationale="legacy accepts previous_index and never reads it, so every call is a "
@@ -3788,6 +4030,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "changegraph-vcs",
+        consumes=(
+            "task_spec",
+            "repository_snapshot",
+            "patches",
+            "artifact_lineage",
+            "validation_results",
+        ),
         build_request=_changegraph_request,
         map_outputs=_changegraph_outputs,
         rationale="legacy hardcodes \"acyclic\": True. There is no cycle detection at "
@@ -3801,6 +4050,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "session-time-travel",
+        consumes=(
+            "run_event_stream",
+            "checkpoints",
+            "context_ledgers",
+            "change_graph",
+            "artifacts",
+        ),
         rationale="legacy returns forked_run={'status': 'PLANNED'} with a fresh uuid4 - "
         "nothing forks, nothing replays, and two identical calls disagree because the "
         "run id is non-deterministic. The kernel actually forks: it copies the prefix "
@@ -3814,6 +4070,12 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "demonstration-to-skill",
+        consumes=(
+            "validated_demonstration",
+            "run_artifacts",
+            "expert_annotations",
+            "privacy_policy",
+        ),
         build_request=_demonstration_request,
         rationale="the kernel requires a counterexample before a draft can leave draft "
         "tier - a rule learned only from positives has no boundary - and "
@@ -3821,6 +4083,13 @@ _ROWS: tuple[BridgeSpec, ...] = (
     ),
     _spec(
         "auto-improvement-inbox-and-skill-curator",
+        consumes=(
+            "run_incidents",
+            "user_corrections",
+            "findings",
+            "telemetry",
+            "benchmark_results",
+        ),
         build_request=_curator_request,
         rationale="order-independence is NOT the difference - the legacy engine groups on "
         "an exact code/category key, which cannot depend on ingest order either, "
@@ -4000,6 +4269,27 @@ def serve(skill: str, payload: Mapping[str, Any], context: Any = None) -> Bridge
     request = spec.request_for(payload, context)
     if not request:
         return BridgeOutcome(served=False, reasons=("KERNEL_INPUT_UNMAPPED:EMPTY_REQUEST",))
+
+    # An input the catalogue declares, that the caller actually *stated*, that
+    # this adapter does not read.  Answering anyway would drop it silently - see
+    # ``BridgeSpec.consumes``.
+    #
+    # "Stated" excludes ``None`` and empty containers on purpose. A caller who
+    # sends ``risk_profile: {"level": "HIGH"}`` has said something that would be
+    # dropped; one who sends ``risk_profile: {}`` has said nothing, and refusing
+    # on a placeholder would route half the callers in this package to the
+    # legacy engine over an empty dict. The distinction is between information
+    # lost and a slot left open.
+    unconsumed = sorted(
+        name for name in (set(payload) & set(SKILL_SPECS[skill].inputs)
+                          - spec.consumes - spec.declared_but_unimplemented)
+        if _is_stated(payload[name])
+    ) if skill in SKILL_SPECS else []
+    if unconsumed:
+        return BridgeOutcome(
+            served=False,
+            reasons=tuple(f"KERNEL_INPUT_UNMAPPED:UNCONSUMED:{name}" for name in unconsumed),
+        )
 
     binding = spec.bind_stores(context, request) if spec.bind_stores is not None else nullcontext()
     # Keys prefixed with ``_`` are bridge-private: an adapter puts them on the

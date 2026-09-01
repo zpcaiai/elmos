@@ -110,6 +110,49 @@ verdict:
 | `agent-arena` (anti-cheat) | `repository-refactoring/anticheat.py` | 365 |
 | `durable-run-orchestrator` | `repository-refactoring/orchestrator.py`, `journal.py` | — |
 
+## Decision: do not wire now, and here is the trigger
+
+Recommended, with the reasoning stated so it can be overruled on its merits.
+
+**Do not wire any of these rows in this package's current shape.** Not because
+the overlap is unreal — for the cache and the contract engine it is measured and
+decisive — but because every wiring changes behaviour across a package boundary
+that nothing currently guards. `engines/build-cache-engine` has 74 test files
+and the root `Makefile` runs none of them as a target of their own; they are
+reachable only as a `PYTHONPATH` entry for `unified-cli-gateway`. A rewiring
+that regressed one of them would be caught by nothing.
+
+**The trigger is a gate, not a schedule.** Wire a row when — and only when — the
+package it wires into is gated by the root `Makefile` on its own, so a
+regression in it fails a build somebody watches. That is one small change to
+`Makefile` per engine, and it is the cheapest prerequisite on this list.
+
+**Order, once gated.** `contract-compatibility-engine` first: the overlap is a
+strict superset (four break kinds against two, and wire-tag awareness), the
+surface is pure computation with no store or lease behind it, and the kernel row
+has no property the existing implementation lacks. `layered-cache-fabric`
+second: the overlap is larger but the kernel's hit re-verification needs
+checking against `action_cache.py` before it is called an addition rather than a
+duplicate. `artifact-evidence-protocol` third, and split: `modules/cas` takes the
+storage, the kernel keeps the claims model (evidence bound to the input digests
+it was produced from), because those are different things that happen to share
+the word "artifact".
+
+**Do not wire `phase-aware-model-router` in either direction without deciding
+about floats first.** The existing implementation ranks on binary floats; the
+kernel uses `Decimal` with a hashed decision. Wiring the kernel to it loses a
+property. If anything the flow runs the other way, and that is a change to
+`execution-intelligence`, not to this package.
+
+**One verification is outstanding and would change the confidence, not the
+decision.** I have not run `build-cache-engine`'s 74 test files. The
+"existing is deeper" verdict rests on reading its `fingerprint.py`,
+`cache_admission.py` and `cache_policy.py` — 17 key dimensions, a hermeticity
+audit, secret refusal, restore-cost-aware admission — all of which are visible
+in the source. Whether that code currently *passes its own tests* is a separate
+question, and the answer bears on how much of it to trust when wiring. Run
+those 74 files before acting on the order above.
+
 ## Why the wiring is not done here
 
 Each row is a cross-package change touching a package this one does not depend

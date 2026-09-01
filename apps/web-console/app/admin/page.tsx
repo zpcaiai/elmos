@@ -1,11 +1,6 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
-import {
-  AccountSessionError,
-  accountSessionFromRequest,
-  isPlatformAdministrator,
-} from "../lib/server/accountSession";
+
+import { requirePlatformOperationsSurface } from "../lib/server/surfaceGuards";
 import { OperationsAdmin } from "./OperationsAdmin";
 
 export const metadata: Metadata = {
@@ -16,23 +11,6 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  const requestHeaders = new Headers(await headers());
-  let denialCode: string | null = null;
-  try {
-    const session = accountSessionFromRequest(
-      new Request("https://elmos.invalid/admin", { headers: requestHeaders }),
-      "admin:read",
-    );
-    if (!isPlatformAdministrator(session.principal)) {
-      denialCode = "ADMIN_EMAIL_REQUIRED";
-    }
-  } catch (error) {
-    denialCode = error instanceof AccountSessionError
-      ? error.code
-      : "ADMIN_SESSION_REQUIRED";
-  }
-  if (denialCode) {
-    redirect(`/admin/login?${new URLSearchParams({ error: denialCode })}`);
-  }
+  await requirePlatformOperationsSurface("/admin");
   return <OperationsAdmin />;
 }

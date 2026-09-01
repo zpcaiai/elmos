@@ -237,9 +237,74 @@ break. Each of the five has a regression test; the validation-dag one also
 asserts that trimming an *optional* check is not a block, because a rule that
 blocks on every trim makes the budget unusable.
 
+## The silently-ignored input
+
+A second defect class, found the same way as the first — by auditing after
+committing it.
+
+`_packreg_request` promoted on the presence of a core-shaped `package` and
+forwarded only the kernel's own fields. A caller who *also* sent
+`test_results: [{"status": "FAIL"}]` therefore got
+`LOCAL_ENGINEERING_VALIDATED`, where the legacy path returns `BLOCKED /
+PACKAGE_INVALID`. The test gate did not move or weaken; the field was never
+read. That is the failure written into this bridge's own `_captured_at`
+docstring — *"a silently ignored field is a caller who thinks they configured
+something"* — committed one row over.
+
+A survey found the same shape latent in eight more adapters. The sharpest was
+`validation-dag`, which reads only `test_catalog`, `task_spec` and
+`validation_budget` and silently drops `risk_profile` — the input that decides
+which checks the legacy planner treats as required.
+
+So it is one mechanism rather than nine repairs. `BridgeSpec.consumes` names the
+declared inputs each adapter actually reads, and `serve` declines to promote
+when the payload *states* one it does not, recording
+`KERNEL_INPUT_UNMAPPED:UNCONSUMED:<name>`.
+
+The word doing the work is *states*. `None` and empty containers are slots left
+open, not information: half the payloads in this package pass `{}` for context
+they have nothing to say about, and refusing on those would route them all to
+the legacy engine over an empty dict — strictness with no safety in it. `0` and
+`False` **do** count, because this repository's own rule is that zero is a legal
+business value, and treating it as absence would put the silent-zero defect
+inside the very check meant to stop silent drops.
+
+## Reachability: the check that was too strict
+
+`consumes` (above) refuses to promote when the caller states a declared input
+the adapter does not read. The reasoning holds only if the *other* engine would
+have read it — and for seven declared inputs it would not. The catalogue names
+them; both implementations drop them:
+
+| skill | field | read by |
+| --- | --- | --- |
+| `validation-dag` | `change_graph` | neither (`validation_plan` never uses the parameter) |
+| `phase-aware-model-router` | `recent_evals` | neither (`route` never uses the parameter) |
+| `repository-model-elo` | `model_cost_latency` | neither (`elo` never uses `costs`) |
+| `repository-census` | `api_schemas`, `coverage`, `optional_runtime_traces` | neither (the handler does not even pass them) |
+| `lazy-tool-loader` | `agent_contract` | neither |
+
+Refusing on one of those sent the call to an engine that ignores it too: the
+better engine lost, no information preserved, nothing gained. So
+`declared_but_unimplemented` exempts them.
+
+An exemption list is exactly the kind of thing that rots into a place to put
+inconvenient cases, so each entry is proved **behaviourally**: the legacy
+engine's output must be byte-identical with and without a value loud enough to
+change anything that consulted it. Making legacy read one of these fails that
+test. The seven fields the *legacy* engine does read — `risk_profile`,
+`build_files`, `production_evals`, `compiler_metadata` among them — still block,
+because there the caller loses something real.
+
+That leaves 7 rows that refuse a stated input, each for a field one engine
+genuinely uses. Also worth naming on its own: **seven inputs this package's
+catalogue declares are read by no implementation in it.** A caller who sends
+`coverage` to `repository-census` believes it influences the census. It
+influences nothing, in either engine.
+
 ## How the bridge stays safe
 
-Four rules, enforced in `kernel_bridge.serve`:
+Five rules, enforced in `kernel_bridge.serve`:
 
 1. A core **domain** rejection is never downgraded to a legacy success. Letting
    the shallower engine overturn a correct rejection is worse than having no core.
@@ -247,10 +312,12 @@ Four rules, enforced in `kernel_bridge.serve`:
    `UNKNOWN_FIELD`, `INPUT_TOO_LARGE`) is a gap in *this bridge's translation*,
    not a verdict about the caller. It falls through to legacy and the gap is
    recorded as `KERNEL_INPUT_UNMAPPED:<code>` — countable, never silent.
-3. A verdict the legacy handler expressed as a **status** is restored from the
-   kernel's outputs by `blocked_when`, in the blocking direction only. See the
-   section above.
-4. An adapter may **derive** a field implied by what the caller sent. It may never
+3. An adapter never answers while **ignoring a declared input the caller
+   stated**. `consumes` names what it reads; `serve` routes the call elsewhere
+   rather than dropping the rest. See the section above.
+4. A verdict the legacy handler expressed as a **status** is restored from the
+   kernel's outputs by `blocked_when`, in the blocking direction only.
+5. An adapter may **derive** a field implied by what the caller sent. It may never
    **invent** one. Deriving an environment fingerprint from the submissions it is
    meant to police, or a policy hash from the layers it is meant to pin, turns the
    check into a tautology — so those adapters refuse and route to legacy instead.
@@ -261,7 +328,7 @@ Four rules, enforced in `kernel_bridge.serve`:
   finding is larger.** This was recorded as "V001–V006 is the control plane's log,
   V007 is the core's; unify them". Measuring it says there is no second live log
   to unify with. Nothing in the package writes to `autonomy_events` — or to
-  `autonomy_runs`, the root table it and twenty others foreign-key to. **22 of
+  `autonomy_runs`, the root table it and twenty others foreign-key to. **23 of
   the 37 tables `postgres-migrate` applies have no writer anywhere.**
 
   What exists is a persistence *split*, not a schema conflict:
@@ -278,11 +345,26 @@ Four rules, enforced in `kernel_bridge.serve`:
   names — and a schema that advertises a control plane which is not there gets
   read, believed, backed up and audited.
 
-  Not silently redesigned here, because implementing 22 tables against
-  PostgreSQL or withdrawing them is an architecture decision, not a cleanup.
-  What is done: `tests/test_persistence_split.py` pins both lists by name so
-  neither can move without the other, `V001`'s header says plainly that these
-  tables stay empty, and the README says where data actually goes.
+  **Decision: neither implement nor withdraw — put the truth in the schema.**
+  V001–V004 are released and digest-pinned; they cannot be edited (the gate
+  caught exactly that attempt) and a deployment that applied them already has
+  the tables. Implementing 23 tables against PostgreSQL means guessing semantics
+  nobody wrote down. What can actually be fixed is the *belief*, and an operator
+  reads `\d+`, a schema browser or a generated data dictionary far more often
+  than a README.
+
+  So **V008 adds `COMMENT ON TABLE` to all 23** — creating nothing, dropping
+  nothing, changing no data, therefore safe on a live deployment and safe to
+  reverse. Verified against a live PostgreSQL 16: all 23 comments land, and
+  `\d+ autonomy_runs` now opens with *"NOT WRITTEN BY THIS PACKAGE"*.
+  `tests/test_persistence_split.py` asserts the commented set equals the
+  unwritten set in both directions, that the migration contains no DDL or DML,
+  and that its text carries no apostrophe — an unescaped one ends the SQL string
+  early, which the first draft did.
+
+  The count was also wrong here: it is **23**, not 22. The arithmetic is now
+  written where it can be rechecked: 37 = 5 (capability core) + 9
+  (`PostgresWaveStore`) + 23 (no writer).
 - **4 of 31 skills answer from the legacy engine, and every one has a written
   reason.** Three are `blocked: true` (below); the fourth,
   `semantic-ir-compiler`, is a different operation rather than a shape gap — the

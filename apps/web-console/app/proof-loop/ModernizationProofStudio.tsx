@@ -167,7 +167,7 @@ export function ModernizationProofStudio() {
       <section className="surface-card" aria-labelledby="proof-loop-form-title">
         <div className="card-heading"><div><span className="overline">DURABLE TENANT JOB</span><h2 id="proof-loop-form-title">提交验证计划</h2></div><StatusChip status={job?.resultStatus ?? "NOT_RUN"} compact /></div>
         <div className="business-form-grid">
-          <label><span>闭环目标 Skill</span><select value={targetSkillId} onChange={(event) => setTargetSkillId(event.target.value)} required>
+          <label><span>闭环目标功能</span><select value={targetSkillId} onChange={(event) => setTargetSkillId(event.target.value)} required>
             {contracts.length ? contracts.map((contract) => <option key={contract.id} value={contract.id}>{contract.id} · {contract.name}</option>) : <option value="B108-S16">B108-S16 · customer-ready-modernization-certificate</option>}
           </select></label>
           <label><span>项目 ID</span><input value={projectId} onChange={(event) => setProjectId(event.target.value)} required pattern="[A-Za-z0-9][A-Za-z0-9._:@/-]{0,159}" autoComplete="off" /></label>

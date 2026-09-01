@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
-const routes = ["/", "/frontend", "/skills", "/help"] as const;
+const routes = ["/", "/frontend", "/capabilities", "/help"] as const;
 
 test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];
@@ -20,7 +20,7 @@ test("deployed console renders its critical public routes", async ({ page }, tes
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page).toHaveTitle("ELMOS 控制中心");
   await expect(page.getByRole("heading", { name: "四类核心工作空间，一套可验证的交付闭环。" })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Skills 与验证" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "功能能力中心" })).toBeVisible();
 
   const reportPath = testInfo.outputPath("deployment-surface.json");
   await writeFile(reportPath, `${JSON.stringify({

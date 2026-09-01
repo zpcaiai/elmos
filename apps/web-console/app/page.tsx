@@ -24,7 +24,7 @@ const workspaces = [
   {
     eyebrow: "PROJECT SYNTHESIS · B46–B80",
     title: "多语言项目生成",
-    description: "用同一份受审项目意图规划多目标工程、资产图和构建图，区分内置生成器与专用 Runtime Skill 路由。",
+    description: "用同一份受审项目意图规划多目标工程、资产图和构建图，区分内置生成器与专用运行时路由。",
     href: "/generation",
     icon: "spark" as const,
     accent: "violet",
@@ -37,7 +37,7 @@ const workspaces = [
     href: "/migration",
     icon: "database" as const,
     accent: "amber",
-    meta: "47 Skills · SPEC_ONLY · 外部证据 NOT_RUN",
+    meta: "47 项功能 · SPEC_ONLY · 外部证据 NOT_RUN",
   },
   {
     eyebrow: "GOVERNANCE · M29–M37",
@@ -145,17 +145,17 @@ export default function Home() {
 
       <section className="overview-grid qualification-overview">
         <article className="surface-card namespace-card">
-          <div className="card-heading"><div><span className="overline">NAMESPACE COVERAGE</span><h2>双命名空间，边界不混用</h2></div><Link className="text-link" href="/skills">查看全部 <Icon name="arrow" size={14} /></Link></div>
+          <div className="card-heading"><div><span className="overline">功能覆盖范围</span><h2>迁移与交付两类功能，边界不混用</h2></div><Link className="text-link" href="/capabilities">查看全部功能 <Icon name="arrow" size={14} /></Link></div>
           <div className="namespace-summary">
-            <div className="namespace-item"><div><span className="namespace-dot migration-dot" /><strong>Migration Packs</strong><small>M1–M45 · 820 Skills</small></div><b>45%</b></div>
+            <div className="namespace-item"><div><span className="namespace-dot migration-dot" /><strong>迁移能力</strong><small>语言 / 框架 / 数据库 / 云 · 820 项功能</small></div><b>45%</b></div>
             <div className="namespace-track"><span className="namespace-fill migration-fill" style={{width:"45%"}} /></div>
-            <div className="namespace-item"><div><span className="namespace-dot product-dot" /><strong>Product commercialization</strong><small>B34–B55 · 1,004 Skills</small></div><b>55%</b></div>
+            <div className="namespace-item"><div><span className="namespace-dot product-dot" /><strong>商业与交付控制</strong><small>租户 / 结算 / 证据 / 行业包 · 1,004 项功能</small></div><b>55%</b></div>
             <div className="namespace-track"><span className="namespace-fill product-fill" style={{width:"55%"}} /></div>
           </div>
         </article>
         <article className="surface-card qualification-card">
-          <span className="overline">QUALIFICATION LADDER</span><h2>工程通过，不等于外部认证</h2>
-          <div className="qualification-steps"><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>Skill 结构</strong><small>1,824 / 1,824</small></span></div><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>用例目录</strong><small>408 / 408</small></span></div><div><i>3</i><span><strong>独立执行</strong><small>0 / 408 · NOT_RUN</small></span></div><div><i><Icon name="lock" size={12} /></i><span><strong>严格认证</strong><small>BLOCKED</small></span></div></div>
+          <span className="overline">验证阶梯</span><h2>工程通过，不等于外部认证</h2>
+          <div className="qualification-steps"><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>功能结构</strong><small>1,824 / 1,824</small></span></div><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>用例目录</strong><small>408 / 408</small></span></div><div><i>3</i><span><strong>独立执行</strong><small>0 / 408 · NOT_RUN</small></span></div><div><i><Icon name="lock" size={12} /></i><span><strong>严格认证</strong><small>BLOCKED</small></span></div></div>
         </article>
       </section>
     </div>

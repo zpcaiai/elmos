@@ -96,7 +96,7 @@ never touches.
 
 ### Where data actually goes
 
-`postgres-migrate` applies 37 tables. **22 of them have no writer anywhere in
+`postgres-migrate` applies 37 tables. **23 of them have no writer anywhere in
 the package** — including `autonomy_runs` and every table that foreign-keys to
 it. The dispatcher's run state goes to SQLite through `storage.DurableStore`,
 under bare names (`runs`, `events`, `leases`). The only PostgreSQL paths are
@@ -107,7 +107,7 @@ tables.
 A schema that advertises a control plane which is not there is worse than a
 missing one: it gets read, believed, backed up and audited. `sql/README.md` has the full table, and
 `tests/test_persistence_split.py` pins which tables have an implementation and
-which do not, failing if either list moves without the other. Closing the split — implementing the 22 against
+which do not, failing if either list moves without the other. Closing the split — implementing the 23 against
 PostgreSQL, or not shipping them — is an open architecture decision.
 
 ## Durability evidence

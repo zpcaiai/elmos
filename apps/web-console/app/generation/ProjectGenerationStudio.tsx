@@ -501,7 +501,7 @@ export function ProjectGenerationStudio() {
 
   async function ingestSources() {
     if (!runnerCredentialReady) {
-      announce("解析文件、Skill 或在线 HTML 前，请先登录具备生成权限的账户或输入本地短期令牌。");
+      announce("解析文件、能力模块或在线 HTML 前，请先登录具备生成权限的账户或输入本地短期令牌。");
       return;
     }
     if (
@@ -511,7 +511,7 @@ export function ProjectGenerationStudio() {
       && !sourceSkills.trim()
       && !repositoryWorkspaceId.trim()
     ) {
-      announce("请至少填写简述、选择文件、填写在线 HTML 地址、仓库工作区或指定 Skill。");
+      announce("请至少填写简述、选择文件、填写在线 HTML 地址、仓库工作区或指定能力模块。");
       return;
     }
     if (
@@ -1035,13 +1035,13 @@ export function ProjectGenerationStudio() {
         <div>
           <span className="overline">PROJECT SYNTHESIS · B46–B80</span>
           <h1>多语言项目生成</h1>
-          <p>输入简述，或导入 TXT、Markdown、Word、HTML、PDF、Skill 与在线 HTML，一键生成可运行工程、验证证据、本地部署和云端部署手册。</p>
+          <p>输入简述，或导入 TXT、Markdown、Word、HTML、PDF、能力模块与在线 HTML，一键生成可运行工程、验证证据、本地部署和云端部署手册。</p>
         </div>
         <div className="generation-header-status"><StatusChip status={draft ? "REVIEW" : "DRAFT"} /><StatusChip status={job?.status ?? "NOT_RUN"} /></div>
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="项目生成能力摘要">
-        <article className="metric-card"><span>项目合成 Skills</span><strong>{capability?.projectSkillCount ?? 417}</strong><small>B46–B80 结构化能力</small></article>
+        <article className="metric-card"><span>项目合成功能</span><strong>{capability?.projectSkillCount ?? 417}</strong><small>结构化生成能力</small></article>
         <article className="metric-card"><span>精确目标栈</span><strong>{capability?.targets.length ?? generationTargets.length}</strong><small>8 个独立 emitter / verifier</small></article>
         <article className="metric-card"><span>已选目标</span><strong>{selectedProfiles.length}</strong><small>一个意图，多份独立工程</small></article>
         <article className="metric-card"><span>本地 Runner</span><strong className={`metric-word ${runnerReady ? "" : "warning-text"}`}>{runnerReady ? "READY" : runnerReadiness?.status ?? "CHECKING"}</strong><small>{runnerReadiness?.isolation ?? capability?.localRunner.isolation ?? "NOT_CONFIGURED"} · 持久恢复</small></article>
@@ -1109,7 +1109,7 @@ export function ProjectGenerationStudio() {
                 </div>
                 <StatusChip status={sourceBundle ? "READY" : "NOT_RUN"} compact />
               </div>
-              <p>文件和 Skill 只作为不可信需求文本读取，不执行其中脚本或指令。在线内容仅允许公网 HTTPS，私网、回环、重定向越界和超限响应会被阻断。</p>
+              <p>文件和能力模块只作为不可信需求文本读取，不执行其中脚本或指令。在线内容仅允许公网 HTTPS，私网、回环、重定向越界和超限响应会被阻断。</p>
               <div className="generation-source-grid">
                 <label className="generation-field">
                   <span>在线 HTML 地址</span>
@@ -1124,7 +1124,7 @@ export function ProjectGenerationStudio() {
                   <small id="source-url-hint">只读取 HTML 正文；不发送 Cookie、凭证或页面内脚本。</small>
                 </label>
                 <label className="generation-field">
-                  <span>仓库 Skills</span>
+                  <span>仓库能力模块</span>
                   <input
                     value={sourceSkills}
                     onChange={(event) => setSourceSkills(event.target.value)}
@@ -1132,7 +1132,7 @@ export function ProjectGenerationStudio() {
                     autoComplete="off"
                     aria-describedby="source-skills-hint"
                   />
-                  <small id="source-skills-hint">填写精确 Skill 名称，逗号分隔，最多 8 个；导入内容不会被执行。</small>
+                  <small id="source-skills-hint">填写精确的能力模块名称，逗号分隔，最多 8 个；导入内容不会被执行。</small>
                 </label>
                 <label className="generation-field">
                   <span>代码仓库工作区 ID</span>

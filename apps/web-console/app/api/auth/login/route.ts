@@ -18,6 +18,10 @@ import {
   type AccountLoginMode,
 } from "../../../lib/server/accountSession";
 import { notifyAdministratorLogin } from "../../../lib/server/adminLoginNotification";
+import {
+  isPlatformOperationsSurface,
+  safeOperationsReturnTo,
+} from "../../../lib/surfaceAudience";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -134,9 +138,11 @@ export async function POST(request: NextRequest) {
     mode = fields.loginMode;
     const result = authenticateLocalCredentials(fields.email, fields.password);
     assertLoginModeAccess(result.principal, mode);
+    // Administrators land on a platform operations surface; customer sessions
+    // are never redirected onto one, whatever returnTo asked for.
     const returnTo = mode === "ADMIN"
-      ? fields.returnTo.startsWith("/admin") ? fields.returnTo : "/admin"
-      : fields.returnTo.startsWith("/admin") ? "/" : fields.returnTo;
+      ? safeOperationsReturnTo(fields.returnTo)
+      : isPlatformOperationsSurface(fields.returnTo) ? "/" : fields.returnTo;
     const notification = isPlatformAdministrator(result.principal)
       ? await notifyAdministratorLogin(
         request,

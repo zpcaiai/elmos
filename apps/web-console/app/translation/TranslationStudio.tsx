@@ -818,7 +818,7 @@ export function TranslationStudio() {
               <dl className="route-profile-facts">
                 <div><dt>源工具链</dt><dd>{sourceProfile?.compiler}</dd></div>
                 <div><dt>目标运行时</dt><dd>{targetProfile?.runtime}</dd></div>
-                <div><dt>方向 Skill</dt><dd>${selectedRoute.skill}</dd></div>
+                <div><dt>方向功能标识</dt><dd>${selectedRoute.skill}</dd></div>
                 <div><dt>本地执行</dt><dd>{selectedRoute.localExecution}</dd></div>
                 <div><dt>独立验证</dt><dd>{selectedRoute.independentVerification}</dd></div>
                 <div><dt>外部认证</dt><dd>{selectedRoute.externalVerification}</dd></div>

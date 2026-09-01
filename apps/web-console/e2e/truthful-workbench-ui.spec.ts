@@ -1,6 +1,8 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/telemetry/events", (route) =>
     route.fulfill({ status: 204, body: "" }));
@@ -9,6 +11,10 @@ test.beforeEach(async ({ page }) => {
 test("playground exposes one shell and never converts a static preview into proof evidence", async ({
   page,
 }) => {
+  // /playground is a platform operations surface, so this test needs an
+  // administrator session. It is installed per test, never in beforeEach:
+  // the account-menu tests below must run on a real /login customer session.
+  await installAdministratorSession(page);
   await page.goto("/playground");
 
   await expect(page.locator(".app-shell")).toHaveCount(1);
@@ -28,6 +34,10 @@ test("playground exposes one shell and never converts a static preview into proo
 test("governance labels illustrative mutation output without claiming a runner execution", async ({
   page,
 }) => {
+  // /governance is a platform operations surface, so this test needs an
+  // administrator session. It is installed per test, never in beforeEach:
+  // the account-menu tests below must run on a real /login customer session.
+  await installAdministratorSession(page);
   await page.goto("/governance");
 
   await expect(page.getByText(/Runner execution NOT_RUN/)).toBeVisible();
@@ -41,6 +51,10 @@ test("governance labels illustrative mutation output without claiming a runner e
 
 test("observability remains truthful, accessible and contained at 390px", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  // /observability is a platform operations surface, so this test needs an
+  // administrator session. It is installed per test, never in beforeEach:
+  // the account-menu tests below must run on a real /login customer session.
+  await installAdministratorSession(page);
   await page.goto("/observability");
 
   await expect(page.getByText("SAMPLE DATA · NOT_RUN")).toBeVisible();
@@ -59,6 +73,10 @@ test("observability remains truthful, accessible and contained at 390px", async 
 });
 
 test("smoke page does not nest main landmarks", async ({ page }) => {
+  // /smoke is a platform operations surface, so this test needs an
+  // administrator session. It is installed per test, never in beforeEach:
+  // the account-menu tests below must run on a real /login customer session.
+  await installAdministratorSession(page);
   await page.goto("/smoke");
   await expect(page.locator("main")).toHaveCount(1);
   expect((await new AxeBuilder({ page }).analyze()).violations).toEqual([]);

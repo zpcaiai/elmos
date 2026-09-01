@@ -8,35 +8,42 @@ import { useAccountSession } from "./AccountSessionProvider";
 import { Icon, type IconName } from "./Icon";
 import { useUiPreferences } from "./UiPreferencesProvider";
 
+type SurfaceGroup = "user" | "operations";
+
 const navigation: Array<{
   href: string;
   label: string;
   enLabel: string;
   hint: string;
   icon: IconName;
+  group: SurfaceGroup;
 }> = [
-  { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home" },
-  { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow" },
-  { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code" },
-  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file" },
-  { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark" },
-  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "FRT G01–G30", icon: "route" },
-  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box" },
-  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow" },
-  { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route" },
-  { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "B105–B108", icon: "shield" },
-  { href: "/playground", label: "AST 证明沙箱", enLabel: "Code & Proof Sandbox", hint: "Playground", icon: "spark" },
-  { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield" },
-  { href: "/governance", label: "契约治理与变异", enLabel: "Governance & Mutation", hint: "API diff & Mutate", icon: "route" },
-  { href: "/skills", label: "Skills 与验证", enLabel: "Skills and qualification", hint: "Qualification", icon: "test" },
-  { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings" },
+  { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home", group: "user" },
+  { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow", group: "user" },
+  { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code", group: "user" },
+  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file", group: "user" },
+  { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark", group: "user" },
+  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "Vue / React / 小程序 / ArkUI / Flutter", icon: "route", group: "user" },
+  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box", group: "user" },
+  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow", group: "user" },
+  { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route", group: "user" },
+  { href: "/capabilities", label: "功能能力中心", enLabel: "Capability center", hint: "平台能做什么", icon: "test", group: "user" },
+  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans / credits", icon: "layers", group: "user" },
+  { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings", group: "operations" },
+  { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield", group: "operations" },
+  { href: "/governance", label: "契约治理与变异", enLabel: "Governance & Mutation", hint: "API diff & Mutate", icon: "route", group: "operations" },
+  { href: "/commercialization", label: "商业化控制面", enLabel: "Commercial control plane", hint: "Tenant / Runner / Evidence", icon: "shield", group: "operations" },
+  { href: "/proof-loop", label: "现代化证据闭环", enLabel: "Modernization proof loop", hint: "Evidence loop", icon: "shield", group: "operations" },
+  { href: "/playground", label: "转换验证沙箱", enLabel: "Transformation sandbox", hint: "Sandbox", icon: "spark", group: "operations" },
+  { href: "/smoke", label: "一键冒烟运行", enLabel: "Smoke run", hint: "Smoke", icon: "test", group: "operations" },
 ];
 
-
-
+const operationsSurfaces = new Set(
+  navigation.filter((item) => item.group === "operations").map((item) => item.href),
+);
 
 const mobileNavigation = navigation.filter((item) =>
-  ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/skills"].includes(item.href),
+  ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/capabilities"].includes(item.href),
 );
 
 const commands = [
@@ -46,15 +53,15 @@ const commands = [
   { href: "/intake", label: "接入多模态项目资料", hint: "Audio / Image / PDF / Word / Folder / Archive", icon: "file" as IconName, group: "业务线", keywords: "多模态 输入 音频 图片 PDF Word 文件夹 压缩包 OCR ASR" },
   { href: "/migration/sql", label: "运行国产数据库 SQL 只读预检", hint: "DM8 / KingbaseES / openGauss / TiDB / OceanBase / GaussDB", icon: "database" as IconName, group: "业务线", keywords: "ChinaDB 国产数据库 SQL 预检 转换 DM8 人大金仓 openGauss TiDB GBase 瀚高 OceanBase GaussDB GoldenDB" },
   { href: "/migration", label: "查看 M36 开发者工作流", hint: "IDE / CLI / PR Bot", icon: "spark" as IconName, group: "能力", keywords: "M36 开发者 IDE CLI PR Bot" },
-  { href: "/migration", label: "查看 M37 扩展 Marketplace", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "M37 Marketplace SDK 签名 撤销" },
-  { href: "/proof-loop", label: "运行 B105–B108 证据闭环", hint: "Golden route / Preview / Live validation / Certificate", icon: "shield" as IconName, group: "业务线", keywords: "B105 B106 B107 B108 现代化 预览 验证 证书" },
-  { href: "/commercialization", label: "查看 B34–B38 可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "能力", keywords: "B34 B35 B36 B37 B38 租户 runner 证据 授权" },
+  { href: "/migration", label: "查看扩展市场与签名策略", hint: "SDK / Signing / Revocation", icon: "box" as IconName, group: "能力", keywords: "Marketplace 扩展 市场 SDK 签名 撤销" },
+  { href: "/proof-loop", label: "运行现代化证据闭环", hint: "Golden route / Preview / Live validation / Certificate", icon: "shield" as IconName, group: "平台运营", keywords: "现代化 预览 验证 证书 证据闭环" },
+  { href: "/commercialization", label: "查看商业化可信链", hint: "Tenant / Runner / Evidence / Policy", icon: "shield" as IconName, group: "平台运营", keywords: "租户 runner 证据 授权 商业化 控制面" },
   { href: "/pricing", label: "比较人民币套餐", hint: "免费体验 / 月付 / 年付", icon: "layers" as IconName, group: "商业", keywords: "套餐 价格 人民币 token credit 免费 月付 年付" },
   { href: "/generation", label: "创建多语言项目草稿", hint: "Java / Python / C#", icon: "spark" as IconName, group: "能力", keywords: "生成 项目 synthesis Java Spring Python FastAPI C# ASP.NET" },
-  { href: "/frontend", label: "规划前端技术栈转换", hint: "G01–G30 / 472 Skills / 30 routes", icon: "route" as IconName, group: "能力", keywords: "前端 FRT Vue React 小程序 ArkUI Flutter 迁移 转换" },
+  { href: "/frontend", label: "规划前端技术栈转换", hint: "472 项前端转换功能 / 30 条路线", icon: "route" as IconName, group: "能力", keywords: "前端 Vue React 小程序 ArkUI Flutter 迁移 转换" },
   { href: "/repositories", label: "拉取并修改代码仓库", hint: "GitHub / Gitee / 通用 Git", icon: "box" as IconName, group: "能力", keywords: "仓库 repository GitHub Gitee clone 配置 部署 修改" },
-  { href: "/skills", label: "查看 Batch 1–55 双命名空间", hint: "1,824 Skills / 408 cases", icon: "test" as IconName, group: "验证", keywords: "Batch 1 55 1824 408 strict cases" },
-  { href: "/admin", label: "查看操作日志与性能", hint: "用户操作 / API / 错误 / P95", icon: "settings" as IconName, group: "管理", keywords: "管理端 操作日志 性能 错误 P95 observability" },
+  { href: "/capabilities", label: "查看平台已实现的功能", hint: "按业务域列出实现范围与验证状态", icon: "test" as IconName, group: "功能", keywords: "功能 能力 中心 业务域 实现 验证 覆盖范围" },
+  { href: "/admin", label: "查看操作日志与性能", hint: "用户操作 / API / 错误 / P95", icon: "settings" as IconName, group: "平台运营", keywords: "管理端 操作日志 性能 错误 P95 observability" },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -77,10 +84,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const hasAdminAccess = account.status === "authenticated"
     && account.principal?.isPlatformAdmin === true
     && accountPermissions.has("admin:read");
-  const visibleNavigation = navigation.filter((item) =>
-    item.href !== "/admin"
-    || hasAdminAccess,
-  );
+  const userNavigation = navigation.filter((item) => item.group === "user");
+  const operationsNavigation = hasAdminAccess
+    ? navigation.filter((item) => item.group === "operations")
+    : [];
   const adminSurface = pathname.startsWith("/admin");
   const current = navigation.find((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ?? navigation[0];
   const navLabel = (item: (typeof navigation)[number]) =>
@@ -93,7 +100,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
     return commands
-      .filter((item) => item.href !== "/admin" || hasAdminAccess)
+      .filter((item) => !operationsSurfaces.has(item.href) || hasAdminAccess)
       .filter((item) => !needle || `${item.label} ${item.hint} ${item.keywords}`.toLocaleLowerCase("zh-CN").includes(needle));
   }, [commandQuery, hasAdminAccess]);
 
@@ -234,16 +241,32 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button className="icon-button sidebar-close" aria-label={english ? "Close navigation" : "关闭导航"} onClick={closeSidebar}><Icon name="close" /></button>
         </div>
         <nav className="primary-nav">
-          <span className="nav-label">{english ? "Workspaces" : "工作空间"}</span>
-          {visibleNavigation.map((item) => {
+          <span className="nav-label">{english ? "Product features · user access" : "产品功能 · 用户端"}</span>
+          {userNavigation.map((item) => {
             const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
             return (
-              <Link className={`nav-item ${item.href === "/admin" ? "admin-nav-item" : ""} ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={closeSidebar} aria-current={active ? "page" : undefined}>
+              <Link className={`nav-item ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={closeSidebar} aria-current={active ? "page" : undefined}>
                 <Icon name={item.icon} size={19} />
                 <span><strong>{navLabel(item)}</strong><small>{item.hint}</small></span>
               </Link>
             );
           })}
+          {operationsNavigation.length > 0 && (
+            <>
+              <span className="nav-label nav-label-operations">
+                {english ? "Platform operations · administrator" : "平台运营 · 管理员端"}
+              </span>
+              {operationsNavigation.map((item) => {
+                const active = pathname.startsWith(item.href);
+                return (
+                  <Link className={`nav-item admin-nav-item ${active ? "active" : ""}`} href={item.href} key={item.href} onClick={closeSidebar} aria-current={active ? "page" : undefined}>
+                    <Icon name={item.icon} size={19} />
+                    <span><strong>{navLabel(item)}</strong><small>{item.hint}</small></span>
+                  </Link>
+                );
+              })}
+            </>
+          )}
         </nav>
         <div className="sidebar-spacer" />
         <div className="guardrail-card">
@@ -375,7 +398,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {mobileNavigation.map((item) => {
           const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
           const label = navLabel(item);
-          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("Skills 与验证", "验证")}</span></Link>;
+          return <Link href={item.href} className={active ? "active" : ""} aria-current={active ? "page" : undefined} key={item.href}><Icon name={item.icon} size={19} /><span>{english ? label : label.replace("Spring 老项目翻新", "Spring").replace("全库跨语言转换", "转换").replace("多语言项目生成", "生成").replace("前端转换工厂", "前端").replace("功能能力中心", "功能")}</span></Link>;
         })}
       </nav>
       {showBackToTop && <button className="back-to-top" type="button" onClick={scrollToTop} aria-label="返回页面顶部">

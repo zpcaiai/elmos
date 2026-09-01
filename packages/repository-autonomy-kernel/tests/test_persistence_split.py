@@ -17,7 +17,7 @@ What actually exists is a split:
   sixteen have any Python behind them: ten written by ``PostgresWaveStore``,
   five by the capability core's adapters, plus the migration ledger.
 
-So an operator who runs ``postgres-migrate`` gets 37 tables, 22 of which nothing
+So an operator who runs ``postgres-migrate`` gets 37 tables, 23 of which nothing
 will ever write to, while their run history, leases and artifacts go to a SQLite
 file under different names. A schema that advertises a control plane which is
 not there is worse than a missing one: it is read, believed, backed up, and
@@ -130,7 +130,7 @@ def _python_code_text() -> str:
 
 
 def test_the_unimplemented_postgres_tables_are_exactly_the_pinned_set():
-    """22 of 37 tables in the shipped schema have nothing behind them.
+    """23 of 37 tables in the shipped schema have nothing behind them.
 
     ``autonomy_runs`` is in here, which is the sharpest part: it is the root
     every other control-plane table foreign-keys to. Nothing creates a run row,
@@ -139,7 +139,7 @@ def test_the_unimplemented_postgres_tables_are_exactly_the_pinned_set():
 
     If this fails because the set shrank, someone implemented one - delete it
     from the list. If it grew, someone added a table to the migrations without
-    a writer, which is how the other 22 got there.
+    a writer, which is how the other 23 got there.
     """
 
     python = _python_code_text()
@@ -189,3 +189,54 @@ def test_the_runtime_store_is_sqlite_and_the_wave_store_is_the_only_postgres_pat
     # With no control store configured, it falls back to the same SQLite store -
     # so a deployment that forgets the flag silently has no PostgreSQL at all.
     assert runtime.control_store is runtime.store
+
+
+#: The migration whose whole job is saying that the tables above stay empty.
+NOTICE_MIGRATION = MIGRATIONS / "V008__autonomy_unimplemented_table_notice.sql"
+
+_COMMENT = re.compile(r"^\s*comment on table\s+([a-z0-9_]+)\s+is",
+                      re.IGNORECASE | re.MULTILINE)
+
+
+def test_the_notice_migration_covers_exactly_the_unwritten_tables():
+    """V001-V004 are released and pinned; they cannot be edited or withdrawn.
+
+    A deployment that already applied them has the tables. What can be fixed is
+    the belief - and an operator reads ``\\d+``, a schema browser or a generated
+    data dictionary far more often than a README, so the warning belongs in the
+    schema itself.
+
+    Exactly, in both directions: a table commented but not on the list would be
+    telling operators it is dead when something writes it, and a table on the
+    list but not commented is the case this migration exists to prevent.
+    """
+
+    commented = set(_COMMENT.findall(NOTICE_MIGRATION.read_text(encoding="utf-8")))
+    assert commented == UNIMPLEMENTED_IN_POSTGRES
+
+
+def test_the_notice_migration_only_comments():
+    """It must create nothing, drop nothing and change no data.
+
+    That is what makes it safe to apply to a live deployment that already has
+    these tables full of nothing, and safe to reverse.
+    """
+
+    body = NOTICE_MIGRATION.read_text(encoding="utf-8").lower()
+    statements = [line for line in body.splitlines() if not line.strip().startswith("--")]
+    joined = "\n".join(statements)
+    for forbidden in ("create ", "drop ", "alter ", "insert ", "update ", "delete "):
+        assert forbidden not in joined, f"V008 contains {forbidden.strip()!r}"
+
+
+def test_the_notice_text_carries_no_apostrophe():
+    """An unescaped one ends the SQL string early and breaks the migration.
+
+    Caught the first time by reading the generated file, not by a server - the
+    original wording said "the dispatcher's state".
+    """
+
+    for line in NOTICE_MIGRATION.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("--"):
+            continue
+        assert line.count("'") % 2 == 0, line

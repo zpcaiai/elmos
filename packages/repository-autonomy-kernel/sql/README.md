@@ -3,12 +3,17 @@
 **Read this before pointing a compliance report, a retention policy or a
 restore drill at these tables.**
 
-`postgres-migrate` applies **37 tables**. As of this revision, **22 of them have
+`postgres-migrate` applies **37 tables**. As of this revision, **23 of them have
 no writer anywhere in the package** — including `autonomy_runs`, the root table
 that `autonomy_events`, `autonomy_steps`, `autonomy_leases`,
 `autonomy_artifacts`, `autonomy_checkpoints`, `autonomy_policy_decisions`,
 `autonomy_tool_calls`, `autonomy_evidence` and thirteen more foreign-key to.
 They are applied, indexed, backed up and audited, and they stay empty.
+
+The arithmetic, so it can be rechecked rather than believed:
+**37 = 5 (capability core) + 9 (PostgresWaveStore) + 23 (no writer).**
+`autonomy_schema_migrations` is created by the migration runner, not by a
+migration, so it is not among the 37.
 
 Where the data actually goes:
 
@@ -28,7 +33,7 @@ missing one, because it gets read, believed, backed up and audited.
 implementation and which do not, and fails if either list moves without the
 other.
 
-Closing the split — implementing the 22 against PostgreSQL, or not shipping
+Closing the split — implementing the 23 against PostgreSQL, or not shipping
 them — is an open architecture decision, recorded in
 `docs/MERGE_DECISIONS.md`. It is deliberately not made by a cleanup commit.
 

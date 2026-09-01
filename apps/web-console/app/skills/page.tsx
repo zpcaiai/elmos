@@ -1,8 +1,6 @@
-import type { Metadata } from "next";
-import { SkillsWorkspace } from "./SkillsWorkspace";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = { title: "Skills 与验证" };
-
-export default function SkillsPage() {
-  return <SkillsWorkspace />;
+/** Legacy entry point. The console now presents capabilities by what they do. */
+export default function LegacyCapabilitiesPage(): never {
+  permanentRedirect("/capabilities");
 }
