@@ -33,7 +33,10 @@ OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
 
 UNSEALED_DIRECTORY_PROFILES: Final = {
     Path("/opt"): {"mode": "0755", "uid": 0, "gid": 0},
-    Path("/opt/homebrew"): {"mode": "0775", "uid": 501, "gid": 80},
+    # github-actions macos-15 image 20260727.0256.1 exposes the Homebrew
+    # prefix itself as runner-owned but already non-group-writable.  Keep this
+    # exact pre-seal identity separate from the root-owned post-seal profile.
+    Path("/opt/homebrew"): {"mode": "0755", "uid": 501, "gid": 80},
     Path("/opt/homebrew/Cellar"): {"mode": "0775", "uid": 501, "gid": 80},
     Path("/opt/homebrew/Cellar/openssl@3"): {
         "mode": "0755",

@@ -415,6 +415,9 @@ jobs:
 
   polyglot-route-engine-matrix:
     name: Directed route engine matrix (${{ matrix.source_language }})
+    # Establish the exact hosted compiler/runtime identity once before
+    # consuming scarce macOS workers for the 13 source-language shards.
+    needs: polyglot-route-engine-core
     runs-on: macos-26
     timeout-minutes: 240
     strategy:

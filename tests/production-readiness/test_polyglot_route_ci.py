@@ -320,6 +320,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 for profile in verifier.SEALED_DIRECTORY_PROFILES.values()
             )
         )
+        self.assertEqual(
+            verifier.UNSEALED_DIRECTORY_PROFILES[Path("/opt/homebrew")],
+            {"mode": "0755", "uid": 501, "gid": 80},
+        )
 
     def test_openssl_seal_mode_is_root_only_and_uses_explicit_image(self) -> None:
         verifier_path = ROOT / "scripts/toolchains/verify_openssl3_ci_runtime.py"
@@ -703,6 +707,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             route_engine_job,
         )
         self.assertIn("fail-fast: false", route_matrix_job)
+        self.assertIn("needs: polyglot-route-engine-core", route_matrix_job)
         self.assertIn("max-parallel: 4", route_matrix_job)
         self.assertIn("timeout-minutes: 240", route_matrix_job)
         source_matrix = route_matrix_job.split("source_language:", 1)[1].split(
