@@ -71,14 +71,33 @@ def permissions(entities: tuple[dict[str, Any], ...]) -> tuple[dict[str, str], .
     )
 
 
-def request_for(language: str, persistence: str, auth_mode: str, entity_count: int):
+#: RETRACTED. This file briefly carried a `--production-matrix` mode that
+#: reimplemented the request behind
+#: `docs/project-synthesis/local-production-profile-matrix.json`. Wrong twice:
+#:
+#:   1. The repository already ships the tool that produced that evidence --
+#:      `engines/project-synthesis-engine/scripts/run_production_matrix.py`.
+#:      Re-run THAT. A reimplementation compares my request against their
+#:      request, not this engine against that engine.
+#:   2. The reimplementation was itself wrong: it declared the many-to-one
+#:      relation with no `source.field -> target.id` mapping, which the
+#:      production profile correctly turns into an open question
+#:      (`OPEN_QUESTIONS_BLOCK_APPROVAL`). The comparison then reported java
+#:      and python **REGRESSED** when nothing had regressed -- the exact
+#:      failure `compare()` warns about, reached from the other side.
+# RETRACTED -- see the note above. The reimplementation is gone; re-run the
+# repository's own `scripts/run_production_matrix.py` instead.
+
+
+def request_for(language: str, persistence: str, auth_mode: str, entity_count: int,
+                relations: tuple[dict[str, Any], ...] = ()):
     entities = tuple(entity(i) for i in range(1, entity_count + 1))
     return approve_request(
         create_draft(
             name=f"verify-{language}-{persistence}-{auth_mode}-{entity_count}",
             description="Execution verification of the ELMOS generation contract.",
             entities=entities,
-            relations=(),
+            relations=relations,
             languages=(language,),
             persistence=persistence,
             auth_mode=auth_mode,
@@ -155,21 +174,21 @@ def failures(evidence: dict[str, Any], limit: int = 3) -> list[dict[str, Any]]:
 
 
 def run_cell(language: str, persistence: str, auth_mode: str, entity_count: int,
-             out_root: Path) -> dict[str, Any]:
+             out_root: Path, relations: tuple[dict[str, Any], ...] = ()) -> dict[str, Any]:
     cell: dict[str, Any] = {
         "language": language, "persistence": persistence, "auth_mode": auth_mode,
-        "entity_count": entity_count,
+        "entity_count": entity_count, "relation_count": len(relations),
     }
     started = time.monotonic()
     try:
-        request = request_for(language, persistence, auth_mode, entity_count)
+        request = request_for(language, persistence, auth_mode, entity_count, relations)
     except Exception as error:  # noqa: BLE001 - the refusal IS the datum
         cell["outcome"] = "REFUSED_BY_INTAKE"
         cell["detail"] = f"{type(error).__name__}:{str(error)[:200]}"
         cell["seconds"] = round(time.monotonic() - started, 1)
         return cell
 
-    workspace = out_root / f"{language}-{persistence}-{auth_mode}-{entity_count}"
+    workspace = out_root / f"{language}-{persistence}-{auth_mode}-{entity_count}e{len(relations)}r"
     try:
         manifest = generate_workspace(request, workspace)
         cell["file_count"] = int(manifest["file_count"])
@@ -214,7 +233,18 @@ def main() -> int:
     parser.add_argument("--auth-modes", default="", help="comma-separated subset")
     parser.add_argument("--resume", action="store_true",
                         help="skip cells already present in --json")
+    parser.add_argument("--compare", type=Path, default=None,
+                        help="path to a local-production-profile-matrix.json; emits a "
+                             "then/now verdict per case (shape differences are "
+                             "reported, never silently treated as comparable)")
+    parser.add_argument("--compare-matrices", nargs=2, type=Path, default=None,
+                        metavar=("OLD", "NEW"),
+                        help="diff two run_production_matrix.py outputs and exit; "
+                             "use this to check a re-run against stored evidence")
     arguments = parser.parse_args()
+
+    if arguments.compare_matrices:
+        return diff_matrices(*arguments.compare_matrices)
 
     languages = tuple(x for x in arguments.languages.split(",") if x) or LANGUAGES
     persistences = tuple(x for x in arguments.persistence.split(",") if x) or PERSISTENCE
@@ -247,16 +277,112 @@ def main() -> int:
                       file=sys.stderr, flush=True)
                 # Written before the next cell starts: a run that dies at hour
                 # three keeps everything it earned.
-                write(arguments.json, cells, arguments)
+                write(arguments.json, cells, arguments, None)
 
-    write(arguments.json, cells, arguments)
+    write(arguments.json, cells, arguments, compare(arguments.compare, cells))
     summary = Counter(c["outcome"] for c in cells)
     print(json.dumps({"outcomes": dict(summary.most_common()),
                       "cells": len(cells)}, indent=2, ensure_ascii=False))
     return 0
 
 
-def write(path: Path, cells: list[dict[str, Any]], arguments) -> None:
+def diff_matrices(old_path: Path, new_path: Path) -> int:
+    """Case-by-case diff of two `run_production_matrix.py` evidence files."""
+
+    old = json.loads(old_path.read_text(encoding="utf-8"))
+    new = json.loads(new_path.read_text(encoding="utf-8"))
+    index = {(c["language"], c["auth_mode"]): c for c in old.get("cases", [])}
+    rows, verdicts = [], Counter()
+    for case in new.get("cases", []):
+        key = (case["language"], case["auth_mode"])
+        before = index.get(key)
+        if before is None:
+            verdict = "NEW_CASE"
+        elif before.get("entity_shape") != case.get("entity_shape"):
+            verdict = "SHAPE_DIFFERS"
+        elif before.get("status") == case.get("status"):
+            verdict = "SAME"
+        elif before.get("status") == "PASSED":
+            verdict = "REGRESSED"
+        else:
+            verdict = "CHANGED"
+        verdicts[verdict] += 1
+        rows.append({
+            "language": key[0], "auth_mode": key[1], "verdict": verdict,
+            "then": before.get("status") if before else None,
+            "now": case.get("status"),
+            "then_files": before.get("generated_file_count") if before else None,
+            "now_files": case.get("generated_file_count"),
+            "request_sha256_same": bool(before)
+            and before.get("request_sha256") == case.get("request_sha256"),
+        })
+    print(json.dumps({
+        "old": {"path": str(old_path), "observed_at": old.get("observed_at"),
+                "status": old.get("status")},
+        "new": {"path": str(new_path), "observed_at": new.get("observed_at"),
+                "status": new.get("status")},
+        "verdicts": dict(verdicts.most_common()),
+        "rows": rows,
+    }, indent=2, ensure_ascii=False))
+    return 0 if not verdicts["REGRESSED"] else 1
+
+
+def compare(stored: Path | None, cells: list[dict[str, Any]]) -> dict[str, Any] | None:
+    """Then vs now, per case, with the shape difference reported not hidden.
+
+    A case that ran on a different entity shape is `SHAPE_DIFFERS`, never
+    `SAME` -- comparing two different requests and calling the result "no
+    regression" is how a regression gets published as a pass.
+    """
+
+    if stored is None:
+        return None
+    try:
+        previous = json.loads(stored.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as error:
+        return {"error": f"{type(error).__name__}: {error}"}
+    then = {
+        (str(c.get("language")), str(c.get("auth_mode"))): c
+        for c in previous.get("cases", [])
+    }
+    rows: list[dict[str, Any]] = []
+    for cell in cells:
+        key = (cell["language"], cell["auth_mode"])
+        before = then.get(key)
+        if before is None:
+            continue
+        before_shape = str(before.get("entity_shape", "?"))
+        now_shape = "multi-entity" if cell.get("entity_count", 1) > 1 else "single-entity"
+        before_status = str(before.get("status", "?"))
+        now_status = str(cell.get("outcome", "?"))
+        if before_shape != now_shape:
+            verdict = "SHAPE_DIFFERS"
+        elif now_status.startswith("NOT_RUN") or now_status == "PARTIAL":
+            verdict = "NOT_COMPARABLE_MEASUREMENT_ABSENT"
+        elif before_status == now_status:
+            verdict = "SAME"
+        elif before_status == "PASSED":
+            verdict = "REGRESSED"
+        else:
+            verdict = "CHANGED"
+        rows.append({
+            "language": cell["language"], "auth_mode": cell["auth_mode"],
+            "then_status": before_status, "then_shape": before_shape,
+            "then_file_count": before.get("generated_file_count"),
+            "now_status": now_status, "now_shape": now_shape,
+            "now_file_count": cell.get("file_count"),
+            "verdict": verdict,
+        })
+    return {
+        "stored_evidence": str(stored),
+        "stored_observed_at": previous.get("observed_at"),
+        "verdicts": dict(Counter(r["verdict"] for r in rows).most_common()),
+        "rows": rows,
+    }
+
+
+def write(path: Path, cells: list[dict[str, Any]], arguments,
+          comparison: dict[str, Any] | None = None) -> None:
     stages: dict[str, Counter[str]] = {}
     for cell in cells:
         for kind, counts in (cell.get("stages") or {}).items():
@@ -272,6 +398,7 @@ def write(path: Path, cells: list[dict[str, Any]], arguments) -> None:
         "entity_count": arguments.entity_count,
         "outcome_summary": dict(Counter(c["outcome"] for c in cells).most_common()),
         "stage_summary": {k: dict(v) for k, v in sorted(stages.items())},
+        "comparison_with_stored_evidence": comparison,
         "cells": cells,
     }
     path.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
