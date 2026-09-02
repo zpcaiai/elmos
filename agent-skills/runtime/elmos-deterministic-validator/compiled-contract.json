@@ -8,13 +8,13 @@
       "Never treat model self-review as substitute for executable validation."
     ],
     "inputs": [
-      "task",
-      "worktree",
-      "gate config"
+      "`task`",
+      "`worktree`",
+      "`gate config`"
     ],
     "outputs": [
-      "validation evidence",
-      "failure signals"
+      "`validation evidence`",
+      "`failure signals`"
     ],
     "triggers": [
       "worker patch produced"

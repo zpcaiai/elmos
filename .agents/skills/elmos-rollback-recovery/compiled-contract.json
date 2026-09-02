@@ -8,12 +8,12 @@
       "Never discard unrelated user changes."
     ],
     "inputs": [
-      "run journal",
-      "task branches",
-      "integration log"
+      "`run journal`",
+      "`task branches`",
+      "`integration log`"
     ],
     "outputs": [
-      "resumed state or rollback state"
+      "`resumed state or rollback state`"
     ],
     "triggers": [
       "run interruption",

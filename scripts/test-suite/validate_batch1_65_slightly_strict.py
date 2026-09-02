@@ -454,7 +454,10 @@ def validate_suite(root: Path) -> tuple[list[str], dict[str, int]]:
         for error in validate_result(result_by_id[case_id], case, root, target_manifest_digest):
             errors.append(f"{case_id}: {error}")
 
-    extension = REPOSITORY_ROOT / controls.get("project_synthesis_extension", {}).get("repository_path", "")
+    extension_rel = controls.get("project_synthesis_extension", {}).get("repository_path", "")
+    extension = REPOSITORY_ROOT / extension_rel
+    if not extension.is_dir() and (REPOSITORY_ROOT / "skills" / extension_rel).is_dir():
+        extension = REPOSITORY_ROOT / "skills" / extension_rel
     extension_files = sorted((extension / "skills").glob("batch-*/*.md")) if extension.is_dir() else []
     extension_ids: list[str] = []
     for path in extension_files:
@@ -473,8 +476,11 @@ def validate_suite(root: Path) -> tuple[list[str], dict[str, int]]:
     expected_extension_tree = controls.get("project_synthesis_extension", {}).get("tree_sha256")
     if extension.is_dir() and expected_extension_tree != "sha256:" + tree_digest(extension):
         errors.append("Project Synthesis extension tree digest mismatch")
+    base_dir = REPOSITORY_ROOT / "elmos-project-synthesis-batch46-60"
+    if not base_dir.is_dir() and (REPOSITORY_ROOT / "skills" / "elmos-project-synthesis-batch46-60").is_dir():
+        base_dir = REPOSITORY_ROOT / "skills" / "elmos-project-synthesis-batch46-60"
     base_ids = []
-    for path in sorted((REPOSITORY_ROOT / "elmos-project-synthesis-batch46-60/skills").glob("batch-*/*.md")):
+    for path in sorted((base_dir / "skills").glob("batch-*/*.md")):
         match = PG_ID_RE.search(path.read_text(encoding="utf-8"))
         if match:
             base_ids.append(match.group(1))

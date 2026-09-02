@@ -8,12 +8,12 @@
       "Promote to L3 when semantics are uncertain."
     ],
     "inputs": [
-      "implementation",
-      "tests",
-      "state model"
+      "`implementation`",
+      "`tests`",
+      "`state model`"
     ],
     "outputs": [
-      "stress/race/idempotency evidence"
+      "`stress/race/idempotency evidence`"
     ],
     "triggers": [
       "concurrency/queue/job/payment-like side effects"

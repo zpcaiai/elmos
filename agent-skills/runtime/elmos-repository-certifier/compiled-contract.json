@@ -8,13 +8,13 @@
       "Leaf-task success cannot substitute for end-to-end acceptance."
     ],
     "inputs": [
-      "normalized requirement",
-      "integration branch",
-      "all evidence"
+      "`normalized requirement`",
+      "`integration branch`",
+      "`all evidence`"
     ],
     "outputs": [
-      "certification report",
-      "go/no-go"
+      "`certification report`",
+      "`go/no-go`"
     ],
     "triggers": [
       "all implementation waves integrated"

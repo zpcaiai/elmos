@@ -8,13 +8,13 @@
       "Fail closed on missing critical evidence."
     ],
     "inputs": [
-      "diff",
-      "threat surface",
-      "tests"
+      "`diff`",
+      "`threat surface`",
+      "`tests`"
     ],
     "outputs": [
-      "security evidence",
-      "block/approve"
+      "`security evidence`",
+      "`block/approve`"
     ],
     "triggers": [
       "risk.security high or auth touched"

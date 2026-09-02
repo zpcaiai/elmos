@@ -94,7 +94,7 @@ def verify_raw_files(
             continue
         try:
             raw = resolve_beneath(manifest_path.parent, item["path"])
-            raw.relative_to(suite_root)
+            raw.relative_to(suite_root.resolve())
         except (ValidationError, ValueError) as exc:
             add(blockers, f"{case_id}: unsafe raw evidence {item.get('path')}: {exc}")
             continue
@@ -238,8 +238,8 @@ def verify_certification_request(
     blockers: list[str],
 ) -> bool:
     try:
-        request_path.resolve().relative_to(suite_root)
-        signature_path.resolve().relative_to(suite_root)
+        request_path.resolve().relative_to(suite_root.resolve())
+        signature_path.resolve().relative_to(suite_root.resolve())
         request = load_json(request_path)
         trust_store = load_json(trust_store_path)
     except Exception as exc:  # noqa: BLE001

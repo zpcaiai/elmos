@@ -8,13 +8,13 @@
       "Never treat successful DDL parse as sufficient."
     ],
     "inputs": [
-      "migration files",
-      "schema",
-      "fixtures"
+      "`migration files`",
+      "`schema`",
+      "`fixtures`"
     ],
     "outputs": [
-      "migration evidence",
-      "rollback evidence"
+      "`migration evidence`",
+      "`rollback evidence`"
     ],
     "triggers": [
       "database/schema migration task"

@@ -8,14 +8,14 @@
       "Do not consume certification reserve for noncritical optional work without explicit policy."
     ],
     "inputs": [
-      "DAG",
-      "pricing/credits",
-      "budget policy"
+      "`DAG`",
+      "`pricing/credits`",
+      "`budget policy`"
     ],
     "outputs": [
-      "run budget plan",
-      "per-wave budget",
-      "reserve"
+      "`run budget plan`",
+      "`per-wave budget`",
+      "`reserve`"
     ],
     "triggers": [
       "DAG + routing priors ready"

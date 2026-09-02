@@ -96,8 +96,8 @@ description: "当长任务需要持续监视上下文窗口、预防溢出并按
 - Source contract SHA-256: `c1ae8cfbd72eb6fd58d6694bdb5b8cdda01023416642148a128bf94da0397a4f`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_context_pressure_monitor`
 - Runtime phase: `context`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-context-budget-manager`, `$elmos-multimodal-token-accounting`, `$elmos-structured-context-compaction`
 - Acceptance identities: `S33-01`, `S33-02`, `S33-03`, `S33-04`, `S33-05`, `S33-06`
 - Generated contract: `compiled-contract.json`

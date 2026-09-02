@@ -8,13 +8,13 @@
       "Policy/security violations are not ordinary retries."
     ],
     "inputs": [
-      "execution logs",
-      "test output",
-      "diff"
+      "`execution logs`",
+      "`test output`",
+      "`diff`"
     ],
     "outputs": [
-      "failure class",
-      "recommended action"
+      "`failure class`",
+      "`recommended action`"
     ],
     "triggers": [
       "worker/validator failure"

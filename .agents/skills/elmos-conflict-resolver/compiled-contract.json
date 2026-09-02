@@ -8,13 +8,13 @@
       "No automatic choose-ours/theirs on semantic files."
     ],
     "inputs": [
-      "conflicting patches",
-      "task contracts",
-      "architecture index"
+      "`conflicting patches`",
+      "`task contracts`",
+      "`architecture index`"
     ],
     "outputs": [
-      "resolved patch",
-      "conflict evidence"
+      "`resolved patch`",
+      "`conflict evidence`"
     ],
     "triggers": [
       "integration conflict"

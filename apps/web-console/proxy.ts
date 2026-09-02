@@ -3,16 +3,36 @@ import { configuredControlPlaneBaseUrl } from "./app/lib/server/trustedUpstream"
 
 const identifier = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 
-const protectedPrefixes = [
+// Platform operations surfaces: only a verified administrator session reaches
+// them, so an anonymous visitor is sent to the administrator entry, never the
+// customer one. Kept in sync with app/lib/surfaceAudience.ts.
+const operationsPrefixes = [
+  "/admin",
+  "/observability",
+  "/governance",
+  "/commercialization",
+  "/proof-loop",
+  "/playground",
+  "/smoke",
+];
+
+// Product surfaces: any signed-in customer session is enough.
+const userPrefixes = [
   "/spring",
   "/translation",
   "/generation",
   "/repositories",
   "/migration",
-  "/commercialization",
-  "/skills",
-  "/admin",
+  "/capabilities",
 ];
+
+const protectedPrefixes = [...userPrefixes, ...operationsPrefixes];
+
+function matchesPrefix(pathname: string, prefixes: readonly string[]): boolean {
+  return prefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
 
 function trustedRedirectOrigin(request: NextRequest): string | null {
   const configured = process.env.ELMOS_PUBLIC_ORIGIN?.trim() ?? "";
@@ -204,15 +224,12 @@ export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname === "/admin/login") {
     return NextResponse.next();
   }
-  const protectedRoute = protectedPrefixes.some(
-    (prefix) => request.nextUrl.pathname === prefix
-      || request.nextUrl.pathname.startsWith(`${prefix}/`),
-  );
-  if (!protectedRoute) return NextResponse.next();
+  if (!matchesPrefix(request.nextUrl.pathname, protectedPrefixes)) {
+    return NextResponse.next();
+  }
   const localCredentialMode = process.env.NODE_ENV !== "production"
     && process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true";
-  const adminRoute = request.nextUrl.pathname === "/admin"
-    || request.nextUrl.pathname.startsWith("/admin/");
+  const adminRoute = matchesPrefix(request.nextUrl.pathname, operationsPrefixes);
   if (
     (localCredentialMode && !adminRoute)
     || request.cookies.has("__Host-elmos_session")
@@ -243,6 +260,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
+  // "/skills" is deliberately absent: it only permanent-redirects to
+  // /capabilities, and gating it would bounce the legacy link to /login instead.
   matcher: [
     "/api/:path*",
     "/spring/:path*",
@@ -250,8 +269,13 @@ export const config = {
     "/generation/:path*",
     "/repositories/:path*",
     "/migration/:path*",
-    "/commercialization/:path*",
-    "/skills/:path*",
+    "/capabilities/:path*",
     "/admin/:path*",
+    "/observability/:path*",
+    "/governance/:path*",
+    "/commercialization/:path*",
+    "/proof-loop/:path*",
+    "/playground/:path*",
+    "/smoke/:path*",
   ],
 };

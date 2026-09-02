@@ -125,7 +125,7 @@ class FlywayMigrationTest {
         assertEquals(6, jdbc.sql("select count(*) from information_schema.tables where table_schema='migration_pack_certification'").query(Integer.class).single());
         assertEquals(664, jdbc.sql("select count(*) from pg_policies where schemaname in ('technology_business_management','organization_workforce','transformation_execution','autonomous_control_tower','mvp_engineering','mvp_gap_review','secure_java_vertical','identity_access_governance') and policyname='tenant_isolation'").query(Integer.class).single());
         String productSchemas = "'scm','catalog','delivery','workspace','execution','sandbox','artifact','evidence','attestation','signing','provenance','sbom','oci','verification','retention','privacy','analytics','assurance','risk','control','audit','portfolio','cockpit','forecast','performance','security','test','policy','authorization','deployment','runtime','admission','remediation','policy_decision','policy_rollout','cache','transfer','operations'";
-        assertEquals(1425, jdbc.sql("select count(*) from information_schema.tables where table_schema in (" + productSchemas + ")").query(Integer.class).single());
+        assertEquals(1426, jdbc.sql("select count(*) from information_schema.tables where table_schema in (" + productSchemas + ")").query(Integer.class).single());
         assertEquals(10, jdbc.sql("""
                 select count(*)
                   from information_schema.columns

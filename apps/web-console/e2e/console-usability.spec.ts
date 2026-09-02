@@ -50,7 +50,7 @@ test("全局搜索支持键盘焦点约束、语义化结果和显式关闭", as
   await trigger.click();
 
   const dialog = page.getByRole("dialog", { name: "全局搜索" });
-  const search = dialog.getByRole("combobox", { name: "搜索页面、能力或批次" });
+  const search = dialog.getByRole("combobox", { name: "搜索页面或功能" });
   const results = dialog.getByRole("option");
   await expect(dialog).toBeVisible();
   await expect(search).toBeFocused();

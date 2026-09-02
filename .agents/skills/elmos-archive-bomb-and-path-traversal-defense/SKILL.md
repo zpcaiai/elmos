@@ -95,8 +95,8 @@ description: "当系统检查或展开任何归档、嵌套压缩包、链接或
 - Source contract SHA-256: `b8502509eff7f4b3c9bf0caa8561003a290d8cd856d8811b4aee2c51a84c2205`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_archive_bomb_and_path_traversal_defense`
 - Runtime phase: `secure-intake`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-file-type-detection-and-validation`, `$elmos-malware-quarantine-and-sandbox`
 - Acceptance identities: `S45-01`, `S45-02`, `S45-03`, `S45-04`, `S45-05`, `S45-06`
 - Generated contract: `compiled-contract.json`

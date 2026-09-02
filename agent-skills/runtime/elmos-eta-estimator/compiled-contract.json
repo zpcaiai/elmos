@@ -8,13 +8,13 @@
       "Never substitute person-days for system runtime ETA."
     ],
     "inputs": [
-      "task durations priors",
-      "concurrency",
-      "critical path"
+      "`task durations priors`",
+      "`concurrency`",
+      "`critical path`"
     ],
     "outputs": [
-      "P50/P90 autonomous ETA",
-      "optional human-effort comparison"
+      "`P50/P90 autonomous ETA`",
+      "`optional human-effort comparison`"
     ],
     "triggers": [
       "DAG and model routes known"

@@ -82,8 +82,8 @@ description: "解析 DOCX/DOC 的标题、表格、图片、批注、修订、�
 - Source contract SHA-256: `7cea2972a88c7f25bc733c78dbb11b6f315fced7f728f6157aa11ac7056cbd5e`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_word_document_parser`
 - Runtime phase: `secure-intake`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-malware-quarantine-and-sandbox`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S10-01`, `S10-02`, `S10-03`, `S10-04`
 - Generated contract: `compiled-contract.json`

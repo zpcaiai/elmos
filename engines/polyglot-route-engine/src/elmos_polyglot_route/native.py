@@ -3604,11 +3604,12 @@ def _verify_swift_xcode_directory_chain(directory: Path, failure: str) -> tuple[
         for part in directory.parts[1:]:
             cursor = cursor / part
             metadata = cursor.lstat()
+            allowed_write_mask = 0o002 if cursor == Path("/Applications") else 0o022
             if (
                 stat.S_ISLNK(metadata.st_mode)
                 or not stat.S_ISDIR(metadata.st_mode)
                 or metadata.st_uid != 0
-                or stat.S_IMODE(metadata.st_mode) & 0o022
+                or stat.S_IMODE(metadata.st_mode) & allowed_write_mask
             ):
                 raise RouteError(failure)
             identities.append(

@@ -8,12 +8,12 @@
       "Security, transaction, concurrency and schema invariants may force larger atomic units."
     ],
     "inputs": [
-      "atomic tasks",
-      "impact map"
+      "`atomic tasks`",
+      "`impact map`"
     ],
     "outputs": [
-      "validated task set",
-      "split/merge recommendations"
+      "`validated task set`",
+      "`split/merge recommendations`"
     ],
     "triggers": [
       "task candidates created"

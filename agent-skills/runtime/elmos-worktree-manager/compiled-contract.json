@@ -9,13 +9,13 @@
       "Never run destructive git reset on user workspace."
     ],
     "inputs": [
-      "repo root",
-      "task id",
-      "base commit"
+      "`repo root`",
+      "`task id`",
+      "`base commit`"
     ],
     "outputs": [
-      "worktree path",
-      "task branch"
+      "`worktree path`",
+      "`task branch`"
     ],
     "triggers": [
       "task dispatched"

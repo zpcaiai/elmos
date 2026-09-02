@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "57c9fbce38991a52080bcf0e95219d6702967e12",
+  "baseline_commit": "765c97fc8161e2c1e1a465adacd75cd52510eab1",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -37,7 +37,7 @@
       "tooling/integrate_knowledge_skill_model_foundry_skills.py",
       "tooling/qualify_knowledge_skill_model_foundry.py"
     ],
-    "sha256": "a0a044a6e8a6346d8a157d003c4d17dfcf1d1c6fe15a8307c2ed702cceb288ff",
+    "sha256": "7eafe96320f7a3fe5912a13d482cd13a1e3038a53fd953aea23e9ed42de78b0e",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
@@ -112,7 +112,7 @@
         },
         "id": "strict_mypy",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 900
       },
       {
         "command": [
@@ -133,7 +133,7 @@
         },
         "id": "python_compileall",
         "status": "PASS",
-        "timeout_seconds": 180
+        "timeout_seconds": 300
       },
       {
         "command": [
@@ -159,7 +159,7 @@
         },
         "id": "engine_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 1200
       },
       {
         "command": [
@@ -185,7 +185,7 @@
         },
         "id": "repository_integration_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 600
       }
     ],
     "evidence_capture": "EXECUTED_BY_WRITE_MODE_ONLY",

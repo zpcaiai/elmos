@@ -479,17 +479,17 @@ EXACT_TOOLCHAIN_VERSIONS: dict[str, str] = {
 # tree change, JAR change, JVM change, or auxiliary drift still changes it.
 EXACT_TOOLCHAIN_RECORD_SHA256: dict[str, str] = {
     "java": "5c7afc06a2fa1a92d4bcc4034773f77c78df623d89b451f154cadbb16f92c32e",
-    "python": "c923d7711e0c8cc7cb70a3f5d042cf9a76d6b78f52846513d9b5253925d6a4c7",
+    "python": "89df5dba5da1068ce01811c66e566c718d8d42290a45bae3322aa81152737151",
     "csharp": "9568b7bf8845e3f99e4231f861c89fc28339d1149ea20cb36a99eab7b02505ba",
-    "typescript": "0851a20c0504992959d674e16c291dc923865969ba8571f8c8ef6604339e0872",
+    "typescript": "0625eeaddd20bec8a42762d2551d243e9baa0a1b03cf221c48e9569899715cd4",
     "go": "68148dfcead6e11f0d85ea6e9fd22e5e1fed88a8ce18e5f547818e023653f6b6",
     "rust": "d033956010ef8bc88c0dc4ce4db0e509013830eacf6bb7e73c29ae77c4e490d6",
     "cpp": "5640f0ce9e65fd7d4a5616f8754f7511c9ddb06d9c90cd6d1ec2a199f017966b",
     "objc": "fbb108ab8528c620f48ec4a12bcde14d284d625b6667493f78ef20ecda63463d",
     "swift": "4f672b92ce63ea95cb8b4cc115f6ca496b3f06aac8de21020e548373ac4a4057",
-    "php": "afcfdfd6ee3cfbe5b94eae687b35b86ee63de868e29e70769200aa9c2f4e9bdb",
+    "php": "4b76880e072a287efb11fa7156dc3892cc2a323577b766781ef8a0126f9db013",
     "kotlin": "71be41a8096b4c35bf41a7438a4b8bef2be1217905bf94ba25e2c3b69f0ddd7b",
-    "react": "e36637f8e855a4e7b4c64275ab0d1995368318c0e14572fef87a8e652b865884",
+    "react": "ae60752360cb72b00d4226f6b40f984ab70dea1f12c90c27889984710e896506",
     "flutter": "9da3d455a7d37a42acc7f709b9843def354de5e2277763f4b69cfc215ea6e160",
 }
 
@@ -535,7 +535,7 @@ def exact_toolchain_contract_sha256() -> str:
 # edits to any version, record hash, language order, or deprecated language fail
 # closed until the complete contract is intentionally re-pinned.
 EXACT_TOOLCHAIN_CONTRACT_SHA256 = (
-    "e6f62f8d7766e219a0926ce1ae3c542e02f7e823859b59ff6e27421c5d51e46f"
+    "c09a5ecccc90d2f2f06315816949523032233e3c32bdba6c8eb5630c094caae5"
 )
 
 

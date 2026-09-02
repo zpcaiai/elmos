@@ -312,9 +312,9 @@ def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None
 def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
 
-    assert installer.count("install_pinned_ada_url") == 3
-    assert '"${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "frontend-formal"' in installer
-    assert "The pinned Node/ada-url bottle receipt is Tahoe-only." in installer
+    assert installer.count("install_pinned_ada_url") == 2
+    assert "install_pinned_node26_sequoia_closure" in installer
+    assert "install_pinned_node26_closure tahoe" in installer
     assert '"ada-url" "3.4.4"' in installer
     assert '"Formula/a/ada-url.rb"' in installer
     assert "db3cda12f2efe5c488b074bdab022a3a22db56700e8687473c8f6807963b02aa" in installer
@@ -324,7 +324,8 @@ def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
     assert '[[ ! -L "${abi_link}" ]]' in installer
     assert '"${link_target}" != "libada.3.4.4.dylib"' in installer
     assert "brew chmod codesign curl find git install mv python3 realpath shasum" in installer
-    assert 'readonly REALPATH_PATH="$(command -v realpath)"' in installer
+    assert 'REALPATH_PATH="$(command -v realpath)"' in installer
+    assert "readonly REALPATH_PATH" in installer
     assert '/bin/realpath|/usr/bin/realpath)' in installer
     assert 'resolved_target="$("${REALPATH_PATH}" "${abi_link}")"' in installer
     assert '"${root}"/*) ;;' in installer

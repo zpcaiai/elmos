@@ -6428,8 +6428,7 @@ def validate_formal_equivalence(
                                 is True
                             )
                             validate_live_sources = (
-                                is_specialized
-                                and (live_repository_root / "engines").is_dir()
+                                (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()

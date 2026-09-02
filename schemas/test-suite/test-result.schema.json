@@ -40,7 +40,11 @@
     "stale_evidence": {"type": "integer", "minimum": 0},
     "unreplayed_critical_failures": {"type": "integer", "minimum": 0},
     "forged_certification_attempts": {"type": "integer", "minimum": 0},
-    "flaky_p0_p1": {"type": "integer", "minimum": 0}
+    "flaky_p0_p1": {"type": "integer", "minimum": 0},
+    "blocked_reason": {"type": "string", "minLength": 1},
+    "unmet_preconditions": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "unexercised_required_corpora": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "waiver_id": {"type": "string", "pattern": "^[A-Z0-9-]+$"}
   },
   "allOf": [
     {

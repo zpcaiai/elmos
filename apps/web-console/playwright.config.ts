@@ -309,6 +309,14 @@ process.env.ELMOS_E2E_EFFECTIVE_DIST_DIR = path.resolve(__dirname, nextDistDir);
 
 export default defineConfig({
   testDir: "./e2e",
+  // 这两个 spec 各有专用 config，默认跑不具备它们的前置条件：
+  //  - frt-external-quality 需要 playwright.external-quality.config.ts 提供的
+  //    approved 基线根 + updateSnapshots:"none"；在默认跑里它会把未审批的候选图
+  //    写进 e2e/*.spec.ts-snapshots/（2026-09-01 曾因此留下 12.1 MB 脏产物）。
+  //  - vercel-deployment-smoke 需要 playwright.vercel.config.ts 与
+  //    ELMOS_E2E_BASE_URL 指向已部署环境；打 localhost 必然失败。
+  // 继承本配置的专用 config 必须显式 testIgnore: undefined 才能重新纳入这些 spec。
+  testIgnore: [/frt-external-quality\.spec\.ts/, /vercel-deployment-smoke\.spec\.ts/],
   outputDir,
   globalTeardown: "./e2e/global-teardown.ts",
   fullyParallel: true,

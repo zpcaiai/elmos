@@ -33,32 +33,32 @@ const precisionGroups: CapabilityGroup[] = precisionMigrationPhases.map((phase, 
 }));
 
 const modernizationGroups: CapabilityGroup[] = [
-  { range: "契约与知识底座", title: "工程契约、资料摄取与语义代码图", count: 160, source: "内置能力底座 v3.0.0", status: "READY", icon: "layers", note: "解析源工程、建立符号索引与检索图谱，把散落的代码、文档和历史经验变成可复用的工程事实。" },
-  { range: "能力工坊与训练", title: "能力抽取、数据集构建与私有模型训练", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "spark", note: "从既有工程中提炼可复用规则，支持 SFT/DPO/RLVR 训练、蒸馏与受控执行沙箱。" },
-  { range: "验证与安全", title: "形式化证明、推理路由、安全防护与用量核算", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "shield", note: "SMT 形式化验证、自适应缓存、越狱防范，以及按租户核算的用量与成本。" },
-  { range: "多租户与自演化", title: "多租户隔离、人机协作与能力沉淀", count: 125, source: "内置能力底座 v3.0.0", status: "READY", icon: "workflow", note: "多租户隔离、合规操作审计、行业能力包沉淀与自我演化流水线。" },
-  { range: "企业工程域", title: "Java / Spring 翻新、跨语言、数据库与前端改造", count: 260, source: "内置能力底座 v3.0.0", status: "READY", icon: "code", note: "覆盖 Spring 老项目翻新、30 个方向的跨语言转换、SQL 迁移与微前端改造。" },
-  { range: "数据与交付域", title: "湖仓大数据、DevOps、质量工厂与工控接入", count: 290, source: "内置能力底座 v3.0.0", status: "READY", icon: "database", note: "覆盖 Dataflow、K8s 编排、变异测试、大型主机与工业边缘总线。" },
-  { range: "适配与合规域", title: "语言 / 数据库 / 云平台适配器与受监管合规", count: 246, source: "内置能力底座 v3.0.0", status: "READY", icon: "route", note: "覆盖主流语言、国产数据库、多云驱动与 ISO/IEC 行业合规标准。" },
+  { range: "契约", title: "工程契约、资料摄取与语义代码图", count: 160, source: "内置能力底座 v3.0.0", status: "READY", icon: "layers", note: "解析源工程、建立符号索引与检索图谱，把散落的代码、文档和历史经验变成可复用的工程事实。" },
+  { range: "能力", title: "能力抽取、数据集构建与私有模型训练", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "spark", note: "从既有工程中提炼可复用规则，支持 SFT/DPO/RLVR 训练、蒸馏与受控执行沙箱。" },
+  { range: "验证", title: "形式化证明、推理路由、安全防护与用量核算", count: 135, source: "内置能力底座 v3.0.0", status: "READY", icon: "shield", note: "SMT 形式化验证、自适应缓存、越狱防范，以及按租户核算的用量与成本。" },
+  { range: "租户", title: "多租户隔离、人机协作与能力沉淀", count: 125, source: "内置能力底座 v3.0.0", status: "READY", icon: "workflow", note: "多租户隔离、合规操作审计、行业能力包沉淀与自我演化流水线。" },
+  { range: "工程", title: "Java / Spring 翻新、跨语言、数据库与前端改造", count: 260, source: "内置能力底座 v3.0.0", status: "READY", icon: "code", note: "覆盖 Spring 老项目翻新、30 个方向的跨语言转换、SQL 迁移与微前端改造。" },
+  { range: "数据", title: "湖仓大数据、DevOps、质量工厂与工控接入", count: 290, source: "内置能力底座 v3.0.0", status: "READY", icon: "database", note: "覆盖 Dataflow、K8s 编排、变异测试、大型主机与工业边缘总线。" },
+  { range: "适配", title: "语言 / 数据库 / 云平台适配器与受监管合规", count: 246, source: "内置能力底座 v3.0.0", status: "READY", icon: "route", note: "覆盖主流语言、国产数据库、多云驱动与 ISO/IEC 行业合规标准。" },
 ];
 
 const polyglotGroups: CapabilityGroup[] = [
-  { range: "摄取与语义归一", title: "源码摄取、统一中间表示与 AST 适配", count: 88, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "code", note: "支持 28 种技术表面，并把多端 UI 组件语义映射到统一中间表示。" },
-  { range: "数据与遗留集成", title: "数据库 / 存储过程转换、遗留系统桥接与交付编排", count: 80, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "database", note: "DDL/DML 语义转换、COBOL 与主机系统桥接，以及交付清单生成。" },
-  { range: "保真与行为校验", title: "语法保真、类型代数、数据流分析与行为对照", count: 72, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "test", note: "静态分析断言、类型保真性证明与确定性双向执行比对。" },
-  { range: "证明与模糊测试", title: "语料治理、原生实验室、形式化证明与差分 Fuzzing", count: 60, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "shield", note: "Z3/CVC5 求解、形式化契约与变异引导的差分 Fuzzing。" },
+  { range: "摄取", title: "源码摄取、统一中间表示与 AST 适配", count: 88, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "code", note: "支持 28 种技术表面，并把多端 UI 组件语义映射到统一中间表示。" },
+  { range: "数据", title: "数据库 / 存储过程转换、遗留系统桥接与交付编排", count: 80, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "database", note: "DDL/DML 语义转换、COBOL 与主机系统桥接，以及交付清单生成。" },
+  { range: "保真", title: "语法保真、类型代数、数据流分析与行为对照", count: 72, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "test", note: "静态分析断言、类型保真性证明与确定性双向执行比对。" },
+  { range: "证明", title: "语料治理、原生实验室、形式化证明与差分 Fuzzing", count: 60, source: "多语言语义编译器 v3.0.0", status: "READY", icon: "shield", note: "Z3/CVC5 求解、形式化契约与变异引导的差分 Fuzzing。" },
 ];
 
 const migrationGroups: CapabilityGroup[] = [
-  { range: "基础迁移", title: "通用迁移能力", count: 448, source: "规范化恢复", status: "REVIEW", icon: "layers", note: "精确原始来源不可用，保留来源不完整的边界声明，不宣称已验证。" },
-  { range: "精确认证", title: "语言、框架、数据库、客户端与云契约", count: 102, source: "导入原始来源", status: "READY", icon: "route", note: "针对具体语言、框架、数据库与云平台的精确迁移契约。" },
-  { range: "规模化交付", title: "组合调度与成熟产品能力", count: 270, source: "仓库契约", status: "READY", icon: "shield", note: "结构与本地门禁就绪，现场证据仍未运行。" },
+  { range: "基础", title: "通用迁移能力", count: 448, source: "规范化恢复", status: "REVIEW", icon: "layers", note: "精确原始来源不可用，保留来源不完整的边界声明，不宣称已验证。" },
+  { range: "精确", title: "语言、框架、数据库、客户端与云契约", count: 102, source: "导入原始来源", status: "READY", icon: "route", note: "针对具体语言、框架、数据库与云平台的精确迁移契约。" },
+  { range: "规模", title: "组合调度与成熟产品能力", count: 270, source: "仓库契约", status: "READY", icon: "shield", note: "结构与本地门禁就绪，现场证据仍未运行。" },
 ];
 
 const deliveryGroups: CapabilityGroup[] = [
-  { range: "商业化内核", title: "租户、代码托管、执行节点、证据与结算", count: 236, source: "完整来源", status: "READY", icon: "shield", note: "租户隔离、代码托管接入、执行节点管理、证据链与计费授权。" },
-  { range: "对话式交付", title: "对话式需求澄清与交付编排", count: 16, source: "已批准设计", status: "READY", icon: "spark", note: "把自然语言需求转成受审的迁移意图与执行计划。" },
-  { range: "行业领域包", title: "企业领域规划能力", count: 752, source: "生成式规划", status: "REVIEW", icon: "file", note: "需要领域负责人完善，当前不能宣称生产可用。" },
+  { range: "内核", title: "租户、代码托管、执行节点、证据与结算", count: 236, source: "完整来源", status: "READY", icon: "shield", note: "租户隔离、代码托管接入、执行节点管理、证据链与计费授权。" },
+  { range: "对话", title: "对话式需求澄清与交付编排", count: 16, source: "已批准设计", status: "READY", icon: "spark", note: "把自然语言需求转成受审的迁移意图与执行计划。" },
+  { range: "行业", title: "企业领域规划能力", count: 752, source: "生成式规划", status: "REVIEW", icon: "file", note: "需要领域负责人完善，当前不能宣称生产可用。" },
 ];
 
 const domains: Record<CapabilityDomain, CapabilityGroup[]> = {
@@ -76,11 +76,11 @@ const domainTabs: Array<{
   icon: IconName;
   count: number;
 }> = [
-  { id: "modernization", title: "工程翻新底座", scope: "契约 / 摄取 / 验证 / 适配", icon: "spark", count: 1351 },
-  { id: "polyglot", title: "跨语言语义转换", scope: "摄取 / 保真 / 证明", icon: "code", count: 300 },
-  { id: "migration", title: "通用迁移能力", scope: "语言 / 框架 / 数据库 / 云", icon: "route", count: 820 },
-  { id: "precision", title: "精密迁移执行", scope: "评估 / 转换 / 验证 / 认证", icon: "workflow", count: precisionMigrationSummary.runtimeSkillCount },
-  { id: "delivery", title: "商业与交付控制", scope: "租户 / 结算 / 证据 / 行业包", icon: "shield", count: 1004 },
+  { id: "modernization", title: "工程翻新底座", scope: "契约与验证", icon: "spark", count: 1351 },
+  { id: "polyglot", title: "跨语言语义转换", scope: "摄取与保真", icon: "code", count: 300 },
+  { id: "migration", title: "通用迁移能力", scope: "语言与数据库", icon: "route", count: 820 },
+  { id: "precision", title: "精密迁移执行", scope: "评估到认证", icon: "workflow", count: precisionMigrationSummary.runtimeSkillCount },
+  { id: "delivery", title: "商业与交付控制", scope: "租户与结算", icon: "shield", count: 1004 },
 ];
 
 const domainSummaries: Record<CapabilityDomain, string> = {
@@ -157,16 +157,16 @@ export function CapabilityCenter() {
         <article className="surface-card namespace-explorer">
           <div className="card-heading">
             <div><span className="overline">按业务域浏览</span><h2>选择业务域，查看具体做什么</h2></div>
-            <div className="flex items-center gap-2">
+            <label className="search-field">
+              <Icon name="search" size={15} />
+              <span className="sr-only">搜索功能或关键词</span>
               <input
-                type="text"
+                type="search"
                 value={searchQuery}
                 onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="搜索功能或关键词..."
-                aria-label="搜索功能或关键词"
-                className="px-3 py-1 text-xs rounded border border-border bg-background"
+                placeholder="搜索功能或关键词…"
               />
-            </div>
+            </label>
           </div>
           <div className="namespace-tabs" role="tablist" aria-label="功能业务域">
             {domainTabs.map((tab) => (
@@ -237,7 +237,7 @@ export function CapabilityCenter() {
         <div className="provenance-grid">
           {provenance.map((item) => (
             <article className={`provenance-card tone-${item.tone}`} key={item.label}>
-              <div><span className="provenance-number">{item.count}</span><StatusChip status={item.status} compact /></div>
+              <div><span className="provenance-number">{item.count.toLocaleString("en-US")}</span><StatusChip status={item.status} compact /></div>
               <h3>{item.label}</h3>
               <p>{item.note}</p>
               <div className="provenance-bar"><span style={{ width: `${Math.min(100, Math.round(item.count / 1351 * 100))}%` }} /></div>

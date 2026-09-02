@@ -96,3 +96,10 @@ erl_crash.dump
 **/probe.tmp.*
 /gate-triage.sh
 apps/web-console/test-results/
+
+# Playwright 失败运行会往 *.spec.ts-snapshots/ 写入未审批的视觉基线。
+# 审批后的基线只存放在 client-packs/frt-g01-g30-platform/visual-baselines/approved/，
+# 由 test:frt-external-quality 显式采集；默认跑写出的候选图一律不入库。
+apps/web-console/e2e/*.spec.ts-snapshots/
+_cloudstage/
+survey-engines-mac.sh

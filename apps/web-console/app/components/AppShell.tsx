@@ -92,10 +92,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const current = navigation.find((item) => item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)) ?? navigation[0];
   const navLabel = (item: (typeof navigation)[number]) =>
     english ? item.enLabel : item.label;
-  const currentLabel = pathname.startsWith("/help")
-    ? (english ? "Help and readiness" : "帮助与就绪状态")
-    : pathname.startsWith("/account")
-      ? (english ? "Account and organizations" : "账户与组织")
+  // Routes outside the primary navigation fell through to navigation[0], so
+  // /login used to breadcrumb as "总览" and /admin/login as "运营管理端".
+  const standaloneLabels: Array<[string, string, string]> = [
+    ["/admin/login", "管理员登录", "Administrator sign in"],
+    ["/login", "用户登录", "User sign in"],
+    ["/register", "注册账户", "Create account"],
+    ["/help", "帮助与就绪状态", "Help and readiness"],
+    ["/account", "账户与组织", "Account and organizations"],
+  ];
+  const standalone = standaloneLabels.find(([href]) => pathname.startsWith(href));
+  const currentLabel = standalone
+    ? (english ? standalone[2] : standalone[1])
     : navLabel(current);
   const visibleCommands = useMemo(() => {
     const needle = commandQuery.trim().toLocaleLowerCase("zh-CN");
@@ -349,7 +357,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <button className="icon-button mobile-menu" aria-label={english ? "Open navigation" : "打开导航"} onClick={() => setMobileOpen(true)}><Icon name="menu" /></button>
           <div className="breadcrumb"><span>ELMOS</span><Icon name="chevron" size={13} /><strong>{currentLabel}</strong></div>
           <button className="command-trigger" onClick={(event) => openCommand(event.currentTarget)} aria-label={english ? "Open global search" : "打开全局搜索"}>
-            <Icon name="search" size={16} /><span>{english ? "Search pages and capabilities" : "搜索页面、能力或批次"}</span><kbd>⌘ K</kbd>
+            <Icon name="search" size={16} /><span>{english ? "Search pages and capabilities" : "搜索页面或功能"}</span><kbd>⌘ K</kbd>
           </button>
           <div className="topbar-actions">
             <span className="environment-pill"><i /> {english ? "Local contract environment" : "本地契约环境"}</span>
@@ -407,14 +415,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {commandOpen && <div className="command-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) closeCommand(); }}>
         <section ref={commandPanel} className="command-panel" role="dialog" aria-modal="true" aria-labelledby="command-title" onKeyDown={containDialogFocus}>
           <h2 id="command-title" className="sr-only">全局搜索</h2>
-          <div className="command-search"><Icon name="search" size={20} /><input ref={commandInput} value={commandQuery} onChange={(event) => { setCommandQuery(event.target.value); setCommandActive(0); }} onKeyDown={handleCommandKey} placeholder="搜索页面、能力、Batch…" aria-label="搜索页面、能力或批次" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="command-results" aria-activedescendant={visibleCommands.length ? `command-result-${commandActive}` : undefined} /><button className="icon-button command-close" type="button" aria-label="关闭全局搜索" onClick={closeCommand}><Icon name="close" size={17} /></button><kbd>ESC</kbd></div>
+          <div className="command-search"><Icon name="search" size={20} /><input ref={commandInput} value={commandQuery} onChange={(event) => { setCommandQuery(event.target.value); setCommandActive(0); }} onKeyDown={handleCommandKey} placeholder="搜索页面或功能…" aria-label="搜索页面或功能" role="combobox" aria-expanded="true" aria-autocomplete="list" aria-controls="command-results" aria-activedescendant={visibleCommands.length ? `command-result-${commandActive}` : undefined} /><button className="icon-button command-close" type="button" aria-label="关闭全局搜索" onClick={closeCommand}><Icon name="close" size={17} /></button><kbd>ESC</kbd></div>
           <div className="command-results" id="command-results" role="listbox" aria-label="搜索结果">
             {visibleCommands.map((item, index) => <Link href={item.href} role="option" aria-selected={index === commandActive} id={`command-result-${index}`} onClick={closeCommand} onMouseEnter={() => setCommandActive(index)} className={`command-result ${index === commandActive ? "active" : ""}`} key={`${item.group}-${item.label}`}>
               <span className="command-icon"><Icon name={item.icon} size={18} /></span>
               <span><strong>{item.label}</strong><small>{item.hint}</small></span>
               <em>{item.group}</em><Icon name="arrow" size={15} />
             </Link>)}
-            {visibleCommands.length === 0 && <div className="command-empty"><Icon name="search" size={22} /><strong>没有匹配结果</strong><span>尝试输入 Batch、能力或页面名称。</span></div>}
+            {visibleCommands.length === 0 && <div className="command-empty"><Icon name="search" size={22} /><strong>没有匹配结果</strong><span>换个关键词，或直接输入页面名称。</span></div>}
           </div>
           <footer className="command-footer"><span><kbd>↑</kbd><kbd>↓</kbd> 浏览</span><span><kbd>↵</kbd> 打开</span><span>仅导航，不执行外部操作</span></footer>
         </section>

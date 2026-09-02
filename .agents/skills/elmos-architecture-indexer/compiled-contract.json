@@ -8,14 +8,14 @@
       "Prefer structural summaries over dumping entire files."
     ],
     "inputs": [
-      "repo profile",
-      "source tree"
+      "`repo profile`",
+      "`source tree`"
     ],
     "outputs": [
-      "component index",
-      "dependency edges",
-      "entry-point map",
-      "data-flow hints"
+      "`component index`",
+      "`dependency edges`",
+      "`entry-point map`",
+      "`data-flow hints`"
     ],
     "triggers": [
       "repo intake complete"

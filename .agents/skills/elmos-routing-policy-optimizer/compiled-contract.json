@@ -9,14 +9,14 @@
       "Cannot lower mandatory high-risk tier without explicit policy change."
     ],
     "inputs": [
-      "historical telemetry",
-      "current policy",
-      "budget goals"
+      "`historical telemetry`",
+      "`current policy`",
+      "`budget goals`"
     ],
     "outputs": [
-      "candidate policy",
-      "offline evaluation",
-      "approved policy"
+      "`candidate policy`",
+      "`offline evaluation`",
+      "`approved policy`"
     ],
     "triggers": [
       "sufficient telemetry or scheduled tuning"

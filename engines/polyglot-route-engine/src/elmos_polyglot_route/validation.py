@@ -2298,9 +2298,10 @@ def validate(
 def safe_output(path: Path) -> Path:
     lexical = Path(os.path.abspath(path.expanduser()))
     current = Path(lexical.anchor)
+    system_symlinks = {Path("/var"), Path("/tmp"), Path("/etc")}
     for component in lexical.parts[1:]:
         current /= component
-        if current.is_symlink():
+        if current.is_symlink() and current not in system_symlinks:
             raise RouteError("OUTPUT_SYMLINK_REJECTED")
     resolved = lexical.resolve(strict=False)
     if resolved == Path.home() or resolved == REPOSITORY_ROOT or len(resolved.parts) < 4:

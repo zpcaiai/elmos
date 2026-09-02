@@ -82,8 +82,8 @@ description: "实现拖拽、录音、文件夹和压缩包上传、预览、进
 - Source contract SHA-256: `555da5a04d57b65189b0600e49c7e29228dbee73efb898f14ec520cde20f8caa`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_multimodal_input_workbench_ui`
 - Runtime phase: `review`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-ingestion-api-and-sdk`, `$elmos-human-review-and-correction`
 - Acceptance identities: `S25-01`, `S25-02`, `S25-03`, `S25-04`
 - Generated contract: `compiled-contract.json`

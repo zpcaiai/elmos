@@ -9,13 +9,13 @@
       "Never ask worker to bypass tests or permissions."
     ],
     "inputs": [
-      "task",
-      "context pack",
-      "contracts",
-      "validation commands"
+      "`task`",
+      "`context pack`",
+      "`contracts`",
+      "`validation commands`"
     ],
     "outputs": [
-      "worker prompt"
+      "`worker prompt`"
     ],
     "triggers": [
       "before model invocation"
