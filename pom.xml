@@ -97,7 +97,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-boot.version>3.5.3</spring-boot.version>
         <archunit.version>1.4.1</archunit.version>
-        <rewrite-spring.version>6.35.0</rewrite-spring.version>
+        <rewrite-spring.version>6.37.1</rewrite-spring.version>
         <testcontainers.version>1.21.2</testcontainers.version>
         <maven.compiler.version>3.14.0</maven.compiler.version>
         <maven.surefire.version>3.5.3</maven.surefire.version>
