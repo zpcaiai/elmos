@@ -11,7 +11,8 @@ Web Console 以中文为完整产品语言。顶部 `EN` 开关只切换导航�
 - 跳转主内容链接、语义化标题/表格、键盘焦点、可见焦点环、
   `aria-live`、200% 缩放、移动端重排、减少动态效果和强制颜色样式。
 - Chromium 桌面与移动视口执行主题、语言、持久化、键盘和
-  `axe-core` 旅程。
+  `axe-core` 旅程。本轮真实浏览器验证为 Chromium-only；Firefox/WebKit
+  与真实移动端执行保持 `NOT_RUN`。
 - 私有控制台输出 `noindex` / `nofollow` / `noarchive`，避免把租户控制
   面当作公共 SEO 页面。
 - 视觉基线只允许先审批后采集；失败后自动更新、扩大遮罩或放宽容差均
@@ -24,6 +25,8 @@ Web Console 以中文为完整产品语言。顶部 `EN` 开关只切换导航�
 - 当前 Firefox、WebKit、真实 iOS/Android 设备矩阵；
 - 经产品/设计负责人批准的视觉基线；
 - 独立 holdout、代表性客户旅程和生产性能预算。
+- Spring rootless Runner、ChinaDB Provider、编排网关、账户/计费/Proof 控制面、
+  遥测上游与独立认证始终保持 `NOT_RUN`，无伪造通过。
 
 本地 Batch 32 客户端门禁可以验证结构并保持 `experimental`，不能据此
 声明 WCAG 认证、生产就绪或客户验收。

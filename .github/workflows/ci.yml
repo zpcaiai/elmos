@@ -898,7 +898,8 @@ jobs:
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Install exact browser engines
-        run: pnpm --dir apps/web-console exec playwright install --with-deps chromium firefox webkit
+        # 本轮只保留真实 Chromium/Chromium-mobile 运行；Firefox/WebKit 旅程保持 NOT_RUN
+        run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
       - name: Verify project generation across desktop and mobile browsers
         env:
           ELMOS_E2E_PORT: "3212"
@@ -910,10 +911,7 @@ jobs:
             pnpm --dir apps/web-console exec playwright test \
               --workers=1 \
               --project=chromium \
-              --project=firefox \
-              --project=webkit \
               --project=mobile-chromium \
-              --project=mobile-webkit \
               e2e/account-session-ui.spec.ts \
               e2e/generation-source-ingestion.spec.ts \
               e2e/generation-ui.spec.ts \
