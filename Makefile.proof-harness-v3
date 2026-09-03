@@ -6,9 +6,10 @@
 # external database, provider, registry, cluster, or production environment.
 
 .DEFAULT_GOAL := help
-.NOTPARALLEL: qic delta-qic release-local
+.NOTPARALLEL: qic postgres-qic delta-qic release-local release-postgres-local
 
 PYTHON ?= python3
+UV ?= uv
 ENGINE := engines/proof-driven-harness-engine
 INTEGRATOR := tooling/integrate_proof_driven_harness_v3.py
 DELTA_INTEGRATOR := tooling/integrate_harness_runtime_assurance_delta.py
@@ -18,7 +19,7 @@ PUBLISHER := $(ENGINE)/tools/publish_verification_pack.py
 RELEASE_CONTRACT := $(ENGINE)/tools/release_contract.py
 PACK := verification-packs/proof-driven-harness-v3-local
 
-.PHONY: help check test postgres bootstrap qualify install qic delta-bootstrap delta-qualify delta-install delta-check delta-qic publish publish-check batch35 release-local release-contract-generate wheel-check
+.PHONY: help check test postgres bootstrap qualify install qic postgres-qic delta-bootstrap delta-qualify delta-install delta-check delta-qic publish publish-check batch35 release-local release-postgres-local release-contract-generate wheel-check
 
 help:
 	@echo "Proof-harness v3 local targets (distribution remains BLOCKED / NOT_CERTIFIED):"
@@ -30,9 +31,11 @@ help:
 	@echo "  qic        run the required Q -> I -> check sequence, serially"
 	@echo "  delta-qic  bootstrap -> qualify -> promote -> check the v3.1 delta"
 	@echo "  postgres   opt-in disposable PostgreSQL 17.5 qualification only"
+	@echo "  postgres-qic  PostgreSQL Q -> I -> check without overwriting its PASS receipt"
 	@echo "  publish    publish/check the limited local Batch 35 verification pack"
 	@echo "  batch35    validate and gate the limited pack; never certifies it"
 	@echo "  release-local  generate manifest -> base qic -> delta qic -> publish -> Batch 35"
+	@echo "  release-postgres-local  same workflow with exact disposable PostgreSQL 17.5"
 	@echo "  wheel-check WHEEL=/path/to/wheel  byte-check one built wheel"
 	@echo "No target deploys, pushes, signs, calls providers, or connects to an external DSN."
 
@@ -85,6 +88,15 @@ postgres:
 	@test -z "$${ELMOS_MIGRATION_OWNER_DSN:-}" || { echo "Refusing: postgres target never accepts ELMOS_MIGRATION_OWNER_DSN or an external DSN" >&2; exit 2; }
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode require
 
+postgres-qic:
+	@test "$${ALLOW_DISPOSABLE_POSTGRES17:-}" = "1" || { echo "Refusing: set ALLOW_DISPOSABLE_POSTGRES17=1 for the repository-owned temporary-cluster runner" >&2; exit 2; }
+	@test -z "$${ELMOS_MIGRATION_OWNER_DSN:-}" || { echo "Refusing: postgres-qic never accepts ELMOS_MIGRATION_OWNER_DSN or an external DSN" >&2; exit 2; }
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) $(QUALIFIER) --repo-root . --postgres17-mode require
+	$(PYTHON) $(INTEGRATOR) --repo-root . --install
+	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --check
+	$(PYTHON) $(INTEGRATOR) --repo-root . --check
+
 publish:
 	$(PYTHON) $(PUBLISHER) --repo-root . --publish
 	$(PYTHON) $(PUBLISHER) --repo-root . --check
@@ -93,11 +105,13 @@ publish-check:
 	$(PYTHON) $(PUBLISHER) --repo-root . --check
 
 batch35: publish
-	$(PYTHON) scripts/batch35/validate_verification_pack.py $(PACK) --repository-root .
-	$(PYTHON) scripts/batch35/run_verification_gate.py $(PACK)
+	UV_OFFLINE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py $(PACK) --repository-root .
+	UV_OFFLINE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py $(PACK)
 	$(PYTHON) -c 'import json,pathlib; value=json.loads(pathlib.Path("$(PACK)/certification/gate-result.json").read_text()); assert value["certification_decision"] == "NOT_CERTIFIED" and value["certification_readiness"] == "BLOCKED"'
 
 release-local: release-contract-generate qic delta-qic publish batch35
+
+release-postgres-local: release-contract-generate postgres-qic delta-qic publish batch35
 
 release-contract-generate:
 	$(PYTHON) $(RELEASE_CONTRACT) --root $(ENGINE) --generate

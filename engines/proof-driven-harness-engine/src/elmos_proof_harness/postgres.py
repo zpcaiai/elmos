@@ -673,6 +673,10 @@ def _control_catalog_fingerprint(cursor: Any) -> str:
         "runtime_assurance_migration_digest_ledger",
         *_DELTA_RELATION_NAMES,
     )
+    # Catalog deparsers are search_path-sensitive.  A deterministic path keeps
+    # the migration-owner digest comparable with the least-privileged runtime
+    # probe without relaxing any relation, function, trigger or policy checks.
+    cursor.execute("SET LOCAL search_path = pg_catalog")
     row = cursor.execute(
         _CATALOG_FINGERPRINT_SQL,
         (
@@ -1453,7 +1457,17 @@ class _PostgresCursor:
         return int(self._cursor.rowcount)
 
     def execute(self, statement: str, parameters: Any = None) -> "_PostgresCursor":
-        sql = statement.replace("?", "%s")
+        # Store statements use the DB-API qmark convention.  psycopg uses the
+        # ``pyformat`` convention and interprets every percent token whenever
+        # parameters are supplied, including PostgreSQL literals such as the
+        # ``%I`` placeholders accepted by ``format()``.  Escape existing
+        # percent characters before introducing psycopg's ``%s`` bindings so
+        # trusted SQL literals cannot be mistaken for client placeholders.
+        sql = (
+            statement
+            if parameters is None
+            else statement.replace("%", "%%").replace("?", "%s")
+        )
         try:
             self._cursor.execute(sql, parameters)
         except HarnessError:
@@ -1902,6 +1916,10 @@ class PostgresStore(SQLiteStore):
                     "AND c.relrowsecurity AND c.relforcerowsecurity",
                     (list(_DELTA_RELATION_NAMES),),
                 ).fetchone()
+                # pg_policies deparses policy expressions against search_path.
+                # Use the same deterministic path as the migration applicator
+                # before comparing the exact fail-closed scope predicate.
+                cursor.execute("SET LOCAL search_path = pg_catalog")
                 delta_policies = cursor.execute(
                     "SELECT COUNT(*) AS count,COUNT(DISTINCT tablename) AS table_count,"
                     "COALESCE(bool_and(COALESCE("
@@ -2262,7 +2280,7 @@ class PostgresStore(SQLiteStore):
                     "AND a.relname=ANY(?::text[])))) OR "
                     "(a.grantee=i.authority_oid AND ((a.privilege_type='SELECT' "
                     "AND a.relname=ANY(?::text[])) OR (a.privilege_type='INSERT' "
-                    "AND a.relname=ANY(?::text[]))))))) "
+                    "AND a.relname=ANY(?::text[])))))))) "
                     "AND NOT EXISTS (SELECT 1 FROM unnest(?::text[]) e(name) "
                     "CROSS JOIN identities i WHERE NOT EXISTS (SELECT 1 FROM relation_acl a "
                     "WHERE a.relname=e.name AND a.grantee=i.app_oid "

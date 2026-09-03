@@ -11,7 +11,7 @@
   "commands": [
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -32,21 +32,21 @@
           "system": "Darwin"
         },
         "python": {
-          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "implementation": "CPython",
           "version": "3.14.6"
         }
       },
       "name": "delta-engine-tests",
-      "raw_log_bytes": 102042,
-      "raw_log_sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9",
+      "raw_log_bytes": 102782,
+      "raw_log_sha256": "sha256:dc227fecd933eab2a1870593fe32c23e202994bb1eca17a4ba181617877cd893",
       "returncode": 0,
-      "structured_results_sha256": "sha256:bb8d3e4f814a0e4d197cc79ef400c566af809d7f455d28c15d95a0924e2dcdda",
+      "structured_results_sha256": "sha256:9d66f9b40dac69f013deb2462343233221d18edc8eaf2462ca418cc1fc7bfea6",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -67,21 +67,21 @@
           "system": "Darwin"
         },
         "python": {
-          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "implementation": "CPython",
           "version": "3.14.6"
         }
       },
       "name": "delta-importer-tests",
-      "raw_log_bytes": 18381,
-      "raw_log_sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4",
+      "raw_log_bytes": 18498,
+      "raw_log_sha256": "sha256:24477fb96ca98223fd57f36ac6b0ca944be02970d4104b48b81bbfc46d85d52d",
       "returncode": 0,
-      "structured_results_sha256": "sha256:3707de04263b0e8974bb7be4412bd2187da26deb224e7c40b71ff4fa067b9cbd",
+      "structured_results_sha256": "sha256:a83eab58f15339185617516b7de69e422bdf0fe206a01f826b228ded28a0fb52",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "tooling/integrate_harness_runtime_assurance_delta.py",
         "--repo-root",
         ".",
@@ -99,21 +99,21 @@
           "system": "Darwin"
         },
         "python": {
-          "executable": "/opt/homebrew/opt/python@3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "implementation": "CPython",
           "version": "3.14.6"
         }
       },
       "name": "delta-installation-check",
-      "raw_log_bytes": 2205,
-      "raw_log_sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3",
+      "raw_log_bytes": 2327,
+      "raw_log_sha256": "sha256:db10eecb4ce93a6b33d8b5a6db293554d30a7ba9c94b159f3feb2a2b8dc2668f",
       "returncode": 0,
       "structured_results_sha256": null,
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "tooling/integrate_proof_driven_harness_v3.py",
         "--check",
         "--qualification-phase"
@@ -133,8 +133,8 @@
           "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
         },
         "packages": {
-          "psycopg": "NOT_INSTALLED",
-          "psycopg-binary": "NOT_INSTALLED"
+          "psycopg": "3.2.13",
+          "psycopg-binary": "3.2.13"
         },
         "postgresql": {
           "required_version": "17.5",
@@ -142,7 +142,7 @@
         },
         "python": {
           "cache_tag": "cpython-314",
-          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
           "implementation": "CPython",
           "version": "3.14.6"
@@ -150,20 +150,20 @@
         "schema_version": "1.0.0",
         "tool": {
           "path": "tooling/integrate_proof_driven_harness_v3.py",
-          "sha256": "sha256:99fd1c52f597831fda767fd7b16c186b5a441c80e4e59d6fd3b161ee6f904d4e",
+          "sha256": "sha256:450bd1207a661875f2f7196c8fabc819ece14f1e0626cb70f8b9670d31044673",
           "version": "3.0.0"
         }
       },
       "name": "archive-installation-check",
-      "raw_log_bytes": 10226,
-      "raw_log_sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7",
+      "raw_log_bytes": 10282,
+      "raw_log_sha256": "sha256:ae80a51c0700150643d6d94817ab57c347fbdfb0f5e3cdfb3ac7604bcd7c9781",
       "returncode": 0,
       "structured_results_sha256": null,
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -187,8 +187,8 @@
           "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
         },
         "packages": {
-          "psycopg": "NOT_INSTALLED",
-          "psycopg-binary": "NOT_INSTALLED"
+          "psycopg": "3.2.13",
+          "psycopg-binary": "3.2.13"
         },
         "postgresql": {
           "required_version": "17.5",
@@ -196,7 +196,7 @@
         },
         "python": {
           "cache_tag": "cpython-314",
-          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
           "implementation": "CPython",
           "version": "3.14.6"
@@ -204,20 +204,20 @@
         "schema_version": "1.0.0",
         "tool": {
           "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
-          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "sha256": "sha256:f816a77b5a9e153fa368d36fcc9a036113c92e63260116f2d8745d9ec918fd24",
           "version": "3.0.0"
         }
       },
       "name": "engine-tests",
-      "raw_log_bytes": 176911,
-      "raw_log_sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce",
+      "raw_log_bytes": 187028,
+      "raw_log_sha256": "sha256:ad07515e3291d506b45ad21bc440b7b6f7cb9e97708410afa5d12a73265bbc0a",
       "returncode": 0,
-      "structured_results_sha256": "sha256:e065307721a49cfca7cdcc80f69f89bb026aead8fa598ca888baa7c159a0eea2",
+      "structured_results_sha256": "sha256:632e61566d980bbd0c6a506536bbc0b2fbb9df36b7187cde89f363c62a375e05",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -241,8 +241,8 @@
           "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
         },
         "packages": {
-          "psycopg": "NOT_INSTALLED",
-          "psycopg-binary": "NOT_INSTALLED"
+          "psycopg": "3.2.13",
+          "psycopg-binary": "3.2.13"
         },
         "postgresql": {
           "required_version": "17.5",
@@ -250,7 +250,7 @@
         },
         "python": {
           "cache_tag": "cpython-314",
-          "executable": "/opt/homebrew/Cellar/python@3.14/3.14.6/Frameworks/Python.framework/Versions/3.14/bin/python3.14",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
           "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
           "implementation": "CPython",
           "version": "3.14.6"
@@ -258,15 +258,103 @@
         "schema_version": "1.0.0",
         "tool": {
           "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
-          "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991",
+          "sha256": "sha256:f816a77b5a9e153fa368d36fcc9a036113c92e63260116f2d8745d9ec918fd24",
           "version": "3.0.0"
         }
       },
       "name": "package-integration-tests",
-      "raw_log_bytes": 29509,
-      "raw_log_sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c",
+      "raw_log_bytes": 33427,
+      "raw_log_sha256": "sha256:2464016d41aa5f5590334b41715692d7a37501d10a3b04e2d38ac33dbdbe52ad",
       "returncode": 0,
-      "structured_results_sha256": "sha256:d81711b2fd7baa3327f22075ebaee3875960a04446f880e8326b94f49b8bdd22",
+      "structured_results_sha256": "sha256:288dcfd5b97d96fdc024e67d8659518ec52d03936ca652297dbcbd0a424ff91f",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "postgres17_integration.py"
+      ],
+      "cwd": ".",
+      "execution_environment": {
+        "evidence_boundary": {
+          "certification": "NOT_CERTIFIED",
+          "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
+          "external_evidence": "NOT_RUN",
+          "independent_verification": "NOT_RUN"
+        },
+        "os": {
+          "machine": "arm64",
+          "release": "25.6.0",
+          "system": "Darwin",
+          "version": "Darwin Kernel Version 25.6.0: Fri Jul 31 19:18:29 PDT 2026; root:xnu-12377.161.14~5/RELEASE_ARM64_T8122"
+        },
+        "packages": {
+          "psycopg": "3.2.13",
+          "psycopg-binary": "3.2.13"
+        },
+        "postgresql": {
+          "observed_version": "17.5",
+          "psycopg_binary_version": "3.2.13",
+          "psycopg_version": "3.2.13",
+          "required_version": "17.5",
+          "status": "AVAILABLE_EXACT",
+          "tools": [
+            {
+              "name": "initdb",
+              "observed_version": "17.5",
+              "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/initdb",
+              "sha256": "sha256:02d6ece702f765ca84f42662a306f5883da7ce98f21caa05622300e5681316aa",
+              "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+            },
+            {
+              "name": "pg_ctl",
+              "observed_version": "17.5",
+              "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/pg_ctl",
+              "sha256": "sha256:6b59e75c123ce3fca74916abd3914b59a392a1d1758b0b563a0b0e78c5521d02",
+              "version_output": "pg_ctl (PostgreSQL) 17.5 (Homebrew)"
+            },
+            {
+              "name": "psql",
+              "observed_version": "17.5",
+              "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/psql",
+              "sha256": "sha256:4770a125f9ecf370d1d02a06883bbc5d320128936f8fb433e0a13d7811d043ac",
+              "version_output": "psql (PostgreSQL) 17.5 (Homebrew)"
+            },
+            {
+              "name": "postgres",
+              "observed_version": "17.5",
+              "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/postgres",
+              "sha256": "sha256:1377b20533d1f88bcbd8c372427514dddd25631723782130cfe4a335850e6e98",
+              "version_output": "postgres (PostgreSQL) 17.5 (Homebrew)"
+            }
+          ],
+          "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+        },
+        "python": {
+          "cache_tag": "cpython-314",
+          "executable": "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
+          "executable_sha256": "sha256:b502cb4c5b46b8d4192ec6bcb600ce8922f1afc396fcf646e8765c6eba74a0bf",
+          "implementation": "CPython",
+          "version": "3.14.6"
+        },
+        "schema_version": "1.0.0",
+        "tool": {
+          "path": "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+          "sha256": "sha256:f816a77b5a9e153fa368d36fcc9a036113c92e63260116f2d8745d9ec918fd24",
+          "version": "3.0.0"
+        }
+      },
+      "name": "postgres17-integration",
+      "raw_log_bytes": 7256,
+      "raw_log_sha256": "sha256:7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13",
+      "returncode": 0,
+      "structured_results_sha256": "sha256:c2b8fb96f6ff6472aa6409fb0ae0c89fe2ef320ce292f830b732d63578c51652",
       "timed_out": false
     }
   ],
@@ -279,17 +367,70 @@
     "target_environment_conformance": "NOT_RUN"
   },
   "delta_qualifier_sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3",
-  "delta_receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
+  "delta_receipt_sha256": "sha256:ea45cfb023d19ae460d1bf17a2a4e8f8e867bb775ff9f888ceb3fda0000aa7a3",
   "kind": "elmos.proof-driven-harness-v3.content-addressed-local-environment",
   "postgresql17": {
-    "raw_log": null,
-    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "certification": "NOT_CERTIFIED",
+    "environment": {
+      "observed_version": "17.5",
+      "psycopg_binary_version": "3.2.13",
+      "psycopg_version": "3.2.13",
+      "required_version": "17.5",
+      "status": "AVAILABLE_EXACT",
+      "tools": [
+        {
+          "name": "initdb",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/initdb",
+          "sha256": "sha256:02d6ece702f765ca84f42662a306f5883da7ce98f21caa05622300e5681316aa",
+          "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "pg_ctl",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/pg_ctl",
+          "sha256": "sha256:6b59e75c123ce3fca74916abd3914b59a392a1d1758b0b563a0b0e78c5521d02",
+          "version_output": "pg_ctl (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "psql",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/psql",
+          "sha256": "sha256:4770a125f9ecf370d1d02a06883bbc5d320128936f8fb433e0a13d7811d043ac",
+          "version_output": "psql (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "postgres",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/postgres",
+          "sha256": "sha256:1377b20533d1f88bcbd8c372427514dddd25631723782130cfe4a335850e6e98",
+          "version_output": "postgres (PostgreSQL) 17.5 (Homebrew)"
+        }
+      ],
+      "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+    },
+    "external_evidence": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "raw_log": {
+      "bytes": 7256,
+      "path": "qualification/raw/postgres17-integration.json",
+      "sha256": "7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13"
+    },
     "required_postgresql_version": "17.5",
     "required_psycopg_version": "3.2.13",
-    "status": "NOT_RUN"
+    "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "tests": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failed": 0,
+      "passed": 6,
+      "selected": 6,
+      "skipped": 0,
+      "unexpected_successes": 0
+    }
   },
-  "qualifier_sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f",
-  "receipt_sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb",
+  "qualifier_sha256": "sha256:82e0b8599473d01a639f7560f0680f992a84ea34fd2df1313786f30e92ac448d",
+  "receipt_sha256": "sha256:ce306e0e66e12e8a9af9d18cbd0ef7f899fd3d993df68f6ce600d716ce675ee0",
   "schema_version": 1,
   "scope": "FIXED_LOCAL_SELF_ATTESTED_QUALIFICATION"
 }

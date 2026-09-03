@@ -37,6 +37,12 @@ RECEIPT_RELATIVE = ENGINE_RELATIVE / "qualification/local-qualification.json"
 RAW_RELATIVE = ENGINE_RELATIVE / "qualification/raw"
 POSTGRES_VERSION = "17.5"
 PSYCOPG_VERSION = "3.2.13"
+POSTGRES_TOOL_NAMES = ("initdb", "pg_ctl", "psql", "postgres")
+POSTGRES_TOOL_VERSION_PATTERN = re.compile(
+    r"(?P<tool>initdb|pg_ctl|psql|postgres) \(PostgreSQL\) "
+    r"(?P<major_minor>[0-9]+\.[0-9]+)"
+    r"(?:[ \t]+\([^()\r\n]+\))?"
+)
 SKILL_NAMES = tuple(
     sorted(
         (
@@ -383,8 +389,15 @@ def _execution_environment(
     *,
     postgres: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    executable = Path(sys.executable).resolve(strict=True)
-    executable_payload, _ = _safe_regular_bytes(executable)
+    # Record the exact path used to launch child commands.  A virtual
+    # environment interpreter is commonly a symlink; resolving it in the
+    # environment record while retaining the symlink in argv creates two
+    # different identities for the same execution and makes the receipt
+    # unverifiable.  Hash the resolved regular target but preserve the
+    # absolute invocation path as the executable identity.
+    executable = Path(os.path.abspath(sys.executable))
+    executable_target = executable.resolve(strict=True)
+    executable_payload, _ = _safe_regular_bytes(executable_target)
     tool_path = repository_root / tool_relative
     tool_payload, _ = _safe_regular_bytes(tool_path)
     packages: dict[str, str] = {}
@@ -427,51 +440,98 @@ def _execution_environment(
     }
 
 
+def _postgres_tool_major_minor(tool_name: str, version_output: str) -> str | None:
+    """Return the exact major/minor from one supported tool version output.
+
+    PostgreSQL distributors may append one parenthesized build/vendor label
+    (for example Homebrew) after the upstream version.  The label is evidence
+    only: it must not weaken the exact major/minor qualification contract.
+    """
+
+    match = POSTGRES_TOOL_VERSION_PATTERN.fullmatch(version_output)
+    if match is None or match.group("tool") != tool_name:
+        return None
+    return match.group("major_minor")
+
+
+def _initdb_major_minor(version_output: str) -> str | None:
+    """Compatibility wrapper for the qualification/parser unit contract."""
+
+    return _postgres_tool_major_minor("initdb", version_output)
+
+
 def _postgres17_preflight(repository_root: Path) -> tuple[dict[str, Any], dict[str, str]]:
     configured = os.environ.get("ELMOS_TEST_POSTGRES17_BIN")
-    if configured:
-        bin_root = Path(configured).resolve(strict=True)
-    else:
-        discovered = shutil.which("initdb")
-        bin_root = (
-            Path(discovered).resolve(strict=True).parent
-            if discovered
-            else Path("/opt/homebrew/opt/postgresql@17/bin").resolve(strict=True)
+    try:
+        if configured:
+            bin_root = Path(configured).resolve(strict=True)
+        else:
+            discovered = shutil.which("initdb")
+            bin_root = (
+                Path(discovered).resolve(strict=True).parent
+                if discovered
+                else Path("/opt/homebrew/opt/postgresql@17/bin").resolve(strict=True)
+            )
+    except OSError as exc:
+        raise QualificationError(
+            "PostgreSQL 17.5 tools were not found; install postgresql@17 and set "
+            "ELMOS_TEST_POSTGRES17_BIN to its bin directory"
+        ) from exc
+    if not bin_root.is_dir():
+        raise QualificationError(
+            "ELMOS_TEST_POSTGRES17_BIN must identify a PostgreSQL 17.5 bin directory"
         )
     tools: list[dict[str, Any]] = []
-    for name in ("initdb", "pg_ctl", "psql", "postgres"):
-        path = (bin_root / name).resolve(strict=True)
-        payload, _ = _safe_regular_bytes(path)
-        tools.append(
-            {
-                "name": name,
-                "path": str(path),
-                "sha256": "sha256:" + sha256_bytes(payload),
-            }
-        )
-    completed = subprocess.run(
-        [str(bin_root / "initdb"), "--version"],
-        cwd=repository_root,
-        env=_command_environment(repository_root),
-        stdin=subprocess.DEVNULL,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        check=False,
-        timeout=10,
-    )
-    version_output = (completed.stdout + completed.stderr).decode(
-        "utf-8", errors="replace"
-    ).strip()
-    match = re.fullmatch(r"initdb \(PostgreSQL\) ([0-9]+\.[0-9]+)(?:\.[0-9]+)?", version_output)
-    if completed.returncode != 0 or match is None or match.group(1) != POSTGRES_VERSION:
+    try:
+        for name in POSTGRES_TOOL_NAMES:
+            path = (bin_root / name).resolve(strict=True)
+            payload, _ = _safe_regular_bytes(path)
+            completed = subprocess.run(
+                [str(path), "--version"],
+                cwd=repository_root,
+                env=_command_environment(repository_root),
+                stdin=subprocess.DEVNULL,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+                timeout=10,
+            )
+            version_output = (completed.stdout + completed.stderr).decode(
+                "utf-8", errors="replace"
+            ).strip()
+            observed_version = _postgres_tool_major_minor(name, version_output)
+            if completed.returncode != 0 or observed_version != POSTGRES_VERSION:
+                raise QualificationError(
+                    f"qualification requires exact PostgreSQL {POSTGRES_VERSION} "
+                    f"for {name}; observed {version_output!r}"
+                )
+            tools.append(
+                {
+                    "name": name,
+                    "path": str(path),
+                    "sha256": "sha256:" + sha256_bytes(payload),
+                    "observed_version": observed_version,
+                    "version_output": version_output,
+                }
+            )
+    except (OSError, subprocess.TimeoutExpired) as exc:
         raise QualificationError(
-            f"qualification requires exact PostgreSQL {POSTGRES_VERSION}; observed {version_output!r}"
-        )
+            "PostgreSQL 17.5 toolchain is incomplete or unusable at "
+            f"{bin_root}"
+        ) from exc
+    initdb = tools[0]
+    version_output = str(initdb["version_output"])
+    observed_version = str(initdb["observed_version"])
     try:
         psycopg_version = importlib.metadata.version("psycopg")
         binary_version = importlib.metadata.version("psycopg-binary")
     except importlib.metadata.PackageNotFoundError as exc:
-        raise QualificationError("PostgreSQL qualification requires psycopg and psycopg-binary") from exc
+        raise QualificationError(
+            "PostgreSQL qualification requires psycopg and psycopg-binary "
+            f"{PSYCOPG_VERSION} in {sys.executable}; run `uv --directory "
+            "engines/proof-driven-harness-engine sync --extra postgres --locked` "
+            "and retry with PYTHON=engines/proof-driven-harness-engine/.venv/bin/python"
+        ) from exc
     if psycopg_version != PSYCOPG_VERSION or binary_version != PSYCOPG_VERSION:
         raise QualificationError(
             "PostgreSQL qualification requires exact psycopg/psycopg-binary "
@@ -481,7 +541,7 @@ def _postgres17_preflight(repository_root: Path) -> tuple[dict[str, Any], dict[s
         {
             "status": "AVAILABLE_EXACT",
             "required_version": POSTGRES_VERSION,
-            "observed_version": match.group(1),
+            "observed_version": observed_version,
             "version_output": version_output,
             "psycopg_version": psycopg_version,
             "psycopg_binary_version": binary_version,
@@ -625,12 +685,22 @@ def _validate_runtime_registry(repository_root: Path) -> None:
 
 def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[str, Any]:
     repository_root = repository_root.resolve(strict=True)
+    if postgres17_mode not in {"not-run", "require"}:
+        raise QualificationError(f"unsupported PostgreSQL qualification mode: {postgres17_mode}")
     engine_root = repository_root / ENGINE_RELATIVE
     archive = repository_root / "skills/subskills/elmos-proof-driven-agentic-harness-repository-semantic-compiler-v3.0.0.zip"
     archive_payload, _ = _safe_regular_bytes(archive)
     if sha256_bytes(archive_payload) != ARCHIVE_SHA256:
         raise QualificationError("source archive digest changed")
     inventory_before = engine_inventory(engine_root)
+
+    postgres_environment: dict[str, Any] | None = None
+    postgres_extra_environment: dict[str, str] | None = None
+    if postgres17_mode == "require":
+        postgres_environment, postgres_extra_environment = _postgres17_preflight(
+            repository_root
+        )
+
     _, raw_directory = _ensure_private_output_tree(engine_root)
 
     commands = (
@@ -712,7 +782,8 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
         "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
     }
     if postgres17_mode == "require":
-        postgres_environment, extra_environment = _postgres17_preflight(repository_root)
+        if postgres_environment is None or postgres_extra_environment is None:
+            raise QualificationError("PostgreSQL preflight state is unavailable")
         raw, command_totals, command_succeeded = _run_fixed_command(
             repository_root=repository_root,
             name="postgres17-integration",
@@ -730,7 +801,7 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
             raw_directory=raw_directory,
             tool_relative=STRUCTURED_RUNNER_RELATIVE,
             structured_tests=True,
-            extra_environment=extra_environment,
+            extra_environment=postgres_extra_environment,
             postgres_environment=postgres_environment,
         )
         raw_logs.append(raw)
@@ -738,6 +809,17 @@ def qualify(repository_root: Path, *, postgres17_mode: str = "not-run") -> dict[
             failures.append("postgres17-integration")
         for key in totals:
             totals[key] += command_totals[key]
+        postgres_environment_after, postgres_extra_environment_after = (
+            _postgres17_preflight(repository_root)
+        )
+        if (
+            canonical_bytes(postgres_environment_after)
+            != canonical_bytes(postgres_environment)
+            or postgres_extra_environment_after != postgres_extra_environment
+        ):
+            raise QualificationError(
+                "PostgreSQL toolchain identity changed during local qualification"
+            )
         postgres_receipt = {
             "status": "LOCAL_EXECUTED_SELF_ATTESTED" if command_succeeded else "FAILED",
             "required_postgresql_version": POSTGRES_VERSION,

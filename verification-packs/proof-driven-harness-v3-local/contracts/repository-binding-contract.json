@@ -18,8 +18,8 @@
   ],
   "required_test_totals": {
     "failed": 0,
-    "passed": 485,
-    "tests": 485
+    "passed": 513,
+    "tests": 513
   },
   "role_semantics": {
     "delta-acceptance-traceability": "repository-owned static 13x8 mapping; never independent execution evidence",

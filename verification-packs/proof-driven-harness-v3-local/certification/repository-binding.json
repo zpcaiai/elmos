@@ -2,7 +2,7 @@
   "certification": "NOT_CERTIFIED",
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "delta_acceptance_binding_sha256": "sha256:d315f4e9a2c0de7d0017d39e1de1331c92c10bb9570c131b4de13051fedae529",
-  "delta_receipt_sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83",
+  "delta_receipt_sha256": "sha256:ea45cfb023d19ae460d1bf17a2a4e8f8e867bb775ff9f888ceb3fda0000aa7a3",
   "delta_runtime_evidence": {
     "opa": "NOT_RUN",
     "postgresql17": "NOT_RUN",
@@ -11,7 +11,7 @@
     "target_environment_conformance": "NOT_RUN"
   },
   "delta_source_digest": "sha256:13ba6f089d3c367affe3e03999418029873d842e07a8c80cfaeeffb4308a7a37",
-  "environment_digest": "sha256:f43b29a9cc421b13e30855234510d5a8a2f64cbb1613935ff15138815c5c157a",
+  "environment_digest": "sha256:70ad68b5b6eacb32d0501676ede007ee4b8019c2ebcf8449bda8774b39e601c6",
   "external_evidence": "NOT_RUN",
   "failed": 0,
   "independent_verification": "NOT_RUN",
@@ -21,32 +21,85 @@
     "Local executor and verifier are repository-owned and not independent."
   ],
   "pack_key": "proof-driven-harness-v3-local",
-  "passed": 485,
+  "passed": 513,
   "postgresql17": {
-    "raw_log": null,
-    "reason": "Disposable PostgreSQL qualification was not explicitly requested.",
+    "certification": "NOT_CERTIFIED",
+    "environment": {
+      "observed_version": "17.5",
+      "psycopg_binary_version": "3.2.13",
+      "psycopg_version": "3.2.13",
+      "required_version": "17.5",
+      "status": "AVAILABLE_EXACT",
+      "tools": [
+        {
+          "name": "initdb",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/initdb",
+          "sha256": "sha256:02d6ece702f765ca84f42662a306f5883da7ce98f21caa05622300e5681316aa",
+          "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "pg_ctl",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/pg_ctl",
+          "sha256": "sha256:6b59e75c123ce3fca74916abd3914b59a392a1d1758b0b563a0b0e78c5521d02",
+          "version_output": "pg_ctl (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "psql",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/psql",
+          "sha256": "sha256:4770a125f9ecf370d1d02a06883bbc5d320128936f8fb433e0a13d7811d043ac",
+          "version_output": "psql (PostgreSQL) 17.5 (Homebrew)"
+        },
+        {
+          "name": "postgres",
+          "observed_version": "17.5",
+          "path": "/opt/homebrew/Cellar/postgresql@17/17.5/bin/postgres",
+          "sha256": "sha256:1377b20533d1f88bcbd8c372427514dddd25631723782130cfe4a335850e6e98",
+          "version_output": "postgres (PostgreSQL) 17.5 (Homebrew)"
+        }
+      ],
+      "version_output": "initdb (PostgreSQL) 17.5 (Homebrew)"
+    },
+    "external_evidence": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "raw_log": {
+      "bytes": 7256,
+      "path": "qualification/raw/postgres17-integration.json",
+      "sha256": "7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13"
+    },
     "required_postgresql_version": "17.5",
     "required_psycopg_version": "3.2.13",
-    "status": "NOT_RUN"
+    "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "tests": {
+      "errors": 0,
+      "expected_failures": 0,
+      "failed": 0,
+      "passed": 6,
+      "selected": 6,
+      "skipped": 0,
+      "unexpected_successes": 0
+    }
   },
   "raw_logs": [
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "tooling/integrate_proof_driven_harness_v3.py",
         "--check",
         "--qualification-phase"
       ],
-      "bytes": 10226,
+      "bytes": 10282,
       "pack_copy": "qualification/raw/archive-installation-check.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7",
+      "sha256": "sha256:ae80a51c0700150643d6d94817ab57c347fbdfb0f5e3cdfb3ac7604bcd7c9781",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -55,16 +108,16 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 176911,
+      "bytes": 187028,
       "pack_copy": "qualification/raw/engine-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce",
+      "sha256": "sha256:ad07515e3291d506b45ad21bc440b7b6f7cb9e97708410afa5d12a73265bbc0a",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -73,16 +126,34 @@
         "--pattern",
         "test_*.py"
       ],
-      "bytes": 29509,
+      "bytes": 33427,
       "pack_copy": "qualification/raw/package-integration-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "returncode": 0,
-      "sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c",
+      "sha256": "sha256:2464016d41aa5f5590334b41715692d7a37501d10a3b04e2d38ac33dbdbe52ad",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
+        "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
+        "--repo-root",
+        ".",
+        "--start-directory",
+        "engines/proof-driven-harness-engine/tests",
+        "--pattern",
+        "postgres17_integration.py"
+      ],
+      "bytes": 7256,
+      "pack_copy": "qualification/raw/postgres17-integration.json",
+      "repository_path": "engines/proof-driven-harness-engine/qualification/raw/postgres17-integration.json",
+      "returncode": 0,
+      "sha256": "sha256:7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -91,16 +162,16 @@
         "--pattern",
         "test_delta_*.py"
       ],
-      "bytes": 102042,
+      "bytes": 102782,
       "pack_copy": "qualification/delta-v3.1/raw/delta-engine-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
       "returncode": 0,
-      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9",
+      "sha256": "sha256:dc227fecd933eab2a1870593fe32c23e202994bb1eca17a4ba181617877cd893",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "engines/proof-driven-harness-engine/tools/run_structured_unittest.py",
         "--repo-root",
         ".",
@@ -109,78 +180,84 @@
         "--pattern",
         "test_delta_integration.py"
       ],
-      "bytes": 18381,
+      "bytes": 18498,
       "pack_copy": "qualification/delta-v3.1/raw/delta-importer-tests.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
       "returncode": 0,
-      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4",
+      "sha256": "sha256:24477fb96ca98223fd57f36ac6b0ca944be02970d4104b48b81bbfc46d85d52d",
       "timed_out": false
     },
     {
       "argv": [
-        "/opt/homebrew/opt/python@3.14/bin/python3.14",
+        "/private/tmp/elmos-proof-harness-v31.is8kCc/worktree/engines/proof-driven-harness-engine/.venv/bin/python",
         "tooling/integrate_harness_runtime_assurance_delta.py",
         "--repo-root",
         ".",
         "--check"
       ],
-      "bytes": 2205,
+      "bytes": 2327,
       "pack_copy": "qualification/delta-v3.1/raw/delta-installation-check.json",
       "repository_path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
       "returncode": 0,
-      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3",
+      "sha256": "sha256:db10eecb4ce93a6b33d8b5a6db293554d30a7ba9c94b159f3feb2a2b8dc2668f",
       "timed_out": false
     }
   ],
-  "receipt_sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb",
+  "receipt_sha256": "sha256:ce306e0e66e12e8a9af9d18cbd0ef7f899fd3d993df68f6ce600d716ce675ee0",
   "repository_bindings": [
     {
-      "byte_size": 148422,
+      "byte_size": 148610,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/local-qualification.json",
       "role": "delta-qualification-receipt",
-      "sha256": "sha256:b1217d98b24145a30b86370989eb3686e8881d0879a7d922876033a36de32a83"
+      "sha256": "sha256:ea45cfb023d19ae460d1bf17a2a4e8f8e867bb775ff9f888ceb3fda0000aa7a3"
     },
     {
-      "byte_size": 102042,
+      "byte_size": 102782,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-engine-tests.json",
       "role": "delta-raw-log-delta-engine-tests",
-      "sha256": "sha256:08aec4261014a72d7aae8cb79c70ba3185ee4a05545f4e096c058d5f208c45e9"
+      "sha256": "sha256:dc227fecd933eab2a1870593fe32c23e202994bb1eca17a4ba181617877cd893"
     },
     {
-      "byte_size": 18381,
+      "byte_size": 18498,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-importer-tests.json",
       "role": "delta-raw-log-delta-importer-tests",
-      "sha256": "sha256:648e942baf67a73a7039bb16899943033115bf147dad62273db1c02c24dc02c4"
+      "sha256": "sha256:24477fb96ca98223fd57f36ac6b0ca944be02970d4104b48b81bbfc46d85d52d"
     },
     {
-      "byte_size": 2205,
+      "byte_size": 2327,
       "path": "engines/proof-driven-harness-engine/qualification/delta-v3.1/raw/delta-installation-check.json",
       "role": "delta-raw-log-delta-installation-check",
-      "sha256": "sha256:50da257ed5cb60c62e99667c88e9695a385f41afdff202ffd1c55671c417c8e3"
+      "sha256": "sha256:db10eecb4ce93a6b33d8b5a6db293554d30a7ba9c94b159f3feb2a2b8dc2668f"
     },
     {
-      "byte_size": 25836,
+      "byte_size": 27620,
       "path": "engines/proof-driven-harness-engine/qualification/local-qualification.json",
       "role": "qualification-receipt",
-      "sha256": "sha256:82b08d41777fd050cbe5667ad144d517b7ea68e6bc01819d8da6108076186fcb"
+      "sha256": "sha256:ce306e0e66e12e8a9af9d18cbd0ef7f899fd3d993df68f6ce600d716ce675ee0"
     },
     {
-      "byte_size": 10226,
+      "byte_size": 10282,
       "path": "engines/proof-driven-harness-engine/qualification/raw/archive-installation-check.json",
       "role": "raw-log-archive-installation-check",
-      "sha256": "sha256:8e162f671f3e80a94e75052a30facd9631d7776ea1915d1882cb86b669389da7"
+      "sha256": "sha256:ae80a51c0700150643d6d94817ab57c347fbdfb0f5e3cdfb3ac7604bcd7c9781"
     },
     {
-      "byte_size": 176911,
+      "byte_size": 187028,
       "path": "engines/proof-driven-harness-engine/qualification/raw/engine-tests.json",
       "role": "raw-log-engine-tests",
-      "sha256": "sha256:80d8e549648cd8566b5fb83c98d9a3d2d0d3a3afb29d4b25c2ca10cc8248d7ce"
+      "sha256": "sha256:ad07515e3291d506b45ad21bc440b7b6f7cb9e97708410afa5d12a73265bbc0a"
     },
     {
-      "byte_size": 29509,
+      "byte_size": 33427,
       "path": "engines/proof-driven-harness-engine/qualification/raw/package-integration-tests.json",
       "role": "raw-log-package-integration-tests",
-      "sha256": "sha256:2580c3e280bb22398fdd41aaef604122978faecb0e08091adffa31c6910db57c"
+      "sha256": "sha256:2464016d41aa5f5590334b41715692d7a37501d10a3b04e2d38ac33dbdbe52ad"
+    },
+    {
+      "byte_size": 7256,
+      "path": "engines/proof-driven-harness-engine/qualification/raw/postgres17-integration.json",
+      "role": "raw-log-postgres17-integration",
+      "sha256": "sha256:7f2f0dce61605dafe2992b36c1e735afd65fccfa802511e4a4794cd9a11e3f13"
     },
     {
       "byte_size": 53596,
@@ -201,10 +278,10 @@
       "sha256": "sha256:60b8a80173caac1629383c88d67a67cf79a5e8378fc9d0055135d446cb55afdd"
     },
     {
-      "byte_size": 19048,
+      "byte_size": 19931,
       "path": "engines/proof-driven-harness-engine/tests/test_delta_migration.py",
       "role": "delta-runtime-test-migration",
-      "sha256": "sha256:0f2c6268486f3776d11168f86fdf7a96595e040e1ccaa29a59c8865eca4936e6"
+      "sha256": "sha256:dcb610eda7b5c180d24f7b5cd9b1489d8ecd7a4a17d449466c8cc4de2b9dfa1f"
     },
     {
       "byte_size": 20807,
@@ -225,16 +302,16 @@
       "sha256": "sha256:e8e82f99dcc30ceeab533e3bfd78c76eb6aff402e727b37b674a1a6ec957eab4"
     },
     {
-      "byte_size": 35574,
+      "byte_size": 38251,
       "path": "engines/proof-driven-harness-engine/tests/test_publish_verification_pack.py",
       "role": "verification-pack-negative-tests",
-      "sha256": "sha256:92cb1447cf47c352d41b0009811278a75d0fa375e61280a5c60624a26b6f3d20"
+      "sha256": "sha256:b6a7cdc7a989c4d82579edf525c76926de0479ae0e803367cb562742c5a07425"
     },
     {
-      "byte_size": 166663,
+      "byte_size": 168054,
       "path": "engines/proof-driven-harness-engine/tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:7becbe8f4e8dee0acf3b6bb610bdc76787a29ab2b9ee4c943d0abf10c0bd33ee"
+      "sha256": "sha256:ff025e9440f259525d899b2305be8785c9700790cdd9e2bba67b63bbf17d6d2d"
     },
     {
       "byte_size": 66773,
@@ -243,10 +320,10 @@
       "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
     },
     {
-      "byte_size": 32715,
+      "byte_size": 36507,
       "path": "engines/proof-driven-harness-engine/tools/qualify_local.py",
       "role": "qualification-producer",
-      "sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f"
+      "sha256": "sha256:82e0b8599473d01a639f7560f0680f992a84ea34fd2df1313786f30e92ac448d"
     },
     {
       "byte_size": 5601254,
@@ -267,10 +344,10 @@
       "sha256": "sha256:6826ce85b48d9a0f26d6fb1dd828ff342452cfb5b332a66856a08ff14e860e28"
     },
     {
-      "byte_size": 23648,
+      "byte_size": 43716,
       "path": "tests/proof-driven-harness-v3/test_integration.py",
       "role": "archive-importer-negative-tests",
-      "sha256": "sha256:04978864b06e4b91275059a9e9eb75e39e48a510c9331aafe96a018ffc8c74c5"
+      "sha256": "sha256:1dc5791e8ba06e0ccce0a7f584001ccbe67b85dd83fcbb3ea616b86260f30541"
     },
     {
       "byte_size": 119826,
@@ -279,28 +356,28 @@
       "sha256": "sha256:c52d8a428e97b76a1833b5e88b46b8b6b9a16b644eb524669fa802545b9c4266"
     },
     {
-      "byte_size": 108864,
+      "byte_size": 125204,
       "path": "tooling/integrate_proof_driven_harness_v3.py",
       "role": "archive-importer",
-      "sha256": "sha256:99fd1c52f597831fda767fd7b16c186b5a441c80e4e59d6fd3b161ee6f904d4e"
+      "sha256": "sha256:450bd1207a661875f2f7196c8fabc819ece14f1e0626cb70f8b9670d31044673"
     },
     {
-      "byte_size": 24239,
+      "byte_size": 24389,
       "path": "verification-packs/proof-driven-harness-v3-local/artifacts/engine-tree-inventory.json",
       "role": "test",
-      "sha256": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4"
+      "sha256": "sha256:554c558d55519a78fcbffadacd900ababebb7c704143b0e0ef54464f811c3b63"
     },
     {
-      "byte_size": 10839,
+      "byte_size": 17113,
       "path": "verification-packs/proof-driven-harness-v3-local/environment/local-environment.json",
       "role": "environment",
-      "sha256": "sha256:f43b29a9cc421b13e30855234510d5a8a2f64cbb1613935ff15138815c5c157a"
+      "sha256": "sha256:70ad68b5b6eacb32d0501676ede007ee4b8019c2ebcf8449bda8774b39e601c6"
     }
   ],
   "schema_version": 1,
   "skipped": 0,
   "source_digest": "sha256:552268611c3edc55f58c6d4d488adaaeda8a549212cc5dc52c06e4333e0c3e07",
   "status": "passed",
-  "test_digest": "sha256:5911d6505514c699d4b161486dc8ab94a503cfaff682b485dfec7e6bab84d3b4",
-  "tests": 485
+  "test_digest": "sha256:554c558d55519a78fcbffadacd900ababebb7c704143b0e0ef54464f811c3b63",
+  "tests": 513
 }

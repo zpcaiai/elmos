@@ -6,7 +6,7 @@
     "externalEvidence": "NOT_RUN",
     "localEngineeringMaximum": "READY_FOR_EXTERNAL_GATE"
   },
-  "contractRoot": "sha256:a799b78a5633e9263308ce879768558656b4570e20a437f97068b16f0f16ca05",
+  "contractRoot": "sha256:ad7268dcdd58ce9a51649baff247a5f77a0d1648c30c78062939c96b2cb4b0dc",
   "counts": {
     "baseSchemas": 18,
     "deltaSchemas": 15,
@@ -49,10 +49,10 @@
   },
   "files": [
     {
-      "bytes": 6416,
+      "bytes": 7286,
       "path": "README.md",
       "role": "implementation-boundary",
-      "sha256": "sha256:bfce0a8967aedb0ec3dbc5130fae74c1087fdfd45ca91c9f5828a86ca048b510"
+      "sha256": "sha256:d14cebdfa6b31ad98860188499aa4ea6225a0610fe7e085f6f4bf5e2fd2d528e"
     },
     {
       "bytes": 661,
@@ -286,7 +286,7 @@
       "bytes": 184730,
       "path": "migrations/V304__harness_runtime_assurance_delta.sql",
       "role": "database-delta-migration",
-      "sha256": "sha256:1219e4009391d77ae70b91d7ec70ec10278f41913cf211942b6c34e5f422f963"
+      "sha256": "sha256:e8fa59233333b446c9208bd82fa5e23f3dfa12e8f65c1eb350c82cff3d2c7dda"
     },
     {
       "bytes": 2923,
@@ -667,10 +667,10 @@
       "sha256": "sha256:8f18312db6fa0eb65ba1d695a3ca206d58f97843c534e001544d543ea533407b"
     },
     {
-      "bytes": 439012,
+      "bytes": 440168,
       "path": "src/elmos_proof_harness/postgres.py",
       "role": "runtime-source",
-      "sha256": "sha256:f7ddee25f43013017840008024258331afd9ec71e7906a033b4ac7605635096b"
+      "sha256": "sha256:9fc2872355e30a22dbb556520a43c16466cb36e2a3bb798d7373871f264d1aad"
     },
     {
       "bytes": 14746,
@@ -718,7 +718,7 @@
       "bytes": 9315,
       "path": "src/elmos_proof_harness/storage.py",
       "role": "runtime-source",
-      "sha256": "sha256:c06b2625c98b4ddc7d2865d4296da130195feaf9a0a10d37c593cbb8d3025856"
+      "sha256": "sha256:c8968ef31891ebf83bde095bdbef95e67e29f0f8de8285e1f7354b98fab5781d"
     },
     {
       "bytes": 77590,
@@ -769,10 +769,10 @@
       "sha256": "sha256:028a0435a74a902e0f30dc030f4e7a2bf4836ca79e07a192a0fa78b5806c8fca"
     },
     {
-      "bytes": 27920,
+      "bytes": 28351,
       "path": "tools/apply_delta_migration.py",
       "role": "postgres-delta-migration-applicator",
-      "sha256": "sha256:322729c358b07fc53d09841d257f2ab63561951e4ffb2f2835c75e8796c31646"
+      "sha256": "sha256:e9cbe83e92ba9c17a3c64087e182ea9c584bbd78fce3b45c8ea4ea904bde7610"
     },
     {
       "bytes": 7113,
@@ -781,10 +781,10 @@
       "sha256": "sha256:236f565e8856a76977042bcdf46aa16a883b2a8fd849e4804e0d3a6121456f38"
     },
     {
-      "bytes": 166663,
+      "bytes": 168054,
       "path": "tools/publish_verification_pack.py",
       "role": "verification-pack-publisher",
-      "sha256": "sha256:7becbe8f4e8dee0acf3b6bb610bdc76787a29ab2b9ee4c943d0abf10c0bd33ee"
+      "sha256": "sha256:ff025e9440f259525d899b2305be8785c9700790cdd9e2bba67b63bbf17d6d2d"
     },
     {
       "bytes": 66773,
@@ -793,10 +793,10 @@
       "sha256": "sha256:a0a5eec88b1cc3d4d5605fb399a4990d6a1eff6f057fe469b30f3cb6722169d3"
     },
     {
-      "bytes": 32715,
+      "bytes": 36507,
       "path": "tools/qualify_local.py",
       "role": "local-qualification-producer",
-      "sha256": "sha256:fb6f59a13145623f45f61c4dbf689475c053c37446fa2d24650c7f1e547d235f"
+      "sha256": "sha256:82e0b8599473d01a639f7560f0680f992a84ea34fd2df1313786f30e92ac448d"
     },
     {
       "bytes": 63173,
@@ -805,10 +805,10 @@
       "sha256": "sha256:c83911ec51d101b149ea227d30eaaadb47bd9ded86f610692aa3f07ba3e9a8c7"
     },
     {
-      "bytes": 9844,
+      "bytes": 10891,
       "path": "tools/run_structured_unittest.py",
       "role": "structured-test-runner",
-      "sha256": "sha256:2f590d1901a9d462e1d0398eb54864db6db6bc7ed6d59a4625a0733f117a5991"
+      "sha256": "sha256:f816a77b5a9e153fa368d36fcc9a036113c92e63260116f2d8745d9ec918fd24"
     },
     {
       "bytes": 560,

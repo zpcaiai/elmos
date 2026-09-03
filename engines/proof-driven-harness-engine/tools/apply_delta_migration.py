@@ -34,7 +34,7 @@ BASE_SOURCE_DIGEST = (
     "sha256:bdddb1ff1a962df931df57e4d8d428e08c232b4ac88e5189bf8c2ccde34e388f"
 )
 EXPECTED_SOURCE_DIGEST = (
-    "sha256:e80c79db5ee6105bb551b487f1dd07c81bcb953f1f5b8adbb6ed176402f7a09c"
+    "sha256:e723bc02c28bd0580c56e8b9cf1ba63ed5c81fff258671f45e7af774cdf57ef2"
 )
 DELTA_RLS_CANONICAL_EXPRESSION = (
     "tenant_id=proof_harness.current_tenant_keyAND"
@@ -353,6 +353,12 @@ def _catalog_fingerprint(cursor: Any) -> str:
         LEDGER_RELATION.rsplit(".", 1)[1],
         *(name.rsplit(".", 1)[1] for name in DELTA_RELATIONS),
     ]
+    # PostgreSQL deparser functions such as pg_get_constraintdef() omit schema
+    # qualification for objects visible through the caller's search_path.
+    # Pin the path before hashing so the deployment owner and application
+    # readiness probe observe the same catalog bytes for the same controls.
+    # This is the terminal catalog operation on both applicator paths.
+    cursor.execute("SET LOCAL search_path = pg_catalog")
     cursor.execute(
         _CATALOG_FINGERPRINT_SQL,
         (

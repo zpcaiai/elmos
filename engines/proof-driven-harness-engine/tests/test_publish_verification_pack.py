@@ -47,6 +47,43 @@ def _json(path: Path) -> dict[str, object]:
     return value
 
 
+class PostgreSQLQualificationContractTests(unittest.TestCase):
+    def test_version_output_contract_accepts_vendor_suffix_only(self) -> None:
+        accepted = (
+            "initdb (PostgreSQL) 17.5",
+            "initdb (PostgreSQL) 17.5 (Homebrew)",
+            "initdb (PostgreSQL) 17.5 (vendor-build)",
+        )
+        rejected = (
+            "initdb (PostgreSQL) 17.5.1",
+            "initdb (PostgreSQL) 17.6 (Homebrew)",
+            "initdb (PostgreSQL) 17.5 unbounded",
+            "initdb (PostgreSQL) 17.5 (nested(vendor))",
+        )
+        for value in accepted:
+            with self.subTest(value=value):
+                self.assertIsNotNone(
+                    publisher.POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(value)
+                )
+        for value in rejected:
+            with self.subTest(value=value):
+                self.assertIsNone(
+                    publisher.POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(value)
+                )
+        for name, pattern in publisher.POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS.items():
+            with self.subTest(tool=name):
+                self.assertIsNotNone(
+                    pattern.fullmatch(
+                        f"{name} (PostgreSQL) 17.5 (Homebrew)"
+                    )
+                )
+                self.assertIsNone(
+                    pattern.fullmatch(
+                        f"{name} (PostgreSQL) 17.5.1 (Homebrew)"
+                    )
+                )
+
+
 class SyntheticQualificationRepository:
     """Exact receipt fixture; no source-package executable is ever invoked."""
 
@@ -157,7 +194,8 @@ class SyntheticQualificationRepository:
             "expected_failures": 0,
             "unexpected_successes": 0,
         }
-        python_executable = Path(sys.executable).resolve(strict=True)
+        python_invocation = Path(os.path.abspath(sys.executable))
+        python_executable = python_invocation.resolve(strict=True)
         python_digest = (
             "sha256:" + hashlib.sha256(python_executable.read_bytes()).hexdigest()
         )
@@ -244,7 +282,7 @@ class SyntheticQualificationRepository:
                         "implementation": platform.python_implementation(),
                         "version": platform.python_version(),
                         "cache_tag": sys.implementation.cache_tag,
-                        "executable": str(python_executable),
+                        "executable": str(python_invocation),
                         "executable_sha256": python_digest,
                     },
                     "tool": {
@@ -743,6 +781,35 @@ class ProofDrivenHarnessVerificationPackPublisherTests(unittest.TestCase):
         with self.assertRaisesRegex(
             publisher.VerificationPackError,
             "receipt identity/status",
+        ):
+            publisher.publish_pack(self.root)
+        self.assertFalse(self.pack.exists())
+
+    def test_rebound_raw_log_with_different_python_executable_fails_closed(
+        self,
+    ) -> None:
+        raw_relative = Path("qualification/raw/engine-tests.json")
+        raw_path = self.root / publisher.ENGINE_ROOT / raw_relative
+        record = _json(raw_path)
+        argv = record["argv"]
+        self.assertIsInstance(argv, list)
+        argv[0] = "/different/python"
+        payload = publisher.canonical_bytes(record) + b"\n"
+        _write(raw_path, payload)
+
+        receipt_path = self.root / publisher.RECEIPT_RELATIVE
+        receipt = _json(receipt_path)
+        raw_logs = receipt["tests"]["raw_logs"]
+        reference = next(
+            item for item in raw_logs if item["path"] == raw_relative.as_posix()
+        )
+        reference["sha256"] = hashlib.sha256(payload).hexdigest()
+        reference["bytes"] = len(payload)
+        _write(receipt_path, publisher.canonical_bytes(receipt) + b"\n")
+
+        with self.assertRaisesRegex(
+            publisher.VerificationPackError,
+            "Python executable binding failed",
         ):
             publisher.publish_pack(self.root)
         self.assertFalse(self.pack.exists())

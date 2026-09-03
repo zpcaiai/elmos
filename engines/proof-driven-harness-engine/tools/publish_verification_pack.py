@@ -212,6 +212,15 @@ POSTGRES_RAW_COMMAND = (
     "--pattern",
     "postgres17_integration.py",
 )
+POSTGRES_VERSION_OUTPUT_PATTERN = re.compile(
+    r"initdb \(PostgreSQL\) 17\.5(?:[ \t]+\([^()\r\n]+\))?"
+)
+POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS = {
+    name: re.compile(
+        rf"{re.escape(name)} \(PostgreSQL\) 17\.5(?:[ \t]+\([^()\r\n]+\))?"
+    )
+    for name in ("initdb", "pg_ctl", "psql", "postgres")
+}
 STRUCTURED_RAW_LOGS = frozenset(
     {
         "qualification/raw/engine-tests.json",
@@ -727,6 +736,7 @@ def _validate_execution_environment(
             not isinstance(python[key], str) or not python[key]
             for key in ("implementation", "version", "cache_tag", "executable")
         )
+        or not Path(python["executable"]).is_absolute()
         or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(python["executable_sha256"]))
         or tool["path"] != expected_tool.as_posix()
         or tool["version"] != PACKAGE_VERSION
@@ -991,12 +1001,16 @@ def _validate_raw_log(
     expected_tool = (
         STRUCTURED_RUNNER_RELATIVE if path in STRUCTURED_RAW_LOGS else IMPORTER_RELATIVE
     )
-    _validate_execution_environment(
+    validated_environment = _validate_execution_environment(
         root_fd,
         record["execution_environment"],
         expected_tool=expected_tool,
         label=path,
     )
+    if argv[0] != validated_environment["python"]["executable"]:
+        raise VerificationPackError(
+            f"raw log Python executable binding failed: {path}"
+        )
     structured: Mapping[str, Any] | None = None
     passed = 0
     if path in STRUCTURED_RAW_LOGS:
@@ -1837,6 +1851,11 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
                 or environment["status"] != "AVAILABLE_EXACT"
                 or environment["required_version"] != "17.5"
                 or environment["observed_version"] != "17.5"
+                or not isinstance(environment["version_output"], str)
+                or POSTGRES_VERSION_OUTPUT_PATTERN.fullmatch(
+                    environment["version_output"]
+                )
+                is None
                 or environment["psycopg_version"] != "3.2.13"
                 or environment["psycopg_binary_version"] != "3.2.13"
                 or postgres["external_evidence"] != "NOT_RUN"
@@ -1849,15 +1868,29 @@ def validate_qualification(repository_root: Path) -> ValidatedQualification:
             tools = environment["tools"]
             if (
                 not isinstance(tools, list)
+                or len(tools) != 4
                 or [item.get("name") for item in tools if isinstance(item, dict)]
                 != ["initdb", "pg_ctl", "psql", "postgres"]
                 or any(
-                    set(item) != {"name", "path", "sha256"}
+                    not isinstance(item, dict)
+                    or set(item)
+                    != {
+                        "name",
+                        "path",
+                        "sha256",
+                        "observed_version",
+                        "version_output",
+                    }
                     or not isinstance(item["path"], str)
-                    or not item["path"]
+                    or not Path(item["path"]).is_absolute()
+                    or item["observed_version"] != "17.5"
+                    or not isinstance(item["version_output"], str)
+                    or POSTGRES_TOOL_VERSION_OUTPUT_PATTERNS.get(
+                        str(item["name"]), re.compile(r"(?!)")
+                    ).fullmatch(item["version_output"])
+                    is None
                     or not re.fullmatch(r"sha256:[0-9a-f]{64}", str(item["sha256"]))
                     for item in tools
-                    if isinstance(item, dict)
                 )
             ):
                 raise VerificationPackError(

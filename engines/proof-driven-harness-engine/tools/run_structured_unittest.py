@@ -15,7 +15,9 @@ import io
 import json
 import os
 from pathlib import Path
+import re
 import stat
+import sys
 import time
 from typing import Any, Sequence
 import unittest
@@ -92,18 +94,39 @@ class StructuredResult(unittest.TextTestResult):
 
     def _source_binding(self, test: unittest.case.TestCase) -> dict[str, str]:
         source = inspect.getsourcefile(test.__class__)
-        if source is None:
-            raise StructuredRunnerError(f"test source is unavailable: {test.id()}")
-        source_path = Path(source).resolve(strict=True)
+        selector = test.id()
+        source_path = Path(source).resolve(strict=True) if source is not None else None
+        if source_path is None or not source_path.is_relative_to(self.repository_root):
+            fixture = re.fullmatch(
+                r"(?:setUpClass|tearDownClass) \((?P<qualified>[^()]+)\)",
+                selector,
+            )
+            module_fixture = re.fullmatch(
+                r"(?:setUpModule|tearDownModule) \((?P<module>[^()]+)\)",
+                selector,
+            )
+            module_name: str | None = None
+            if fixture is not None:
+                module_name = fixture.group("qualified").rsplit(".", 1)[0]
+            elif module_fixture is not None:
+                module_name = module_fixture.group("module")
+            module = sys.modules.get(module_name) if module_name else None
+            module_source = inspect.getsourcefile(module) if module is not None else None
+            source_path = (
+                Path(module_source).resolve(strict=True)
+                if module_source is not None
+                else None
+            )
+        if source_path is None:
+            raise StructuredRunnerError(f"test source is unavailable: {selector}")
         try:
             relative = source_path.relative_to(self.repository_root)
         except ValueError as exc:
             raise StructuredRunnerError(
-                f"test source escapes repository root: {test.id()}"
+                f"test source escapes repository root: {selector}"
             ) from exc
         payload = _safe_source(source_path)
         source_digest = "sha256:" + _sha256(payload)
-        selector = test.id()
         binding = {
             "selector": selector,
             "source_path": relative.as_posix(),
