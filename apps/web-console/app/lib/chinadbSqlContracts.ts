@@ -33,8 +33,8 @@ export const chinaDbSqlSourceProfiles = [
 export type ChinaDbSqlTargetId = (typeof chinaDbSqlTargetIds)[number];
 export type ChinaDbSqlSourceProfile = (typeof chinaDbSqlSourceProfiles)[number];
 
-type CommercialState = "SPEC_ONLY";
-type ExecutionState = "NOT_RUN";
+type CommercialState = "LOCAL_ADAPTER";
+type ExecutionState = "NOT_RUN" | "PASSED" | "FAILED";
 type CertificationState = "NOT_CERTIFIED";
 
 export type ChinaDbSqlTarget = {
@@ -73,9 +73,9 @@ export type ChinaDbSqlCapabilities = {
   plannedRouteCount: 78;
   boundaries: {
     exactCommercialTargetProfilesRegistered: false;
-    verifiedTargetRenderers: 0;
+    verifiedTargetRenderers: 13;
     productionDatabaseAccess: false;
-    targetSqlMayBeEmitted: false;
+    targetSqlMayBeEmitted: true;
     claim: string;
   };
 };
@@ -146,12 +146,12 @@ export type ChinaDbSqlPreflightResult = {
     implementationStatus: CommercialState;
   };
   routeId: string;
-  state: "BLOCKED";
+  state: "BLOCKED" | "LOCAL_EMITTED";
   sourceDigest: string;
   capabilitySnapshotDigest: string;
   statements: ChinaDbSqlStatement[];
   blockers: ChinaDbSqlBlocker[];
-  targetSql: null;
+  targetSql: string | null;
   verification: ChinaDbSqlVerification;
   certification: CertificationState;
 };
@@ -323,7 +323,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
   exactLiteral(root.schemaVersion, "1.0", "CHINADB_SQL_CAPABILITIES_IDENTITY_INVALID");
   exactLiteral(root.package, "chinadb-commercial-migration-skills", "CHINADB_SQL_CAPABILITIES_IDENTITY_INVALID");
   exactLiteral(root.version, "1.0.0", "CHINADB_SQL_CAPABILITIES_IDENTITY_INVALID");
-  exactLiteral(root.implementationStatus, "SPEC_ONLY", "CHINADB_SQL_CAPABILITIES_STATE_INVALID");
+  exactLiteral(root.implementationStatus, "LOCAL_ADAPTER", "CHINADB_SQL_CAPABILITIES_STATE_INVALID");
   exactLiteral(root.externalExecution, "NOT_RUN", "CHINADB_SQL_CAPABILITIES_STATE_INVALID");
   exactLiteral(root.certification, "NOT_CERTIFIED", "CHINADB_SQL_CAPABILITIES_STATE_INVALID");
   exactLiteral(root.targetCount, 13, "CHINADB_SQL_TARGET_COUNT_INVALID");
@@ -355,7 +355,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
       adapterId,
       versionRequirement: boundedText(item.versionRequirement, 256, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
       compatibilityModeRequirement: boundedText(item.compatibilityModeRequirement, 256, "CHINADB_SQL_TARGET_REQUIREMENT_INVALID"),
-      implementationStatus: exactLiteral(item.implementationStatus, "SPEC_ONLY", "CHINADB_SQL_TARGET_STATE_INVALID"),
+      implementationStatus: exactLiteral(item.implementationStatus, "LOCAL_ADAPTER", "CHINADB_SQL_TARGET_STATE_INVALID"),
       externalExecution: exactLiteral(item.externalExecution, "NOT_RUN", "CHINADB_SQL_TARGET_STATE_INVALID"),
       certification: exactLiteral(item.certification, "NOT_CERTIFIED", "CHINADB_SQL_TARGET_STATE_INVALID"),
     };
@@ -394,7 +394,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
       sourceFamily,
       targetId: routeTargetId,
       priority: item.priority as ChinaDbSqlRoute["priority"],
-      state: exactLiteral(item.state, "SPEC_ONLY", "CHINADB_SQL_ROUTE_STATE_INVALID"),
+      state: exactLiteral(item.state, "LOCAL_ADAPTER", "CHINADB_SQL_ROUTE_STATE_INVALID"),
       externalExecution: exactLiteral(item.externalExecution, "NOT_RUN", "CHINADB_SQL_ROUTE_STATE_INVALID"),
       certification: exactLiteral(item.certification, "NOT_CERTIFIED", "CHINADB_SQL_ROUTE_STATE_INVALID"),
     };
@@ -440,7 +440,7 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
     targets,
     plannedRoutes,
     excludedTargets,
-    implementationStatus: "SPEC_ONLY",
+    implementationStatus: "LOCAL_ADAPTER",
     externalExecution: "NOT_RUN",
     certification: "NOT_CERTIFIED",
     capabilitySnapshotDigest: digest(root.capabilitySnapshotDigest, "CHINADB_SQL_CAPABILITY_DIGEST_INVALID"),
@@ -448,9 +448,9 @@ export function parseChinaDbSqlCapabilities(value: unknown): ChinaDbSqlCapabilit
     plannedRouteCount: 78,
     boundaries: {
       exactCommercialTargetProfilesRegistered: exactLiteral(boundaries.exactCommercialTargetProfilesRegistered, false, "CHINADB_SQL_BOUNDARIES_INVALID"),
-      verifiedTargetRenderers: exactLiteral(boundaries.verifiedTargetRenderers, 0, "CHINADB_SQL_BOUNDARIES_INVALID"),
+      verifiedTargetRenderers: exactLiteral(boundaries.verifiedTargetRenderers, 13, "CHINADB_SQL_BOUNDARIES_INVALID"),
       productionDatabaseAccess: exactLiteral(boundaries.productionDatabaseAccess, false, "CHINADB_SQL_BOUNDARIES_INVALID"),
-      targetSqlMayBeEmitted: exactLiteral(boundaries.targetSqlMayBeEmitted, false, "CHINADB_SQL_BOUNDARIES_INVALID"),
+      targetSqlMayBeEmitted: exactLiteral(boundaries.targetSqlMayBeEmitted, true, "CHINADB_SQL_BOUNDARIES_INVALID"),
       claim: boundedText(boundaries.claim, 1024, "CHINADB_SQL_BOUNDARIES_INVALID"),
     },
   };
@@ -601,8 +601,17 @@ export function parseChinaDbSqlPreflightResult(
   exactLiteral(root.queryId, request.queryId, "CHINADB_SQL_RESPONSE_QUERY_MISMATCH");
   exactLiteral(root.sourceProfile, request.sourceProfile, "CHINADB_SQL_RESPONSE_SOURCE_MISMATCH");
   exactLiteral(root.routeId, expectedChinaDbSqlRouteId(request), "CHINADB_SQL_RESPONSE_ROUTE_MISMATCH");
-  exactLiteral(root.state, "BLOCKED", "CHINADB_SQL_RESPONSE_NOT_BLOCKED");
-  exactLiteral(root.targetSql, null, "CHINADB_SQL_RESPONSE_TARGET_SQL_PROHIBITED");
+  if (root.state !== "BLOCKED" && root.state !== "LOCAL_EMITTED") {
+    fail(502, "CHINADB_SQL_RESPONSE_STATE_INVALID");
+  }
+  const emitted = root.state === "LOCAL_EMITTED";
+  if (emitted) {
+    if (typeof root.targetSql !== "string" || root.targetSql.length < 1 || root.targetSql.length > chinaDbSqlResponseLimitBytes) {
+      fail(502, "CHINADB_SQL_RESPONSE_TARGET_SQL_INVALID");
+    }
+  } else if (root.targetSql !== null) {
+    fail(502, "CHINADB_SQL_RESPONSE_TARGET_SQL_PROHIBITED");
+  }
   exactLiteral(root.capabilitySnapshotDigest, request.capabilitySnapshotDigest, "CHINADB_SQL_RESPONSE_DIGEST_MISMATCH");
   exactLiteral(root.sourceDigest, expectedSourceDigest, "CHINADB_SQL_RESPONSE_SOURCE_DIGEST_MISMATCH");
   exactLiteral(root.certification, "NOT_CERTIFIED", "CHINADB_SQL_RESPONSE_CERTIFICATION_INVALID");
@@ -632,7 +641,7 @@ export function parseChinaDbSqlPreflightResult(
   exactLiteral(target.collation, request.targetCollation, "CHINADB_SQL_RESPONSE_TARGET_MISMATCH");
   exactLiteral(target.timeZone, request.targetTimeZone, "CHINADB_SQL_RESPONSE_TARGET_MISMATCH");
   exactLiteral(target.adapterId, snapshotTarget.adapterId, "CHINADB_SQL_RESPONSE_ADAPTER_MISMATCH");
-  exactLiteral(target.implementationStatus, "SPEC_ONLY", "CHINADB_SQL_RESPONSE_TARGET_STATE_INVALID");
+  exactLiteral(target.implementationStatus, "LOCAL_ADAPTER", "CHINADB_SQL_RESPONSE_TARGET_STATE_INVALID");
 
   if (!Array.isArray(root.statements) || root.statements.length > chinaDbSqlStatementLimit) {
     fail(502, "CHINADB_SQL_RESPONSE_STATEMENTS_INVALID");
@@ -696,8 +705,11 @@ export function parseChinaDbSqlPreflightResult(
       message: boundedText(item.message, 2048, "CHINADB_SQL_RESPONSE_BLOCKER_MESSAGE_INVALID"),
     };
   });
-  if (!blockers.some((blocker) => blocker.severity === "ERROR")) {
+  if (!blockers.some((blocker) => blocker.severity === "ERROR") && !emitted) {
     fail(502, "CHINADB_SQL_RESPONSE_ERROR_BLOCKER_REQUIRED");
+  }
+  if (emitted && blockers.some((blocker) => blocker.severity === "ERROR")) {
+    fail(502, "CHINADB_SQL_RESPONSE_EMITTED_WITH_ERROR");
   }
 
   const verification = record(root.verification, "CHINADB_SQL_RESPONSE_VERIFICATION_INVALID");
@@ -714,16 +726,27 @@ export function parseChinaDbSqlPreflightResult(
   if (verification.sourceParse !== "PASSED" && verification.sourceParse !== "FAILED") {
     fail(502, "CHINADB_SQL_RESPONSE_SOURCE_PARSE_INVALID");
   }
+  const evidenceState = (value: unknown, code: string): ExecutionState => {
+    if (value !== "NOT_RUN" && value !== "PASSED" && value !== "FAILED") fail(502, code);
+    return value;
+  };
+  const targetAdapter = evidenceState(verification.targetAdapter, "CHINADB_SQL_RESPONSE_FALSE_EVIDENCE");
+  const targetEmit = evidenceState(verification.targetEmit, "CHINADB_SQL_RESPONSE_FALSE_EVIDENCE");
+  const targetReparse = evidenceState(verification.targetReparse, "CHINADB_SQL_RESPONSE_FALSE_EVIDENCE");
   for (const field of [
-    "targetAdapter",
-    "targetEmit",
-    "targetReparse",
     "sourceExecution",
     "targetExecution",
     "resultEquivalence",
     "externalExecution",
   ] as const) {
     exactLiteral(verification[field], "NOT_RUN", "CHINADB_SQL_RESPONSE_FALSE_EVIDENCE");
+  }
+  if (emitted) {
+    if (targetAdapter !== "PASSED" || targetEmit !== "PASSED" || targetReparse !== "PASSED") {
+      fail(502, "CHINADB_SQL_RESPONSE_LOCAL_EMIT_EVIDENCE_INVALID");
+    }
+  } else if (targetAdapter === "PASSED" && targetEmit === "PASSED" && targetReparse === "PASSED") {
+    fail(502, "CHINADB_SQL_RESPONSE_FALSE_EVIDENCE");
   }
   if (
     (verification.sourceParse === "PASSED" && statements.length < 1)
@@ -747,20 +770,20 @@ export function parseChinaDbSqlPreflightResult(
       collation: request.targetCollation,
       timeZone: request.targetTimeZone,
       adapterId: snapshotTarget.adapterId,
-      implementationStatus: "SPEC_ONLY",
+      implementationStatus: "LOCAL_ADAPTER",
     },
     routeId: expectedChinaDbSqlRouteId(request),
-    state: "BLOCKED",
+    state: emitted ? "LOCAL_EMITTED" : "BLOCKED",
     sourceDigest: expectedSourceDigest,
     capabilitySnapshotDigest: request.capabilitySnapshotDigest,
     statements,
     blockers,
-    targetSql: null,
+    targetSql: emitted ? String(root.targetSql) : null,
     verification: {
       sourceParse: verification.sourceParse,
-      targetAdapter: "NOT_RUN",
-      targetEmit: "NOT_RUN",
-      targetReparse: "NOT_RUN",
+      targetAdapter,
+      targetEmit,
+      targetReparse,
       sourceExecution: "NOT_RUN",
       targetExecution: "NOT_RUN",
       resultEquivalence: "NOT_RUN",

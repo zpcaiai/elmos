@@ -2502,14 +2502,6 @@ export async function createJob(
   ensureMutationsAllowed(runner);
   const validated = validateCreate(request, context);
   const analysisReview = await loadApprovedAnalysis(runner, context, validated);
-  const multiEntityProductionTargets = new Set<GenerationTargetId>(["java", "python"]);
-  if (
-    validated.persistence === "postgresql"
-    && analysisReview.request.entities.length > 1
-    && validated.targets.some((target) => !multiEntityProductionTargets.has(target))
-  ) {
-    throw new GenerationRunnerError(409, "PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY");
-  }
   const job = await withDurableRuntimeOperation(
     runner,
     context,

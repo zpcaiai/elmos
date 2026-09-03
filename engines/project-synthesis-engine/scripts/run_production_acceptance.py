@@ -29,7 +29,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-MULTI_ENTITY_TARGETS = frozenset({"python", "java"})
+MULTI_ENTITY_TARGETS = frozenset({"python", "java", "csharp", "typescript", "go", "kotlin", "php", "rust"})
 
 
 MULTI_ENTITY_SHAPE: dict[str, Any] = {

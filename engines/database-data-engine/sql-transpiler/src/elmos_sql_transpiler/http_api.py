@@ -146,29 +146,51 @@ def _assert_fail_closed_assessment(value: dict[str, Any]) -> None:
     if not isinstance(verification, dict):
         raise AssertionError("commercial assessment verification is absent")
     source_parse = verification.get("sourceParse")
-    required_not_run = {
-        "targetAdapter",
-        "targetEmit",
-        "targetReparse",
+    execution_not_run = {
         "sourceExecution",
         "targetExecution",
         "resultEquivalence",
         "externalExecution",
     }
-    if set(verification) != required_not_run | {"sourceParse"}:
+    required_verification = execution_not_run | {
+        "sourceParse",
+        "targetAdapter",
+        "targetEmit",
+        "targetReparse",
+    }
+    if set(verification) != required_verification:
         raise AssertionError("commercial assessment verification fields are not exact")
-    if (
-        value.get("state") != "BLOCKED"
-        or value.get("targetSql") is not None
-        or value.get("certification") != "NOT_CERTIFIED"
-        or source_parse not in {"PASSED", "FAILED"}
-        or any(verification.get(field) != "NOT_RUN" for field in required_not_run)
-    ):
+    state = value.get("state")
+    target_sql = value.get("targetSql")
+    if value.get("certification") != "NOT_CERTIFIED" or source_parse not in {"PASSED", "FAILED"}:
+        raise AssertionError("commercial assessment escaped fail-closed boundaries")
+    if any(verification.get(field) != "NOT_RUN" for field in execution_not_run):
         raise AssertionError("commercial assessment escaped fail-closed boundaries")
     statements = value.get("statements")
     blockers = value.get("blockers")
     if not isinstance(statements, list) or not isinstance(blockers, list) or not blockers:
         raise AssertionError("commercial assessment statements are absent")
+    error_blockers = [
+        item
+        for item in blockers
+        if isinstance(item, dict) and item.get("severity") == "ERROR"
+    ]
+    if state == "BLOCKED":
+        if target_sql is not None:
+            raise AssertionError("commercial assessment escaped fail-closed boundaries")
+    elif state == "LOCAL_EMITTED":
+        if not isinstance(target_sql, str) or not target_sql.strip():
+            raise AssertionError("commercial assessment escaped fail-closed boundaries")
+        if (
+            source_parse != "PASSED"
+            or verification.get("targetAdapter") != "PASSED"
+            or verification.get("targetEmit") != "PASSED"
+            or verification.get("targetReparse") != "PASSED"
+            or error_blockers
+        ):
+            raise AssertionError("commercial assessment escaped fail-closed boundaries")
+    else:
+        raise AssertionError("commercial assessment escaped fail-closed boundaries")
     if (source_parse == "PASSED" and not statements) or (source_parse == "FAILED" and statements):
         raise AssertionError("commercial assessment parse evidence is inconsistent")
     for statement in statements:
@@ -550,7 +572,7 @@ def _readiness() -> dict[str, str | int]:
     if (
         capabilities.get("targetCount") != 13
         or capabilities.get("plannedRouteCount") != 78
-        or capabilities.get("implementationStatus") != "SPEC_ONLY"
+        or capabilities.get("implementationStatus") != "LOCAL_ADAPTER"
         or capabilities.get("externalExecution") != "NOT_RUN"
         or capabilities.get("certification") != "NOT_CERTIFIED"
         or skills.get("skillCount") != 47

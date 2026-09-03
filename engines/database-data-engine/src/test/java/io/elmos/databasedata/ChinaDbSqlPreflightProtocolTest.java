@@ -89,6 +89,14 @@ class ChinaDbSqlPreflightProtocolTest {
         assessment.put("targetSql", "SELECT 1");
         assertThrows(ChinaDbSqlPreflightFailure.class,
                 () -> protocol.assessment(request, assessment));
+
+        ObjectNode emitted = localEmittedAssessment();
+        JsonNode acceptedEmit = protocol.assessment(request, emitted);
+        assertEquals("LOCAL_EMITTED", acceptedEmit.path("state").textValue());
+        assertEquals("SELECT 1;\n", acceptedEmit.path("targetSql").textValue());
+        emitted.putNull("targetSql");
+        assertThrows(ChinaDbSqlPreflightFailure.class,
+                () -> protocol.assessment(request, emitted));
     }
 
     @Test
@@ -186,7 +194,7 @@ class ChinaDbSqlPreflightProtocolTest {
             target.put("adapterId", "chinadb." + id + ".target-adapter.v1");
             target.put("versionRequirement", "exact version required");
             target.put("compatibilityModeRequirement", "exact mode required");
-            target.put("implementationStatus", "SPEC_ONLY");
+            target.put("implementationStatus", "LOCAL_ADAPTER");
             target.put("externalExecution", "NOT_RUN");
             target.put("certification", "NOT_CERTIFIED");
         });
@@ -197,7 +205,7 @@ class ChinaDbSqlPreflightProtocolTest {
             route.put("sourceFamily", family);
             route.put("targetId", targetId);
             route.put("priority", "T1");
-            route.put("state", "SPEC_ONLY");
+            route.put("state", "LOCAL_ADAPTER");
             route.put("externalExecution", "NOT_RUN");
             route.put("certification", "NOT_CERTIFIED");
         }));
@@ -208,7 +216,7 @@ class ChinaDbSqlPreflightProtocolTest {
             exclusion.put("label", id);
             exclusion.put("reason", "excluded from this exact package");
         });
-        root.put("implementationStatus", "SPEC_ONLY");
+        root.put("implementationStatus", "LOCAL_ADAPTER");
         root.put("externalExecution", "NOT_RUN");
         root.put("certification", "NOT_CERTIFIED");
         root.put("capabilitySnapshotDigest", SNAPSHOT);
@@ -216,10 +224,10 @@ class ChinaDbSqlPreflightProtocolTest {
         root.put("plannedRouteCount", 78);
         ObjectNode boundaries = root.putObject("boundaries");
         boundaries.put("exactCommercialTargetProfilesRegistered", false);
-        boundaries.put("verifiedTargetRenderers", 0);
+        boundaries.put("verifiedTargetRenderers", 13);
         boundaries.put("productionDatabaseAccess", false);
-        boundaries.put("targetSqlMayBeEmitted", false);
-        boundaries.put("claim", "typed source parsing only");
+        boundaries.put("targetSqlMayBeEmitted", true);
+        boundaries.put("claim", "local query adapters emit SQL under an explicit mode");
         return root;
     }
 
@@ -239,7 +247,7 @@ class ChinaDbSqlPreflightProtocolTest {
         target.put("collation", "BINARY");
         target.put("timeZone", "Asia/Shanghai");
         target.put("adapterId", "chinadb.dm8.target-adapter.v1");
-        target.put("implementationStatus", "SPEC_ONLY");
+        target.put("implementationStatus", "LOCAL_ADAPTER");
         root.put("routeId", "postgresql--to--dm8");
         root.put("state", "BLOCKED");
         root.put("sourceDigest", sha256("SELECT 1"));
@@ -261,6 +269,21 @@ class ChinaDbSqlPreflightProtocolTest {
                 "targetExecution", "resultEquivalence", "externalExecution")
                 .forEach(field -> verification.put(field, "NOT_RUN"));
         root.put("certification", "NOT_CERTIFIED");
+        return root;
+    }
+
+    private ObjectNode localEmittedAssessment() {
+        ObjectNode root = assessment();
+        root.put("state", "LOCAL_EMITTED");
+        root.put("targetSql", "SELECT 1;\n");
+        ObjectNode blocker = (ObjectNode) root.path("blockers").get(0);
+        blocker.put("code", "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED");
+        blocker.put("severity", "WARNING");
+        blocker.put("message", "Local emission is not live-database evidence.");
+        ObjectNode verification = (ObjectNode) root.path("verification");
+        verification.put("targetAdapter", "PASSED");
+        verification.put("targetEmit", "PASSED");
+        verification.put("targetReparse", "PASSED");
         return root;
     }
 

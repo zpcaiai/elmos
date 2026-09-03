@@ -7,6 +7,43 @@
 > **完成的唯一判据**：真实业务逻辑 + 接进真实调用链 + 有测试覆盖行为 + **执行过**并记录结果。
 > 文件存在、目录存在、Skill 存在都不算。
 
+## 2026-09-03 当前源码覆盖说明（优先于下方历史快照）
+
+本节按 `main@a350d76c1` 重新核对。下方按日期保留的分析仍用于解释来路，但以下
+结论已经被当前源码证伪或替代，不得再作为实施前提：
+
+- 仓库是 **42 个顶层引擎 / 43 个测试步骤**，不是 41 个。现在由
+  `scripts/operations/engine-test-registry.json` 逐项登记，统一入口为
+  `make test-engine ENGINE=<name>`；`make test-engines-check` 强制新增引擎不能漏登记。
+  结果明确区分 assertion failure、collection/internal error、无测试、环境缺失、超时和
+  无 pytest 汇总，且 venv、临时目录及日志均在仓库外。#11 因此改为 `DONE`。
+- `database-bigdata-engine` **不是零测试引擎**。运行时与安装完整性测试位于
+  `tests/database-bigdata-skills/test_runtime.py` 和 `test_integration.py`，共 32 个
+  `unittest` 用例，由 `make database-bigdata-skills` 和统一引擎入口执行。它仍是明确的
+  bounded plan-skeleton；“没有 Provider/数据库副作用”是契约边界，不是要用模拟执行填掉的测试缺口。
+- `composite-engine` 只有 policy/fixtures 是 ADR-0034 的刻意设计；可执行逻辑在
+  `modules/composite-modernization`，不得再创建“第四个源码转换 Worker”。
+  Batch 22–26 五个 Java Worker 也按 ADR-0051–0055 保持独立，以
+  `modules/evidence-bound-engine` 承载共享传输和域策略。它们的 Provider Adapter
+  `NOT_CONFIGURED` 是外部执行边界；#7 的“六个骨架逐个补”前提已过期。
+- `routes/inventory.json` 当前权威口径仍是 **13 种活动语言 / 156 条路线**，
+  `pending_analyzer_languages=[]`、`pending_repository_languages=[]`。Kotlin、React 和
+  Flutter 的精确单元分析器及仓库表面已经接入；66 条相关路线仍是
+  `research / NOT_RUN / NOT_CERTIFIED`。React UI 与 Flutter framework/UI 继续归
+  `component-dialect-engine`，不得把 pure-function 分析器写成 UI 支持。此前“13→11”
+  决定发生在这些实现落地之前，未进入当前契约，不能再机械执行。
+- CAS、Snapshot、ActionCache 和 tenant API 已有 durable catalog/index、当前 trust
+  revalidation 端口、调度队列、租约与控制面装配。当前仓库内的明确闭环缺口是：
+  signed `ActionResult` completion write-back、生产 Authorizer/PayloadPolicy 绑定、
+  ExecutionJob signed envelope、runner secret/egress/admission 接线，以及 repository
+  retirement 的全局驱动和运维可观测性。真实多主机、KMS/HSM、独立 trust/revocation、
+  gVisor/Kata/Firecracker、真实 GitHub App 与 R10 仍是外部门禁。
+
+本轮已执行：统一入口 `functional-assurance-engine` **15 passed**，
+`python-engine` **32 passed / 1 warning**，测试器单元测试 **12 passed**，
+`operations-scripts-test` **70 passed**；这些是本地工程证据，不改变任何
+`NOT_RUN / NOT_CERTIFIED` 外部状态。
+
 ## 执行环境约束（决定每条能在哪做）
 
 | 环境 | 能做 | 不能做 |
@@ -510,7 +547,11 @@ PostgreSQL、MinIO、真实多主机与外部 provider 证据仍为 **NOT_RUN**�
 状态固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`、ArkUI
 `NOT_RUN / NOT_CERTIFIED`。
 
-## #11 引擎测试没有统一入口 — `READY`（2026-09-01 实测暴露）
+## #11 引擎测试统一入口 — `DONE`（2026-09-03）
+
+当前实现见本文件顶部覆盖说明及 `docs/ENGINE_TESTING.md`。以下内容保留为问题发现记录；
+其中“该做的”已经由 42 引擎完整注册表、统一 Python 结果判定、Makefile/CI 门禁和
+CWD 回归测试闭合。
 
 **症状**：仓库里 41 个引擎，**没有任何一个"跑任意引擎测试"的标准入口**。每个人和每个
 agent 都要现试，而试错过程会产出**看起来完全像真的假红**。2026-09-01 为了跑通

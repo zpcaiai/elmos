@@ -175,7 +175,7 @@ final class ChinaDbSqlPreflightProtocol {
         equalsResponseText(response, "schemaVersion", "1.0");
         equalsResponseText(response, "package", "chinadb-commercial-migration-skills");
         equalsResponseText(response, "version", "1.0.0");
-        equalsResponseText(response, "implementationStatus", "SPEC_ONLY");
+        equalsResponseText(response, "implementationStatus", "LOCAL_ADAPTER");
         equalsResponseText(response, "externalExecution", "NOT_RUN");
         equalsResponseText(response, "certification", "NOT_CERTIFIED");
         if (!DIGEST.matcher(responseText(response, "capabilitySnapshotDigest", 80)).matches()) {
@@ -197,7 +197,7 @@ final class ChinaDbSqlPreflightProtocol {
             equalsResponseText(target, "adapterId", adapterId(id));
             responseText(target, "versionRequirement", 256);
             responseText(target, "compatibilityModeRequirement", 256);
-            equalsResponseText(target, "implementationStatus", "SPEC_ONLY");
+            equalsResponseText(target, "implementationStatus", "LOCAL_ADAPTER");
             equalsResponseText(target, "externalExecution", "NOT_RUN");
             equalsResponseText(target, "certification", "NOT_CERTIFIED");
         }
@@ -218,7 +218,7 @@ final class ChinaDbSqlPreflightProtocol {
                     || !PRIORITIES.contains(responseText(route, "priority", 16))) {
                 throw failure(PROTOCOL_ERROR);
             }
-            equalsResponseText(route, "state", "SPEC_ONLY");
+            equalsResponseText(route, "state", "LOCAL_ADAPTER");
             equalsResponseText(route, "externalExecution", "NOT_RUN");
             equalsResponseText(route, "certification", "NOT_CERTIFIED");
         }
@@ -243,9 +243,9 @@ final class ChinaDbSqlPreflightProtocol {
         JsonNode boundaries = response.path("boundaries");
         exactObject(boundaries, BOUNDARY_FIELDS, PROTOCOL_ERROR);
         if (!exactBoolean(boundaries.path("exactCommercialTargetProfilesRegistered"), false)
-                || !exactInteger(boundaries.path("verifiedTargetRenderers"), 0)
+                || !exactInteger(boundaries.path("verifiedTargetRenderers"), 13)
                 || !exactBoolean(boundaries.path("productionDatabaseAccess"), false)
-                || !exactBoolean(boundaries.path("targetSqlMayBeEmitted"), false)) {
+                || !exactBoolean(boundaries.path("targetSqlMayBeEmitted"), true)) {
             throw failure(PROTOCOL_ERROR);
         }
         responseText(boundaries, "claim", 1024);
@@ -262,8 +262,23 @@ final class ChinaDbSqlPreflightProtocol {
         equalsResponseText(response, "sourceProfile", sourceProfile);
         equalsResponseText(response, "routeId", SOURCE_ROUTE_SLUGS.get(sourceProfile)
                 + "--to--" + targetId);
-        equalsResponseText(response, "state", "BLOCKED");
-        if (!response.has("targetSql") || !response.path("targetSql").isNull()) {
+        String state = responseText(response, "state", 32);
+        boolean emitted = "LOCAL_EMITTED".equals(state);
+        if (!emitted && !"BLOCKED".equals(state)) {
+            throw failure(PROTOCOL_ERROR);
+        }
+        JsonNode targetSql = response.path("targetSql");
+        if (emitted) {
+            if (!targetSql.isTextual()) {
+                throw failure(PROTOCOL_ERROR);
+            }
+            String sql = targetSql.textValue();
+            if (sql.isEmpty()
+                    || sql.indexOf('\0') >= 0
+                    || sql.getBytes(StandardCharsets.UTF_8).length > MAX_RESPONSE_BYTES) {
+                throw failure(PROTOCOL_ERROR);
+            }
+        } else if (!response.has("targetSql") || !targetSql.isNull()) {
             throw failure(PROTOCOL_ERROR);
         }
         equalsResponseText(response, "sourceDigest", sha256(requestSql(request)));
@@ -284,14 +299,36 @@ final class ChinaDbSqlPreflightProtocol {
         equalsResponseText(target, "collation", requestText(request, "targetCollation", 128));
         equalsResponseText(target, "timeZone", requestText(request, "targetTimeZone", 128));
         equalsResponseText(target, "adapterId", adapterId(targetId));
-        equalsResponseText(target, "implementationStatus", "SPEC_ONLY");
+        equalsResponseText(target, "implementationStatus", "LOCAL_ADAPTER");
 
         JsonNode verification = response.path("verification");
         exactObject(verification, VERIFICATION_FIELDS, PROTOCOL_ERROR);
         String sourceParse = responseText(verification, "sourceParse", 16);
         if (!Set.of("PASSED", "FAILED").contains(sourceParse)) throw failure(PROTOCOL_ERROR);
-        for (String field : VERIFICATION_FIELDS) {
-            if (!"sourceParse".equals(field)) equalsResponseText(verification, field, "NOT_RUN");
+        String targetAdapter = responseText(verification, "targetAdapter", 16);
+        String targetEmit = responseText(verification, "targetEmit", 16);
+        String targetReparse = responseText(verification, "targetReparse", 16);
+        Set<String> localEvidence = Set.of("NOT_RUN", "PASSED", "FAILED");
+        if (!localEvidence.contains(targetAdapter)
+                || !localEvidence.contains(targetEmit)
+                || !localEvidence.contains(targetReparse)) {
+            throw failure(PROTOCOL_ERROR);
+        }
+        for (String field : new String[] {
+                "sourceExecution", "targetExecution", "resultEquivalence", "externalExecution"
+        }) {
+            equalsResponseText(verification, field, "NOT_RUN");
+        }
+        if (emitted) {
+            if (!"PASSED".equals(targetAdapter)
+                    || !"PASSED".equals(targetEmit)
+                    || !"PASSED".equals(targetReparse)) {
+                throw failure(PROTOCOL_ERROR);
+            }
+        } else if ("PASSED".equals(targetAdapter)
+                && "PASSED".equals(targetEmit)
+                && "PASSED".equals(targetReparse)) {
+            throw failure(PROTOCOL_ERROR);
         }
 
         JsonNode statements = response.path("statements");
@@ -343,7 +380,8 @@ final class ChinaDbSqlPreflightProtocol {
             responseText(blocker, "message", 2048);
         }
 
-        if (!errorBlocker
+        if ((emitted && errorBlocker)
+                || (!emitted && !errorBlocker)
                 || ("PASSED".equals(sourceParse) && statements.isEmpty())
                 || ("FAILED".equals(sourceParse) && !statements.isEmpty())) {
             throw failure(PROTOCOL_ERROR);

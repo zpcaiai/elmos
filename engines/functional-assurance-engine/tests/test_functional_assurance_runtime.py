@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import json
-import pytest
 from pathlib import Path
+
+import pytest
 
 from elmos_functional_assurance.domain import (
     AssuranceLevel,
@@ -21,11 +22,12 @@ from elmos_functional_assurance.domain import (
 )
 from elmos_functional_assurance.database import CertificationDatabase
 from elmos_functional_assurance.golden_routes import GoldenRouteValidator
-from elmos_functional_assurance.handler_registry import FunctionalAssuranceHandlerRegistry
 from elmos_functional_assurance.kernel import FunctionalAssuranceKernel
 from elmos_functional_assurance.policies import CertificationPolicyEngine
 from elmos_functional_assurance.workflows import CertificationWorkflowRunner
 from elmos_functional_assurance.cli import main as cli_main
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[3]
 
 
 @pytest.fixture
@@ -47,7 +49,10 @@ def kernel() -> FunctionalAssuranceKernel:
 
 
 def test_all_178_skills_dispatched(kernel: FunctionalAssuranceKernel, context: FunctionalAssuranceContext) -> None:
-    skills_dir = Path("skills/elmos-functional-assurance-certification-skills-v4.1.0/agent-skills/runtime")
+    skills_dir = (
+        REPOSITORY_ROOT
+        / "skills/elmos-functional-assurance-certification-skills-v4.1.0/agent-skills/runtime"
+    )
     all_skills = sorted([p.name for p in skills_dir.iterdir() if p.is_dir()])
     assert len(all_skills) == 178
 

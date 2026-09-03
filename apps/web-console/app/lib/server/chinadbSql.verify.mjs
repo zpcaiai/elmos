@@ -27,9 +27,9 @@ const capabilities = parseChinaDbSqlCapabilities({
   plannedRouteCount: 78,
   boundaries: {
     exactCommercialTargetProfilesRegistered: false,
-    verifiedTargetRenderers: 0,
+    verifiedTargetRenderers: 13,
     productionDatabaseAccess: false,
-    targetSqlMayBeEmitted: false,
+    targetSqlMayBeEmitted: true,
     claim: "Static commercial planning registry and source-side typed preflight only.",
   },
 });
@@ -94,7 +94,7 @@ const result = {
     collation: request.targetCollation,
     timeZone: request.targetTimeZone,
     adapterId: "chinadb.dm8.target-adapter.v1",
-    implementationStatus: "SPEC_ONLY",
+    implementationStatus: "LOCAL_ADAPTER",
   },
   routeId: "postgresql--to--dm8",
   state: "BLOCKED",
@@ -143,6 +143,33 @@ assert.throws(
   }, request, capabilities, sourceDigest),
   ChinaDbSqlPolicyError,
 );
+const emitted = {
+  ...result,
+  state: "LOCAL_EMITTED",
+  targetSql: "SELECT 1;\n",
+  blockers: [{
+    code: "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
+    severity: "WARNING",
+    statementIndex: null,
+    message: "Local emission is not live-database evidence.",
+  }],
+  verification: {
+    ...result.verification,
+    targetAdapter: "PASSED",
+    targetEmit: "PASSED",
+    targetReparse: "PASSED",
+  },
+};
+const acceptedEmit = parseChinaDbSqlPreflightResult(emitted, request, capabilities, sourceDigest);
+assert.equal(acceptedEmit.state, "LOCAL_EMITTED");
+assert.equal(acceptedEmit.targetSql, "SELECT 1;\n");
+assert.equal(acceptedEmit.certification, "NOT_CERTIFIED");
+assert.ok(Object.values(acceptedEmit.verification).slice(4).every((state) => state === "NOT_RUN"));
+assert.throws(
+  () => parseChinaDbSqlPreflightResult({ ...emitted, targetSql: null }, request, capabilities, sourceDigest),
+  ChinaDbSqlPolicyError,
+);
+checks += 5;
 let deepAst = { value: "leaf" };
 for (let depth = 0; depth < 66; depth += 1) deepAst = { child: deepAst };
 assert.throws(
@@ -152,7 +179,7 @@ assert.throws(
   }, request, capabilities, sourceDigest),
   ChinaDbSqlPolicyError,
 );
-checks += 3;
+checks += 1;
 
 const parseOnly = parseChinaDbSqlPreflightRequest({ ...request, sourceProfile: "sqlite-3.53.3" });
 assert.equal(expectedChinaDbSqlRouteId(parseOnly), "sqlite-3-53-3--to--dm8");

@@ -103,6 +103,48 @@ def all_entity_sql(request: SynthesisRequest, *, placeholder: str = "?") -> list
     return [entity_sql(entity, placeholder=placeholder) for entity in request.entities]
 
 
+def uuid_relation_fields(request: SynthesisRequest) -> set[tuple[str, str]]:
+    """(entity, field) pairs the migration declares as uuid foreign keys."""
+
+    return {
+        (relation.source, relation.source_field)
+        for relation in request.canonical_relations
+        if relation.source_field is not None and relation.target_field == "id"
+    }
+
+
+def relation_parents(request: SynthesisRequest, entity_name: str) -> list[tuple[str, str]]:
+    """(source_field, parent entity) pairs required before inserting entity_name."""
+
+    return [
+        (relation.source_field, relation.target)
+        for relation in request.canonical_relations
+        if relation.source == entity_name
+        and relation.source_field is not None
+        and relation.target_field == "id"
+    ]
+
+
+def fixture_chain(request: SynthesisRequest, entity_name: str) -> list[str]:
+    """Parent entities that must exist before entity_name, parents-first."""
+
+    ordered: list[str] = []
+    visiting: set[str] = set()
+
+    def walk(name: str) -> None:
+        if name in visiting:
+            raise ValueError(f"PRODUCTION_RELATION_CYCLE:{name}")
+        visiting.add(name)
+        for _field, parent in relation_parents(request, name):
+            if parent not in ordered:
+                walk(parent)
+                ordered.append(parent)
+        visiting.discard(name)
+
+    walk(entity_name)
+    return ordered
+
+
 @dataclass(frozen=True)
 class RouteSpec:
     method: str

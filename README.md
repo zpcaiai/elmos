@@ -92,6 +92,10 @@ Web Console `/spring` 与 Java Engine `/engine/v1/spring-upgrades` 提供一条�
 
 ## 验证
 
+42 个顶层引擎统一使用 `make test-engine ENGINE=<name>`；完整注册表、结果状态和
+环境边界见 [`docs/ENGINE_TESTING.md`](docs/ENGINE_TESTING.md)。注册表本身由
+`make test-engines-check` 校验，新增引擎但未声明真实测试入口会失败关闭。
+
 ### 可选的 Skill 源包
 
 正常源码检出**有意不包含**各批次的权威 Skill 导入包（`elmos-project-synthesis-batch46-60`、

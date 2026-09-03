@@ -780,7 +780,7 @@ export function ProjectGenerationStudio() {
     if (incompatibleProductionTargets.length > 0) {
       announce(
         `当前生产请求有 ${analysis.request.entities.length} 个实体；`
-        + `${incompatibleProductionTargets.map((target) => target.language).join("、")} 仅支持单实体生产 Profile。`,
+        + `${incompatibleProductionTargets.map((target) => target.language).join("、")} 的生产 Profile 当前仍只接受单实体。`,
       );
       return;
     }
@@ -1325,7 +1325,7 @@ export function ProjectGenerationStudio() {
                   {incompatibleProductionTargets.length > 0 && (
                     <span className="warning-text">
                       目标边界阻断：{incompatibleProductionTargets.map((target) => target.language).join("、")}
-                      的 PostgreSQL Profile 只接受单实体；请改选 Java/Python 或将需求拆分。
+                      的 PostgreSQL Profile 当前仍只接受单实体；请改选多实体目标或将需求拆分。
                     </span>
                   )}
                 </div>

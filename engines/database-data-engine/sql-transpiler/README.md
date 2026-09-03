@@ -32,22 +32,27 @@ estimation, vendor-bridge, and observability operations. They require exact
 tenant/project/actor scope, reject inline secrets and ambiguous JSON, produce
 content-addressed results, and execute no provider/database/repository effect.
 
-`47/47 CODE_IMPLEMENTED` therefore means every exact Skill has executable
-repository-owned bounded handler code and tests. It does not mean the source
-package was mutated to claim implementation, or that 13 vendor renderers and
-databases were independently exercised. Exact target SQL emission, target
-apply/introspection, source/target execution, vendor tools, production cutover,
-independent verification, and certification remain `NOT_RUN` /
+Repository-owned ChinaDB query adapters can emit local target SQL under an
+explicit compatibility-mode allow-list (`LOCAL_ADAPTER` / `LOCAL_EMITTED`).
+That is syntax-ready local emission only. Exact product-version profiles,
+target apply/introspection, source/target execution, vendor tools, production
+cutover, independent verification, and certification remain `NOT_RUN` /
 `NOT_CERTIFIED`.
+
+`47/47 CODE_IMPLEMENTED` therefore means every exact Skill has executable
+repository-owned bounded handler code and tests. It does not mean the imported
+specification package was mutated, or that live vendor databases were
+independently exercised.
 
 `commercial-assess` is a read-only preflight. It requires an existing exact
 source profile, concrete target ID/version/edition/compatibility mode/driver/
 charset/collation/time zone, and a SHA-256 capability-snapshot identity. It
-parses source SQL into typed AST and semantic
-obligations, but it always returns `BLOCKED`, includes explicit blockers, and
-sets `targetSql` to null because no commercial target renderer or target
-capability snapshot has been independently verified. The example snapshot
-digest is a specimen identity only and is deliberately reported as unverified.
+parses source SQL into typed AST and semantic obligations, then either returns
+`LOCAL_EMITTED` with local target SQL under an explicit compatibility-mode
+allow-list, or `BLOCKED` with `targetSql` null. Source/target execution,
+result equivalence, and certification stay `NOT_RUN` / `NOT_CERTIFIED`. The
+example snapshot digest is a specimen identity only and is deliberately
+reported as unverified.
 
 The machine-readable contracts are:
 

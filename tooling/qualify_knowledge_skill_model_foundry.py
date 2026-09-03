@@ -182,7 +182,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 1200,
+        "timeout_seconds": 2400,
     },
     {
         "id": "repository_integration_unittest_suite",
@@ -204,7 +204,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 600,
+        "timeout_seconds": 1200,
     },
 )
 

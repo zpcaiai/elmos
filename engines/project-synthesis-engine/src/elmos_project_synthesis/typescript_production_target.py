@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 
 from .container_images import NODE_IMAGE
-from .models import FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
     ENV_AUTH_ISSUER,
@@ -23,7 +23,9 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
@@ -56,6 +58,178 @@ def _sample_json(field: FieldSpec) -> object:
         "boolean": True,
         "datetime": "2026-01-01T00:00:00Z",
     }[field.type]
+
+
+def _ts_object_literal(request: SynthesisRequest, entity: EntitySpec, parent_vars: dict[str, str]) -> str:
+    parents = dict(relation_parents(request, entity.singular))
+    parts: list[str] = []
+    for field in entity.fields:
+        if field.name in parents:
+            parts.append(f"{field.name}: {parent_vars[parents[field.name]]}")
+        else:
+            parts.append(f"{field.name}: {json.dumps(_sample_json(field))}")
+    return "{ " + ", ".join(parts) + " }"
+
+
+def _ts_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
+    by_name = {item.singular: item for item in request.entities}
+    parent_vars: dict[str, str] = {}
+    lines: list[str] = []
+    for parent in fixture_chain(request, entity.singular):
+        variable = f"{parent}Id"
+        parent_vars[parent] = variable
+        parent_entity = by_name[parent]
+        body = _ts_object_literal(request, parent_entity, parent_vars)
+        lines.extend(
+            [
+                f"const {variable} = randomUUID();",
+                f'assert.equal((await send("PUT", `/{parent_entity.plural}/${{{variable}}}`, tenantA, JSON.stringify({body}))).status, 200);',
+            ]
+        )
+    record_var = f"{entity.singular}Id"
+    body = _ts_object_literal(request, entity, parent_vars)
+    lines.extend(
+        [
+            f"const {record_var} = randomUUID();",
+            f'const created{pascal(entity.singular)} = await send("PUT", `/{entity.plural}/${{{record_var}}}`, tenantA, JSON.stringify({body}));',
+            f"assert.equal(created{pascal(entity.singular)}.status, 200, await created{pascal(entity.singular)}.text());",
+            f'const read{pascal(entity.singular)} = await send("GET", `/{entity.plural}/${{{record_var}}}`, tenantA);',
+            f"assert.equal(read{pascal(entity.singular)}.status, 200);",
+            f"assert.match(await read{pascal(entity.singular)}.text(), new RegExp({record_var}));",
+            f'const listed{pascal(entity.singular)} = await send("GET", "/{entity.plural}", tenantA);',
+            f"assert.equal(listed{pascal(entity.singular)}.status, 200);",
+            f"assert.match(await listed{pascal(entity.singular)}.text(), new RegExp({record_var}));",
+            f'assert.equal((await send("GET", `/{entity.plural}/${{{record_var}}}`, tenantB)).status, 404);',
+            f'assert.doesNotMatch(await (await send("GET", "/{entity.plural}", tenantB)).text(), new RegExp({record_var}));',
+            f'assert.equal((await send("DELETE", `/{entity.plural}/${{{record_var}}}`, tenantA)).status, 204);',
+            f'assert.equal((await send("GET", `/{entity.plural}/${{{record_var}}}`, tenantA)).status, 404);',
+        ]
+    )
+    return "\n          ".join(lines)
+
+
+def _ts_entity_store(entity: EntitySpec, sql: object) -> str:
+    entity_class = pascal(entity.singular)
+    field_types = "\n          ".join(f"{field.name}: {_ts_type(field)};" for field in entity.fields)
+    upsert_values = ", ".join(f"payload.{field.name}" for field in entity.fields)
+    return f"""
+            export interface {entity_class} {{
+              id: string;
+              {field_types}
+            }}
+
+            export interface {entity_class}Upsert {{
+              {field_types}
+            }}
+
+            export function list{pascal(entity.plural)}(tenantId: string): Promise<{entity_class}[]> {{
+              return inTenant(tenantId, async (client) => {{
+                const result = await client.query({json.dumps(sql.list_sql)});
+                return result.rows as {entity_class}[];
+              }});
+            }}
+
+            export function get{entity_class}(tenantId: string, recordId: string): Promise<{entity_class} | null> {{
+              return inTenant(tenantId, async (client) => {{
+                const result = await client.query({json.dumps(sql.get_sql)}, [recordId]);
+                return (result.rows[0] as {entity_class} | undefined) ?? null;
+              }});
+            }}
+
+            export function save{entity_class}(
+              tenantId: string,
+              recordId: string,
+              payload: {entity_class}Upsert,
+            ): Promise<{entity_class}> {{
+              return inTenant(tenantId, async (client) => {{
+                const result = await client.query({json.dumps(sql.upsert_sql)}, [
+                  tenantId,
+                  recordId,
+                  {upsert_values},
+                ]);
+                return result.rows[0] as {entity_class};
+              }});
+            }}
+
+            export function delete{entity_class}(tenantId: string, recordId: string): Promise<void> {{
+              return inTenant(tenantId, async (client) => {{
+                await client.query({json.dumps(sql.delete_sql)}, [recordId]);
+              }});
+            }}
+            """
+
+
+def _ts_entity_validator(entity: EntitySpec) -> str:
+    entity_class = pascal(entity.singular)
+    allowed_keys = json.dumps(sorted(field.name for field in entity.fields))
+    required_string_checks = "\n            ".join(
+        f'if (typeof payload.{field.name} !== "string" || payload.{field.name}.length === 0) return null;'
+        if field.type == "string" and field.required
+        else f'if (typeof payload.{field.name} !== "{_ts_type(field)}") return null;'
+        for field in entity.fields
+    )
+    return f"""
+            function validated{entity_class}Upsert(raw: string): {entity_class}Upsert | null {{
+              let payload: Record<string, unknown>;
+              try {{
+                payload = JSON.parse(raw);
+              }} catch {{
+                return null;
+              }}
+              if (typeof payload !== "object" || payload === null || Array.isArray(payload)) return null;
+              const allowed = new Set({allowed_keys} as const);
+              for (const key of Object.keys(payload)) {{
+                if (!allowed.has(key as never)) return null;
+              }}
+              {required_string_checks}
+              return payload as unknown as {entity_class}Upsert;
+            }}
+            """
+
+
+def _ts_entity_dispatch(entity: EntitySpec) -> str:
+    entity_class = pascal(entity.singular)
+    list_name = f"list{pascal(entity.plural)}"
+    return f"""
+                  if (segments[0] === "{entity.plural}") {{
+                    if (segments.length === 1) {{
+                      if (request.method !== "GET") {{
+                        sendJson(response, 405, {{ error: "method_not_allowed" }});
+                        return;
+                      }}
+                      sendJson(response, 200, await {list_name}(tenant));
+                      return;
+                    }}
+                    const recordId = segments[1];
+                    if (!UUID_PATTERN.test(recordId)) {{
+                      sendJson(response, 422, {{ error: "RECORD_ID_MUST_BE_UUID" }});
+                      return;
+                    }}
+                    if (request.method === "GET") {{
+                      const record = await get{entity_class}(tenant, recordId);
+                      if (record === null) sendJson(response, 404, {{ error: "not_found" }});
+                      else sendJson(response, 200, record);
+                      return;
+                    }}
+                    if (request.method === "PUT") {{
+                      const payload = validated{entity_class}Upsert(await readBody(request));
+                      if (payload === null) {{
+                        sendJson(response, 422, {{ error: "PAYLOAD_INVALID" }});
+                        return;
+                      }}
+                      sendJson(response, 200, await save{entity_class}(tenant, recordId, payload));
+                      return;
+                    }}
+                    if (request.method === "DELETE") {{
+                      await delete{entity_class}(tenant, recordId);
+                      response.writeHead(204);
+                      response.end();
+                      return;
+                    }}
+                    sendJson(response, 405, {{ error: "method_not_allowed" }});
+                    return;
+                  }}
+            """
 
 
 def _auth_ts(request: SynthesisRequest) -> str:
@@ -174,26 +348,17 @@ def _auth_ts(request: SynthesisRequest) -> str:
 
 
 def render_typescript_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        # Same deliberate refusal as the Go profile: emitting only the first
-        # entity would silently drop declared capabilities.
-        raise ValueError(
-            "TYPESCRIPT_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    sql = all_entity_sql(request, placeholder="${}")[0]
-    field_types = "\n          ".join(f"{field.name}: {_ts_type(field)};" for field in entity.fields)
-    upsert_values = ", ".join(f"payload.{field.name}" for field in entity.fields)
-    required_string_checks = "\n            ".join(
-        f'if (typeof payload.{field.name} !== "string" || payload.{field.name}.length === 0) return null;'
-        if field.type == "string" and field.required
-        else f'if (typeof payload.{field.name} !== "{_ts_type(field)}") return null;'
-        for field in entity.fields
+    statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
+    store_entities = "\n".join(
+        _ts_entity_store(entity, statements[entity.singular]) for entity in request.entities
     )
-    allowed_keys = json.dumps(sorted(field.name for field in entity.fields))
-    body_json = json.dumps({field.name: _sample_json(field) for field in entity.fields})
+    import_names = ",\n              ".join(
+        f"delete{pascal(entity.singular)},\n              get{pascal(entity.singular)},\n              list{pascal(entity.plural)},\n              save{pascal(entity.singular)},\n              type {pascal(entity.singular)}Upsert"
+        for entity in request.entities
+    )
+    validators = "\n".join(_ts_entity_validator(entity) for entity in request.entities)
+    dispatches = "\n".join(_ts_entity_dispatch(entity) for entity in request.entities)
+    collection_names = json.dumps([entity.plural for entity in request.entities])
 
     files: dict[str, str] = {
         ".gitignore": gitignore() + "dist/\nnode_modules/\n",
@@ -246,15 +411,6 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
             import pg from "pg";
             import {{ mustEnv }} from "./auth.js";
 
-            export interface {entity_class} {{
-              id: string;
-              {field_types}
-            }}
-
-            export interface {entity_class}Upsert {{
-              {field_types}
-            }}
-
             const url = readFileSync(mustEnv("{ENV_DATABASE_URL_FILE}"), "utf8").trim();
             if (!url.startsWith("postgresql://")) throw new Error("DATABASE_URL_SCHEME_UNSUPPORTED");
             export const pool = new pg.Pool({{ connectionString: url, max: 8 }});
@@ -285,40 +441,7 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
               }}
             }}
 
-            export function list{entity_class}s(tenantId: string): Promise<{entity_class}[]> {{
-              return inTenant(tenantId, async (client) => {{
-                const result = await client.query({json.dumps(sql.list_sql)});
-                return result.rows as {entity_class}[];
-              }});
-            }}
-
-            export function get{entity_class}(tenantId: string, recordId: string): Promise<{entity_class} | null> {{
-              return inTenant(tenantId, async (client) => {{
-                const result = await client.query({json.dumps(sql.get_sql)}, [recordId]);
-                return (result.rows[0] as {entity_class} | undefined) ?? null;
-              }});
-            }}
-
-            export function save{entity_class}(
-              tenantId: string,
-              recordId: string,
-              payload: {entity_class}Upsert,
-            ): Promise<{entity_class}> {{
-              return inTenant(tenantId, async (client) => {{
-                const result = await client.query({json.dumps(sql.upsert_sql)}, [
-                  tenantId,
-                  recordId,
-                  {upsert_values},
-                ]);
-                return result.rows[0] as {entity_class};
-              }});
-            }}
-
-            export function delete{entity_class}(tenantId: string, recordId: string): Promise<void> {{
-              return inTenant(tenantId, async (client) => {{
-                await client.query({json.dumps(sql.delete_sql)}, [recordId]);
-              }});
-            }}
+            {store_entities}
             """
         ),
         "src/server.ts": clean(
@@ -326,15 +449,11 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
             import {{ createServer, type IncomingMessage, type Server, type ServerResponse }} from "node:http";
             import {{ tenantFrom }} from "./auth.js";
             import {{
-              delete{entity_class},
-              get{entity_class},
-              list{entity_class}s,
-              save{entity_class},
-              type {entity_class}Upsert,
+              {import_names}
             }} from "./store.js";
 
             const UUID_PATTERN = /^[0-9a-f]{{8}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{4}}-[0-9a-f]{{12}}$/i;
-            const ALLOWED_KEYS = new Set({allowed_keys} as const);
+            const COLLECTIONS = new Set({collection_names} as const);
 
             function sendJson(response: ServerResponse, status: number, body: unknown): void {{
               response.writeHead(status, {{ "content-type": "application/json" }});
@@ -359,20 +478,7 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
               }});
             }}
 
-            function validatedUpsert(raw: string): {entity_class}Upsert | null {{
-              let payload: Record<string, unknown>;
-              try {{
-                payload = JSON.parse(raw);
-              }} catch {{
-                return null;
-              }}
-              if (typeof payload !== "object" || payload === null || Array.isArray(payload)) return null;
-              for (const key of Object.keys(payload)) {{
-                if (!ALLOWED_KEYS.has(key as never)) return null;
-              }}
-              {required_string_checks}
-              return payload as unknown as {entity_class}Upsert;
-            }}
+            {validators}
 
             export function newServer(): Server {{
               return createServer(async (request, response) => {{
@@ -383,7 +489,7 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
                     sendJson(response, 200, {{ status: "UP", service: "{request.project_name}" }});
                     return;
                   }}
-                  if (segments[0] !== "{entity.plural}" || segments.length > 2) {{
+                  if (!COLLECTIONS.has(segments[0] as never) || segments.length > 2) {{
                     sendJson(response, 404, {{ error: "not_found" }});
                     return;
                   }}
@@ -392,41 +498,8 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
                     sendJson(response, 401, {{ error: "unauthorized" }});
                     return;
                   }}
-                  if (segments.length === 1) {{
-                    if (request.method !== "GET") {{
-                      sendJson(response, 405, {{ error: "method_not_allowed" }});
-                      return;
-                    }}
-                    sendJson(response, 200, await list{entity_class}s(tenant));
-                    return;
-                  }}
-                  const recordId = segments[1];
-                  if (!UUID_PATTERN.test(recordId)) {{
-                    sendJson(response, 422, {{ error: "RECORD_ID_MUST_BE_UUID" }});
-                    return;
-                  }}
-                  if (request.method === "GET") {{
-                    const record = await get{entity_class}(tenant, recordId);
-                    if (record === null) sendJson(response, 404, {{ error: "not_found" }});
-                    else sendJson(response, 200, record);
-                    return;
-                  }}
-                  if (request.method === "PUT") {{
-                    const payload = validatedUpsert(await readBody(request));
-                    if (payload === null) {{
-                      sendJson(response, 422, {{ error: "PAYLOAD_INVALID" }});
-                      return;
-                    }}
-                    sendJson(response, 200, await save{entity_class}(tenant, recordId, payload));
-                    return;
-                  }}
-                  if (request.method === "DELETE") {{
-                    await delete{entity_class}(tenant, recordId);
-                    response.writeHead(204);
-                    response.end();
-                    return;
-                  }}
-                  sendJson(response, 405, {{ error: "method_not_allowed" }});
+                  {dispatches}
+                  sendJson(response, 404, {{ error: "not_found" }});
                 }} catch {{
                   sendJson(response, 500, {{ error: "QUERY_FAILED" }});
                 }}
@@ -466,7 +539,7 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
             });
             """
         ),
-        "src/integration.test.ts": _integration_test_ts(request, body_json),
+        "src/integration.test.ts": _integration_test_ts(request),
         "scripts/local_runtime.py": render_local_runtime(
             auth_mode=request.auth_mode,
             app_command=["sh", "-c", "pnpm install --silent && pnpm exec tsc && node dist/main.js"],
@@ -545,8 +618,9 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
     return files
 
 
-def _integration_test_ts(request: SynthesisRequest, body_json: str) -> str:
+def _integration_test_ts(request: SynthesisRequest) -> str:
     entity = request.entities[0]
+    entity_scenarios = "\n          ".join(_ts_entity_scenario(request, item) for item in request.entities)
     if request.auth_mode == "jwt":
         signer = f"""
         function signToken(tenant: string | null, issuer: string, audience: string, valid: boolean): string {{
@@ -644,27 +718,7 @@ def _integration_test_ts(request: SynthesisRequest, body_json: str) -> str:
           // missing-tenant-claim-rejected
           assert.equal((await send("GET", "/{entity.plural}", signToken(null, issuer, audience, true))).status, 401);
 
-          // upsert-and-read
-          const recordId = randomUUID();
-          const payload = JSON.stringify({body_json});
-          const created = await send("PUT", `/{entity.plural}/${{recordId}}`, tenantA, payload);
-          assert.equal(created.status, 200, await created.text());
-          const read = await send("GET", `/{entity.plural}/${{recordId}}`, tenantA);
-          assert.equal(read.status, 200);
-          assert.match(await read.text(), new RegExp(recordId));
-
-          // list-scoped-to-tenant
-          const listed = await send("GET", "/{entity.plural}", tenantA);
-          assert.equal(listed.status, 200);
-          assert.match(await listed.text(), new RegExp(recordId));
-
-          // cross-tenant-read-blocked
-          assert.equal((await send("GET", `/{entity.plural}/${{recordId}}`, tenantB)).status, 404);
-          assert.doesNotMatch(await (await send("GET", "/{entity.plural}", tenantB)).text(), new RegExp(recordId));
-
-          // delete-removes-record
-          assert.equal((await send("DELETE", `/{entity.plural}/${{recordId}}`, tenantA)).status, 204);
-          assert.equal((await send("GET", `/{entity.plural}/${{recordId}}`, tenantA)).status, 404);
+          {entity_scenarios}
         }});
         """
     )

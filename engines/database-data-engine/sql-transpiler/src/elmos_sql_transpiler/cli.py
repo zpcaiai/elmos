@@ -153,7 +153,7 @@ def main(argv: list[str] | None = None) -> int:
             assessment = assess_commercial(parse_commercial_request_json(args.request.read_bytes()))
             rendered = _json(assessment.to_dict()) + "\n"
             _create_only_output(args.output, rendered, label="commercial assessment")
-            return 3
+            return 0 if assessment.state == "LOCAL_EMITTED" else 3
         if args.command == "commercial-skill-capabilities":
             rendered = _json(skill_capabilities()) + "\n"
             _create_only_output(args.output, rendered, label="commercial Skill capability")

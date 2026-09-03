@@ -226,7 +226,7 @@ def test_rust_inventory_and_analyze_dispatchers_require_isolated_cargo(
 ) -> None:
     source = tmp_path / "sample.rs"
     _write_sample(source)
-    calls: list[tuple[list[str], Path, int, bool]] = []
+    calls: list[tuple[list[str], Path, int, bool, Path | None]] = []
 
     def stop_after_dispatch(
         command: list[str],
@@ -234,8 +234,10 @@ def test_rust_inventory_and_analyze_dispatchers_require_isolated_cargo(
         cwd: Path,
         timeout: int = 120,
         isolated_cargo: bool = False,
+        cargo_package: Path | None = None,
+        **kwargs: Any,
     ) -> dict[str, Any]:
-        calls.append((command, cwd, timeout, isolated_cargo))
+        calls.append((command, cwd, timeout, isolated_cargo, cargo_package))
         raise RouteError("TEST_RUST_DISPATCH_REACHED")
 
     monkeypatch.setattr(native, "exact_toolchain", lambda _language: rust_toolchain)
@@ -246,7 +248,7 @@ def test_rust_inventory_and_analyze_dispatchers_require_isolated_cargo(
         native.analyze(source, "rust", "total")
 
     assert len(calls) == 2
-    for command, cwd, timeout, isolated_cargo in calls:
+    for command, cwd, timeout, isolated_cargo, cargo_package in calls:
         assert command[1:6] == [
             "run",
             "--quiet",
@@ -258,6 +260,7 @@ def test_rust_inventory_and_analyze_dispatchers_require_isolated_cargo(
         assert cwd == RUST_PACKAGE
         assert timeout == 900
         assert isolated_cargo is True
+        assert cargo_package == RUST_PACKAGE
 
 
 @pytest.mark.parametrize("mutation", ["missing", "tampered"])

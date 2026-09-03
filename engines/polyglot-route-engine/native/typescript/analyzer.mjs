@@ -469,29 +469,60 @@ function validateEmittedArithmeticExpression(
   throw new Error(`TYPESCRIPT_EMITTED_EXPRESSION_UNSUPPORTED:${ts.SyntaxKind[node.kind]}`);
 }
 
-function validateEmittedArithmeticStatements(nodes, environment, numericReturnContract) {
+function validateEmittedArithmeticStatements(nodes, environment, numericReturnContract, liftedReturn) {
   for (const node of nodes) {
     if (ts.isReturnStatement(node) && node.expression) {
       const expression = numericReturnContract === null
         ? node.expression
         : node.expression.arguments[0];
       validateEmittedArithmeticExpression(expression, environment);
+      if (liftedReturn !== undefined) {
+        const actualType = emittedExpressionType(node.expression, environment);
+        if (actualType !== liftedReturn) {
+          throw new Error(`TYPESCRIPT_EMITTED_RETURN_TYPE_MISMATCH:${liftedReturn}:${actualType}`);
+        }
+      }
       continue;
     }
     if (ts.isIfStatement(node)) {
       validateEmittedArithmeticExpression(node.expression, environment);
       validateEmittedArithmeticStatements(
         statementNodes(node.thenStatement),
-        environment,
+        new Map(environment),
         numericReturnContract,
+        liftedReturn,
       );
       if (node.elseStatement) {
         validateEmittedArithmeticStatements(
           statementNodes(node.elseStatement),
-          environment,
+          new Map(environment),
           numericReturnContract,
+          liftedReturn,
         );
       }
+      continue;
+    }
+    if (ts.isVariableStatement(node)) {
+      const declList = node.declarationList;
+      if (!(declList.flags & ts.NodeFlags.Const)) {
+        throw new Error("TYPESCRIPT_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (declList.declarations.length !== 1) {
+        throw new Error("TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      const decl = declList.declarations[0];
+      if (!ts.isIdentifier(decl.name)) {
+        throw new Error("TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.type) {
+        throw new Error("TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.initializer) {
+        throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
+      }
+      const canonicalType = typeName(decl.type);
+      validateEmittedArithmeticExpression(decl.initializer, environment);
+      environment.set(decl.name.text, canonicalType);
       continue;
     }
     throw new Error(`TYPESCRIPT_EMITTED_STATEMENT_UNSUPPORTED:${ts.SyntaxKind[node.kind]}`);
@@ -521,6 +552,32 @@ function sourceStatements(nodes) {
         else: node.elseStatement ? sourceStatements(statementNodes(node.elseStatement)) : [],
       };
     }
+    if (ts.isVariableStatement(node)) {
+      const declList = node.declarationList;
+      if (!(declList.flags & ts.NodeFlags.Const)) {
+        throw new Error("TYPESCRIPT_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (declList.declarations.length !== 1) {
+        throw new Error("TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      const decl = declList.declarations[0];
+      if (!ts.isIdentifier(decl.name)) {
+        throw new Error("TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.type) {
+        throw new Error("TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.initializer) {
+        throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
+      }
+      const canonicalType = typeName(decl.type);
+      return {
+        kind: "let",
+        name: decl.name.text,
+        type: canonicalType,
+        expression: sourceExpression(decl.initializer),
+      };
+    }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
   });
 }
@@ -536,6 +593,32 @@ function emittedStatements(nodes) {
         condition: emittedExpression(node.expression),
         then: emittedStatements(statementNodes(node.thenStatement)),
         else: node.elseStatement ? emittedStatements(statementNodes(node.elseStatement)) : [],
+      };
+    }
+    if (ts.isVariableStatement(node)) {
+      const declList = node.declarationList;
+      if (!(declList.flags & ts.NodeFlags.Const)) {
+        throw new Error("TYPESCRIPT_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (declList.declarations.length !== 1) {
+        throw new Error("TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      const decl = declList.declarations[0];
+      if (!ts.isIdentifier(decl.name)) {
+        throw new Error("TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.type) {
+        throw new Error("TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+      }
+      if (!decl.initializer) {
+        throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
+      }
+      const canonicalType = typeName(decl.type);
+      return {
+        kind: "let",
+        name: decl.name.text,
+        type: canonicalType,
+        expression: emittedExpression(decl.initializer),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
@@ -665,14 +748,8 @@ function analyzeNamedFunction(functionName) {
       if (declaredReturn !== "number" && numericContract !== null) {
         throw new Error("TYPESCRIPT_EMITTED_RETURN_GUARD_TYPE_MISMATCH");
       }
-      validateEmittedArithmeticStatements(split.body, environment, numericContract);
       const liftedReturn = numericContract ?? declaredReturn;
-      for (const value of returns) {
-        const actualType = emittedExpressionType(value, environment);
-        if (actualType !== liftedReturn) {
-          throw new Error(`TYPESCRIPT_EMITTED_RETURN_TYPE_MISMATCH:${liftedReturn}:${actualType}`);
-        }
-      }
+      validateEmittedArithmeticStatements(split.body, environment, numericContract, liftedReturn);
       return {
         name: item.name.text,
         parameters: liftedParameters,

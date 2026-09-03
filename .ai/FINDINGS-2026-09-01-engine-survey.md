@@ -1,5 +1,11 @@
 # FINDINGS 2026-09-01 · 20 引擎测试普查(云端复原实测)
 
+> **2026-09-03 更正：**“`database-bigdata-engine` 完全没有 tests 目录，因此是零测试
+> 引擎”只检查了引擎目录，结论错误。它的 32 个运行时/安装完整性用例在仓库级
+> `tests/database-bigdata-skills/`，并由 `make database-bigdata-skills` 执行。
+> 当前统一注册表也把该根绑定到 `database-bigdata-engine`。下文原句保留为当时普查记录，
+> 不得再引用为当前缺口。
+
 **执行环境**:设备桥 device_bash 因本会话 VM 卷 ENOSPC 不可用;改用「Mac→云端逐引擎复原」法:
 device_stage_files 搬运源码 + Blender 无头 CLI(`blender --background --python`)在 Mac 上打 tar 包/复制超深路径文件,云容器内以 `uv run --locked --with pytest` 在仓库根 CWD 下逐引擎实测。
 判读纪律:只认 pytest 汇总行,不认退出码。

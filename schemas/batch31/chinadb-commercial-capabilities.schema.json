@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://elmos.dev/schemas/batch31/chinadb-commercial-capabilities.schema.json",
   "title": "ELMOS ChinaDB commercial SQL capability snapshot",
-  "description": "Specification-only inventory for the 13 ChinaDB targets and 78 planned source-to-target routes. This document is not runtime or certification evidence.",
+  "description": "Local query-adapter inventory for the 13 ChinaDB targets and 78 planned source-to-target routes. External execution and certification remain NOT_RUN / NOT_CERTIFIED.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -67,7 +67,7 @@
       }
     },
     "implementationStatus": {
-      "const": "SPEC_ONLY"
+      "const": "LOCAL_ADAPTER"
     },
     "externalExecution": {
       "const": "NOT_RUN"
@@ -90,13 +90,13 @@
           "const": false
         },
         "verifiedTargetRenderers": {
-          "const": 0
+          "const": 13
         },
         "productionDatabaseAccess": {
           "const": false
         },
         "targetSqlMayBeEmitted": {
-          "const": false
+          "const": true
         },
         "claim": {
           "type": "string",
@@ -175,7 +175,7 @@
           "maxLength": 256
         },
         "implementationStatus": {
-          "const": "SPEC_ONLY"
+          "const": "LOCAL_ADAPTER"
         },
         "externalExecution": {
           "const": "NOT_RUN"
@@ -216,7 +216,7 @@
           ]
         },
         "state": {
-          "const": "SPEC_ONLY"
+          "const": "LOCAL_ADAPTER"
         },
         "externalExecution": {
           "const": "NOT_RUN"

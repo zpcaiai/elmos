@@ -237,8 +237,8 @@ export function ChinaDbSqlPreflightStudio() {
       <section className="page-header">
         <div>
           <span className="overline">BATCH 31 · READ-ONLY SOURCE PREFLIGHT</span>
-          <h1>ChinaDB SQL 只读预检</h1>
-          <p>解析精确源方言并列出迁移义务；目标适配器、目标 SQL、实库执行与认证始终失败关闭。</p>
+          <h1>ChinaDB SQL 预检</h1>
+          <p>在显式兼容模式下发射本地目标 SQL；实库执行、结果等价与认证仍失败关闭。</p>
         </div>
         <Link className="button button-secondary" href="/migration">
           <Icon name="arrow" size={16} />返回迁移工坊
@@ -254,7 +254,7 @@ export function ChinaDbSqlPreflightStudio() {
               ? `已绑定 ${capabilities.targetCount} 个目标、${capabilities.plannedRouteCount} 条规划路线；不会连接数据库。`
               : "能力服务不可用；提交保持禁用。"}
         </span>
-        <StatusChip status={capabilities ? "SPEC_ONLY" : "BLOCKED"} compact />
+        <StatusChip status={capabilities ? "LOCAL_ADAPTER" : "BLOCKED"} compact />
       </section>
 
       {error && (
@@ -273,7 +273,7 @@ export function ChinaDbSqlPreflightStudio() {
         >
           <div className={styles.sectionHeading}>
             <div><span className="overline">EXACT REQUEST</span><h2>源 SQL 与目标精确元组</h2></div>
-            <StatusChip status="BLOCKED" compact />
+            <StatusChip status={capabilities ? "LOCAL_ADAPTER" : "BLOCKED"} compact />
           </div>
 
           <fieldset className={styles.fieldset}>
@@ -284,7 +284,7 @@ export function ChinaDbSqlPreflightStudio() {
             </div>
             <p id="sql-source-profile-hint" className={styles.sourceProfileHint}>
               {sourceRoutePlanned
-                ? "该源家族存在 13 条商业目标规划路线；目标实现仍为 SPEC_ONLY。"
+                ? "该源家族存在 13 条商业目标规划路线；本地查询适配器仅在显式兼容模式下发射 SQL。"
                 : "该 Profile 仅用于 typed source intake，不在 78 条商业规划路线内；结果将明确标记 COMMERCIAL_ROUTE_NOT_PLANNED。"}
             </p>
           </fieldset>
@@ -318,10 +318,10 @@ export function ChinaDbSqlPreflightStudio() {
           <label className={styles.sqlField} htmlFor="sql-source"><span>源 SQL</span><textarea id="sql-source" aria-describedby="sql-source-hint" value={fields.sql} onChange={(event) => updateField("sql", event.target.value)} placeholder="粘贴已脱敏的查询；不要包含凭据、个人信息或未授权生产数据。" required spellCheck={false} /><small id="sql-source-hint">UTF-8 最大 {chinaDbSqlInputLimitBytes / 1024} KiB。SQL 只发送到同源 BFF 和受信 control-plane，不保存为草稿。</small></label>
 
           <div className={styles.digestBlock}><span>能力快照摘要</span><code>{capabilities?.capabilitySnapshotDigest ?? "尚未绑定"}</code></div>
-          <div className={styles.boundary}><Icon name="shield" size={17} /><p>本操作只解析源 SQL。不会生成目标 SQL、连接数据库、执行查询、验证等价性或签发认证。</p></div>
+          <div className={styles.boundary}><Icon name="shield" size={17} /><p>本操作可在显式兼容模式下生成本地目标 SQL。不会连接数据库、验证行值等价或签发认证。</p></div>
           <div className={styles.actions}>
             {busy && <button className="button button-secondary" type="button" onClick={cancelAssessment}>取消本次预检</button>}
-            <button className="button button-primary" type="submit" disabled={!capabilities || busy}>{busy ? "正在只读解析…" : "运行只读预检"}</button>
+            <button className="button button-primary" type="submit" disabled={!capabilities || busy}>{busy ? "正在评估…" : "运行 SQL 预检"}</button>
           </div>
         </form>
 
@@ -329,9 +329,9 @@ export function ChinaDbSqlPreflightStudio() {
           <span className="overline">FAIL-CLOSED BOUNDARY</span>
           <h2>当前能力上限</h2>
           <dl>
-            <div><dt>目标 Renderer</dt><dd>0</dd></div>
+            <div><dt>目标 Renderer</dt><dd>{capabilities?.boundaries.verifiedTargetRenderers ?? 0}</dd></div>
             <div><dt>生产数据库访问</dt><dd>FALSE</dd></div>
-            <div><dt>目标 SQL</dt><dd>PROHIBITED</dd></div>
+            <div><dt>目标 SQL</dt><dd>{capabilities?.boundaries.targetSqlMayBeEmitted ? "LOCAL_ONLY" : "PROHIBITED"}</dd></div>
             <div><dt>外部执行</dt><dd>NOT_RUN</dd></div>
             <div><dt>认证</dt><dd>NOT_CERTIFIED</dd></div>
           </dl>
@@ -342,16 +342,24 @@ export function ChinaDbSqlPreflightStudio() {
       {result && (
         <section ref={resultPanel} className={`surface-card ${styles.result}`} tabIndex={-1} aria-labelledby="sql-preflight-result-title">
           <div className={styles.resultHeading}>
-            <div><span className="overline">TYPED SOURCE ASSESSMENT</span><h2 id="sql-preflight-result-title">预检结果：已阻断</h2><p>{result.routeId} · {result.queryId}</p></div>
+            <div><span className="overline">TYPED SOURCE ASSESSMENT</span><h2 id="sql-preflight-result-title">预检结果：{result.state === "LOCAL_EMITTED" ? "本地已发射" : "已阻断"}</h2><p>{result.routeId} · {result.queryId}</p></div>
             <StatusChip status={result.state} />
           </div>
 
           <div className={styles.resultFacts}>
             <div><span>源解析</span><StatusChip status={result.verification.sourceParse} compact /></div>
-            <div><span>目标 SQL</span><strong>NULL · 未生成</strong></div>
+            <div><span>目标 SQL</span><strong>{result.targetSql ? "已生成本地 SQL" : "NULL · 未生成"}</strong></div>
             <div><span>目标状态</span><StatusChip status={result.target.implementationStatus} compact /></div>
             <div><span>认证</span><StatusChip status={result.certification} compact /></div>
           </div>
+
+          {result.targetSql && (
+            <div className={styles.statementSection}>
+              <h3>本地目标 SQL</h3>
+              <pre aria-label="本地发射的目标 SQL">{result.targetSql}</pre>
+              <p className={styles.noStatements}>此 SQL 未经目标库执行或等价验证，不得当作认证产物。</p>
+            </div>
+          )}
 
           <div className={styles.resultGrid}>
             <div>

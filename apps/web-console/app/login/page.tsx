@@ -50,7 +50,7 @@ export default async function LoginPage({
 
         <div className="user-scope-notice" role="note">
           <strong>登录后可以使用的功能</strong>
-          <span>Spring 老项目翻新、全库跨语言转换、多模态输入、多语言项目生成、前端转换工厂、代码仓库工作区、任务编排与模型路由、迁移工坊、功能能力中心、套餐与用量、账户与组织。</span>
+          <span>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换、多模态输入、前端转换工厂、代码仓库工作区、任务编排与模型路由、迁移工坊、功能能力中心、套餐与用量、账户与组织。</span>
           <small>平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放。</small>
         </div>
         {error && <div className="auth-error" role="alert">{error}</div>}
