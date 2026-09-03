@@ -1,2 +1,0 @@
-[console_scripts]
-elmos-project-intelligence = elmos_project_intelligence.cli:main

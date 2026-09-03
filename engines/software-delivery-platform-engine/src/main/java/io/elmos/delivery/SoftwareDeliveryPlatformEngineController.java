@@ -1,4 +1,4 @@
-package io.elmos.deliveryplatform;
+package io.elmos.delivery;
 
 import io.elmos.engine.api.EngineApi.*;
 import io.elmos.executiondomain.EvidenceBoundDomainEngine;
