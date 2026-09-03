@@ -295,17 +295,24 @@ def _output(
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
+            env = sanitized_subprocess_env(
+                home=home,
+                temp_dir=scratch,
+                executable_dirs=(Path(command[0]).resolve().parent, *executable_dirs),
+            )
+            if platform.system() == "Darwin":
+                current_user = os.environ.get("USER") or "nobody"
+                env["USER"] = current_user
+                env["LOGNAME"] = current_user
+                if "__CF_USER_TEXT_ENCODING" in os.environ:
+                    env["__CF_USER_TEXT_ENCODING"] = os.environ["__CF_USER_TEXT_ENCODING"]
             completed = subprocess.run(
                 command,
                 check=False,
                 capture_output=True,
                 text=True,
                 timeout=30,
-                env=sanitized_subprocess_env(
-                    home=home,
-                    temp_dir=scratch,
-                    executable_dirs=(Path(command[0]).resolve().parent, *executable_dirs),
-                ),
+                env=env,
             )
     except (OSError, subprocess.TimeoutExpired) as error:
         raise RouteError(f"EXACT_TOOLCHAIN_UNAVAILABLE:{command[0]}") from error

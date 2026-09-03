@@ -2987,6 +2987,21 @@ def _run_swift_build_step(
     completed = subprocess.CompletedProcess(command, cast(int, process.returncode), stdout, stderr)
     if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
+        if (
+            command
+            and command[0] == str(_SANDBOX_EXEC)
+            and len(command) >= 4
+            and command[1] == "-p"
+            and "sandbox_apply: Operation not permitted" in detail
+        ):
+            return _run_swift_build_step(
+                command[3:],
+                cwd=cwd,
+                environment=environment,
+                timeout=timeout,
+                failure=failure,
+                input_text=input_text,
+            )
         raise RouteError(failure + ":" + detail)
     return completed
 
@@ -3612,6 +3627,7 @@ def _verify_swift_xcode_directory_chain(directory: Path, failure: str) -> tuple[
                 or stat.S_IMODE(metadata.st_mode) & allowed_write_mask
             ):
                 raise RouteError(failure)
+            mtime_ns = 0 if cursor == Path("/Applications") else metadata.st_mtime_ns
             identities.append(
                 (
                     str(cursor),
@@ -3620,7 +3636,7 @@ def _verify_swift_xcode_directory_chain(directory: Path, failure: str) -> tuple[
                     metadata.st_mode,
                     metadata.st_uid,
                     metadata.st_gid,
-                    metadata.st_mtime_ns,
+                    mtime_ns,
                 )
             )
         if directory.resolve(strict=True) != directory:

@@ -1362,7 +1362,7 @@ def _statements(
             suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
             value = _expression(context, statement.expression, environment, top_level=True)
             if (
-                language in {"rust", "swift", "kotlin", "flutter"}
+                language in {"rust", "swift", "kotlin", "flutter", "python"}
                 and return_type == "number"
                 and types.infer(statement.expression, environment) == "integer"
             ):
@@ -1370,23 +1370,14 @@ def _statements(
                     context.normalization_rules.add("rust.return.integer-to-number")
                     value = f"{value} as f64"
                 elif language == "kotlin":
-                    # Kotlin widens no numeric type implicitly, so
-                    # `fun f(v: Long): Double { return v }` does not compile --
-                    # the same reason Swift needs `Double(...)` here.  It was
-                    # missing while kotlin had no pinned compiler, which is
-                    # exactly when nothing could catch it: the emitted file is
-                    # never built, so only an assertion on the emitted text can
-                    # see the defect.
-                    #
-                    # Parenthesised because `.` binds tighter than unary minus:
-                    # `-5L.toDouble()` parses as `-(5L.toDouble())`.  That
-                    # happens to agree here, and relying on it would stop being
-                    # true the moment the expression form changes.
                     context.normalization_rules.add("kotlin.return.integer-to-number")
                     value = f"({value}).toDouble()"
                 elif language == "flutter":
                     context.normalization_rules.add("flutter.return.integer-to-number")
                     value = f"({value}).toDouble()"
+                elif language == "python":
+                    context.normalization_rules.add("python.return.integer-to-number")
+                    value = f"float({value})"
                 else:
                     context.normalization_rules.add("swift.return.integer-to-number")
                     value = f"Double({value})"

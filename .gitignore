@@ -1,6 +1,10 @@
 .idea/
 .vscode/
 .DS_Store
+.gradle/
+**/.gradle/
+.hvigor/
+**/.hvigor/
 target/
 **/target/
 node_modules/
@@ -26,7 +30,8 @@ __pycache__/
 **/.pytest_cache/
 .mypy_cache/
 **/.mypy_cache/
-/engines/openhands-absorption-engine/src/elmos_openhands_absorption_engine.egg-info/
+*.egg-info/
+**/*.egg-info/
 .ruff_cache/
 **/.ruff_cache/
 .coverage

@@ -170,7 +170,15 @@ def test_strict_mode_refuses_an_unpinned_toolchain(source_root: Path) -> None:
     assert identity.detail["version"]
 
 
-def test_an_unpinned_identity_cannot_collide_with_a_pinned_one(stages: RouteStages) -> None:
+def test_an_unpinned_identity_cannot_collide_with_a_pinned_one(
+    stages: RouteStages, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from elmos_polyglot_route.models import RouteError
+
+    monkeypatch.setattr(
+        "elmos_polyglot_route.toolchains.exact_toolchain",
+        lambda _language: (_ for _ in ()).throw(RouteError("HOST_TOOLCHAIN_UNPINNED")),
+    )
     identity = stages.toolchain_identity("java")
     assert identity.pinned is False
     assert "host" in identity.detail

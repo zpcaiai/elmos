@@ -80,7 +80,7 @@ SUPPORTED_GENERATION_PROFILES = (
     STARTER_GENERATION_PROFILE,
     RELATIONAL_GENERATION_PROFILE,
 )
-STARTER_MULTI_ENTITY_TARGETS = frozenset({"java", "python"})
+STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
@@ -373,8 +373,6 @@ class RelationSpec:
             raise RequestValidationError("RELATION_FIELD_MAPPING_INCOMPLETE")
         if kind not in SUPPORTED_RELATION_KINDS:
             raise RequestValidationError(f"RELATION_KIND_INVALID:{kind}")
-        if kind == "many-to-many" and source_field is not None:
-            raise RequestValidationError("MANY_TO_MANY_FIELD_MAPPING_FORBIDDEN")
         if not isinstance(required, bool):
             raise RequestValidationError("RELATION_REQUIRED_MUST_BE_BOOLEAN")
         return cls(

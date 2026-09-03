@@ -583,7 +583,9 @@ def test_swift_analyzer_is_fresh_built_outside_repository_build_cache() -> None:
         "sha256",
         "file_count",
         "bytes",
+        "object_store_policy",
     }
+    assert dependency_cache["object_store_policy"] == "standalone-no-alternates-no-hardlinks-v2"
     assert dependency_cache["cache_key"] == native._swift_dependency_cache_key()
     assert dependency_cache["version"] == native._SWIFT_SYNTAX_VERSION
     assert dependency_cache["revision"] == native._SWIFT_SYNTAX_REVISION

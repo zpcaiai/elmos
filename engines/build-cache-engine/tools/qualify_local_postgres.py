@@ -520,6 +520,15 @@ def _run_pytest(
     }
 
 
+def _pkg_version(name: str) -> str:
+    for pkg in (name, f"{name}-binary", f"{name}_binary"):
+        try:
+            return importlib.metadata.version(pkg)
+        except importlib.metadata.PackageNotFoundError:
+            continue
+    return "NOT_OBSERVED"
+
+
 def _unobserved_environment(
     cluster: DisposablePostgres,
     binaries: dict[str, Path],
@@ -540,8 +549,8 @@ def _unobserved_environment(
         "architecture": platform.machine(),
         "python": platform.python_version(),
         "uv": _command_version("uv", environment=cluster.process_environment, cwd=cluster.root),
-        "pytest": importlib.metadata.version("pytest"),
-        "psycopg": importlib.metadata.version("psycopg"),
+        "pytest": _pkg_version("pytest"),
+        "psycopg": _pkg_version("psycopg"),
         "postgres_server_binary": postgres_version,
         "postgres_client": psql_version,
         "postgres_runtime_observed": False,
@@ -568,8 +577,8 @@ def _fallback_environment() -> dict[str, Any]:
         "architecture": platform.machine(),
         "python": platform.python_version(),
         "uv": "NOT_OBSERVED",
-        "pytest": importlib.metadata.version("pytest"),
-        "psycopg": importlib.metadata.version("psycopg"),
+        "pytest": _pkg_version("pytest"),
+        "psycopg": _pkg_version("psycopg"),
         "postgres_server_binary": "NOT_OBSERVED",
         "postgres_client": "NOT_OBSERVED",
         "postgres_runtime_observed": False,

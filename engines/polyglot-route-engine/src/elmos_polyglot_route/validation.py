@@ -2298,7 +2298,7 @@ def validate(
 def safe_output(path: Path) -> Path:
     lexical = Path(os.path.abspath(path.expanduser()))
     current = Path(lexical.anchor)
-    system_symlinks = {Path("/var"), Path("/tmp"), Path("/etc")}
+    system_symlinks = {Path("/var"), Path("/tmp"), Path("/etc")}  # noqa: S108
     for component in lexical.parts[1:]:
         current /= component
         if current.is_symlink() and current not in system_symlinks:
