@@ -521,6 +521,21 @@ def _write_result(path: Path, engine: str, results: list[StepResult]) -> None:
     os.replace(temporary, path)
 
 
+def _detect_java_21_home() -> str | None:
+    if os.environ.get("JAVA_21_HOME"):
+        return os.environ["JAVA_21_HOME"]
+    cellar_path = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
+    if cellar_path.is_dir():
+        return str(cellar_path)
+    sdkman_21_tem = Path.home() / ".sdkman/candidates/java/21.0.11-tem"
+    if sdkman_21_tem.is_dir():
+        return str(sdkman_21_tem)
+    sdkman_21_amzn = Path.home() / ".sdkman/candidates/java/21.0.6-amzn"
+    if sdkman_21_amzn.is_dir():
+        return str(sdkman_21_amzn)
+    return os.environ.get("JAVA_HOME")
+
+
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("engine", nargs="?", help="engine directory name")
@@ -539,7 +554,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument("--dotnet", default=os.environ.get("DOTNET", "dotnet"))
     parser.add_argument(
         "--java-home",
-        default=os.environ.get("JAVA_21_HOME") or os.environ.get("JAVA_HOME"),
+        default=_detect_java_21_home(),
     )
     parser.add_argument("--clean", action="store_true", help="remove each run environment after recording results")
     return parser

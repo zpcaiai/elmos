@@ -109,11 +109,13 @@
           "name": "repository-runtime-tests",
           "kind": "pytest",
           "timeout_seconds": 3600,
-          "project": "engines/database-bigdata-engine",
+          "project": null,
           "tests": ["tests/database-bigdata-skills"],
           "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
           "pythonpath": ["engines/database-bigdata-engine/src", "tooling"],
-          "environment": {}
+          "environment": {
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
         }
       ]
     },
