@@ -10,16 +10,16 @@ import sqlglot
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
+from . import placeholders
 from .chinadb_adapters import chinadb_adapter_by_id, chinadb_local_adapter_count
 from .models import (
     CommercialAssessmentResult,
-    CommercialAssessRequest,
     CommercialAssessmentState,
+    CommercialAssessRequest,
     CommercialBlocker,
     CommercialStatement,
     EvidenceState,
 )
-from . import placeholders
 from .profiles import profile_by_id
 from .transpiler import _obligations, _parameter_nodes, _require_pinned_parser
 
@@ -618,7 +618,7 @@ def assess_commercial(
     target_sql_parts: list[str] = []
     emit_index: int | None = None
     try:
-        for emit_index, statement in enumerate(source_statements):
+        for emit_index, statement in enumerate(source_statements):  # noqa: B007
             if isinstance(statement, exp.Command):
                 raise UnsupportedError("opaque command nodes are prohibited")
             rewritten, _mapping = placeholders.rewrite(
@@ -673,7 +673,9 @@ def assess_commercial(
                 code="TARGET_REPARSE_FAILED",
                 severity="ERROR",
                 statement_index=None,
-                message="Emitted target SQL did not re-parse under the mapped compatibility dialect.",
+                message=(
+                    "Emitted target SQL did not re-parse under the mapped compatibility dialect."
+                ),
             )
         )
         return _result(

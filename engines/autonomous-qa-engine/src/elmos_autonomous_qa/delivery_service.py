@@ -17,6 +17,7 @@ import os
 import sqlite3
 import stat
 import threading
+import time
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -947,26 +948,37 @@ class TrustedDeliveryService:
         return result
 
     def _initialize_database(self) -> None:
-        with self._connect() as connection:
-            connection.execute("PRAGMA journal_mode = WAL")
-            self._assert_database_path_identity()
-            self._assert_database_sidecars()
-            connection.execute("BEGIN IMMEDIATE")
-            objects = self._physical_schema_objects(connection)
-            if not objects:
-                connection.execute(self._SCHEMA_METADATA_SQL)
-                connection.execute(self._SCHEMA_SESSIONS_SQL)
-                connection.execute(self._SCHEMA_RECEIPTS_SQL)
-                connection.execute(self._SCHEMA_LIFECYCLE_INTENTS_SQL)
-                connection.execute(self._SCHEMA_PENDING_LIFECYCLE_INTENT_INDEX_SQL)
-                connection.execute(self._SCHEMA_PUBLISHED_INDEX_SQL)
-                connection.execute(
-                    "INSERT INTO delivery_schema "
-                    "(schema_key, schema_version, physical_fingerprint, created_at) "
-                    "VALUES (?, ?, ?, ?)",
-                    (_SCHEMA_KEY, _SCHEMA_VERSION, self._schema_fingerprint(), _now()),
-                )
-            self._assert_schema(connection)
+        deadline = time.monotonic() + 30.0
+        while True:
+            try:
+                with self._connect() as connection:
+                    mode = connection.execute("PRAGMA journal_mode").fetchone()[0]
+                    if str(mode).lower() != "wal":
+                        connection.execute("PRAGMA journal_mode = WAL")
+                    self._assert_database_path_identity()
+                    self._assert_database_sidecars()
+                    connection.execute("BEGIN IMMEDIATE")
+                    objects = self._physical_schema_objects(connection)
+                    if not objects:
+                        connection.execute(self._SCHEMA_METADATA_SQL)
+                        connection.execute(self._SCHEMA_SESSIONS_SQL)
+                        connection.execute(self._SCHEMA_RECEIPTS_SQL)
+                        connection.execute(self._SCHEMA_LIFECYCLE_INTENTS_SQL)
+                        connection.execute(self._SCHEMA_PENDING_LIFECYCLE_INTENT_INDEX_SQL)
+                        connection.execute(self._SCHEMA_PUBLISHED_INDEX_SQL)
+                        connection.execute(
+                            "INSERT INTO delivery_schema "
+                            "(schema_key, schema_version, physical_fingerprint, created_at) "
+                            "VALUES (?, ?, ?, ?)",
+                            (_SCHEMA_KEY, _SCHEMA_VERSION, self._schema_fingerprint(), _now()),
+                        )
+                    self._assert_schema(connection)
+                break
+            except sqlite3.OperationalError as exc:
+                if "locked" in str(exc).lower() and time.monotonic() < deadline:
+                    time.sleep(0.02)
+                    continue
+                raise
         try:
             artifact_module._fsync_directory(self.state_root)
         except OSError as exc:

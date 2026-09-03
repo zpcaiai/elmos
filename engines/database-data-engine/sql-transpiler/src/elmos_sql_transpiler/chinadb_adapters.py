@@ -10,14 +10,20 @@ mode.  External execution, result equivalence and certification remain
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from types import MappingProxyType
-from typing import Mapping
 
 from sqlglot import exp
 from sqlglot.errors import ErrorLevel
 
-from .adapters import AdapterEmission, AdapterRuleTrace, _SQLGLOT_VERSION, _canonical_digest, _digest_text
+from .adapters import (
+    _SQLGLOT_VERSION,
+    AdapterEmission,
+    AdapterRuleTrace,
+    _canonical_digest,
+    _digest_text,
+)
 
 _ORACLE = MappingProxyType(
     {
