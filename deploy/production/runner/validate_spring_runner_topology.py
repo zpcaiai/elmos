@@ -879,6 +879,17 @@ def validate_documentation(errors: list[str], paths: ContractPaths) -> None:
         "EXTERNAL_EVIDENCE_INTAKE=NOT_RUN" in production,
         "production runbook must retain external evidence intake as NOT_RUN",
     )
+    for token in (
+        "sudo uv run --quiet --with pyyaml",
+        '--rootless-owner-uid "$RUNNER_UID"',
+        '--rootless-owner-gid "$RUNNER_GID"',
+        "Docker daemon\n# 仍必须是 rootless",
+    ):
+        require(
+            errors,
+            token in production,
+            f"production runbook lacks controlled root observer contract: {token}",
+        )
     runner_keys = {
         line.split("=", 1)[0]
         for line in runner_environment.splitlines()
@@ -1145,13 +1156,21 @@ def owner_only_file(
     minimum_size: int = 1,
     maximum_size: int = 4096,
     canonical_hmac_secret: bool = False,
-) -> tuple[int, int, str] | None:
+    inspect_contents: bool = True,
+    expected_parent_uid: int | None = None,
+    expected_parent_gid: int | None = None,
+) -> tuple[int, int, str | None] | None:
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         errors.append(f"{label} must be a normalized absolute non-root path")
         return None
     ancestor_metadata, ancestor_error = safe_ancestor_metadata(
         path,
-        allowed_uids={0, os.getuid(), expected_uid},
+        allowed_uids={
+            0,
+            os.getuid(),
+            expected_uid,
+            *(set() if expected_parent_uid is None else {expected_parent_uid}),
+        },
         label=label,
     )
     if ancestor_error is not None:
@@ -1164,10 +1183,20 @@ def owner_only_file(
     except OSError:
         errors.append(f"{label} is missing")
         return None
+    parent_uid_valid = (
+        parent_details.st_uid in {0, os.getuid(), expected_uid}
+        if expected_parent_uid is None
+        else parent_details.st_uid == expected_parent_uid
+    )
+    parent_gid_valid = (
+        parent_details.st_gid in {0, os.getgid(), expected_gid}
+        if expected_parent_gid is None
+        else parent_details.st_gid == expected_parent_gid
+    )
     if (
         stat.S_IMODE(parent_details.st_mode) != 0o700
-        or parent_details.st_uid not in {0, os.getuid(), expected_uid}
-        or parent_details.st_gid not in {0, os.getgid(), expected_gid}
+        or not parent_uid_valid
+        or not parent_gid_valid
     ):
         errors.append(
             f"{label} immediate parent must be a trusted 0700 directory"
@@ -1188,7 +1217,11 @@ def owner_only_file(
             valid = False
     if not valid:
         return None
-    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    if not inspect_contents and not hasattr(os, "O_PATH"):
+        errors.append(f"{label} metadata-only validation requires Linux O_PATH")
+        return None
+    flags = getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags |= os.O_RDONLY if inspect_contents else os.O_PATH
     try:
         descriptor = os.open(path, flags)
     except OSError:
@@ -1199,27 +1232,32 @@ def owner_only_file(
         if stable_file_metadata(opened) != stable_file_metadata(details):
             errors.append(f"{label} changed while it was being validated")
             return None
-        chunks: list[bytes] = []
-        remaining = maximum_size + 1
-        while remaining:
-            chunk = os.read(descriptor, remaining)
-            if not chunk:
-                break
-            chunks.append(chunk)
-            remaining -= len(chunk)
-        contents = b"".join(chunks)
+        contents: bytes | None = None
+        if inspect_contents:
+            chunks: list[bytes] = []
+            remaining = maximum_size + 1
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            contents = b"".join(chunks)
         after = os.fstat(descriptor)
         after_path = path.lstat()
         ancestors_unchanged = ancestors_remain_stable(ancestor_metadata)
         if (
             stable_file_metadata(after) != stable_file_metadata(opened)
             or stable_file_metadata(after_path) != stable_file_metadata(opened)
-            or len(contents) != opened.st_size
+            or (contents is not None and len(contents) != opened.st_size)
             or not ancestors_unchanged
         ):
             errors.append(f"{label} or parent path changed while it was being read")
             return None
         if canonical_hmac_secret:
+            if contents is None:
+                errors.append(f"{label} canonical HMAC bytes were not inspected")
+                return None
             try:
                 decoded = contents.decode("utf-8", errors="strict")
             except UnicodeError:
@@ -1234,7 +1272,8 @@ def owner_only_file(
                     f"{label} must not have leading or trailing HMAC whitespace"
                 )
                 return None
-        return (opened.st_dev, opened.st_ino, hashlib.sha256(contents).hexdigest())
+        digest = hashlib.sha256(contents).hexdigest() if contents is not None else None
+        return (opened.st_dev, opened.st_ino, digest)
     except OSError:
         errors.append(f"{label} changed or became unreadable while it was being read")
         return None
@@ -1418,14 +1457,24 @@ def trusted_unix_socket(
 
 
 def protected_directory(
-    errors: list[str], path: Path, *, label: str, expected_uid: int, expected_gid: int
+    errors: list[str],
+    path: Path,
+    *,
+    label: str,
+    expected_uid: int,
+    expected_gid: int,
+    allowed_ancestor_uids: set[int] | None = None,
 ) -> None:
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         errors.append(f"{label} must be a normalized absolute non-root path")
         return
     ancestor_metadata, ancestor_error = safe_ancestor_metadata(
         path,
-        allowed_uids={0, os.getuid(), expected_uid},
+        allowed_uids=(
+            {0, os.getuid(), expected_uid}
+            if allowed_ancestor_uids is None
+            else set(allowed_ancestor_uids) | {0, os.getuid(), expected_uid}
+        ),
         label=label,
     )
     if ancestor_error is not None:
@@ -1524,7 +1573,12 @@ def stable_file_metadata(details: os.stat_result) -> tuple[int, ...]:
     )
 
 
-def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_result | None, os.stat_result | None, list[str]]:
+def secure_environment_file_bytes(
+    path: Path,
+    *,
+    expected_owner_uid: int | None = None,
+    expected_owner_gid: int | None = None,
+) -> tuple[bytes | None, os.stat_result | None, os.stat_result | None, list[str]]:
     """Read an owner-only file without following links or accepting path races."""
 
     errors: list[str] = []
@@ -1533,9 +1587,11 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
             "Runner environment file path must be normalized, absolute, and non-root"
         ]
 
+    owner_uid = os.getuid() if expected_owner_uid is None else expected_owner_uid
+    owner_gid = os.getgid() if expected_owner_gid is None else expected_owner_gid
     ancestor_metadata, ancestor_error = safe_ancestor_metadata(
         path,
-        allowed_uids={0, os.getuid()},
+        allowed_uids={0, os.getuid(), owner_uid},
         label="Runner environment file",
     )
     if ancestor_error is not None:
@@ -1560,11 +1616,11 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
         return None, None, None, ["Runner environment file must be outside the repository"]
     if (
         stat.S_IMODE(initial_parent_details.st_mode) != 0o700
-        or initial_parent_details.st_uid != os.getuid()
-        or initial_parent_details.st_gid != os.getgid()
+        or initial_parent_details.st_uid != owner_uid
+        or initial_parent_details.st_gid != owner_gid
     ):
         return None, None, None, [
-            "Runner environment parent must be mode 0700 and owned by the current UID/GID"
+            f"Runner environment parent must be mode 0700 and owned by UID/GID {owner_uid}:{owner_gid}"
         ]
 
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
@@ -1591,8 +1647,10 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
         mode = stat.S_IMODE(opened_details.st_mode)
         if mode not in {0o400, 0o600}:
             errors.append("Runner environment file mode must be 0400 or 0600")
-        if opened_details.st_uid != os.getuid() or opened_details.st_gid != os.getgid():
-            errors.append("Runner environment file must be owned by the current user and group")
+        if opened_details.st_uid != owner_uid or opened_details.st_gid != owner_gid:
+            errors.append(
+                f"Runner environment file must be owned by UID/GID {owner_uid}:{owner_gid}"
+            )
         if opened_details.st_size > 65536:
             return None, None, None, errors + [
                 "Runner environment file must not exceed 65536 bytes"
@@ -1637,12 +1695,19 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
 def load_environment_file(
     path: Path,
     process_environment: Mapping[str, str] | None = None,
+    *,
+    expected_owner_uid: int | None = None,
+    expected_owner_gid: int | None = None,
 ) -> tuple[dict[str, str], list[str]]:
     """Parse a Runner env file as inert data and apply allowlisted overrides."""
 
     errors: list[str] = []
     process_environment = process_environment if process_environment is not None else os.environ
-    raw, details, parent_details, read_errors = secure_environment_file_bytes(path)
+    raw, details, parent_details, read_errors = secure_environment_file_bytes(
+        path,
+        expected_owner_uid=expected_owner_uid,
+        expected_owner_gid=expected_owner_gid,
+    )
     errors.extend(read_errors)
     if raw is None or details is None or parent_details is None:
         return {}, errors
@@ -1736,14 +1801,29 @@ def validate_host(
     except (OSError, TypeError, ValueError, yaml.YAMLError) as error:
         errors.append(f"Runner network isolation contract could not be loaded: {error}")
 
-    protected_directory(errors, secret_root, label="broker secret root", expected_uid=rootless_uid, expected_gid=rootless_gid)
-    protected_directory(errors, tls_root, label="ingress TLS secret root", expected_uid=rootless_uid, expected_gid=rootless_gid)
+    protected_directory(
+        errors,
+        secret_root,
+        label="broker secret root",
+        expected_uid=rootless_uid,
+        expected_gid=rootless_gid,
+        allowed_ancestor_uids={rootless_uid},
+    )
+    protected_directory(
+        errors,
+        tls_root,
+        label="ingress TLS secret root",
+        expected_uid=rootless_uid,
+        expected_gid=rootless_gid,
+        allowed_ancestor_uids={rootless_uid},
+    )
     protected_directory(
         errors,
         replay_root,
         label="Spring Runner replay root",
         expected_uid=broker_uid,
         expected_gid=broker_gid,
+        allowed_ancestor_uids={rootless_uid, broker_uid},
     )
     require(
         errors,
@@ -1779,7 +1859,7 @@ def validate_host(
     validate_sensitive_path_isolation(errors, sensitive_paths, operational_roots)
     validate_operational_root_isolation(errors, operational_roots)
 
-    secret_records: list[tuple[int, int, str]] = []
+    secret_records: list[tuple[int, int, str | None]] = []
     for name in BROKER_SECRET_ENVIRONMENTS:
         try:
             path = environment_path(name, environment)
@@ -1795,6 +1875,8 @@ def validate_host(
             expected_gid=broker_gid,
             minimum_size=32,
             canonical_hmac_secret=True,
+            expected_parent_uid=rootless_uid,
+            expected_parent_gid=rootless_gid,
         )
         if inode:
             secret_records.append(inode)
@@ -1822,6 +1904,8 @@ def validate_host(
             expected_gid=ingress_gid,
             minimum_size=32,
             maximum_size=65536,
+            expected_parent_uid=rootless_uid,
+            expected_parent_gid=rootless_gid,
         )
     except (TypeError, ValueError) as error:
         errors.append(str(error))
@@ -1877,6 +1961,8 @@ def validate_host(
             expected_uid=rootless_uid,
             expected_gid=rootless_gid,
             maximum_size=65536,
+            expected_parent_uid=rootless_uid,
+            expected_parent_gid=rootless_gid,
         )
     except (TypeError, ValueError) as error:
         errors.append(str(error))
@@ -2291,6 +2377,409 @@ def validate_runtime_mounts(
         )
 
 
+MountObjectIdentity = tuple[int, int, int, int, int, int]
+ProcessIdentity = tuple[int, int, int, str, int, int]
+LiveMountObservation = tuple[
+    MountObjectIdentity,
+    MountObjectIdentity,
+    ProcessIdentity,
+    ProcessIdentity,
+]
+LiveMountObserver = Callable[[str, int, str, str], LiveMountObservation]
+LiveProcessObserver = Callable[[int, str], ProcessIdentity]
+
+
+def mount_object_identity(details: os.stat_result) -> MountObjectIdentity:
+    """Stable bind-object identity that ignores active-directory timestamps."""
+
+    return (
+        details.st_dev,
+        details.st_ino,
+        stat.S_IFMT(details.st_mode),
+        stat.S_IMODE(details.st_mode),
+        details.st_uid,
+        details.st_gid,
+    )
+
+
+def read_proc_stat_start_time(process_descriptor: int, *, label: str) -> str:
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    descriptor = -1
+    try:
+        descriptor = os.open("stat", flags, dir_fd=process_descriptor)
+        chunks: list[bytes] = []
+        total = 0
+        while total <= 16 * 1024:
+            chunk = os.read(descriptor, min(4096, 16 * 1024 + 1 - total))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            total += len(chunk)
+        if total > 16 * 1024:
+            raise RuntimeError(f"{label} process stat exceeds the byte budget")
+        rendered = b"".join(chunks).decode("ascii", errors="strict").strip()
+    except (OSError, UnicodeError) as error:
+        raise RuntimeError(f"{label} process stat could not be read safely") from error
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+    close_parenthesis = rendered.rfind(")")
+    fields = rendered[close_parenthesis + 1 :].strip().split()
+    if close_parenthesis < 2 or len(fields) < 20 or not fields[19].isdigit():
+        raise RuntimeError(f"{label} process stat identity is invalid")
+    return fields[19]
+
+
+def live_process_identity(
+    process_descriptor: int, process_id: int, *, label: str
+) -> ProcessIdentity:
+    try:
+        process_details = os.fstat(process_descriptor)
+        namespace_details = os.stat(
+            "ns/mnt", dir_fd=process_descriptor, follow_symlinks=True
+        )
+    except OSError as error:
+        raise RuntimeError(f"{label} mount namespace identity could not be read") from error
+    return (
+        process_id,
+        process_details.st_dev,
+        process_details.st_ino,
+        read_proc_stat_start_time(process_descriptor, label=label),
+        namespace_details.st_dev,
+        namespace_details.st_ino,
+    )
+
+
+def observe_live_process_identity(process_id: int, label: str) -> ProcessIdentity:
+    """Capture one Linux process generation and mount-namespace identity."""
+
+    if sys.platform != "linux" or not hasattr(os, "O_PATH"):
+        raise RuntimeError("live Runner process identity validation requires Linux O_PATH and /proc")
+    if type(process_id) is not int or process_id <= 1:
+        raise RuntimeError(f"{label} process ID is invalid")
+    directory_flags = (
+        os.O_PATH
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    proc_descriptor = -1
+    process_descriptor = -1
+    try:
+        proc_descriptor = os.open("/proc", directory_flags)
+        process_descriptor = os.open(
+            str(process_id), directory_flags, dir_fd=proc_descriptor
+        )
+        return live_process_identity(process_descriptor, process_id, label=label)
+    except OSError as error:
+        raise RuntimeError(f"{label} process identity could not be captured safely") from error
+    finally:
+        if process_descriptor >= 0:
+            os.close(process_descriptor)
+        if proc_descriptor >= 0:
+            os.close(proc_descriptor)
+
+
+def observe_live_bind_mount(
+    source: str,
+    process_id: int,
+    destination: str,
+    label: str,
+) -> LiveMountObservation:
+    """Bind the current host object to the object visible in a live container."""
+
+    if sys.platform != "linux" or not hasattr(os, "O_PATH"):
+        raise RuntimeError("live Runner mount identity validation requires Linux O_PATH and /proc")
+    if type(process_id) is not int or process_id <= 1:
+        raise RuntimeError(f"{label} process ID is invalid")
+    if (
+        not isinstance(source, str)
+        or not source
+        or source != source.strip()
+    ):
+        raise RuntimeError(f"{label} host source is not a normalized absolute non-root path")
+    if (
+        not isinstance(destination, str)
+        or not destination
+        or destination != destination.strip()
+    ):
+        raise RuntimeError(f"{label} container destination is invalid")
+    source_path = Path(source)
+    destination_path = Path(destination)
+    if (
+        not source_path.is_absolute()
+        or source_path == Path("/")
+        or source_path != Path(os.path.normpath(source_path))
+    ):
+        raise RuntimeError(f"{label} host source is not a normalized absolute non-root path")
+    if (
+        not destination_path.is_absolute()
+        or destination_path == Path("/")
+        or destination_path != Path(os.path.normpath(destination_path))
+    ):
+        raise RuntimeError(f"{label} container destination is invalid")
+
+    directory_flags = (
+        os.O_PATH
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    object_flags = os.O_PATH | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    root_magic_flags = os.O_PATH | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_DIRECTORY", 0)
+    source_ancestors: list[int] = []
+    target_ancestors: list[int] = []
+    source_descriptor = -1
+    proc_descriptor = -1
+    process_descriptor = -1
+    target_descriptor = -1
+    try:
+        current = os.open(source_path.anchor, directory_flags)
+        source_ancestors.append(current)
+        for part in source_path.parts[1:-1]:
+            current = os.open(part, directory_flags, dir_fd=current)
+            source_ancestors.append(current)
+        source_descriptor = os.open(
+            source_path.parts[-1], object_flags, dir_fd=source_ancestors[-1]
+        )
+        source_before = os.fstat(source_descriptor)
+        if not (
+            stat.S_ISREG(source_before.st_mode)
+            or stat.S_ISDIR(source_before.st_mode)
+            or stat.S_ISSOCK(source_before.st_mode)
+        ):
+            raise RuntimeError(f"{label} host source has an unsupported object type")
+        source_ancestor_before = [
+            stable_directory_identity(os.fstat(descriptor))
+            for descriptor in source_ancestors
+        ]
+
+        proc_descriptor = os.open("/proc", directory_flags)
+        process_descriptor = os.open(
+            str(process_id), directory_flags, dir_fd=proc_descriptor
+        )
+        process_before = live_process_identity(
+            process_descriptor, process_id, label=label
+        )
+        # /proc/<pid>/root is an intentional kernel magic link into the already
+        # authenticated process mount namespace. Components below it remain
+        # no-follow O_PATH descriptors.
+        current = os.open("root", root_magic_flags, dir_fd=process_descriptor)
+        target_ancestors.append(current)
+        for part in destination_path.parts[1:-1]:
+            current = os.open(part, directory_flags, dir_fd=current)
+            target_ancestors.append(current)
+        target_descriptor = os.open(
+            destination_path.parts[-1], object_flags, dir_fd=target_ancestors[-1]
+        )
+        target_before = os.fstat(target_descriptor)
+        target_ancestor_before = [
+            stable_directory_identity(os.fstat(descriptor))
+            for descriptor in target_ancestors
+        ]
+        if not (
+            stat.S_ISREG(target_before.st_mode)
+            or stat.S_ISDIR(target_before.st_mode)
+            or stat.S_ISSOCK(target_before.st_mode)
+        ):
+            raise RuntimeError(f"{label} container target has an unsupported object type")
+
+        source_path_after = os.stat(
+            source_path.parts[-1],
+            dir_fd=source_ancestors[-1],
+            follow_symlinks=False,
+        )
+        source_ancestor_after = [
+            stable_directory_identity(os.fstat(descriptor))
+            for descriptor in source_ancestors
+        ]
+        source_ancestor_paths_after = [
+            stable_directory_identity(os.stat(source_path.anchor, follow_symlinks=False))
+        ]
+        for index, part in enumerate(source_path.parts[1:-1]):
+            source_ancestor_paths_after.append(
+                stable_directory_identity(
+                    os.stat(
+                        part,
+                        dir_fd=source_ancestors[index],
+                        follow_symlinks=False,
+                    )
+                )
+            )
+        source_after = os.fstat(source_descriptor)
+        target_after = os.fstat(target_descriptor)
+        target_ancestor_after = [
+            stable_directory_identity(os.fstat(descriptor))
+            for descriptor in target_ancestors
+        ]
+        target_ancestor_paths_after = [
+            stable_directory_identity(os.fstat(target_ancestors[0]))
+        ]
+        for index, part in enumerate(destination_path.parts[1:-1]):
+            target_ancestor_paths_after.append(
+                stable_directory_identity(
+                    os.stat(
+                        part,
+                        dir_fd=target_ancestors[index],
+                        follow_symlinks=False,
+                    )
+                )
+            )
+        target_path_after = os.stat(
+            destination_path.parts[-1],
+            dir_fd=target_ancestors[-1],
+            follow_symlinks=False,
+        )
+        process_after = live_process_identity(
+            process_descriptor, process_id, label=label
+        )
+        host_identity = mount_object_identity(source_before)
+        target_identity = mount_object_identity(target_before)
+        if (
+            host_identity != mount_object_identity(source_after)
+            or host_identity != mount_object_identity(source_path_after)
+            or source_ancestor_before != source_ancestor_after
+            or source_ancestor_before != source_ancestor_paths_after
+        ):
+            raise RuntimeError(f"{label} host source or ancestry changed during validation")
+        if (
+            target_identity != mount_object_identity(target_after)
+            or target_identity != mount_object_identity(target_path_after)
+            or target_ancestor_before != target_ancestor_after
+            or target_ancestor_before != target_ancestor_paths_after
+        ):
+            raise RuntimeError(f"{label} container target or ancestry changed during validation")
+        return host_identity, target_identity, process_before, process_after
+    except OSError as error:
+        raise RuntimeError(f"{label} live mount identity could not be captured safely") from error
+    finally:
+        for descriptor in (target_descriptor, process_descriptor, proc_descriptor, source_descriptor):
+            if descriptor >= 0:
+                os.close(descriptor)
+        for descriptor in reversed(target_ancestors):
+            os.close(descriptor)
+        for descriptor in reversed(source_ancestors):
+            os.close(descriptor)
+
+
+def validate_live_mount_identities(
+    errors: list[str],
+    *,
+    records: Mapping[str, Mapping[str, Any]],
+    compose: Mapping[str, Any],
+    environment: Mapping[str, str],
+    observer: LiveMountObserver,
+    process_observer: LiveProcessObserver,
+) -> dict[str, ProcessIdentity]:
+    """Validate every exact bind mount and return one stable process token/service."""
+
+    services = compose.get("services", {})
+    if not isinstance(services, dict):
+        errors.append("runner Compose services must be an object")
+        return {}
+    identities: dict[str, ProcessIdentity] = {}
+    for service_name in sorted(EXPECTED_RUNNER_SERVICES):
+        service = services.get(service_name)
+        record = records.get(service_name)
+        if not isinstance(service, dict) or not isinstance(record, Mapping):
+            errors.append(f"{service_name} live mount inputs are incomplete")
+            continue
+        state = record.get("State")
+        process_id = state.get("Pid") if isinstance(state, dict) else None
+        if type(process_id) is not int or process_id <= 1:
+            errors.append(f"{service_name} runtime process ID must be a positive host PID")
+            continue
+        try:
+            service_identity = process_observer(
+                process_id, f"{service_name} live process"
+            )
+        except (OSError, RuntimeError, TypeError, ValueError) as error:
+            errors.append(f"{service_name} live process identity failed: {error}")
+            continue
+        try:
+            mounts = expected_service_mounts(service, environment)
+        except (TypeError, ValueError) as error:
+            errors.append(str(error))
+            continue
+        for destination, (source, _read_write) in sorted(mounts.items()):
+            label = f"{service_name} mount {destination}"
+            try:
+                observation = observer(source, process_id, destination, label)
+                if not isinstance(observation, tuple) or len(observation) != 4:
+                    raise TypeError("observer returned an invalid record")
+                host_identity, target_identity, process_before, process_after = observation
+                if host_identity != target_identity:
+                    raise RuntimeError(
+                        "container target does not expose the current host source object"
+                    )
+                if process_before != process_after:
+                    raise RuntimeError("container process or mount namespace changed")
+                if service_identity != process_before:
+                    raise RuntimeError(
+                        "container process or mount namespace changed between mounts"
+                    )
+            except (OSError, RuntimeError, TypeError, ValueError) as error:
+                errors.append(f"{label} live identity failed: {error}")
+        try:
+            completed_identity = process_observer(
+                process_id, f"{service_name} completed live process"
+            )
+            if completed_identity != service_identity:
+                raise RuntimeError(
+                    "container process or mount namespace changed during live mount validation"
+                )
+            identities[service_name] = service_identity
+        except (OSError, RuntimeError, TypeError, ValueError) as error:
+            errors.append(f"{service_name} final live process identity failed: {error}")
+    return identities
+
+
+def runtime_generation(record: Mapping[str, Any], *, label: str) -> tuple[Any, ...]:
+    """Stable projection used to reject restarts or mount drift during inspection."""
+
+    state = record.get("State")
+    host = record.get("HostConfig")
+    mounts = record.get("Mounts")
+    if not isinstance(state, dict) or not isinstance(host, dict) or not isinstance(mounts, list):
+        raise TypeError(f"{label} runtime generation fields are malformed")
+    process_id = state.get("Pid")
+    started_at = state.get("StartedAt")
+    restart_count = record.get("RestartCount")
+    if type(process_id) is not int or process_id <= 1:
+        raise ValueError(f"{label} State.Pid must be a positive host PID")
+    if not isinstance(started_at, str) or not started_at:
+        raise ValueError(f"{label} State.StartedAt is required")
+    if type(restart_count) is not int or restart_count < 0:
+        raise ValueError(f"{label} RestartCount must be a non-negative integer")
+    mount_projection: list[tuple[Any, ...]] = []
+    for mount in mounts:
+        if not isinstance(mount, dict):
+            raise TypeError(f"{label} mount generation record is malformed")
+        mount_projection.append(
+            tuple(
+                mount.get(name)
+                for name in ("Type", "Source", "Destination", "RW", "Mode", "Propagation")
+            )
+        )
+    binds = host.get("Binds")
+    if not isinstance(binds, list) or not all(isinstance(item, str) for item in binds):
+        raise TypeError(f"{label} HostConfig.Binds generation is malformed")
+    return (
+        record.get("Id"),
+        record.get("Image"),
+        process_id,
+        started_at,
+        restart_count,
+        tuple(sorted(mount_projection, key=repr)),
+        tuple(sorted(binds)),
+    )
+
+
 def validate_runtime_service(
     errors: list[str],
     *,
@@ -2662,6 +3151,9 @@ def compose_container_ids(
 def validate_running(
     paths: ContractPaths | None = None,
     environment: Mapping[str, str] | None = None,
+    *,
+    _live_mount_observer: LiveMountObserver = observe_live_bind_mount,
+    _live_process_observer: LiveProcessObserver = observe_live_process_identity,
 ) -> list[str]:
     paths = paths or ContractPaths()
     environment = environment if environment is not None else os.environ
@@ -2722,6 +3214,30 @@ def validate_running(
             bind_port=bind_port,
         )
 
+    if errors:
+        return errors
+    initial_generations: dict[str, tuple[Any, ...]] = {}
+    try:
+        initial_generations = {
+            service: runtime_generation(records[service], label=service)
+            for service in sorted(EXPECTED_RUNNER_SERVICES)
+        }
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
+        return errors
+    initial_process_identities = validate_live_mount_identities(
+        errors,
+        records=records,
+        compose=compose,
+        environment=environment,
+        observer=_live_mount_observer,
+        process_observer=_live_process_observer,
+    )
+    if errors or set(initial_process_identities) != EXPECTED_RUNNER_SERVICES:
+        if not errors:
+            errors.append("Runner live mount process identities are incomplete")
+        return errors
+
     for network_name in ("elmos-spring-runner-edge", "elmos-spring-runner-broker"):
         try:
             inspected = command_json(
@@ -2746,6 +3262,67 @@ def validate_running(
             )
         except (RuntimeError, json.JSONDecodeError) as error:
             errors.append(str(error))
+
+    if errors:
+        return errors
+
+    try:
+        final_identifiers = compose_container_ids(socket_path, environment, paths)
+        if final_identifiers != identifiers:
+            errors.append("Runner Compose container identities changed during live validation")
+            return errors
+        final_records: dict[str, dict[str, Any]] = {}
+        for service, identifier in sorted(final_identifiers.items()):
+            inspected = command_json(docker_command(socket_path, "inspect", identifier))
+            if (
+                not isinstance(inspected, list)
+                or len(inspected) != 1
+                or not isinstance(inspected[0], dict)
+                or inspected[0].get("Id") != identifier
+            ):
+                raise TypeError(
+                    f"{service} stable Docker reinspection must return its exact container"
+                )
+            final_records[service] = inspected[0]
+            service_config = services.get(service)
+            if not isinstance(service_config, dict):
+                raise TypeError(f"runner service {service} is missing during reinspection")
+            validate_runtime_service(
+                errors,
+                service_name=service,
+                service=service_config,
+                compose=compose,
+                record=final_records[service],
+                image_record=image_records[service],
+                environment=environment,
+                bind_address=bind_address,
+                bind_port=bind_port,
+            )
+            final_generation = runtime_generation(
+                final_records[service], label=f"{service} stable reinspection"
+            )
+            require(
+                errors,
+                final_generation == initial_generations[service],
+                f"{service} container generation changed during live validation",
+            )
+        if errors:
+            return errors
+        final_process_identities = validate_live_mount_identities(
+            errors,
+            records=final_records,
+            compose=compose,
+            environment=environment,
+            observer=_live_mount_observer,
+            process_observer=_live_process_observer,
+        )
+        require(
+            errors,
+            final_process_identities == initial_process_identities,
+            "Runner process or mount namespace identities changed during live validation",
+        )
+    except (RuntimeError, json.JSONDecodeError, IndexError, KeyError, TypeError, ValueError) as error:
+        errors.append(f"Runner stable reinspection failed: {error}")
     return errors
 
 
@@ -2780,6 +3357,16 @@ def main() -> int:
         type=Path,
         help="parse an owner-only Runner environment file as inert allowlisted data",
     )
+    parser.add_argument(
+        "--rootless-owner-uid",
+        type=int,
+        help="independently supplied non-root UID that owns the rootless daemon and Runner env",
+    )
+    parser.add_argument(
+        "--rootless-owner-gid",
+        type=int,
+        help="independently supplied non-root GID that owns the rootless daemon and Runner env",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     if (args.check_host or args.check_running) and not args.environment_file:
@@ -2788,10 +3375,44 @@ def main() -> int:
             mode="ENVIRONMENT_FILE_REQUIRED",
             as_json=args.json,
         )
+    if args.check_host or args.check_running:
+        if (
+            type(args.rootless_owner_uid) is not int
+            or args.rootless_owner_uid <= 0
+            or type(args.rootless_owner_gid) is not int
+            or args.rootless_owner_gid <= 0
+        ):
+            return emit(
+                [
+                    "--check-host and --check-running require positive --rootless-owner-uid and --rootless-owner-gid bindings"
+                ],
+                mode="ROOTLESS_OWNER_BINDING_REQUIRED",
+                as_json=args.json,
+            )
+        if os.geteuid() != 0:
+            return emit(
+                [
+                    "--check-host and --check-running require a controlled read-only root observer; the Docker daemon itself must remain rootless"
+                ],
+                mode="PRIVILEGED_OBSERVER_REQUIRED",
+                as_json=args.json,
+            )
     environment: Mapping[str, str] = os.environ
     environment_errors: list[str] = []
     if args.environment_file:
-        environment, environment_errors = load_environment_file(args.environment_file)
+        environment, environment_errors = load_environment_file(
+            args.environment_file,
+            expected_owner_uid=(
+                args.rootless_owner_uid
+                if args.check_host or args.check_running
+                else None
+            ),
+            expected_owner_gid=(
+                args.rootless_owner_gid
+                if args.check_host or args.check_running
+                else None
+            ),
+        )
     if environment_errors:
         return emit(environment_errors, mode="ENVIRONMENT_FILE_REJECTED", as_json=args.json)
     if args.check_running:

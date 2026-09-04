@@ -1568,6 +1568,52 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                             f"{attacked} executed {attack_kind} input",
                         )
 
+    def test_batch30_pack_key_is_direct_allowlisted_inert_data(self):
+        for target in ("b30-pack-validate", "b30-pack-gate"):
+            for attack_kind in ("shell", "make", "traversal"):
+                with (
+                    self.subTest(target=target, attack_kind=attack_kind),
+                    tempfile.TemporaryDirectory() as temporary,
+                ):
+                    marker = Path(temporary) / "pack-injection-marker"
+                    supplied = {
+                        "shell": f"x; touch {marker}; #",
+                        "make": f"$(shell touch {marker})",
+                        "traversal": "../spring-boot-2-7-18-to-3-5-3",
+                    }[attack_kind]
+                    result = subprocess.run(
+                        [
+                            "make",
+                            "--no-print-directory",
+                            "-f",
+                            str(MAKEFILE),
+                            target,
+                            "BATCH30_PYTHON=true",
+                            f"PACK={supplied}",
+                        ],
+                        cwd=ROOT,
+                        text=True,
+                        capture_output=True,
+                    )
+                    self.assertNotEqual(0, result.returncode)
+                    self.assertFalse(marker.exists(), f"PACK executed {attack_kind} input")
+
+        valid = subprocess.run(
+            [
+                "make",
+                "--no-print-directory",
+                "-f",
+                str(MAKEFILE),
+                "b30-pack-validate",
+                "BATCH30_PYTHON=true",
+                "PACK=spring-boot-2-7-18-to-3-5-3",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(0, valid.returncode, valid.stdout + valid.stderr)
+
     def test_external_verification_rechecks_environment_and_mount_snapshots(self):
         specification = importlib.util.spec_from_file_location(
             "spring_launch_validator_post_external_snapshot", SCRIPT

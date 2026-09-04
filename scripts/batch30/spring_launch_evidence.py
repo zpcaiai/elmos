@@ -482,7 +482,6 @@ class WebRuntimeObservation:
     mount_source_digests: dict[str, str]
     environment_names_digest: str
     configuration_digest: str
-    raw_inspect_digest: str
     worker_inspect_digest: str
     worker_container_id: str
     application_mount_sources_digest: str
@@ -3525,8 +3524,6 @@ def collect_web_console_runtime_attestation(
         "method": WEB_RUNTIME_ATTESTATION_METHOD,
         "captured_at": _utc_instant_text(captured),
         "collector_identity": collector,
-        "raw_inspect_digest": "sha256:" + hashlib.sha256(raw_inspect).hexdigest(),
-        "raw_inspect_size_bytes": len(raw_inspect),
         "raw_worker_inspect_digest": "sha256:"
         + hashlib.sha256(raw_worker_inspect).hexdigest(),
         "raw_worker_inspect_size_bytes": len(raw_worker_inspect),
@@ -3735,8 +3732,6 @@ def _validate_web_console_runtime_attestation(
         "method",
         "captured_at",
         "collector_identity",
-        "raw_inspect_digest",
-        "raw_inspect_size_bytes",
         "raw_worker_inspect_digest",
         "raw_worker_inspect_size_bytes",
         "worker_container_id",
@@ -3769,18 +3764,6 @@ def _validate_web_console_runtime_attestation(
     if observed_at - captured > max_age:
         raise SpringLaunchEvidenceError(
             "web-console runtime attestation is older than the allowed evidence age"
-        )
-    raw_digest = _digest(
-        document.get("raw_inspect_digest"),
-        "web-console runtime attestation.raw_inspect_digest",
-    )
-    raw_size = _positive_size(
-        document.get("raw_inspect_size_bytes"),
-        "web-console runtime attestation.raw_inspect_size_bytes",
-    )
-    if raw_size > MAX_JSON_BYTES:
-        raise SpringLaunchEvidenceError(
-            "web-console runtime attestation raw inspect exceeds the byte budget"
         )
     if document.get("raw_worker_inspect_digest") != worker_inspect_digest:
         raise SpringLaunchEvidenceError(
@@ -3880,7 +3863,6 @@ def _validate_web_console_runtime_attestation(
         mount_source_digests=mounts,
         environment_names_digest=names_digest,
         configuration_digest=configuration_digest,
-        raw_inspect_digest=raw_digest,
         worker_inspect_digest=worker_inspect_digest,
         worker_container_id=worker.container_id,
         application_mount_sources_digest=application_mount_digest,
