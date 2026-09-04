@@ -2,6 +2,10 @@
   "schema_version": 1,
   "pack_key": "spring-to-boot-4-1-0",
   "enabled": false,
+  "components": [],
+  "exit_criteria": [
+    "Retire the source runtime only after the exact Boot 4.1.0 tuple passes target startup, parity, rollback, holdout, and customer acceptance."
+  ],
   "reason": "Direct cutover is not authorized by this pack; coexistence requires an application-specific compatibility contract.",
   "status": "NOT_RUN"
 }

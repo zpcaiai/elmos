@@ -328,32 +328,42 @@ class SQLiteDifferentialExecutor:
         error: dict[str, Any] | None = None
         query_rows: list[list[dict[str, Any]]] = []
         try:
-            connection.execute("PRAGMA foreign_keys=ON")
-            for phase in ("schema", "seed", "action"):
-                script = fixtures.get(f"{side}/{phase}.sql", "")
-                for statement in _split_sql(script):
-                    cursor = connection.execute(statement)
-                    if phase == "action":
-                        affected.append(max(cursor.rowcount, 0))
-            query = fixtures[f"{side}/query.sql"]
-            statements = _split_sql(query)
-            if len(statements) != 1 or not _READ_QUERY.match(statements[0]):
-                raise ExecutionAuthorizationError("comparison query must be one SELECT/WITH statement")
-            cursor = connection.execute(statements[0])
-            values = cursor.fetchmany(max_rows + 1)
-            if len(values) > max_rows:
-                raise ExecutionContractError("database comparison exceeded maxRows")
-            query_rows = _rows(values, ordered)
-        except sqlite3.Error as exc:
-            error = {
-                "class": type(exc).__name__,
-                "sqliteErrorCode": getattr(exc, "sqlite_errorcode", None),
-                "sqliteErrorName": getattr(exc, "sqlite_errorname", None),
-            }
-        schema = self._schema_snapshot(connection)
-        state = self._state_snapshot(connection, max_rows)
-        connection.close()
-        return DatabaseSideResult(schema, query_rows, state, affected, error)
+            try:
+                connection.execute("PRAGMA foreign_keys=ON")
+                for phase in ("schema", "seed", "action"):
+                    script = fixtures.get(f"{side}/{phase}.sql", "")
+                    for statement in _split_sql(script):
+                        cursor = connection.execute(statement)
+                        if phase == "action":
+                            affected.append(max(cursor.rowcount, 0))
+                query = fixtures[f"{side}/query.sql"]
+                statements = _split_sql(query)
+                if len(statements) != 1 or not _READ_QUERY.match(statements[0]):
+                    raise ExecutionAuthorizationError(
+                        "comparison query must be one SELECT/WITH statement"
+                    )
+                cursor = connection.execute(statements[0])
+                values = cursor.fetchmany(max_rows + 1)
+                if len(values) > max_rows:
+                    raise ExecutionContractError(
+                        "database comparison exceeded maxRows"
+                    )
+                query_rows = _rows(values, ordered)
+            except sqlite3.Error as exc:
+                error = {
+                    "class": type(exc).__name__,
+                    "sqliteErrorCode": getattr(exc, "sqlite_errorcode", None),
+                    "sqliteErrorName": getattr(exc, "sqlite_errorname", None),
+                }
+            schema = self._schema_snapshot(connection)
+            state = self._state_snapshot(connection, max_rows)
+            return DatabaseSideResult(schema, query_rows, state, affected, error)
+        finally:
+            # Authorization and contract failures deliberately propagate, but the
+            # disposable database must still be released on every failure path.
+            # This is especially important for hostile fixtures rejected before
+            # SQLite can execute their first statement.
+            connection.close()
 
     @staticmethod
     def _schema_snapshot(connection: sqlite3.Connection) -> list[dict[str, Any]]:

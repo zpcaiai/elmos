@@ -318,6 +318,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         routeSelection.put("detected_build_tool", fingerprint.buildTool());
         routeSelection.put("accepted_source_constraint", route.sourceConstraint());
         routeSelection.put("route_evidence", selection.evidence().name());
+        routeSelection.put("launch_status", selection.launchStatus().name());
         routeSelection.put("experimental_opt_in_required", selection.requiresExperimentalOptIn());
         routeSelection.put("recipe_id", route.recipeId());
         routeSelection.put("target_spring_boot", route.targetBoot());
@@ -619,6 +620,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
     }
 
     @Override public boolean configured() { return true; }
+    @Override public boolean experimentalRoutesEnabled() { return experimentalRoutesEnabled; }
     @Override public String configurationReason() {
         return "Local execution adapter is enabled; deployment authority must still prove rootless Workspace isolation.";
     }
@@ -908,7 +910,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint, StartRequest request) {
         return selectRoute(fingerprint, request.targetSpringBoot(), request.targetJava(),
-                experimentalRoutesEnabled || request.allowExperimentalRoutes());
+                experimentalRoutesEnabled && request.allowExperimentalRoutes());
     }
 
     static SpringRouteCatalog.Selection selectRoute(

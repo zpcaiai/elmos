@@ -70,6 +70,19 @@ class ExternalCertificationIntakeTests(unittest.TestCase):
         cls.pack = cls.root / "framework-pack"
         (cls.pack / "target-profile").mkdir(parents=True)
         (cls.pack / "recipes").mkdir()
+        (cls.pack / "coexistence").mkdir()
+        cls.write_class_json(
+            cls.pack / "coexistence" / "manifest.json",
+            {
+                "schema_version": 1,
+                "pack_key": "spring-boot-2-7-18-to-3-5-3",
+                "enabled": False,
+                "components": [],
+                "status": "NOT_RUN",
+                "reason": "Fixture models direct cutover; coexistence requires a separate contract.",
+                "exit_criteria": ["Target parity, rollback, and customer acceptance pass."],
+            },
+        )
         cls.write_class_json(
             cls.pack / "pack.json",
             {

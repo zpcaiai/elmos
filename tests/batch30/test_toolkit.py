@@ -132,6 +132,45 @@ class ToolkitTests(unittest.TestCase):
             self.assertEqual(rejected.returncode, 1)
             self.assertIn("pack and certification statuses must match", rejected.stderr)
 
+    def test_framework_validator_requires_coexistence_contract(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            shutil.rmtree(pack / "coexistence")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "validate_framework_pack.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 1)
+            self.assertIn("/coexistence", rejected.stderr)
+
+    def test_framework_validator_rejects_empty_coexistence_exit_criteria(self):
+        with tempfile.TemporaryDirectory() as td:
+            pack = Path(td) / "spring-boot-2-7-18-to-3-5-3"
+            shutil.copytree(
+                ROOT / "framework-packs" / "spring-boot-2-7-18-to-3-5-3",
+                pack,
+                ignore=shutil.ignore_patterns("target", "*.log"),
+            )
+            coexistence_path = pack / "coexistence/manifest.json"
+            coexistence = json.loads(coexistence_path.read_text())
+            coexistence["exit_criteria"] = []
+            coexistence_path.write_text(json.dumps(coexistence, indent=2) + "\n")
+            rejected = subprocess.run(
+                [sys.executable, str(SCRIPTS / "validate_framework_pack.py"), str(pack)],
+                text=True,
+                capture_output=True,
+                check=False,
+            )
+            self.assertEqual(rejected.returncode, 1)
+            self.assertIn("requires explicit exit_criteria", rejected.stderr)
+
     def test_v2_supported_capabilities_require_exact_bindings(self):
         def missing_binding(capability):
             capability.pop("evidence_bindings")

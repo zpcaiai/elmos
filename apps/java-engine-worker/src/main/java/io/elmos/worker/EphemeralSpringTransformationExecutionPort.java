@@ -41,17 +41,20 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
     private final ObjectMapper json;
     private final Clock clock;
     private final HttpClient client;
+    private final boolean experimentalRoutesEnabled;
 
     EphemeralSpringTransformationExecutionPort(
             Path workspaceRoot,
             URI brokerBaseUrl,
             Path secretFile,
+            boolean experimentalRoutesEnabled,
             ObjectMapper json,
             Clock clock
     ) {
         this.workspaceRoot = workspaceRoot.toAbsolutePath().normalize();
         this.endpoint = endpoint(brokerBaseUrl);
         this.secret = readSecret(secretFile);
+        this.experimentalRoutesEnabled = experimentalRoutesEnabled;
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
         this.client = HttpClient.newBuilder()
@@ -116,6 +119,7 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
 
     @Override public void stop(RuntimeHandle handle, Control control) {}
     @Override public boolean configured() { return true; }
+    @Override public boolean experimentalRoutesEnabled() { return experimentalRoutesEnabled; }
     @Override public String configurationReason() {
         return "Per-run rootless transformation broker is configured; repository code cannot access control Worker credentials.";
     }

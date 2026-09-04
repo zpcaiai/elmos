@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "business_line": "spring-legacy-modernization",
+  "route_id": "boot-2.7-maven-to-boot-3.5.3-java-21",
+  "source_revision": "CHANGE_ME_40_HEX",
+  "launch_profile_sha256": "CHANGE_ME_64_HEX",
+  "artifact_sha256": "CHANGE_ME_64_HEX",
+  "environment_digest": "CHANGE_ME_64_HEX",
+  "gates": [
+    {"id": "STAGING_DEPLOYMENT", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "ROOTLESS_ISOLATION_ATTESTATION", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "DEFAULT_DENY_NETWORK_ATTESTATION", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "INDEPENDENT_VERIFICATION", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "ROLLBACK_AND_RESTORE_DRILL", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "DESIGN_PARTNER_ACCEPTANCE", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "SECURITY_AND_PRIVACY_REVIEW", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "OPERATIONS_SLO_SIGNOFF", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""},
+    {"id": "LEGAL_TAX_PAYMENT_READINESS", "status": "NOT_RUN", "evidence_uri": "", "evidence_sha256": ""}
+  ],
+  "execution_identity": "",
+  "independent_verifier": "",
+  "independent_reviewer": "",
+  "design_partner_organizations": [],
+  "approved_by": [],
+  "observed_at": ""
+}

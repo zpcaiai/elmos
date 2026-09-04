@@ -33,6 +33,7 @@ REQUIRED_DIRS = [
     "recipes",
     "adapters",
     "compatibility",
+    "coexistence",
     "corpus/development",
     "corpus/holdout",
     "corpus/real-repository",
@@ -77,6 +78,13 @@ EXPECTED_CONFIGURATION_BYTES = (
     b"management.endpoint.health.show-details=never\n"
     b"server.shutdown=graceful\n"
 )
+
+PACK_SPECIFIC_VALIDATORS = {
+    "spring-framework-5-3-mvc-to-spring-boot-3-5-3": (
+        "validate_legacy_spring_mvc_pack.py",
+        "--pack-dir",
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -393,6 +401,62 @@ def _validate_configuration_semantics(
         errors.append("configuration source and target property bytes differ")
 
 
+def _validate_coexistence(
+    errors: list[str],
+    pack: Path,
+    manifest: dict[str, Any],
+) -> None:
+    path = pack / "coexistence" / "manifest.json"
+    try:
+        coexistence = load(path)
+    except Exception as exc:
+        errors.append(str(exc))
+        return
+    if coexistence.get("schema_version") != 1:
+        errors.append("coexistence manifest schema_version must be 1")
+    if coexistence.get("pack_key") != manifest.get("pack_key"):
+        errors.append("coexistence manifest pack_key mismatch")
+    if not isinstance(coexistence.get("enabled"), bool):
+        errors.append("coexistence manifest enabled must be boolean")
+    status = coexistence.get("status", coexistence.get("evaluation_status"))
+    if status not in {"NOT_RUN", "PASSED", "BLOCKED"}:
+        errors.append("coexistence manifest status must be NOT_RUN, PASSED, or BLOCKED")
+    if coexistence.get("enabled") is False:
+        reason = coexistence.get("reason")
+        if not isinstance(reason, str) or not reason.strip():
+            errors.append("disabled coexistence requires a non-empty reason")
+    components = coexistence.get("components")
+    if not isinstance(components, list):
+        errors.append("coexistence manifest components must be a list")
+    exit_criteria = coexistence.get("exit_criteria")
+    if not isinstance(exit_criteria, list) or not exit_criteria:
+        errors.append("coexistence manifest requires explicit exit_criteria")
+
+
+def _run_pack_specific_validator(
+    errors: list[str],
+    pack: Path,
+    manifest: dict[str, Any],
+) -> None:
+    validator_spec = PACK_SPECIFIC_VALIDATORS.get(str(manifest.get("pack_key", "")))
+    if validator_spec is None:
+        return
+    validator_name, pack_argument = validator_spec
+    validator = Path(__file__).with_name(validator_name)
+    result = subprocess.run(
+        [sys.executable, str(validator), pack_argument, str(pack)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode:
+        detail = (result.stdout + result.stderr).strip()
+        errors.append(
+            f"pack-specific validator failed ({validator_name})"
+            + (f": {detail}" if detail else "")
+        )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("pack_dir")
@@ -531,6 +595,8 @@ def main() -> int:
             load(path)
         except Exception as exc:
             errors.append(str(exc))
+    if manifest:
+        _validate_coexistence(errors, pack, manifest)
     try:
         certification = load(pack / "certification" / "certification.json")
         if str(certification.get("status", "")).lower() != str(manifest.get("status", "")).lower():
@@ -548,6 +614,8 @@ def main() -> int:
         if result.returncode:
             detail = (result.stdout + result.stderr).strip()
             errors.append(f"Spring Boot 4.1.1 verification plan failed: {detail}")
+    if manifest:
+        _run_pack_specific_validator(errors, pack, manifest)
     if errors:
         print("\n".join(f"ERROR: {item}" for item in errors), file=sys.stderr)
         return 1

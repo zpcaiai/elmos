@@ -54,6 +54,7 @@ async function proxy(method: "GET" | "POST", context: Context, request?: NextReq
           openRewrite: { rewriteSpring: "6.35.0", mavenPlugin: "6.44.0" },
           routes: springRouteCatalogFallback,
           experimentalRoutesRequireOptIn: true,
+          operatorExperimentalRoutesEnabled: false,
           transformerConfigured: false,
           transformerReason: "SPRING_UPGRADE_PROXY_NOT_CONFIGURED",
           runtimeRunnerConfigured: false,

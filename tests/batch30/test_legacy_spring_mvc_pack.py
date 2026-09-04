@@ -36,7 +36,8 @@ class LegacySpringMvcPackTests(unittest.TestCase):
         completed = self.run_validator(PACK)
         self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
         self.assertIn(
-            "status=experimental decision=NOT_CERTIFIED execution=PASSED_LOCAL_EXACT_FIXTURE",
+            "status=experimental decision=NOT_CERTIFIED "
+            "execution=PASSED_LOCAL_EXACT_FIXTURE_AT_RECORDED_HARNESS_COMMIT",
             completed.stdout,
         )
 

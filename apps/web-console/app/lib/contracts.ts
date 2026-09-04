@@ -585,6 +585,7 @@ export type SpringModernizationCapabilityResponse = {
 };
 
 export type SpringRouteEvidenceStatus = "PASSED_LOCAL" | "NOT_RUN" | "NOT_IMPLEMENTED";
+export type SpringRouteLaunchStatus = "DESIGN_PARTNER" | "EXPERIMENTAL" | "INVENTORY_ONLY";
 
 export type SpringRouteDescriptor = {
   routeId: string;
@@ -602,6 +603,7 @@ export type SpringRouteDescriptor = {
   targetJava: string;
   recipeId: string;
   evidenceStatus: SpringRouteEvidenceStatus;
+  launchStatus?: SpringRouteLaunchStatus;
   verifiedSourceSpringBoot: string;
   verifiedSourceJava: string;
   notes?: string;

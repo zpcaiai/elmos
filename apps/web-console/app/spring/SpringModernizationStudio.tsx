@@ -24,6 +24,7 @@ type Capability = {
   openRewrite: { rewriteSpring: string; mavenPlugin: string };
   routes?: SpringRouteDescriptor[];
   experimentalRoutesRequireOptIn?: boolean;
+  operatorExperimentalRoutesEnabled?: boolean;
   transformerConfigured: boolean;
   transformerReason: string;
   runtimeRunnerConfigured: boolean;
@@ -177,6 +178,11 @@ function routeEvidenceLabel(route: SpringRouteDescriptor) {
   return route.evidenceStatus === "PASSED_LOCAL"
     ? `PASSED_LOCAL @ ${sourceFamily} ${route.verifiedSourceSpringBoot} / Java ${route.verifiedSourceJava}`
     : `${route.evidenceStatus} · ${sourceFamily}`;
+}
+
+function routeLaunchStatus(route: SpringRouteDescriptor) {
+  if (route.launchStatus) return route.launchStatus;
+  return route.evidenceStatus === "NOT_IMPLEMENTED" ? "INVENTORY_ONLY" : "EXPERIMENTAL";
 }
 
 function fingerprintSourceLabel(fingerprint: NonNullable<Run["fingerprint"]>) {
@@ -376,9 +382,13 @@ export function SpringModernizationStudio() {
   const targetOptions = useMemo(() => {
     const distinct = new Map<string, TargetTuple>();
     const routes = capability?.routes;
-    for (const route of routes?.filter(
-      (candidate) => candidate.evidenceStatus !== "NOT_IMPLEMENTED",
-    ) ?? []) {
+    for (const route of routes?.filter((candidate) => {
+      const launchStatus = routeLaunchStatus(candidate);
+      return launchStatus === "DESIGN_PARTNER"
+        || launchStatus === "EXPERIMENTAL"
+          && capability?.operatorExperimentalRoutesEnabled === true
+          && allowExperimentalRoutes;
+    }) ?? []) {
       const key = `${route.targetSpringBoot}|${route.targetJava}`;
       distinct.set(key, { springBoot: route.targetSpringBoot, java: route.targetJava });
     }
@@ -390,7 +400,7 @@ export function SpringModernizationStudio() {
     }
     return [...distinct.values()].sort((left, right) =>
       left.springBoot.localeCompare(right.springBoot, undefined, { numeric: true }));
-  }, [capability]);
+  }, [allowExperimentalRoutes, capability]);
   const selectedTarget = useMemo<TargetTuple | null>(
     () => targetSpringBoot && targetJava
       ? { springBoot: targetSpringBoot, java: targetJava }
@@ -428,12 +438,18 @@ export function SpringModernizationStudio() {
   );
   const evidenceTarget = runTarget ?? selectedTarget;
   const matchingTargetRoutes = capability?.routes?.filter(
-    (route) => route.evidenceStatus !== "NOT_IMPLEMENTED"
+    (route) => (routeLaunchStatus(route) === "DESIGN_PARTNER"
+      || routeLaunchStatus(route) === "EXPERIMENTAL"
+        && capability?.operatorExperimentalRoutesEnabled === true
+        && allowExperimentalRoutes)
       && route.targetSpringBoot === targetSpringBoot
       && route.targetJava === targetJava,
   ) ?? [];
   const verifiedRouteCount = capability?.routes?.filter(
-    (route) => route.evidenceStatus === "PASSED_LOCAL",
+    (route) => route.evidenceStatus === "PASSED_LOCAL"
+      && (routeLaunchStatus(route) === "DESIGN_PARTNER"
+        || capability?.operatorExperimentalRoutesEnabled === true
+          && allowExperimentalRoutes),
   ).length ?? (capability ? 1 : 0);
   const lastStageIndex = run ? orderedStages.indexOf(run.stage) : -1;
   // The exact tuple is owned by the Java engine capability contract. Until it
@@ -811,7 +827,8 @@ export function SpringModernizationStudio() {
                 value={`${targetSpringBoot}|${targetJava}`}
                 disabled={!capability || targetOptions.length === 0 || migrationActive}
                 onChange={(event) => {
-                  const [springBoot, java] = event.target.value.split("|");
+                  const [springBoot = "", java = ""] = event.target.value.split("|");
+                  if (!springBoot || !java) return;
                   setTargetSpringBoot(springBoot);
                   setTargetJava(java);
                 }}
@@ -845,8 +862,8 @@ export function SpringModernizationStudio() {
             <span><strong>验证通过后自动一键启动</strong><small>{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}</small></span>
           </label>
           <label className="spring-start-toggle">
-            <input type="checkbox" checked={allowExperimentalRoutes} onChange={(event) => setAllowExperimentalRoutes(event.target.checked)} />
-            <span><strong>允许自适应实验性升级路线</strong><small>对处于受支持大版本区间内的未标定补丁版本，自动放行升级流水线并执行严格编译与探活验证。</small></span>
+            <input type="checkbox" checked={allowExperimentalRoutes} disabled={capability?.operatorExperimentalRoutesEnabled !== true} onChange={(event) => setAllowExperimentalRoutes(event.target.checked)} />
+            <span><strong>允许实验性升级路线</strong><small>{capability?.operatorExperimentalRoutesEnabled === true ? "需要本次请求再次明确选择；实验路线不属于首发正式承诺。" : "运营方未启用实验路线；首发仅开放目录内唯一 DESIGN_PARTNER 路线。"}</small></span>
           </label>
           <div className="business-actions">
             <button className="button button-primary" type="submit" disabled={busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}>

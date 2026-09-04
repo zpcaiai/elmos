@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import io
 import json
 import re
+import subprocess
 import sys
+import tarfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Any
@@ -806,13 +809,40 @@ def validate_local_evidence(
     if set(harness_by_path) != EXPECTED_HARNESS_FILES:
         errors.append("local qualification harness file inventory is incomplete")
     else:
+        repository_head = str(harness.get("repository_head", ""))
+        archive = subprocess.run(
+            ["git", "archive", "--format=tar", repository_head, "--", *sorted(EXPECTED_HARNESS_FILES)],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        recorded_blobs: dict[str, bytes] = {}
+        if archive.returncode:
+            errors.append("local qualification harness Git archive is unavailable")
+        else:
+            try:
+                with tarfile.open(fileobj=io.BytesIO(archive.stdout), mode="r:") as stream:
+                    for member in stream.getmembers():
+                        if member.isfile() and member.name in EXPECTED_HARNESS_FILES:
+                            extracted = stream.extractfile(member)
+                            if extracted is not None:
+                                recorded_blobs[member.name] = extracted.read()
+            except tarfile.TarError:
+                errors.append("local qualification harness Git archive is invalid")
         for relative, item in harness_by_path.items():
             candidate = ROOT / relative
             if not candidate.is_file() or candidate.is_symlink():
                 errors.append(f"local qualification harness source is missing or unsafe: {relative}")
                 continue
-            if item.get("bytes") != candidate.stat().st_size or item.get("sha256") != digest(candidate):
-                errors.append(f"local qualification harness source digest drifted: {relative}")
+            recorded = recorded_blobs.get(relative)
+            if recorded is None:
+                errors.append(f"local qualification harness Git blob is unavailable: {relative}")
+                continue
+            if (
+                item.get("bytes") != len(recorded)
+                or item.get("sha256") != hashlib.sha256(recorded).hexdigest()
+            ):
+                errors.append(f"local qualification harness recorded Git blob drifted: {relative}")
 
     execution = receipt.get("execution", {})
     expected_execution = {
@@ -1343,7 +1373,10 @@ def main() -> int:
     if errors:
         print("\n".join(f"ERROR: {error}" for error in errors), file=sys.stderr)
         return 1
-    print(f"OK: {pack} status=experimental decision=NOT_CERTIFIED execution=PASSED_LOCAL_EXACT_FIXTURE")
+    print(
+        f"OK: {pack} status=experimental decision=NOT_CERTIFIED "
+        "execution=PASSED_LOCAL_EXACT_FIXTURE_AT_RECORDED_HARNESS_COMMIT"
+    )
     return 0
 
 

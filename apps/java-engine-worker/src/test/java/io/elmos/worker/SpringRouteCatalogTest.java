@@ -23,6 +23,7 @@ class SpringRouteCatalogTest {
         assertEquals("boot-2.7-maven-to-boot-3.5.3-java-21", selection.route().routeId());
         assertEquals(EvidenceStatus.PASSED_LOCAL, selection.evidence());
         assertFalse(selection.requiresExperimentalOptIn());
+        assertEquals(SpringRouteCatalog.LaunchStatus.DESIGN_PARTNER, selection.launchStatus());
     }
 
     @Test void otherTuplesInsideTheSameRouteRemainNotRun() {
@@ -246,7 +247,8 @@ class SpringRouteCatalogTest {
         assertEquals(EvidenceStatus.PASSED_LOCAL, selection.evidence());
         assertEquals("5.3.39", selection.route().verifiedSourceBoot());
         assertEquals("11", selection.route().verifiedSourceJava());
-        assertFalse(selection.requiresExperimentalOptIn());
+        assertTrue(selection.requiresExperimentalOptIn());
+        assertEquals(SpringRouteCatalog.LaunchStatus.EXPERIMENTAL, selection.launchStatus());
     }
 
     @Test void exactMvcRouteRejectsAdjacentAndQualifiedVersions() {

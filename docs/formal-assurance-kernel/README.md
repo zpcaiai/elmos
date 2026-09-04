@@ -46,14 +46,18 @@ as inert declarative requirements. Broad work starts with
 installed Skill. The importer rejects collisions, symlinks and dual-root drift.
 
 Native execution is fail closed. A deployment must provide a complete
-digest-pinned toolchain registry and a private permit key. The CLI refuses a
-registry without its SHA-256, follows neither registry nor key symlinks, and
-rejects permit keys readable by group or others. Example operator wiring:
+digest-pinned toolchain registry, a private permit key and a separate private
+artifact-encryption key whenever durable artifact storage is enabled. The CLI
+refuses a registry without its SHA-256, follows neither registry nor key
+symlinks, and rejects secret keys readable by group or others. Example operator
+wiring:
 
 ```sh
 elmos-formal-assurance \
   --state /var/lib/elmos/formal-assurance.sqlite3 \
   --artifact-root /var/lib/elmos/formal-artifacts \
+  --artifact-encryption-key-file /run/secrets/elmos-formal-artifact-encryption-key \
+  --artifact-encryption-key-id local-artifact-kek-v1 \
   --execution-root /var/lib/elmos/formal-executions \
   --permit-key-file /run/secrets/elmos-formal-permit-key \
   --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \
@@ -67,6 +71,13 @@ The registry format is `elmos-formal-toolchain-registry/v1`. Each entry binds
 an exact adapter ID, executable path and executable SHA-256; OCI adapters also
 bind an immutable image digest and in-container executable. Project/runtime
 code cannot fall back from OCI isolation to a local process.
+
+The optional native HMAC/Merkle bridge is a separate local acceleration path.
+It has no directory scan or implicit fallback: the host must supply one
+absolute library path and its exact SHA-256 together. Returned payload digests,
+HMAC values and Merkle roots are recomputed independently before acceptance.
+Missing configuration stays `NOT_RUN`; even a successful call remains local
+self-attested engineering evidence and is not an external signature.
 
 The WSGI API exposes scope-bound assumption and trusted-component registration,
 four-eyes waiver proposal/approval/revocation, explicit dependency-drift

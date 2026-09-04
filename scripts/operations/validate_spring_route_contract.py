@@ -960,6 +960,7 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "route.artifactFileName()",
         "sourceJavaHome(",
         "SPRING_ROUTE_EVIDENCE_NOT_RUN",
+        "experimentalRoutesEnabled && request.allowExperimentalRoutes()",
     ):
         require(needle in port, f"ENGINE_NOT_CATALOG_BOUND:{needle}")
     require(
@@ -974,6 +975,8 @@ def check_engine(routes: list[dict[str, object]], constants: dict[str, str]) -> 
         "request.targetJava()",
         "SpringRouteCatalog.selectSpringMvc(",
         "SpringRouteCatalog.selectSpringFramework(",
+        'Map.entry("launchStatus", new SpringRouteCatalog.Selection(',
+        'Map.entry("operatorExperimentalRoutesEnabled", transformer.experimentalRoutesEnabled())',
     ):
         require(needle in service, f"RUN_SERVICE_NOT_DIRECTED_MATRIX_BOUND:{needle}")
 
@@ -1041,6 +1044,12 @@ def check_console(routes: list[dict[str, object]], constants: dict[str, str]) ->
             declared == sorted(route["source_java_versions"]),  # type: ignore[arg-type]
             f"CONSOLE_ROUTE_JAVA_DRIFT:{route_id}",
         )
+        launch_status = re.search(r'launchStatus:\s*"([A-Z_]+)"', body)
+        expected_launch_status = "DESIGN_PARTNER" if route_id == PACK_BOUND_ROUTE_ID else None
+        require(
+            (launch_status.group(1) if launch_status else None) == expected_launch_status,
+            f"CONSOLE_ROUTE_LAUNCH_STATUS_DRIFT:{route_id}",
+        )
 
     proxy = CONSOLE_PROXY.read_text(encoding="utf-8")
     require(f'packKey: "{verified["pack_key"]}"' in proxy, "PROXY_PACK_KEY_DRIFT")
@@ -1093,7 +1102,9 @@ def check_console(routes: list[dict[str, object]], constants: dict[str, str]) ->
         'const migrationActive = Boolean(run && ["QUEUED", "RUNNING"].includes(run.status))',
         "const evidenceTarget = runTarget ?? selectedTarget",
         "disabled={!capability || targetOptions.length === 0 || migrationActive}",
-        'candidate.evidenceStatus !== "NOT_IMPLEMENTED"',
+        'launchStatus === "DESIGN_PARTNER"',
+        'capability?.operatorExperimentalRoutesEnabled === true',
+        'disabled={capability?.operatorExperimentalRoutesEnabled !== true}',
         "disabled={!selectableTargetKeys.has(`${target.springBoot}|${target.java}`)}",
         "busy || migrationActive || !selectedTargetSupported",
         'route.sourceFrameworkFamily === "spring-mvc"',

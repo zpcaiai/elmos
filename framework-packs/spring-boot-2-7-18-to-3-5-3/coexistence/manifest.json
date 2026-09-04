@@ -3,5 +3,9 @@
   "pack_key": "spring-boot-2-7-18-to-3-5-3",
   "enabled": false,
   "components": [],
-  "exit_criteria": []
+  "status": "NOT_RUN",
+  "reason": "The assisted launch uses verified cutover plus rollback; dual runtime coexistence requires a customer-specific compatibility contract.",
+  "exit_criteria": [
+    "Target build, startup, declared web/configuration/lifecycle parity, rollback, and customer acceptance pass for the exact repository digest."
+  ]
 }
