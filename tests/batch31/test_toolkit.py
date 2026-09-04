@@ -73,6 +73,12 @@ class ToolkitTests(unittest.TestCase):
             closure["current"]["emittableRouteCells"]
             + closure["current"]["blockedRouteCells"],
         )
+        self.assertEqual(
+            closure["current"]["frozenSourceUnits"],
+            closure["current"]["admittedCandidateUnits"]
+            + closure["current"]["manualMigrationItems"]
+            + closure["current"]["sourceFormatReviewItems"],
+        )
 
     def test_scaffold_and_validate(self):
         with tempfile.TemporaryDirectory() as td:

@@ -6,12 +6,16 @@
     "commonFourTargetEmittableUnits": 363,
     "commonFourTargetImplementationRate": 0.2788,
     "commonFourTargetOpenUnits": 939,
+    "dispositionAccountedUnits": 1739,
+    "dispositionCoverage": 1.0,
     "emittableRouteCells": 2673,
     "externalExecution": "NOT_RUN",
+    "frozenSourceUnits": 1739,
     "independentVerification": "NOT_RUN",
     "manualMigrationItems": 435,
     "manualMigrationOpen": 435,
     "runtimeVerifiedRouteCells": 0,
+    "sourceFormatReviewItems": 2,
     "targetRouteCells": 5208
   },
   "definitionOf100Percent": {

@@ -9,8 +9,11 @@
     "definitionOf100Percent": {"type": "object"},
     "current": {
       "type": "object",
-      "required": ["admittedCandidateUnits", "commonFourTargetEmittableUnits", "commonFourTargetImplementationRate", "commonFourTargetOpenUnits", "targetRouteCells", "emittableRouteCells", "blockedRouteCells", "runtimeVerifiedRouteCells", "manualMigrationItems", "manualMigrationOpen", "externalExecution", "independentVerification", "certification"],
+      "required": ["frozenSourceUnits", "dispositionAccountedUnits", "dispositionCoverage", "admittedCandidateUnits", "commonFourTargetEmittableUnits", "commonFourTargetImplementationRate", "commonFourTargetOpenUnits", "targetRouteCells", "emittableRouteCells", "blockedRouteCells", "runtimeVerifiedRouteCells", "manualMigrationItems", "manualMigrationOpen", "sourceFormatReviewItems", "externalExecution", "independentVerification", "certification"],
       "properties": {
+        "frozenSourceUnits": {"type": "integer", "minimum": 0},
+        "dispositionAccountedUnits": {"type": "integer", "minimum": 0},
+        "dispositionCoverage": {"const": 1.0},
         "admittedCandidateUnits": {"type": "integer", "minimum": 0},
         "commonFourTargetEmittableUnits": {"type": "integer", "minimum": 0},
         "commonFourTargetImplementationRate": {"type": "number", "minimum": 0, "maximum": 1},
@@ -21,6 +24,7 @@
         "runtimeVerifiedRouteCells": {"const": 0},
         "manualMigrationItems": {"type": "integer", "minimum": 0},
         "manualMigrationOpen": {"type": "integer", "minimum": 0},
+        "sourceFormatReviewItems": {"type": "integer", "minimum": 0},
         "externalExecution": {"const": "NOT_RUN"},
         "independentVerification": {"const": "NOT_RUN"},
         "certification": {"const": "NOT_CERTIFIED"}

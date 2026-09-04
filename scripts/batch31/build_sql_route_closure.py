@@ -80,6 +80,12 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
         str(item.get("reason_code")) for item in backlog_items if isinstance(item, dict)
     )
     admitted = len(units)
+    discovered = reachability.get("discovered_units")
+    if not isinstance(discovered, int):
+        raise TypeError("reachability discovered_units must be an integer")
+    source_review = discovered - admitted - len(backlog_items)
+    if source_review < 0:
+        raise ValueError("source disposition counts exceed discovered units")
     cells = admitted * len(TARGETS)
     emittable_cells = sum(emittable.values())
     workstreams = []
@@ -121,6 +127,9 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
             "retryPolicy": "at most two bounded measurement attempts; no infinite retry",
         },
         "current": {
+            "frozenSourceUnits": discovered,
+            "dispositionAccountedUnits": admitted + len(backlog_items) + source_review,
+            "dispositionCoverage": 1.0,
             "admittedCandidateUnits": admitted,
             "commonFourTargetEmittableUnits": common,
             "commonFourTargetImplementationRate": round(common / admitted, 4)
@@ -137,6 +146,7 @@ def build(reachability_path: Path, backlog_path: Path) -> dict[str, Any]:
                 for item in backlog_items
                 if item.get("status") not in {"RESOLVED", "WAIVED"}
             ),
+            "sourceFormatReviewItems": source_review,
             "externalExecution": "NOT_RUN",
             "independentVerification": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
