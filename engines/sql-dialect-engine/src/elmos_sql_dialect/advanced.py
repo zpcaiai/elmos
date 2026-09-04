@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import Protocol
+from typing import Protocol, cast
 
 import sqlglot
 from sqlglot import exp
@@ -47,11 +47,11 @@ from .models import (
     RoutineParameter,
     RoutineParameterMode,
     RowPolicy,
-    SavepointStatement,
     RowPolicyCommand,
     RowPolicyFunctionPredicate,
     RowPolicyMode,
     RowPolicySettingPredicate,
+    SavepointStatement,
     TableFunction,
     TableFunctionColumn,
     Trigger,
@@ -240,9 +240,7 @@ def parse_comment(
         )
         assert isinstance(target, exp.UserDefinedFunction)
         schema, name = _routine_name(target.this, namespace_map)
-        argument_types = tuple(
-            _plain_identifier(item, "comment function argument type") for item in target.expressions
-        )
+        argument_types = tuple(_plain_identifier(item, "comment function argument type") for item in target.expressions)
         return Comment(
             CommentObjectKind.FUNCTION,
             name,
@@ -588,7 +586,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             current = []
             if chunk:
                 try:
-                    stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
+                    stmt = cast(exp.Expression, sqlglot.parse_one(chunk, read=source_dialect.value))
                     statements.append(stmt)
                 except Exception:
                     statements.append(exp.Command(this=chunk))
@@ -596,7 +594,7 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
         chunk = " ".join(current).rstrip(";").strip()
         if chunk:
             try:
-                stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
+                stmt = cast(exp.Expression, sqlglot.parse_one(chunk, read=source_dialect.value))
                 statements.append(stmt)
             except Exception:
                 statements.append(exp.Command(this=chunk))
@@ -639,7 +637,9 @@ def parse_procedure(
         if isinstance(item, exp.Set):
             for set_item in item.expressions:
                 target = set_item.this
-                _require(isinstance(target, exp.EQ), "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", "SET assignment is malformed")
+                _require(
+                    isinstance(target, exp.EQ), "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", "SET assignment is malformed"
+                )
                 assert isinstance(target, exp.EQ)
                 lhs = target.this
                 if isinstance(lhs, exp.Parameter):
@@ -658,7 +658,7 @@ def parse_procedure(
                 )
                 value = _parse_value(target.expression, parameter_map, source_dialect)
                 assignments.append(RoutineAssignment(target_name, value))
-        elif isinstance(item, (exp.PropertyEQ, exp.EQ)):
+        elif isinstance(item, exp.PropertyEQ | exp.EQ):
             lhs = item.this
             if isinstance(lhs, exp.Parameter):
                 lhs = lhs.this
@@ -678,7 +678,7 @@ def parse_procedure(
             assignments.append(RoutineAssignment(target_name, value))
         elif isinstance(item, exp.Rollback):
             sp_id = item.args.get("savepoint")
-            sp_name = str(sp_id.this if hasattr(sp_id, "this") else (sp_id or ""))
+            sp_name = str(getattr(sp_id, "this", sp_id) or "")
             if not sp_name:
                 tokens = item.sql().split()
                 sp_name = tokens[-1].rstrip(";")
@@ -696,65 +696,110 @@ def parse_procedure(
                 sp_name = item_sql.split()[-1].rstrip(";")
                 rollback_savepoints.append(RollbackSavepointStatement(name=sp_name))
             elif item_upper.startswith("FOR ") and " IN " in item_upper and " LOOP" in item_upper:
-                m = re.search(r"FOR\s+(\w+)\s+IN\s*\((.*?)\)\s*LOOP(.*?)END\s+LOOP", item_sql, re.IGNORECASE | re.DOTALL)
+                m = re.search(
+                    r"FOR\s+(\w+)\s+IN\s*\((.*?)\)\s*LOOP(.*?)END\s+LOOP", item_sql, re.IGNORECASE | re.DOTALL
+                )
                 if m:
                     cur_name, cur_query, cur_body = m.groups()
-                    cursor_loops.append(CursorLoop(cursor_name=cur_name.strip(), query_sql=cur_query.strip(), body_statements=(cur_body.strip(),)))
+                    cursor_loops.append(
+                        CursorLoop(
+                            cursor_name=cur_name.strip(),
+                            query_sql=cur_query.strip(),
+                            body_statements=(cur_body.strip(),),
+                        )
+                    )
                 else:
                     raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"cursor loop malformed: {item_sql}")
             elif item_upper.startswith("EXCEPTION"):
                 m = re.search(r"EXCEPTION\s+WHEN\s+(\w+)\s+THEN(.*)", item_sql, re.IGNORECASE | re.DOTALL)
                 if m:
                     cond, act = m.groups()
-                    exception_handlers.append(ExceptionHandler(condition=cond.strip(), action_statements=(act.strip(),)))
+                    exception_handlers.append(
+                        ExceptionHandler(condition=cond.strip(), action_statements=(act.strip(),))
+                    )
                 else:
                     raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"exception block malformed: {item_sql}")
             elif item_upper.startswith("IF ") or item_upper.startswith("IF\n"):
                 branches: list[IfBranch] = []
                 else_stmts: list[str] = []
                 if "END IF" in item_upper:
-                    m_if = re.search(r"IF\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))", item_sql, re.IGNORECASE | re.DOTALL)
+                    m_if = re.search(
+                        r"IF\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))",
+                        item_sql,
+                        re.IGNORECASE | re.DOTALL,
+                    )
                     if m_if:
                         branches.append(IfBranch(condition=m_if.group(1).strip(), statements=(m_if.group(2).strip(),)))
-                        for m_elsif in re.finditer(r"(?:ELSIF|ELSEIF)\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))", item_sql, re.IGNORECASE | re.DOTALL):
-                            branches.append(IfBranch(condition=m_elsif.group(1).strip(), statements=(m_elsif.group(2).strip(),)))
+                        for m_elsif in re.finditer(
+                            r"(?:ELSIF|ELSEIF)\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))",
+                            item_sql,
+                            re.IGNORECASE | re.DOTALL,
+                        ):
+                            branches.append(
+                                IfBranch(condition=m_elsif.group(1).strip(), statements=(m_elsif.group(2).strip(),))
+                            )
                         m_else = re.search(r"ELSE\s+(.*?)\s+END\s+IF", item_sql, re.IGNORECASE | re.DOTALL)
                         if m_else:
                             else_stmts.append(m_else.group(1).strip())
                     if branches:
-                        if_statements.append(IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts)))
+                        if_statements.append(
+                            IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts))
+                        )
                     else:
                         raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed IF statement: {item_sql}")
                 elif "BEGIN" in item_upper and "END" in item_upper:
-                    m_tsql_if = re.search(r"IF\s+(.*?)\s+BEGIN\s+(.*?)\s+END(?:\s+ELSE\s+BEGIN\s+(.*?)\s+END)?", item_sql, re.IGNORECASE | re.DOTALL)
+                    m_tsql_if = re.search(
+                        r"IF\s+(.*?)\s+BEGIN\s+(.*?)\s+END(?:\s+ELSE\s+BEGIN\s+(.*?)\s+END)?",
+                        item_sql,
+                        re.IGNORECASE | re.DOTALL,
+                    )
                     if m_tsql_if:
                         cond = m_tsql_if.group(1).strip()
                         then_stmt = m_tsql_if.group(2).strip()
                         branches.append(IfBranch(condition=cond, statements=(then_stmt,)))
                         if m_tsql_if.group(3):
                             else_stmts.append(m_tsql_if.group(3).strip())
-                        if_statements.append(IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts)))
+                        if_statements.append(
+                            IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts))
+                        )
                     else:
-                        raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed T-SQL IF statement: {item_sql}")
+                        raise DialectError(
+                            "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed T-SQL IF statement: {item_sql}"
+                        )
                 else:
                     raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"unsupported IF structure: {item_sql}")
             elif item_upper.startswith("WHILE ") or item_upper.startswith("WHILE\n"):
-                m_while = re.search(r"WHILE\s+(.*?)\s+(?:LOOP|BEGIN)\s+(.*?)\s+(?:END\s+LOOP|END)", item_sql, re.IGNORECASE | re.DOTALL)
+                m_while = re.search(
+                    r"WHILE\s+(.*?)\s+(?:LOOP|BEGIN)\s+(.*?)\s+(?:END\s+LOOP|END)", item_sql, re.IGNORECASE | re.DOTALL
+                )
                 if m_while:
                     cond, body = m_while.groups()
                     while_loops.append(WhileLoop(condition=cond.strip(), body_statements=(body.strip(),)))
                 else:
                     raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed WHILE statement: {item_sql}")
-            elif item_upper.startswith("EXECUTE ") or item_upper.startswith("EXECUTE\n") or item_upper.startswith("EXEC "):
+            elif (
+                item_upper.startswith("EXECUTE ")
+                or item_upper.startswith("EXECUTE\n")
+                or item_upper.startswith("EXEC ")
+            ):
                 if not allow_dynamic_sql:
-                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"dynamic SQL is not certified in routine body: {item_sql}")
-                m_dyn = re.search(r"(?:EXECUTE\s+IMMEDIATE|EXECUTE|EXEC\s+sp_executesql)\s+(.*?)(?:\s+INTO\s+(\w+))?;?$", item_sql, re.IGNORECASE | re.DOTALL)
+                    raise DialectError(
+                        "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+                        f"dynamic SQL is not certified in routine body: {item_sql}",
+                    )
+                m_dyn = re.search(
+                    r"(?:EXECUTE\s+IMMEDIATE|EXECUTE|EXEC\s+sp_executesql)\s+(.*?)(?:\s+INTO\s+(\w+))?;?$",
+                    item_sql,
+                    re.IGNORECASE | re.DOTALL,
+                )
                 if m_dyn:
                     dyn_expr = m_dyn.group(1).strip().rstrip(";")
                     dyn_into = m_dyn.group(2).strip() if m_dyn.group(2) else None
                     dynamic_executes.append(DynamicExecuteStatement(query_expression=dyn_expr, into_variable=dyn_into))
                 else:
-                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"dynamic SQL statement malformed: {item_sql}")
+                    raise DialectError(
+                        "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"dynamic SQL statement malformed: {item_sql}"
+                    )
             else:
                 raise DialectError(
                     "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
@@ -1221,9 +1266,7 @@ def _parse_row_policy_predicate(
     upper = [value.upper() for value in values]
     if len(tokens) == 8 and upper[1:4] == ["=", "CURRENT_SETTING", "("]:
         _require(
-            upper[5] == ","
-            and upper[6] in {"TRUE", "FALSE"}
-            and upper[7] == ")",
+            upper[5] == "," and upper[6] in {"TRUE", "FALSE"} and upper[7] == ")",
             "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
             f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
         )
@@ -1242,16 +1285,22 @@ def _parse_row_policy_predicate(
     if len(tokens) >= 4 and upper[1] == "=":
         column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
         if len(tokens) == 7 and upper[3] == "." and upper[5:7] == ["(", ")"]:
-            raw_schema = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function schema"), f"{what} function schema")
+            raw_schema = _plain_identifier(
+                _row_policy_identifier(tokens[2], f"{what} function schema"), f"{what} function schema"
+            )
             mapped_schema = namespace_map.get(raw_schema, raw_schema) if namespace_map else raw_schema
-            function_name = _plain_identifier(_row_policy_identifier(tokens[4], f"{what} function name"), f"{what} function name")
+            function_name = _plain_identifier(
+                _row_policy_identifier(tokens[4], f"{what} function name"), f"{what} function name"
+            )
             return RowPolicyFunctionPredicate(
                 column=column,
                 function_name=function_name,
                 function_schema=mapped_schema,
             )
         if len(tokens) == 5 and upper[3:5] == ["(", ")"]:
-            function_name = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function name"), f"{what} function name")
+            function_name = _plain_identifier(
+                _row_policy_identifier(tokens[2], f"{what} function name"), f"{what} function name"
+            )
             return RowPolicyFunctionPredicate(
                 column=column,
                 function_name=function_name,
@@ -1354,7 +1403,10 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
             sec_schema = quote_identifier(schema, target_dialect)
             pol_name = quote_identifier(policy.name, target_dialect)
             tbl_name = _object_name(policy.schema, policy.table, target_dialect)
-            return f"CREATE SECURITY POLICY {sec_schema}.{pol_name} ADD FILTER PREDICATE {sec_schema}.fn_rls({col}) ON {tbl_name} WITH (STATE = ON)"
+            return (
+                f"CREATE SECURITY POLICY {sec_schema}.{pol_name} ADD FILTER PREDICATE "
+                f"{sec_schema}.fn_rls({col}) ON {tbl_name} WITH (STATE = ON)"
+            )
         elif target_dialect is Dialect.ORACLE:
             schema_str = f"'{policy.schema}'" if policy.schema else "USER"
             return f"CALL DBMS_RLS.ADD_POLICY({schema_str}, '{policy.table}', '{policy.name}', {schema_str}, 'fn_rls')"
@@ -1367,10 +1419,7 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
         if isinstance(value, RowPolicySettingPredicate):
             setting = value.setting_name.replace("'", "''")
             missing_ok = "TRUE" if value.missing_ok else "FALSE"
-            return (
-                f"{quote_identifier(value.column, target_dialect)} = "
-                f"current_setting('{setting}', {missing_ok})"
-            )
+            return f"{quote_identifier(value.column, target_dialect)} = current_setting('{setting}', {missing_ok})"
         if isinstance(value, RowPolicyFunctionPredicate):
             fn = quote_identifier(value.function_name, target_dialect)
             if value.function_schema:
@@ -1381,8 +1430,7 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
         raise TypeError(f"unhandled predicate type: {type(value).__name__}")
 
     roles = ", ".join(
-        "PUBLIC" if str(role).upper() == "PUBLIC" else quote_identifier(role, target_dialect)
-        for role in policy.roles
+        "PUBLIC" if str(role).upper() == "PUBLIC" else quote_identifier(role, target_dialect) for role in policy.roles
     )
     with_check = f" WITH CHECK ({predicate(policy.check_predicate)})" if policy.check_predicate is not None else ""
     return (
@@ -1510,7 +1558,8 @@ def emit_comment(
                     "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                     f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
                 )
-            return f"-- COMMENT ON FUNCTION {_object_name(comment.schema, comment.object_name, target_dialect)} IS '{escaped}'"
+            function_name = _object_name(comment.schema, comment.object_name, target_dialect)
+            return f"-- COMMENT ON FUNCTION {function_name} IS '{escaped}'"
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.MYSQL:
@@ -1653,28 +1702,31 @@ def emit_privilege(
     if privilege.object_kind in {"FUNCTION", "PROCEDURE"}:
         target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.POSTGRES:
-            object_clause = (
-                f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
-            )
+            object_clause = f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
         else:
-            if not allow_privilege_shim and (routine_catalog is None or privilege.routine_argument_type_refs is None):
-                raise DialectError(
-                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                    f"{target_dialect.value} routine privileges cannot safely drop the source "
-                    "signature without a target routine-identity catalogue",
-                )
-            if not allow_privilege_shim and not routine_catalog.has_unique_routine(
-                privilege.object_kind,
-                privilege.schema,
-                privilege.object_name,
-                privilege.routine_argument_type_refs,
-            ):
-                raise DialectError(
-                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                    f"source catalog cannot prove one exact {target_dialect.value} routine identity",
-                )
+            if not allow_privilege_shim:
+                argument_type_refs = privilege.routine_argument_type_refs
+                if routine_catalog is None or argument_type_refs is None:
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                        f"{target_dialect.value} routine privileges cannot safely drop the source "
+                        "signature without a target routine-identity catalogue",
+                    )
+                if not routine_catalog.has_unique_routine(
+                    privilege.object_kind,
+                    privilege.schema,
+                    privilege.object_name,
+                    argument_type_refs,
+                ):
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                        f"source catalog cannot prove one exact {target_dialect.value} routine identity",
+                    )
             if target_dialect is Dialect.MYSQL:
-                if any(principal.casefold() == "public" for principal in privilege.principals) and not allow_privilege_shim:
+                if (
+                    any(principal.casefold() == "public" for principal in privilege.principals)
+                    and not allow_privilege_shim
+                ):
                     raise DialectError(
                         "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
                         "MySQL has no PUBLIC grantee with PostgreSQL's all-account semantics",
@@ -1755,7 +1807,11 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
         if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE):
             statements.append(f"FOR {cl.cursor_name} IN ({cl.query_sql}) LOOP {inner}; END LOOP;")
         elif target_dialect is Dialect.TSQL:
-            statements.append(f"DECLARE {cl.cursor_name}_cur CURSOR FOR {cl.query_sql}; OPEN {cl.cursor_name}_cur; {inner}; CLOSE {cl.cursor_name}_cur; DEALLOCATE {cl.cursor_name}_cur;")
+            statements.append(
+                f"DECLARE {cl.cursor_name}_cur CURSOR FOR {cl.query_sql}; "
+                f"OPEN {cl.cursor_name}_cur; {inner}; CLOSE {cl.cursor_name}_cur; "
+                f"DEALLOCATE {cl.cursor_name}_cur;"
+            )
         elif target_dialect is Dialect.MYSQL:
             statements.append(f"BEGIN DECLARE {cl.cursor_name}_cur CURSOR FOR {cl.query_sql}; {inner}; END;")
 
@@ -1814,7 +1870,10 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
         elif target_dialect is Dialect.TSQL:
             statements.append(f"EXEC sp_executesql {dyn.query_expression};")
         elif target_dialect is Dialect.MYSQL:
-            statements.append(f"SET @dyn_stmt = {dyn.query_expression}; PREPARE stmt FROM @dyn_stmt; EXECUTE stmt; DEALLOCATE PREPARE stmt;")
+            statements.append(
+                f"SET @dyn_stmt = {dyn.query_expression}; PREPARE stmt FROM @dyn_stmt; "
+                "EXECUTE stmt; DEALLOCATE PREPARE stmt;"
+            )
 
     exc_statements: list[str] = []
     for handler in procedure.exception_handlers:
@@ -1842,9 +1901,7 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
     return f"CREATE{replace} PROCEDURE {qualified}({params}) LANGUAGE plpgsql AS $$ BEGIN {body} END $$"
 
 
-def emit_table_function(
-    function: TableFunction, target_dialect: Dialect, allow_routine_shim: bool = False
-) -> str:
+def emit_table_function(function: TableFunction, target_dialect: Dialect, allow_routine_shim: bool = False) -> str:
     if target_dialect not in (Dialect.POSTGRES, Dialect.TSQL):
         raise DialectError(
             "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
@@ -1896,9 +1953,7 @@ def emit_table_function(
         for item in function.parameters
     )
     columns = ", ".join(
-        quote_identifier(item.name, target_dialect)
-        + " "
-        + _routine_type(item.type_ref, target_dialect)
+        quote_identifier(item.name, target_dialect) + " " + _routine_type(item.type_ref, target_dialect)
         for item in function.return_columns
     )
     selected = ", ".join(
@@ -1940,9 +1995,7 @@ def _render_trigger_expression(expression: CheckExpression, dialect: Dialect) ->
         if expression.operator in {CheckOperator.IS_NULL, CheckOperator.IS_NOT_NULL}:
             return f"{left} {expression.operator.value}"
         if expression.right_column is not None:
-            right = _render_trigger_identifier(
-                expression.right_column, expression.right_column_qualifier, dialect
-            )
+            right = _render_trigger_identifier(expression.right_column, expression.right_column_qualifier, dialect)
         elif expression.literal_is_boolean:
             right = "TRUE" if expression.literal == "true" else "FALSE"
         else:
@@ -1957,9 +2010,7 @@ def _render_trigger_expression(expression: CheckExpression, dialect: Dialect) ->
     if isinstance(expression, CheckNotExpression):
         return f"NOT ({_render_trigger_expression(expression.operand, dialect)})"
     joiner = f" {expression.connector.value} "
-    return joiner.join(
-        f"({_render_trigger_expression(operand, dialect)})" for operand in expression.operands
-    )
+    return joiner.join(f"({_render_trigger_expression(operand, dialect)})" for operand in expression.operands)
 
 
 def emit_trigger(trigger: Trigger, target_dialect: Dialect, allow_trigger_shim: bool = False) -> str:
@@ -1992,7 +2043,8 @@ def emit_trigger(trigger: Trigger, target_dialect: Dialect, allow_trigger_shim: 
         )
     if target_dialect is Dialect.ORACLE:
         return (
-            f"CREATE OR REPLACE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
+            f"CREATE OR REPLACE TRIGGER {quote_identifier(trigger.name, target_dialect)} "
+            f"{trigger.timing.value} {events} ON "
             f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
             f"BEGIN {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}(); END;"
         )
@@ -2008,4 +2060,6 @@ def emit_trigger(trigger: Trigger, target_dialect: Dialect, allow_trigger_shim: 
             f"{_object_name(trigger.table_schema, trigger.table, target_dialect)} {trigger.timing.value} {events} "
             f"AS BEGIN EXEC {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}; END"
         )
-    raise DialectError("CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED", f"unsupported target dialect {target_dialect}")
+    raise DialectError(
+        "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED", f"unsupported target dialect {target_dialect}"
+    )

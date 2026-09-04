@@ -42,10 +42,14 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 public final class Analyzer {
     private Analyzer() {}
@@ -118,31 +122,49 @@ public final class Analyzer {
                 recordJsonList.add(recMap);
             }
             SourcePositions positions = Trees.instance(task).getSourcePositions();
-            for (var unit : trees) {
-                SpanContext spans = new SpanContext(
-                        unit,
-                        positions,
-                        sourceText,
-                        source.getFileName().toString());
-                if (inventoryMode) {
+            if (inventoryMode) {
+                for (var unit : trees) {
+                    SpanContext spans = new SpanContext(
+                            unit,
+                            positions,
+                            sourceText,
+                            source.getFileName().toString());
                     new ModuleScanner(subjects, spans).scan(unit, null);
-                } else if (batchMode) {
+                }
+            } else {
+                Map<String, MethodTree> allMethods = new LinkedHashMap<>();
+                Map<String, SpanContext> allMethodSpans = new LinkedHashMap<>();
+                for (var unit : trees) {
+                    SpanContext spans = new SpanContext(
+                            unit,
+                            positions,
+                            sourceText,
+                            source.getFileName().toString());
+                    MethodCollector collector = new MethodCollector(spans, emittedTarget);
+                    collector.scan(unit, null);
+                    for (var entry : collector.methods.entrySet()) {
+                        if (allMethods.containsKey(entry.getKey())) {
+                            throw new IllegalArgumentException("JAVA_DUPLICATE_FUNCTION_NAME:" + entry.getKey());
+                        }
+                        allMethods.put(entry.getKey(), entry.getValue());
+                        allMethodSpans.put(entry.getKey(), collector.methodSpans.get(entry.getKey()));
+                    }
+                }
+                if (batchMode) {
                     for (String name : batchNames) {
                         if (batchFailures.containsKey(name)) continue;
-                        @SuppressWarnings("unchecked")
-                        List<Map<String, Object>> collected =
-                                (List<Map<String, Object>>) batchResults.computeIfAbsent(name, key -> new ArrayList<>());
                         try {
-                            new FunctionScanner(name, collected, emittedTarget, records, spans).scan(unit, null);
+                            List<Map<String, Object>> reachable = analyzeReachableFunctions(
+                                    name, allMethods, allMethodSpans, emittedTarget, records);
+                            batchResults.put(name, reachable);
                         } catch (CertifiedSubsetDomainException error) {
-                            // Exactly the message single-function mode would have
-                            // printed to stderr before exiting 2.
                             batchFailures.put(name, error.getMessage());
                             batchResults.remove(name);
                         }
                     }
                 } else {
-                    new FunctionScanner(functionName, functions, emittedTarget, records, spans).scan(unit, null);
+                    functions.addAll(analyzeReachableFunctions(
+                            functionName, allMethods, allMethodSpans, emittedTarget, records));
                 }
             }
         }
@@ -332,52 +354,340 @@ public final class Analyzer {
         return result;
     }
 
-    private static final class FunctionScanner extends TreePathScanner<Void, Void> {
-        private final String expectedName;
-        private final List<Map<String, Object>> functions;
-        private final boolean emittedTarget;
-        private final Map<String, RecordDef> records;
-        private final SpanContext spans;
+    private static final class MethodCollector extends TreePathScanner<Void, Void> {
+        final Map<String, MethodTree> methods = new LinkedHashMap<>();
+        final Map<String, SpanContext> methodSpans = new LinkedHashMap<>();
+        final SpanContext spans;
+        final boolean emittedTarget;
 
-        private FunctionScanner(
-                String expectedName,
-                List<Map<String, Object>> functions,
-                boolean emittedTarget,
-                Map<String, RecordDef> records,
-                SpanContext spans) {
-            this.expectedName = expectedName;
-            this.functions = functions;
-            this.emittedTarget = emittedTarget;
-            this.records = records;
+        MethodCollector(SpanContext spans, boolean emittedTarget) {
             this.spans = spans;
+            this.emittedTarget = emittedTarget;
+        }
+
+        @Override
+        public Void visitClass(ClassTree node, Void unused) {
+            if (node.getKind() == Tree.Kind.RECORD) {
+                return null;
+            }
+            return super.visitClass(node, unused);
         }
 
         @Override
         public Void visitMethod(MethodTree method, Void unused) {
-            if (!method.getName().contentEquals(expectedName) || method.getBody() == null) return null;
-            if (!typedPureMethodShape(method)) {
-                throw new IllegalArgumentException("JAVA_METHOD_SHAPE_OUTSIDE_CERTIFIED_SUBSET");
+            String name = method.getName().toString();
+            if (method.getReturnType() == null) {
+                return null;
             }
-            List<Map<String, Object>> parameters = new ArrayList<>();
-            Map<String, String> environment = new LinkedHashMap<>();
-            for (VariableTree parameter : method.getParameters()) {
-                String parameterType = type(parameter.getType().toString(), records);
-                parameters.add(withSpan(
-                        parameter,
-                        spans,
-                        Map.of(
-                                "name", parameter.getName().toString(),
-                                "type", parameterType)));
-                environment.put(parameter.getName().toString(), parameterType);
+            if (emittedTarget && (name.startsWith("elmos") || name.equals("equals"))) {
+                return null;
             }
-            Map<String, Object> function = new LinkedHashMap<>();
-            function.put("name", method.getName().toString());
-            function.put("parameters", parameters);
-            function.put("return_type", type(method.getReturnType().toString(), records));
-            function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, records, spans));
-            functions.add(withSpan(method, spans, function));
+            if (method.getBody() != null && method.getModifiers().getFlags().contains(Modifier.STATIC)) {
+                if (methods.containsKey(name)) {
+                    throw new IllegalArgumentException("JAVA_DUPLICATE_FUNCTION_NAME:" + name);
+                }
+                methods.put(name, method);
+                methodSpans.put(name, spans);
+            }
             return null;
         }
+    }
+
+    private static Map<String, Object> parseMethod(
+            MethodTree method,
+            boolean emittedTarget,
+            Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
+            SpanContext spans) {
+        if (!typedPureMethodShape(method)) {
+            throw new IllegalArgumentException("JAVA_METHOD_SHAPE_OUTSIDE_CERTIFIED_SUBSET");
+        }
+        List<Map<String, Object>> parameters = new ArrayList<>();
+        Map<String, String> environment = new LinkedHashMap<>();
+        for (VariableTree parameter : method.getParameters()) {
+            String parameterType = type(parameter.getType().toString(), records);
+            parameters.add(withSpan(
+                    parameter,
+                    spans,
+                    Map.of(
+                            "name", parameter.getName().toString(),
+                            "type", parameterType)));
+            environment.put(parameter.getName().toString(), parameterType);
+        }
+        Map<String, Object> function = new LinkedHashMap<>();
+        function.put("name", method.getName().toString());
+        function.put("parameters", parameters);
+        function.put("return_type", type(method.getReturnType().toString(), records));
+        function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+        return withSpan(method, spans, function);
+    }
+
+    private static void extractCalleesFromExpression(Map<String, Object> expr, List<String> callees) {
+        if (expr == null) return;
+        String kind = (String) expr.get("kind");
+        if (kind == null) return;
+        switch (kind) {
+            case "call" -> {
+                String fnName = (String) expr.get("function_name");
+                if (fnName != null) {
+                    callees.add(fnName);
+                }
+                @SuppressWarnings("unchecked")
+                List<Map<String, Object>> args = (List<Map<String, Object>>) expr.get("arguments");
+                if (args != null) {
+                    for (Map<String, Object> arg : args) {
+                        extractCalleesFromExpression(arg, callees);
+                    }
+                }
+            }
+            case "binary" -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> left = (Map<String, Object>) expr.get("left");
+                extractCalleesFromExpression(left, callees);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> right = (Map<String, Object>) expr.get("right");
+                extractCalleesFromExpression(right, callees);
+            }
+            case "member_access" -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> target = (Map<String, Object>) expr.get("target");
+                extractCalleesFromExpression(target, callees);
+            }
+            case "record_construct" -> {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> args = (Map<String, Object>) expr.get("arguments");
+                if (args != null) {
+                    for (Object val : args.values()) {
+                        if (val instanceof Map<?, ?> argMap) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> m = (Map<String, Object>) argMap;
+                            extractCalleesFromExpression(m, callees);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private static void extractCalleesFromStatements(List<Map<String, Object>> stmts, List<String> callees) {
+        if (stmts == null) return;
+        for (Map<String, Object> stmt : stmts) {
+            String kind = (String) stmt.get("kind");
+            if (kind == null) continue;
+            switch (kind) {
+                case "return", "let" -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> expr = (Map<String, Object>) stmt.get("expression");
+                    extractCalleesFromExpression(expr, callees);
+                }
+                case "if" -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> cond = (Map<String, Object>) stmt.get("condition");
+                    extractCalleesFromExpression(cond, callees);
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> thenBranch = (List<Map<String, Object>>) stmt.get("then");
+                    extractCalleesFromStatements(thenBranch, callees);
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> elseBranch = (List<Map<String, Object>>) stmt.get("else");
+                    extractCalleesFromStatements(elseBranch, callees);
+                }
+                case "while" -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> cond = (Map<String, Object>) stmt.get("condition");
+                    extractCalleesFromExpression(cond, callees);
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> body = (List<Map<String, Object>>) stmt.get("body");
+                    extractCalleesFromStatements(body, callees);
+                }
+                case "for" -> {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> start = (Map<String, Object>) stmt.get("start");
+                    extractCalleesFromExpression(start, callees);
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> end = (Map<String, Object>) stmt.get("end");
+                    extractCalleesFromExpression(end, callees);
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> step = (Map<String, Object>) stmt.get("step");
+                    extractCalleesFromExpression(step, callees);
+                    @SuppressWarnings("unchecked")
+                    List<Map<String, Object>> body = (List<Map<String, Object>>) stmt.get("body");
+                    extractCalleesFromStatements(body, callees);
+                }
+            }
+        }
+    }
+
+    private static List<Map<String, Object>> topologicalSortFunctions(List<Map<String, Object>> functions) {
+        Map<String, Map<String, Object>> fnMap = new LinkedHashMap<>();
+        Map<String, Set<String>> calleesMap = new LinkedHashMap<>();
+
+        for (Map<String, Object> fn : functions) {
+            String name = (String) fn.get("name");
+            fnMap.put(name, fn);
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> body = (List<Map<String, Object>>) fn.get("body");
+            List<String> called = new ArrayList<>();
+            extractCalleesFromStatements(body, called);
+            Set<String> cSet = new LinkedHashSet<>();
+            for (String c : called) {
+                if (c.equals(name)) {
+                    throw new CertifiedSubsetDomainException("RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET:" + name + "->" + name);
+                }
+                if (functions.stream().anyMatch(f -> c.equals(f.get("name")))) {
+                    cSet.add(c);
+                }
+            }
+            calleesMap.put(name, cSet);
+        }
+
+        Map<String, Integer> state = new LinkedHashMap<>();
+        for (Map<String, Object> fn : functions) {
+            state.put((String) fn.get("name"), 0);
+        }
+        List<String> callPath = new ArrayList<>();
+
+        class CycleDetector {
+            void dfs(String name) {
+                state.put(name, 1);
+                callPath.add(name);
+
+                List<String> sortedCallees = new ArrayList<>(calleesMap.get(name));
+                Collections.sort(sortedCallees);
+
+                for (String callee : sortedCallees) {
+                    int s = state.getOrDefault(callee, 0);
+                    if (s == 1) {
+                        int idx = callPath.indexOf(callee);
+                        List<String> cycleSlice = new ArrayList<>(callPath.subList(idx, callPath.size()));
+                        cycleSlice.add(callee);
+                        throw new CertifiedSubsetDomainException(
+                                "RECURSIVE_CALL_OUTSIDE_CERTIFIED_SUBSET:" + String.join("->", cycleSlice));
+                    }
+                    if (s == 0) {
+                        dfs(callee);
+                    }
+                }
+
+                callPath.remove(callPath.size() - 1);
+                state.put(name, 2);
+            }
+        }
+
+        CycleDetector detector = new CycleDetector();
+        for (Map<String, Object> fn : functions) {
+            String name = (String) fn.get("name");
+            if (state.get(name) == 0) {
+                detector.dfs(name);
+            }
+        }
+
+        Map<String, Integer> inDegree = new LinkedHashMap<>();
+        Map<String, List<String>> dependents = new LinkedHashMap<>();
+        for (Map<String, Object> fn : functions) {
+            String name = (String) fn.get("name");
+            inDegree.put(name, calleesMap.get(name).size());
+            dependents.put(name, new ArrayList<>());
+        }
+        for (var entry : calleesMap.entrySet()) {
+            String caller = entry.getKey();
+            for (String callee : entry.getValue()) {
+                dependents.get(callee).add(caller);
+            }
+        }
+
+        Map<String, Integer> originalOrder = new LinkedHashMap<>();
+        for (int i = 0; i < functions.size(); i++) {
+            originalOrder.put((String) functions.get(i).get("name"), i);
+        }
+
+        List<String> ready = new ArrayList<>();
+        for (Map<String, Object> fn : functions) {
+            String name = (String) fn.get("name");
+            if (inDegree.get(name) == 0) {
+                ready.add(name);
+            }
+        }
+        ready.sort(Comparator.comparingInt(originalOrder::get));
+
+        List<String> sortedNames = new ArrayList<>();
+        while (!ready.isEmpty()) {
+            String curr = ready.remove(0);
+            sortedNames.add(curr);
+
+            List<String> deps = dependents.get(curr);
+            deps.sort(Comparator.comparingInt(originalOrder::get));
+
+            for (String dep : deps) {
+                int deg = inDegree.get(dep) - 1;
+                inDegree.put(dep, deg);
+                if (deg == 0) {
+                    ready.add(dep);
+                    ready.sort(Comparator.comparingInt(originalOrder::get));
+                }
+            }
+        }
+
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String name : sortedNames) {
+            result.add(fnMap.get(name));
+        }
+        return result;
+    }
+
+    private static List<Map<String, Object>> analyzeReachableFunctions(
+            String entrypointName,
+            Map<String, MethodTree> moduleMethods,
+            Map<String, SpanContext> methodSpans,
+            boolean emittedTarget,
+            Map<String, RecordDef> records) {
+        if (!moduleMethods.containsKey(entrypointName)) {
+            return List.of();
+        }
+
+        Set<String> functionNames = moduleMethods.keySet();
+        Map<String, String> functionReturnTypes = new LinkedHashMap<>();
+        for (var entry : moduleMethods.entrySet()) {
+            functionReturnTypes.put(entry.getKey(), type(entry.getValue().getReturnType().toString(), records));
+        }
+
+        Map<String, Map<String, Object>> parsedFunctions = new LinkedHashMap<>();
+        List<String> queue = new ArrayList<>();
+        Set<String> visited = new LinkedHashSet<>();
+        queue.add(entrypointName);
+        visited.add(entrypointName);
+
+        while (!queue.isEmpty()) {
+            String curr = queue.remove(0);
+            MethodTree method = moduleMethods.get(curr);
+            SpanContext spans = methodSpans.get(curr);
+            Map<String, Object> parsed = parseMethod(method, emittedTarget, records, functionNames, functionReturnTypes, spans);
+            parsedFunctions.put(curr, parsed);
+
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> body = (List<Map<String, Object>>) parsed.get("body");
+            List<String> callees = new ArrayList<>();
+            extractCalleesFromStatements(body, callees);
+            for (String callee : callees) {
+                if (moduleMethods.containsKey(callee)) {
+                    if (!visited.contains(callee)) {
+                        visited.add(callee);
+                        queue.add(callee);
+                    }
+                } else {
+                    throw new IllegalArgumentException("UNKNOWN_FUNCTION:" + callee);
+                }
+            }
+        }
+
+        List<Map<String, Object>> reachableList = new ArrayList<>();
+        for (String name : moduleMethods.keySet()) {
+            if (parsedFunctions.containsKey(name)) {
+                reachableList.add(parsedFunctions.get(name));
+            }
+        }
+
+        return topologicalSortFunctions(reachableList);
     }
 
     private static final class ModuleScanner extends TreePathScanner<Void, Void> {
@@ -677,6 +987,10 @@ public final class Analyzer {
         private CertifiedSubsetDomainException(CertifiedSubsetDomainError error) {
             super(error.reason, null, false, false);
         }
+
+        private CertifiedSubsetDomainException(String message) {
+            super(message, null, false, false);
+        }
     }
 
     private static List<Map<String, Object>> statements(
@@ -684,6 +998,8 @@ public final class Analyzer {
             boolean emittedTarget,
             Map<String, String> environment,
             Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
             SpanContext spans) {
         List<Map<String, Object>> result = new ArrayList<>();
         for (StatementTree statement : source) {
@@ -694,7 +1010,7 @@ public final class Analyzer {
                         Map.of(
                                 "kind", "return",
                                 "expression", expression(
-                                        returning.getExpression(), emittedTarget, environment, records, spans))));
+                                        returning.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans))));
             } else if (statement instanceof VariableTree variable) {
                 if (variable.getInitializer() == null) {
                     throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.DECLARATION_WITHOUT_VALUE);
@@ -714,7 +1030,7 @@ public final class Analyzer {
                 String declaredType = variable.getType().toString().trim();
                 String canonical = type(declaredType, records);
                 Map<String, Object> expr = expression(
-                        variable.getInitializer(), emittedTarget, environment, records, spans);
+                        variable.getInitializer(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
                 String name = variable.getName().toString();
                 environment.put(name, canonical);
                 Map<String, Object> item = new LinkedHashMap<>();
@@ -729,12 +1045,12 @@ public final class Analyzer {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "if");
                 item.put("condition", expression(
-                        conditional.getCondition(), emittedTarget, environment, records, spans));
+                        conditional.getCondition(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                 item.put("then", statementBody(
-                        conditional.getThenStatement(), emittedTarget, environment, records, spans));
+                        conditional.getThenStatement(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                 item.put("else", conditional.getElseStatement() == null
                         ? List.of()
-                        : statementBody(conditional.getElseStatement(), emittedTarget, environment, records, spans));
+                        : statementBody(conditional.getElseStatement(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                 result.add(withSpan(statement, spans, item));
             } else if (statement instanceof BreakTree breakTree) {
                 if (breakTree.getLabel() != null) {
@@ -752,8 +1068,8 @@ public final class Analyzer {
                 }
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "while");
-                item.put("condition", expression(whileLoop.getCondition(), emittedTarget, environment, records, spans));
-                item.put("body", statementBody(whileLoop.getStatement(), emittedTarget, new LinkedHashMap<>(environment), records, spans));
+                item.put("condition", expression(whileLoop.getCondition(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+                item.put("body", statementBody(whileLoop.getStatement(), emittedTarget, new LinkedHashMap<>(environment), records, functionNames, functionReturnTypes, spans));
                 result.add(withSpan(statement, spans, item));
             } else if (statement instanceof ForLoopTree forLoop) {
                 List<? extends StatementTree> inits = forLoop.getInitializer();
@@ -769,7 +1085,7 @@ public final class Analyzer {
                 if (!"integer".equals(varType)) {
                     throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_INIT_OUTSIDE_CERTIFIED_SUBSET);
                 }
-                Map<String, Object> start = expression(initVar.getInitializer(), emittedTarget, environment, records, spans);
+                Map<String, Object> start = expression(initVar.getInitializer(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
 
                 ExpressionTree cond = forLoop.getCondition();
                 if (cond == null) {
@@ -781,7 +1097,7 @@ public final class Analyzer {
                 if (!(binCond.getLeftOperand() instanceof IdentifierTree leftIdent) || !leftIdent.getName().contentEquals(varName)) {
                     throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_CONDITION_NON_MONOTONIC);
                 }
-                Map<String, Object> end = expression(binCond.getRightOperand(), emittedTarget, environment, records, spans);
+                Map<String, Object> end = expression(binCond.getRightOperand(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
 
                 List<? extends ExpressionStatementTree> updates = forLoop.getUpdate();
                 if (updates.size() != 1) {
@@ -797,14 +1113,14 @@ public final class Analyzer {
                     if (!(compound.getVariable() instanceof IdentifierTree id) || !id.getName().contentEquals(varName)) {
                         throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
                     }
-                    step = expression(compound.getExpression(), emittedTarget, environment, records, spans);
+                    step = expression(compound.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
                 } else {
                     throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
                 }
 
                 Map<String, String> loopEnv = new LinkedHashMap<>(environment);
                 loopEnv.put(varName, "integer");
-                List<Map<String, Object>> body = statementBody(forLoop.getStatement(), emittedTarget, loopEnv, records, spans);
+                List<Map<String, Object>> body = statementBody(forLoop.getStatement(), emittedTarget, loopEnv, records, functionNames, functionReturnTypes, spans);
 
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "for");
@@ -833,20 +1149,23 @@ public final class Analyzer {
             boolean emittedTarget,
             Map<String, String> environment,
             Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
             SpanContext spans) {
         Map<String, String> branchEnv = new LinkedHashMap<>(environment);
         if (statement instanceof BlockTree block) {
-            return statements(block.getStatements(), emittedTarget, branchEnv, records, spans);
+            return statements(block.getStatements(), emittedTarget, branchEnv, records, functionNames, functionReturnTypes, spans);
         }
-        return statements(List.of(statement), emittedTarget, branchEnv, records, spans);
+        return statements(List.of(statement), emittedTarget, branchEnv, records, functionNames, functionReturnTypes, spans);
     }
 
     private static String expressionType(
             ExpressionTree tree,
             Map<String, String> environment,
-            Map<String, RecordDef> records) {
+            Map<String, RecordDef> records,
+            Map<String, String> functionReturnTypes) {
         if (tree instanceof ParenthesizedTree parenthesized) {
-            return expressionType(parenthesized.getExpression(), environment, records);
+            return expressionType(parenthesized.getExpression(), environment, records, functionReturnTypes);
         }
         if (tree instanceof IdentifierTree identifier) {
             return environment.get(identifier.getName().toString());
@@ -871,7 +1190,7 @@ public final class Analyzer {
         if (tree instanceof MethodInvocationTree invocation) {
             if (invocation.getMethodSelect() instanceof MemberSelectTree member
                     && invocation.getArguments().isEmpty()) {
-                String targetType = expressionType(member.getExpression(), environment, records);
+                String targetType = expressionType(member.getExpression(), environment, records, functionReturnTypes);
                 if (targetType != null && records.containsKey(targetType)) {
                     RecordDef rec = records.get(targetType);
                     String fieldName = member.getIdentifier().toString();
@@ -879,6 +1198,18 @@ public final class Analyzer {
                         if (f.name().equals(fieldName)) return f.type();
                     }
                 }
+            }
+            String calleeName = null;
+            if (invocation.getMethodSelect() instanceof IdentifierTree id) {
+                calleeName = id.getName().toString();
+            } else if (invocation.getMethodSelect() instanceof MemberSelectTree member) {
+                String fullCallee = invocation.getMethodSelect().toString();
+                if (!fullCallee.startsWith("Math.") && !fullCallee.startsWith("Migrated.elmos") && !member.getIdentifier().contentEquals("equals")) {
+                    calleeName = member.getIdentifier().toString();
+                }
+            }
+            if (calleeName != null && functionReturnTypes.containsKey(calleeName)) {
+                return functionReturnTypes.get(calleeName);
             }
             String callee = invocation.getMethodSelect().toString();
             if (callee.startsWith("Math.addExact")
@@ -890,7 +1221,7 @@ public final class Analyzer {
             }
             if (callee.startsWith("Migrated.elmosNonZero")) {
                 if (!invocation.getArguments().isEmpty()) {
-                    return expressionType(invocation.getArguments().get(0), environment, records);
+                    return expressionType(invocation.getArguments().get(0), environment, records, functionReturnTypes);
                 }
             }
             if (invocation.getMethodSelect() instanceof MemberSelectTree member
@@ -900,7 +1231,7 @@ public final class Analyzer {
             return null;
         }
         if (tree instanceof MemberSelectTree member) {
-            String targetType = expressionType(member.getExpression(), environment, records);
+            String targetType = expressionType(member.getExpression(), environment, records, functionReturnTypes);
             if (targetType != null && records.containsKey(targetType)) {
                 RecordDef rec = records.get(targetType);
                 String fieldName = member.getIdentifier().toString();
@@ -917,8 +1248,8 @@ public final class Analyzer {
                     || symbol.equals("&&") || symbol.equals("||")) {
                 return "boolean";
             }
-            String leftType = expressionType(binary.getLeftOperand(), environment, records);
-            String rightType = expressionType(binary.getRightOperand(), environment, records);
+            String leftType = expressionType(binary.getLeftOperand(), environment, records, functionReturnTypes);
+            String rightType = expressionType(binary.getRightOperand(), environment, records, functionReturnTypes);
             if ("string".equals(leftType) && "+".equals(symbol)) return "string";
             if ("number".equals(leftType) || "number".equals(rightType)) return "number";
             return "integer";
@@ -929,15 +1260,16 @@ public final class Analyzer {
     private static boolean isStringExpression(
             ExpressionTree tree,
             Map<String, String> environment,
-            Map<String, RecordDef> records) {
+            Map<String, RecordDef> records,
+            Map<String, String> functionReturnTypes) {
         if (tree instanceof ParenthesizedTree parenthesized) {
-            return isStringExpression(parenthesized.getExpression(), environment, records);
+            return isStringExpression(parenthesized.getExpression(), environment, records, functionReturnTypes);
         }
         if (tree instanceof LiteralTree literal) return literal.getValue() instanceof String;
         if (tree instanceof IdentifierTree identifier) {
             return "string".equals(environment.get(identifier.getName().toString()));
         }
-        return "string".equals(expressionType(tree, environment, records));
+        return "string".equals(expressionType(tree, environment, records, functionReturnTypes));
     }
 
     private static Map<String, Object> expression(
@@ -945,10 +1277,12 @@ public final class Analyzer {
             boolean emittedTarget,
             Map<String, String> environment,
             Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
             SpanContext spans) {
         if (tree instanceof ParenthesizedTree parenthesized) {
             Map<String, Object> nested = expression(
-                    parenthesized.getExpression(), emittedTarget, environment, records, spans);
+                    parenthesized.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans);
             Map<String, Object> value = new LinkedHashMap<>(nested);
             value.put("source_span", sourceSpan(tree, spans));
             return value;
@@ -971,8 +1305,8 @@ public final class Analyzer {
         if (tree instanceof BinaryTree binary) {
             String symbol = operator(binary.getKind());
             if ((symbol.equals("==") || symbol.equals("!="))
-                    && (isStringExpression(binary.getLeftOperand(), environment, records)
-                            || isStringExpression(binary.getRightOperand(), environment, records))) {
+                    && (isStringExpression(binary.getLeftOperand(), environment, records, functionReturnTypes)
+                            || isStringExpression(binary.getRightOperand(), environment, records, functionReturnTypes))) {
                 throw new CertifiedSubsetDomainException(
                         CertifiedSubsetDomainError.STRING_REFERENCE_EQUALITY);
             }
@@ -982,8 +1316,8 @@ public final class Analyzer {
                     Map.of(
                             "kind", "binary",
                             "operator", symbol,
-                            "left", expression(binary.getLeftOperand(), emittedTarget, environment, records, spans),
-                            "right", expression(binary.getRightOperand(), emittedTarget, environment, records, spans)));
+                            "left", expression(binary.getLeftOperand(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans),
+                            "right", expression(binary.getRightOperand(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans)));
         }
         if (tree instanceof NewClassTree newClass) {
             String typeName = newClass.getIdentifier().toString().trim();
@@ -1005,7 +1339,7 @@ public final class Analyzer {
             Map<String, Object> argMap = new LinkedHashMap<>();
             for (int i = 0; i < rec.fields().size(); i++) {
                 RecordField field = rec.fields().get(i);
-                argMap.put(field.name(), expression(args.get(i), emittedTarget, environment, records, spans));
+                argMap.put(field.name(), expression(args.get(i), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
             }
             Map<String, Object> construct = new LinkedHashMap<>();
             construct.put("kind", "record_construct");
@@ -1016,7 +1350,7 @@ public final class Analyzer {
         if (tree instanceof MethodInvocationTree invocation) {
             if (invocation.getMethodSelect() instanceof MemberSelectTree member
                     && invocation.getArguments().isEmpty()) {
-                String targetType = expressionType(member.getExpression(), environment, records);
+                String targetType = expressionType(member.getExpression(), environment, records, functionReturnTypes);
                 if (targetType != null && records.containsKey(targetType)) {
                     RecordDef rec = records.get(targetType);
                     String memberName = member.getIdentifier().toString();
@@ -1024,7 +1358,7 @@ public final class Analyzer {
                     if (isField) {
                         Map<String, Object> memberAccess = new LinkedHashMap<>();
                         memberAccess.put("kind", "member_access");
-                        memberAccess.put("target", expression(member.getExpression(), emittedTarget, environment, records, spans));
+                        memberAccess.put("target", expression(member.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                         memberAccess.put("member", memberName);
                         return withSpan(invocation, spans, memberAccess);
                     } else {
@@ -1032,12 +1366,37 @@ public final class Analyzer {
                     }
                 }
             }
-            if (emittedTarget) {
-                return emittedInvocation(invocation, environment, records, spans);
+
+            String calleeName = null;
+            if (invocation.getMethodSelect() instanceof IdentifierTree id) {
+                calleeName = id.getName().toString();
+            } else if (invocation.getMethodSelect() instanceof MemberSelectTree member) {
+                String fullCallee = invocation.getMethodSelect().toString();
+                if (!fullCallee.startsWith("Math.") && !fullCallee.startsWith("Migrated.elmos") && !member.getIdentifier().contentEquals("equals")) {
+                    calleeName = member.getIdentifier().toString();
+                }
             }
+
+            if (calleeName != null && functionNames.contains(calleeName)) {
+                List<Map<String, Object>> callArgs = new ArrayList<>();
+                for (ExpressionTree arg : invocation.getArguments()) {
+                    callArgs.add(expression(arg, emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
+                }
+                Map<String, Object> callExpr = new LinkedHashMap<>();
+                callExpr.put("kind", "call");
+                callExpr.put("function_name", calleeName);
+                callExpr.put("arguments", callArgs);
+                return withSpan(invocation, spans, callExpr);
+            }
+
+            if (emittedTarget) {
+                return emittedInvocation(invocation, environment, records, functionNames, functionReturnTypes, spans);
+            }
+
+            throw new IllegalArgumentException("UNKNOWN_FUNCTION:" + (calleeName != null ? calleeName : invocation.getMethodSelect().toString()));
         }
         if (tree instanceof MemberSelectTree member) {
-            String targetType = expressionType(member.getExpression(), environment, records);
+            String targetType = expressionType(member.getExpression(), environment, records, functionReturnTypes);
             if (targetType != null && records.containsKey(targetType)) {
                 RecordDef rec = records.get(targetType);
                 String memberName = member.getIdentifier().toString();
@@ -1045,7 +1404,7 @@ public final class Analyzer {
                 if (isField) {
                     Map<String, Object> memberAccess = new LinkedHashMap<>();
                     memberAccess.put("kind", "member_access");
-                    memberAccess.put("target", expression(member.getExpression(), emittedTarget, environment, records, spans));
+                    memberAccess.put("target", expression(member.getExpression(), emittedTarget, environment, records, functionNames, functionReturnTypes, spans));
                     memberAccess.put("member", memberName);
                     return withSpan(member, spans, memberAccess);
                 } else {
@@ -1058,7 +1417,7 @@ public final class Analyzer {
                         && tree instanceof UnaryTree unary
                         && unary.getKind() == Tree.Kind.LOGICAL_COMPLEMENT
                         && unary.getExpression() instanceof MethodInvocationTree invocation) {
-            return emittedStringEquality(invocation, true, environment, records, spans, tree);
+            return emittedStringEquality(invocation, true, environment, records, functionNames, functionReturnTypes, spans, tree);
         }
         throw new IllegalArgumentException("JAVA_UNSUPPORTED_EXPRESSION:" + tree.getKind());
     }
@@ -1067,6 +1426,8 @@ public final class Analyzer {
             MethodInvocationTree invocation,
             Map<String, String> environment,
             Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
             SpanContext spans) {
         String callee = invocation.getMethodSelect().toString();
         String operator = switch (callee) {
@@ -1087,22 +1448,22 @@ public final class Analyzer {
                     Map.of(
                             "kind", "binary",
                             "operator", operator,
-                            "left", expression(invocation.getArguments().get(0), true, environment, records, spans),
-                            "right", expression(invocation.getArguments().get(1), true, environment, records, spans)));
+                            "left", expression(invocation.getArguments().get(0), true, environment, records, functionNames, functionReturnTypes, spans),
+                            "right", expression(invocation.getArguments().get(1), true, environment, records, functionNames, functionReturnTypes, spans)));
         }
         if (callee.equals("Migrated.elmosNonZero")) {
             if (invocation.getArguments().size() != 1) {
                 throw new IllegalArgumentException("JAVA_EMITTED_HELPER_ARITY:" + callee);
             }
             Map<String, Object> value = new LinkedHashMap<>(expression(
-                    invocation.getArguments().get(0), true, environment, records, spans));
+                    invocation.getArguments().get(0), true, environment, records, functionNames, functionReturnTypes, spans));
             value.put("source_span", sourceSpan(invocation, spans));
             return value;
         }
         if (
                 invocation.getMethodSelect() instanceof MemberSelectTree member
                         && member.getIdentifier().contentEquals("equals")) {
-            return emittedStringEquality(invocation, false, environment, records, spans, invocation);
+            return emittedStringEquality(invocation, false, environment, records, functionNames, functionReturnTypes, spans, invocation);
         }
         throw new IllegalArgumentException("JAVA_EMITTED_HELPER_UNRECOGNIZED:" + callee);
     }
@@ -1112,6 +1473,8 @@ public final class Analyzer {
             boolean negated,
             Map<String, String> environment,
             Map<String, RecordDef> records,
+            Set<String> functionNames,
+            Map<String, String> functionReturnTypes,
             SpanContext spans,
             Tree spanTree) {
         if (
@@ -1126,8 +1489,8 @@ public final class Analyzer {
                 Map.of(
                         "kind", "binary",
                         "operator", negated ? "!=" : "==",
-                        "left", expression(member.getExpression(), true, environment, records, spans),
-                        "right", expression(invocation.getArguments().get(0), true, environment, records, spans)));
+                        "left", expression(member.getExpression(), true, environment, records, functionNames, functionReturnTypes, spans),
+                        "right", expression(invocation.getArguments().get(0), true, environment, records, functionNames, functionReturnTypes, spans)));
     }
 
     private static String operator(Tree.Kind kind) {

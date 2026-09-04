@@ -401,6 +401,8 @@ class Expression:
     arguments: tuple[tuple[str, Expression], ...] = ()
     target: Expression | None = None
     member: str | None = None
+    function_name: str | None = None
+    call_arguments: tuple[Expression, ...] = ()
     source_span: SourceSpan | None = None
 
     @classmethod
@@ -497,6 +499,27 @@ class Expression:
                 arguments=tuple(parsed_args),
                 source_span=_optional_source_span(value, _path),
             )
+        if kind == "call":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "function_name", "arguments"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            fn_name = _require_string(value["function_name"], f"{_path}.function_name", nonempty=True)
+            args_raw = value["arguments"]
+            if type(args_raw) is not list:
+                raise RouteError(f"INVALID_CALL_ARGUMENTS:{_path}.arguments")
+            call_args = tuple(
+                cls.from_mapping(arg_item, _path=f"{_path}.arguments[{i}]")
+                for i, arg_item in enumerate(args_raw)
+            )
+            return cls(
+                kind=kind,
+                function_name=fn_name,
+                call_arguments=call_args,
+                source_span=_optional_source_span(value, _path),
+            )
         raise RouteError(f"UNSUPPORTED_EXPRESSION:{kind}")
 
     def semantic_mapping(self) -> dict[str, Any]:
@@ -517,6 +540,14 @@ class Expression:
                 "kind": "record_construct",
                 "record_name": self.record_name,
                 "arguments": {k: v.semantic_mapping() for k, v in self.arguments},
+            }
+        if self.kind == "call":
+            if self.function_name is None:
+                raise RouteError("INVALID_CALL_EXPRESSION")
+            return {
+                "kind": "call",
+                "function_name": self.function_name,
+                "arguments": [arg.semantic_mapping() for arg in self.call_arguments],
             }
         if self.left is None or self.right is None or self.operator is None:
             raise RouteError("INVALID_BINARY_EXPRESSION")
@@ -545,6 +576,14 @@ class Expression:
                 "kind": "record_construct",
                 "record_name": self.record_name,
                 "arguments": {k: v.to_mapping() for k, v in self.arguments},
+            }
+        elif self.kind == "call":
+            if self.function_name is None:
+                raise RouteError("INVALID_CALL_EXPRESSION")
+            result = {
+                "kind": "call",
+                "function_name": self.function_name,
+                "arguments": [arg.to_mapping() for arg in self.call_arguments],
             }
         else:
             if self.left is None or self.right is None or self.operator is None:

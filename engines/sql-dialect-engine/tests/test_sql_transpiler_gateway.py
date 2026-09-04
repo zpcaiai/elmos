@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_dialect.sql_transpiler_gateway import (
+    _CORE_DIALECTS,
     SqlTranspilerGateway,
     SupportedDialect,
-    _CORE_DIALECTS,
 )
 
 

@@ -114,10 +114,7 @@ def looks_like_client_directive(text: str, dialect: str | None = None) -> bool:
     if not _is_mysql(dialect):
         return False
     first_line = _first_payload_line(text)
-    return (
-        _MYSQL_SOURCE.fullmatch(first_line) is not None
-        or _MYSQL_DELIMITER.fullmatch(first_line) is not None
-    )
+    return _MYSQL_SOURCE.fullmatch(first_line) is not None or _MYSQL_DELIMITER.fullmatch(first_line) is not None
 
 
 def _mysql_delimiter(text: str) -> str | None:
@@ -144,10 +141,11 @@ def _skip_whitespace(source: str, index: int, line: int) -> tuple[int, int]:
 def split_statements(source: str, dialect: str | None = None) -> list[RawStatement]:
     try:
         from .native_bridge import native_split_statements
+
         native_res = native_split_statements(source, dialect)
         if native_res is not None:
             return [RawStatement(text=item["text"], start_line=item["start_line"]) for item in native_res]
-    except Exception:
+    except Exception:  # noqa: S110 - the optional native accelerator must fail closed to the Python parser
         pass
     statements: list[RawStatement] = []
     buffer: list[str] = []
@@ -251,9 +249,7 @@ def split_statements(source: str, dialect: str | None = None) -> list[RawStateme
             if mysql:
                 line_end = _line_end(source, look if look < length else index)
                 first_line = source[index:line_end].strip()
-                if _MYSQL_SOURCE.fullmatch(first_line) or _MYSQL_DELIMITER.fullmatch(
-                    first_line
-                ):
+                if _MYSQL_SOURCE.fullmatch(first_line) or _MYSQL_DELIMITER.fullmatch(first_line):
                     chunk = source[index:line_end]
                     line += chunk.count("\n")
                     buffer.append(chunk)

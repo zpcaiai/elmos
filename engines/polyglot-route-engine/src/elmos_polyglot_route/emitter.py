@@ -831,6 +831,7 @@ class _Context:
     imports: set[str] = field(default_factory=set)
     normalization_rules: set[str] = field(default_factory=set)
     records: dict[str, RecordDefinition] = field(default_factory=dict)
+    functions: dict[str, Function] = field(default_factory=dict)
 
 
 def _emitted_file(context: _Context, relative_path: str, content: str) -> EmittedFile:
@@ -1440,6 +1441,16 @@ def _expression(
             args_str = ", ".join(v for _, v in ordered_args)
             return f"new {rec.name}({args_str})"
         raise RouteError(f"UNSUPPORTED_RECORD_CONSTRUCT_TARGET:{lang}")
+    if expression.kind == "call":
+        if expression.function_name is None:
+            raise RouteError("INVALID_CALL_EXPRESSION")
+        if context.functions and expression.function_name not in context.functions:
+            raise RouteError(f"UNKNOWN_FUNCTION:{expression.function_name}")
+        args_str = ", ".join(
+            _expression(context, arg, environment)
+            for arg in expression.call_arguments
+        )
+        return f"{expression.function_name}({args_str})"
     raise RouteError(f"UNSUPPORTED_EMISSION_EXPRESSION:{expression.kind}")
 
 
@@ -1716,7 +1727,7 @@ def _signature(language: Language, function: Function, records: dict[str, Record
 
 def _function(context: _Context, function: Function) -> str:
     language = context.language
-    environment = types.check_function(function, context.records)
+    environment = types.check_function(function, context.records, context.functions)
     lines = [_signature(language, function, context.records)]
     if language in {"typescript", "react"}:
         for parameter in function.parameters:
@@ -1779,14 +1790,16 @@ def emit(
     if plan.target_language != target:
         raise RouteError("IDENTIFIER_PLAN_TARGET_LANGUAGE_MISMATCH")
     emitter_ir = target_ir_view(ir, plan)
+    sorted_functions = types.topological_sort_functions(emitter_ir.functions)
     context = _Context(
         language=target,
         records={r.name: r for r in emitter_ir.records},
+        functions={f.name: f for f in sorted_functions},
     )
     records_defs = [_record_definition(context, record) for record in emitter_ir.records]
     records_str = "\n\n".join(records_defs)
     records_part = [records_str] if records_str else []
-    functions = "\n\n".join(_function(context, function) for function in emitter_ir.functions)
+    functions = "\n\n".join(_function(context, function) for function in sorted_functions)
     helpers = _helper_sources(context)
     if target == "java":
         # Java and C# put helpers inside the type, after the functions, so the

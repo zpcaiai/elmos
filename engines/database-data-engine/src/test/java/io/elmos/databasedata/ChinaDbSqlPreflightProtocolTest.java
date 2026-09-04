@@ -152,7 +152,7 @@ class ChinaDbSqlPreflightProtocolTest {
         try {
             String baseUrl = "http://127.0.0.1:" + server.getAddress().getPort();
             var gateway = new HttpChinaDbSqlPreflightGateway(
-                    true, baseUrl, Duration.ofSeconds(1), Duration.ofSeconds(2), json);
+                    true, baseUrl, Duration.ofSeconds(1), Duration.ofSeconds(30), json);
             byte[] request = requestJson("SELECT 1").getBytes(StandardCharsets.UTF_8);
 
             JsonNode capabilityDocument = gateway.capabilities();

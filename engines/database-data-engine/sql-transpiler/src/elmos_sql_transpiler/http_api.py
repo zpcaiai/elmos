@@ -4,12 +4,13 @@ import asyncio
 import json
 import multiprocessing
 import os
+import sys
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
 from multiprocessing.connection import Connection
 from pathlib import Path
-from typing import Any, NoReturn, Protocol
+from typing import Any, NoReturn, Protocol, cast
 
 import anyio
 import uvicorn
@@ -49,6 +50,10 @@ MAX_HTTP_RESPONSE_BYTES = 4 * 1024 * 1024
 MAX_CONCURRENT_ASSESSMENTS = 1
 MAX_CONCURRENT_SKILL_RUNS = 4
 MAX_CONCURRENT_PRODUCTION_PLANS = 2
+# macOS and other spawn-only runtimes must import the isolated worker before it
+# can acknowledge readiness. Keep that cold-start budget separate from the
+# actual assessment deadline so host load cannot silently consume SQL work time.
+ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS = 30.0
 ASSESSMENT_TIMEOUT_SECONDS = 15.0
 
 _HTTP_REQUEST_LIMITS = CommercialRequestLimits(
@@ -56,6 +61,7 @@ _HTTP_REQUEST_LIMITS = CommercialRequestLimits(
     max_sql_bytes=MAX_HTTP_SQL_BYTES,
     max_parameters=MAX_HTTP_PARAMETERS,
 )
+_READY_PREFIX = b"S"
 _ASSESSMENT_PREFIX = b"A"
 _REQUEST_ERROR_PREFIX = b"R"
 _UNAVAILABLE_PREFIX = b"U"
@@ -76,6 +82,8 @@ class _ResponseLimitExceeded(RuntimeError):
 
 
 class _ManagedProcess(Protocol):
+    def start(self) -> None: ...
+
     def is_alive(self) -> bool: ...
 
     def join(self, timeout: float | None = None) -> None: ...
@@ -83,6 +91,19 @@ class _ManagedProcess(Protocol):
     def terminate(self) -> None: ...
 
     def kill(self) -> None: ...
+
+
+class _ProcessContext(Protocol):
+    def Pipe(self, duplex: bool = True) -> tuple[Connection, Connection]: ...  # noqa: N802
+
+    def Process(  # noqa: N802
+        self,
+        *,
+        target: Callable[..., object],
+        args: tuple[object, ...],
+        daemon: bool,
+        name: str,
+    ) -> _ManagedProcess: ...
 
 
 class AssessmentConcurrencyGate:
@@ -277,6 +298,7 @@ def _assessment_child(
     request: CommercialAssessRequest,
 ) -> None:
     try:
+        connection.send_bytes(_READY_PREFIX)
         result = assess_commercial(
             request,
             max_statements=MAX_HTTP_STATEMENTS,
@@ -332,8 +354,45 @@ def _raise_child_failure(prefix: bytes) -> NoReturn:
     )
 
 
+def _receive_child_message(
+    connection: Connection,
+    process: _ManagedProcess,
+    *,
+    deadline: float,
+    timeout_message: str,
+) -> bytes:
+    while True:
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            _stop_process(process)
+            raise SidecarFailure(
+                504,
+                "CHINADB_PREFLIGHT_TIMEOUT",
+                timeout_message,
+                retryable=True,
+            )
+        if connection.poll(min(remaining, 0.05)):
+            try:
+                return connection.recv_bytes(MAX_HTTP_RESPONSE_BYTES + 1)
+            except (EOFError, OSError) as error:
+                _stop_process(process)
+                raise SidecarFailure(
+                    500,
+                    "CHINADB_PREFLIGHT_CHILD_RESPONSE_INVALID",
+                    "ChinaDB SQL preflight returned an invalid bounded response.",
+                ) from error
+        if not process.is_alive():
+            process.join(timeout=0.1)
+            _raise_child_failure(_INTERNAL_ERROR_PREFIX)
+
+
 def _run_assessment_isolated(request: CommercialAssessRequest) -> bytes:
-    context = multiprocessing.get_context("spawn")
+    available_start_methods = multiprocessing.get_all_start_methods()
+    if sys.platform == "darwin":
+        start_method = "spawn"
+    else:
+        start_method = "forkserver" if "forkserver" in available_start_methods else "spawn"
+    context = cast(_ProcessContext, multiprocessing.get_context(start_method))
     parent_connection, child_connection = context.Pipe(duplex=False)
     process = context.Process(
         target=_assessment_child,
@@ -353,39 +412,29 @@ def _run_assessment_isolated(request: CommercialAssessRequest) -> bytes:
             retryable=True,
         ) from error
     child_connection.close()
-    deadline = time.monotonic() + ASSESSMENT_TIMEOUT_SECONDS
     try:
-        while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                _stop_process(process)
-                raise SidecarFailure(
-                    504,
-                    "CHINADB_PREFLIGHT_TIMEOUT",
-                    "ChinaDB SQL preflight exceeded the bounded execution deadline.",
-                    retryable=True,
-                )
-            if parent_connection.poll(min(remaining, 0.05)):
-                try:
-                    message = parent_connection.recv_bytes(MAX_HTTP_RESPONSE_BYTES + 1)
-                except (EOFError, OSError) as error:
-                    _stop_process(process)
-                    raise SidecarFailure(
-                        500,
-                        "CHINADB_PREFLIGHT_CHILD_RESPONSE_INVALID",
-                        "ChinaDB SQL preflight returned an invalid bounded response.",
-                    ) from error
-                process.join(timeout=0.5)
-                if process.is_alive():
-                    _stop_process(process)
-                if not message:
-                    _raise_child_failure(_INTERNAL_ERROR_PREFIX)
-                if message[:1] != _ASSESSMENT_PREFIX:
-                    _raise_child_failure(message[:1])
-                return message[1:]
-            if not process.is_alive():
-                process.join(timeout=0.1)
-                _raise_child_failure(_INTERNAL_ERROR_PREFIX)
+        ready = _receive_child_message(
+            parent_connection,
+            process,
+            deadline=time.monotonic() + ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS,
+            timeout_message="ChinaDB SQL preflight isolation process did not become ready in time.",
+        )
+        if ready != _READY_PREFIX:
+            _raise_child_failure(ready[:1] if ready else _INTERNAL_ERROR_PREFIX)
+        message = _receive_child_message(
+            parent_connection,
+            process,
+            deadline=time.monotonic() + ASSESSMENT_TIMEOUT_SECONDS,
+            timeout_message="ChinaDB SQL preflight exceeded the bounded execution deadline.",
+        )
+        process.join(timeout=0.5)
+        if process.is_alive():
+            _stop_process(process)
+        if not message:
+            _raise_child_failure(_INTERNAL_ERROR_PREFIX)
+        if message[:1] != _ASSESSMENT_PREFIX:
+            _raise_child_failure(message[:1])
+        return message[1:]
     finally:
         parent_connection.close()
         if process.is_alive():

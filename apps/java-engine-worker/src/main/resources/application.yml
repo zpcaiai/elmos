@@ -23,7 +23,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,prometheus
 elmos:
   worker:
     workspace-root: ${ELMOS_WORKSPACE_ROOT:/workspace}
@@ -41,6 +41,9 @@ elmos:
         tenant-capacity: ${ELMOS_SPRING_UPGRADE_TENANT_CAPACITY:1}
         ttl-seconds: ${ELMOS_SPRING_UPGRADE_QUEUE_TTL_SECONDS:3600}
         lease-seconds: ${ELMOS_SPRING_UPGRADE_LEASE_TTL_SECONDS:120}
+      ingress-auth-enabled: ${ELMOS_SPRING_ENGINE_AUTH_ENABLED:false}
+      ingress-auth-secret-file: ${ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE:}
+      ingress-auth-window-seconds: ${ELMOS_SPRING_ENGINE_AUTH_WINDOW_SECONDS:60}
       source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
       target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
       java-homes: ${ELMOS_SPRING_UPGRADE_JAVA_HOMES:}

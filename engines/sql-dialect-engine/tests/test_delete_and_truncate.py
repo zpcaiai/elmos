@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import pytest
+import sqlglot
 
-from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.emitter import emit_delete, emit_truncate_table
+from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import Dialect, DialectError
 from elmos_sql_dialect.parser import parse_delete, parse_truncate_table
 from elmos_sql_dialect.scan import _classify
-import sqlglot
 
 
 def test_truncate_table_cross_dialect_translation() -> None:

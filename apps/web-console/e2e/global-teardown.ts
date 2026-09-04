@@ -2,9 +2,10 @@ import { readFile, realpath, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-const temporaryNextTypeGlob = /^\.next-e2e-\d{4,5}\/(?:dev\/)?types\/\*\*\/\*\.ts$/;
+const temporaryNextTypeGlob =
+  /^\.next-e2e-\d{4,5}(?:-[0-9a-f]{16})?\/(?:dev\/)?types\/\*\*\/\*\.ts$/;
 const temporaryNextTypeImport =
-  /^import "\.\/\.next-e2e-\d{4,5}\/(?:dev\/)?types\/(routes|root-params)\.d\.ts";$/gm;
+  /^import "\.\/\.next-e2e-\d{4,5}(?:-[0-9a-f]{16})?\/(?:dev\/)?types\/(routes|root-params)\.d\.ts";$/gm;
 
 async function removeTemporaryNextTypeReferences(applicationRoot: string): Promise<void> {
   const tsconfigPath = path.join(applicationRoot, "tsconfig.json");

@@ -9,7 +9,7 @@ constant concatenations, they can be statically folded, validated, and safely tr
 from __future__ import annotations
 
 import re
-from typing import Sequence
+from typing import cast
 
 import sqlglot
 from sqlglot import exp
@@ -59,7 +59,7 @@ def extract_and_transpile_dynamic_sql(
         m = re.search(r"EXECUTE\s+IMMEDIATE\s+(.+)$", cmd_text, re.IGNORECASE)
         if m:
             expr_str = m.group(1).rstrip(";")
-            expr_ast = sqlglot.parse_one(expr_str, read=source_dialect.value)
+            expr_ast = cast(exp.Expression, sqlglot.parse_one(expr_str, read=source_dialect.value))
             raw_query = fold_constant_sql_expression(expr_ast)
     elif isinstance(parsed, exp.Anonymous) and parsed.this.upper() == "EXECUTE IMMEDIATE":
         # parsed as Anonymous function or command

@@ -109,3 +109,5 @@ apps/web-console/test-results/
 apps/web-console/e2e/*.spec.ts-snapshots/
 _cloudstage/
 survey-engines-mac.sh
+.vercel
+.env*

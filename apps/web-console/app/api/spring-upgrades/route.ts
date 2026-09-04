@@ -10,6 +10,7 @@ import {
   RepositoryWorkspaceProxyError,
   repositorySpringMaterialization,
 } from "../../lib/server/repositoryWorkspaceProxy";
+import { authenticateSpringEngineRequest } from "./springEngineAuth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -64,7 +65,7 @@ async function start(request: NextRequest) {
     return startFromGitHubApp(input, organizationId, actorId);
   }
   if (input.sourceMode === "REPOSITORY_WORKSPACE") {
-    return startFromRepositoryWorkspace(request, input, organizationId);
+    return startFromRepositoryWorkspace(request, input, organizationId, actorId);
   }
   return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
     method: "POST",
@@ -83,6 +84,7 @@ async function startFromRepositoryWorkspace(
   request: NextRequest,
   input: Record<string, unknown>,
   organizationId: string,
+  actorId: string,
 ) {
   const configuration = springProxyConfiguration();
   if (!configuration.configured) return proxyNotConfiguredResponse();
@@ -117,26 +119,28 @@ async function startFromRepositoryWorkspace(
     const materialized = await repositorySpringMaterialization(
       request, repositoryWorkspaceId, expectedHeadCommit,
     );
+    const upstreamBody = JSON.stringify({
+      organizationId,
+      sourceMode: "MATERIALIZED_SNAPSHOT",
+      repositoryUrl: null,
+      requestedRef,
+      expectedCommitSha: materialized.resolvedCommitSha,
+      snapshotId: `workspace-${repositoryWorkspaceId}`,
+      materializedRelativePath: materialized.relativePath,
+      startAfterVerification: input.startAfterVerification === true,
+      allowExperimentalRoutes: input.allowExperimentalRoutes === true,
+      targetSpringBoot: input.targetSpringBoot,
+      targetJava: input.targetJava,
+      idempotencyKey,
+    });
     return forward(`${configuration.engineBase}/engine/v1/spring-upgrades`, {
       method: "POST",
       headers: {
         "content-type": "application/json",
         "X-ELMOS-Organization-ID": organizationId,
+        "X-ELMOS-Actor-ID": actorId,
       },
-      body: JSON.stringify({
-        organizationId,
-        sourceMode: "MATERIALIZED_SNAPSHOT",
-        repositoryUrl: null,
-        requestedRef,
-        expectedCommitSha: materialized.resolvedCommitSha,
-        snapshotId: `workspace-${repositoryWorkspaceId}`,
-        materializedRelativePath: materialized.relativePath,
-        startAfterVerification: input.startAfterVerification === true,
-        allowExperimentalRoutes: input.allowExperimentalRoutes === true,
-        targetSpringBoot: input.targetSpringBoot,
-        targetJava: input.targetJava,
-        idempotencyKey,
-      }),
+      body: upstreamBody,
       cache: "no-store",
       signal: AbortSignal.timeout(30_000),
     });
@@ -298,7 +302,18 @@ async function startFromGitHubApp(
 
 async function forward(url: string, init: RequestInit) {
   try {
-    const upstream = await fetch(url, init);
+    const parsed = new URL(url);
+    const method = init.method === "GET" ? "GET" : "POST";
+    const body = typeof init.body === "string" ? init.body : "";
+    const upstream = await fetch(url, {
+      ...init,
+      headers: authenticateSpringEngineRequest(
+        method,
+        parsed.pathname,
+        init.headers ?? {},
+        body,
+      ),
+    });
     return new Response(upstream.body, {
       status: upstream.status,
       headers: safeHeaders(upstream.headers),

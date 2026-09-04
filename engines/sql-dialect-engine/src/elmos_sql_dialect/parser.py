@@ -35,11 +35,6 @@ from .models import (
     AlterTable,
     CanonicalType,
     CanonicalTypeRef,
-    DeleteStatement,
-    DropNotNull,
-    SetNotNull,
-    TruncateTable,
-    TypeMigrationPolicy,
     CheckBooleanExpression,
     CheckComparison,
     CheckConnector,
@@ -55,6 +50,7 @@ from .models import (
     Column,
     ColumnDefault,
     DefaultKind,
+    DeleteStatement,
     Dialect,
     DialectError,
     DmlAggregate,
@@ -69,6 +65,7 @@ from .models import (
     DmlPredicate,
     DropColumn,
     DropConstraint,
+    DropNotNull,
     DropTable,
     ForeignKey,
     Index,
@@ -83,7 +80,10 @@ from .models import (
     RowSecurityAction,
     RowSecurityCommand,
     Schema,
+    SetNotNull,
     Table,
+    TruncateTable,
+    TypeMigrationPolicy,
     UpdateAssignment,
     UpdateStatement,
 )
@@ -177,6 +177,7 @@ def _assignment_type_compatible(source: CanonicalTypeRef, target: CanonicalTypeR
         return False
     return source.length <= target.length
 
+
 _CHECK_OPERATOR_MAP: dict[type, CheckOperator] = {
     exp.EQ: CheckOperator.EQ,
     exp.NEQ: CheckOperator.NE,
@@ -198,6 +199,7 @@ class UpdateCatalogLike(Protocol):
     def type_ref_of(self, schema: str | None, table: str, column: str) -> CanonicalTypeRef | None: ...
 
     def has_unique_key(self, schema: str | None, table: str, columns: tuple[str, ...]) -> bool: ...
+
 
 _REFERENTIAL_ACTION_MAP = {
     "CASCADE": ReferentialAction.CASCADE,
@@ -416,9 +418,7 @@ def _recover_multi_action_alter(
         if len(statement_actions) != 1:
             return None
         action = statement_actions[0]
-        if isinstance(action, exp.Drop) and any(
-            action.args.get(flag) for flag in ("cascade", "restrict")
-        ):
+        if isinstance(action, exp.Drop) and any(action.args.get(flag) for flag in ("cascade", "restrict")):
             return None
         if isinstance(action, exp.ColumnDef) and action.args.get("exists"):
             return None
@@ -755,8 +755,12 @@ def _parse_type(
             return CanonicalTypeRef(canonical_type=CanonicalType.BOOLEAN)
 
     if sqlglot_type == DataType.Type.USERDEFINED:
-        type_name = str(node.this).upper() if node.this is not None else ""
-        if type_name == "UUID":
+        type_identifier = data_type.args.get("kind")
+        if (
+            isinstance(type_identifier, exp.Identifier)
+            and not type_identifier.args.get("quoted")
+            and str(type_identifier.this).upper() == "UUID"
+        ):
             return CanonicalTypeRef(canonical_type=CanonicalType.UUID)
 
     canonical = _TYPE_MAP.get(sqlglot_type)
@@ -870,7 +874,8 @@ def _parse_default(
     )
     if is_uuid_default:
         _require(
-            type_ref.canonical_type in (CanonicalType.UUID, CanonicalType.VARCHAR, CanonicalType.CHAR, CanonicalType.TEXT),
+            type_ref.canonical_type
+            in (CanonicalType.UUID, CanonicalType.VARCHAR, CanonicalType.CHAR, CanonicalType.TEXT),
             "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
             "UUID generator default is only supported on UUID or string columns",
         )
@@ -1022,9 +1027,7 @@ def _parse_check_left_value(
         )
         dimension = node.expression
         _require(
-            isinstance(dimension, exp.Literal)
-            and not dimension.is_string
-            and str(dimension.this) == "1",
+            isinstance(dimension, exp.Literal) and not dimension.is_string and str(dimension.this) == "1",
             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
             "ARRAY_LENGTH CHECK expressions require dimension 1",
         )
@@ -1168,9 +1171,7 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
             "certified-ddl-v1 supports IS [NOT] NULL only; IS TRUE/FALSE has no Oracle equivalent",
         )
-        column, left_expression = _parse_check_left_value(
-            node.this, "CHECK left-hand column", source_dialect
-        )
+        column, left_expression = _parse_check_left_value(node.this, "CHECK left-hand column", source_dialect)
         operator = CheckOperator.IS_NOT_NULL if node.args.get("negate") else CheckOperator.IS_NULL
         return CheckComparison(
             column=column,
@@ -1406,13 +1407,10 @@ def _parse_check_comparison(node: exp.Expression, source_dialect: Dialect) -> Ch
             left_expression=left_expression,
         )
     if isinstance(literal, exp.Anonymous):
-        right_column, right_expression = _parse_check_left_value(
-            literal, "CHECK right-hand value", source_dialect
-        )
+        right_column, right_expression = _parse_check_left_value(literal, "CHECK right-hand value", source_dialect)
         if right_expression is not None:
             _require(
-                left_expression is not None
-                and left_expression.function is right_expression.function,
+                left_expression is not None and left_expression.function is right_expression.function,
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "typed CHECK function comparisons require the same function on both sides",
             )
@@ -1502,17 +1500,13 @@ def _looks_like_boolean_predicate(node: exp.Expression) -> bool:
     """
 
     current = _unwrap_check_parens(node)
-    return isinstance(
-        current,
-        exp.Is
-        | exp.In
-        | exp.Between
-        | exp.Like
-        | exp.RegexpLike
-        | exp.And
-        | exp.Or
-        | exp.Not,
-    ) or type(current) in _CHECK_OPERATOR_MAP
+    return (
+        isinstance(
+            current,
+            exp.Is | exp.In | exp.Between | exp.Like | exp.RegexpLike | exp.And | exp.Or | exp.Not,
+        )
+        or type(current) in _CHECK_OPERATOR_MAP
+    )
 
 
 def _parse_check(
@@ -2160,7 +2154,7 @@ def looks_like_row_security(sql: str, source_dialect: Dialect) -> bool:
     action_start = len(values) - 3
     action_start -= 2 if values[action_start - 2 : action_start] == ["NO", "FORCE"] else 1
     name = values[2:action_start]
-    action = values[action_start:len(values) - 3]
+    action = values[action_start : len(values) - 3]
     return len(name) in {1, 3} and action in [["ENABLE"], ["DISABLE"], ["FORCE"], ["NO", "FORCE"]]
 
 
@@ -2707,8 +2701,7 @@ def parse_insert_select(
     assert isinstance(source, exp.Select)
     _require(
         not any(
-            source.args.get(flag)
-            for flag in ("distinct", "having", "qualify", "order", "limit", "offset", "with")
+            source.args.get(flag) for flag in ("distinct", "having", "qualify", "order", "limit", "offset", "with")
         ),
         "CERTIFIED_INSERT_SELECT_UNSUPPORTED_QUERY",
         "INSERT SELECT supports bounded INNER JOINs without ordering, limits or CTEs",
@@ -2784,9 +2777,7 @@ def parse_insert_select(
         joins.append(DmlJoin(join_name, alias, conditions, schema=join_schema))
         known_aliases = aliases
     table_schema, table, columns = _parse_insert_target(statement, namespace_map)
-    expressions = tuple(
-        _parse_dml_expression(item, source_dialect, known_aliases) for item in source.expressions
-    )
+    expressions = tuple(_parse_dml_expression(item, source_dialect, known_aliases) for item in source.expressions)
     _require(
         len(columns) == len(expressions),
         "CERTIFIED_INSERT_ARITY_MISMATCH",
@@ -2886,8 +2877,7 @@ def parse_update(
         assert isinstance(from_clause, exp.From)
         target_alias_node = statement.this.args.get("alias")
         _require(
-            isinstance(target_alias_node, exp.TableAlias)
-            and isinstance(target_alias_node.this, exp.Identifier),
+            isinstance(target_alias_node, exp.TableAlias) and isinstance(target_alias_node.this, exp.Identifier),
             "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
             "UPDATE ... FROM requires a plain target alias",
         )
@@ -2905,8 +2895,7 @@ def parse_update(
         source_schema, source_table = _mapped_table_name(source_ref, "UPDATE source table", namespace_map)
         source_alias_node = source_ref.args.get("alias")
         _require(
-            isinstance(source_alias_node, exp.TableAlias)
-            and isinstance(source_alias_node.this, exp.Identifier),
+            isinstance(source_alias_node, exp.TableAlias) and isinstance(source_alias_node.this, exp.Identifier),
             "CERTIFIED_UPDATE_UNSUPPORTED_SOURCE",
             "UPDATE ... FROM requires a plain source alias",
         )
@@ -3325,4 +3314,3 @@ def parse_delete(
         )
         predicate = _parse_dml_predicate(where.this, source_dialect)
     return DeleteStatement(table=table, predicate=predicate, schema=schema)
-

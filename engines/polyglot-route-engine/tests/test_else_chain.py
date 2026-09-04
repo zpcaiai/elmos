@@ -180,7 +180,7 @@ def test_the_go_frontend_no_longer_rejects_an_else_if_chain() -> None:
 
     assert "GO_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET" not in source
     assert "func ifStatement(" in source
-    assert "elseBody = []map[string]any{ifStatement(alternative, emittedTarget)}" in source
+    assert "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records)}" in source
     # The init-statement boundary is unchanged and must stay unchanged: hoisting
     # it needs a local-declaration IR kind that no target emitter has.
     assert "GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET" in source
@@ -215,12 +215,12 @@ def test_an_unknown_statement_kind_still_fails_closed() -> None:
                     "name": "pick",
                     "return_type": "integer",
                     "parameters": [{"name": "score", "type": "integer"}],
-                    "body": [{"kind": "while", "condition": None}],
+                    "body": [{"kind": "unsupported_statement", "condition": None}],
                 }
             ],
         }
     )
-    with pytest.raises(RouteError, match="UNSUPPORTED_STATEMENT:while"):
+    with pytest.raises(RouteError, match="UNSUPPORTED_STATEMENT:unsupported_statement"):
         emit(SemanticIR.from_mapping(payload), "go")
 
 

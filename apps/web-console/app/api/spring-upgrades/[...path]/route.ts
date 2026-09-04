@@ -6,6 +6,7 @@ import {
   springProxyConfiguration,
 } from "../proxyPolicy";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
+import { authenticateSpringEngineRequest } from "../springEngineAuth";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -99,9 +100,12 @@ async function proxy(method: "GET" | "POST", context: Context, request?: NextReq
     }
   }
   try {
-    const upstream = await fetch(`${configuration.engineBase}/engine/v1/spring-upgrades/${path}`, {
+    const requestPath = `/engine/v1/spring-upgrades/${path}`;
+    const upstream = await fetch(`${configuration.engineBase}${requestPath}`, {
       method,
-      headers,
+      headers: path === "capabilities"
+        ? headers
+        : authenticateSpringEngineRequest(method, requestPath, headers, body ?? ""),
       body,
       cache: "no-store",
       signal: AbortSignal.timeout(30_000),

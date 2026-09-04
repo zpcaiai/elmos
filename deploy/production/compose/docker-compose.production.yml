@@ -12,7 +12,8 @@
 #
 # 用法：
 #   docker compose -f docker-compose.production.yml up -d                    # 仅 /generation
-#   docker compose -f docker-compose.production.yml --profile spring up -d   # 追加 Spring 升级
+#   docker compose -f docker-compose.production.yml \
+#     -f docker-compose.spring-application.yml --profile spring up -d         # 追加 Spring 升级
 #
 # ⚠ 标记 VERIFY-REQUIRED 的项目必须在 staging 逐条验证后才能保留：
 #   read_only 与 user 依赖各服务镜像的实际写入路径，本文件的作者未构建过这些镜像。
@@ -90,6 +91,9 @@ services:
       # Spring profile 仍由环境变量单独授权；多租户模式禁止回退到全局租户。
       ELMOS_SPRING_PROXY_ENABLED: "${ELMOS_SPRING_PROXY_ENABLED:-false}"
       ELMOS_SPRING_PROXY_MULTI_TENANT: "true"
+      # 基础业务线不挂载 Spring Secret；Spring overlay 才同时启用认证和精确文件挂载。
+      ELMOS_SPRING_ENGINE_AUTH_ENABLED: "${ELMOS_SPRING_ENGINE_AUTH_ENABLED:-false}"
+      ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
       JAVA_ENGINE_BASE_URL: http://java-engine-worker:8081
       # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
       ELMOS_HOSTED_EXECUTION_ENABLED: "true"
@@ -239,27 +243,37 @@ services:
   # ---------------------------------------------------------------------------
   # Tier 2 · Spring 升级业务线（profile: spring）
   # 仅在售卖 Boot 2.7.18 / Java 17 / Maven 3.9.11 这一条设计伙伴路线时启用。
-  # 外部 Runner URL、共享工作区和三份 HMAC Secret 必须先通过 launch preflight。
+  # 必须与 docker-compose.spring-application.yml 一起启用；overlay 才给 BFF 与本
+  # Worker 精确挂载同一 engine HMAC。外部 Runner URL、共享工作区和四份互不复用
+  # 的 HMAC Secret 必须先通过 launch preflight。
   # ---------------------------------------------------------------------------
   java-engine-worker:
     <<: *java-service
     profiles: ["spring"]
     build: { context: ../../.., dockerfile: apps/java-engine-worker/Dockerfile }
+    user: "10001:10001"
+    read_only: true
+    pids_limit: 1024
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=512m"
+      - "/home/elmos/.m2:rw,noexec,nosuid,size=512m"
     environment:
       ELMOS_SPRING_UPGRADE_ENABLED: "true"
+      ELMOS_SPRING_ENGINE_AUTH_ENABLED: "true"
+      ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
       # ⚠ 以下两项必须由真实的 rootless / 网络策略证明置为 true，
       #   在证明产生前保持 false 会让 Spring 升级失败关闭 —— 这是正确行为
       ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED: "${ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED:-false}"
       ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED: "${ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED:-false}"
       ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED: "${ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED:-false}"
       ELMOS_SPRING_UPGRADE_VERIFIER_ID: "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:-NOT_CONFIGURED}"
-      ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL: "${ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL:-http://spring-runner.invalid}"
+      ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL: "${ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL:-https://spring-runner.invalid}"
       ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE: /run/secrets/elmos-verifier-hmac
       ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED: "${ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED:-false}"
-      ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL: "${ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL:-http://spring-runner.invalid}"
+      ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL: "${ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL:-https://spring-runner.invalid}"
       ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE: /run/secrets/elmos-transformer-hmac
       ELMOS_SPRING_RUNTIME_RUNNER_ENABLED: "${ELMOS_SPRING_RUNTIME_RUNNER_ENABLED:-false}"
-      ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL: "${ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL:-http://spring-runner.invalid}"
+      ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL: "${ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL:-https://spring-runner.invalid}"
       ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE: /run/secrets/elmos-runtime-hmac
       ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"
       ELMOS_SPRING_CODING_AGENT_ENABLED: "false"
@@ -267,15 +281,31 @@ services:
       ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT: /workspace/private-runner
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
     volumes:
-      - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:-/tmp/elmos-spring-disabled}:/workspace/private-runner"
-      - "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:-/dev/null}:/run/secrets/elmos-verifier-hmac:ro"
-      - "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:-/dev/null}:/run/secrets/elmos-transformer-hmac:ro"
-      - "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:-/dev/null}:/run/secrets/elmos-runtime-hmac:ro"
+      - type: bind
+        source: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:-/srv/elmos/spring-disabled/workspace}"
+        target: /workspace/private-runner
+        read_only: false
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/verifier-hmac}"
+        target: /run/secrets/elmos-verifier-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/transformer-hmac}"
+        target: /run/secrets/elmos-transformer-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:-/srv/elmos/spring-disabled/runtime-hmac}"
+        target: /run/secrets/elmos-runtime-hmac
+        read_only: true
+        bind: { create_host_path: false }
     networks: [backend]
     expose: ["8081"]
     deploy:
       resources:
-        limits: { cpus: "4.0", memory: 6g }
+        limits: { cpus: "4.0", memory: 6g, pids: 1024 }
 
 volumes:
   artifact-data:

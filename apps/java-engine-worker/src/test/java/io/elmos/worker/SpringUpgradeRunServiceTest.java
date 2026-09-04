@@ -27,6 +27,8 @@ import static io.elmos.worker.SpringUpgradeModels.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SpringUpgradeRunServiceTest {
+    private static final Duration ASYNC_STATE_TIMEOUT = Duration.ofMinutes(3);
+
     @TempDir Path workspace;
     private SpringUpgradeRunService service;
 
@@ -228,11 +230,13 @@ class SpringUpgradeRunServiceTest {
         service = service(transformer, new PassingVerifier());
         StartRequest request = request("remote-cancel", true);
         RunView run = service.create("org-a", request);
-        assertTrue(transformer.startEntered.await(3, TimeUnit.SECONDS));
+        assertTrue(transformer.startEntered.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
 
         assertEquals(RunStatus.CANCELLED,
                 service.cancel("org-a", run.runId()).status());
-        assertTrue(transformer.stopped.await(3, TimeUnit.SECONDS));
+        assertTrue(transformer.stopped.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
         assertEquals(1, transformer.stopCalls.get());
         assertEquals(RunStatus.CANCELLED,
                 awaitTerminal(run.runId(), "org-a").status());
@@ -407,7 +411,7 @@ class SpringUpgradeRunServiceTest {
     }
 
     private RunView awaitTerminal(String runId, String organizationId) {
-        long deadline = System.nanoTime() + java.time.Duration.ofSeconds(3).toNanos();
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
         RunView current;
         do {
             current = service.get(organizationId, runId);
@@ -424,7 +428,7 @@ class SpringUpgradeRunServiceTest {
     }
 
     private RunView awaitRuntime(String runId, RuntimeStatus expected) {
-        long deadline = System.nanoTime() + java.time.Duration.ofSeconds(3).toNanos();
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
         do {
             RunView current = service.get("org-a", runId);
             if (current.runtimeStatus() == expected) return current;

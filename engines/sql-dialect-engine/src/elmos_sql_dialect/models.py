@@ -252,9 +252,7 @@ class CheckLiteral:
     is_special_float: bool = False
 
     def __post_init__(self) -> None:
-        if self.is_null and (
-            self.value or self.is_string or self.is_boolean or self.is_special_float
-        ):
+        if self.is_null and (self.value or self.is_string or self.is_boolean or self.is_special_float):
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "NULL CHECK literals cannot carry another literal kind",
@@ -308,25 +306,31 @@ class CheckValueExpression:
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "CHECK scalar functions cannot carry an operator operand",
             )
-        if self.function in {
-            CheckValueFunction.ARRAY_POSITION,
-            CheckValueFunction.JSONB_HAS_KEY,
-        } and self.argument is None:
+        if (
+            self.function
+            in {
+                CheckValueFunction.ARRAY_POSITION,
+                CheckValueFunction.JSONB_HAS_KEY,
+            }
+            and self.argument is None
+        ):
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "typed CHECK search expressions require one search literal",
             )
-        if self.function not in {
-            CheckValueFunction.ARRAY_POSITION,
-            CheckValueFunction.JSONB_HAS_KEY,
-        } and self.argument is not None:
+        if (
+            self.function
+            not in {
+                CheckValueFunction.ARRAY_POSITION,
+                CheckValueFunction.JSONB_HAS_KEY,
+            }
+            and self.argument is not None
+        ):
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "only typed search expressions may carry a search literal",
             )
-        if self.function is CheckValueFunction.ARRAY_CONTAINED_BY and (
-            not self.arguments or self.argument is not None
-        ):
+        if self.function is CheckValueFunction.ARRAY_CONTAINED_BY and (not self.arguments or self.argument is not None):
             raise DialectError(
                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                 "ARRAY containment checks require a non-empty typed literal list",
@@ -416,22 +420,29 @@ class CheckComparison:
                 "a qualified CHECK right column requires a column comparison",
             )
         if self.left_expression is not None:
-            allowed_expression_operator = self.operator in BINARY_CHECK_OPERATORS or (
-                self.left_expression.function in {
-                    CheckValueFunction.ARRAY_LENGTH,
-                    CheckValueFunction.ARRAY_CARDINALITY,
-                    CheckValueFunction.OCTET_LENGTH,
-                }
-                and self.operator is CheckOperator.BETWEEN
-            ) or (
-                self.left_expression.function is CheckValueFunction.ARRAY_POSITION
-                and self.operator in NULLARY_CHECK_OPERATORS
-            ) or (
-                self.left_expression.function in {
-                    CheckValueFunction.ARRAY_CONTAINED_BY,
-                    CheckValueFunction.JSONB_HAS_KEY,
-                }
-                and self.operator is CheckOperator.IS_TRUE
+            allowed_expression_operator = (
+                self.operator in BINARY_CHECK_OPERATORS
+                or (
+                    self.left_expression.function
+                    in {
+                        CheckValueFunction.ARRAY_LENGTH,
+                        CheckValueFunction.ARRAY_CARDINALITY,
+                        CheckValueFunction.OCTET_LENGTH,
+                    }
+                    and self.operator is CheckOperator.BETWEEN
+                )
+                or (
+                    self.left_expression.function is CheckValueFunction.ARRAY_POSITION
+                    and self.operator in NULLARY_CHECK_OPERATORS
+                )
+                or (
+                    self.left_expression.function
+                    in {
+                        CheckValueFunction.ARRAY_CONTAINED_BY,
+                        CheckValueFunction.JSONB_HAS_KEY,
+                    }
+                    and self.operator is CheckOperator.IS_TRUE
+                )
             )
             if self.left_expression.column != self.column or not allowed_expression_operator:
                 raise DialectError(
@@ -692,21 +703,14 @@ class Table:
                                 "typed CHECK addition requires two same-typed numeric columns",
                             )
                     if comparison.left_expression.function is CheckValueFunction.JSONB_TYPEOF:
-                        type_ref = {
-                            column.name: column.type_ref for column in self.columns
-                        }[comparison.column]
-                        if not (
-                            type_ref.canonical_type is CanonicalType.JSON
-                            and type_ref.json_binary
-                        ):
+                        type_ref = {column.name: column.type_ref for column in self.columns}[comparison.column]
+                        if not (type_ref.canonical_type is CanonicalType.JSON and type_ref.json_binary):
                             raise DialectError(
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                                 "JSONB_TYPEOF CHECK expressions require a JSONB column",
                             )
                     if comparison.left_expression.function is CheckValueFunction.JSONB_HAS_KEY:
-                        type_ref = {
-                            column.name: column.type_ref for column in self.columns
-                        }[comparison.column]
+                        type_ref = {column.name: column.type_ref for column in self.columns}[comparison.column]
                         argument = comparison.left_expression.argument
                         if not (
                             type_ref.canonical_type is CanonicalType.JSON
@@ -725,9 +729,7 @@ class Table:
                         CheckValueFunction.ARRAY_POSITION,
                         CheckValueFunction.ARRAY_CONTAINED_BY,
                     }:
-                        type_ref = {
-                            column.name: column.type_ref for column in self.columns
-                        }[comparison.column]
+                        type_ref = {column.name: column.type_ref for column in self.columns}[comparison.column]
                         if type_ref.canonical_type is not CanonicalType.ARRAY:
                             raise DialectError(
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
@@ -769,9 +771,7 @@ class Table:
                                     "ARRAY containment members must match the declared element type",
                                 )
                     if comparison.left_expression.function is CheckValueFunction.OCTET_LENGTH:
-                        type_ref = {
-                            column.name: column.type_ref for column in self.columns
-                        }[comparison.column]
+                        type_ref = {column.name: column.type_ref for column in self.columns}[comparison.column]
                         if type_ref.canonical_type is not CanonicalType.BINARY:
                             raise DialectError(
                                 "CERTIFIED_DDL_UNSUPPORTED_CHECK",
@@ -806,10 +806,7 @@ class Table:
                             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                             "typed CHECK function comparisons require the same function on both sides",
                         )
-                    if (
-                        column_types[comparison.column]
-                        is not column_types[comparison.right_expression.column]
-                    ):
+                    if column_types[comparison.column] is not column_types[comparison.right_expression.column]:
                         raise DialectError(
                             "CERTIFIED_DDL_UNSUPPORTED_CHECK",
                             "typed CHECK function comparisons require same-typed columns",
@@ -1042,14 +1039,7 @@ class DropConstraint:
 
 
 AlterAction = (
-    AddColumn
-    | DropColumn
-    | RenameColumn
-    | AddConstraint
-    | DropConstraint
-    | SetNotNull
-    | DropNotNull
-    | AlterColumnType
+    AddColumn | DropColumn | RenameColumn | AddConstraint | DropConstraint | SetNotNull | DropNotNull | AlterColumnType
 )
 
 
@@ -1600,7 +1590,7 @@ class DynamicExecuteStatement:
 
 @dataclass(frozen=True)
 class Procedure:
-    """A bounded procedure IR supporting assignments, savepoints, cursors, control flow, dynamic execution and exceptions."""
+    """Bounded procedure IR for assignments, savepoints, cursors, control flow, dynamic SQL and exceptions."""
 
     name: str
     parameters: tuple[RoutineParameter, ...]

@@ -53,6 +53,7 @@ from .identifier_hygiene import (
     validate_identifier_plan,
 )
 from .models import (
+    DEPRECATED_DIRECTED_PAIRS,
     REPOSITORY_LANGUAGE_LIFECYCLE_ACTIVE,
     REPOSITORY_LANGUAGE_LIFECYCLE_DEPRECATED_REPLAY,
     REPOSITORY_SURFACE_LANGUAGES,
@@ -930,7 +931,7 @@ def verify_pure_module(
 
     source_language = source_ir.source_language
     target_language = target_ir.source_language
-    if not is_routed_pair(source_language, target_language):
+    if not is_routed_pair(source_language, target_language) and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     validate_identifier_plan(source_ir, identifier_plan)
     observed_normalized_target = alpha_normalize_target(source_ir, raw_target_ir, identifier_plan)
@@ -3020,7 +3021,7 @@ def migrate_module(
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    if not is_routed_pair(source_language, target_language) and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     resolved_source = source.resolve()
     resolved_manifest = manifest_path.resolve()
@@ -3085,7 +3086,7 @@ def _migrate_module_snapshot(
         raise RouteError("UNSUPPORTED_ROUTE_LANGUAGE")
     if source_language == target_language:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER")
-    if not is_routed_pair(source_language, target_language):
+    if not is_routed_pair(source_language, target_language) and (source_language, target_language) not in DEPRECATED_DIRECTED_PAIRS:
         raise RouteError(f"UNSUPPORTED_DIRECTED_ROUTE:{source_language}-to-{target_language}")
     source = source.resolve()
     manifest_path = manifest_path.resolve()
