@@ -262,12 +262,14 @@ def _render_check_comparison(
         elif comparison.left_expression.function is CheckValueFunction.ARRAY_POSITION:
             if dialect is not Dialect.POSTGRES:
                 if type_policy is not None and type_policy.array == "json":
-                    argument = _render_check_literal(
-                        comparison.left_expression.argument,
+                    array_position_argument = comparison.left_expression.argument
+                    assert array_position_argument is not None
+                    rendered_array_position_argument = _render_check_literal(
+                        array_position_argument,
                         dialect,
                         allow_check_shim=allow_check_shim,
                     )
-                    left = f"JSON_CONTAINS({left}, {argument})"
+                    left = f"JSON_CONTAINS({left}, {rendered_array_position_argument})"
                 elif allow_check_shim:
                     return "(1=1)"
                 else:
@@ -276,10 +278,17 @@ def _render_check_comparison(
                         "ARRAY_POSITION requires PostgreSQL array storage and has no exact target mapping",
                     )
             else:
-                argument = comparison.left_expression.argument
-                assert argument is not None
-                rendered_argument = _render_check_literal(argument, dialect, allow_check_shim=allow_check_shim)
-                left = f"ARRAY_POSITION({left}, {rendered_argument})"
+                postgres_array_position_argument = comparison.left_expression.argument
+                assert postgres_array_position_argument is not None
+                rendered_postgres_array_position_argument = _render_check_literal(
+                    postgres_array_position_argument,
+                    dialect,
+                    allow_check_shim=allow_check_shim,
+                )
+                left = (
+                    f"ARRAY_POSITION({left}, "
+                    f"{rendered_postgres_array_position_argument})"
+                )
         elif comparison.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY:
             members = ", ".join(
                 _render_check_literal(item, dialect, allow_check_shim=allow_check_shim)
@@ -314,9 +323,12 @@ def _render_check_comparison(
                     "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
                     "JSONB key-existence semantics require PostgreSQL JSONB storage and have no exact common mapping",
                 )
-            argument = comparison.left_expression.argument
-            assert argument is not None
-            left = f"{left} ? {_render_check_literal(argument, dialect, allow_check_shim=allow_check_shim)}"
+            json_key_argument = comparison.left_expression.argument
+            assert json_key_argument is not None
+            left = (
+                f"{left} ? "
+                f"{_render_check_literal(json_key_argument, dialect, allow_check_shim=allow_check_shim)}"
+            )
         elif comparison.left_expression.function is CheckValueFunction.OCTET_LENGTH:
             function = {
                 Dialect.POSTGRES: "OCTET_LENGTH",

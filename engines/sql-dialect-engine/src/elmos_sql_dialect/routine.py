@@ -1136,6 +1136,7 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
             elif variable.default.kind is DefaultKind.CURRENT_TIMESTAMP:
                 default_value = "CURRENT_TIMESTAMP"
             elif variable.default.kind is DefaultKind.STRING:
+                assert default_value is not None
                 default_value = "'" + default_value.replace("'", "''") + "'"
             elif variable.default.kind is DefaultKind.BOOLEAN and target_dialect in (Dialect.ORACLE, Dialect.TSQL):
                 default_value = "1" if default_value == "true" else "0"

@@ -586,16 +586,26 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             current = []
             if chunk:
                 try:
-                    stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
-                    statements.append(stmt)
+                    parsed_statement = sqlglot.parse_one(
+                        chunk, read=source_dialect.value
+                    )
+                    if isinstance(parsed_statement, exp.Expression):
+                        statements.append(parsed_statement)
+                    else:
+                        statements.append(exp.Command(this=chunk))
                 except Exception:
                     statements.append(exp.Command(this=chunk))
     if current:
         chunk = " ".join(current).rstrip(";").strip()
         if chunk:
             try:
-                stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
-                statements.append(stmt)
+                parsed_statement = sqlglot.parse_one(
+                    chunk, read=source_dialect.value
+                )
+                if isinstance(parsed_statement, exp.Expression):
+                    statements.append(parsed_statement)
+                else:
+                    statements.append(exp.Command(this=chunk))
             except Exception:
                 statements.append(exp.Command(this=chunk))
     return statements
@@ -678,7 +688,9 @@ def parse_procedure(
             assignments.append(RoutineAssignment(target_name, value))
         elif isinstance(item, exp.Rollback):
             sp_id = item.args.get("savepoint")
-            sp_name = str(sp_id.this if hasattr(sp_id, "this") else (sp_id or ""))
+            sp_name = str(
+                sp_id.this if isinstance(sp_id, exp.Expression) else (sp_id or "")
+            )
             if not sp_name:
                 tokens = item.sql().split()
                 sp_name = tokens[-1].rstrip(";")
@@ -1705,22 +1717,26 @@ def emit_privilege(
         if target_dialect is Dialect.POSTGRES:
             object_clause = f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
         else:
-            if not allow_privilege_shim and (routine_catalog is None or privilege.routine_argument_type_refs is None):
-                raise DialectError(
-                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                    f"{target_dialect.value} routine privileges cannot safely drop the source "
-                    "signature without a target routine-identity catalogue",
-                )
-            if not allow_privilege_shim and not routine_catalog.has_unique_routine(
-                privilege.object_kind,
-                privilege.schema,
-                privilege.object_name,
-                privilege.routine_argument_type_refs,
-            ):
-                raise DialectError(
-                    "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
-                    f"source catalog cannot prove one exact {target_dialect.value} routine identity",
-                )
+            if not allow_privilege_shim:
+                if (
+                    routine_catalog is None
+                    or privilege.routine_argument_type_refs is None
+                ):
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                        f"{target_dialect.value} routine privileges cannot safely drop the source "
+                        "signature without a target routine-identity catalogue",
+                    )
+                if not routine_catalog.has_unique_routine(
+                    privilege.object_kind,
+                    privilege.schema,
+                    privilege.object_name,
+                    privilege.routine_argument_type_refs,
+                ):
+                    raise DialectError(
+                        "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
+                        f"source catalog cannot prove one exact {target_dialect.value} routine identity",
+                    )
             if target_dialect is Dialect.MYSQL:
                 if (
                     any(principal.casefold() == "public" for principal in privilege.principals)

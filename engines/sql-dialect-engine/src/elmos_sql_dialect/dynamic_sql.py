@@ -59,12 +59,23 @@ def extract_and_transpile_dynamic_sql(
         if m:
             expr_str = m.group(1).rstrip(";")
             expr_ast = sqlglot.parse_one(expr_str, read=source_dialect.value)
+            if not isinstance(expr_ast, exp.Expression):
+                raise DialectError(
+                    "CERTIFIED_DYNAMIC_SQL_UNSAFE",
+                    "Dynamic SQL body is not a typed SQL expression",
+                )
             raw_query = fold_constant_sql_expression(expr_ast)
     elif isinstance(parsed, exp.Anonymous) and parsed.this.upper() == "EXECUTE IMMEDIATE":
         # parsed as Anonymous function or command
         args = list(parsed.expressions)
         if args:
-            raw_query = fold_constant_sql_expression(args[0])
+            argument = args[0]
+            if not isinstance(argument, exp.Expression):
+                raise DialectError(
+                    "CERTIFIED_DYNAMIC_SQL_UNSAFE",
+                    "Dynamic SQL argument is not a typed SQL expression",
+                )
+            raw_query = fold_constant_sql_expression(argument)
 
     if raw_query is None:
         # Fallback regex for EXECUTE IMMEDIATE / sp_executesql

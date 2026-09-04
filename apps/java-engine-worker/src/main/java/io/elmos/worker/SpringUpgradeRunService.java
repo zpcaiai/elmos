@@ -504,6 +504,16 @@ final class SpringUpgradeRunService {
                 case BLOCKED -> "BLOCKED";
                 default -> "FAILED";
             };
+            /*
+             * Future.cancel(true) interrupts the execution thread. A cancelled
+             * runtime can return its remote handle only after observing that
+             * interrupt, and FileChannel.lock then fails immediately with
+             * ClosedByInterruptException if the flag remains set. Clear the
+             * flag only for the mandatory durable lease reconciliation and
+             * restore it afterwards so cancellation does not become a false
+             * QUEUE_LEASE_RELEASE_FAILED result.
+             */
+            boolean interrupted = Thread.interrupted();
             try {
                 lease.release(outcome);
                 synchronized (state) {
@@ -518,6 +528,8 @@ final class SpringUpgradeRunService {
                     appendEvent(state, state.stage, "BLOCKED", state.failureMessage);
                     touch(state);
                 }
+            } finally {
+                if (interrupted) Thread.currentThread().interrupt();
             }
         }
     }

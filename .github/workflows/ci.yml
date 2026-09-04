@@ -882,6 +882,12 @@ jobs:
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
+        env:
+          # The immutable legacy route receipts bind an older engine source
+          # closure. Replaying them against this revision would be a false
+          # provenance claim; the adapter test requires a fail-closed result,
+          # no migration artifact, and explicit NOT_RUN/NOT_CERTIFIED states.
+          ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY: NOT_RUN
         run: make precision-migration-b01-44-check
       - name: Set up exact ChinaDB preflight runtime
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0

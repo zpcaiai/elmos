@@ -424,7 +424,7 @@ def render_default(
         if dialect is not Dialect.POSTGRES:
             if type_policy is not None and type_policy.array == "json":
                 import json as _json
-                elements = []
+                elements: list[object] = []
                 for item in default.array_elements:
                     if item.is_null:
                         elements.append(None)

@@ -379,14 +379,16 @@ verify_pinned_node26_component() {
     || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
     printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
       "${path}" >&2
-    exit 3
+    return 1
   fi
   observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
+  local observed_sha256
+  observed_sha256="$(file_sha256 "${path}")"
   if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "$(file_sha256 "${path}")" != "${expected_sha256}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (%s)\n' \
-      "${path}" "${observed}" >&2
-    exit 3
+    || "${observed_sha256}" != "${expected_sha256}" ]]; then
+    printf 'Pinned Node closure component identity mismatch: %s (%s:%s)\n' \
+      "${path}" "${observed}" "${observed_sha256}" >&2
+    return 1
   fi
 }
 
@@ -578,9 +580,12 @@ node|26.0.0
 EOF
 
   if [[ "${profile}" == "tahoe" ]]; then
+    local component_failures=0
     while IFS='|' read -r path mode byte_count digest; do
-      verify_pinned_node26_component \
-        "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"
+      if ! verify_pinned_node26_component \
+          "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"; then
+        component_failures=$((component_failures + 1))
+      fi
     done <<'EOF'
 ada-url/3.4.4/lib/libada.3.4.4.dylib|444|598704|b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8
 brotli/1.2.0/lib/libbrotlicommon.1.2.0.dylib|444|150128|eb4c35c72adfea50045e0901767820b32a6b434685c0a4753ca9d3f9b389e44f
@@ -608,6 +613,11 @@ sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
+    if (( component_failures != 0 )); then
+      printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
+        "${component_failures}" >&2
+      exit 3
+    fi
   fi
 }
 

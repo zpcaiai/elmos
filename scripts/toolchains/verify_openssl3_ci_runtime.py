@@ -618,14 +618,22 @@ def _seal_runtime() -> dict[str, object]:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
     opt_link_before = _opt_link_receipt(UNSEALED_OPT_LINK_PROFILE)
-    files_before = tuple(
-        _stable_file_receipt(
-            path,
-            UNSEALED_FILE_PROFILES,
-            validate_parent_chain=False,
-        )
-        for path in UNSEALED_FILE_PROFILES
-    )
+    file_receipts: list[dict[str, object]] = []
+    file_identity_errors: list[str] = []
+    for path in UNSEALED_FILE_PROFILES:
+        try:
+            file_receipts.append(
+                _stable_file_receipt(
+                    path,
+                    UNSEALED_FILE_PROFILES,
+                    validate_parent_chain=False,
+                )
+            )
+        except RuntimeError as error:
+            file_identity_errors.append(str(error))
+    if file_identity_errors:
+        raise RuntimeError("\n".join(file_identity_errors))
+    files_before = tuple(file_receipts)
     directory_initial = {
         Path(str(receipt["path"])): receipt for receipt in directories_before
     }
