@@ -252,9 +252,13 @@ write_rust_wrapper() {
   local wrapper="${target}/bin/${command_name}"
   printf '%s\n' \
     '#!/bin/sh' \
-    "export RUSTUP_HOME='${target}/rustup'" \
-    "export CARGO_HOME='${target}/cargo'" \
-    "exec '${target}/cargo/bin/${command_name}' \"\$@\"" \
+    'set -eu' \
+    'wrapper_path="$(/usr/bin/realpath "$0")"' \
+    'wrapper_dir="${wrapper_path%/*}"' \
+    'toolchain_root="${wrapper_dir%/*}"' \
+    'export RUSTUP_HOME="${toolchain_root}/rustup"' \
+    'export CARGO_HOME="${toolchain_root}/cargo"' \
+    "exec \"\${toolchain_root}/cargo/bin/${command_name}\" \"\$@\"" \
     >"${wrapper}"
   chmod 0755 "${wrapper}"
 }
@@ -285,10 +289,6 @@ install_rust() {
     write_rust_wrapper "${stage}" "cargo"
     write_rust_wrapper "${stage}" "rustup"
     mv "${stage}" "${target}"
-    # Wrappers were generated in the staging path; rewrite them with the final path.
-    write_rust_wrapper "${target}" "rustc"
-    write_rust_wrapper "${target}" "cargo"
-    write_rust_wrapper "${target}" "rustup"
   fi
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"

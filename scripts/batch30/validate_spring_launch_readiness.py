@@ -1052,8 +1052,8 @@ def validate_code(errors: list[str]) -> None:
     require(errors, "micrometer-registry-prometheus" in worker_pom, "Spring worker must include the Prometheus registry")
     require(
         errors,
-        "\n        include: health,info\n" in worker_config,
-        "Spring worker must expose only the minimal internal health and info endpoints",
+        "\n        include: health,info,prometheus\n" in worker_config,
+        "Spring worker must expose only the minimal internal health, info, and Prometheus endpoints",
     )
     require(errors, 'ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"' in compose, "production experimental routes must be hard disabled")
     require(errors, 'ELMOS_SPRING_CODING_AGENT_ENABLED: "false"' in compose, "production long-tail coding agent must be hard disabled")

@@ -851,6 +851,16 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
     "a2577b1c0ea25dd77e22a00515c8eb06d111ceff" \
     "Casks/f/flutter.rb" \
     "476d39d9cd9a9f2af485a61888dcdc646ca659b106b7d05a934e91efd3e62510"
+  # The cask contains flutter_tools/pubspec.lock but not its generated
+  # package_config.json. Materialize that exact locked graph before the route
+  # analyzer switches to offline/default-deny execution. The analyzer then
+  # re-hashes every package it loads and rejects lock or closure drift.
+  (
+    cd "${HOMEBREW_PREFIX}/share/flutter/packages/flutter_tools"
+    HOME="${PINNED_HOME}" \
+      "${HOMEBREW_PREFIX}/share/flutter/bin/cache/dart-sdk/bin/dart" \
+      pub get --enforce-lockfile
+  )
 fi
 
 readonly CAPTURE_ROOT="${REPOSITORY_ROOT}/routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime"

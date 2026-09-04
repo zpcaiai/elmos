@@ -614,21 +614,9 @@ def test_node_closure_rejects_libada_content_drift_even_with_recomputed_identity
     ),
 )
 def test_node_closure_accepts_each_complete_legacy_profile(
-    node_closure: dict[str, object],
     profile: dict[str, str | int],
 ) -> None:
-    manifest = copy.deepcopy(node_closure["manifest"])
-    assert isinstance(manifest, dict)
-    components = manifest["components"]
-    assert isinstance(components, list)
-    libada = next(
-        component
-        for component in components
-        if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
-    )
-    libada["sha256"] = profile["libada_sha256"]
-    libada["bytes"] = profile["libada_bytes"]
-    candidate = toolchains._node_closure_identity(manifest)
+    candidate = _synthetic_profile_identity(profile, profile, profile, profile)
 
     assert candidate["sha256"] == profile["closure_sha256"]
     assert candidate["bytes"] == profile["closure_bytes"]

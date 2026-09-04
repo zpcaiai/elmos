@@ -271,6 +271,73 @@ def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
     )
 
 
+def test_kotlin_temurin_receipt_uses_exact_profile_override(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_temurin",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    original = module.exact_toolchain("kotlin")
+    temurin = replace(
+        original,
+        version="kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+        profile=tuple(
+            "kotlin-jvm-home=/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+            if item.startswith("kotlin-jvm-home=")
+            else "kotlin-jvm-distribution=temurin"
+            if item == "kotlin-jvm-distribution=homebrew"
+            else "kotlin-jvm-release-sha256=5fccc331767cf526748f17402c7355efb0d1c24f397c49ff9836760f4a3f3d17"
+            if item.startswith("kotlin-jvm-release-sha256=")
+            else item
+            for item in original.profile
+        ),
+    )
+    monkeypatch.setattr(module, "exact_toolchain", lambda language: temurin)
+
+    record = module._portable_toolchain("kotlin")
+
+    assert "kotlin-jvm-home=<java21-home>" in record["profile"]
+    assert "/Users/runner" not in json.dumps(record, sort_keys=True)
+    assert module.exact_toolchain_record_sha256(record) == (
+        module.EXACT_TOOLCHAIN_PROFILE_OVERRIDES["kotlin"][
+            "kotlin-jvm-distribution=temurin"
+        ]["record_sha256"]
+    )
+
+
+@pytest.mark.parametrize(
+    "profile",
+    (
+        [],
+        ["kotlin-jvm-distribution=unknown"],
+        [
+            "kotlin-jvm-distribution=homebrew",
+            "kotlin-jvm-distribution=temurin",
+        ],
+    ),
+)
+def test_kotlin_receipt_rejects_missing_unknown_or_ambiguous_jvm_profile(
+    profile: list[str],
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        "elmos_runtime_toolchain_receipt_invalid_profile",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    with pytest.raises(module.RouteError):
+        module._expected_toolchain_identity("kotlin", profile)
+
+
 def test_batch29_live_schemas_and_historical_module_schema_keep_separate_sets() -> None:
     schema_root = REPOSITORY_ROOT / "schemas" / "batch29"
     active = set(ROUTED_LANGUAGES)

@@ -265,7 +265,12 @@ def test_java_declared_home_cannot_replace_the_pinned_distribution(
         path.chmod(0o700)
     monkeypatch.setenv("ELMOS_JAVA21_HOME", str(fake))
 
-    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_DECLARED_HOME_MISMATCH:java"):
+    expected = (
+        "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin"
+        if os.environ.get("ELMOS_JAVA21_DISTRIBUTION") == "temurin"
+        else "EXACT_TOOLCHAIN_DECLARED_HOME_MISMATCH:java"
+    )
+    with pytest.raises(RouteError, match=expected):
         toolchains.exact_toolchain("java")
 
 

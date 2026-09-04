@@ -914,7 +914,7 @@ func analyzeFunction(
 	for _, declaration := range parsed.Decls {
 		if function, ok := declaration.(*ast.FuncDecl); ok {
 			name := function.Name.Name
-			if emittedTarget && (strings.HasPrefix(name, "elmos") || emittedBinaryHelpers[name] != "" || name == "elmosNonZeroFloat64") {
+			if emittedTarget && (emittedBinaryHelpers[name] != "" || name == "elmosNonZeroFloat64") {
 				continue
 			}
 			if functionNames[name] {

@@ -483,14 +483,31 @@ EXACT_TOOLCHAIN_RECORD_SHA256: dict[str, str] = {
     "csharp": "9568b7bf8845e3f99e4231f861c89fc28339d1149ea20cb36a99eab7b02505ba",
     "typescript": "0625eeaddd20bec8a42762d2551d243e9baa0a1b03cf221c48e9569899715cd4",
     "go": "68148dfcead6e11f0d85ea6e9fd22e5e1fed88a8ce18e5f547818e023653f6b6",
-    "rust": "d033956010ef8bc88c0dc4ce4db0e509013830eacf6bb7e73c29ae77c4e490d6",
+    "rust": "22bb7330b6dccb7b6a0d5dac9dfd54b1d502560a00c106fcf885583cb3106cd3",
     "cpp": "5640f0ce9e65fd7d4a5616f8754f7511c9ddb06d9c90cd6d1ec2a199f017966b",
     "objc": "fbb108ab8528c620f48ec4a12bcde14d284d625b6667493f78ef20ecda63463d",
     "swift": "4f672b92ce63ea95cb8b4cc115f6ca496b3f06aac8de21020e548373ac4a4057",
-    "php": "4b76880e072a287efb11fa7156dc3892cc2a323577b766781ef8a0126f9db013",
+    "php": "7d3bf8334efba9155a7af7e02cf5e4cb1dd5218c44d35c04926c967814b909d9",
     "kotlin": "71be41a8096b4c35bf41a7438a4b8bef2be1217905bf94ba25e2c3b69f0ddd7b",
     "react": "ae60752360cb72b00d4226f6b40f984ab70dea1f12c90c27889984710e896506",
     "flutter": "9da3d455a7d37a42acc7f709b9843def354de5e2277763f4b69cfc215ea6e160",
+}
+
+
+# Exact, profile-selected alternatives to the canonical records above.  The
+# base Kotlin record is the Homebrew JDK profile; hosted CI intentionally uses
+# the separately pinned Temurin JDK.  The selector is itself a required profile
+# fact, so an unknown, missing, or ambiguous JVM distribution still fails
+# closed rather than accepting a banner-only match.
+EXACT_TOOLCHAIN_PROFILE_OVERRIDES: dict[str, dict[str, dict[str, str]]] = {
+    "kotlin": {
+        "kotlin-jvm-distribution=temurin": {
+            "version": "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+            "record_sha256": (
+                "7f726c544b77a49e13f0759f2a1f2e5d59952c32173f71f20a1991155d8266c6"
+            ),
+        }
+    }
 }
 
 
@@ -522,6 +539,7 @@ def exact_toolchain_contract_document() -> dict[str, object]:
             language: EXACT_TOOLCHAIN_RECORD_SHA256[language]
             for language in EXACT_TOOLCHAIN_ACTIVE_LANGUAGES
         },
+        "profile_overrides": EXACT_TOOLCHAIN_PROFILE_OVERRIDES,
     }
 
 
@@ -535,7 +553,7 @@ def exact_toolchain_contract_sha256() -> str:
 # edits to any version, record hash, language order, or deprecated language fail
 # closed until the complete contract is intentionally re-pinned.
 EXACT_TOOLCHAIN_CONTRACT_SHA256 = (
-    "c09a5ecccc90d2f2f06315816949523032233e3c32bdba6c8eb5630c094caae5"
+    "400375091dc41819a2c6588e596ae337d75d1ae6d92d56f4dddc83f1d2702be3"
 )
 
 

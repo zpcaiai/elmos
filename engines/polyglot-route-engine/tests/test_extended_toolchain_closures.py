@@ -37,7 +37,9 @@ def test_real_fixed_user_toolchains_work_without_ambient_path(
 
     selected = toolchains.exact_toolchain(language)  # type: ignore[arg-type]
 
-    assert selected.executable.startswith("/Users/stephen/.local/share/elmos/toolchains/")
+    assert Path(selected.executable).is_relative_to(
+        toolchains.configured_polyglot_toolchain_root()
+    )
     assert selected.executable_sha256
     assert selected.profile
     assert any(item.endswith("=NOT_RUN") for item in selected.profile)

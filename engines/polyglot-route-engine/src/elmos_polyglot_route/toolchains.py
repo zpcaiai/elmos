@@ -8,7 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass
-from functools import lru_cache
+from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
@@ -354,8 +354,9 @@ _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
 # bundle above: the bytes, release metadata, and signed bundle identity all
 # differ.  Keeping both contracts explicit prevents CI from silently accepting
 # an arbitrary JAVA_HOME merely because it prints the right version.
-_TEMURIN_JAVA_HOME_SUFFIX = (
-    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+_TEMURIN_JAVA_HOME_SUFFIXES = (
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home",
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home",
 )
 _TEMURIN_JAVA_SHA256 = "afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
 _TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"
@@ -815,7 +816,13 @@ def _verify_qualified_tree_manifest(
         "bytes": expected_bytes,
     }
     if identity != expected:
-        raise RouteError(failure)
+        raise RouteError(
+            failure
+            + ":expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+        )
 
 
 def _qualified_fixed_symlink(
@@ -968,7 +975,17 @@ def _dotnet_bundle_identity() -> dict[str, object]:
         or hostfxr_binary["sha256"] != _EXPECTED_DOTNET_HOSTFXR_SHA256
         or hostpolicy_binary["sha256"] != _EXPECTED_DOTNET_HOSTPOLICY_SHA256
     ):
-        raise RouteError("EXACT_TOOLCHAIN_DOTNET_BUNDLE_MISMATCH")
+        diagnostic = {
+            "bundle": observed,
+            "hostfxr_binary": hostfxr_binary,
+            "hostpolicy_binary": hostpolicy_binary,
+        }
+        raise RouteError(
+            "EXACT_TOOLCHAIN_DOTNET_BUNDLE_MISMATCH:expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(diagnostic, sort_keys=True, separators=(",", ":"))
+        )
     return {
         **observed,
         "hostfxr_binary": hostfxr_binary,
@@ -1109,10 +1126,10 @@ def _java_contract() -> _JavaContract:
         expected_home = Path(configured).resolve(strict=True)
     except OSError as error:
         raise RouteError("EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin") from error
-    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIX):
+    if not expected_home.as_posix().endswith(_TEMURIN_JAVA_HOME_SUFFIXES):
         raise RouteError(
             "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin:"
-            f"expected_suffix={_TEMURIN_JAVA_HOME_SUFFIX}"
+            f"expected_suffixes={','.join(_TEMURIN_JAVA_HOME_SUFFIXES)}"
         )
     return _JavaContract(
         home=expected_home,
@@ -3549,7 +3566,7 @@ _EXPECTED_RUST_PUBLIC_TARGETS = {
     _EXPECTED_RUST_PUBLIC_CARGO: str(_EXPECTED_RUST_WRAPPER_ROOT / "cargo"),
     _EXPECTED_RUST_PUBLIC_RUSTUP: str(_EXPECTED_RUST_WRAPPER_ROOT / "rustup"),
 }
-_EXPECTED_RUST_WRAPPER_TREE_SHA256 = "f74538687384c432f46553dbee0ecddf732c7bcae239aadcf94ad090056ab8c8"
+_EXPECTED_RUST_WRAPPER_TREE_SHA256 = "9535e5745dbb13f2573cff2e885c85e5ff178ea060d2ae598cdf3fe4c1e821e8"
 _EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT = 0
@@ -3805,6 +3822,200 @@ _EXPECTED_CLANG_SHA256 = "7def90dd8829726686213a747fc5bff1583df933dae5edc55d7554
 _EXPECTED_SWIFTC_SHA256 = "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
 
 
+@dataclass(frozen=True)
+class AppleRouteHostProfile:
+    """One indivisible, measured GitHub macOS/Xcode execution closure."""
+
+    profile_id: str
+    image_version: str
+    product_version: str
+    build_version: str
+    xcode: str
+    macos_sdk: str
+    clang_sha256: str
+    swiftc_sha256: str
+    component_overrides: tuple[tuple[str, str, int], ...]
+    tree_overrides: tuple[tuple[str, str, int, int], ...]
+    apple_git_sha256: str
+    apple_git_bytes: int
+    sandbox_exec_sha256: str
+    sandbox_exec_cdhash_full: str
+    sandbox_exec_bytes: int
+    codesign_sha256: str
+    codesign_bytes: int
+
+
+_APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
+    product_version="26.6.2",
+    build_version="25G83",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256=_EXPECTED_CLANG_SHA256,
+    swiftc_sha256=_EXPECTED_SWIFTC_SHA256,
+    component_overrides=(),
+    tree_overrides=(),
+    apple_git_sha256="10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+    apple_git_bytes=3_704_880,
+    sandbox_exec_sha256="abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
+    sandbox_exec_cdhash_full="4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+    sandbox_exec_bytes=102_368,
+    codesign_sha256="844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
+    codesign_bytes=458_576,
+)
+
+_APPLE_ROUTE_LEGACY_PROFILE = AppleRouteHostProfile(
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256="d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda",
+    swiftc_sha256="8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f",
+    component_overrides=(
+        ("swift-dispatcher", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("swiftc-dispatcher", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("swift-build-dispatcher", "487af88e37990b089e4979b874bd7944aca0dba5ffb0cae6236aefd02b301f05", 48_459_440),
+        ("swift-package", "487af88e37990b089e4979b874bd7944aca0dba5ffb0cae6236aefd02b301f05", 48_459_440),
+        ("swift-driver", "65b741dd6274318d08d8d510b48b56fc718af418adc20c3913f68aea4b4e4d42", 6_305_152),
+        ("swift-frontend", "8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f", 357_109_680),
+        ("clang", "d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda", 290_664_032),
+        ("clangxx-dispatcher", "d2e4bf622758eee1bf7267c060497fb2c41e098d37b0fca8be73898dc7e14eda", 290_664_032),
+        ("linker", "e412b9f2af31b1567a9eabc28f553a8f1cf34127e2107cb39c2694cf147571a4", 4_953_232),
+        ("archiver", "796d3d310da783252c83ae4a9a9f3c5c92dba0747bb81de3753ce61809be6947", 139_056),
+        ("libtool", "0d41e97fd26c5dd2a268ddb1a5c07b7f8f9e6f0cd28922d92b5b19aec7c42849", 440_176),
+        ("platform-swift-plugin-server", "7a9c12f5b6c5ad40f26b9e0e7767967cb7bd192a91532c4b915c0c01369e3e03", 137_056),
+        ("in-process-plugin-server", "37b37b1eb1354c870910187fb3ac42414805da941c302f00d9be0b1017eb8eba", 173_344),
+        ("swift-driver-library", "31136107cf83f639540d698016d69c861231d4282ea93ded7353e614a7c3b15c", 6_340_944),
+        ("swift-tools-support-library", "728890c1f2e5fefd564247f1b5a350a441a26285d7c234b46f50819608ff3020", 2_419_296),
+        ("build-server-protocol", "a05648ca25c2db07f4c2af84abd8eeb11c8debe76b8b5f8ffb68be2324c6a7f5", 963_248),
+        ("language-server-protocol", "3593be35263b82a0cdd4a31ffcd77ba8fe9433aced80913b8a03bb78ab53a785", 5_343_632),
+        (
+            "language-server-protocol-transport",
+            "bdc80c99e955ed599e1da3f4fdd1ec67aa5c7d58e504bb949070635e0aee6e8f",
+            516_624,
+        ),
+        ("swb-build-service", "67e6b1bbcf34059fca5fa467f3b738a8c0823f28122ebfea719ce3e28c2f6e1c", 2_837_056),
+        ("swb-project-model", "ac3bc1eb2eb6643b392d2bae16c818dca505a434586a25a13eeee1c18dde53bb", 1_113_584),
+        ("swb-util", "92b7dcda84db6891a4f48bed7289750ff8481c270d6da8f2b8de1fcf01720218", 6_440_816),
+        ("swift-build-framework", "fafeefff64776545195c6e41356ee76422ce2a66a0b64d796bb487677df08aa3", 6_935_776),
+        (
+            "tools-protocols-swift-extensions",
+            "689e9f1c1ca838af83cc75bbf451b83f84d8bc3bfb5830c0e5d85a26d3f925c4",
+            396_432,
+        ),
+        ("llbuild-framework", "0322414740fb02dd9f0bc0e238bd251d5dc9e58af43660eec7f5f0664ceb1b03", 2_890_784),
+    ),
+    tree_overrides=(
+        ("toolchain-host-plugins", "4fa83d7d2c0246c4fbe83cc8d71fe26b8beacc27f2a650fb0945d23de0eacbcc", 4, 3_222_976),
+        ("platform-host-plugins", "8d1463ff558fa7cdc81daabf20855fa6878e27716ca4874adf5f37824d2494ed", 15, 10_106_220),
+    ),
+    apple_git_sha256="e68bc9395203d8e1be47b98c374df67ccb45732379a9fdba94b56d861e5f648f",
+    apple_git_bytes=7_604_272,
+    sandbox_exec_sha256="8290e4be7387a0df83cd1559e86afd880464f269450573d012795761fe298f16",
+    sandbox_exec_cdhash_full="2f619ca893522eb88a87dc31ddc1e8cad98f237d4672f6f9d0c9f05395572463",
+    sandbox_exec_bytes=102_560,
+    codesign_sha256="214d455584d19abc0d74d02b9cbc7d3da6bdcb0596c235e6156dd9ed2f4e1ba7",
+    codesign_bytes=459_824,
+)
+
+_APPLE_ROUTE_HOST_PROFILES = (
+    _APPLE_ROUTE_LEGACY_PROFILE,
+    _APPLE_ROUTE_CURRENT_PROFILE,
+)
+
+
+def _select_apple_route_host_profile(
+    *,
+    image_version: str,
+    product_version: str,
+    build_version: str,
+    xcode: str,
+) -> AppleRouteHostProfile:
+    matches = tuple(
+        profile
+        for profile in _APPLE_ROUTE_HOST_PROFILES
+        if (
+            profile.product_version,
+            profile.build_version,
+            profile.xcode,
+        )
+        == (product_version, build_version, xcode)
+        and (not image_version or profile.image_version == image_version)
+    )
+    if len(matches) != 1:
+        observed = "/".join(
+            (image_version, product_version, build_version, xcode.replace("\n", "/"))
+        )
+        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_HOST_PROFILE_MISMATCH:observed={observed}")
+    return matches[0]
+
+
+@cache
+def apple_route_host_profile(language: Language) -> AppleRouteHostProfile:
+    """Select one complete Apple closure; never accept per-file alternatives."""
+
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    xcodebuild = Path("/usr/bin/xcodebuild")
+    xcrun = Path("/usr/bin/xcrun")
+    if not xcodebuild.is_file() or not xcrun.is_file():
+        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
+    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
+    image_version = os.environ.get("ImageVersion", "").strip()
+    if image_version:
+        required_environment = {
+            "GITHUB_ACTIONS": "true",
+            "RUNNER_ENVIRONMENT": "github-hosted",
+            "ImageOS": "macos26",
+            "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
+            "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL": "/Applications/Xcode.app",
+        }
+        drift = tuple(
+            key
+            for key, expected in required_environment.items()
+            if os.environ.get(key, "").strip() != expected
+        )
+        if drift:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_APPLE_HOST_PROVENANCE_MISMATCH:" + ",".join(drift)
+            )
+    product_version = _output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False)
+    build_version = _output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False)
+    selected = _select_apple_route_host_profile(
+        image_version=image_version,
+        product_version=product_version,
+        build_version=build_version,
+        xcode=observed_xcode,
+    )
+    sdk_version = _output(
+        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
+        include_stderr=False,
+    )
+    sdk_path = Path(
+        _output(
+            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
+            include_stderr=False,
+        )
+    )
+    if sdk_version != selected.macos_sdk:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"
+            f"expected={selected.xcode.replace(chr(10), '/')}/sdk={selected.macos_sdk}:"
+            f"observed={observed_xcode.replace(chr(10), '/')}/sdk={sdk_version}"
+        )
+    foundation = sdk_path / "System/Library/Frameworks/Foundation.framework/Headers/Foundation.h"
+    objc_runtime = sdk_path / "usr/include/objc/objc.h"
+    if sdk_path.name != "MacOSX26.5.sdk" or not foundation.is_file() or not objc_runtime.is_file():
+        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_SDK_INCOMPLETE:{language}:{sdk_path}")
+    return selected
+
+
 def _pinned(variable: str, language: Language, repository_pin: str) -> str:
     declared = os.environ.get(variable, repository_pin).strip()
     if declared != repository_pin:
@@ -3819,45 +4030,19 @@ def _sha256(path: Path) -> str:
 
 
 def _apple_profile(language: Language) -> tuple[str, ...]:
-    if platform.system() != "Darwin" or platform.machine() != "arm64":
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_PLATFORM_MISMATCH:{language}:expected=Darwin/arm64:"
-            f"observed={platform.system()}/{platform.machine()}"
-        )
-    xcodebuild = Path("/usr/bin/xcodebuild")
-    xcrun = Path("/usr/bin/xcrun")
-    if not xcodebuild.is_file() or not xcrun.is_file():
-        raise RouteError("EXACT_TOOLCHAIN_UNAVAILABLE:xcodebuild/xcrun")
-    observed_xcode = _output([str(xcodebuild), "-version"], include_stderr=False)
-    sdk_version = _output(
-        [str(xcrun), "--sdk", "macosx", "--show-sdk-version"],
-        include_stderr=False,
-    )
-    sdk_path = Path(
-        _output(
-            [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
-            include_stderr=False,
-        )
-    )
-    if observed_xcode != _EXPECTED_XCODE or sdk_version != _EXPECTED_MACOS_SDK:
-        raise RouteError(
-            f"EXACT_TOOLCHAIN_APPLE_PROFILE_MISMATCH:{language}:"
-            f"expected={_EXPECTED_XCODE.replace(chr(10), '/')}/sdk={_EXPECTED_MACOS_SDK}:"
-            f"observed={observed_xcode.replace(chr(10), '/')}/sdk={sdk_version}"
-        )
-    foundation = sdk_path / "System/Library/Frameworks/Foundation.framework/Headers/Foundation.h"
-    objc_runtime = sdk_path / "usr/include/objc/objc.h"
-    if sdk_path.name != "MacOSX26.5.sdk" or not foundation.is_file() or not objc_runtime.is_file():
-        raise RouteError(f"EXACT_TOOLCHAIN_APPLE_SDK_INCOMPLETE:{language}:{sdk_path}")
+    selected = apple_route_host_profile(language)
     return (
         "platform=Darwin/arm64",
+        f"apple-host-profile={selected.profile_id}",
         "xcode=26.6/17F113",
         "macosx-sdk=26.5",
-        f"sdk-path={sdk_path}",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+        "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
     )
 
 
 def _clang(language: Language, executable_name: str) -> ExactToolchain:
+    selected = apple_route_host_profile(language)
     xcrun = Path("/usr/bin/xcrun")
     executable = _output([str(xcrun), "--find", executable_name]) if xcrun.is_file() else None
     if not executable or not Path(executable).is_file():
@@ -3876,9 +4061,9 @@ def _clang(language: Language, executable_name: str) -> ExactToolchain:
     expected = _pinned(_CLANG_VERSION_VARIABLE, language, _EXPECTED_CLANG_VERSION)
     observed = _output([executable, "--version"]).splitlines()[0].strip()
     executable_digest = _sha256(Path(executable).resolve())
-    if observed != expected or executable_digest != _EXPECTED_CLANG_SHA256:
+    if observed != expected or executable_digest != selected.clang_sha256:
         raise RouteError(
-            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}/sha256={_EXPECTED_CLANG_SHA256}:"
+            f"EXACT_TOOLCHAIN_MISMATCH:{language}:expected={expected}/sha256={selected.clang_sha256}:"
             f"observed={observed}/sha256={executable_digest}"
         )
     standard = "c++20" if language == "cpp" else "c17/objc-arc/Foundation/Apple-runtime"
@@ -3902,6 +4087,7 @@ def _objc() -> ExactToolchain:
 
 
 def _swift() -> ExactToolchain:
+    selected = apple_route_host_profile("swift")
     xcrun = Path("/usr/bin/xcrun")
     executable = _output([str(xcrun), "--find", "swiftc"]) if xcrun.is_file() else None
     driver = _output([str(xcrun), "--find", "swift"]) if xcrun.is_file() else None
@@ -3917,13 +4103,13 @@ def _swift() -> ExactToolchain:
     if (
         observed != expected
         or observed_target != _EXPECTED_SWIFT_TARGET
-        or executable_digest != _EXPECTED_SWIFTC_SHA256
-        or driver_digest != _EXPECTED_SWIFTC_SHA256
+        or executable_digest != selected.swiftc_sha256
+        or driver_digest != selected.swiftc_sha256
         or driver_version != "\n".join((expected, _EXPECTED_SWIFT_TARGET, _EXPECTED_SWIFT_DRIVER_VERSION))
     ):
         raise RouteError(
             f"EXACT_TOOLCHAIN_MISMATCH:swift:expected={expected}/{_EXPECTED_SWIFT_TARGET}/"
-            f"swiftc-sha256={_EXPECTED_SWIFTC_SHA256}/swift-driver-sha256={_EXPECTED_SWIFTC_SHA256}:"
+            f"swiftc-sha256={selected.swiftc_sha256}/swift-driver-sha256={selected.swiftc_sha256}:"
             f"observed={observed}/{observed_target}/swiftc-sha256={executable_digest}/"
             f"swift-driver-sha256={driver_digest}"
         )
@@ -3973,11 +4159,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '67b55fd7129e98b7291b6b2e8e7d18a3574ddb682d032159c44305d649dbb18c'
+_EXPECTED_PHP_TREE_SHA256 = '8c4459ea3d6603c87b85ca6c07fac8d255180f4404b59c3b778230edacd7fb0f'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129955920
+_EXPECTED_PHP_TREE_BYTES = 129952837
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4140,6 +4326,26 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
         if not stat.S_ISREG(metadata.st_mode):
             raise RouteError(failure)
         record = _qualified_file_record(path, root, failure)
+        if relative == "INSTALL_RECEIPT.json":
+            try:
+                receipt = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise RouteError(failure) from error
+            if not isinstance(receipt, dict) or type(receipt.get("time")) is not int:
+                raise RouteError(failure)
+            # These fields identify the disposable installer invocation, not
+            # the immutable bottle. Every bottle/source/dependency, target,
+            # architecture, build-host and option field remains hash-bound.
+            receipt["time"] = "<installation-time>"
+            receipt["homebrew_version"] = "<homebrew-client-version>"
+            normalized = json.dumps(
+                receipt, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
         file_count += 1
         total_bytes += cast(int, record["bytes"])
         records.append(
@@ -4187,7 +4393,12 @@ def _php_tree_identity() -> dict[str, object]:
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
     if identity != expected:
-        raise RouteError("EXACT_TOOLCHAIN_PHP_TREE_MISMATCH")
+        raise RouteError(
+            "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected="
+            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            + ":observed="
+            + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+        )
     return identity
 
 
