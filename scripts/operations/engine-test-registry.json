@@ -529,7 +529,7 @@
           "project": "engines/semantic-assurance-engine",
           "tests": ["engines/semantic-assurance-engine/tests", "tests/semantic-assurance-expansion-skills"],
           "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
-          "pythonpath": ["engines/semantic-assurance-engine/src"],
+          "pythonpath": ["engines/semantic-assurance-engine/src", "."],
           "environment": {}
         }
       ]

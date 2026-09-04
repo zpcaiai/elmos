@@ -112,23 +112,29 @@ docker network create --internal \
 
 # 7. 将 deploy/production/runner/spring-runner.env.example 复制到下面的仓库外路径，
 # 填写精确值并设置父目录 0700、文件 0400/0600。把 runner env 当作数据解析，
-# 然后做不变更主机的 preflight。禁止 source/eval；
+# 然后由受控 root 只读 observer 做不变更主机的 preflight。禁止 source/eval；
 # parser 使用 Runner 专属 allowlist，拒绝未知项、重复项、插值和命令语法，并要求
 # 仓库外绝对路径、非 symlink、owner-only 文件及 0700 父目录。
 # 该文件只供 preflight 与 `docker compose --env-file` 做变量替换；三个 Runner
 # service 均禁止 service-level `env_file`，因此 TLS/Socket/宿主路径等不会整包注入容器。
 # --check-host 验证 rootless SecurityOptions、internal 控制网络、digest 格式、
-# socket、目录、Secret owner/mode/inode 和 TLS/config；它不会制造 attestation。
-uv run --quiet --with pyyaml \
+# socket、目录、Secret owner/mode/inode/value separation 和 TLS/config。root 权限
+# 仅用于读取 mapped-UID/0400 Secret 及 /proc/<container-pid>/root；Docker daemon
+# 仍必须是 rootless。独立参数不得从 runner.env 自行推导。该检查不制造 attestation。
+RUNNER_UID="$(id -u elmos-spring-runner)"
+RUNNER_GID="$(id -g elmos-spring-runner)"
+sudo uv run --quiet --with pyyaml \
   python deploy/production/runner/validate_spring_runner_topology.py \
-  --environment-file /srv/elmos/spring-runner/runner.env --check-host
+  --environment-file /srv/elmos/spring-runner/runner.env \
+  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" --check-host
 
 # 8. 在该独立主机启动 Runner；绝不能与应用 compose 叠加。
-docker compose --env-file /srv/elmos/spring-runner/runner.env \
+sudo -u elmos-spring-runner docker compose --env-file /srv/elmos/spring-runner/runner.env \
   -f deploy/production/compose/docker-compose.spring-runner.yml up -d
-uv run --quiet --with pyyaml \
+sudo uv run --quiet --with pyyaml \
   python deploy/production/runner/validate_spring_runner_topology.py \
-  --environment-file /srv/elmos/spring-runner/runner.env --check-running
+  --environment-file /srv/elmos/spring-runner/runner.env \
+  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" --check-running
 
 # spring-runner-edge 与 spring-runner-broker 都是 internal bridge。Rootless 端口
 # 转发必须仍能把批准的宿主私网地址映射到 ingress:8443；从应用主机执行 TLS 握手和
@@ -154,7 +160,9 @@ docker compose --env-file /srv/elmos/config/elmos.env \
 
 # web-console 的 raw inspect 含 env_file 明文，禁止落盘；collector 在 Linux Docker
 # 宿主内存中同时校验 web/worker，并通过 /proc/<pid>/root 比较每个 bind 的源/目标
-# inode；仅输出脱敏、content-addressed attestation，不签名、不生成外部通过状态。
+# inode；collector 必须由具备受控只读 /proc 权限的 host observer 执行。仅输出
+# 脱敏、content-addressed attestation，不携带 raw web inspect 摘要
+# （避免弱密钥离线猜测 oracle），不签名、不生成外部通过状态。
 make spring-web-runtime-attestation \
   SPRING_WEB_CONTAINER=elmos-staging-web-console-1 \
   SPRING_WEB_IMAGE_DIGEST="$PINNED_WEB_IMAGE_ID" \
@@ -247,6 +255,12 @@ supplementary group 0 只用于 rootless Docker socket。不得用 `0444`、grou
 读权限、硬链接或同一 inode 解决跨 user namespace 可读性。三个逻辑密钥和
 `engine.hmac` 四者的值不得复用；对应 Worker/broker 副本必须由 Secret Manager
 协调轮换并在撤销后删除旧 inode。
+
+Runner host/running validator 由受控 root observer 读取这些 mapped-UID/`0400`
+文件并比较三者的 canonical byte digest（摘要不出站），同时只读访问容器 `/proc`
+mount namespace。该 observer 不是 Docker daemon；daemon 必须继续以独立非 root
+身份运行并通过 `name=rootless` 检查。以 daemon owner 直接执行会因正确的文件和
+ptrace 权限而失败，因此不得通过放宽 Secret mode 或容器 UID 绕过。
 
 应用 Worker 与 Runner broker 必须把同一个租户/Run 内容寻址 POSIX 文件系统挂到
 `ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH`。该路径相同只是校验条件，不足以证明是同一

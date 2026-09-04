@@ -68,8 +68,9 @@ python3 scripts/batch30/validate_spring_launch_readiness.py \
   --compose-environment-file /srv/elmos/config/elmos.env
 
 # Validate both live application containers in memory and write only a sanitized record.
-# The raw docker inspect includes env-file secrets and must never be redirected,
-# copied or attached to the external evidence bundle. Docker inspect has no
+# The raw web docker inspect includes env-file secrets and neither its bytes nor
+# its unkeyed digest may be copied or attached to the external evidence bundle.
+# Docker inspect has no
 # inode data, so this command must run on the Linux Docker host with permission
 # to compare every source FD to /proc/<container-pid>/root/<mount-target>.
 make spring-web-runtime-attestation \

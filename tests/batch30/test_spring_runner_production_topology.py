@@ -4,6 +4,7 @@ import copy
 import importlib.util
 import json
 import os
+import socket
 import subprocess
 import sys
 import tempfile
@@ -36,6 +37,46 @@ class SpringRunnerProductionTopologyTests(TestCase):
         self.assertEqual(1, completed.returncode)
         self.assertEqual("ENVIRONMENT_FILE_REQUIRED", payload["mode"])
         self.assertTrue(any("shell sourcing is forbidden" in item for item in payload["errors"]))
+
+    def test_host_mode_requires_independent_owner_binding_and_root_observer(self) -> None:
+        missing_binding = subprocess.run(
+            [
+                sys.executable,
+                str(VALIDATOR_PATH),
+                "--check-host",
+                "--environment-file",
+                "/does/not/exist/runner.env",
+                "--json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(missing_binding.stdout)
+        self.assertEqual(1, missing_binding.returncode)
+        self.assertEqual("ROOTLESS_OWNER_BINDING_REQUIRED", payload["mode"])
+
+        if os.geteuid() != 0:
+            unprivileged = subprocess.run(
+                [
+                    sys.executable,
+                    str(VALIDATOR_PATH),
+                    "--check-host",
+                    "--environment-file",
+                    "/does/not/exist/runner.env",
+                    "--rootless-owner-uid",
+                    str(os.getuid()),
+                    "--rootless-owner-gid",
+                    str(os.getgid()),
+                    "--json",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            payload = json.loads(unprivileged.stdout)
+            self.assertEqual(1, unprivileged.returncode)
+            self.assertEqual("PRIVILEGED_OBSERVER_REQUIRED", payload["mode"])
 
     def test_runner_is_separate_and_never_receives_engine_hmac(self) -> None:
         paths = TOPOLOGY.ContractPaths()
@@ -496,7 +537,7 @@ class SpringRunnerProductionTopologyTests(TestCase):
         self.assertTrue(any("mode must be 0400 or 0600" in item for item in errors))
 
     def test_hmac_secret_rejects_ascii_and_unicode_boundary_whitespace(self) -> None:
-        for suffix in (b"\n", "\u00a0".encode("utf-8")):
+        for suffix in (b"\n", "\u00a0".encode("utf-8"), "\ufeff".encode("utf-8")):
             with self.subTest(suffix=suffix), tempfile.TemporaryDirectory(
                 prefix="spring-runner-hmac-whitespace-"
             ) as directory:
@@ -547,6 +588,90 @@ class SpringRunnerProductionTopologyTests(TestCase):
 
         self.assertTrue(any("mode must equal 0700" in item for item in permissive_errors))
         self.assertTrue(any("symbolic-link" in item for item in symlink_errors))
+
+    def test_runner_bind_sources_reject_unsafe_ancestors_and_permissions(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-runner-bind-source-") as directory:
+            root = Path(directory).resolve()
+            root.chmod(0o700)
+            unsafe = root / "unsafe"
+            unsafe.mkdir(mode=0o700)
+            private = unsafe / "private"
+            private.mkdir(mode=0o700)
+            config = private / "nginx.conf"
+            config.write_bytes(b"reviewed")
+            config.chmod(0o600)
+            workspace = unsafe / "workspace"
+            workspace.mkdir(mode=0o700)
+            unsafe.chmod(0o777)
+
+            config_errors: list[str] = []
+            TOPOLOGY.trusted_regular_file(
+                config_errors,
+                config,
+                label="config",
+                expected_uid=os.getuid(),
+                expected_gid=os.getgid(),
+                expected_parent_uid=os.getuid(),
+                expected_parent_gid=os.getgid(),
+                expected_sha256=TOPOLOGY.hashlib.sha256(b"reviewed").hexdigest(),
+            )
+            directory_errors: list[str] = []
+            TOPOLOGY.ordinary_directory(
+                directory_errors,
+                workspace,
+                label="workspace",
+                allowed_uids={os.getuid()},
+                allowed_gids={os.getgid()},
+            )
+
+        self.assertTrue(
+            any("group/other-writable non-sticky ancestors" in item for item in config_errors),
+            config_errors,
+        )
+        self.assertTrue(
+            any("group/other-writable non-sticky ancestors" in item for item in directory_errors),
+            directory_errors,
+        )
+
+    def test_runner_sensitive_bind_sources_reject_foreign_owned_ancestors(self) -> None:
+        real_lstat = Path.lstat
+        foreign_uid = os.getuid() + 20_000
+        with tempfile.TemporaryDirectory(prefix="spring-runner-foreign-owner-") as directory:
+            root = Path(directory).resolve()
+            root.chmod(0o700)
+            foreign = root / "foreign"
+            foreign.mkdir(mode=0o755)
+            private = foreign / "private"
+            private.mkdir(mode=0o700)
+            secret = private / "secret"
+            secret.write_bytes(b"x" * 32)
+            secret.chmod(0o600)
+
+            def foreign_owner(path: Path) -> os.stat_result:
+                details = real_lstat(path)
+                if path == foreign:
+                    fields = list(details)
+                    fields[4] = foreign_uid
+                    return os.stat_result(fields)
+                return details
+
+            errors: list[str] = []
+            with mock.patch.object(
+                TOPOLOGY.Path,
+                "lstat",
+                autospec=True,
+                side_effect=foreign_owner,
+            ):
+                TOPOLOGY.owner_only_file(
+                    errors,
+                    secret,
+                    label="secret",
+                    expected_uid=os.getuid(),
+                    expected_gid=os.getgid(),
+                    minimum_size=32,
+                )
+
+        self.assertTrue(any("foreign-owned ancestors" in item for item in errors), errors)
 
     def test_environment_file_is_inert_allowlisted_data_with_explicit_override(self) -> None:
         with tempfile.TemporaryDirectory(prefix="spring-runner-env-") as directory:
@@ -990,6 +1115,153 @@ class SpringRunnerProductionTopologyTests(TestCase):
         TOPOLOGY.validate_runtime_service(errors, **fixture)
         self.assertTrue(any("runtime mount inventory drift" in item for item in errors), errors)
 
+    def test_live_mount_identities_cover_zero_mount_service_and_reject_stale_inode(self) -> None:
+        compose = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
+        environment = self.valid_environment_values(Path("/secure/runner.env"))
+        records: dict[str, dict[str, object]] = {}
+        for index, service in enumerate(sorted(TOPOLOGY.EXPECTED_RUNNER_SERVICES), start=10):
+            record = self.runtime_fixture(service)["record"]
+            assert isinstance(record, dict)
+            record["State"]["Pid"] = index
+            records[service] = record
+
+        calls: list[tuple[str, int, str]] = []
+
+        def process_observer(process_id: int, _label: str) -> tuple[int, int, int, str, int, int]:
+            return (process_id, 1, process_id, "100", 2, process_id)
+
+        def matching_observer(
+            source: str, process_id: int, destination: str, _label: str
+        ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
+            calls.append((source, process_id, destination))
+            identity = (1, process_id, 0o100000, 0o600, os.getuid(), os.getgid())
+            process = process_observer(process_id, "")
+            return identity, identity, process, process
+
+        errors: list[str] = []
+        identities = TOPOLOGY.validate_live_mount_identities(
+            errors,
+            records=records,
+            compose=compose,
+            environment=environment,
+            observer=matching_observer,
+            process_observer=process_observer,
+        )
+        self.assertEqual([], errors)
+        self.assertEqual(TOPOLOGY.EXPECTED_RUNNER_SERVICES, set(identities))
+        self.assertEqual(
+            sum(
+                len(TOPOLOGY.expected_service_mounts(compose["services"][name], environment))
+                for name in TOPOLOGY.EXPECTED_RUNNER_SERVICES
+            ),
+            len(calls),
+        )
+
+        def stale_observer(
+            source: str, process_id: int, destination: str, label: str
+        ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
+            host, target, before, after = matching_observer(
+                source, process_id, destination, label
+            )
+            return host, (target[0], target[1] + 1, *target[2:]), before, after
+
+        stale_errors: list[str] = []
+        TOPOLOGY.validate_live_mount_identities(
+            stale_errors,
+            records=records,
+            compose=compose,
+            environment=environment,
+            observer=stale_observer,
+            process_observer=process_observer,
+        )
+        self.assertTrue(
+            any("does not expose the current host source object" in item for item in stale_errors),
+            stale_errors,
+        )
+
+    def test_live_mount_identities_reject_process_generation_or_namespace_change(self) -> None:
+        compose = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
+        environment = self.valid_environment_values(Path("/secure/runner.env"))
+        records: dict[str, dict[str, object]] = {}
+        for index, service in enumerate(sorted(TOPOLOGY.EXPECTED_RUNNER_SERVICES), start=20):
+            record = self.runtime_fixture(service)["record"]
+            assert isinstance(record, dict)
+            record["State"]["Pid"] = index
+            records[service] = record
+        calls: dict[int, int] = {}
+
+        def changing_process(process_id: int, _label: str) -> tuple[int, int, int, str, int, int]:
+            calls[process_id] = calls.get(process_id, 0) + 1
+            return (process_id, 1, process_id, "100", 2, process_id + calls[process_id] - 1)
+
+        def stable_mount(
+            _source: str, process_id: int, _destination: str, _label: str
+        ) -> tuple[tuple[int, ...], tuple[int, ...], tuple[int, ...], tuple[int, ...]]:
+            identity = (1, process_id, 0o100000, 0o600, os.getuid(), os.getgid())
+            process = (process_id, 1, process_id, "100", 2, process_id)
+            return identity, identity, process, process
+
+        errors: list[str] = []
+        TOPOLOGY.validate_live_mount_identities(
+            errors,
+            records=records,
+            compose=compose,
+            environment=environment,
+            observer=stable_mount,
+            process_observer=changing_process,
+        )
+        self.assertTrue(any("mount namespace changed" in item for item in errors), errors)
+
+    def test_runtime_generation_binds_restart_and_mount_inventory(self) -> None:
+        fixture = self.runtime_fixture("spring-runner-ingress")
+        record = fixture["record"]
+        assert isinstance(record, dict)
+        baseline = TOPOLOGY.runtime_generation(record, label="ingress")
+        for field, mutate in (
+            ("pid", lambda value: value["State"].__setitem__("Pid", 99999)),
+            ("started", lambda value: value["State"].__setitem__("StartedAt", "later")),
+            ("restart", lambda value: value.__setitem__("RestartCount", 1)),
+            ("id", lambda value: value.__setitem__("Id", "f" * 64)),
+            ("bind", lambda value: value["HostConfig"]["Binds"].append("/x:/y:rw")),
+        ):
+            with self.subTest(field=field):
+                changed = copy.deepcopy(record)
+                mutate(changed)
+                self.assertNotEqual(
+                    baseline,
+                    TOPOLOGY.runtime_generation(changed, label="ingress"),
+                )
+
+    def test_linux_live_mount_observer_detects_atomic_source_replacement_and_socket(self) -> None:
+        if sys.platform != "linux" or not hasattr(os, "O_PATH"):
+            self.skipTest("Linux O_PATH and /proc are required")
+        with tempfile.TemporaryDirectory(prefix="spring-runner-live-bind-") as directory:
+            root = Path(directory).resolve()
+            source = root / "source"
+            stale_target = root / "stale-target"
+            source.write_bytes(b"old")
+            os.link(source, stale_target)
+            replacement = root / "replacement"
+            replacement.write_bytes(b"new")
+            os.replace(replacement, source)
+            host, target, before, after = TOPOLOGY.observe_live_bind_mount(
+                str(source), os.getpid(), str(stale_target), "stale file"
+            )
+            self.assertNotEqual(host, target)
+            self.assertEqual(before, after)
+
+            socket_path = root / "docker.sock"
+            endpoint = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            try:
+                endpoint.bind(str(socket_path))
+                host, target, before, after = TOPOLOGY.observe_live_bind_mount(
+                    str(socket_path), os.getpid(), str(socket_path), "socket"
+                )
+                self.assertEqual(host, target)
+                self.assertEqual(before, after)
+            finally:
+                endpoint.close()
+
     @classmethod
     def runtime_fixture(cls, service_name: str) -> dict[str, object]:
         compose = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
@@ -1030,6 +1302,12 @@ class SpringRunnerProductionTopologyTests(TestCase):
             else {}
         )
         record = {
+            "Id": {
+                "spring-runner-ingress": "d",
+                "spring-runner-broker": "e",
+                "spring-runner-egress-proxy": "f",
+            }[service_name]
+            * 64,
             "Image": image_id,
             "Path": "/usr/local/bin/entrypoint",
             "Args": ["serve"],
@@ -1114,6 +1392,8 @@ class SpringRunnerProductionTopologyTests(TestCase):
                 for target, (source, read_write) in mounts.items()
             ],
             "State": {
+                "Pid": 1000,
+                "StartedAt": "2026-09-05T00:00:00Z",
                 "Running": True,
                 "Restarting": False,
                 "Paused": False,
@@ -1126,6 +1406,7 @@ class SpringRunnerProductionTopologyTests(TestCase):
                     else {}
                 ),
             },
+            "RestartCount": 0,
         }
         return {
             "service_name": service_name,

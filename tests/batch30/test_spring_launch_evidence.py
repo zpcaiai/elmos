@@ -1782,6 +1782,15 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         self.assertIn("DATABASE_PASSWORD", sanitized["environment_names"])
         self.assertFalse(sanitized["secrets_embedded"])
         self.assertTrue(sanitized["stable_reinspection"])
+        alternate_value = copy.deepcopy(self.web_inspect_value)
+        alternate_value[0]["Config"]["Env"].append(
+            "DATABASE_PASSWORD=different-secret-guess"
+        )
+        self.assertEqual(
+            sanitized,
+            self.collect_web_runtime(alternate_value),
+            "portable sanitized evidence must not act as an offline secret oracle",
+        )
         self.assertIn(
             "inode",
             sanitized["mount_sources"]["application_engine_hmac"][
@@ -1825,7 +1834,7 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         with self.assertRaisesRegex(SpringLaunchEvidenceError, "must use exact key"):
             self.collect_web_runtime(value)
 
-    def test_web_runtime_attestation_binds_engine_source_and_never_references_raw(self) -> None:
+    def test_web_runtime_attestation_binds_engine_source_without_raw_web_oracle(self) -> None:
         receipt = self.make_receipt()
         _, environment = self.environment_document(receipt)
         reference = environment["web_console_runtime_attestation"]
@@ -1836,10 +1845,8 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         )
         attestation = json.loads(attestation_path.read_text(encoding="utf-8"))
         self.assertNotIn("Env", json.dumps(attestation, sort_keys=True))
-        self.assertEqual(
-            "sha256:" + hashlib.sha256(canonical_bytes(self.web_inspect_value)).hexdigest(),
-            attestation["raw_inspect_digest"],
-        )
+        self.assertNotIn("raw_inspect_digest", attestation)
+        self.assertNotIn("raw_inspect_size_bytes", attestation)
         self.assertEqual(
             "sha256:" + hashlib.sha256(self.worker_inspect_bytes).hexdigest(),
             attestation["raw_worker_inspect_digest"],

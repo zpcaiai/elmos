@@ -1,5 +1,6 @@
 UV ?= uv
 BATCH30_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+PACK ?=
 SPRING_ENV_FILE ?=
 ELMOS_ENV_FILE ?=
 SPRING_EXTERNAL_EVIDENCE ?=
@@ -41,6 +42,8 @@ override SPRING_WORKER_CONTAINER := $(value SPRING_WORKER_CONTAINER)
 override SPRING_WORKER_IMAGE_DIGEST := $(value SPRING_WORKER_IMAGE_DIGEST)
 override SPRING_WEB_COLLECTOR_ID := $(value SPRING_WEB_COLLECTOR_ID)
 override SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT := $(value SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT)
+override PACK := $(value PACK)
+export PACK
 export SPRING_ENV_FILE ELMOS_ENV_FILE SPRING_EXTERNAL_EVIDENCE
 export SPRING_TRUST_STORE SPRING_TRUST_STORE_DIGEST SPRING_EVIDENCE_ROOT
 export SPRING_ENVIRONMENT_ID SPRING_DEPLOYMENT_ID SPRING_PROVIDER SPRING_REGION
@@ -54,11 +57,13 @@ b30-skills-test:
 	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
 	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
 b30-pack-validate:
-	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
-	$(BATCH30_PYTHON) scripts/batch30/validate_framework_pack.py framework-packs/$(PACK)
+	@case "$${PACK}" in ""|.*|*..*|*[!A-Za-z0-9._-]*) echo "PACK must be one direct framework pack key" >&2; exit 2;; esac
+	@test -d "framework-packs/$${PACK}" || (echo "PACK must identify an existing framework pack" >&2 && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/validate_framework_pack.py "framework-packs/$${PACK}"
 b30-pack-gate:
-	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
-	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py framework-packs/$(PACK)
+	@case "$${PACK}" in ""|.*|*..*|*[!A-Za-z0-9._-]*) echo "PACK must be one direct framework pack key" >&2; exit 2;; esac
+	@test -d "framework-packs/$${PACK}" || (echo "PACK must identify an existing framework pack" >&2 && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py "framework-packs/$${PACK}"
 spring-runner-validate:
 	$(BATCH30_PYTHON) deploy/production/runner/validate_spring_runner_topology.py
 spring-launch-validate: spring-runner-validate
