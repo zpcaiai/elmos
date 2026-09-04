@@ -1189,8 +1189,8 @@ def _binary(
     assert expression.left is not None and expression.right is not None
     language = context.language
     operator = expression.operator or ""
-    left_type = types.infer(expression.left, environment, context.records)
-    right_type = types.infer(expression.right, environment, context.records)
+    left_type = types.infer(expression.left, environment, context.records, context.functions)
+    right_type = types.infer(expression.right, environment, context.records, context.functions)
     left = _expression(context, expression.left, environment)
     right = _expression(context, expression.right, environment)
     if language == "rust":
@@ -1523,7 +1523,7 @@ def _statements(
             if (
                 language in {"rust", "swift", "kotlin", "flutter", "python"}
                 and return_type == "number"
-                and types.infer(statement.expression, environment, context.records) == "integer"
+                and types.infer(statement.expression, environment, context.records, context.functions) == "integer"
             ):
                 if language == "rust":
                     context.normalization_rules.add("rust.return.integer-to-number")

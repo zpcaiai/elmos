@@ -1235,6 +1235,56 @@ def test_runtime_plan_uses_the_same_exact_toolchain_selection(
     assert verification._runtime_tool("test-runtime", "runtime") == str(exact_runtime)
 
 
+def test_one_executable_must_satisfy_every_constraint_for_the_same_tool(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    path_runtime = tmp_path / "path-runtime"
+    exact_runtime = tmp_path / "exact-runtime"
+    path_runtime.write_text(
+        "#!/bin/sh\n"
+        "if [ \"$1\" = \"--version\" ]; then printf 'runtime 99.0\\n'; "
+        "else printf 'language 3.12\\n'; fi\n",
+        encoding="utf-8",
+    )
+    exact_runtime.write_text(
+        "#!/bin/sh\n"
+        "if [ \"$1\" = \"--version\" ]; then printf 'runtime 1.2.3\\n'; "
+        "else printf 'language 3.12\\n'; fi\n",
+        encoding="utf-8",
+    )
+    path_runtime.chmod(0o700)
+    exact_runtime.chmod(0o700)
+    monkeypatch.setattr(verification.shutil, "which", lambda _: str(path_runtime))
+    requirements = [
+        {
+            "tool": "runtime",
+            "arguments": ["--version"],
+            "expected": "runtime 1.2.3",
+            "pattern": r"^runtime 1\.2\.3$",
+            "fallback": str(exact_runtime),
+        },
+        {
+            "tool": "runtime",
+            "arguments": ["language-version"],
+            "expected": "language 3.12",
+            "pattern": r"^language 3\.12$",
+            "fallback": str(exact_runtime),
+        },
+    ]
+    monkeypatch.setitem(
+        verification.EXACT_TOOLCHAIN_REQUIREMENTS,
+        "test-runtime",
+        requirements,
+    )
+
+    matched, results = _check_exact_toolchain("test-runtime", requirements)
+
+    assert matched is True
+    assert {result["command"][0] for result in results} == {str(exact_runtime)}
+    assert verification._runtime_tool("test-runtime", "runtime") == str(exact_runtime)
+
+
 def test_native_build_uses_the_same_exact_toolchain_selection(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

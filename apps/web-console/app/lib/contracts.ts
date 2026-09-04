@@ -473,6 +473,7 @@ export type GenerationRuntimePlan = {
   environment: Record<string, string>;
   providers?: string[];
   port: number;
+  startup_timeout_seconds?: number;
 };
 
 export type GenerationRuntime = {

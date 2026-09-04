@@ -30,6 +30,8 @@ __pycache__/
 **/.pytest_cache/
 .mypy_cache/
 **/.mypy_cache/
+*.tsbuildinfo
+**/*.tsbuildinfo
 *.egg-info/
 **/*.egg-info/
 .ruff_cache/

@@ -853,7 +853,16 @@ for (const authMode of ["jwt", "oidc"] as const) {
     await expect(page.getByText("开放问题 · 0")).toBeVisible();
 
     await page.getByRole("checkbox", { name: /我已审阅结构化需求/ }).check();
+    const acceptedJobResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === "/api/generation/jobs"
+    ), { timeout: 180_000 });
     await page.getByRole("button", { name: "一键生成、验证并归档" }).click();
+    const acceptedJobResponse = await acceptedJobResponsePromise;
+    if (!acceptedJobResponse.ok()) {
+      throw new Error(`generation job admission failed: ${await acceptedJobResponse.text()}`);
+    }
+    const acceptedJob = await acceptedJobResponse.json() as { id: string };
     const generationOutcome = await Promise.race([
       page.getByText("生成文件树").waitFor({
         state: "visible",
@@ -878,8 +887,35 @@ for (const authMode of ["jwt", "oidc"] as const) {
       timeout: 600_000,
     });
 
+    const runtimeWarmup = await request.post(
+      `/api/generation/jobs/${acceptedJob.id}/run`,
+      {
+        headers: {
+          ...runnerHeaders,
+          Authorization: "Bearer invalid-runner-token-token-token",
+        },
+        data: { language: "python" },
+        timeout: 180_000,
+      },
+    );
+    expect(runtimeWarmup.status()).toBe(401);
+    expect(await runtimeWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
+    const runtimeStartResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/run`
+    ), { timeout: 200_000 });
     await page.getByRole("button", { name: "一键运行 10 分钟" }).click();
-    await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 60_000 });
+    const runtimeStartResponse = await runtimeStartResponsePromise;
+    if (!runtimeStartResponse.ok()) {
+      throw new Error(`generation runtime start failed: ${await runtimeStartResponse.text()}`);
+    }
+    expect(await runtimeStartResponse.json()).toMatchObject({
+      runtime: { status: "RUNNING", language: "python" },
+    });
+    await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
     await page.getByRole("button", { name: "停止" }).click();
     await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
