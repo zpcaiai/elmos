@@ -1060,6 +1060,7 @@ type DirectoryUsage = {
 
 async function boundedDirectoryUsage(root: string): Promise<DirectoryUsage> {
   const pending = [root];
+  const metadataBatchSize = 64;
   let fileCount = 0;
   let total = 0;
   const jobBytes = new Map<string, number>();
@@ -1087,37 +1088,49 @@ async function boundedDirectoryUsage(root: string): Promise<DirectoryUsage> {
       if (error instanceof Error && "code" in error && error.code === "ENOENT") continue;
       throw error;
     }
-    for (const entry of entries) {
-      const candidate = confined(root, path.relative(root, directory), entry.name);
-      let info;
-      try {
-        info = await lstat(candidate);
-      } catch (error) {
-        if (error instanceof Error && "code" in error && error.code === "ENOENT") continue;
-        throw error;
-      }
-      if (info.isSymbolicLink()) {
-        // Build tools legitimately create virtual-environment/toolchain links.
-        // Count only the link inode and never resolve or follow its target.
+    // Bound metadata concurrency instead of serially awaiting every file in a
+    // generated virtual environment.  The fixed batch keeps descriptor and
+    // memory pressure predictable while preserving the exact scan limits.
+    for (let offset = 0; offset < entries.length; offset += metadataBatchSize) {
+      const inspected = await Promise.all(
+        entries.slice(offset, offset + metadataBatchSize).map(async (entry) => {
+          const candidate = confined(root, path.relative(root, directory), entry.name);
+          try {
+            return { candidate, info: await lstat(candidate) };
+          } catch (error) {
+            if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+              return undefined;
+            }
+            throw error;
+          }
+        }),
+      );
+      for (const result of inspected) {
+        if (!result) continue;
+        const { candidate, info } = result;
+        if (info.isSymbolicLink()) {
+          // Build tools legitimately create virtual-environment/toolchain links.
+          // Count only the link inode and never resolve or follow its target.
+          fileCount += 1;
+          addBytes(candidate, info.size);
+          if (fileCount > 250_000) {
+            throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
+          }
+          continue;
+        }
+        if (info.isDirectory()) {
+          pending.push(candidate);
+          continue;
+        }
+        if (!info.isFile()) {
+          throw new GenerationRunnerError(409, "GENERATION_STORAGE_SPECIAL_FILE_FORBIDDEN");
+        }
         fileCount += 1;
-        addBytes(candidate, info.size);
         if (fileCount > 250_000) {
           throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
         }
-        continue;
+        addBytes(candidate, info.size);
       }
-      if (info.isDirectory()) {
-        pending.push(candidate);
-        continue;
-      }
-      if (!info.isFile()) {
-        throw new GenerationRunnerError(409, "GENERATION_STORAGE_SPECIAL_FILE_FORBIDDEN");
-      }
-      fileCount += 1;
-      if (fileCount > 250_000) {
-        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
-      }
-      addBytes(candidate, info.size);
     }
   }
   return { bytes: total, jobBytes };

@@ -32,6 +32,22 @@ SPRING_ENVIRONMENT_KEYS = (
     "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH",
     "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH",
     "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH",
+    "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH",
+)
+DANGEROUS_DEPLOYMENT_KEYS = (
+    "SPRING_APPLICATION_JSON",
+    "JAVA_TOOL_OPTIONS",
+    "_JAVA_OPTIONS",
+    "JAVA_OPTS",
+    "JDK_JAVA_OPTIONS",
+    "SERVER_SERVLET_CONTEXT_PATH",
+    "SERVER_SERVLET_PATH",
+    "SPRING_MVC_SERVLET_PATH",
+    "SPRING_CONFIG_LOCATION",
+    "SPRING_CONFIG_ADDITIONAL_LOCATION",
+    "SPRING_CONFIG_IMPORT",
+    "SPRING_PROFILES_ACTIVE",
+    "SPRING_PROFILES_INCLUDE",
 )
 
 
@@ -44,6 +60,8 @@ def sanitized_environment() -> dict[str, str]:
             or name.startswith("ELMOS_VERIFIER_")
             or name.startswith("ELMOS_TRANSFORMER_")
             or name == "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID"
+            or name == "ELMOS_ENV_FILE"
+            or name in DANGEROUS_DEPLOYMENT_KEYS
         ):
             environment.pop(name)
     return environment
@@ -52,6 +70,8 @@ def sanitized_environment() -> dict[str, str]:
 def complete_environment(root: Path) -> dict[str, str]:
     workspace = root / "workspace"
     workspace.mkdir()
+    replay = root / "engine-replay"
+    replay.mkdir(mode=0o700)
     secrets = []
     for index in range(4):
         secret = root / f"secret-{index}"
@@ -78,6 +98,7 @@ def complete_environment(root: Path) -> dict[str, str]:
         "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH": str(secrets[1]),
         "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH": str(secrets[2]),
         "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH": str(secrets[3]),
+        "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH": str(replay),
     }
 
 
@@ -87,6 +108,20 @@ def write_environment_file(path: Path, values: dict[str, str], extra_lines: tupl
     lines.extend(extra_lines)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
     path.chmod(0o600)
+
+
+def write_compose_environment_file(
+    path: Path,
+    spring_values: dict[str, str],
+    extra_lines: tuple[str, ...] = (),
+) -> None:
+    values = {
+        "ELMOS_ENV_FILE": str(path),
+        "NODE_ENV": "production",
+        "ELMOS_DATABASE_URL": "jdbc:postgresql://database.example/elmos?sslmode=require",
+        **spring_values,
+    }
+    write_environment_file(path, values, extra_lines)
 
 
 class SpringLaunchReadinessTests(unittest.TestCase):
@@ -105,6 +140,9 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         )
         self.assertEqual(2, result.returncode)
         self.assertIn("production evidence is required", result.stderr)
+        self.assertIn(
+            "production evidence requires --compose-environment-file", result.stderr
+        )
 
     def test_template_cannot_masquerade_as_external_evidence(self):
         template = ROOT / "deploy/production/spring-external-evidence.example.json"
@@ -173,6 +211,10 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 result.stdout,
                 r"SPRING_CONFIGURATION_DIGEST=sha256:[0-9a-f]{64}",
             )
+            self.assertRegex(
+                result.stdout,
+                r"EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST=sha256:[0-9a-f]{64}",
+            )
 
     def test_environment_preflight_rejects_unsafe_https_endpoints(self):
         cases = (
@@ -236,6 +278,193 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertIn("ENVIRONMENT_PRECEDENCE=PROCESS_ENVIRONMENT_OVER_FILE", result.stdout)
             self.assertIn("CERTIFICATION=NOT_CERTIFIED", result.stdout)
+
+    def test_actual_compose_environment_is_verified_and_digest_bound(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = complete_environment(root)
+            spring_file = root / "spring.env"
+            compose_file = root / "elmos.env"
+            write_environment_file(spring_file, values)
+            write_compose_environment_file(compose_file, values)
+            command = [
+                sys.executable,
+                str(SCRIPT),
+                "--environment-file",
+                str(spring_file),
+                "--compose-environment-file",
+                str(compose_file),
+            ]
+
+            first = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(0, first.returncode, first.stdout + first.stderr)
+            self.assertIn(
+                "COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED", first.stdout
+            )
+            first_digest = next(
+                line
+                for line in first.stdout.splitlines()
+                if line.startswith("SPRING_CONFIGURATION_DIGEST=")
+            )
+            first_worker_digest = next(
+                line
+                for line in first.stdout.splitlines()
+                if line.startswith("EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST=")
+            )
+
+            write_compose_environment_file(
+                compose_file,
+                values,
+                ("ELMOS_DEPLOYMENT_MARKER=second-revision",),
+            )
+            second = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(0, second.returncode, second.stdout + second.stderr)
+            second_digest = next(
+                line
+                for line in second.stdout.splitlines()
+                if line.startswith("SPRING_CONFIGURATION_DIGEST=")
+            )
+            second_worker_digest = next(
+                line
+                for line in second.stdout.splitlines()
+                if line.startswith("EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST=")
+            )
+            self.assertNotEqual(first_digest, second_digest)
+            self.assertEqual(first_worker_digest, second_worker_digest)
+
+    def test_actual_compose_environment_must_match_spring_file_and_self_bind(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = complete_environment(root)
+            spring_file = root / "spring.env"
+            compose_file = root / "elmos.env"
+            write_environment_file(spring_file, values)
+            mismatched = {**values, "ELMOS_SPRING_PROXY_ENABLED": "false"}
+            write_compose_environment_file(compose_file, mismatched)
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--environment-file",
+                    str(spring_file),
+                    "--compose-environment-file",
+                    str(compose_file),
+                ],
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn(
+                "Spring value differs from SPRING_ENV_FILE for ELMOS_SPRING_PROXY_ENABLED",
+                result.stderr,
+            )
+
+            write_environment_file(
+                compose_file,
+                {
+                    "ELMOS_ENV_FILE": "/different/deployment.env",
+                    "NODE_ENV": "production",
+                    **values,
+                },
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    "--environment-file",
+                    str(spring_file),
+                    "--compose-environment-file",
+                    str(compose_file),
+                ],
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn(
+                "must set ELMOS_ENV_FILE to its exact validated path", result.stderr
+            )
+
+    def test_actual_compose_environment_rejects_dangerous_or_equivalent_overrides(self):
+        keys = DANGEROUS_DEPLOYMENT_KEYS + (
+            "SERVER_SERVLET_CONTEXTPATH",
+            "spring_mvc_servletpath",
+        )
+        for key in keys:
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary).resolve()
+                values = complete_environment(root)
+                spring_file = root / "spring.env"
+                compose_file = root / "elmos.env"
+                write_environment_file(spring_file, values)
+                write_compose_environment_file(compose_file, values, (f"{key}=attacker",))
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "--environment-file",
+                        str(spring_file),
+                        "--compose-environment-file",
+                        str(compose_file),
+                    ],
+                    text=True,
+                    capture_output=True,
+                    env=sanitized_environment(),
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertIn(
+                    f"must not define dangerous override {key}", result.stderr
+                )
+
+    def test_process_environment_rejects_dangerous_overrides_and_config_drift(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = complete_environment(root)
+            spring_file = root / "spring.env"
+            compose_file = root / "elmos.env"
+            write_environment_file(spring_file, values)
+            write_compose_environment_file(compose_file, values)
+            command = [
+                sys.executable,
+                str(SCRIPT),
+                "--environment-file",
+                str(spring_file),
+                "--compose-environment-file",
+                str(compose_file),
+            ]
+
+            environment = sanitized_environment()
+            environment["JAVA_TOOL_OPTIONS"] = "-Dserver.servlet.context-path=/hidden"
+            result = subprocess.run(
+                command, text=True, capture_output=True, env=environment
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn(
+                "process environment must not define dangerous override JAVA_TOOL_OPTIONS",
+                result.stderr,
+            )
+
+            environment = sanitized_environment()
+            environment["ELMOS_SPRING_PROXY_ENABLED"] = "false"
+            result = subprocess.run(
+                command, text=True, capture_output=True, env=environment
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn(
+                "process environment Spring value differs from SPRING_ENV_FILE for ELMOS_SPRING_PROXY_ENABLED",
+                result.stderr,
+            )
 
     def test_explicit_process_environment_overrides_file_and_empty_override_fails(self):
         with tempfile.TemporaryDirectory() as temporary:
@@ -488,6 +717,62 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 self.assertEqual(2, result.returncode)
                 self.assertIn(expected_error, result.stderr)
 
+    def test_hmac_secret_rejects_ascii_and_unicode_boundary_whitespace(self):
+        for suffix in (b"\n", "\u00a0".encode("utf-8")):
+            with self.subTest(suffix=suffix), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary).resolve()
+                values = complete_environment(root)
+                secret = Path(values["ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH"])
+                secret.write_bytes(b"A" * 32 + suffix)
+                secret.chmod(0o600)
+                environment = sanitized_environment()
+                environment.update(values)
+
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPT), "--check-environment"],
+                    text=True,
+                    capture_output=True,
+                    env=environment,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn("must not have leading or trailing whitespace", result.stderr)
+
+    def test_persistent_replay_directory_is_owner_only_and_workspace_isolated(self):
+        cases = ("mode", "symlink", "workspace", "missing")
+        for case in cases:
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary).resolve()
+                values = complete_environment(root)
+                replay = Path(values["ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH"])
+                if case == "mode":
+                    replay.chmod(0o755)
+                elif case == "symlink":
+                    target = root / "real-replay"
+                    target.mkdir(mode=0o700)
+                    replay.rmdir()
+                    replay.symlink_to(target, target_is_directory=True)
+                elif case == "workspace":
+                    replay.rmdir()
+                    values["ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH"] = values[
+                        "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH"
+                    ]
+                    Path(values["ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH"]).chmod(0o700)
+                else:
+                    replay.rmdir()
+                environment = sanitized_environment()
+                environment.update(values)
+
+                result = subprocess.run(
+                    [sys.executable, str(SCRIPT), "--check-environment"],
+                    text=True,
+                    capture_output=True,
+                    env=environment,
+                )
+
+                self.assertEqual(2, result.returncode)
+                self.assertIn("replay", result.stderr.lower())
+
     def test_environment_file_rejects_relative_and_missing_paths(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -515,6 +800,8 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         makefile = MAKEFILE.read_text(encoding="utf-8")
         self.assertIn('test -n "$(SPRING_ENV_FILE)"', makefile)
         self.assertIn('--environment-file "$(SPRING_ENV_FILE)"', makefile)
+        self.assertIn('test -n "$(ELMOS_ENV_FILE)"', makefile)
+        self.assertIn('--compose-environment-file "$(ELMOS_ENV_FILE)"', makefile)
         self.assertIn('test -n "$(SPRING_TRUST_STORE)"', makefile)
         self.assertIn('--trust-store "$(SPRING_TRUST_STORE)"', makefile)
         self.assertIn('test -n "$(SPRING_TRUST_STORE_DIGEST)"', makefile)

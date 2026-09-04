@@ -12,6 +12,7 @@
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-recipe-governance</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-validation</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-enterprise-governance</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-security</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-validation</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>

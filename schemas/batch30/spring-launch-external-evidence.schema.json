@@ -1,0 +1,525 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/spring-launch-external-evidence.schema.json",
+  "title": "Batch 30 Spring legacy-modernization signed launch receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "namespace",
+    "receipt_id",
+    "business_line",
+    "route_id",
+    "observed_at",
+    "binding",
+    "binding_digest",
+    "principals",
+    "evidence_index",
+    "gates",
+    "approvals",
+    "design_partner_acceptances",
+    "independent_review",
+    "receipt_digest"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "namespace": {"const": "batch30-spring-launch-external-evidence"},
+    "receipt_id": {"$ref": "#/$defs/identity"},
+    "business_line": {"const": "spring-legacy-modernization"},
+    "route_id": {"const": "boot-2.7-maven-to-boot-3.5.3-java-21"},
+    "observed_at": {"$ref": "#/$defs/utcInstant"},
+    "binding": {"$ref": "#/$defs/binding"},
+    "binding_digest": {"$ref": "#/$defs/digest"},
+    "principals": {"$ref": "#/$defs/principals"},
+    "evidence_index": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/evidenceIndex"}
+      ]
+    },
+    "gates": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "prefixItems": [
+        {"$ref": "#/$defs/stagingGate"},
+        {"$ref": "#/$defs/rootlessGate"},
+        {"$ref": "#/$defs/networkGate"},
+        {"$ref": "#/$defs/verificationGate"},
+        {"$ref": "#/$defs/rollbackGate"},
+        {"$ref": "#/$defs/partnerGate"},
+        {"$ref": "#/$defs/securityGate"},
+        {"$ref": "#/$defs/operationsGate"},
+        {"$ref": "#/$defs/legalGate"}
+      ],
+      "items": false
+    },
+    "approvals": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/approvalEnvelope"}
+    },
+    "design_partner_acceptances": {
+      "type": "array",
+      "minItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "#/$defs/partnerEnvelope"}
+    },
+    "independent_review": {"$ref": "#/$defs/reviewEnvelope"},
+    "receipt_digest": {"$ref": "#/$defs/digest"}
+  },
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$",
+      "not": {
+        "enum": [
+          "UNKNOWN",
+          "INCONCLUSIVE",
+          "NOT_RUN",
+          "NOT_EVALUATED",
+          "NOT_APPLICABLE",
+          "UNSUPPORTED",
+          "BLOCKED",
+          "CHANGE_ME"
+        ]
+      }
+    },
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "utcInstant": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,9})?Z$"
+    },
+    "emptyList": {"type": "array", "maxItems": 0},
+    "contentReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "digest", "size_bytes", "media_type"],
+      "properties": {
+        "uri": {"type": "string", "pattern": "^file://(?:localhost)?/[^\\s]+$"},
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 200}
+      }
+    },
+    "evidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "digest", "size_bytes", "media_type", "verification"],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "verification": {
+                "properties": {"mode": {"const": "LOCAL_BYTES"}},
+                "required": ["mode"]
+              }
+            },
+            "required": ["verification"]
+          },
+          "then": {
+            "properties": {
+              "uri": {"pattern": "^file://(?:localhost)?/[^\\s]+$"}
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "verification": {
+                "properties": {"mode": {"const": "CONTROLLED_INDEX"}},
+                "required": ["mode"]
+              }
+            },
+            "required": ["verification"]
+          },
+          "then": {
+            "properties": {
+              "uri": {"pattern": "^(?:cas|https|s3|gs|az)://[^\\s]+$"}
+            }
+          }
+        }
+      ],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "pattern": "^(?:file|cas|https|s3|gs|az)://[^\\s]+$"
+        },
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {"type": "integer", "minimum": 1, "maximum": 536870912},
+        "media_type": {"type": "string", "minLength": 1, "maxLength": 200},
+        "verification": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mode", "local_uri"],
+              "properties": {
+                "mode": {"const": "LOCAL_BYTES"},
+                "local_uri": {
+                  "type": "string",
+                  "pattern": "^file://(?:localhost)?/[^\\s]+$"
+                }
+              }
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mode", "entry_id", "entry_digest"],
+              "properties": {
+                "mode": {"const": "CONTROLLED_INDEX"},
+                "entry_id": {"$ref": "#/$defs/identity"},
+                "entry_digest": {"$ref": "#/$defs/digest"}
+              }
+            }
+          ]
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deployed_revision", "launch_profile", "artifact", "environment"],
+      "properties": {
+        "deployed_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+        "launch_profile": {"$ref": "#/$defs/contentReference"},
+        "artifact": {"$ref": "#/$defs/contentReference"},
+        "environment": {"$ref": "#/$defs/contentReference"}
+      }
+    },
+    "principal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["actor_id", "organization_id"],
+      "properties": {
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"}
+      }
+    },
+    "principals": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution", "independent_verifier", "independent_reviewer"],
+      "properties": {
+        "execution": {"$ref": "#/$defs/principal"},
+        "independent_verifier": {"$ref": "#/$defs/principal"},
+        "independent_reviewer": {"$ref": "#/$defs/principal"}
+      }
+    },
+    "envelopeBase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "payload", "signature"],
+      "properties": {
+        "algorithm": {"const": "ed25519"},
+        "key_id": {"$ref": "#/$defs/identity"},
+        "payload": {"type": "object"},
+        "signature": {
+          "type": "string",
+          "minLength": 80,
+          "maxLength": 100,
+          "pattern": "^[A-Za-z0-9_+/=-]+$"
+        }
+      }
+    },
+    "commonPayload": {
+      "type": "object",
+      "required": [
+        "record_id",
+        "issued_at",
+        "expires_at",
+        "actor_id",
+        "organization_id",
+        "role",
+        "receipt_id",
+        "binding_digest",
+        "evidence_set_digest",
+        "outcome",
+        "synthetic",
+        "unknowns",
+        "not_run"
+      ],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"$ref": "#/$defs/utcInstant"},
+        "expires_at": {"$ref": "#/$defs/utcInstant"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"type": "string"},
+        "receipt_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "evidence_set_digest": {"$ref": "#/$defs/digest"},
+        "outcome": {"type": "string"},
+        "synthetic": {"const": false},
+        "unknowns": {"$ref": "#/$defs/emptyList"},
+        "not_run": {"$ref": "#/$defs/emptyList"}
+      }
+    },
+    "gatePayloadBase": {
+      "allOf": [
+        {"$ref": "#/$defs/commonPayload"},
+        {
+          "type": "object",
+          "required": [
+            "gate_id",
+            "evidence_uri",
+            "evidence_digest",
+            "evidence_size_bytes",
+            "evidence_class"
+          ],
+          "properties": {
+            "outcome": {"const": "PASSED_EXTERNAL"},
+            "gate_id": {"enum": [
+              "STAGING_DEPLOYMENT",
+              "ROOTLESS_ISOLATION_ATTESTATION",
+              "DEFAULT_DENY_NETWORK_ATTESTATION",
+              "INDEPENDENT_VERIFICATION",
+              "ROLLBACK_AND_RESTORE_DRILL",
+              "DESIGN_PARTNER_ACCEPTANCE",
+              "SECURITY_AND_PRIVACY_REVIEW",
+              "OPERATIONS_SLO_SIGNOFF",
+              "LEGAL_TAX_PAYMENT_READINESS"
+            ]},
+            "evidence_uri": {
+              "type": "string",
+              "pattern": "^(?:file|cas|https|s3|gs|az)://[^\\s]+$"
+            },
+            "evidence_digest": {"$ref": "#/$defs/digest"},
+            "evidence_size_bytes": {"type": "integer", "minimum": 1},
+            "evidence_class": {"const": "EXTERNAL_NON_SYNTHETIC"}
+          }
+        }
+      ]
+    },
+    "executionPayload": {
+      "allOf": [
+        {"$ref": "#/$defs/gatePayloadBase"},
+        {
+          "type": "object",
+          "properties": {
+            "role": {"const": "spring-launch-evidence-executor"}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "verificationPayload": {
+      "allOf": [
+        {"$ref": "#/$defs/gatePayloadBase"},
+        {
+          "type": "object",
+          "required": ["execution_record_id", "execution_payload_digest"],
+          "properties": {
+            "role": {"const": "spring-launch-gate-verifier"},
+            "execution_record_id": {"$ref": "#/$defs/identity"},
+            "execution_payload_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "executionEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/executionPayload"}}}
+      ]
+    },
+    "verificationEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/verificationPayload"}}}
+      ]
+    },
+    "gate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "evidence",
+        "execution_attestation",
+        "verification_attestation"
+      ],
+      "properties": {
+        "id": {"type": "string"},
+        "status": {"const": "PASSED_EXTERNAL"},
+        "evidence": {"$ref": "#/$defs/evidenceReference"},
+        "execution_attestation": {"$ref": "#/$defs/executionEnvelope"},
+        "verification_attestation": {"$ref": "#/$defs/verificationEnvelope"}
+      }
+    },
+    "stagingGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "STAGING_DEPLOYMENT"}}}
+      ]
+    },
+    "rootlessGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "ROOTLESS_ISOLATION_ATTESTATION"}}}
+      ]
+    },
+    "networkGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "DEFAULT_DENY_NETWORK_ATTESTATION"}}}
+      ]
+    },
+    "verificationGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "INDEPENDENT_VERIFICATION"}}}
+      ]
+    },
+    "rollbackGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "ROLLBACK_AND_RESTORE_DRILL"}}}
+      ]
+    },
+    "partnerGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "DESIGN_PARTNER_ACCEPTANCE"}}}
+      ]
+    },
+    "securityGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "SECURITY_AND_PRIVACY_REVIEW"}}}
+      ]
+    },
+    "operationsGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "OPERATIONS_SLO_SIGNOFF"}}}
+      ]
+    },
+    "legalGate": {
+      "allOf": [
+        {"$ref": "#/$defs/gate"},
+        {"properties": {"id": {"const": "LEGAL_TAX_PAYMENT_READINESS"}}}
+      ]
+    },
+    "approvalPayload": {
+      "allOf": [
+        {"$ref": "#/$defs/commonPayload"},
+        {
+          "type": "object",
+          "required": ["approval_scope"],
+          "properties": {
+            "role": {"const": "spring-launch-release-approver"},
+            "outcome": {"const": "APPROVED"},
+            "approval_scope": {
+              "enum": ["RELEASE_AUTHORIZATION", "RISK_ACCEPTANCE"]
+            }
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "approvalEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/approvalPayload"}}}
+      ]
+    },
+    "partnerPayload": {
+      "allOf": [
+        {"$ref": "#/$defs/commonPayload"},
+        {
+          "type": "object",
+          "required": ["partner_organization_id"],
+          "properties": {
+            "role": {"const": "spring-launch-design-partner-approver"},
+            "outcome": {"const": "ACCEPTED"},
+            "partner_organization_id": {"$ref": "#/$defs/identity"}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "partnerEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/partnerPayload"}}}
+      ]
+    },
+    "reviewPayload": {
+      "allOf": [
+        {"$ref": "#/$defs/commonPayload"},
+        {
+          "type": "object",
+          "required": ["review_subject_digest"],
+          "properties": {
+            "role": {"const": "spring-launch-independent-reviewer"},
+            "outcome": {"const": "REVIEWED"},
+            "review_subject_digest": {"$ref": "#/$defs/digest"}
+          }
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "reviewEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/reviewPayload"}}}
+      ]
+    },
+    "indexPayload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "record_id",
+        "issued_at",
+        "expires_at",
+        "actor_id",
+        "organization_id",
+        "role",
+        "receipt_id",
+        "binding_digest",
+        "index_id",
+        "index_content_digest",
+        "index_content_size_bytes",
+        "outcome",
+        "synthetic",
+        "unknowns",
+        "not_run"
+      ],
+      "properties": {
+        "record_id": {"$ref": "#/$defs/identity"},
+        "issued_at": {"$ref": "#/$defs/utcInstant"},
+        "expires_at": {"$ref": "#/$defs/utcInstant"},
+        "actor_id": {"$ref": "#/$defs/identity"},
+        "organization_id": {"$ref": "#/$defs/identity"},
+        "role": {"const": "spring-launch-evidence-index-authority"},
+        "receipt_id": {"$ref": "#/$defs/identity"},
+        "binding_digest": {"$ref": "#/$defs/digest"},
+        "index_id": {"$ref": "#/$defs/identity"},
+        "index_content_digest": {"$ref": "#/$defs/digest"},
+        "index_content_size_bytes": {"type": "integer", "minimum": 1},
+        "outcome": {"const": "INDEX_AUTHENTICATED"},
+        "synthetic": {"const": false},
+        "unknowns": {"$ref": "#/$defs/emptyList"},
+        "not_run": {"$ref": "#/$defs/emptyList"}
+      }
+    },
+    "indexEnvelope": {
+      "allOf": [
+        {"$ref": "#/$defs/envelopeBase"},
+        {"properties": {"payload": {"$ref": "#/$defs/indexPayload"}}}
+      ]
+    },
+    "evidenceIndex": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["content", "attestation"],
+      "properties": {
+        "content": {"$ref": "#/$defs/contentReference"},
+        "attestation": {"$ref": "#/$defs/indexEnvelope"}
+      }
+    }
+  }
+}

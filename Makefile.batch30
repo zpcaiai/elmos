@@ -1,6 +1,7 @@
 UV ?= uv
 BATCH30_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 SPRING_ENV_FILE ?=
+ELMOS_ENV_FILE ?=
 SPRING_EXTERNAL_EVIDENCE ?=
 SPRING_TRUST_STORE ?=
 SPRING_TRUST_STORE_DIGEST ?=
@@ -27,6 +28,7 @@ spring-launch-validate: spring-runner-validate
 spring-launch-gate: spring-runner-validate
 	@test -n "$(SPRING_EXTERNAL_EVIDENCE)" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
 	@test -n "$(SPRING_ENV_FILE)" || (echo "SPRING_ENV_FILE=<owner-only spring.env> required" && exit 2)
+	@test -n "$(ELMOS_ENV_FILE)" || (echo "ELMOS_ENV_FILE=<actual owner-only Compose env file> required" && exit 2)
 	@test -n "$(SPRING_TRUST_STORE)" || (echo "SPRING_TRUST_STORE=<trust-store.json> required" && exit 2)
 	@test -n "$(SPRING_TRUST_STORE_DIGEST)" || (echo "SPRING_TRUST_STORE_DIGEST=sha256:<pinned digest> required" && exit 2)
 	@test -n "$(SPRING_EVIDENCE_ROOT)" || (echo "SPRING_EVIDENCE_ROOT=<approved-evidence-directory> required" && exit 2)
@@ -36,7 +38,8 @@ spring-launch-gate: spring-runner-validate
 	@test -n "$(SPRING_REGION)" || (echo "SPRING_REGION=<exact region identity> required" && exit 2)
 	@test -n "$(SPRING_ENVIRONMENT_CLASS)" || (echo "SPRING_ENVIRONMENT_CLASS=STAGING|PRODUCTION required" && exit 2)
 	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py \
-		--environment-file "$(SPRING_ENV_FILE)" --require-production-evidence \
+		--environment-file "$(SPRING_ENV_FILE)" \
+		--compose-environment-file "$(ELMOS_ENV_FILE)" --require-production-evidence \
 		--external-evidence "$(SPRING_EXTERNAL_EVIDENCE)" \
 		--trust-store "$(SPRING_TRUST_STORE)" \
 		--expected-trust-store-digest "$(SPRING_TRUST_STORE_DIGEST)" \

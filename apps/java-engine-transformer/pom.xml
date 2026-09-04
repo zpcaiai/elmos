@@ -5,6 +5,7 @@
   <artifactId>elmos-java-engine-transformer</artifactId>
   <dependencies>
     <dependency><groupId>io.elmos</groupId><artifactId>elmos-java-engine-worker</artifactId><version>${project.version}</version></dependency>
+    <dependency><groupId>io.elmos</groupId><artifactId>elmos-security</artifactId><version>${project.version}</version></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-actuator</artifactId></dependency>
     <dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-test</artifactId><scope>test</scope></dependency>

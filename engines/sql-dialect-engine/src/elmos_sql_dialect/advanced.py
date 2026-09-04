@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import Protocol, cast
+from typing import Protocol
 
 import sqlglot
 from sqlglot import exp

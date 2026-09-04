@@ -2,9 +2,8 @@ package io.elmos.worker;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.SpringHmacProtocol;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -51,9 +50,25 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
             ObjectMapper json,
             Clock clock
     ) {
+        this(workspaceRoot, brokerBaseUrl, secretFile, experimentalRoutesEnabled, json, clock, false);
+    }
+
+    /**
+     * Package-private transport escape hatch for loopback-only protocol tests.
+     * Production configuration always uses the HTTPS-only constructor above.
+     */
+    EphemeralSpringTransformationExecutionPort(
+            Path workspaceRoot,
+            URI brokerBaseUrl,
+            Path secretFile,
+            boolean experimentalRoutesEnabled,
+            ObjectMapper json,
+            Clock clock,
+            boolean allowLoopbackHttpForTests
+    ) {
         this.workspaceRoot = workspaceRoot.toAbsolutePath().normalize();
-        this.endpoint = endpoint(brokerBaseUrl);
-        this.secret = readSecret(secretFile);
+        this.endpoint = endpoint(brokerBaseUrl, allowLoopbackHttpForTests);
+        this.secret = SpringHmacProtocol.readSecret(secretFile, "transformation broker");
         this.experimentalRoutesEnabled = experimentalRoutesEnabled;
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
@@ -254,7 +269,8 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
                 .header("Accept", "application/json")
                 .header("X-ELMOS-Transformer-Timestamp", timestamp)
                 .header("X-ELMOS-Transformer-Nonce", nonce)
-                .header("X-ELMOS-Transformer-Signature", sign(secret, timestamp, nonce, body))
+                .header("X-ELMOS-Transformer-Signature", SpringHmacProtocol.sign(
+                        secret, SpringHmacProtocol.Role.TRANSFORMER, timestamp, nonce, body))
                 .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                 .build();
     }
@@ -327,32 +343,30 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
         }
     }
 
-    private static URI endpoint(URI base) {
+    private static URI endpoint(URI base, boolean allowLoopbackHttpForTests) {
         Objects.requireNonNull(base);
-        if (!List.of("http", "https").contains(base.getScheme())
+        boolean https = "https".equalsIgnoreCase(base.getScheme());
+        boolean testLoopbackHttp = allowLoopbackHttpForTests
+                && "http".equalsIgnoreCase(base.getScheme())
+                && loopbackHost(base.getHost());
+        if (!base.isAbsolute()
+                || (!https && !testLoopbackHttp)
                 || base.getHost() == null
                 || base.getUserInfo() != null
                 || base.getQuery() != null
                 || base.getFragment() != null) {
-            throw new IllegalArgumentException("transformation broker base URL is invalid");
+            throw new IllegalArgumentException(
+                    "transformation broker base URL must use absolute HTTPS");
         }
         String normalized = base.toString().endsWith("/") ? base.toString() : base + "/";
         return URI.create(normalized).resolve("internal/v1/spring-transformations");
     }
 
-    private static byte[] readSecret(Path path) {
-        try {
-            if (!Files.isRegularFile(path) || Files.isSymbolicLink(path)) {
-                throw new IllegalStateException("transformation broker HMAC secret file is unavailable");
-            }
-            byte[] raw = Files.readAllBytes(path);
-            if (raw.length > 4096) throw new IllegalStateException("transformation broker HMAC secret is too large");
-            byte[] value = new String(raw, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-            if (value.length < 32) throw new IllegalStateException("transformation broker HMAC secret must contain at least 32 bytes");
-            return value;
-        } catch (IOException error) {
-            throw new IllegalStateException("transformation broker HMAC secret file could not be read", error);
-        }
+    private static boolean loopbackHost(String host) {
+        return host != null && ("localhost".equalsIgnoreCase(host)
+                || "127.0.0.1".equals(host)
+                || "::1".equals(host)
+                || "[::1]".equals(host));
     }
 
     private static String sha256(Path path) {
@@ -367,19 +381,6 @@ final class EphemeralSpringTransformationExecutionPort implements SpringUpgradeE
         } catch (Exception error) {
             throw blocked("TRANSFORM_ARTIFACT_DIGEST_UNAVAILABLE",
                     "Transformation Artifact digest could not be calculated.");
-        }
-    }
-
-    private static String sign(byte[] secret, String timestamp, String nonce, byte[] body) {
-        try {
-            String bodySha = HexFormat.of().formatHex(
-                    MessageDigest.getInstance("SHA-256").digest(body));
-            Mac mac = Mac.getInstance("HmacSHA256");
-            mac.init(new SecretKeySpec(secret, "HmacSHA256"));
-            return HexFormat.of().formatHex(mac.doFinal(
-                    (timestamp + "\n" + nonce + "\n" + bodySha).getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception error) {
-            throw new IllegalStateException("transformation request signing failed", error);
         }
     }
 

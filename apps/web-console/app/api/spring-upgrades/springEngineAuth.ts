@@ -15,6 +15,8 @@ const requestPathPattern = new RegExp(
 );
 const organizationPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
 const actorPattern = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,199}$/;
+const authenticationProtocol = "ELMOS-SPRING-ENGINE-HMAC-V1";
+const authenticationRole = "ENGINE";
 
 type SignInput = {
   method: string;
@@ -48,6 +50,8 @@ export function signSpringEngineRequest(input: SignInput) {
   }
   const bodySha256 = sha256(input.body);
   const canonical = [
+    authenticationProtocol,
+    authenticationRole,
     String(input.timestamp),
     input.nonce,
     method,
@@ -117,6 +121,7 @@ function configuredSecret(): Buffer {
       throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED");
     }
     const secret = readFileSync(/*turbopackIgnore: true*/ descriptor);
+    const decodedSecret = secret.toString("utf8");
     const completed = fstatSync(descriptor);
     const pathAfter = lstatSync(configured);
     if (
@@ -137,6 +142,8 @@ function configuredSecret(): Buffer {
       || pathAfter.gid !== details.gid
       || pathAfter.nlink !== details.nlink
       || pathAfter.size !== details.size
+      || !Buffer.from(decodedSecret, "utf8").equals(secret)
+      || /^\s|\s$/u.test(decodedSecret)
     ) {
       throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED");
     }

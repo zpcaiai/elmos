@@ -44,6 +44,7 @@ elmos:
       ingress-auth-enabled: ${ELMOS_SPRING_ENGINE_AUTH_ENABLED:false}
       ingress-auth-secret-file: ${ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE:}
       ingress-auth-window-seconds: ${ELMOS_SPRING_ENGINE_AUTH_WINDOW_SECONDS:60}
+      ingress-auth-replay-root: ${ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT:}
       source-java-home: ${ELMOS_SOURCE_JAVA_HOME:/opt/java/openjdk-17}
       target-java-home: ${ELMOS_TARGET_JAVA_HOME:/opt/java/openjdk}
       java-homes: ${ELMOS_SPRING_UPGRADE_JAVA_HOMES:}

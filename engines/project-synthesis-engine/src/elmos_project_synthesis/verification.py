@@ -768,7 +768,7 @@ def _probe(
         daemon=True,
     )
     reader.start()
-    if not 5 <= startup_timeout_seconds <= 180:
+    if not 5 <= startup_timeout_seconds <= 300:
         raise ValueError("STARTUP_TIMEOUT_OUT_OF_RANGE")
     deadline = time.monotonic() + startup_timeout_seconds
     status = "FAILED"
@@ -1285,7 +1285,7 @@ def runtime_commands(
                         **_toolchain_environment("kotlin"),
                     },
                     "port": port,
-                    "startup_timeout_seconds": 180,
+                    "startup_timeout_seconds": 300,
                     **execution,
                 }
             )

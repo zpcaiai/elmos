@@ -10,7 +10,7 @@
     "installed_manifest": "sha256:be67c0853fed09a30b9a7e218462e1e1dfb3eaead32b191d9e91c030a00f9c6b",
     "orchestrator_registry": "sha256:212a88ffcecbbc334ca9cf7f42bba4d27cec2778067fe5d9840f708630755860",
     "runtime_code": {
-      "scripts/precision_migration/adapters.py": "sha256:8342c98edb3f508ca905916f1299940bdf6b6fab5c84c1147e526b6a2f5571a9",
+      "scripts/precision_migration/adapters.py": "sha256:2739f6b3ce787d1a9a9fdb1bd0ada9d6d2d24657344f0b4ffb0205a618fbfe43",
       "scripts/precision_migration/check_external_readiness.py": "sha256:2bdfda363373cb028c10aeef4777b38aa675fef0a11cbc7851cb0414410a1745",
       "scripts/precision_migration/exact.py": "sha256:92bd9633b742ff6d45a69aa9022be8dfeaeacb0dd8a496a458fddab709f612aa",
       "scripts/precision_migration/external.py": "sha256:d34811a2f3ef61a103a9b7623f154c7e3331690bc32a6f31b7b5b5a750ef41b7",
