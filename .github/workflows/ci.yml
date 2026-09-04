@@ -349,22 +349,27 @@ jobs:
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Prepare exact Apple route host
         run: scripts/toolchains/prepare_apple_route_ci_host.sh
-      - name: Capture non-certifying Apple route host identity
-        run: |
-          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
-          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
-            | tee "${diagnostic}"
-          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
-            --verify-jsonl "${diagnostic}"
-      - name: Provision digest-bound route toolchains
-        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
-      - name: Install locked tools
+      - name: Install locked diagnostic runtime
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           uv python install 3.12.12
           printf '%s\n' \
             "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv" \
             >>"${GITHUB_ENV}"
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
+      - name: Capture non-certifying Apple route host identity
+        run: |
+          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            | tee "${diagnostic}"
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+              --verify-jsonl "${diagnostic}"
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked tools
+        run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           # The native Rust analyzer executes with --offline --locked so a

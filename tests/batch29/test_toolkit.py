@@ -886,6 +886,48 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
 
 
 class ToolkitTests(unittest.TestCase):
+    def test_non_apple_ci_profile_does_not_claim_an_unsealed_xcode_tree(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "GITHUB_ACTIONS": "true",
+                    "RUNNER_ENVIRONMENT": "github-hosted",
+                    "ImageOS": "macos26",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile"
+            ) as selector,
+        ):
+            self.assertIsNone(validator._selected_swift_host_profile())
+            selector.assert_not_called()
+
+    def test_partial_apple_sealing_claim_still_reaches_strict_selector(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile",
+                side_effect=RuntimeError("partial Apple host claim"),
+            ) as selector,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
+                validator._selected_swift_host_profile()
+            selector.assert_called_once_with("swift")
+
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
         maximum = validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES

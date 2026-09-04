@@ -67,8 +67,8 @@ _PORTABLE_ROOT_MARKER = "<polyglot-toolchain-root>"
 _PORTABLE_JAVA_HOME_MARKER = "<java21-home>"
 
 
-def _portable_kotlin_value(value: str, root: Path) -> str:
-    """Tokenize only the governed Kotlin install root, preserving all digests."""
+def _portable_toolchain_value(value: str, root: Path) -> str:
+    """Tokenize the governed install root while preserving all content facts."""
 
     root_text = os.fspath(root)
     if value == root_text:
@@ -83,16 +83,16 @@ def _portable_toolchain_record(language: str) -> dict[str, Any]:
         raise RouteError(f"EXACT_TOOLCHAIN_LANGUAGE_DRIFT:{language}")
     value = asdict(toolchain)
     value["profile"] = list(toolchain.profile)
+    root = configured_polyglot_toolchain_root()
+    for field in ("executable", "auxiliary"):
+        raw = value.get(field)
+        if isinstance(raw, str):
+            value[field] = _portable_toolchain_value(raw, root)
+    value["profile"] = [
+        _portable_toolchain_value(item, root)
+        for item in value["profile"]
+    ]
     if language == "kotlin":
-        root = configured_polyglot_toolchain_root()
-        for field in ("executable", "auxiliary"):
-            raw = value.get(field)
-            if isinstance(raw, str):
-                value[field] = _portable_kotlin_value(raw, root)
-        value["profile"] = [
-            _portable_kotlin_value(item, root)
-            for item in value["profile"]
-        ]
         if "kotlin-jvm-distribution=temurin" in value["profile"]:
             jvm_homes = [
                 item.removeprefix("kotlin-jvm-home=")

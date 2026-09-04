@@ -253,8 +253,21 @@ write_rust_wrapper() {
   printf '%s\n' \
     '#!/bin/sh' \
     'set -eu' \
-    'wrapper_path="$(/usr/bin/realpath "$0")"' \
+    'wrapper_path="$0"' \
+    'case "${wrapper_path}" in' \
+    '  */*) ;;' \
+    '  *) wrapper_path="$(command -v "${wrapper_path}")" ;;' \
+    'esac' \
+    'while [ -L "${wrapper_path}" ]; do' \
+    '  wrapper_dir="${wrapper_path%/*}"' \
+    '  link_target="$(/usr/bin/readlink "${wrapper_path}")"' \
+    '  case "${link_target}" in' \
+    '    /*) wrapper_path="${link_target}" ;;' \
+    '    *) wrapper_path="${wrapper_dir}/${link_target}" ;;' \
+    '  esac' \
+    'done' \
     'wrapper_dir="${wrapper_path%/*}"' \
+    'wrapper_dir="$(CDPATH= cd -P -- "${wrapper_dir}" && pwd)"' \
     'toolchain_root="${wrapper_dir%/*}"' \
     'export RUSTUP_HOME="${toolchain_root}/rustup"' \
     'export CARGO_HOME="${toolchain_root}/cargo"' \

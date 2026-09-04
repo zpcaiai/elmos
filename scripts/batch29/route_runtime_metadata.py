@@ -472,18 +472,18 @@ EXACT_TOOLCHAIN_VERSIONS: dict[str, str] = {
 
 # SHA-256 over each complete portable ExactToolchain record, including its
 # language, exact version, executable and auxiliary identities, full ordered
-# profile, and executable digests. Kotlin paths below its governed shared
-# install root use ``<polyglot-toolchain-root>``; moving the same byte-identical
-# pinned tree between approved absolute roots therefore preserves the record,
+# profile, and executable digests. Paths below the governed shared install root
+# use ``<polyglot-toolchain-root>``; moving the same byte-identical pinned tree
+# between approved absolute roots therefore preserves the record,
 # while a relative path, path escape, profile edit, executable replacement,
 # tree change, JAR change, JVM change, or auxiliary drift still changes it.
 EXACT_TOOLCHAIN_RECORD_SHA256: dict[str, str] = {
     "java": "5c7afc06a2fa1a92d4bcc4034773f77c78df623d89b451f154cadbb16f92c32e",
-    "python": "89df5dba5da1068ce01811c66e566c718d8d42290a45bae3322aa81152737151",
+    "python": "acdff16bd2346436e74f896082eebc2ad7e60e0786f821033c84551f8729c136",
     "csharp": "9568b7bf8845e3f99e4231f861c89fc28339d1149ea20cb36a99eab7b02505ba",
     "typescript": "0625eeaddd20bec8a42762d2551d243e9baa0a1b03cf221c48e9569899715cd4",
-    "go": "68148dfcead6e11f0d85ea6e9fd22e5e1fed88a8ce18e5f547818e023653f6b6",
-    "rust": "22bb7330b6dccb7b6a0d5dac9dfd54b1d502560a00c106fcf885583cb3106cd3",
+    "go": "69db95b0f07ad243db976191853dad3c0597c97a1724bf950f576e883c3c13f6",
+    "rust": "a2e04542e74dc03c0d01b45add0f09d6189af4f812a5243e2de108daec07f1ec",
     "cpp": "5640f0ce9e65fd7d4a5616f8754f7511c9ddb06d9c90cd6d1ec2a199f017966b",
     "objc": "fbb108ab8528c620f48ec4a12bcde14d284d625b6667493f78ef20ecda63463d",
     "swift": "4f672b92ce63ea95cb8b4cc115f6ca496b3f06aac8de21020e548373ac4a4057",
@@ -553,7 +553,7 @@ def exact_toolchain_contract_sha256() -> str:
 # edits to any version, record hash, language order, or deprecated language fail
 # closed until the complete contract is intentionally re-pinned.
 EXACT_TOOLCHAIN_CONTRACT_SHA256 = (
-    "400375091dc41819a2c6588e596ae337d75d1ae6d92d56f4dddc83f1d2702be3"
+    "240d5ea692ed86248e0d673bea01553754209ef47c186c476ce71f64e9986adc"
 )
 
 

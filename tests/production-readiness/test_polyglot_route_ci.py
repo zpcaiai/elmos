@@ -578,9 +578,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         core_partition = route_engine_job.index(
             "all_test_files = sorted(tests_root.rglob(\"test_*.py\"))"
         )
-        apple_diagnostic = route_engine_job.index(
-            "python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py"
+        diagnostic_command = (
+            "python -I -B scripts/toolchains/diagnose_apple_route_ci.py"
         )
+        apple_diagnostic = route_engine_job.index(diagnostic_command)
         host_preparation = route_engine_job.index(
             "scripts/toolchains/prepare_apple_route_ci_host.sh"
         )
@@ -595,12 +596,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertLess(route_sync, closure_tests)
         self.assertLess(closure_tests, core_partition)
         self.assertLess(host_preparation, apple_diagnostic)
+        self.assertLess(route_sync, apple_diagnostic)
         self.assertLess(apple_diagnostic, route_provision)
         self.assertLess(apple_diagnostic, closure_tests)
         self.assertEqual(
-            route_workers.count(
-                "python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py"
-            ),
+            route_workers.count(diagnostic_command),
             2,
         )
         self.assertEqual(route_workers.count("--verify-jsonl"), 1)

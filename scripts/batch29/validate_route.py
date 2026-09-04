@@ -1151,9 +1151,26 @@ SWIFT_BUILD_CLOSURE_TREE_SPECS = (
 
 
 def _selected_swift_host_profile() -> Any | None:
-    """Use the engine's one-shot host selector when validating on Apple CI."""
+    """Use the engine's one-shot host selector when Apple sealing was requested.
+
+    Some non-Apple route packs run on GitHub macOS only to reuse the exact Java
+    and Python closure.  ``ImageVersion`` identifies that host but does not, by
+    itself, claim that the Xcode tree was physically sealed.  Only consume the
+    Apple profile when the preparation step declared at least one sealing fact;
+    a partial or incorrect declaration still reaches the strict selector and
+    fails closed.
+    """
 
     if platform.system() != "Darwin":
+        return None
+    if os.environ.get("ImageVersion", "").strip() and not any(
+        key in os.environ
+        for key in (
+            "ELMOS_APPLE_ROUTE_XCODE_SEALED",
+            "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL",
+            "ELMOS_APPLE_ROUTE_XCODE_TREE_IDENTITY",
+        )
+    ):
         return None
     try:
         from elmos_polyglot_route.toolchains import (  # type: ignore[import-not-found]

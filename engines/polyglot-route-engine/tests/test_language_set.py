@@ -227,6 +227,50 @@ def test_exact_toolchain_receipt_uses_the_engine_language_tuple() -> None:
     assert module.EXPECTED_ACTIVE_LANGUAGES == ROUTED_LANGUAGES
 
 
+@pytest.mark.parametrize("language", ("python", "go", "rust", "kotlin"))
+def test_receipt_identity_tokenizes_every_governed_install_root(
+    language: str,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    receipt_tool = ENGINE_ROOT / "tools" / "runtime_toolchain_receipt.py"
+    spec = importlib.util.spec_from_file_location(
+        f"elmos_runtime_toolchain_receipt_{language}_portability",
+        receipt_tool,
+    )
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    root = (tmp_path / "toolchains").resolve()
+    executable = root / language / "bin" / language
+    auxiliary = root / language / "lib" / f"lib{language}.dylib"
+    original = module.exact_toolchain("kotlin")
+    relocated = replace(
+        original,
+        language=language,
+        executable=str(executable),
+        auxiliary=str(auxiliary),
+        profile=(f"{language}-root={root / language}", "content-sha256=" + "a" * 64),
+    )
+    monkeypatch.setattr(module, "exact_toolchain", lambda selected: relocated)
+    monkeypatch.setattr(
+        module,
+        "configured_polyglot_toolchain_root",
+        lambda: root,
+    )
+
+    record = module._portable_toolchain_record(language)
+
+    serialized = json.dumps(record, sort_keys=True)
+    assert str(root) not in serialized
+    assert record["executable"].startswith("<polyglot-toolchain-root>/")
+    assert record["auxiliary"].startswith("<polyglot-toolchain-root>/")
+    assert record["profile"][0].startswith(
+        f"{language}-root=<polyglot-toolchain-root>/"
+    )
+
+
 def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,

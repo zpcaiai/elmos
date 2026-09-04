@@ -2,12 +2,20 @@ from __future__ import annotations
 
 import copy
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from elmos_polyglot_route import toolchains
 from elmos_polyglot_route.models import RouteError
+
+PROJECT_TOOLCHAIN_INSTALLER = (
+    toolchains.REPOSITORY_ROOT
+    / "scripts"
+    / "toolchains"
+    / "install_project_synthesis_toolchains.sh"
+)
 
 
 def _tree_identity(
@@ -26,6 +34,56 @@ def _tree_identity(
         "directory_count": directory_count,
         "bytes": byte_count,
     }
+
+
+def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("write_rust_wrapper() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    assert "/usr/bin/realpath" not in function
+
+    root = tmp_path / "root"
+    cargo_bin = root / "cargo" / "bin"
+    wrappers = root / "bin"
+    public = tmp_path / "public"
+    cargo_bin.mkdir(parents=True)
+    wrappers.mkdir()
+    public.mkdir()
+    probe = cargo_bin / "rustc"
+    probe.write_text(
+        '#!/bin/sh\nprintf "%s|%s\\n" "$RUSTUP_HOME" "$CARGO_HOME"\n',
+        encoding="utf-8",
+    )
+    probe.chmod(0o755)
+    subprocess.run(
+        ["/bin/bash", "-c", function + '\nwrite_rust_wrapper "$1" rustc', "bash", str(root)],
+        check=True,
+    )
+    public_wrapper = public / "rustc"
+    public_wrapper.symlink_to(Path("../root/bin/rustc"))
+    expected = f"{root}/rustup|{root}/cargo"
+    restricted_environment = {"PATH": "/usr/bin:/bin"}
+
+    direct = subprocess.run(
+        [str(wrappers / "rustc")],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+    linked = subprocess.run(
+        [str(public_wrapper)],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+
+    assert direct.stdout.strip() == expected
+    assert linked.stdout.strip() == expected
 
 
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
