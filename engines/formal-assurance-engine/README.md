@@ -49,6 +49,13 @@ content-addressed. The telemetry service stores only bounded, scope-isolated
 labels and allows external export only through an explicitly configured HTTPS
 exporter.
 
+The optional native HMAC/Merkle accelerator is never auto-discovered. A host
+must construct `NativeAttestationBridge` with an absolute library path and its
+exact SHA-256. The bridge rejects unsafe or mutable library identities and
+independently recomputes every payload digest, HMAC and Merkle root before it
+returns a result. Its signer remains `LOCAL_EXECUTED_SELF_ATTESTED`; an absent
+configuration remains `NOT_RUN` and cannot become external attestation.
+
 The runtime binds every request to a trusted tenant/project scope, immutable
 source/target/environment digests, an idempotency key, an append-only event
 chain and (when configured) a tenant-isolated content-addressed artifact store.
@@ -76,14 +83,16 @@ make formal-assurance-kernel-qualify
 ```
 
 For an operator-managed CLI deployment, provide durable state/artifact roots,
-a private (mode `0600`) permit key file, and a complete digest-pinned toolchain
-registry. A separate private key may be supplied for local evidence-bundle
-signing:
+a private (mode `0600`) artifact-encryption key and key identifier, a private
+(mode `0600`) permit key file, and a complete digest-pinned toolchain registry.
+A separate private key may be supplied for local evidence-bundle signing:
 
 ```sh
 elmos-formal-assurance \
   --state /var/lib/elmos/formal-assurance.sqlite3 \
   --artifact-root /var/lib/elmos/formal-artifacts \
+  --artifact-encryption-key-file /run/secrets/elmos-formal-artifact-encryption-key \
+  --artifact-encryption-key-id local-artifact-kek-v1 \
   --execution-root /var/lib/elmos/formal-executions \
   --permit-key-file /run/secrets/elmos-formal-permit-key \
   --bundle-signing-key-file /run/secrets/elmos-formal-bundle-key \
@@ -110,3 +119,8 @@ engineering evidence only. External signing, independent replay, exact
 production-provider runs, customer golden routes, deployment evidence and
 certification remain explicit `NOT_RUN` / `NOT_CERTIFIED` states until their
 named evidence actually exists.
+
+Python dependencies for this engine are resolved from the committed
+`engines/formal-assurance-engine/uv.lock`; the Make targets use that project in
+locked mode so a workstation's global site packages cannot satisfy a missing
+runtime dependency implicitly.

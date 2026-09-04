@@ -147,12 +147,22 @@ def probe(executable: str, args: tuple[str, ...]) -> dict[str, Any]:
 
 
 def implementation_files() -> list[Path]:
+    generated_directory_names = {
+        ".mypy_cache",
+        ".pytest_cache",
+        ".ruff_cache",
+        ".venv",
+        "__pycache__",
+    }
     files = [
         path
         for path in ENGINE.rglob("*")
         if path.is_file()
         and not path.is_symlink()
-        and "__pycache__" not in path.parts
+        and not any(
+            part in generated_directory_names or part.endswith(".egg-info")
+            for part in path.parts
+        )
         and not path.name.endswith((".pyc", ".pyo"))
     ]
     files.extend(
