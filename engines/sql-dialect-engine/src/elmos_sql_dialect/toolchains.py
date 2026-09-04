@@ -3,6 +3,7 @@ pattern: certified-ddl-v1's parse/emit/round-trip-validate proof was captured
 against one exact sqlglot release. A different release could parse or
 generate differently; this module fails closed rather than silently trusting
 whatever version happens to be installed."""
+
 from __future__ import annotations
 
 import sqlglot

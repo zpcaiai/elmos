@@ -56,7 +56,7 @@ makefile-portability-check:
 	python3 scripts/operations/validate_makefile_portability.py
 model-catalog-check:
 	python3 scripts/operations/validate_model_catalog.py
-production-readiness-check: business-line-contracts chinadb-commercial-migration-skills sql-transpiler batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web operations-scripts-test
+production-readiness-check: business-line-contracts chinadb-commercial-migration-skills sql-transpiler b31-all-packs-check batch45-check project-synthesis batch97-104-skills product-batch56-skills product-closure-convergence-skills web operations-scripts-test
 	$(UV) run --quiet --with pyyaml python tooling/validate_runtime_operability.py
 	$(UV) run --quiet --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
 # The modernization-proof release scripts carry their unit tests next to the code

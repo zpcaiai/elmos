@@ -1,7 +1,30 @@
 {
   "coverage": 1.0,
   "discovery_mode": "disposable-synthetic-sqlite",
+  "engine_facts": {
+    "edition": "public-domain",
+    "engine": "sqlite",
+    "version": "3.53.3"
+  },
+  "object_counts": {
+    "indexes": 1,
+    "rows": 3,
+    "tables": 1
+  },
   "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
+  "runtime_workload": {
+    "jobs": [],
+    "locks": [
+      "transaction-rollback"
+    ],
+    "plans": [
+      "source-query-plan"
+    ],
+    "top_queries": [
+      "query:tenant-orders"
+    ]
+  },
   "schema_version": 1,
-  "snapshot_digest": "sha256:9b7defefdecca924c8fa34d25b378bbc6df29854d4b96c57b07f570f56129065"
+  "snapshot_digest": "sha256:9b7defefdecca924c8fa34d25b378bbc6df29854d4b96c57b07f570f56129065",
+  "unknowns": []
 }

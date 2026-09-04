@@ -7,6 +7,7 @@ this module is where that becomes a structured, evidence-carrying report
 instead of an uncaught exception -- mirroring `engines/polyglot-route-engine`'s
 `RouteError` -> `{"status": "BLOCKED", "reason": ...}` convention.
 """
+
 from __future__ import annotations
 
 from collections.abc import Mapping
@@ -99,11 +100,29 @@ def translate_ddl(
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
-        "TABLE", "INDEX", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "ALTER", "DROP", "SCHEMA", "RLS", "FUNCTION", "PROCEDURE", "TRIGGER",
-        "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY", "DO",
+        "TABLE",
+        "INDEX",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+        "TRUNCATE",
+        "ALTER",
+        "DROP",
+        "SCHEMA",
+        "RLS",
+        "FUNCTION",
+        "PROCEDURE",
+        "TRIGGER",
+        "VIEW",
+        "COMMENT",
+        "GRANT",
+        "REVOKE",
+        "POLICY",
+        "DO",
     ):
         raise RouteError(
-            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, UPDATE, DELETE, TRUNCATE, ALTER, DROP, "
+            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, UPDATE, "
+            "DELETE, TRUNCATE, ALTER, DROP, "
             "SCHEMA, RLS, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
         )
     profile = {
@@ -154,18 +173,14 @@ def translate_ddl(
                 parser.parse_update(sql, source, active_namespace_map, update_catalog), target
             )
         elif statement_kind == "DELETE":
-            emitted = emitter.emit_delete(
-                parser.parse_delete(sql, source, active_namespace_map), target
-            )
+            emitted = emitter.emit_delete(parser.parse_delete(sql, source, active_namespace_map), target)
         elif statement_kind == "TRUNCATE":
             emitted = emitter.emit_truncate_table(
                 parser.parse_truncate_table(sql, source, active_namespace_map), target
             )
         elif statement_kind == "ALTER":
             emitted = emitter.emit_alter_table(
-                parser.parse_alter_table(
-                    sql, source, active_namespace_map, allow_alter_column=(catalog is not None)
-                ),
+                parser.parse_alter_table(sql, source, active_namespace_map, allow_alter_column=(catalog is not None)),
                 target,
                 catalog,
             )
@@ -258,13 +273,21 @@ def translate_ddl(
         "sourceDialect": source.value,
         "targetDialect": target.value,
         "namespaceProfile": None if active_namespace_profile is None else active_namespace_profile.to_dict(),
-        "reasonCode": None if status == "PASSED" else (
-            "CERTIFIED_ALTER_TARGET_VALIDATION_FAILED" if statement_kind == "ALTER"
-            else "CERTIFIED_DROP_TARGET_VALIDATION_FAILED" if statement_kind == "DROP"
-            else "CERTIFIED_SCHEMA_TARGET_VALIDATION_FAILED" if statement_kind == "SCHEMA"
-            else "CERTIFIED_VIEW_TARGET_VALIDATION_FAILED" if statement_kind == "VIEW"
-            else "CERTIFIED_COMMENT_TARGET_VALIDATION_FAILED" if statement_kind == "COMMENT"
-            else "CERTIFIED_PRIVILEGE_TARGET_VALIDATION_FAILED" if statement_kind in ("GRANT", "REVOKE")
+        "reasonCode": None
+        if status == "PASSED"
+        else (
+            "CERTIFIED_ALTER_TARGET_VALIDATION_FAILED"
+            if statement_kind == "ALTER"
+            else "CERTIFIED_DROP_TARGET_VALIDATION_FAILED"
+            if statement_kind == "DROP"
+            else "CERTIFIED_SCHEMA_TARGET_VALIDATION_FAILED"
+            if statement_kind == "SCHEMA"
+            else "CERTIFIED_VIEW_TARGET_VALIDATION_FAILED"
+            if statement_kind == "VIEW"
+            else "CERTIFIED_COMMENT_TARGET_VALIDATION_FAILED"
+            if statement_kind == "COMMENT"
+            else "CERTIFIED_PRIVILEGE_TARGET_VALIDATION_FAILED"
+            if statement_kind in ("GRANT", "REVOKE")
             else "CERTIFIED_ROUTINE_TARGET_VALIDATION_FAILED"
             if statement_kind in ("FUNCTION", "PROCEDURE", "TRIGGER")
             else "CERTIFIED_DDL_TARGET_VALIDATION_FAILED"

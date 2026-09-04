@@ -1,7 +1,15 @@
 {
   "checks": {
+    "backfill_checkpoint": {
+      "last_primary_key": 3,
+      "rows_loaded": 3,
+      "source_digest": "sha256:ec76f4b5b7b402b24b269b0f7a87368de7b925ceedbb3132b2235db63aa29cbb"
+    },
     "backup_restore_reconciliation": true,
     "cleanup_completed": true,
+    "initial_backfill_reconciliation": true,
+    "offline_cutover_rehearsal": true,
+    "offline_delete_delta_propagation": true,
     "row_level_reconciliation": true,
     "source_negative_constraint": true,
     "source_query_plan": [
@@ -12,6 +20,7 @@
         "SEARCH work_orders USING INDEX idx_work_orders_tenant_created (tenant_id=?)"
       ]
     ],
+    "source_read_only_session_rejects_write": true,
     "source_rows": [
       [
         "1",
@@ -24,12 +33,6 @@
         "tenant-a",
         "500",
         "2026-07-26T02:00:00+00:00"
-      ],
-      [
-        "3",
-        "tenant-b",
-        "9999",
-        "2026-07-26T03:00:00+00:00"
       ]
     ],
     "source_transaction_rollback": true,
@@ -54,12 +57,6 @@
         "tenant-a",
         "500",
         "2026-07-26T02:00:00+00:00"
-      ],
-      [
-        "3",
-        "tenant-b",
-        "9999",
-        "2026-07-26T03:00:00+00:00"
       ]
     ],
     "target_transaction_rollback": true,

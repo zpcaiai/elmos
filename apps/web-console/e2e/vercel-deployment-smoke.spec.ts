@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
-const routes = ["/", "/frontend", "/capabilities", "/help"] as const;
+const routes = ["/", "/frontend", "/capabilities", "/migration/sql", "/help"] as const;
 
 test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];
@@ -31,6 +31,33 @@ test("deployed console renders its critical public routes", async ({ page }, tes
     boundary: "DEPLOYMENT_SURFACE_ONLY_NOT_PRODUCTION_CERTIFICATION",
   }, null, 2)}\n`, "utf8");
   await testInfo.attach("deployment-surface", { path: reportPath, contentType: "application/json" });
+});
+
+test("SQL preflight deployment routes exist and fail closed", async ({ request }, testInfo) => {
+  const capabilities = await request.get("/api/capabilities/database-sql");
+  expect(capabilities.status(), "SQL capabilities route must be deployed, not missing").not.toBe(404);
+  expect([200, 401, 403, 503]).toContain(capabilities.status());
+
+  const assessment = await request.post("/api/database-sql/preflight", {
+    data: {},
+    headers: { "content-type": "application/json" },
+  });
+  expect(assessment.status(), "SQL preflight route must be deployed, not missing").not.toBe(404);
+  expect([400, 401, 403, 413, 422, 503]).toContain(assessment.status());
+
+  const reportPath = testInfo.outputPath("sql-preflight-surface.json");
+  await writeFile(reportPath, `${JSON.stringify({
+    schemaVersion: "1.0",
+    kind: "VERCEL_SQL_PREFLIGHT_SURFACE_SMOKE",
+    capabilitiesStatus: capabilities.status(),
+    assessmentStatus: assessment.status(),
+    boundary: "ROUTE_EXISTENCE_AND_FAIL_CLOSED_ONLY",
+    sourceExecution: "NOT_RUN",
+    targetExecution: "NOT_RUN",
+    independentVerification: "NOT_RUN",
+    certification: "NOT_CERTIFIED",
+  }, null, 2)}\n`, "utf8");
+  await testInfo.attach("sql-preflight-surface", { path: reportPath, contentType: "application/json" });
 });
 
 test("health reports readiness honestly and never upgrades blocked dependencies", async ({ page }, testInfo) => {

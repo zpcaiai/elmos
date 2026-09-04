@@ -43,8 +43,7 @@ class _CommentCatalog:
 
 def test_namespace_map_preserves_qualified_table_and_reference_names() -> None:
     report = translate_ddl(
-        "CREATE TABLE app.users (id INT PRIMARY KEY, org_id INT, "
-        "FOREIGN KEY (org_id) REFERENCES app.orgs (id))",
+        "CREATE TABLE app.users (id INT PRIMARY KEY, org_id INT, FOREIGN KEY (org_id) REFERENCES app.orgs (id))",
         "postgres",
         "mysql",
         namespace_map={"app": "tenant"},
@@ -110,8 +109,7 @@ def test_function_comment_does_not_fall_back_to_table_metadata_on_mysql() -> Non
 def test_mysql_zero_argument_function_comment_uses_proven_identity() -> None:
     catalog = SourceSchemaCatalog()
     identity = parse_routine_identity(
-        "CREATE FUNCTION elmos_sync_payment_order_directory() RETURNS varchar "
-        "LANGUAGE sql AS 'SELECT NULL'",
+        "CREATE FUNCTION elmos_sync_payment_order_directory() RETURNS varchar LANGUAGE sql AS 'SELECT NULL'",
         Dialect.POSTGRES,
         {"": "dbo"},
     )
@@ -130,8 +128,7 @@ def test_mysql_zero_argument_function_comment_uses_proven_identity() -> None:
 def test_mysql_function_comment_keeps_unbounded_numeric_as_identity_only() -> None:
     catalog = SourceSchemaCatalog()
     identity = parse_routine_identity(
-        "CREATE FUNCTION elmos_wallet_post_entry(p_amount numeric) RETURNS varchar "
-        "LANGUAGE sql AS 'SELECT NULL'",
+        "CREATE FUNCTION elmos_wallet_post_entry(p_amount numeric) RETURNS varchar LANGUAGE sql AS 'SELECT NULL'",
         Dialect.POSTGRES,
         {"": "dbo"},
     )
@@ -361,8 +358,7 @@ def test_view_is_translated_as_a_typed_query_not_a_text_replacement() -> None:
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_bounded_out_parameter_procedure_has_a_target_route(target: str) -> None:
     report = translate_ddl(
-        "CREATE PROCEDURE increment(IN x INT, OUT y INT) LANGUAGE SQL "
-        "AS $$ SET y = x + 1 $$",
+        "CREATE PROCEDURE increment(IN x INT, OUT y INT) LANGUAGE SQL AS $$ SET y = x + 1 $$",
         "postgres",
         target,
         statement_kind="PROCEDURE",
@@ -374,23 +370,20 @@ def test_bounded_out_parameter_procedure_has_a_target_route(target: str) -> None
 
 def test_table_function_has_an_explicit_tsql_route() -> None:
     report = translate_ddl(
-        "CREATE FUNCTION active_users() RETURNS TABLE(id INT) LANGUAGE SQL "
-        "AS $$ SELECT id FROM users WHERE id > 0 $$",
+        "CREATE FUNCTION active_users() RETURNS TABLE(id INT) LANGUAGE SQL AS $$ SELECT id FROM users WHERE id > 0 $$",
         "postgres",
         "tsql",
         statement_kind="FUNCTION",
     )
     assert report["status"] == "PASSED", report
     assert report["emitted"] == (
-        "CREATE FUNCTION active_users() RETURNS TABLE AS RETURN "
-        "(SELECT id FROM users WHERE id > 0)"
+        "CREATE FUNCTION active_users() RETURNS TABLE AS RETURN (SELECT id FROM users WHERE id > 0)"
     )
 
 
 def test_trigger_target_route_is_not_fabricated_for_mysql() -> None:
     report = translate_ddl(
-        "CREATE TRIGGER audit_update BEFORE UPDATE ON users "
-        "FOR EACH ROW EXECUTE FUNCTION audit_row()",
+        "CREATE TRIGGER audit_update BEFORE UPDATE ON users FOR EACH ROW EXECUTE FUNCTION audit_row()",
         "postgres",
         "mysql",
         statement_kind="TRIGGER",
@@ -502,8 +495,7 @@ def test_tenant_rls_function_predicate_and_shims() -> None:
         "WITH CHECK (organization_id = current_setting('app.organization_id', true))",
         "CREATE POLICY p ON users USING (organization_id = 'tenant') "
         "WITH CHECK (organization_id = current_setting('app.organization_id', true))",
-        "CREATE POLICY p ON users "
-        "USING (organization_id = current_setting('app.organization_id', true))",
+        "CREATE POLICY p ON users USING (organization_id = current_setting('app.organization_id', true))",
     ],
 )
 def test_rls_policy_modifiers_and_untyped_predicates_remain_blocked(sql: str) -> None:
@@ -568,4 +560,3 @@ def test_mysql_column_comment_with_type_policy_and_shim() -> None:
     # With allow_comment_shim, falls back to comment shim
     shimmed = emit_comment(comment_jsonb, Dialect.MYSQL, catalog=catalog, allow_comment_shim=True)
     assert shimmed.startswith("-- COMMENT ON COLUMN")
-

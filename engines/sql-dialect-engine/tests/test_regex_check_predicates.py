@@ -14,6 +14,7 @@ wholesale refusal never had to make explicit:
 SQL Server has no regex predicate, so only the emitter's explicitly bounded
 ASCII lowerings are reachable; every other pattern fails closed.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -42,14 +43,15 @@ def _check_line(report: dict) -> str:
 # the portable core
 # --------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize(
     "pattern",
     [
-        "^[0-9a-f]{64}$",                     # 400 of 418 occurrences in the corpus
+        "^[0-9a-f]{64}$",  # 400 of 418 occurrences in the corpus
         "^sha256:[0-9a-f]{64}$",
         "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$",
         "^[0-9]+$",
-        "^(alpha|beta)$",                     # alternation and grouping
+        "^(alpha|beta)$",  # alternation and grouping
     ],
 )
 def test_the_portable_core_is_admitted(pattern: str) -> None:
@@ -68,9 +70,7 @@ def test_the_portable_core_is_admitted(pattern: str) -> None:
         (r"^\p{L}+$", "Unicode property"),
     ],
 )
-def test_a_pattern_the_three_engines_disagree_about_is_refused(
-    pattern: str, construct: str
-) -> None:
+def test_a_pattern_the_three_engines_disagree_about_is_refused(pattern: str, construct: str) -> None:
     with pytest.raises(DialectError) as caught:
         require_portable_regex(pattern)
     assert caught.value.code == "CERTIFIED_DDL_UNSUPPORTED_CHECK_PATTERN"
@@ -92,9 +92,7 @@ def test_the_pattern_gate_runs_on_model_construction_not_only_on_parse() -> None
 # emission: three reachable targets, one refused
 # --------------------------------------------------------------------------
 
-ORACLE_HASH_CHECK = (
-    "CREATE TABLE t (h VARCHAR(64), CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c')))"
-)
+ORACLE_HASH_CHECK = "CREATE TABLE t (h VARCHAR(64), CHECK (REGEXP_LIKE(h, '^[0-9a-f]{64}$', 'c')))"
 
 
 def test_postgres_emits_the_operator_form() -> None:
@@ -116,6 +114,7 @@ def test_the_emitted_mysql_form_can_be_read_back_as_a_source() -> None:
 # --------------------------------------------------------------------------
 # case sensitivity has to be established on the SOURCE side too
 # --------------------------------------------------------------------------
+
 
 def test_a_mysql_regexp_without_a_match_parameter_is_refused() -> None:
     """MySQL's REGEXP follows the column collation, which the statement omits.
@@ -220,6 +219,7 @@ def test_a_non_portable_pattern_is_blocked_before_any_target_is_chosen() -> None
 # --------------------------------------------------------------------------
 # composition with the rest of the CHECK grammar
 # --------------------------------------------------------------------------
+
 
 def test_a_regex_inside_a_nullable_guard_survives_the_round_trip() -> None:
     """`h IS NULL OR h ~ '...'` is the corpus's actual shape, not a bare regex."""

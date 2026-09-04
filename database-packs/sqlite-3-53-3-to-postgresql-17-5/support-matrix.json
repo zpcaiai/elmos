@@ -1,47 +1,72 @@
 {
   "capabilities": [
     {
+      "domain": "schema",
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
       "id": "schema-type-constraint",
       "owner": "ELMOS Database Migration",
       "reason": "Deterministic typed DDL and constraint mapping. Local evidence passes; independent certification is NOT_RUN.",
-      "status": "experimental"
+      "restrictions": [
+        "Bounded work_orders fixture only."
+      ],
+      "status": "experimental",
+      "strategy": "typed-ir-lowering"
     },
     {
+      "domain": "queries",
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
       "id": "query-semantics",
       "owner": "ELMOS Database Migration",
       "reason": "Tenant-scoped query results are compared at row level. Local evidence passes; independent certification is NOT_RUN.",
-      "status": "experimental"
+      "restrictions": [
+        "Bounded tenant query workload only."
+      ],
+      "status": "experimental",
+      "strategy": "parameterized-differential-execution"
     },
     {
+      "domain": "transactions",
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
       "id": "transaction-rollback",
       "owner": "ELMOS Database Migration",
       "reason": "Source and target rollback behavior is executed. Local evidence passes; independent certification is NOT_RUN.",
-      "status": "experimental"
+      "restrictions": [
+        "Single-transaction rollback fixture only."
+      ],
+      "status": "experimental",
+      "strategy": "dual-engine-rollback-replay"
     },
     {
+      "domain": "migration",
       "evidence_refs": [
         "certification/local-engine-evidence.json"
       ],
       "id": "backup-restore",
       "owner": "ELMOS Database Migration",
       "reason": "A disposable target backup is restored and reconciled. Local evidence passes; independent certification is NOT_RUN.",
-      "status": "experimental"
+      "restrictions": [
+        "Local disposable target only."
+      ],
+      "status": "experimental",
+      "strategy": "disposable-target-backup-restore"
     },
     {
+      "domain": "migration",
       "evidence_refs": [],
       "id": "cdc-production-cutover",
       "owner": "ELMOS Database Migration",
       "reason": "Requires an approved production workflow, source CDC capability, and accountable data owner.",
-      "status": "blocked"
+      "restrictions": [
+        "No production CDC or cutover authority."
+      ],
+      "status": "blocked",
+      "strategy": "blocked-pending-approved-workflow"
     }
   ],
   "pack_key": "sqlite-3-53-3-to-postgresql-17-5",

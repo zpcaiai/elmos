@@ -7,6 +7,7 @@ than the source column. Syntax validation cannot catch any of them -- the
 emitted statement parses fine, it is just the wrong column -- so they are
 locked down here by asserting the rendered type text directly.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -73,9 +74,7 @@ def test_parameterised_decimal_still_translates() -> None:
 
 
 def test_jsonb_literal_default_is_retained_as_a_typed_source_fact() -> None:
-    table = parse_create_table(
-        "CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", Dialect.POSTGRES
-    )
+    table = parse_create_table("CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", Dialect.POSTGRES)
     default = table.columns[0].default
     assert default is not None
     assert default.kind is DefaultKind.STRING
@@ -87,9 +86,10 @@ def test_jsonb_literal_default_is_retained_as_a_typed_source_fact() -> None:
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_jsonb_literal_default_does_not_get_downgraded_to_plain_json(target: str) -> None:
-    assert _blocked(
-        "CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", "postgres", target
-    ) == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+    assert (
+        _blocked("CREATE TABLE t (payload JSONB NOT NULL DEFAULT '{}'::jsonb)", "postgres", target)
+        == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+    )
 
 
 def test_postgres_array_literal_default_is_retained_as_typed_source_fact() -> None:
@@ -107,21 +107,27 @@ def test_postgres_array_literal_default_is_retained_as_typed_source_fact() -> No
     assert "DEFAULT ARRAY[5000, 8000]" in rendered
 
 
-@pytest.mark.parametrize("ddl", [
-    "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY['5000'])",
-    "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY[])",
-])
+@pytest.mark.parametrize(
+    "ddl",
+    [
+        "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY['5000'])",
+        "CREATE TABLE t (threshold_bps INTEGER[] DEFAULT ARRAY[])",
+    ],
+)
 def test_array_literal_defaults_fail_closed_on_untyped_or_mismatched_members(ddl: str) -> None:
     with pytest.raises(DialectError):
         parse_create_table(ddl, Dialect.POSTGRES)
 
 
 def test_array_literal_default_does_not_get_serialized_to_a_non_postgres_type() -> None:
-    assert _blocked(
-        "CREATE TABLE t (threshold_bps INTEGER[] NOT NULL DEFAULT ARRAY[5000,8000])",
-        "postgres",
-        "mysql",
-    ) == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
+    assert (
+        _blocked(
+            "CREATE TABLE t (threshold_bps INTEGER[] NOT NULL DEFAULT ARRAY[5000,8000])",
+            "postgres",
+            "mysql",
+        )
+        == "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED"
+    )
 
 
 def test_decimal_precision_beyond_the_target_maximum_fails_closed() -> None:
@@ -178,9 +184,7 @@ def test_every_mysql_text_size_reads_as_canonical_text(mysql_text_type: str) -> 
 
 
 def test_sql_server_target_uses_unicode_character_types() -> None:
-    emitted = _emit(
-        "CREATE TABLE t (code CHAR(3), name VARCHAR(50), body TEXT)", "postgres", "tsql"
-    )
+    emitted = _emit("CREATE TABLE t (code CHAR(3), name VARCHAR(50), body TEXT)", "postgres", "tsql")
     assert "NCHAR(3)" in emitted
     assert "NVARCHAR(50)" in emitted
     assert "NVARCHAR(MAX)" in emitted
@@ -196,9 +200,7 @@ def test_sql_server_nchar_is_accepted_as_a_source_type() -> None:
 
 
 def test_varchar_beyond_the_sql_server_nvarchar_limit_fails_closed() -> None:
-    assert _blocked("CREATE TABLE t (v VARCHAR(6000))", "postgres", "tsql") == (
-        "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET"
-    )
+    assert _blocked("CREATE TABLE t (v VARCHAR(6000))", "postgres", "tsql") == ("CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET")
 
 
 @pytest.mark.parametrize(
@@ -209,9 +211,7 @@ def test_varchar_beyond_the_sql_server_nvarchar_limit_fails_closed() -> None:
         ("tsql", "VARBINARY(MAX)"),
     ],
 )
-def test_postgres_bytea_uses_an_unbounded_target_byte_storage_type(
-    target: str, expected: str
-) -> None:
+def test_postgres_bytea_uses_an_unbounded_target_byte_storage_type(target: str, expected: str) -> None:
     # BYTEA has no declared length and accepts arbitrary byte payloads.  The
     # target must therefore use its unbounded byte type, never a bounded
     # BINARY(n)/VARBINARY(n) approximation.
@@ -228,15 +228,11 @@ def test_postgres_bytea_is_retained_as_unbounded_binary_in_the_canonical_model()
 
 
 def test_fixed_binary_without_a_length_stays_fail_closed() -> None:
-    assert _blocked("CREATE TABLE t (payload BINARY)", "postgres", "mysql") == (
-        "CERTIFIED_DDL_UNBOUNDED_BINARY"
-    )
+    assert _blocked("CREATE TABLE t (payload BINARY)", "postgres", "mysql") == ("CERTIFIED_DDL_UNBOUNDED_BINARY")
 
 
 def test_bare_non_postgres_varbinary_stays_fail_closed() -> None:
-    assert _blocked("CREATE TABLE t (payload VARBINARY)", "mysql", "postgres") == (
-        "CERTIFIED_DDL_UNBOUNDED_BINARY"
-    )
+    assert _blocked("CREATE TABLE t (payload VARBINARY)", "mysql", "postgres") == ("CERTIFIED_DDL_UNBOUNDED_BINARY")
 
 
 # --------------------------------------------------------------------------
@@ -258,15 +254,11 @@ def test_oracle_source_accepts_every_length_semantics_spelling(qualifier: str) -
 
 
 def test_varchar_beyond_the_oracle_limit_fails_closed() -> None:
-    assert _blocked("CREATE TABLE t (v VARCHAR(5000))", "postgres", "oracle") == (
-        "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET"
-    )
+    assert _blocked("CREATE TABLE t (v VARCHAR(5000))", "postgres", "oracle") == ("CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET")
 
 
 def test_char_beyond_the_mysql_limit_fails_closed() -> None:
-    assert _blocked("CREATE TABLE t (v CHAR(300))", "postgres", "mysql") == (
-        "CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET"
-    )
+    assert _blocked("CREATE TABLE t (v CHAR(300))", "postgres", "mysql") == ("CERTIFIED_DDL_LENGTH_EXCEEDS_TARGET")
 
 
 # --------------------------------------------------------------------------
@@ -298,9 +290,7 @@ def test_mysql_boolean_round_trips_through_its_own_storage_spelling() -> None:
         ("INT UNSIGNED", "BIGINT"),  # 0..4294967295 needs INT64
     ],
 )
-def test_narrow_and_unsigned_mysql_integers_widen_without_losing_range(
-    declared: str, expected: str
-) -> None:
+def test_narrow_and_unsigned_mysql_integers_widen_without_losing_range(declared: str, expected: str) -> None:
     assert f"v {expected}" in _emit(f"CREATE TABLE t (v {declared})", "mysql", "postgres")
 
 
@@ -335,7 +325,11 @@ def test_postgres_serial_types_become_target_native_identity_columns(
 
 
 def test_serial_is_not_assumed_to_be_postgres_when_declared_by_another_source() -> None:
-    assert _blocked("CREATE TABLE t (id SERIAL)", "mysql", "postgres") == (
+    assert _blocked("CREATE TABLE t (id SERIAL)", "mysql", "postgres") == ("CERTIFIED_DDL_UNSUPPORTED_TYPE")
+
+
+def test_user_defined_type_fails_closed_instead_of_raising_name_error() -> None:
+    assert _blocked("CREATE TABLE t (payload public.custom_type)", "postgres", "mysql") == (
         "CERTIFIED_DDL_UNSUPPORTED_TYPE"
     )
 
@@ -349,9 +343,7 @@ def test_serial_is_not_assumed_to_be_postgres_when_declared_by_another_source() 
         ("postgres", "tsql", "DOUBLE PRECISION", "FLOAT(53)"),
     ],
 )
-def test_double_maps_to_binary64_without_narrowing(
-    source: str, target: str, ddl: str, expected: str
-) -> None:
+def test_double_maps_to_binary64_without_narrowing(source: str, target: str, ddl: str, expected: str) -> None:
     assert expected in _emit(f"CREATE TABLE t (score {ddl})", source, target)
 
 
@@ -415,9 +407,7 @@ def test_oracle_number_reads_back_as_decimal_not_as_a_narrower_integer() -> None
 
 
 def test_current_timestamp_default_uses_sysdatetime_on_sql_server() -> None:
-    emitted = _emit(
-        "CREATE TABLE t (created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)", "postgres", "tsql"
-    )
+    emitted = _emit("CREATE TABLE t (created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP)", "postgres", "tsql")
     assert "DATETIME2 NOT NULL DEFAULT SYSDATETIME()" in emitted
     assert "GETDATE()" not in emitted
 

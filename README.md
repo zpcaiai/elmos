@@ -12,13 +12,12 @@
 | 跨语言转换 | Java、Python、C#、TypeScript、Go、Rust、C++、Objective-C、Swift、PHP、Kotlin、React、Flutter 共 **13 种活动语言、156 个有向 Route Pack** 已接入精确运行时、源分析器与仓库编排；其中既有 90 条为 `limited`，新增 66 条保持 `research` | **当前 156 条 Route Pack 的路线执行、仓库执行与独立验证证据均为 `NOT_RUN`**；React UI 和 Flutter framework/UI/插件/设备语义不在纯函数子集内，对象图、异常、async、I/O、框架、数据库、并发、依赖/资源/配置/测试迁移也未闭合 | `TOOLCHAIN_READY` / `NOT_CERTIFIED`；不得把分析器或聚焦仓库测试提升为路线认证 |
 | 多语言项目生成 | 8 个目标支持多实体/关系生成、精确工具链构建与启动探针；16 个 PostgreSQL 17.5 JWT/OIDC 生产 Profile 有独立重放入口 | 本地原生检查不等于跨目标语义/行为等价，也不替代独立或外部验证 | `PASSED_LOCAL` / `limited` |
 
-附属能力的实测覆盖率分为两项：SQL 方言转写对当前 76 个真实迁移文件、digest-bound namespace profile 下的自动转写候选已提升到 **1274/1485 = 85.8%**，
-同时扫描器已对全部 **1485/1485 = 100.0%** SQL 单元给出可审计处置（自动候选、人工迁移、源格式复核或引擎缺陷），
-并将 13 个国产数据库目标纳入逐目标 route ledger：**19305/19305 = 100.0%** 国产目标路由单元有明确处置；
-国产目标当前仍为 `SPEC_ONLY`，没有把兼容模式冒充成自动转换，目标 SQL 发射数为 0，
-四目标 emitter reachability 在显式源默认命名空间映射
-`{"": "dbo", "public": "dbo"}` profile 下为 **398/1274 = 31.2%**；同一批候选的逐目标可达数为
-PostgreSQL **1274**、MySQL **432**、Oracle **426**、SQL Server **512**；这些仍是保守上界，不代表实库执行或认证，
+附属能力的实测覆盖率分为两项：SQL 方言转写对当前 81 个真实迁移文件、digest-bound namespace profile 下识别出 **1302/1739 = 74.9%** 自动转写候选，
+同时扫描器已对全部 **1739/1739 = 100.0%** SQL 单元给出可审计处置（1302 个自动候选、435 个人工迁移、2 个源格式复核、0 个引擎缺陷），
+并将 13 个国产数据库目标纳入逐目标 route ledger：**22607/22607 = 100.0%** 国产目标路由单元有明确处置；
+国产目标当前仍为 `SPEC_ONLY`，没有把兼容模式冒充成自动转换，该审计账本中的自动目标 SQL 发射数为 0；
+四目标 emitter reachability 的严格交集为 **363/1302 = 27.9%**，逐目标为 PostgreSQL **1302**、MySQL **411**、Oracle **435**、SQL Server **525**，
+同一 corpus 的重放摘要见 [`docs/batch31/SQL_LINE_RELEASE_STATUS.md`](docs/batch31/SQL_LINE_RELEASE_STATUS.md)；这些仍是保守上界，不代表实库执行或认证，
 大前端组件转写对 `apps/web-console` 实测 **8/33 = 24.2%**。两者的缺口都是结构性的，不是增量的。
 
 完整边界与外部证据清单见 [`docs/BUSINESS_LINE_CLOSURE_MATRIX.md`](docs/BUSINESS_LINE_CLOSURE_MATRIX.md)。

@@ -67,6 +67,35 @@ def test_shared_host_performance_confirmation_preserves_initial_failure(
     assert first["sloP95Milliseconds"] == 75.0
 
 
+def test_shared_host_performance_stops_after_one_confirmation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    class FakeRunner:
+        profile_id = "sqlite-3.53.3"
+
+        def analyze(self, _: object) -> None:
+            pass
+
+    target = FakeRunner()
+    target.profile_id = "duckdb-1.5.4"
+    measured: list[dict[str, object]] = []
+
+    def failed_attempt(*_args: object) -> dict[str, object]:
+        attempt = _performance_attempt("FAILED", 90.0)
+        measured.append(attempt)
+        return attempt
+
+    monkeypatch.setattr(runner_module, "_measure_performance_attempt", failed_attempt)
+
+    evidence = runner_module._performance_evidence(FakeRunner(), target, object(), object())
+    first = evidence["queries"][0]
+
+    assert evidence["state"] == "FAILED"
+    assert first["measurementAttempts"] == 2
+    assert len(measured) == 12
+    assert [attempt["state"] for attempt in first["attempts"]] == ["FAILED", "FAILED"]
+
+
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     capabilities = runner_capabilities()
 

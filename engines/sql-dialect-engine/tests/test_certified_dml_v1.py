@@ -29,8 +29,7 @@ def test_single_table_update_has_a_typed_route(target: str) -> None:
 
 def test_update_from_remains_fail_closed() -> None:
     report = translate_ddl(
-        "UPDATE target SET size_bytes = source.size_bytes "
-        "FROM source WHERE target.digest_hex = source.digest_hex",
+        "UPDATE target SET size_bytes = source.size_bytes FROM source WHERE target.digest_hex = source.digest_hex",
         "postgres",
         "mysql",
         statement_kind="UPDATE",
@@ -53,8 +52,7 @@ def test_update_from_has_a_typed_route_when_the_source_key_is_proven(target: str
         "CREATE TABLE source (id VARCHAR(10) PRIMARY KEY, value VARCHAR(10))",
     )
     report = translate_ddl(
-        "UPDATE target t SET value = s.value FROM source s "
-        "WHERE t.id = s.id AND t.value IS DISTINCT FROM s.value",
+        "UPDATE target t SET value = s.value FROM source s WHERE t.id = s.id AND t.value IS DISTINCT FROM s.value",
         "postgres",
         target,
         statement_kind="UPDATE",

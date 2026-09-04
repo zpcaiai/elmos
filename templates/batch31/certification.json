@@ -6,5 +6,7 @@
   "metrics": {},
   "restrictions": [],
   "evidence_refs": [],
+  "evidence_digests": {},
+  "external_certification": "NOT_RUN",
   "approved_by": []
 }

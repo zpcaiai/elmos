@@ -4,28 +4,33 @@
   "capabilities": [
     {
       "id": "schema-type-constraint",
+      "domain": "schema",
       "owner": "elmos-commercial-billing",
-      "status": "experimental",
-      "reason": "Typed CNY money, integer Token/Credit quantities, row-locked quota admission, append-only facts, trial lifecycle, payment reconciliation and tenant RLS. Local evidence passes; independent certification is NOT_RUN.",
-      "evidence_refs": [
-        "certification/evidence.json"
-      ]
+      "status": "detected-only",
+      "reason": "Typed structures are present in static IR; live source and Neon execution are NOT_RUN.",
+      "evidence_refs": [],
+      "strategy": "typed-ir-lowering",
+      "restrictions": ["Local static evidence only; live Neon execution is NOT_RUN."]
     },
     {
       "id": "tenant-isolation-rls",
+      "domain": "security",
       "owner": "elmos-commercial-billing",
-      "status": "experimental",
-      "reason": "Tenant isolation via PostgreSQL RLS policies. Local evidence passes; independent certification is NOT_RUN.",
-      "evidence_refs": [
-        "certification/evidence.json"
-      ]
+      "status": "detected-only",
+      "reason": "PostgreSQL RLS policies are statically identified; external tenant-isolation execution is NOT_RUN.",
+      "evidence_refs": [],
+      "strategy": "postgresql-rls-policy",
+      "restrictions": ["External tenant-isolation verification is NOT_RUN."]
     },
     {
       "id": "neon-production-cutover",
+      "domain": "migration",
       "owner": "elmos-commercial-billing",
       "status": "blocked",
       "reason": "Requires Neon cloud credential lease, production workflow approval, and live reconciliation.",
-      "evidence_refs": []
+      "evidence_refs": [],
+      "strategy": "blocked-pending-approved-workflow",
+      "restrictions": ["No live Neon credential lease or cutover authority."]
     }
   ]
 }

@@ -53,8 +53,7 @@ def test_inline_and_table_level_foreign_keys_produce_the_same_model() -> None:
         Dialect.POSTGRES,
     )
     table_level = parse_create_table(
-        "CREATE TABLE a (id INTEGER PRIMARY KEY, b_id INTEGER, "
-        "FOREIGN KEY (b_id) REFERENCES b(id) ON DELETE CASCADE)",
+        "CREATE TABLE a (id INTEGER PRIMARY KEY, b_id INTEGER, FOREIGN KEY (b_id) REFERENCES b(id) ON DELETE CASCADE)",
         Dialect.POSTGRES,
     )
     # Every one of the four dialects accepts both spellings and treats them
@@ -84,9 +83,7 @@ def test_an_inline_foreign_key_translates_to_every_dialect(target: str) -> None:
 
 def test_two_inline_references_on_one_column_still_fail_closed() -> None:
     with pytest.raises(DialectError) as exc:
-        parse_create_table(
-            "CREATE TABLE a (b_id INTEGER REFERENCES b(id) REFERENCES c(id))", Dialect.POSTGRES
-        )
+        parse_create_table("CREATE TABLE a (b_id INTEGER REFERENCES b(id) REFERENCES c(id))", Dialect.POSTGRES)
     assert exc.value.code == "CERTIFIED_DDL_UNSUPPORTED_COLUMN_CONSTRAINT"
 
 
@@ -279,9 +276,7 @@ def test_cli_writes_both_formats_and_exits_non_zero_when_incomplete(
     assert (out / "feasibility-report.md").exists()
 
 
-def test_cli_exits_zero_only_when_everything_is_in_subset(
-    tmp_path: Path, capsys: pytest.CaptureFixture[str]
-) -> None:
+def test_cli_exits_zero_only_when_everything_is_in_subset(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
     root = _repo(tmp_path, {"V1.sql": IN_SUBSET})
     code = main(["scan", "--repository", str(root), "--source-dialect", "postgres"])
     capsys.readouterr()

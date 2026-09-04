@@ -9,7 +9,6 @@ constant concatenations, they can be statically folded, validated, and safely tr
 from __future__ import annotations
 
 import re
-from typing import Sequence
 
 import sqlglot
 from sqlglot import exp
@@ -60,6 +59,11 @@ def extract_and_transpile_dynamic_sql(
         if m:
             expr_str = m.group(1).rstrip(";")
             expr_ast = sqlglot.parse_one(expr_str, read=source_dialect.value)
+            if not isinstance(expr_ast, exp.Expression):
+                raise DialectError(
+                    "CERTIFIED_DYNAMIC_SQL_UNSAFE",
+                    "dynamic SQL constant did not parse to a SQL expression",
+                )
             raw_query = fold_constant_sql_expression(expr_ast)
     elif isinstance(parsed, exp.Anonymous) and parsed.this.upper() == "EXECUTE IMMEDIATE":
         # parsed as Anonymous function or command
@@ -106,9 +110,6 @@ def extract_and_transpile_dynamic_sql(
     elif target_dialect is Dialect.MYSQL:
         # MySQL PREPARE + EXECUTE pattern
         return (
-            f"SET @dyn_stmt = '{escaped_query}';\n"
-            f"PREPARE stmt FROM @dyn_stmt;\n"
-            f"EXECUTE stmt;\n"
-            f"DEALLOCATE PREPARE stmt;"
+            f"SET @dyn_stmt = '{escaped_query}';\nPREPARE stmt FROM @dyn_stmt;\nEXECUTE stmt;\nDEALLOCATE PREPARE stmt;"
         )
     return f"EXECUTE IMMEDIATE '{escaped_query}';"

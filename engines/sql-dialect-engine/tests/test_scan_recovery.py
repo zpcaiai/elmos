@@ -19,6 +19,7 @@ hundreds.
 
 The parser remains the primary splitter; these tests pin the fallback.
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -44,8 +45,7 @@ def _scan(tmp_path: Path, sql: str, dialect: Dialect = Dialect.POSTGRES) -> dict
         ("doubled quote", "INSERT INTO t VALUES ('o''brien; x'); SELECT 2;", 2),
         (
             "dollar-quoted body",
-            "CREATE FUNCTION f() RETURNS int AS $$ BEGIN; RETURN 1; END; $$ LANGUAGE plpgsql;"
-            " SELECT 3;",
+            "CREATE FUNCTION f() RETURNS int AS $$ BEGIN; RETURN 1; END; $$ LANGUAGE plpgsql; SELECT 3;",
             2,
         ),
         (
@@ -67,9 +67,7 @@ def test_the_fallback_splitter_respects_everything_that_may_contain_a_semicolon(
 
 
 def test_the_fallback_splitter_reports_the_starting_line_of_each_statement() -> None:
-    statements = split_statements(
-        "CREATE TABLE a (x INT);\n\nCREATE TABLE b (\n  y INT\n);\n\nSELECT 1;\n"
-    )
+    statements = split_statements("CREATE TABLE a (x INT);\n\nCREATE TABLE b (\n  y INT\n);\n\nSELECT 1;\n")
     assert [s.start_line for s in statements] == [1, 3, 7]
 
 
@@ -81,9 +79,7 @@ def test_a_single_unreadable_statement_no_longer_discards_the_file(
 
     report = _scan(
         tmp_path,
-        "CREATE TABLE a (x INT NOT NULL);\n"
-        "DROP TABLE IF EXISTS a, b;\n"
-        "CREATE TABLE c (y INT NOT NULL);\n",
+        "CREATE TABLE a (x INT NOT NULL);\nDROP TABLE IF EXISTS a, b;\nCREATE TABLE c (y INT NOT NULL);\n",
         Dialect.MYSQL,
     )
     assert report["totals"]["discovered"] == 3
@@ -161,9 +157,7 @@ def test_mysql_delimiter_does_not_invent_parse_failed_fragments(tmp_path: Path) 
 
 
 def test_the_fallback_splitter_isolates_a_newline_terminated_psql_command() -> None:
-    statements = split_statements(
-        "-- header\n\\set ON_ERROR_STOP on\nBEGIN;\nCREATE TABLE a (x INT);\n"
-    )
+    statements = split_statements("-- header\n\\set ON_ERROR_STOP on\nBEGIN;\nCREATE TABLE a (x INT);\n")
     texts = [item.text.strip() for item in statements]
     assert any("\\set ON_ERROR_STOP on" in text for text in texts)
     assert any(text.upper().startswith("BEGIN") for text in texts)
@@ -177,11 +171,7 @@ def test_the_unreadable_statement_carries_a_line_number(tmp_path: Path) -> None:
         "CREATE TABLE a (x INT NOT NULL);\n\n\nDROP TABLE IF EXISTS a, b;\n",
         Dialect.MYSQL,
     )
-    failures = [
-        finding
-        for finding in report["findings"]
-        if finding["reason_code"] == "CERTIFIED_DDL_PARSE_FAILED"
-    ]
+    failures = [finding for finding in report["findings"] if finding["reason_code"] == "CERTIFIED_DDL_PARSE_FAILED"]
     assert failures, "expected the unreadable statement to be reported"
     assert "line 4" in failures[0]["reason"]
 

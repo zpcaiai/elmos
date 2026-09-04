@@ -123,9 +123,7 @@ def _ast_has_unquoted_identifier(
         value_nodes = [
             node
             for node in ast_dump
-            if isinstance(node, dict)
-            and node.get("i") == identifier_index
-            and node.get("k") == "this"
+            if isinstance(node, dict) and node.get("i") == identifier_index and node.get("k") == "this"
         ]
         if not any(str(node.get("v", "")).upper() == value.upper() for node in value_nodes):
             continue
@@ -143,9 +141,7 @@ def _ast_has_unquoted_identifier(
         if _class_name(ast_dump[parent_index]) != parent_class:
             continue
         if require_unqualified and any(
-            isinstance(node, dict)
-            and node.get("i") == parent_index
-            and node.get("k") in {"table", "db", "catalog"}
+            isinstance(node, dict) and node.get("i") == parent_index and node.get("k") in {"table", "db", "catalog"}
             for node in ast_dump
         ):
             continue
@@ -203,15 +199,15 @@ def _post_emission_blocker(
                     "Oracle DUAL survived target emission as a physical table reference "
                     "without a bound compatibility contract.",
                 )
-            if _ast_has_class(source_ast, "Connect", "Prior") and _ast_has_class(
-                target_ast, "Connect", "Prior"
-            ):
+            if _ast_has_class(source_ast, "Connect", "Prior") and _ast_has_class(target_ast, "Connect", "Prior"):
                 return (
                     "UNSUPPORTED_ORACLE_HIERARCHICAL_QUERY",
                     "Oracle hierarchical-query nodes survived target emission without a recursive-query lowering.",
                 )
-        if source_dialect != target_dialect and _ast_has_class(source_ast, "Anonymous") and _ast_has_class(
-            target_ast, "Anonymous"
+        if (
+            source_dialect != target_dialect
+            and _ast_has_class(source_ast, "Anonymous")
+            and _ast_has_class(target_ast, "Anonymous")
         ):
             return (
                 "UNBOUND_FUNCTION_SEMANTICS",
@@ -268,7 +264,8 @@ class SqlTranspilerGateway:
             semantic_equivalence="NOT_VERIFIED",
             reason_code=reason_code,
             reason=reason,
-            verification=verification or {
+            verification=verification
+            or {
                 "syntaxParse": "NOT_RUN",
                 "targetEmit": "NOT_RUN",
                 "targetReparse": "NOT_RUN",
@@ -439,9 +436,7 @@ class SqlTranspilerGateway:
         metadata = getattr(typed_result, "metadata", {})
         traces = metadata.get("ruleTrace", []) if isinstance(metadata, dict) else []
         transformed = [
-            str(trace["ruleId"])
-            for trace in traces
-            if isinstance(trace, dict) and isinstance(trace.get("ruleId"), str)
+            str(trace["ruleId"]) for trace in traces if isinstance(trace, dict) and isinstance(trace.get("ruleId"), str)
         ]
         transformed = list(dict.fromkeys(transformed))
         target_sql = str(typed_result.target_sql)

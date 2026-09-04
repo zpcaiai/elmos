@@ -96,9 +96,7 @@ def test_multiple_actions_become_separate_statements() -> None:
     # action kinds, so a multi-action source is split into separate
     # statements rather than emitted as a comma list only some dialects
     # accept.
-    alter = parse_alter_table(
-        "ALTER TABLE t ADD COLUMN a INTEGER, ADD COLUMN b INTEGER", Dialect.POSTGRES
-    )
+    alter = parse_alter_table("ALTER TABLE t ADD COLUMN a INTEGER, ADD COLUMN b INTEGER", Dialect.POSTGRES)
     assert len(alter.actions) == 2
     emitted = emit_alter_table(alter, Dialect.ORACLE)
     assert emitted.count("ALTER TABLE t") == 2
@@ -133,8 +131,7 @@ def test_opaque_postgres_multi_add_alter_is_recovered_action_by_action() -> None
 
 def test_an_inline_reference_on_an_added_column_is_preserved() -> None:
     alter = parse_alter_table(
-        "ALTER TABLE sessions ADD COLUMN account_ref VARCHAR(96) "
-        "REFERENCES accounts (account_id) ON DELETE CASCADE",
+        "ALTER TABLE sessions ADD COLUMN account_ref VARCHAR(96) REFERENCES accounts (account_id) ON DELETE CASCADE",
         Dialect.POSTGRES,
     )
     action = alter.actions[0]
@@ -175,9 +172,7 @@ def test_out_of_profile_alters_fail_closed(sql: str, code: str) -> None:
 
 
 def test_a_blocked_alter_is_reported_not_raised() -> None:
-    report = translate_ddl(
-        "ALTER TABLE t ALTER COLUMN c SET NOT NULL", "postgres", "mysql", statement_kind="ALTER"
-    )
+    report = translate_ddl("ALTER TABLE t ALTER COLUMN c SET NOT NULL", "postgres", "mysql", statement_kind="ALTER")
     assert report["status"] == "BLOCKED"
     assert report["reasonCode"] == "CERTIFIED_ALTER_UNSUPPORTED_ACTION"
     assert report["emitted"] is None
@@ -214,19 +209,14 @@ def test_add_column_round_trips_to_the_same_canonical_model(dialect: Dialect) ->
 # Oracle foreign key carried a clause Oracle rejects.
 # --------------------------------------------------------------------------
 
-FK_TABLE = (
-    "CREATE TABLE a (id INTEGER PRIMARY KEY, b_id INTEGER, "
-    "FOREIGN KEY (b_id) REFERENCES b (id){actions})"
-)
+FK_TABLE = "CREATE TABLE a (id INTEGER PRIMARY KEY, b_id INTEGER, FOREIGN KEY (b_id) REFERENCES b (id){actions})"
 
 
 def test_oracle_omits_the_default_referential_actions() -> None:
     from elmos_sql_dialect.emitter import emit_create_table
     from elmos_sql_dialect.parser import parse_create_table
 
-    emitted = emit_create_table(
-        parse_create_table(FK_TABLE.format(actions=""), Dialect.POSTGRES), Dialect.ORACLE
-    )
+    emitted = emit_create_table(parse_create_table(FK_TABLE.format(actions=""), Dialect.POSTGRES), Dialect.ORACLE)
     # Oracle expresses NO ACTION by omission; spelling it out is a syntax
     # error there even though sqlglot parses it happily.
     assert "ON UPDATE" not in emitted
@@ -243,9 +233,7 @@ def test_the_other_dialects_still_spell_the_actions_out(target: str) -> None:
 
 
 def test_oracle_keeps_the_delete_actions_it_does_support() -> None:
-    report = translate_ddl(
-        FK_TABLE.format(actions=" ON DELETE CASCADE"), "postgres", "oracle"
-    )
+    report = translate_ddl(FK_TABLE.format(actions=" ON DELETE CASCADE"), "postgres", "oracle")
     assert report["status"] == "PASSED", report["reason"]
     assert "ON DELETE CASCADE" in report["emitted"]
     assert "ON UPDATE" not in report["emitted"]
@@ -277,8 +265,7 @@ def test_the_same_rule_applies_to_alter_add_constraint() -> None:
     # The ALTER path must not be able to smuggle in a clause the CREATE path
     # refuses -- one canonical model, one set of per-dialect rules.
     report = translate_ddl(
-        "ALTER TABLE a ADD CONSTRAINT a_fk FOREIGN KEY (b_id) "
-        "REFERENCES b (id) ON UPDATE CASCADE",
+        "ALTER TABLE a ADD CONSTRAINT a_fk FOREIGN KEY (b_id) REFERENCES b (id) ON UPDATE CASCADE",
         "postgres",
         "oracle",
         statement_kind="ALTER",

@@ -4,31 +4,33 @@ import io.elmos.engine.api.EngineApi;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import static io.elmos.engine.api.EngineApi.*;
 
 @Service
 public final class DatabaseDataEngineService {
-    private record IdempotentResult(String fingerprint, JobResponse response) {}
-
     private final VendorRunnerRegistry runners;
-    private final Map<String, JobResponse> jobs = new ConcurrentHashMap<>();
-    private final Map<String, IdempotentResult> idempotency = new ConcurrentHashMap<>();
+    private final DatabaseJobStore jobStore;
 
     public DatabaseDataEngineService() {
-        this(new VendorRunnerRegistry());
+        this(new VendorRunnerRegistry(), configuredJobStore());
     }
 
     DatabaseDataEngineService(VendorRunnerRegistry runners) {
+        this(runners, new InMemoryDatabaseJobStore());
+    }
+
+    DatabaseDataEngineService(VendorRunnerRegistry runners, DatabaseJobStore jobStore) {
         this.runners = Objects.requireNonNull(runners);
+        this.jobStore = Objects.requireNonNull(jobStore);
     }
 
     public Capabilities capabilities() {
@@ -56,9 +58,11 @@ public final class DatabaseDataEngineService {
                         "productionWrites", "NAMED_APPROVAL_REQUIRED",
                         "customerCodeExecution", "RUNNER_REQUIRED_FAIL_CLOSED",
                         "runnerStatus", "NOT_CONFIGURED",
-                        "jobStatePersistence", "EPHEMERAL_PROCESS_LOCAL",
+                        "jobStatePersistence", jobStore.durable()
+                                ? "DURABLE_OWNER_ONLY_FILES" : "EPHEMERAL_PROCESS_LOCAL",
                         "durableStateAuthority", "ELMOS_CONTROL_PLANE",
-                        "restartRecovery", "NOT_SUPPORTED_BY_WORKER"));
+                        "restartRecovery", jobStore.durable()
+                                ? "TERMINAL_JOB_AND_IDEMPOTENCY_REPLAY" : "NOT_SUPPORTED_BY_WORKER"));
     }
 
     public JobResponse scan(JobRequest request) {
@@ -91,9 +95,8 @@ public final class DatabaseDataEngineService {
     public JobResponse job(String organizationId, String jobId) {
         require(organizationId, "organizationId");
         require(jobId, "jobId");
-        var existing = jobs.get(organizationId + ":" + jobId);
-        if (existing == null) throw new EngineApi.JobNotFoundException(jobId);
-        return existing;
+        return jobStore.job(organizationId, jobId)
+                .orElseThrow(() -> new EngineApi.JobNotFoundException(jobId));
     }
 
     public JobResponse cancel(String organizationId, String jobId) {
@@ -101,7 +104,7 @@ public final class DatabaseDataEngineService {
         if (EngineApi.isTerminal(existing.status())) throw new EngineApi.JobConflictException(jobId);
         var cancelled = new JobResponse(existing.schemaVersion(), existing.jobId(), JobStatus.CANCELLED,
                 existing.evidenceRefs(), existing.result(), null);
-        jobs.put(organizationId + ":" + jobId, cancelled);
+        jobStore.replaceJob(organizationId, jobId, cancelled);
         return cancelled;
     }
 
@@ -115,22 +118,31 @@ public final class DatabaseDataEngineService {
         return once(operation, request.organizationId(), request.idempotencyKey(), EngineApi.idempotencyMaterial(request), action);
     }
 
-    private JobResponse once(String operation, String organizationId, String key, String input,
-                             Function<String, JobResponse> action) {
+    private synchronized JobResponse once(String operation, String organizationId, String key, String input,
+                                          Function<String, JobResponse> action) {
         String scopedKey = organizationId + ":" + operation + ":" + key;
         String currentFingerprint = hash(operation + "\n" + input);
-        var previous = idempotency.get(scopedKey);
-        if (previous != null) {
-            if (!previous.fingerprint().equals(currentFingerprint)) {
+        var previous = jobStore.idempotent(scopedKey);
+        if (previous.isPresent()) {
+            if (!previous.get().fingerprint().equals(currentFingerprint)) {
                 throw new EngineApi.IdempotencyConflictException(key);
             }
-            return previous.response();
+            return previous.get().response();
         }
         String jobId = hash(scopedKey).substring(0, 24);
         JobResponse response = action.apply(jobId);
-        idempotency.put(scopedKey, new IdempotentResult(currentFingerprint, response));
-        jobs.put(organizationId + ":" + jobId, response);
+        jobStore.save(
+                organizationId,
+                jobId,
+                scopedKey,
+                new DatabaseJobStore.IdempotentResult(currentFingerprint, response));
         return response;
+    }
+
+    private static DatabaseJobStore configuredJobStore() {
+        String configured = System.getenv("ELMOS_DATABASE_JOB_STATE_DIR");
+        if (configured == null || configured.isBlank()) return new InMemoryDatabaseJobStore();
+        return new FileDatabaseJobStore(Path.of(configured));
     }
 
     private JobResponse failure(String jobId, ErrorCode code, String message) {

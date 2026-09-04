@@ -8,6 +8,7 @@ call gets wrong for several of these pairs, see `dialects.py`'s docstring).
 Negative cases prove certified-ddl-v1 fails closed for out-of-scope SQL
 instead of silently mistranslating it.
 """
+
 from __future__ import annotations
 
 import itertools
@@ -153,8 +154,10 @@ def test_unnamed_table_level_unique_and_foreign_key_without_constraint_keyword()
     written without a leading `CONSTRAINT <name>` as bare nodes in the table
     body rather than wrapped in exp.Constraint -- a distinct AST shape from
     the named form covered by REALISTIC_DDL_BY_SOURCE, exercised here directly."""
-    ddl = "CREATE TABLE line_items (id INT PRIMARY KEY, sku VARCHAR(20), order_id INT, " \
-          "UNIQUE (sku), FOREIGN KEY (order_id) REFERENCES orders (id))"
+    ddl = (
+        "CREATE TABLE line_items (id INT PRIMARY KEY, sku VARCHAR(20), order_id INT, "
+        "UNIQUE (sku), FOREIGN KEY (order_id) REFERENCES orders (id))"
+    )
     report = translate_ddl(ddl, "postgres", "oracle")
     assert report["status"] == "PASSED", report
     assert "UNIQUE (sku)" in report["emitted"]
@@ -170,10 +173,13 @@ def test_create_index_translates_across_dialects() -> None:
 
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
-@pytest.mark.parametrize("ddl", [
-    "CREATE INDEX idx_events_time ON events (occurred_at DESC)",
-    "CREATE INDEX idx_events_time ON events (occurred_at ASC)",
-])
+@pytest.mark.parametrize(
+    "ddl",
+    [
+        "CREATE INDEX idx_events_time ON events (occurred_at DESC)",
+        "CREATE INDEX idx_events_time ON events (occurred_at ASC)",
+    ],
+)
 def test_index_column_order_is_preserved_or_explicit_defaulted(ddl: str, target: str) -> None:
     report = translate_ddl(ddl, "postgres", target, statement_kind="INDEX")
     assert report["status"] == "PASSED", report
@@ -183,10 +189,13 @@ def test_index_column_order_is_preserved_or_explicit_defaulted(ddl: str, target:
         assert "occurred_at DESC" not in report["emitted"]
 
 
-@pytest.mark.parametrize("ddl", [
-    "CREATE INDEX idx_events_time ON events (occurred_at) WHERE occurred_at IS NOT NULL",
-    "CREATE INDEX idx_events_time ON events (occurred_at) INCLUDE (event_id)",
-])
+@pytest.mark.parametrize(
+    "ddl",
+    [
+        "CREATE INDEX idx_events_time ON events (occurred_at) WHERE occurred_at IS NOT NULL",
+        "CREATE INDEX idx_events_time ON events (occurred_at) INCLUDE (event_id)",
+    ],
+)
 def test_index_semantics_that_mysql_cannot_preserve_fail_closed(ddl: str) -> None:
     report = translate_ddl(ddl, "postgres", "mysql", statement_kind="INDEX")
     assert report["status"] == "BLOCKED", report

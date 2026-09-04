@@ -5,6 +5,7 @@ the 97-file corpus, 80 were a bare `DROP TABLE`. Every modifier is refused
 because each one means something different on at least one dialect -- those
 refusals are asserted here as behaviour, not documented as a limitation.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -26,16 +27,13 @@ OTHERS = {
 # parse
 # --------------------------------------------------------------------------
 
+
 def test_a_bare_drop_table_parses_into_the_canonical_model() -> None:
-    assert parse_drop_table("DROP TABLE users", Dialect.POSTGRES) == DropTable(
-        name="users", if_exists=False
-    )
+    assert parse_drop_table("DROP TABLE users", Dialect.POSTGRES) == DropTable(name="users", if_exists=False)
 
 
 def test_if_exists_is_carried_on_the_model_not_decided_by_the_parser() -> None:
-    assert parse_drop_table("DROP TABLE IF EXISTS users", Dialect.MYSQL) == DropTable(
-        name="users", if_exists=True
-    )
+    assert parse_drop_table("DROP TABLE IF EXISTS users", Dialect.MYSQL) == DropTable(name="users", if_exists=True)
 
 
 @pytest.mark.parametrize(
@@ -90,6 +88,7 @@ def test_a_create_table_handed_to_the_drop_parser_is_refused() -> None:
 # emit
 # --------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("dialect", ALL)
 def test_a_bare_drop_emits_identically_on_every_dialect(dialect: Dialect) -> None:
     assert emit_drop_table(DropTable(name="users"), dialect) == "DROP TABLE users"
@@ -99,9 +98,7 @@ def test_a_bare_drop_emits_identically_on_every_dialect(dialect: Dialect) -> Non
 def test_if_exists_emits_where_the_spelling_needs_no_pinned_server_version(
     dialect: Dialect,
 ) -> None:
-    assert emit_drop_table(DropTable(name="users", if_exists=True), dialect) == (
-        "DROP TABLE IF EXISTS users"
-    )
+    assert emit_drop_table(DropTable(name="users", if_exists=True), dialect) == ("DROP TABLE IF EXISTS users")
 
 
 @pytest.mark.parametrize("dialect", [Dialect.ORACLE, Dialect.TSQL])
@@ -124,6 +121,7 @@ def test_if_exists_fails_closed_where_the_spelling_needs_a_pinned_version(
 # end to end through the engine
 # --------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("source", [Dialect.POSTGRES, Dialect.MYSQL])
 def test_a_bare_drop_round_trips_to_every_other_dialect_and_revalidates(
     source: Dialect,
@@ -137,24 +135,21 @@ def test_a_bare_drop_round_trips_to_every_other_dialect_and_revalidates(
 
 
 def test_a_refused_statement_is_reported_blocked_not_raised() -> None:
-    report = translate_ddl(
-        "DROP TABLE users CASCADE", "postgres", "mysql", statement_kind="DROP"
-    )
+    report = translate_ddl("DROP TABLE users CASCADE", "postgres", "mysql", statement_kind="DROP")
     assert report["status"] == "BLOCKED"
     assert report["reasonCode"] == "CERTIFIED_DROP_UNSUPPORTED_MODIFIER"
     assert report["emitted"] is None
 
 
 def test_the_drop_profile_is_reported_on_blocked_reports_too() -> None:
-    report = translate_ddl(
-        "DROP TABLE public.users", "postgres", "mysql", statement_kind="DROP"
-    )
+    report = translate_ddl("DROP TABLE public.users", "postgres", "mysql", statement_kind="DROP")
     assert report["profile"] == "certified-drop-v1"
 
 
 # --------------------------------------------------------------------------
 # scan integration -- the coverage number must move for the right reason
 # --------------------------------------------------------------------------
+
 
 def test_scan_admits_a_bare_drop_table() -> None:
     import sqlglot

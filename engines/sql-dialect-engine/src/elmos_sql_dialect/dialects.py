@@ -13,6 +13,7 @@ this module. This module owns exactly those decisions instead, per dialect,
 verified by the round-trip and (where possible) real-execution tests in
 `tests/`.
 """
+
 from __future__ import annotations
 
 from .models import (
@@ -63,29 +64,21 @@ def referential_action_sql(action: ReferentialAction) -> str:
 _ON_DELETE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
     Dialect.POSTGRES: frozenset(ReferentialAction),
     Dialect.MYSQL: frozenset(ReferentialAction),
-    Dialect.TSQL: frozenset(
-        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
-    ),
-    Dialect.ORACLE: frozenset(
-        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
-    ),
+    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
+    Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
 }
 
 _ON_UPDATE_SUPPORT: dict[Dialect, frozenset[ReferentialAction]] = {
     Dialect.POSTGRES: frozenset(ReferentialAction),
     Dialect.MYSQL: frozenset(ReferentialAction),
-    Dialect.TSQL: frozenset(
-        {ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}
-    ),
+    Dialect.TSQL: frozenset({ReferentialAction.NO_ACTION, ReferentialAction.CASCADE, ReferentialAction.SET_NULL}),
     Dialect.ORACLE: frozenset({ReferentialAction.NO_ACTION}),
 }
 
 _OMIT_NO_ACTION = frozenset({Dialect.ORACLE})
 
 
-def render_reference_actions(
-    on_delete: ReferentialAction, on_update: ReferentialAction, dialect: Dialect
-) -> str:
+def render_reference_actions(on_delete: ReferentialAction, on_update: ReferentialAction, dialect: Dialect) -> str:
     """Render a target-valid REFERENCES action tail, failing closed when the
     requested semantics cannot be represented by that database."""
     for action, supported, clause in (
@@ -217,15 +210,13 @@ def render_type(
         if precision > limit:
             raise DialectError(
                 "CERTIFIED_DDL_PRECISION_EXCEEDS_TARGET",
-                f"DECIMAL precision {precision} exceeds the maximum {limit} that "
-                f"{dialect.value} accepts",
+                f"DECIMAL precision {precision} exceeds the maximum {limit} that {dialect.value} accepts",
             )
         scale_limit = _MAX_DECIMAL_SCALE.get(dialect)
         if scale_limit is not None and scale > scale_limit:
             raise DialectError(
                 "CERTIFIED_DDL_PRECISION_EXCEEDS_TARGET",
-                f"DECIMAL scale {scale} exceeds the maximum {scale_limit} that "
-                f"{dialect.value} accepts",
+                f"DECIMAL scale {scale} exceeds the maximum {scale_limit} that {dialect.value} accepts",
             )
         name = "NUMBER" if dialect == Dialect.ORACLE else ("NUMERIC" if dialect == Dialect.POSTGRES else "DECIMAL")
         return f"{name}({precision}, {scale})"
@@ -424,7 +415,8 @@ def render_default(
         if dialect is not Dialect.POSTGRES:
             if type_policy is not None and type_policy.array == "json":
                 import json as _json
-                elements = []
+
+                elements: list[str | int | bool | None] = []
                 for item in default.array_elements:
                     if item.is_null:
                         elements.append(None)
@@ -450,6 +442,7 @@ def render_default(
                 "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
                 "ARRAY defaults require an ARRAY column",
             )
+
         def render_member(member: CheckLiteral) -> str:
             if member.is_null:
                 return "NULL"

@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-import pytest
-
 from elmos_sql_dialect.advanced import emit_procedure, emit_trigger, parse_procedure, parse_trigger
 from elmos_sql_dialect.models import (
-    CursorLoop,
     Dialect,
-    ExceptionHandler,
-    RollbackSavepointStatement,
-    SavepointStatement,
 )
 
 

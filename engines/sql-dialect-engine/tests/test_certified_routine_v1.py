@@ -15,8 +15,7 @@ from elmos_sql_dialect.models import Dialect, DialectError, RoutineLanguage
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine, parse_routine_identity
 
 PURE_FUNCTION = (
-    "CREATE FUNCTION make_key(p VARCHAR(32)) RETURNS VARCHAR(64) "
-    "LANGUAGE SQL AS $$ SELECT 'x' || chr(10) || p $$"
+    "CREATE FUNCTION make_key(p VARCHAR(32)) RETURNS VARCHAR(64) LANGUAGE SQL AS $$ SELECT 'x' || chr(10) || p $$"
 )
 
 
@@ -43,8 +42,7 @@ def test_function_parser_builds_typed_body_instead_of_preserving_source_text() -
 
 def test_source_routine_ir_retains_nonportable_metadata_for_target_gate() -> None:
     routine = parse_create_routine(
-        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT "
-        "SECURITY DEFINER AS $$ SELECT p $$",
+        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT SECURITY DEFINER AS $$ SELECT p $$",
         Dialect.POSTGRES,
     )
     assert routine.strict is True
@@ -53,8 +51,7 @@ def test_source_routine_ir_retains_nonportable_metadata_for_target_gate() -> Non
     assert routine.stability is not None
 
     report = translate_ddl(
-        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT "
-        "SECURITY DEFINER AS $$ SELECT p $$",
+        "CREATE FUNCTION guarded(p INT) RETURNS INT LANGUAGE SQL STABLE STRICT SECURITY DEFINER AS $$ SELECT p $$",
         "postgres",
         "mysql",
         statement_kind="FUNCTION",
@@ -75,8 +72,7 @@ def test_static_plpgsql_return_query_table_function_has_a_typed_query_route() ->
     report = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION")
     assert report["status"] == "PASSED", report
     assert report["emitted"] == (
-        "CREATE FUNCTION active_users(@p_min_id INT) RETURNS TABLE AS RETURN "
-        "(SELECT id FROM users WHERE id > 0)"
+        "CREATE FUNCTION active_users(@p_min_id INT) RETURNS TABLE AS RETURN (SELECT id FROM users WHERE id > 0)"
     )
 
 
@@ -110,10 +106,7 @@ def test_table_function_security_context_with_shim() -> None:
 
 
 def test_scalar_routine_security_definer_shims() -> None:
-    sql = (
-        "CREATE FUNCTION get_val(p INT) RETURNS INT LANGUAGE SQL "
-        "SECURITY DEFINER AS $$ SELECT p $$"
-    )
+    sql = "CREATE FUNCTION get_val(p INT) RETURNS INT LANGUAGE SQL SECURITY DEFINER AS $$ SELECT p $$"
     report_my = translate_ddl(sql, "postgres", "mysql", statement_kind="FUNCTION", allow_routine_shim=True)
     assert report_my["status"] == "PASSED", report_my
     assert "SQL SECURITY DEFINER" in report_my["emitted"]
@@ -144,28 +137,23 @@ def test_default_namespace_is_applied_to_typed_routine_identity() -> None:
             "CERTIFIED_ROUTINE_NAMESPACE_MAPPING_REQUIRED",
         ),
         (
-            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL STABLE "
-            "SQL SECURITY DEFINER AS $$ SELECT p $$",
+            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL STABLE SQL SECURITY DEFINER AS $$ SELECT p $$",
             "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
         ),
         (
-            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL IMMUTABLE "
-            "AS $$ SELECT p $$",
+            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL IMMUTABLE AS $$ SELECT p $$",
             "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
         ),
         (
-            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE plpgsql "
-            "AS $$ BEGIN IF p > 0 THEN RETURN p; END IF; END $$",
+            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE plpgsql AS $$ BEGIN IF p > 0 THEN RETURN p; END IF; END $$",
             "CERTIFIED_ROUTINE_UNSUPPORTED_LANGUAGE",
         ),
         (
-            "CREATE FUNCTION f(p INT) RETURNS TABLE(value INT) LANGUAGE SQL "
-            "AS $$ SELECT p $$",
+            "CREATE FUNCTION f(p INT) RETURNS TABLE(value INT) LANGUAGE SQL AS $$ SELECT p $$",
             "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
         ),
         (
-            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL "
-            "AS $$ SELECT p FROM source_table $$",
+            "CREATE FUNCTION f(p INT) RETURNS INT LANGUAGE SQL AS $$ SELECT p FROM source_table $$",
             "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
         ),
     ],
@@ -190,8 +178,7 @@ def test_procedure_is_not_relabelled_as_a_function() -> None:
 
 def test_trigger_is_not_relabelled_as_a_function() -> None:
     report = translate_ddl(
-        "CREATE TRIGGER keep_history BEFORE UPDATE ON records "
-        "FOR EACH ROW EXECUTE FUNCTION audit_row()",
+        "CREATE TRIGGER keep_history BEFORE UPDATE ON records FOR EACH ROW EXECUTE FUNCTION audit_row()",
         "postgres",
         "mysql",
         statement_kind="TRIGGER",
@@ -214,13 +201,11 @@ def test_common_expression_functions_are_typed_and_rendered() -> None:
 def test_mysql_and_tsql_direct_return_functions_are_source_supported() -> None:
     source_forms = (
         (
-            "CREATE FUNCTION mysql_key(p VARCHAR(32)) RETURNS VARCHAR(64) "
-            "RETURN CONCAT('x', p)",
+            "CREATE FUNCTION mysql_key(p VARCHAR(32)) RETURNS VARCHAR(64) RETURN CONCAT('x', p)",
             "mysql",
         ),
         (
-            "CREATE FUNCTION tsql_key(@p INT) RETURNS INT "
-            "AS BEGIN RETURN @p + 1 END",
+            "CREATE FUNCTION tsql_key(@p INT) RETURNS INT AS BEGIN RETURN @p + 1 END",
             "tsql",
         ),
     )
@@ -260,4 +245,3 @@ def test_routine_stability_shim_cross_dialect() -> None:
 
     emitted_tsql = emit_create_function(routine, Dialect.TSQL, allow_routine_shim=True)
     assert "CREATE FUNCTION dbo.elmos_cas_key" in emitted_tsql
-

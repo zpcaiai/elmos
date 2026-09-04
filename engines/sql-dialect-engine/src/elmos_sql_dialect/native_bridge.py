@@ -5,9 +5,9 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
-_LIB = None
+_LIB: ctypes.CDLL | None = None
 _TRIED_LOAD = False
 
 
@@ -30,7 +30,7 @@ def _find_library() -> Path | None:
     return None
 
 
-def _get_lib():
+def _get_lib() -> ctypes.CDLL | None:
     global _LIB, _TRIED_LOAD
     if _TRIED_LOAD:
         return _LIB
@@ -62,6 +62,6 @@ def native_split_statements(source: str, dialect: str | None = None) -> list[dic
             return None
         raw_str = ctypes.string_at(ptr).decode("utf-8")
         lib.elmos_free_string(ptr)
-        return json.loads(raw_str)
+        return cast(list[dict[str, Any]], json.loads(raw_str))
     except Exception:
         return None

@@ -32,7 +32,11 @@
       "typed-ddl",
       "tenant-query",
       "constraint-negative",
-      "transaction-rollback"
+      "transaction-rollback",
+      "offline-backfill",
+      "offline-delete-delta",
+      "cutover-rehearsal",
+      "backup-restore"
     ]
   },
   "source": {

@@ -37,7 +37,7 @@ const workspaces = [
     href: "/migration",
     icon: "database" as const,
     accent: "amber",
-    meta: "13 个本地查询适配器 · 外部证据 NOT_RUN",
+    meta: "13 个兼容模式目标 · 外部证据 NOT_RUN",
   },
   {
     eyebrow: "GOVERNANCE · M29–M37",
@@ -54,7 +54,7 @@ const attention = [
   ["转换路线独立验证", "13 语言活动矩阵已接入；客户仓库与独立验证仍未运行", "NOT_RUN"],
   ["Spring 外部 Runner 证据", "实验 Pack 已闭环，真实客户仓库、holdout 与独立执行未运行", "NOT_RUN"],
   ["多语言生成外部工具链", "浏览器只准备受控交接，不执行生成", "NOT_RUN"],
-  ["ChinaDB 实库执行", "13 个本地查询适配器可发射 SQL；实库执行与认证仍未运行", "NOT_RUN"],
+  ["ChinaDB 实库执行", "13 个目标仅提供有限兼容模式发射，并非厂商原生适配；实库执行与认证仍未运行", "NOT_RUN"],
 ];
 
 export default function Home() {

@@ -60,8 +60,7 @@ def test_every_sql_unit_gets_a_disposition_for_every_chinadb_target(tmp_path: Pa
     report = scan_repository(
         _repo(
             tmp_path,
-            "CREATE TABLE person (id INTEGER PRIMARY KEY);\n"
-            "ALTER TABLE person ALTER COLUMN id SET NOT NULL;\n",
+            "CREATE TABLE person (id INTEGER PRIMARY KEY);\nALTER TABLE person ALTER COLUMN id SET NOT NULL;\n",
         ),
         Dialect.POSTGRES,
     )

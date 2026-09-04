@@ -8,6 +8,7 @@ Executing the whole admitted corpus against a real PostgreSQL 16.13 and
 MySQL 8.0.46 found three such classes. Each is asserted here so the syntax leg
 is never again the only thing standing behind an emission.
 """
+
 from __future__ import annotations
 
 import pytest
@@ -30,6 +31,7 @@ def _blocked(ddl: str, source: str, target: str, kind: str = "TABLE") -> str:
 # --------------------------------------------------------------------------
 # 1. `REFERENCES t ()` -- emitted SQL no server accepts
 # --------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize("target", ["mysql", "oracle", "tsql"])
 def test_a_reference_without_a_column_list_does_not_emit_empty_parentheses(
@@ -62,9 +64,7 @@ def test_an_explicit_reference_column_list_is_still_rendered(target: str) -> Non
 
 
 def test_the_inline_reference_form_also_omits_empty_parentheses() -> None:
-    emitted = _emit(
-        "CREATE TABLE orders (cid VARCHAR(10) REFERENCES customers)", "postgres", "mysql"
-    )
+    emitted = _emit("CREATE TABLE orders (cid VARCHAR(10) REFERENCES customers)", "postgres", "mysql")
     assert "REFERENCES customers" in emitted
     assert "()" not in emitted
 
@@ -72,6 +72,7 @@ def test_the_inline_reference_form_also_omits_empty_parentheses() -> None:
 # --------------------------------------------------------------------------
 # 2. MySQL error 1170 -- a TEXT column cannot be indexed without a prefix
 # --------------------------------------------------------------------------
+
 
 @pytest.mark.parametrize(
     "ddl",
@@ -124,6 +125,7 @@ def test_a_text_foreign_key_column_also_fails_closed() -> None:
 # 3. MySQL error 1101 -- a TEXT column cannot carry a DEFAULT
 # --------------------------------------------------------------------------
 
+
 def test_a_text_column_with_a_default_fails_closed_for_mysql() -> None:
     assert (
         _blocked("CREATE TABLE t (state TEXT DEFAULT 'NEW')", "postgres", "mysql")
@@ -146,6 +148,7 @@ def test_a_text_default_is_fine_on_every_other_dialect(target: str) -> None:
 # 4. MySQL error 1064 -- an identifier that is a reserved word on the target
 # --------------------------------------------------------------------------
 
+
 @pytest.mark.parametrize("name", ["signal", "rank", "system", "groups", "lead"])
 def test_a_column_named_after_a_mysql_reserved_word_fails_closed(name: str) -> None:
     """PostgreSQL accepts these unquoted; MySQL does not.
@@ -167,9 +170,7 @@ def test_a_table_named_after_a_mysql_reserved_word_fails_closed() -> None:
 
 
 def test_the_refusal_explains_why_quoting_is_not_the_fix() -> None:
-    report = translate_ddl(
-        "CREATE TABLE t (id VARCHAR(10), signal VARCHAR(32))", "postgres", "mysql"
-    )
+    report = translate_ddl("CREATE TABLE t (id VARCHAR(10), signal VARCHAR(32))", "postgres", "mysql")
     assert "read back" in report["reason"]
 
 

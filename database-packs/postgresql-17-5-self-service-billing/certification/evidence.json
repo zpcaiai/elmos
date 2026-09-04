@@ -23,5 +23,19 @@
   "critical_security_regressions": 0,
   "destructive_unapproved_changes": 0,
   "test_integrity_violations": 0,
-  "evidence_refs": []
+  "evidence_status": {
+    "source_execution": "NOT_RUN",
+    "target_execution": "NOT_RUN",
+    "holdout": "NOT_RUN",
+    "representative_workload": "NOT_RUN",
+    "rollback": "NOT_RUN",
+    "security": "NOT_RUN",
+    "cdc": "NOT_RUN",
+    "cutover": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "external_certification": "NOT_RUN"
+  },
+  "evidence_refs": [],
+  "evidence_digests": {},
+  "evidence_roles": {}
 }

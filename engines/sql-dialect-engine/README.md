@@ -30,14 +30,14 @@ other engines (see `engines/polyglot-route-engine`, `CanonicalDatabaseIr`'s
 
 So this engine draws a hard line instead: the scanner gives every discovered
 SQL unit an explicit disposition. The current measured result is
-**1485/1485 = 100.0% disposition coverage**: each unit is either an automatic
+**1739/1739 = 100.0% disposition coverage**: each unit is either an automatic
 translation candidate, a manual migration requirement, source-format review,
 or an engine defect. This is the 100% completeness measure; it does not
 relabel manual work as translated.
 
 The separate automatic-translation measure remains an upper bound. With the
 digest-bound profile `persistence-public-to-dbo` (`{"": "dbo", "public":
-"dbo"}`), the current 76-file migration corpus measures **1274/1485 = 85.8%**
+"dbo"}`), the current 81-file migration corpus measures **1302/1739 = 74.9%**
 source-side candidates. This includes typed namespace profiles, quoted and
 reserved identifiers, views, callable, constraint and PostgreSQL role comments, table
 privileges, bounded procedures, typed `RETURNS TABLE`, narrow static PL/pgSQL
@@ -57,7 +57,7 @@ guessing. External execution, independent verification, and certification
 remain separate evidence gates.
 
 For the domestic target ledger, the current scan expands every discovered
-source unit against all 13 ChinaDB targets: **19305/19305 = 100.0% route
+source unit against all 13 ChinaDB targets: **22607/22607 = 100.0% route
 disposition coverage**. An admitted source unit receives
 `TARGET_ADAPTER_REVIEW_REQUIRED`; an already blocked source unit retains its
 manual or source-format disposition. This is complete, auditable route
@@ -67,11 +67,10 @@ remain `0`, external execution remains `NOT_RUN`, and certification remains
 
 The source-side number is not the same as target reachability. Replaying every
 admitted candidate through all four target emitters with that explicit profile
-gives **398/1274 = 31.2%** strict four-target intersection. The optimal strategy
+gives **363/1302 = 27.9%** strict four-target intersection. The optimal strategy
 under the fail-closed constraints is a target-specific route portfolio, not a
-forced common denominator: PostgreSQL is the source-native route at **1274**,
-followed by SQL Server at **512**, MySQL at **432**, and Oracle at **426**
-(100.0%, 40.2%, 33.9%, and 33.4% of admitted candidates). Routine privileges
+forced common denominator: PostgreSQL is source-native at **1302**, followed by
+SQL Server at **525**, Oracle at **435**, and MySQL at **411**. Routine privileges
 and MySQL function comments are widened only when a typed source catalog proves
 one exact routine overload, including a proven zero-argument signature; opaque
 PL/pgSQL declarations contribute identity-only evidence and remain blocked for
@@ -431,10 +430,10 @@ text-path expression indexes plus `JSONB_TYPEOF`/top-level-key object checks,
 typed `ARRAY_LENGTH`/`CARDINALITY`/`ARRAY_POSITION`/containment/default routes,
 and PostgreSQL-only table-level RLS state controls plus typed tenant-setting
 policies on the source side; their non-PostgreSQL target routes remain
-explicitly blocked. The current checkout therefore measures **1274/1485 =
-85.8%** automatic candidates with the
+explicitly blocked. The current checkout therefore measures **1302/1739 =
+74.9%** automatic candidates with the
 explicit namespace profile.
-The repository-level headline remains **1485/1485 = 100.0% disposition
+The repository-level headline remains **1739/1739 = 100.0% disposition
 coverage**: every blocker is explicit manual or source-review work, and none
 is silently converted.
 

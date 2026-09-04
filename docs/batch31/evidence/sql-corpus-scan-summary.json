@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "kind": "elmos.batch31.sql-corpus-scan-summary",
+  "scanned_at": "2026-09-04T09:03:41.578044+00:00",
+  "source_root": "modules/persistence/src/main/resources/db/migration",
+  "source_dialect": "postgres",
+  "namespace_profile": {
+    "name": "persistence-public-to-dbo",
+    "mapping": {"": "dbo", "public": "dbo"},
+    "digest": "21cb5cbb1f12ee8de95711b911b5fc60f452e897b23b16764ba63bcbd1651daa"
+  },
+  "scan_report_digest": "sha256:254632b2f3172881969dc31ee6d84366e29b2f38e787268d60af0e699c109626",
+  "reachability_report_digest": "sha256:008eab98104fc2aaa4b371fac69e20e44b5ea1a616dc3c0405d7538736c97b63",
+  "totals": {
+    "files": 81,
+    "discovered": 1739,
+    "automated_translation_candidates": 1302,
+    "manual_migration_required": 435,
+    "source_format_review": 2,
+    "engine_defects": 0,
+    "disposition_coverage": 1.0,
+    "automatic_candidate_rate": 0.7487
+  },
+  "four_target_reachability": {
+    "intersection": 363,
+    "intersection_rate_of_candidates": 0.2788,
+    "postgres": 1302,
+    "mysql": 411,
+    "oracle": 435,
+    "tsql": 525
+  },
+  "chinadb_route_ledger": {
+    "target_count": 13,
+    "planned_routes": 78,
+    "route_units": 22607,
+    "disposition_covered": 22607,
+    "automatic_target_emissions": 0,
+    "implementation_status": "SPEC_ONLY",
+    "external_execution": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  },
+  "replay": [
+    "uv run --directory engines/sql-dialect-engine --locked elmos-sql-dialect scan --repository modules/persistence/src/main/resources/db/migration --source-dialect postgres --namespace-profile '{\"name\":\"persistence-public-to-dbo\",\"mapping\":{\"\":\"dbo\",\"public\":\"dbo\"}}' --require-disposition-complete --all-findings --output <output-dir>",
+    "uv run --directory engines/sql-dialect-engine --locked python engines/sql-dialect-engine/tools/target_reachability.py --corpus 'persistence=modules/persistence/src/main/resources/db/migration=postgres' --namespace-profile '{\"name\":\"persistence-public-to-dbo\",\"mapping\":{\"\":\"dbo\",\"public\":\"dbo\"}}' --output <output-json>"
+  ],
+  "external_execution": "NOT_RUN",
+  "independent_verification": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

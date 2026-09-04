@@ -2,7 +2,7 @@ openapi: 3.1.0
 info:
   title: ELMOS ChinaDB SQL Preflight Control-Plane API
   version: 1.0.0
-  description: Authenticated, tenant-bound proxy to the database-data worker. This surface never emits target SQL or certification.
+  description: Authenticated, tenant-bound proxy to the database-data worker. It may return bounded compatibility-mode SQL for an exact allowlisted request, but never claims vendor-native execution or certification.
 servers:
   - url: http://localhost:8080
 security:
@@ -14,7 +14,7 @@ paths:
       description: Requires workspace:view and returns the exact fail-closed commercial planning snapshot.
       responses:
         "200":
-          description: SPEC_ONLY snapshot with 13 targets and 78 planned routes.
+          description: Snapshot with 13 target identities and 78 planned routes; compatibility-mode availability is not vendor-runtime evidence.
           content:
             application/json:
               schema:
@@ -26,7 +26,7 @@ paths:
   /api/v1/database-data/sql-preflight/assess:
     post:
       operationId: assessGovernedChinaDbSourceSql
-      description: Requires translation:execute, derives tenant and actor from authenticated identity, and always returns BLOCKED with targetSql null.
+      description: Requires translation:execute and derives tenant and actor from authenticated identity. Unsupported requests remain BLOCKED; an exact allowlisted request may return LOCAL_EMITTED compatibility SQL without vendor-runtime evidence.
       requestBody:
         required: true
         content:
@@ -35,7 +35,7 @@ paths:
               $ref: "../../schemas/batch31/chinadb-sql-preflight-request.schema.json"
       responses:
         "200":
-          description: Typed source AST and blockers; every target or external check remains NOT_RUN.
+          description: Typed source AST, obligations, blockers, and optional compatibility-mode SQL; target execution and external checks remain NOT_RUN.
           content:
             application/json:
               schema:

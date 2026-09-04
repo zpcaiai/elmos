@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "kind", "release_channel", "routes", "excluded_claims"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "kind": {"const": "elmos.batch31.sql-line-launch-scope"},
+    "release_channel": {"enum": ["PREFLIGHT_BETA", "MIGRATION_PILOT", "GA"]},
+    "routes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 3,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["route_id", "pack_key", "source", "target", "scope", "status", "release_eligible"],
+        "properties": {
+          "route_id": {"type": "string", "minLength": 1},
+          "pack_key": {"type": "string", "minLength": 1},
+          "source": {"type": "object"},
+          "target": {"type": "object"},
+          "scope": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+          "status": {"enum": ["research", "experimental", "limited", "certified", "blocked"]},
+          "release_eligible": {"type": "boolean"}
+        }
+      }
+    },
+    "excluded_claims": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}
+  }
+}

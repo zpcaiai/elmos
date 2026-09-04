@@ -2,5 +2,6 @@
   "components": [],
   "lossy_mappings": [],
   "money_as_float": false,
+  "pack_key": "sqlite-3-53-3-to-postgresql-17-5",
   "schema_version": 1
 }

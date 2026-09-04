@@ -38,18 +38,14 @@ class ChinaDbTarget:
 # Keep this tuple in the same order as the Batch 31 commercial registry.  The
 # order is part of the report's deterministic, diffable output.
 CHINADB_TARGETS: tuple[ChinaDbTarget, ...] = (
-    ChinaDbTarget(
-        "dm8", "DM8", "chinadb.dm8.target-adapter.v1", "native or explicitly selected compatibility mode"
-    ),
+    ChinaDbTarget("dm8", "DM8", "chinadb.dm8.target-adapter.v1", "native or explicitly selected compatibility mode"),
     ChinaDbTarget(
         "kingbasees",
         "KingbaseES",
         "chinadb.kingbasees.target-adapter.v1",
         "native or explicitly selected compatibility mode",
     ),
-    ChinaDbTarget(
-        "opengauss", "openGauss", "chinadb.opengauss.target-adapter.v1", "exact database compatibility mode"
-    ),
+    ChinaDbTarget("opengauss", "openGauss", "chinadb.opengauss.target-adapter.v1", "exact database compatibility mode"),
     ChinaDbTarget("tidb", "TiDB", "chinadb.tidb.target-adapter.v1", "exact SQL mode and deployment topology"),
     ChinaDbTarget("gbase-8s", "GBase 8s", "chinadb.gbase-8s.target-adapter.v1", "exact compatibility mode"),
     ChinaDbTarget(
