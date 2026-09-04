@@ -1160,6 +1160,7 @@ def owner_only_file(
     try:
         details = path.lstat()
         parent_details = path.parent.lstat()
+        resolved = path.resolve(strict=True)
     except OSError:
         errors.append(f"{label} is missing")
         return None
@@ -1174,6 +1175,7 @@ def owner_only_file(
         return None
     valid = True
     for condition, message in (
+        (not resolved.is_relative_to(ROOT.resolve()), f"{label} must be outside the repository"),
         (stat.S_ISREG(details.st_mode) and not stat.S_ISLNK(details.st_mode), f"{label} must be a regular non-symlink file"),
         (details.st_nlink == 1, f"{label} must not be hard-linked"),
         (stat.S_IMODE(details.st_mode) in {0o400, 0o600}, f"{label} mode must be 0400 or 0600"),
@@ -1238,6 +1240,181 @@ def owner_only_file(
         return None
     finally:
         os.close(descriptor)
+
+
+def trusted_regular_file(
+    errors: list[str],
+    path: Path,
+    *,
+    label: str,
+    expected_uid: int,
+    expected_gid: int,
+    expected_parent_uid: int,
+    expected_parent_gid: int,
+    minimum_size: int = 1,
+    maximum_size: int = 1024 * 1024,
+    expected_sha256: str | None = None,
+) -> tuple[int, int, str | None] | None:
+    """Validate a bind-mounted regular file and optionally read reviewed bytes."""
+
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        errors.append(f"{label} must be a normalized absolute non-root path")
+        return None
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids={0, os.getuid(), expected_uid, expected_parent_uid},
+        label=label,
+    )
+    if ancestor_error is not None:
+        errors.append(ancestor_error)
+        return None
+    try:
+        details = path.lstat()
+        parent_details = path.parent.lstat()
+        resolved = path.resolve(strict=True)
+    except OSError:
+        errors.append(f"{label} is missing")
+        return None
+    valid = True
+    for condition, message in (
+        (not resolved.is_relative_to(ROOT.resolve()), f"{label} must be outside the repository"),
+        (
+            stat.S_ISDIR(parent_details.st_mode)
+            and not stat.S_ISLNK(parent_details.st_mode)
+            and stat.S_IMODE(parent_details.st_mode) == 0o700,
+            f"{label} immediate parent must be a non-symlink 0700 directory",
+        ),
+        (
+            parent_details.st_uid == expected_parent_uid
+            and parent_details.st_gid == expected_parent_gid,
+            f"{label} immediate parent owner UID/GID must equal {expected_parent_uid}:{expected_parent_gid}",
+        ),
+        (
+            stat.S_ISREG(details.st_mode) and not stat.S_ISLNK(details.st_mode),
+            f"{label} must be a regular non-symlink file",
+        ),
+        (details.st_nlink == 1, f"{label} must not be hard-linked"),
+        (
+            stat.S_IMODE(details.st_mode) & 0o022 == 0,
+            f"{label} must not be group/other-writable",
+        ),
+        (details.st_uid == expected_uid, f"{label} owner UID must equal {expected_uid}"),
+        (details.st_gid == expected_gid, f"{label} owner GID must equal {expected_gid}"),
+        (
+            minimum_size <= details.st_size <= maximum_size,
+            f"{label} size must be {minimum_size}-{maximum_size} bytes",
+        ),
+    ):
+        if not condition:
+            errors.append(message)
+            valid = False
+    if not valid:
+        return None
+
+    flags = getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    flags |= os.O_RDONLY if expected_sha256 is not None else getattr(os, "O_PATH", os.O_RDONLY)
+    try:
+        descriptor = os.open(path, flags)
+    except OSError:
+        errors.append(f"{label} could not be opened without following links")
+        return None
+    try:
+        opened = os.fstat(descriptor)
+        if stable_file_metadata(opened) != stable_file_metadata(details):
+            errors.append(f"{label} changed while it was being validated")
+            return None
+        digest: str | None = None
+        if expected_sha256 is not None:
+            chunks: list[bytes] = []
+            remaining = maximum_size + 1
+            while remaining:
+                chunk = os.read(descriptor, remaining)
+                if not chunk:
+                    break
+                chunks.append(chunk)
+                remaining -= len(chunk)
+            contents = b"".join(chunks)
+            if len(contents) != opened.st_size:
+                errors.append(f"{label} changed while its reviewed bytes were read")
+                return None
+            digest = hashlib.sha256(contents).hexdigest()
+            if digest != expected_sha256:
+                errors.append(f"{label} must match the reviewed repository digest")
+                return None
+        after = os.fstat(descriptor)
+        after_path = path.lstat()
+        if (
+            stable_file_metadata(after) != stable_file_metadata(opened)
+            or stable_file_metadata(after_path) != stable_file_metadata(opened)
+            or not ancestors_remain_stable(ancestor_metadata)
+        ):
+            errors.append(f"{label} or parent path changed while it was being validated")
+            return None
+        return (opened.st_dev, opened.st_ino, digest)
+    except OSError:
+        errors.append(f"{label} changed or became unreadable while it was being validated")
+        return None
+    finally:
+        os.close(descriptor)
+
+
+def trusted_unix_socket(
+    errors: list[str],
+    path: Path,
+    *,
+    expected_uid: int,
+    expected_gid: int,
+) -> None:
+    """Validate the rootless Docker endpoint without following replaceable paths."""
+
+    label = "rootless Docker socket"
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        errors.append(f"{label} must be a normalized absolute non-root path")
+        return
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids={0, os.getuid(), expected_uid},
+        label=label,
+    )
+    if ancestor_error is not None:
+        errors.append(ancestor_error)
+        return
+    try:
+        details = path.lstat()
+        parent_details = path.parent.lstat()
+        resolved = path.resolve(strict=True)
+    except OSError:
+        errors.append(f"{label} is missing")
+        return
+    require(errors, not resolved.is_relative_to(ROOT.resolve()), f"{label} must be outside the repository")
+    require(
+        errors,
+        stat.S_ISDIR(parent_details.st_mode)
+        and not stat.S_ISLNK(parent_details.st_mode)
+        and stat.S_IMODE(parent_details.st_mode) == 0o700
+        and parent_details.st_uid == expected_uid
+        and parent_details.st_gid == expected_gid,
+        f"{label} immediate parent must be a trusted 0700 UID/GID {expected_uid}:{expected_gid} directory",
+    )
+    require(
+        errors,
+        stat.S_ISSOCK(details.st_mode) and not stat.S_ISLNK(details.st_mode),
+        f"{label} must be a Unix socket",
+    )
+    require(errors, details.st_uid == expected_uid, f"{label} owner mismatch")
+    require(errors, details.st_gid == expected_gid, f"{label} group mismatch")
+    require(errors, details.st_mode & 0o007 == 0, f"{label} must not grant other permissions")
+    try:
+        after = path.lstat()
+    except OSError:
+        errors.append(f"{label} changed while it was being validated")
+        return
+    require(
+        errors,
+        stable_file_metadata(details) == stable_file_metadata(after)
+        and ancestors_remain_stable(ancestor_metadata),
+        f"{label} or an ancestor changed while it was being validated",
+    )
 
 
 def protected_directory(
