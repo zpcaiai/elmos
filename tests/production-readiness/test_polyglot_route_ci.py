@@ -105,6 +105,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('if token == "openssl@3":', installer)
         self.assertIn('if source.count(overwrite) != 1:', installer)
         self.assertIn('source.replace(overwrite, "force: true", 1)', installer)
+        self.assertIn(
+            "libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|"
+            "9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c",
+            installer,
+        )
 
         node_inventory_block = (
             '  if [[ "${token}" == "node" ]]; then'
@@ -237,7 +242,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
             "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
             "b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
-            "30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
+            "a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (
