@@ -99,6 +99,18 @@ class SpringEngineRequestAuthenticationFilterTest {
     }
 
     @Test
+    void rejectedDotAndDoubleSlashRepresentationsCanNeverSkipAuthentication() throws Exception {
+        var filter = new SpringEngineRequestAuthenticationFilter(true, authentication());
+
+        assertRejectedBeforeController(filter, new MockHttpServletRequest(
+                "POST", "/engine/x/../v1/spring-upgrades"));
+        assertRejectedBeforeController(filter, new MockHttpServletRequest(
+                "POST", "/engine//v1/spring-upgrades"));
+        assertRejectedBeforeController(filter, new MockHttpServletRequest(
+                "POST", "/unrelated/../engine/v1/spring-upgrades"));
+    }
+
+    @Test
     void rejectsInconsistentContainerPathMetadata() throws Exception {
         var filter = new SpringEngineRequestAuthenticationFilter(true, authentication());
         MockHttpServletRequest request = new MockHttpServletRequest("POST", "/public" + PATH);

@@ -116,15 +116,17 @@ try {
   );
 
   chmodSync(secretFile, 0o600);
-  writeFileSync(secretFile, Buffer.concat([secret, Buffer.from("\u2003", "utf8")]));
-  assert.throws(
-    () => authenticateSpringEngineRequest(
-      "POST", input.requestPath,
-      { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-      input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
-  );
+  for (const whitespace of ["\u0085", "\u2003", "\ufeff"]) {
+    writeFileSync(secretFile, Buffer.concat([secret, Buffer.from(whitespace, "utf8")]));
+    assert.throws(
+      () => authenticateSpringEngineRequest(
+        "POST", input.requestPath,
+        { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
+        input.body,
+      ),
+      /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
+    );
+  }
 
   process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "false";
   const unsigned = authenticateSpringEngineRequest(

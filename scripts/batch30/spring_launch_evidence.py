@@ -170,6 +170,13 @@ SPRING_WORKER_FIXED_ENVIRONMENT = {
     "ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT": "/workspace/private-runner",
     "ELMOS_TARGET_JAVA_HOME": "/opt/java/openjdk",
 }
+SPRING_WORKER_EXECUTION_ENVIRONMENT = {
+    "PATH": "/opt/java/openjdk/bin:/usr/share/maven/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "JAVA_HOME": "/opt/java/openjdk",
+    "MAVEN_HOME": "/usr/share/maven",
+    "MAVEN_CONFIG": "/home/elmos/.m2",
+    "HOME": "/home/elmos",
+}
 SPRING_WORKER_DYNAMIC_ENV_KEYS = (
     "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL",
     "ELMOS_SPRING_RUNTIME_RUNNER_ENABLED",
@@ -201,18 +208,41 @@ SPRING_WORKER_EFFECTIVE_ENV_KEYS = tuple(
         {
             *SPRING_WORKER_CONFIGURATION_ENV_KEYS,
             *SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT,
+            *SPRING_WORKER_EXECUTION_ENVIRONMENT,
         }
     )
 )
 SPRING_WORKER_CONTAINER_ENTRYPOINT = (
-    "java",
+    "/opt/java/openjdk/bin/java",
     "-XX:MaxRAMPercentage=70",
     "-jar",
     "/app/app.jar",
 )
 REQUIRED_RUNTIME_IMAGE_NAMES = frozenset(
-    {"worker", "proxy", "transformer", "runner"}
+    {"worker", "web", "proxy", "transformer", "runner"}
 )
+WEB_CONSOLE_CONTAINER_ENTRYPOINT = ("/usr/local/bin/docker-entrypoint.sh",)
+WEB_CONSOLE_CONTAINER_COMMAND = (
+    "/usr/local/bin/node",
+    "/workspace/apps/web-console/node_modules/next/dist/bin/next",
+    "start",
+    "--hostname",
+    "0.0.0.0",
+    "--port",
+    "3000",
+)
+WEB_CONSOLE_CONFIGURATION_ENVIRONMENT = {
+    "NODE_ENV": "production",
+    "NEXT_TELEMETRY_DISABLED": "1",
+    "HOSTNAME": "0.0.0.0",
+    "PORT": "3000",
+    "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+    "NODE_OPTIONS": "",
+    "ELMOS_SPRING_PROXY_ENABLED": "true",
+    "ELMOS_SPRING_PROXY_MULTI_TENANT": "true",
+    "ELMOS_SPRING_ENGINE_AUTH_ENABLED": "true",
+    "ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE": "/run/secrets/elmos-spring-engine-hmac",
+}
 DOCKER_ENVIRONMENT_ASSIGNMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.DOTALL)
 DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
     {
@@ -350,6 +380,15 @@ class ContentObservation:
     media_type: str
     path: Path
     content: bytes
+
+
+@dataclass(frozen=True)
+class ContainerRuntimeObservation:
+    environment: dict[str, str]
+    image_digest: str
+    configured_image: str
+    engine_secret_source: str
+    backend_network: str
 
 
 @dataclass(frozen=True)
@@ -1359,6 +1398,7 @@ _SPRING_WORKER_ENV_CANONICAL_BY_NORMALIZED = {
     for name in (
         *SPRING_WORKER_CONFIGURATION_ENV_KEYS,
         *SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT,
+        *SPRING_WORKER_EXECUTION_ENVIRONMENT,
     )
 }
 
@@ -1371,7 +1411,18 @@ def _dangerous_spring_worker_environment_name(name: str) -> bool:
         or normalized.startswith("SERVER")
         or normalized.startswith("MANAGEMENT")
         or normalized.startswith("ELMOSWORKER")
+        or normalized.startswith("LD")
         or normalized.startswith("JVM")
+        or normalized in {
+            "CLASSPATH",
+            "BASHENV",
+            "ENV",
+            "MAVENOPTS",
+            "MAVENARGS",
+            "MAVENCMDLINEARGS",
+            "GRADLEOPTS",
+            "GRADLEUSERHOME",
+        }
     )
 
 
@@ -1407,7 +1458,10 @@ def expected_spring_worker_environment(
     exact empty assignments by a separate allowlist.
     """
 
-    expected = dict(SPRING_WORKER_FIXED_ENVIRONMENT)
+    expected = {
+        **SPRING_WORKER_FIXED_ENVIRONMENT,
+        **SPRING_WORKER_EXECUTION_ENVIRONMENT,
+    }
     for name in SPRING_WORKER_DYNAMIC_ENV_KEYS:
         if name not in spring_environment:
             raise SpringLaunchEvidenceError(
@@ -1582,6 +1636,14 @@ def _spring_worker_environment_from_inspect(
             if value != "":
                 raise SpringLaunchEvidenceError(
                     f"{label} dangerous override {name} must be exactly empty"
+                )
+            values[name] = value
+            continue
+        if name in SPRING_WORKER_EXECUTION_ENVIRONMENT:
+            expected_execution_value = SPRING_WORKER_EXECUTION_ENVIRONMENT[name]
+            if value != expected_execution_value:
+                raise SpringLaunchEvidenceError(
+                    f"{label} execution environment {name} does not match the controlled worker image"
                 )
             values[name] = value
             continue

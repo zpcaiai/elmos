@@ -24,7 +24,9 @@ WORKDIR /workspace/apps/web-console
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
-    PORT=3000
+    PORT=3000 \
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    NODE_OPTIONS=
 RUN addgroup -S -g 10001 elmos \
     && adduser -S -D -H -u 10001 -G elmos elmos
 COPY --from=build --chown=10001:10001 /workspace/apps/web-console/package.json ./package.json
@@ -35,4 +37,5 @@ USER 10001:10001
 EXPOSE 3000
 HEALTHCHECK --interval=15s --timeout=3s --start-period=20s --retries=4 \
   CMD wget -q -O /dev/null "http://127.0.0.1:3000/api/health?probe=readiness" || exit 1
-CMD ["./node_modules/.bin/next", "start", "--hostname", "0.0.0.0", "--port", "3000"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+CMD ["/usr/local/bin/node", "/workspace/apps/web-console/node_modules/next/dist/bin/next", "start", "--hostname", "0.0.0.0", "--port", "3000"]
