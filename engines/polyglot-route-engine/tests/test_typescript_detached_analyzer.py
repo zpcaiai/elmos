@@ -408,10 +408,9 @@ def test_typescript_emitted_guards_are_typed_per_arithmetic_node(tmp_path: Path)
         assert completed.returncode == 0, completed.stderr
         lifted = json.loads(completed.stdout)["functions"][0]
         if expected_literal is not None:
-            assert lifted["body"][0]["expression"] == {
-                "kind": "literal",
-                "value": expected_literal,
-            }
+            expression = lifted["body"][0]["expression"]
+            assert expression["kind"] == "literal"
+            assert expression["value"] == expected_literal
 
     inventory = run(_emitted_nested_number(), "number-inventory.ts", "", inventory=True)
     assert inventory.returncode == 0, inventory.stderr

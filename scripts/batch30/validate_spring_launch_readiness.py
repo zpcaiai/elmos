@@ -11,6 +11,7 @@ import os
 import re
 import stat
 import sys
+from collections import namedtuple
 from collections.abc import Mapping
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -121,6 +122,28 @@ EnvironmentFileSnapshot = tuple[
     tuple[int, ...],
     tuple[tuple[int, ...], ...],
 ]
+
+
+LaunchEnvironmentBinding = namedtuple(
+    "LaunchEnvironmentBinding",
+    (
+        "spring_environment",
+        "spring_file_snapshot",
+        "compose_environment",
+        "compose_file_snapshot",
+        "effective_environment",
+        "application_secret_path",
+        "application_environment_commitment_digest",
+        "configuration_digest",
+        "effective_spring_configuration_digest",
+        "effective_web_console_configuration_digest",
+        "web_console_environment_names_digest",
+        "application_mount_sources_digest",
+    ),
+)
+LaunchEnvironmentBinding.__doc__ = (
+    "One private, reproducible snapshot of every launch-environment binding."
+)
 
 
 def load(path: Path) -> dict:
@@ -1340,6 +1363,180 @@ def validate_environment(
     )
 
 
+def derive_launch_environment_binding(
+    errors: list[str],
+    *,
+    environment_file: Path | None,
+    compose_environment_file: Path | None,
+    production: bool,
+) -> LaunchEnvironmentBinding:
+    """Securely read, validate, and derive one complete launch binding snapshot."""
+
+    spring_snapshots: list[EnvironmentFileSnapshot] = []
+    spring_environment = (
+        parse_environment_file(
+            errors,
+            environment_file,
+            snapshot_out=spring_snapshots,
+        )
+        if environment_file is not None
+        else {}
+    )
+    if environment_file is not None:
+        for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST - spring_environment.keys()):
+            errors.append(f"SPRING_ENV_FILE is missing required key {name}")
+
+    compose_snapshots: list[EnvironmentFileSnapshot] = []
+    compose_environment: dict[str, str] = {}
+    if compose_environment_file is not None:
+        compose_environment = parse_compose_environment_file(
+            errors,
+            compose_environment_file,
+            snapshot_out=compose_snapshots,
+        )
+        if environment_file is None:
+            errors.append("--compose-environment-file requires --environment-file")
+        else:
+            validate_compose_environment_binding(
+                errors,
+                path=compose_environment_file,
+                compose_environment=compose_environment,
+                spring_environment=spring_environment,
+            )
+
+    effective = effective_environment(spring_environment)
+    application_secret_path = (
+        Path(compose_environment.get("ELMOS_SECRET_ROOT", "/srv/elmos/secrets"))
+        / "resend-api-key"
+        if compose_environment_file is not None
+        else None
+    )
+    runtime_uid = APPLICATION_RUNTIME_UID if production else os.getuid()
+    runtime_gid = APPLICATION_RUNTIME_GID if production else os.getgid()
+    validate_environment(
+        errors,
+        effective,
+        expected_uid=runtime_uid,
+        expected_gid=runtime_gid,
+        application_secret_path=application_secret_path,
+        production=production,
+    )
+
+    application_commitment: str | None = None
+    configuration_digest: str | None = None
+    spring_worker_digest: str | None = None
+    web_console_digest: str | None = None
+    web_console_names_digest: str | None = None
+    mount_sources_digest: str | None = None
+    try:
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        from scripts.batch30.spring_launch_evidence import (
+            application_environment_commitment_digest,
+            application_mount_sources_digest,
+            expected_spring_worker_configuration_digest,
+            expected_web_console_environment,
+            expected_web_console_environment_names,
+            spring_environment_configuration_digest,
+            web_console_configuration_digest,
+            web_console_environment_names_digest,
+        )
+
+        spring_configuration_digest = spring_environment_configuration_digest(
+            effective
+        )
+        if compose_environment_file is not None:
+            application_commitment = application_environment_commitment_digest(
+                compose_environment
+            )
+        configuration_digest = (
+            deployment_configuration_digest(
+                spring_configuration_digest,
+                application_commitment,
+            )
+            if application_commitment is not None
+            else spring_configuration_digest
+        )
+        spring_worker_digest = expected_spring_worker_configuration_digest(effective)
+        if application_commitment is not None:
+            expected_web_environment = expected_web_console_environment(
+                compose_environment
+            )
+            web_console_digest = web_console_configuration_digest(
+                expected_web_environment
+            )
+            web_console_names_digest = web_console_environment_names_digest(
+                expected_web_console_environment_names(compose_environment)
+            )
+            if application_secret_path is None:
+                raise ValueError(
+                    "application mount binding requires the Compose environment file"
+                )
+            application_mount_sources = {
+                "worker_workspace": effective.get(
+                    "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH", ""
+                ),
+                "worker_verifier_hmac": effective.get(
+                    "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH", ""
+                ),
+                "worker_transformer_hmac": effective.get(
+                    "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH", ""
+                ),
+                "worker_runtime_hmac": effective.get(
+                    "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH", ""
+                ),
+                "application_engine_hmac": effective.get(
+                    "ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH", ""
+                ),
+                "worker_engine_replay": effective.get(
+                    "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH", ""
+                ),
+                "web_resend_secret": str(application_secret_path),
+            }
+            first_mount_sources_digest = application_mount_sources_digest(
+                application_mount_sources,
+                expected_uid=runtime_uid,
+                expected_gid=runtime_gid,
+            )
+            validate_environment(
+                errors,
+                effective,
+                expected_uid=runtime_uid,
+                expected_gid=runtime_gid,
+                application_secret_path=application_secret_path,
+                production=production,
+            )
+            mount_sources_digest = application_mount_sources_digest(
+                application_mount_sources,
+                expected_uid=runtime_uid,
+                expected_gid=runtime_gid,
+            )
+            require(
+                errors,
+                mount_sources_digest == first_mount_sources_digest,
+                "application mount source objects changed during launch binding",
+            )
+    except (OSError, TypeError, ValueError) as error:
+        errors.append(f"Spring environment configuration digest failed: {error}")
+
+    return LaunchEnvironmentBinding(
+        spring_environment=spring_environment,
+        spring_file_snapshot=spring_snapshots[0] if len(spring_snapshots) == 1 else None,
+        compose_environment=compose_environment,
+        compose_file_snapshot=(
+            compose_snapshots[0] if len(compose_snapshots) == 1 else None
+        ),
+        effective_environment=effective,
+        application_secret_path=application_secret_path,
+        application_environment_commitment_digest=application_commitment,
+        configuration_digest=configuration_digest,
+        effective_spring_configuration_digest=spring_worker_digest,
+        effective_web_console_configuration_digest=web_console_digest,
+        web_console_environment_names_digest=web_console_names_digest,
+        application_mount_sources_digest=mount_sources_digest,
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate the bounded Spring launch profile without executing environment-file contents.",
@@ -1398,150 +1595,24 @@ def main() -> int:
     profile = load(PROFILE)
     validate_contract(errors, profile)
     validate_code(errors)
-    file_environment = parse_environment_file(errors, args.environment_file) if args.environment_file else {}
-    if args.environment_file is not None:
-        for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST - file_environment.keys()):
-            errors.append(f"SPRING_ENV_FILE is missing required key {name}")
-    compose_environment: dict[str, str] = {}
-    application_environment_commitment: str | None = None
-    if args.compose_environment_file:
-        compose_environment = parse_compose_environment_file(
-            errors, args.compose_environment_file
-        )
-        if args.environment_file is None:
-            errors.append("--compose-environment-file requires --environment-file")
-        else:
-            validate_compose_environment_binding(
-                errors,
-                path=args.compose_environment_file,
-                compose_environment=compose_environment,
-                spring_environment=file_environment,
-            )
     check_environment = (
         args.check_environment
         or args.environment_file is not None
         or args.compose_environment_file is not None
     )
-    effective = effective_environment(file_environment)
-    application_secret_path = (
-        Path(compose_environment.get("ELMOS_SECRET_ROOT", "/srv/elmos/secrets"))
-        / "resend-api-key"
-        if args.compose_environment_file is not None
-        else None
+    production_identity = (
+        args.require_production_evidence or args.external_evidence is not None
     )
-    configuration_digest: str | None = None
-    expected_effective_spring_configuration_digest: str | None = None
-    expected_effective_web_console_configuration_digest: str | None = None
-    expected_web_console_environment_names_digest: str | None = None
-    expected_application_mount_sources_digest: str | None = None
-    if check_environment:
-        production_identity = (
-            args.require_production_evidence or args.external_evidence is not None
-        )
-        runtime_uid = APPLICATION_RUNTIME_UID if production_identity else os.getuid()
-        runtime_gid = APPLICATION_RUNTIME_GID if production_identity else os.getgid()
-        validate_environment(
+    environment_binding = (
+        derive_launch_environment_binding(
             errors,
-            effective,
-            expected_uid=runtime_uid,
-            expected_gid=runtime_gid,
-            application_secret_path=application_secret_path,
+            environment_file=args.environment_file,
+            compose_environment_file=args.compose_environment_file,
             production=production_identity,
         )
-        try:
-            if str(ROOT) not in sys.path:
-                sys.path.insert(0, str(ROOT))
-            from scripts.batch30.spring_launch_evidence import (
-                application_environment_commitment_digest as derive_application_environment_commitment,
-                application_mount_sources_digest,
-                expected_web_console_environment,
-                expected_web_console_environment_names,
-                expected_spring_worker_configuration_digest,
-                spring_environment_configuration_digest,
-                web_console_configuration_digest,
-                web_console_environment_names_digest,
-            )
-
-            spring_configuration_digest = spring_environment_configuration_digest(effective)
-            if args.compose_environment_file is not None:
-                application_environment_commitment = (
-                    derive_application_environment_commitment(compose_environment)
-                )
-            configuration_digest = (
-                deployment_configuration_digest(
-                    spring_configuration_digest, application_environment_commitment
-                )
-                if application_environment_commitment is not None
-                else spring_configuration_digest
-            )
-            expected_effective_spring_configuration_digest = (
-                expected_spring_worker_configuration_digest(effective)
-            )
-            if application_environment_commitment is not None:
-                expected_web_environment = expected_web_console_environment(
-                    compose_environment
-                )
-                expected_effective_web_console_configuration_digest = (
-                    web_console_configuration_digest(expected_web_environment)
-                )
-                expected_web_console_environment_names_digest = (
-                    web_console_environment_names_digest(
-                        expected_web_console_environment_names(compose_environment)
-                    )
-                )
-                if application_secret_path is None:
-                    raise ValueError(
-                        "application mount binding requires the Compose environment file"
-                    )
-                application_mount_sources = {
-                    "worker_workspace": effective.get(
-                        "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH", ""
-                    ),
-                    "worker_verifier_hmac": effective.get(
-                        "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH", ""
-                    ),
-                    "worker_transformer_hmac": effective.get(
-                        "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH", ""
-                    ),
-                    "worker_runtime_hmac": effective.get(
-                        "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH", ""
-                    ),
-                    "application_engine_hmac": effective.get(
-                        "ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH", ""
-                    ),
-                    "worker_engine_replay": effective.get(
-                        "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH", ""
-                    ),
-                    "web_resend_secret": str(application_secret_path),
-                }
-                first_mount_sources_digest = application_mount_sources_digest(
-                    application_mount_sources,
-                    expected_uid=runtime_uid,
-                    expected_gid=runtime_gid,
-                )
-                validate_environment(
-                    errors,
-                    effective,
-                    expected_uid=runtime_uid,
-                    expected_gid=runtime_gid,
-                    application_secret_path=application_secret_path,
-                    production=production_identity,
-                )
-                expected_application_mount_sources_digest = (
-                    application_mount_sources_digest(
-                        application_mount_sources,
-                        expected_uid=runtime_uid,
-                        expected_gid=runtime_gid,
-                    )
-                )
-                require(
-                    errors,
-                    expected_application_mount_sources_digest
-                    == first_mount_sources_digest,
-                    "application mount source objects changed during launch binding",
-                )
-        except (OSError, TypeError, ValueError) as error:
-            errors.append(f"Spring environment configuration digest failed: {error}")
+        if check_environment
+        else None
+    )
 
     if args.require_production_evidence:
         required_production_arguments = {
@@ -1600,21 +1671,35 @@ def main() -> int:
                 expected_provider=args.expected_provider,
                 expected_region=args.expected_region,
                 expected_environment_class=args.expected_environment_class,
-                expected_configuration_digest=configuration_digest,
+                expected_configuration_digest=(
+                    environment_binding.configuration_digest
+                    if environment_binding is not None
+                    else None
+                ),
                 expected_application_environment_commitment_digest=(
-                    application_environment_commitment
+                    environment_binding.application_environment_commitment_digest
+                    if environment_binding is not None
+                    else None
                 ),
                 expected_effective_spring_configuration_digest=(
-                    expected_effective_spring_configuration_digest
+                    environment_binding.effective_spring_configuration_digest
+                    if environment_binding is not None
+                    else None
                 ),
                 expected_effective_web_console_configuration_digest=(
-                    expected_effective_web_console_configuration_digest
+                    environment_binding.effective_web_console_configuration_digest
+                    if environment_binding is not None
+                    else None
                 ),
                 expected_web_console_environment_names_digest=(
-                    expected_web_console_environment_names_digest
+                    environment_binding.web_console_environment_names_digest
+                    if environment_binding is not None
+                    else None
                 ),
                 expected_application_mount_sources_digest=(
-                    expected_application_mount_sources_digest
+                    environment_binding.application_mount_sources_digest
+                    if environment_binding is not None
+                    else None
                 ),
                 expected_worker_application_artifact_digest=(
                     args.expected_worker_application_artifact_digest
@@ -1622,41 +1707,69 @@ def main() -> int:
             )
     elif args.require_production_evidence:
         errors.append("production evidence is required but --external-evidence was not supplied")
+
+    if external_result is not None:
+        if environment_binding is None:
+            errors.append(
+                "external evidence verification requires a complete launch environment binding"
+            )
+        else:
+            final_environment_binding = derive_launch_environment_binding(
+                errors,
+                environment_file=args.environment_file,
+                compose_environment_file=args.compose_environment_file,
+                production=production_identity,
+            )
+            require(
+                errors,
+                final_environment_binding == environment_binding,
+                "launch environment or mount binding changed during external evidence verification",
+            )
     if errors:
         for error in errors:
             print(f"ERROR: {error}", file=sys.stderr)
         return 2 if args.require_production_evidence or args.external_evidence or check_environment else 1
     print(
         "SPRING_LAUNCH_GATE="
-        + ("EXTERNAL_GATE_VERIFIED_NOT_CERTIFIED" if external_result else "READY_FOR_EXTERNAL_GATE")
+        + (
+            "EXTERNAL_GATE_VERIFIED_NOT_CERTIFIED"
+            if external_result is not None
+            else "READY_FOR_EXTERNAL_GATE"
+        )
     )
-    if check_environment:
+    if environment_binding is not None:
         print("ENVIRONMENT_PRECEDENCE=PROCESS_ENVIRONMENT_OVER_FILE")
-        if application_environment_commitment is not None:
+        if environment_binding.application_environment_commitment_digest is not None:
             print("COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED")
             print(
                 "APPLICATION_ENVIRONMENT_COMMITMENT_DIGEST="
-                f"{application_environment_commitment}"
+                f"{environment_binding.application_environment_commitment_digest}"
             )
-        print(f"SPRING_CONFIGURATION_DIGEST={configuration_digest}")
+        print(
+            "SPRING_CONFIGURATION_DIGEST="
+            f"{environment_binding.configuration_digest}"
+        )
         print(
             "EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST="
-            f"{expected_effective_spring_configuration_digest}"
+            f"{environment_binding.effective_spring_configuration_digest}"
         )
-        if expected_effective_web_console_configuration_digest is not None:
+        if (
+            environment_binding.effective_web_console_configuration_digest
+            is not None
+        ):
             print(
                 "EXPECTED_WEB_CONSOLE_CONFIGURATION_DIGEST="
-                f"{expected_effective_web_console_configuration_digest}"
+                f"{environment_binding.effective_web_console_configuration_digest}"
             )
-        if expected_web_console_environment_names_digest is not None:
+        if environment_binding.web_console_environment_names_digest is not None:
             print(
                 "EXPECTED_WEB_CONSOLE_ENVIRONMENT_NAMES_DIGEST="
-                f"{expected_web_console_environment_names_digest}"
+                f"{environment_binding.web_console_environment_names_digest}"
             )
-        if expected_application_mount_sources_digest is not None:
+        if environment_binding.application_mount_sources_digest is not None:
             print(
                 "EXPECTED_APPLICATION_MOUNT_SOURCES_DIGEST="
-                f"{expected_application_mount_sources_digest}"
+                f"{environment_binding.application_mount_sources_digest}"
             )
     print("EXTERNAL_EVIDENCE_INTAKE=" + ("VALIDATED_NOT_CERTIFIED" if args.external_evidence else "NOT_RUN"))
     print("CERTIFICATION=NOT_CERTIFIED")

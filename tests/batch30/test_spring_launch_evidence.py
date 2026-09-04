@@ -326,6 +326,7 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         cls.key_directory.cleanup()
 
     def setUp(self) -> None:
+        self._ANCESTOR_CACHE.clear()
         self.temporary = tempfile.TemporaryDirectory(prefix="spring-launch-case-")
         self.case = Path(self.temporary.name).resolve()
         self.evidence_root = self.case / "evidence"
@@ -399,15 +400,23 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "ctime_ns": observed.st_ctime_ns,
         }
 
+    _ANCESTOR_CACHE: dict[str, list[dict[str, object]]] = {}
+
     @classmethod
     def mount_source_snapshot(cls, source: str) -> dict[str, object]:
         path = Path(source)
-        ancestors: list[dict[str, object]] = []
-        current = Path(path.anchor)
-        ancestors.append(cls.mount_object_identity(str(current)))
-        for part in path.parts[1:-1]:
-            current /= part
+        parent_path_str = str(path.parent)
+        cached = cls._ANCESTOR_CACHE.get(parent_path_str)
+        if cached is not None:
+            ancestors = [dict(item) for item in cached]
+        else:
+            ancestors = []
+            current = Path(path.anchor)
             ancestors.append(cls.mount_object_identity(str(current)))
+            for part in path.parts[1:-1]:
+                current /= part
+                ancestors.append(cls.mount_object_identity(str(current)))
+            cls._ANCESTOR_CACHE[parent_path_str] = [dict(item) for item in ancestors]
         return {
             "object_identity": cls.mount_object_identity(source),
             "parent_identity": dict(ancestors[-1]),

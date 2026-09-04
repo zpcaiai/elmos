@@ -292,26 +292,24 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link className={`secondary-link ${styles.readableSecondary}`} href="/help"><Icon name="help" size={18} />{english ? "Help and readiness" : "帮助与就绪状态"}</Link>
         </nav>
         <div className="profile-area">
-          <button
-            className="profile-row"
-            type="button"
-            aria-expanded={profileOpen}
-            aria-controls="account-profile-menu"
-            onClick={() => setProfileOpen((open) => !open)}
-          >
-            <span className={`avatar ${hasAdminAccess ? "admin-avatar" : ""}`}>{account.principal?.displayName.slice(0, 1) ?? "访"}</span>
-            <div>
-              <strong>{account.principal?.displayName ?? (account.status === "not-configured" ? (english ? "Local development" : "本地开发模式") : (english ? "Signed out" : "未登录"))}</strong>
-              <small>{account.principal
-                ? `${hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}${account.principal.organizationId}`
-                : (english ? "No enterprise session" : "无企业会话")}</small>
-            </div>
-            <Icon name="chevron" size={16} />
-          </button>
-          {profileOpen && (
-            <div className="profile-menu" id="account-profile-menu">
-              {account.status === "authenticated" && account.principal ? (
-                <>
+          {account.status === "authenticated" && account.principal ? (
+            <>
+              <button
+                className="profile-row"
+                type="button"
+                aria-expanded={profileOpen}
+                aria-controls="account-profile-menu"
+                onClick={() => setProfileOpen((open) => !open)}
+              >
+                <span className={`avatar ${hasAdminAccess ? "admin-avatar" : ""}`}>{account.principal.displayName.slice(0, 1)}</span>
+                <div>
+                  <strong>{account.principal.displayName}</strong>
+                  <small>{hasAdminAccess ? (english ? "Administrator" : "管理员") + " · " : ""}{account.principal.organizationId}</small>
+                </div>
+                <Icon name="chevron" size={16} />
+              </button>
+              {profileOpen && (
+                <div className="profile-menu" id="account-profile-menu">
                   <div className="profile-menu-summary">
                     <strong>{account.principal.displayName}</strong>
                     <small>{account.principal.roles.join(" · ") || "无业务角色"}</small>
@@ -336,18 +334,35 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     </label>
                   )}
                   <button type="button" onClick={() => void logout()}>{english ? "Sign out securely" : "安全退出"}</button>
-                </>
-              ) : (
-                <>
-                  <Link href={`/login?${new URLSearchParams({ returnTo: pathname })}`} onClick={closeSidebar}>
-                    {english ? "User sign in" : "用户登录"}
-                  </Link>
-                  <Link className="profile-admin-login-link" href="/admin/login" onClick={closeSidebar}>
-                    {english ? "Administrator entry" : "管理员入口"}
-                  </Link>
-                </>
+                </div>
               )}
-            </div>
+            </>
+          ) : (
+            <>
+              <Link
+                className={`profile-row profile-login-row ${pathname === "/login" ? "active" : ""}`}
+                href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
+                prefetch={false}
+                onClick={closeSidebar}
+              >
+                <span className="avatar">访</span>
+                <div>
+                  <strong>{english ? "User sign in" : "用户登录"}</strong>
+                  <small>{english ? "Signed out · click to sign in" : "未登录 · 点击进入登录"}</small>
+                </div>
+                <Icon name="chevron" size={16} />
+              </Link>
+              <div className="profile-guest-bar">
+                <Link
+                  className="profile-guest-admin"
+                  href="/admin/login"
+                  prefetch={false}
+                  onClick={closeSidebar}
+                >
+                  {english ? "Administrator login →" : "管理员登录入口 →"}
+                </Link>
+              </div>
+            </>
           )}
         </div>
       </aside>
@@ -390,10 +405,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </button>
             ) : (
               <div className="anonymous-login-actions">
-                <Link className="top-login-link" href={`/login?${new URLSearchParams({ returnTo: pathname })}`}>
+                <Link
+                  className={`top-login-link ${pathname === "/login" ? "active" : ""}`}
+                  href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
+                  prefetch={false}
+                >
                   {english ? "User sign in" : "用户登录"}
                 </Link>
-                <Link className="top-login-link top-admin-login-link" href="/admin/login">
+                <Link
+                  className={`top-login-link top-admin-login-link ${pathname === "/admin/login" ? "active" : ""}`}
+                  href="/admin/login"
+                  prefetch={false}
+                >
                   {english ? "Admin" : "管理员入口"}
                 </Link>
               </div>
