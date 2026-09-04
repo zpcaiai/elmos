@@ -579,7 +579,8 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "all_test_files = sorted(tests_root.rglob(\"test_*.py\"))"
         )
         diagnostic_command = (
-            "python -I -B scripts/toolchains/diagnose_apple_route_ci.py"
+            'python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/'
+            'diagnose_apple_route_ci.py"'
         )
         apple_diagnostic = route_engine_job.index(diagnostic_command)
         host_preparation = route_engine_job.index(

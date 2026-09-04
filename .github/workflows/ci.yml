@@ -361,10 +361,10 @@ jobs:
         run: |
           diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
           uv --directory engines/polyglot-route-engine run --locked --no-dev \
-            python -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/diagnose_apple_route_ci.py" \
             | tee "${diagnostic}"
           uv --directory engines/polyglot-route-engine run --locked --no-dev \
-            python -I -B scripts/toolchains/diagnose_apple_route_ci.py \
+            python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/diagnose_apple_route_ci.py" \
               --verify-jsonl "${diagnostic}"
       - name: Provision digest-bound route toolchains
         run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
