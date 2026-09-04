@@ -1,8 +1,24 @@
 UV ?= uv
-BATCH30_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
+override SHELL := /bin/sh
+override .SHELLFLAGS := -eu -c
+# Security gates must not be replaceable with `BATCH30_PYTHON=true` or
+# `UV=true` on a make command line. Resolve the executable once and freeze the
+# complete isolated invocation. Production operators use the separately
+# documented root-owned qualification mirror, never a caller-supplied tool.
+override BATCH30_RESOLVED_UV := $(realpath $(shell command -v uv 2>/dev/null))
+override BATCH30_PYTHON := $(BATCH30_RESOLVED_UV) run --quiet --with jsonschema --with pyyaml python -I
+# Production evidence collection and the launch gate must not execute anything
+# discovered through caller-controlled PATH.  The immutable production mirror
+# supplies root-owned system dependencies for this fixed isolated interpreter;
+# developer convenience targets may continue to use the frozen uv invocation.
+override SPRING_PRODUCTION_PYTHON := /usr/bin/python3 -I
+# Production targets parse this file alone. This value is evaluated when the
+# recipe runs, after GNU make has discovered every included makefile.
+override SPRING_PRODUCTION_MAKEFILE_OK = $(if $(and $(filter file,$(origin MAKEFILE_LIST)),$(filter 1,$(words $(MAKEFILE_LIST))),$(filter $(abspath Makefile.batch30),$(abspath $(firstword $(MAKEFILE_LIST))))),true,false)
 PACK ?=
 SPRING_ENV_FILE ?=
 ELMOS_ENV_FILE ?=
+ELMOS_WEB_ENV_FILE ?=
 SPRING_EXTERNAL_EVIDENCE ?=
 SPRING_TRUST_STORE ?=
 SPRING_TRUST_STORE_DIGEST ?=
@@ -13,6 +29,7 @@ SPRING_PROVIDER ?=
 SPRING_REGION ?=
 SPRING_ENVIRONMENT_CLASS ?=
 SPRING_EXPECTED_REVISION ?=
+SPRING_OBSERVER_BUNDLE_DIGEST ?=
 SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST ?=
 SPRING_WEB_CONTAINER ?=
 SPRING_WEB_IMAGE_DIGEST ?=
@@ -25,6 +42,7 @@ SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT ?=
 # otherwise a value such as $$(shell ...) would execute inside make itself.
 override SPRING_ENV_FILE := $(value SPRING_ENV_FILE)
 override ELMOS_ENV_FILE := $(value ELMOS_ENV_FILE)
+override ELMOS_WEB_ENV_FILE := $(value ELMOS_WEB_ENV_FILE)
 override SPRING_EXTERNAL_EVIDENCE := $(value SPRING_EXTERNAL_EVIDENCE)
 override SPRING_TRUST_STORE := $(value SPRING_TRUST_STORE)
 override SPRING_TRUST_STORE_DIGEST := $(value SPRING_TRUST_STORE_DIGEST)
@@ -35,6 +53,7 @@ override SPRING_PROVIDER := $(value SPRING_PROVIDER)
 override SPRING_REGION := $(value SPRING_REGION)
 override SPRING_ENVIRONMENT_CLASS := $(value SPRING_ENVIRONMENT_CLASS)
 override SPRING_EXPECTED_REVISION := $(value SPRING_EXPECTED_REVISION)
+override SPRING_OBSERVER_BUNDLE_DIGEST := $(value SPRING_OBSERVER_BUNDLE_DIGEST)
 override SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST := $(value SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST)
 override SPRING_WEB_CONTAINER := $(value SPRING_WEB_CONTAINER)
 override SPRING_WEB_IMAGE_DIGEST := $(value SPRING_WEB_IMAGE_DIGEST)
@@ -44,18 +63,19 @@ override SPRING_WEB_COLLECTOR_ID := $(value SPRING_WEB_COLLECTOR_ID)
 override SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT := $(value SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT)
 override PACK := $(value PACK)
 export PACK
-export SPRING_ENV_FILE ELMOS_ENV_FILE SPRING_EXTERNAL_EVIDENCE
+export SPRING_ENV_FILE ELMOS_ENV_FILE ELMOS_WEB_ENV_FILE SPRING_EXTERNAL_EVIDENCE
 export SPRING_TRUST_STORE SPRING_TRUST_STORE_DIGEST SPRING_EVIDENCE_ROOT
 export SPRING_ENVIRONMENT_ID SPRING_DEPLOYMENT_ID SPRING_PROVIDER SPRING_REGION
 export SPRING_ENVIRONMENT_CLASS SPRING_EXPECTED_REVISION
+export SPRING_OBSERVER_BUNDLE_DIGEST
 export SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST
 export SPRING_WEB_CONTAINER SPRING_WEB_IMAGE_DIGEST SPRING_WEB_COLLECTOR_ID
 export SPRING_WORKER_CONTAINER SPRING_WORKER_IMAGE_DIGEST
 export SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT
-.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-runner-validate spring-launch-validate spring-web-runtime-attestation spring-launch-gate
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-runner-validate spring-production-makefile-validate spring-runner-production-validate spring-launch-validate spring-web-runtime-attestation spring-launch-gate
 b30-skills-test:
 	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
-	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
+	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -t . -p 'test_*.py'
 b30-pack-validate:
 	@case "$${PACK}" in ""|.*|*..*|*[!A-Za-z0-9._-]*) echo "PACK must be one direct framework pack key" >&2; exit 2;; esac
 	@test -d "framework-packs/$${PACK}" || (echo "PACK must identify an existing framework pack" >&2 && exit 2)
@@ -66,26 +86,36 @@ b30-pack-gate:
 	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py "framework-packs/$${PACK}"
 spring-runner-validate:
 	$(BATCH30_PYTHON) deploy/production/runner/validate_spring_runner_topology.py
+spring-production-makefile-validate:
+	@test "$(SPRING_PRODUCTION_MAKEFILE_OK)" = true || (echo "production Spring targets require /usr/bin/make -f Makefile.batch30" >&2; exit 2)
+spring-runner-production-validate: spring-production-makefile-validate
+	@test -n "$${SPRING_EXPECTED_REVISION}" || (echo "SPRING_EXPECTED_REVISION=<40-char deployed Git revision> required" && exit 2)
+	@test -n "$${SPRING_OBSERVER_BUNDLE_DIGEST}" || (echo "SPRING_OBSERVER_BUNDLE_DIGEST=sha256:<independently approved immutable bundle digest> required" && exit 2)
+	$(SPRING_PRODUCTION_PYTHON) deploy/production/runner/validate_spring_runner_topology.py \
+		--check-observer-bundle \
+		--observer-revision "$${SPRING_EXPECTED_REVISION}" \
+		--observer-bundle-digest "$${SPRING_OBSERVER_BUNDLE_DIGEST}"
 spring-launch-validate: spring-runner-validate
 	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py
-spring-web-runtime-attestation:
+spring-web-runtime-attestation: spring-runner-production-validate
 	@test -n "$${SPRING_WEB_CONTAINER}" || (echo "SPRING_WEB_CONTAINER=<exact container name/id> required" && exit 2)
 	@test -n "$${SPRING_WEB_IMAGE_DIGEST}" || (echo "SPRING_WEB_IMAGE_DIGEST=sha256:<pinned image ID> required" && exit 2)
 	@test -n "$${SPRING_WORKER_CONTAINER}" || (echo "SPRING_WORKER_CONTAINER=<exact container name/id> required" && exit 2)
 	@test -n "$${SPRING_WORKER_IMAGE_DIGEST}" || (echo "SPRING_WORKER_IMAGE_DIGEST=sha256:<pinned image ID> required" && exit 2)
 	@test -n "$${SPRING_WEB_COLLECTOR_ID}" || (echo "SPRING_WEB_COLLECTOR_ID=<collector identity> required" && exit 2)
 	@test -n "$${SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT}" || (echo "SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=<new file outside repository> required" && exit 2)
-	$(BATCH30_PYTHON) scripts/batch30/spring_launch_evidence.py collect-web-runtime \
+	$(SPRING_PRODUCTION_PYTHON) scripts/batch30/spring_launch_evidence.py collect-web-runtime \
 		--container "$${SPRING_WEB_CONTAINER}" \
 		--expected-image-digest "$${SPRING_WEB_IMAGE_DIGEST}" \
 		--worker-container "$${SPRING_WORKER_CONTAINER}" \
 		--expected-worker-image-digest "$${SPRING_WORKER_IMAGE_DIGEST}" \
 		--collector-identity "$${SPRING_WEB_COLLECTOR_ID}" \
 		--output "$${SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT}"
-spring-launch-gate: spring-runner-validate
+spring-launch-gate: spring-runner-production-validate
 	@test -n "$${SPRING_EXTERNAL_EVIDENCE}" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
 	@test -n "$${SPRING_ENV_FILE}" || (echo "SPRING_ENV_FILE=<owner-only spring.env> required" && exit 2)
-	@test -n "$${ELMOS_ENV_FILE}" || (echo "ELMOS_ENV_FILE=<actual owner-only Compose env file> required" && exit 2)
+	@test -n "$${ELMOS_ENV_FILE}" || (echo "ELMOS_ENV_FILE=<owner-only credential-free Compose interpolation manifest> required" && exit 2)
+	@test -n "$${ELMOS_WEB_ENV_FILE}" || (echo "ELMOS_WEB_ENV_FILE=<owner-only web-console runtime env file> required" && exit 2)
 	@test -n "$${SPRING_TRUST_STORE}" || (echo "SPRING_TRUST_STORE=<trust-store.json> required" && exit 2)
 	@test -n "$${SPRING_TRUST_STORE_DIGEST}" || (echo "SPRING_TRUST_STORE_DIGEST=sha256:<pinned digest> required" && exit 2)
 	@test -n "$${SPRING_EVIDENCE_ROOT}" || (echo "SPRING_EVIDENCE_ROOT=<approved-evidence-directory> required" && exit 2)
@@ -96,9 +126,10 @@ spring-launch-gate: spring-runner-validate
 	@test -n "$${SPRING_ENVIRONMENT_CLASS}" || (echo "SPRING_ENVIRONMENT_CLASS=STAGING|PRODUCTION required" && exit 2)
 	@test -n "$${SPRING_EXPECTED_REVISION}" || (echo "SPRING_EXPECTED_REVISION=<40-char deployed Git revision> required" && exit 2)
 	@test -n "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}" || (echo "SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST=sha256:<CI-pinned /app/app.jar digest> required" && exit 2)
-	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py \
+	$(SPRING_PRODUCTION_PYTHON) scripts/batch30/validate_spring_launch_readiness.py \
 		--environment-file "$${SPRING_ENV_FILE}" \
-		--compose-environment-file "$${ELMOS_ENV_FILE}" --require-production-evidence \
+		--compose-environment-file "$${ELMOS_ENV_FILE}" \
+		--web-environment-file "$${ELMOS_WEB_ENV_FILE}" --require-production-evidence \
 		--external-evidence "$${SPRING_EXTERNAL_EVIDENCE}" \
 		--trust-store "$${SPRING_TRUST_STORE}" \
 		--expected-trust-store-digest "$${SPRING_TRUST_STORE_DIGEST}" \

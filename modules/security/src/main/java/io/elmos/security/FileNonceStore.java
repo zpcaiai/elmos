@@ -54,6 +54,8 @@ public final class FileNonceStore {
     private static final long MAX_TTL_SECONDS = 600;
     private static final int MAX_PRUNE_PER_CLAIM = 32;
     private static final String LOCK_FILE_NAME = ".nonce-store.lock";
+    private static final String CLOCK_FILE_NAME = ".nonce-store.clock";
+    private static final String CLOCK_VERSION = "ELMOS-SPRING-NONCE-CLOCK-V1";
     private static final ConcurrentMap<Path, ReentrantLock> JVM_LOCKS = new ConcurrentHashMap<>();
 
     private final Path root;
@@ -62,6 +64,8 @@ public final class FileNonceStore {
     private final long processUid;
     private final Path lockFile;
     private final Object lockFileKey;
+    private final Path clockFile;
+    private final Object clockFileKey;
     private final ReentrantLock jvmLock;
 
     public FileNonceStore(Path root, Clock clock) {
@@ -76,6 +80,8 @@ public final class FileNonceStore {
         this.lockFile = root.resolve(LOCK_FILE_NAME);
         this.lockFileKey = initializeLockFile();
         this.jvmLock = JVM_LOCKS.computeIfAbsent(realRoot(), ignored -> new ReentrantLock());
+        this.clockFile = root.resolve(CLOCK_FILE_NAME);
+        this.clockFileKey = initializeClockFileUnderLock();
     }
 
     public boolean claim(
@@ -103,11 +109,7 @@ public final class FileNonceStore {
             throw new IllegalArgumentException("nonce is invalid");
         }
         Objects.requireNonNull(expiresAt, "expiresAt");
-        long now = clock.instant().getEpochSecond();
         long expiry = expiresAt.getEpochSecond();
-        if (expiry < now || expiry > Math.addExact(now, MAX_TTL_SECONDS)) {
-            throw new IllegalArgumentException("nonce expiry is outside the bounded window");
-        }
         String digest = SpringHmacProtocol.sha256(String.join("\u0000",
                 protocol, role, signer, nonce).getBytes(StandardCharsets.UTF_8));
         Path record = root.resolve(digest + ".nonce");
@@ -118,6 +120,11 @@ public final class FileNonceStore {
              FileLock ignored = channel.lock()) {
             validateRootIdentity();
             validateRecordFile(lockFile, lockFileKey, true);
+            long now = clock.instant().getEpochSecond();
+            if (expiry < now || expiry > Math.addExact(now, MAX_TTL_SECONDS)) {
+                throw new IllegalArgumentException("nonce expiry is outside the bounded window");
+            }
+            advanceClockHighWater(now);
             pruneExpired(now);
             for (int attempt = 0; attempt < 4; attempt++) {
                 if (createRecord(record, expiry)) return true;
@@ -294,6 +301,101 @@ public final class FileNonceStore {
             return attributes.fileKey();
         } catch (IOException error) {
             throw new IllegalStateException("nonce store lock could not be initialized", error);
+        }
+    }
+
+    private Object initializeClockFile() {
+        try {
+            try (FileChannel channel = FileChannel.open(
+                    clockFile,
+                    Set.of(StandardOpenOption.CREATE_NEW, StandardOpenOption.WRITE),
+                    PosixFilePermissions.asFileAttribute(FILE_PERMISSIONS))) {
+                writeFully(channel, (CLOCK_VERSION + "\n0\n").getBytes(StandardCharsets.US_ASCII));
+                channel.force(true);
+            } catch (FileAlreadyExistsException ignored) {
+                // Another instance initialized the high-water record; validate it below.
+            }
+            BasicFileAttributes attributes = validateRecordFile(clockFile, null, true);
+            readClockHighWater(attributes.fileKey());
+            forceDirectory();
+            return attributes.fileKey();
+        } catch (IOException error) {
+            throw new IllegalStateException("nonce clock high-water could not be initialized", error);
+        }
+    }
+
+    private Object initializeClockFileUnderLock() {
+        jvmLock.lock();
+        try (FileChannel channel = FileChannel.open(
+                     lockFile,
+                     Set.of(StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS));
+             FileLock ignored = channel.lock()) {
+            validateRootIdentity();
+            validateRecordFile(lockFile, lockFileKey, true);
+            return initializeClockFile();
+        } catch (IOException error) {
+            throw new IllegalStateException("nonce clock high-water lock failed", error);
+        } finally {
+            jvmLock.unlock();
+        }
+    }
+
+    private long readClockHighWater(Object expectedFileKey) throws IOException {
+        BasicFileAttributes before = validateRecordFile(clockFile, expectedFileKey, true);
+        if (before.size() < CLOCK_VERSION.length() + 3 || before.size() > 96) {
+            throw new IllegalStateException("nonce clock high-water size is invalid");
+        }
+        byte[] content = Files.readAllBytes(clockFile);
+        BasicFileAttributes after = validateRecordFile(clockFile, expectedFileKey, true);
+        if (before.size() != after.size()
+                || !before.lastModifiedTime().equals(after.lastModifiedTime())) {
+            throw new IllegalStateException("nonce clock high-water changed while read");
+        }
+        String[] lines = new String(content, StandardCharsets.US_ASCII).split("\\n", -1);
+        if (lines.length != 3
+                || !CLOCK_VERSION.equals(lines[0])
+                || !lines[1].matches("[0-9]{1,20}")
+                || !lines[2].isEmpty()) {
+            throw new IllegalStateException("nonce clock high-water content is invalid");
+        }
+        try {
+            return Long.parseLong(lines[1]);
+        } catch (NumberFormatException error) {
+            throw new IllegalStateException("nonce clock high-water value is invalid", error);
+        }
+    }
+
+    private void advanceClockHighWater(long now) throws IOException {
+        long highWater = readClockHighWater(clockFileKey);
+        if (now < highWater) {
+            throw new IllegalStateException("nonce store clock rollback detected");
+        }
+        if (now == highWater) return;
+        try (FileChannel channel = FileChannel.open(
+                clockFile,
+                Set.of(StandardOpenOption.WRITE, LinkOption.NOFOLLOW_LINKS))) {
+            channel.truncate(0);
+            channel.position(0);
+            writeFully(channel, (CLOCK_VERSION + "\n" + now + "\n")
+                    .getBytes(StandardCharsets.US_ASCII));
+            channel.force(true);
+        }
+        validateRecordFile(clockFile, clockFileKey, true);
+        if (readClockHighWater(clockFileKey) != now) {
+            throw new IllegalStateException("nonce clock high-water was not durably advanced");
+        }
+        forceDirectory();
+    }
+
+    private static void writeFully(FileChannel channel, byte[] content) throws IOException {
+        ByteBuffer buffer = ByteBuffer.wrap(content);
+        int zeroWrites = 0;
+        while (buffer.hasRemaining()) {
+            int count = channel.write(buffer);
+            if (count == 0 && ++zeroWrites > 8) {
+                throw new IOException("nonce metadata write made no progress");
+            }
+            if (count > 0) zeroWrites = 0;
         }
     }
 

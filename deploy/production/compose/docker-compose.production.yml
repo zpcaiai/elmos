@@ -29,7 +29,6 @@ x-hardening: &hardening
 
 x-java-service: &java-service
   <<: *hardening
-  env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
   # VERIFY-REQUIRED: Java 镜像的可写路径未经确认，暂不设 read_only / user
   deploy:
     resources:
@@ -74,7 +73,7 @@ services:
     pids_limit: 512
     tmpfs:
       - "/tmp:rw,noexec,nosuid,size=64m"
-    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
+    env_file: ["${ELMOS_WEB_ENV_FILE:?web-console env file is required}"]
     environment:
       NODE_ENV: production
       # 同一受控 Compose bridge 内只允许下面三个精确服务名使用 HTTP；
@@ -88,7 +87,6 @@ services:
       ELMOS_REPOSITORY_WORKSPACE_BASE_URL: http://control-plane:8080
       # Enable only together with the chinadb-sql profile and an approved
       # internal worker deployment. Disabled remains a safe 503/BLOCKED state.
-      ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED: "${ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED:-false}"
       # Spring profile 仍由环境变量单独授权；多租户模式禁止回退到全局租户。
       ELMOS_SPRING_PROXY_ENABLED: "${ELMOS_SPRING_PROXY_ENABLED:-false}"
       ELMOS_SPRING_PROXY_MULTI_TENANT: "true"
@@ -101,7 +99,7 @@ services:
       ELMOS_LOCAL_RUNNER_ENABLED: "false"
     volumes:
       # 管理员登录邮件 API Key；宿主文件需由容器 UID 10001 读取且不得授予 group/other。
-      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/resend-api-key:/run/secrets/elmos/resend-api-key:ro"
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/web/resend-api-key:/run/secrets/elmos/resend-api-key:ro"
     networks: [edge, backend]
     expose: ["3000"]
     depends_on:
@@ -117,7 +115,7 @@ services:
       start_period: 20s
     deploy:
       resources:
-        limits: { cpus: "2.0", memory: 1g }
+        limits: { cpus: "2.0", memory: 1g, pids: 512 }
 
   # ---------------------------------------------------------------------------
   # Tier 1 · 控制面
@@ -125,14 +123,14 @@ services:
   control-plane:
     <<: *java-service
     build: { context: ../../.., dockerfile: apps/control-plane/Dockerfile }
+    env_file: ["${ELMOS_CONTROL_PLANE_ENV_FILE:?control-plane env file is required}"]
     environment:
       # 来自 env_file：ELMOS_DATABASE_URL / _USER / _PASSWORD（托管 PostgreSQL）
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
-      ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED: "${ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED:-false}"
       ELMOS_DATABASE_DATA_ENGINE_BASE_URL: http://database-data-engine-worker:8089
     volumes:
       # owner-only 对象存储凭据与可选本地身份 pepper；只读挂载。
-      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}:/run/secrets/elmos:ro"
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/control-plane:/run/secrets/elmos:ro"
     networks: [backend]
     expose: ["8080"]
 
@@ -142,11 +140,14 @@ services:
   commercial-api:
     <<: *java-service
     build: { context: ../../.., dockerfile: apps/commercial-api/Dockerfile }
+    env_file: ["${ELMOS_COMMERCIAL_API_ENV_FILE:?commercial-api env file is required}"]
     environment:
       ELMOS_COMMERCIAL_API_PORT: "8085"
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
       # 计费数据库适配器只在 ELMOS_COMMERCIAL_DATABASE_URL 存在时创建（来自 env_file）
       # 缺失时计费 Controller 不注册 —— 这是预期的失败关闭，不是启动失败
+    volumes:
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/commercial-api:/run/secrets/elmos:ro"
     networks: [backend]
     expose: ["8085"]
 
@@ -156,6 +157,7 @@ services:
   workspace-service:
     <<: *java-service
     build: { context: ../../.., dockerfile: apps/workspace-service/Dockerfile }
+    env_file: ["${ELMOS_WORKSPACE_SERVICE_ENV_FILE:?workspace-service env file is required}"]
     environment:
       ELMOS_WORKSPACE_DOCKER_ENABLED: "false"   # 容器执行由独立 Runner 主机承担
       ELMOS_SHUTDOWN_TIMEOUT: "30s"
@@ -195,6 +197,7 @@ services:
     <<: *java-service
     profiles: ["chinadb-sql"]
     build: { context: ../../.., dockerfile: engines/database-data-engine/Dockerfile }
+    env_file: ["${ELMOS_DATABASE_DATA_ENGINE_ENV_FILE:?database-data-engine env file is required}"]
     environment:
       ELMOS_DATABASE_DATA_PORT: "8089"
       ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED: "true"
@@ -218,7 +221,7 @@ services:
     profiles: ["minio"]
     image: minio/minio:RELEASE.2025-07-23T15-54-02Z
     command: server /data --console-address :9001
-    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]
+    env_file: ["${ELMOS_MINIO_ENV_FILE:?minio env file is required}"]
     volumes: ["artifact-data:/data"]
     networks: [backend]
     expose: ["9000"]
@@ -239,6 +242,7 @@ services:
     <<: *java-service
     profiles: ["egress"]
     build: { context: ../../.., dockerfile: apps/egress-proxy/Dockerfile }
+    env_file: ["${ELMOS_EGRESS_PROXY_ENV_FILE:?egress-proxy env file is required}"]
     networks: [backend]
 
   # ---------------------------------------------------------------------------
@@ -252,9 +256,8 @@ services:
     <<: *java-service
     profiles: ["spring"]
     build: { context: ../../.., dockerfile: apps/java-engine-worker/Dockerfile }
-    # The Spring worker consumes only the explicit allowlist below.  The full
-    # application env_file contains unrelated credentials and must not enter
-    # this narrower ingress-authentication security boundary.
+    # The Spring worker consumes only the explicit allowlist below and never
+    # receives any service runtime env file.
     env_file: []
     user: "10001:10001"
     read_only: true

@@ -19,6 +19,7 @@ import subprocess
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable
 from urllib.parse import unquote, urlparse
@@ -26,6 +27,127 @@ from urllib.parse import unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
 DIGEST_PATTERN = re.compile(r"^sha256:([0-9a-f]{64})$")
+TRUSTED_OPENSSL_PATHS = (
+    Path("/usr/bin/openssl"),
+    Path("/opt/homebrew/opt/openssl@3/bin/openssl"),
+    Path("/usr/local/opt/openssl@3/bin/openssl"),
+)
+
+
+def _trusted_system_executable(
+    path: Path, *, label: str, allow_current_owner: bool = False
+) -> Path:
+    """Resolve one fixed system executable without consulting caller PATH state."""
+
+    if not path.is_absolute() or path == Path("/"):
+        raise OSError(f"{label} path must be an absolute non-root path")
+    try:
+        resolved = path.resolve(strict=True)
+        details = resolved.stat()
+    except OSError as exc:
+        raise OSError(f"{label} is unavailable at {path}") from exc
+    allowed_owners = {0}
+    if allow_current_owner and os.geteuid() != 0:
+        allowed_owners.add(os.geteuid())
+    if not stat.S_ISREG(details.st_mode) or details.st_uid not in allowed_owners:
+        raise OSError(f"{label} must resolve to an approved-owner regular file")
+    if stat.S_IMODE(details.st_mode) & 0o022:
+        raise OSError(f"{label} must not be group/other-writable")
+    for parent in resolved.parents:
+        parent_details = parent.stat()
+        if (
+            not stat.S_ISDIR(parent_details.st_mode)
+            or parent_details.st_uid not in allowed_owners
+            or (
+                stat.S_IMODE(parent_details.st_mode) & 0o022
+                and not (
+                    allow_current_owner
+                    and os.geteuid() != 0
+                    and parent_details.st_uid == os.geteuid()
+                )
+            )
+        ):
+            raise OSError(f"{label} must not traverse an unapproved path")
+    return resolved
+
+
+@lru_cache(maxsize=1)
+def trusted_openssl_path() -> Path:
+    """Select an allowlisted OpenSSL that actually supports Ed25519.
+
+    Linux production hosts are expected to use the root-owned ``/usr/bin``
+    binary.  Apple ships an older LibreSSL there, so bounded developer checks
+    may use the current account's allowlisted Homebrew OpenSSL installation.
+    Production launch validation separately rejects a non-root-owned crypto
+    toolchain.
+    """
+
+    probe = (
+        b"-----BEGIN PUBLIC KEY-----\n"
+        b"MCowBQYDK2VwAyEA11qYAYKxCrfVS/JC/eEXyzE32cDGOtaIWzPDcqdEKQA=\n"
+        b"-----END PUBLIC KEY-----\n"
+    )
+    failures: list[str] = []
+    for candidate in TRUSTED_OPENSSL_PATHS:
+        try:
+            executable = _trusted_system_executable(
+                candidate,
+                label="OpenSSL verifier",
+                allow_current_owner=True,
+            )
+            completed = subprocess.run(
+                [str(executable), "pkey", "-pubin", "-outform", "DER"],
+                input=probe,
+                check=False,
+                capture_output=True,
+                timeout=10,
+                env={
+                    "HOME": "/nonexistent",
+                    "LANG": "C",
+                    "LC_ALL": "C",
+                    "PATH": "/usr/bin:/bin",
+                },
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            failures.append(f"{candidate}: {exc}")
+            continue
+        if completed.returncode == 0 and completed.stdout.startswith(b"0*"):
+            return executable
+        failures.append(f"{candidate}: Ed25519 unsupported")
+    raise OSError("no allowlisted Ed25519-capable OpenSSL verifier is available")
+
+
+def production_openssl_is_root_owned() -> bool:
+    """Return whether the selected crypto verifier is immutable to this account."""
+
+    executable = trusted_openssl_path()
+    if executable.stat().st_uid != 0:
+        return False
+    return all(parent.stat().st_uid == 0 for parent in executable.parents)
+
+
+def run_trusted_openssl(
+    arguments: Iterable[str],
+    *,
+    input_bytes: bytes | None = None,
+    timeout: int = 10,
+) -> subprocess.CompletedProcess[bytes]:
+    """Run the fixed OS OpenSSL binary with no inherited path or Python hooks."""
+
+    executable = trusted_openssl_path()
+    return subprocess.run(
+        [str(executable), *arguments],
+        input=input_bytes,
+        check=False,
+        capture_output=True,
+        timeout=timeout,
+        env={
+            "HOME": "/nonexistent",
+            "LANG": "C",
+            "LC_ALL": "C",
+            "PATH": "/usr/bin:/bin",
+        },
+    )
 
 
 def canonical_bytes(value: Any) -> bytes:
@@ -557,9 +679,8 @@ class TrustStore:
             payload_path.write_bytes(canonical_bytes(payload))
             signature_path.write_bytes(signature)
             public_key_path.write_bytes(key.public_key_bytes)
-            completed = subprocess.run(
+            completed = run_trusted_openssl(
                 [
-                    "openssl",
                     "pkeyutl",
                     "-verify",
                     "-pubin",
@@ -571,8 +692,6 @@ class TrustStore:
                     "-sigfile",
                     str(signature_path),
                 ],
-                check=False,
-                capture_output=True,
                 timeout=10,
             )
         if completed.returncode != 0:

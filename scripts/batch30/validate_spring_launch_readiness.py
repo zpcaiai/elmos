@@ -5,12 +5,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib.util
 import ipaddress
 import json
 import os
 import re
 import stat
 import sys
+import types
 from collections import namedtuple
 from collections.abc import Mapping
 from pathlib import Path
@@ -20,7 +22,16 @@ ROOT = Path(__file__).resolve().parents[2]
 PROFILE = ROOT / "deploy/production/spring-launch-profile.json"
 COMPOSE = ROOT / "deploy/production/compose/docker-compose.production.yml"
 SPRING_APPLICATION_COMPOSE = ROOT / "deploy/production/compose/docker-compose.spring-application.yml"
-ENV_EXAMPLE = ROOT / "deploy/production/elmos-commercial.env.example"
+COMPOSE_ENV_EXAMPLE = ROOT / "deploy/production/.env.example"
+SERVICE_ENV_EXAMPLES = {
+    "web-console": ROOT / "deploy/production/env/web-console.env.example",
+    "control-plane": ROOT / "deploy/production/env/control-plane.env.example",
+    "commercial-api": ROOT / "deploy/production/env/commercial-api.env.example",
+    "workspace-service": ROOT / "deploy/production/env/workspace-service.env.example",
+    "database-data-engine-worker": ROOT / "deploy/production/env/database-data-engine.env.example",
+    "egress-proxy": ROOT / "deploy/production/env/egress-proxy.env.example",
+    "minio": ROOT / "deploy/production/env/minio.env.example",
+}
 CATALOG = ROOT / "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java"
 LOCAL_PORT = ROOT / "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java"
 WORKER_CONFIG = ROOT / "apps/java-engine-worker/src/main/resources/application.yml"
@@ -28,6 +39,37 @@ WORKER_POM = ROOT / "apps/java-engine-worker/pom.xml"
 STUDIO = ROOT / "apps/web-console/app/spring/SpringModernizationStudio.tsx"
 ENGINE_AUTH = ROOT / "apps/web-console/app/api/spring-upgrades/springEngineAuth.ts"
 ENGINE_FILTER = ROOT / "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringEngineRequestAuthenticationFilter.java"
+SPRING_EVIDENCE_MODULE = ROOT / "scripts/batch30/spring_launch_evidence.py"
+_SPRING_EVIDENCE: types.ModuleType | None = None
+
+
+def load_spring_evidence_module() -> types.ModuleType:
+    """Load the receipt verifier from its exact repository path."""
+
+    global _SPRING_EVIDENCE
+    if _SPRING_EVIDENCE is not None:
+        return _SPRING_EVIDENCE
+    expected = SPRING_EVIDENCE_MODULE.resolve(strict=True)
+    name = "_elmos_batch30_spring_launch_evidence"
+    specification = importlib.util.spec_from_file_location(name, expected)
+    if specification is None or specification.loader is None:
+        raise RuntimeError(f"cannot load Spring evidence verifier at {expected}")
+    module = importlib.util.module_from_spec(specification)
+    previous = sys.modules.get(name)
+    sys.modules[name] = module
+    try:
+        specification.loader.exec_module(module)
+    except BaseException:
+        if previous is None:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = previous
+        raise
+    origin = Path(str(getattr(module, "__file__", ""))).resolve(strict=True)
+    if origin != expected:
+        raise RuntimeError(f"Spring evidence verifier origin drift: {origin}")
+    _SPRING_EVIDENCE = module
+    return module
 
 EXPECTED_ROUTE = "boot-2.7-maven-to-boot-3.5.3-java-21"
 EXPECTED_GATES = {
@@ -88,12 +130,149 @@ SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED = frozenset(
 FORBIDDEN_SINGLE_TENANT_ENVIRONMENT = "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID"
 MAX_ENVIRONMENT_FILE_BYTES = 64 * 1024
 ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Z][A-Z0-9_]*)=(.*)")
-SAFE_ENVIRONMENT_VALUE = re.compile(r"[A-Za-z0-9._~:/@,+%=-]*")
+SAFE_ENVIRONMENT_VALUE = re.compile(r"[A-Za-z0-9._~:/@,+%=?&-]*")
 EXACT_IDENTITY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}")
 SHA256_DIGEST = re.compile(r"sha256:[0-9a-f]{64}")
 GIT_REVISION = re.compile(r"[0-9a-f]{40}")
 DNS_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")
 COMPOSE_ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)=(.*)")
+COMPOSE_ENVIRONMENT_FILE_KEYS = {
+    "ELMOS_WEB_ENV_FILE": "web-console",
+    "ELMOS_CONTROL_PLANE_ENV_FILE": "control-plane",
+    "ELMOS_COMMERCIAL_API_ENV_FILE": "commercial-api",
+    "ELMOS_WORKSPACE_SERVICE_ENV_FILE": "workspace-service",
+    "ELMOS_DATABASE_DATA_ENGINE_ENV_FILE": "database-data-engine-worker",
+    "ELMOS_EGRESS_PROXY_ENV_FILE": "egress-proxy",
+    "ELMOS_MINIO_ENV_FILE": "minio",
+}
+COMPOSE_ENVIRONMENT_ALLOWLIST = frozenset(
+    {"ELMOS_ENV_FILE", "ELMOS_SECRET_ROOT", *COMPOSE_ENVIRONMENT_FILE_KEYS}
+)
+SECRET_SHAPED_ENVIRONMENT_NAME = re.compile(
+    r"(?:PASSWORD|PASSWD|SECRET|TOKEN|PRIVATEKEY|APIKEY|CREDENTIAL)"
+)
+SERVICE_ENVIRONMENT_ALLOWLISTS = {
+    "web-console": frozenset(
+        {
+            "ELMOS_OIDC_CLIENT_ID",
+            "ELMOS_OIDC_CLIENT_SECRET",
+            "ELMOS_OIDC_AUTHORIZATION_ENDPOINT",
+            "ELMOS_OIDC_TOKEN_ENDPOINT",
+            "ELMOS_OIDC_USERINFO_ENDPOINT",
+            "ELMOS_OIDC_JWKS_URI",
+            "ELMOS_OIDC_END_SESSION_ENDPOINT",
+            "ELMOS_OIDC_REVOCATION_ENDPOINT",
+            "ELMOS_OIDC_REDIRECT_URI",
+            "ELMOS_PUBLIC_ORIGIN",
+            "ELMOS_SESSION_SECRET",
+            "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED",
+            "ELMOS_OPERATIONS_API_KEY",
+            "ELMOS_OPERATIONS_API_KEY_EXPIRES_AT",
+            "ELMOS_OPERATIONS_TENANT_ID",
+            "ELMOS_OPERATIONS_ACTOR_ID",
+            "ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED",
+            "ELMOS_ADMIN_LOGIN_EMAIL_FROM",
+            "ELMOS_RESEND_API_KEY_FILE",
+            "ELMOS_BUSINESS_AUDIT_REQUIRED",
+            "ELMOS_REPOSITORY_WORKSPACE_API_KEY",
+            "ELMOS_REPOSITORY_WORKSPACE_API_KEY_EXPIRES_AT",
+            "ELMOS_REPOSITORY_WORKSPACE_TENANT_ID",
+            "ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID",
+        }
+    ),
+    "control-plane": frozenset(
+        {
+            "ELMOS_DATABASE_URL",
+            "ELMOS_DATABASE_USER",
+            "ELMOS_DATABASE_PASSWORD",
+            "ELMOS_DATABASE_DATA_PREFLIGHT_ENABLED",
+            "ELMOS_OIDC_ISSUER_URI",
+            "ELMOS_OIDC_JWKS_URI",
+            "ELMOS_OIDC_AUDIENCE",
+            "ELMOS_IDENTITY_PEPPER_FILE",
+            "ELMOS_LOCAL_IDENTITY_ENABLED",
+            "ELMOS_RUNNER_IMAGE_GENERATION",
+            "ELMOS_RUNNER_IMAGE_TRANSLATION",
+            "ELMOS_RUNNER_IMAGE_SPRING_UPGRADE",
+            "ELMOS_RUNNER_IMAGE_REPOSITORY_WORKSPACE",
+            "ELMOS_RUNNER_IMAGE_MODERNIZATION_PROOF",
+            "ELMOS_EXECUTION_REAPER_INTERVAL_MS",
+            "ELMOS_OBJECT_STORAGE_CREDENTIAL_REFERENCE",
+            "ELMOS_OBJECT_STORAGE_ACCESS_KEY_ID_FILE",
+            "ELMOS_OBJECT_STORAGE_SECRET_ACCESS_KEY_FILE",
+            "ELMOS_OBJECT_STORAGE_SESSION_TOKEN_FILE",
+            "ELMOS_OBJECT_STORAGE_GC_INTERVAL_MS",
+            "ELMOS_REPOSITORY_WORKSPACE_ENABLED",
+            "ELMOS_REPOSITORY_LEGACY_API_KEY_ENABLED",
+            "ELMOS_REPOSITORY_WORKSPACE_ROOT",
+            "ELMOS_REPOSITORY_CREDENTIAL_ROOT",
+            "ELMOS_GITHUB_APP_ENABLED",
+            "ELMOS_GITHUB_APP_ID",
+            "ELMOS_GITHUB_APP_PRIVATE_KEY_PATH",
+            "ELMOS_GITHUB_APP_SLUG",
+            "ELMOS_GITHUB_APP_CLIENT_ID",
+            "ELMOS_GITHUB_APP_CLIENT_SECRET_PATH",
+            "ELMOS_GITHUB_APP_CALLBACK_URL",
+            "ELMOS_GITHUB_CLONE_BASE_URL",
+            "ELMOS_GITHUB_APP_SUCCESS_URL",
+            "ELMOS_GITHUB_ONBOARDING_STATE_SECRET_PATH",
+            "ELMOS_GITHUB_WEBHOOK_SECRET_FILE",
+            "ELMOS_ACTION_CACHE_ENABLED",
+            "ELMOS_ACTION_CACHE_EXECUTION_CALLER_ENABLED",
+            "ELMOS_ACTION_CACHE_SAMPLE_RECOMPUTE_ONE_IN_N",
+        }
+    ),
+    "commercial-api": frozenset(
+        {
+            "ELMOS_OIDC_ISSUER_URI",
+            "ELMOS_OIDC_JWK_SET_URI",
+            "ELMOS_OIDC_AUDIENCE",
+            "ELMOS_TRIAL_IDENTITY_PEPPER",
+            "ELMOS_COMMERCIAL_DATABASE_URL",
+            "ELMOS_COMMERCIAL_DATABASE_USERNAME",
+            "ELMOS_COMMERCIAL_DATABASE_PASSWORD",
+            "ELMOS_PAYMENT_PROVIDER",
+            "ELMOS_ALIPAY_APP_ID",
+            "ELMOS_ALIPAY_PRIVATE_KEY_FILE",
+            "ELMOS_ALIPAY_PUBLIC_KEY_FILE",
+            "ELMOS_ALIPAY_GATEWAY_URL",
+            "ELMOS_ALIPAY_NOTIFY_URL",
+            "ELMOS_ALIPAY_RETURN_URL",
+            "ELMOS_BILLING_LIVE_ENABLED",
+            "ELMOS_USAGE_EMAIL_ALERTS_ENABLED",
+        }
+    ),
+    "workspace-service": frozenset(
+        {
+            "ELMOS_REPOSITORY_WORKSPACE_API_KEY",
+            "ELMOS_REPOSITORY_WORKSPACE_API_KEY_EXPIRES_AT",
+            "ELMOS_REPOSITORY_WORKSPACE_TENANT_ID",
+            "ELMOS_REPOSITORY_WORKSPACE_ACTOR_ID",
+            "ELMOS_DATABASE_URL",
+            "ELMOS_DATABASE_USER",
+            "ELMOS_DATABASE_PASSWORD",
+        }
+    ),
+    "database-data-engine-worker": frozenset(
+        {
+            "ELMOS_CHINADB_SQL_PREFLIGHT_CONNECT_TIMEOUT",
+            "ELMOS_CHINADB_SQL_PREFLIGHT_REQUEST_TIMEOUT",
+        }
+    ),
+    "egress-proxy": frozenset(
+        {
+            "ELMOS_EGRESS_ALLOWED_HOSTS",
+            "ELMOS_NETWORK_POLICY_ID",
+            "ELMOS_NETWORK_POLICY_VERSION",
+            "ELMOS_PROXY_IDLE_SECONDS",
+            "ELMOS_PROXY_MAX_TUNNEL_MB",
+            "ELMOS_PROXY_PORT",
+            "ELMOS_WORKSPACE_ID",
+        }
+    ),
+    "minio": frozenset({"MINIO_ROOT_USER", "MINIO_ROOT_PASSWORD"}),
+}
+SERVICE_ENVIRONMENT_REQUIRED = SERVICE_ENVIRONMENT_ALLOWLISTS
 DANGEROUS_DEPLOYMENT_ENVIRONMENT = frozenset(
     {
         "SPRING_APPLICATION_JSON",
@@ -109,6 +288,10 @@ DANGEROUS_DEPLOYMENT_ENVIRONMENT = frozenset(
         "SPRING_CONFIG_IMPORT",
         "SPRING_PROFILES_ACTIVE",
         "SPRING_PROFILES_INCLUDE",
+        "PYTHONHOME",
+        "PYTHONPATH",
+        "PYTHONSTARTUP",
+        "PYTHONUSERBASE",
     }
 )
 DANGEROUS_DEPLOYMENT_ENVIRONMENT_NORMALIZED = frozenset(
@@ -131,6 +314,10 @@ LaunchEnvironmentBinding = namedtuple(
         "spring_file_snapshot",
         "compose_environment",
         "compose_file_snapshot",
+        "service_environments",
+        "service_file_snapshots",
+        "web_environment",
+        "web_file_snapshot",
         "effective_environment",
         "application_secret_path",
         "application_environment_commitment_digest",
@@ -513,11 +700,11 @@ def parse_compose_environment_file(
     *,
     snapshot_out: list[EnvironmentFileSnapshot] | None = None,
 ) -> dict[str, str]:
-    """Parse the application env-file as inert data without hashing secret bytes."""
+    """Parse the Compose interpolation manifest as inert, non-secret data."""
     raw = secure_environment_file_bytes(
         errors,
         path,
-        label="Compose deployment environment file",
+        label="Compose interpolation manifest",
         snapshot_out=snapshot_out,
     )
     if raw is None:
@@ -525,10 +712,10 @@ def parse_compose_environment_file(
     try:
         contents = raw.decode("utf-8")
     except UnicodeDecodeError:
-        errors.append("Compose deployment environment file must be valid UTF-8")
+        errors.append("Compose interpolation manifest must be valid UTF-8")
         return {}
     if "\x00" in contents:
-        errors.append("Compose deployment environment file must not contain NUL bytes")
+        errors.append("Compose interpolation manifest must not contain NUL bytes")
         return {}
 
     values: dict[str, str] = {}
@@ -538,38 +725,124 @@ def parse_compose_environment_file(
             continue
         if line != line.strip():
             errors.append(
-                f"Compose deployment environment file line {line_number} has leading or trailing whitespace"
+                f"Compose interpolation manifest line {line_number} has leading or trailing whitespace"
             )
             continue
         match = COMPOSE_ENVIRONMENT_ASSIGNMENT.fullmatch(line)
         if not match:
             errors.append(
-                f"Compose deployment environment file line {line_number} must be an exact KEY=VALUE assignment"
+                f"Compose interpolation manifest line {line_number} must be an exact KEY=VALUE assignment"
             )
             continue
         name, value = match.groups()
         if name in seen:
             errors.append(
-                f"Compose deployment environment file line {line_number} duplicates {name}"
+                f"Compose interpolation manifest line {line_number} duplicates {name}"
             )
             continue
         seen.add(name)
         if "$" in value:
             errors.append(
-                f"Compose deployment environment file line {line_number} contains forbidden interpolation"
+                f"Compose interpolation manifest line {line_number} contains forbidden interpolation"
             )
             continue
         if dangerous_deployment_environment_name(name):
             errors.append(
-                f"Compose deployment environment file must not define dangerous override {name}"
+                f"Compose interpolation manifest must not define dangerous override {name}"
             )
             continue
-        if name in SPRING_ENVIRONMENT_ALLOWLIST and not SAFE_ENVIRONMENT_VALUE.fullmatch(value):
+        if not SAFE_ENVIRONMENT_VALUE.fullmatch(value):
             errors.append(
-                f"Compose deployment environment file line {line_number} has an unsafe Spring value"
+                f"Compose interpolation manifest line {line_number} contains unsafe path syntax"
             )
             continue
         values[name] = value
+    return values
+
+
+def parse_service_environment_file(
+    errors: list[str],
+    path: Path,
+    *,
+    service: str,
+    snapshot_out: list[EnvironmentFileSnapshot] | None = None,
+) -> dict[str, str]:
+    """Load one exact service env file and reject cross-boundary variables."""
+
+    raw = secure_environment_file_bytes(
+        errors,
+        path,
+        label=f"{service} runtime environment file",
+        snapshot_out=snapshot_out,
+    )
+    if raw is None:
+        return {}
+    try:
+        contents = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        errors.append(f"{service} runtime environment file must be valid UTF-8")
+        return {}
+    if "\x00" in contents:
+        errors.append(f"{service} runtime environment file must not contain NUL bytes")
+        return {}
+
+    allowed = SERVICE_ENVIRONMENT_ALLOWLISTS[service]
+    values: dict[str, str] = {}
+    normalized_seen: dict[str, str] = {}
+    for line_number, line in enumerate(contents.splitlines(), start=1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if line != line.strip():
+            errors.append(
+                f"{service} runtime environment line {line_number} has leading or trailing whitespace"
+            )
+            continue
+        match = COMPOSE_ENVIRONMENT_ASSIGNMENT.fullmatch(line)
+        if not match:
+            errors.append(
+                f"{service} runtime environment line {line_number} must be an exact KEY=VALUE assignment"
+            )
+            continue
+        name, value = match.groups()
+        normalized = normalized_environment_name(name)
+        prior = normalized_seen.setdefault(normalized, name)
+        if name in values or prior != name:
+            errors.append(
+                f"{service} runtime environment line {line_number} duplicates or aliases {name}"
+            )
+            continue
+        if "$" in value:
+            errors.append(
+                f"{service} runtime environment line {line_number} contains forbidden interpolation"
+            )
+            continue
+        if not SAFE_ENVIRONMENT_VALUE.fullmatch(value):
+            errors.append(
+                f"{service} runtime environment line {line_number} contains ambiguous quoting, whitespace, comment, or escape syntax"
+            )
+            continue
+        if dangerous_deployment_environment_name(name):
+            errors.append(
+                f"{service} runtime environment must not define dangerous override {name}"
+            )
+            continue
+        if (
+            normalized in SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED
+            or normalized.startswith("ELMOSSPRING")
+        ):
+            errors.append(
+                f"{service} runtime environment must not receive Spring launch key {name}"
+            )
+            continue
+        if name not in allowed:
+            errors.append(
+                f"{service} runtime environment uses key outside its exact allowlist: {name}"
+            )
+            continue
+        values[name] = value
+
+    for name in sorted(SERVICE_ENVIRONMENT_REQUIRED[service] - values.keys()):
+        errors.append(f"{service} runtime environment is missing required key {name}")
     return values
 
 
@@ -577,6 +850,7 @@ def validate_compose_environment_binding(
     errors: list[str],
     *,
     path: Path,
+    web_environment_path: Path | None,
     compose_environment: Mapping[str, str],
     spring_environment: Mapping[str, str],
 ) -> None:
@@ -584,7 +858,12 @@ def validate_compose_environment_binding(
     require(
         errors,
         configured_path == str(path),
-        "Compose deployment environment must set ELMOS_ENV_FILE to its exact validated path",
+        "Compose interpolation manifest must set ELMOS_ENV_FILE to its exact validated path",
+    )
+    require(
+        errors,
+        set(compose_environment) == COMPOSE_ENVIRONMENT_ALLOWLIST,
+        "Compose interpolation manifest must contain only and all exact service-file path keys",
     )
     for name in sorted(compose_environment):
         normalized = normalized_environment_name(name)
@@ -592,12 +871,51 @@ def validate_compose_environment_binding(
             errors,
             normalized not in SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED
             and not normalized.startswith("ELMOSSPRING"),
-            f"Compose application environment must not leak Spring launch key {name} into application services",
+            f"Compose interpolation manifest must not contain Spring launch key {name}",
+        )
+        require(
+            errors,
+            name == "ELMOS_SECRET_ROOT"
+            or SECRET_SHAPED_ENVIRONMENT_NAME.search(normalized) is None,
+            f"Compose interpolation manifest must not contain secret-shaped key {name}",
         )
     require(
         errors,
         FORBIDDEN_SINGLE_TENANT_ENVIRONMENT not in compose_environment,
-        "Compose deployment environment must not define a single-tenant Spring identity",
+        "Compose interpolation manifest must not define a single-tenant Spring identity",
+    )
+
+    expected_web_path = compose_environment.get("ELMOS_WEB_ENV_FILE", "")
+    if web_environment_path is not None:
+        require(
+            errors,
+            expected_web_path == str(web_environment_path),
+            "Compose interpolation manifest must bind ELMOS_WEB_ENV_FILE to --web-environment-file",
+        )
+    referenced_paths: dict[Path, str] = {}
+    for key in COMPOSE_ENVIRONMENT_FILE_KEYS:
+        raw_path = compose_environment.get(key, "")
+        candidate = Path(raw_path)
+        require(
+            errors,
+            candidate.is_absolute()
+            and candidate != Path("/")
+            and candidate == Path(os.path.normpath(candidate)),
+            f"Compose interpolation manifest {key} must be a normalized absolute non-root path",
+        )
+        prior = referenced_paths.setdefault(candidate, key)
+        require(
+            errors,
+            prior == key,
+            f"Compose service env files must be distinct; {key} reuses {prior}",
+        )
+    secret_root = Path(compose_environment.get("ELMOS_SECRET_ROOT", ""))
+    require(
+        errors,
+        secret_root.is_absolute()
+        and secret_root != Path("/")
+        and secret_root == Path(os.path.normpath(secret_root)),
+        "Compose interpolation manifest ELMOS_SECRET_ROOT must be a normalized absolute non-root path",
     )
     for name in os.environ:
         if dangerous_deployment_environment_name(name):
@@ -617,11 +935,13 @@ def validate_compose_environment_binding(
             errors.append(
                 f"process environment defines unsupported Spring launch key {name}"
             )
-    if "ELMOS_ENV_FILE" in os.environ:
+    for name in sorted(COMPOSE_ENVIRONMENT_ALLOWLIST):
+        if name not in os.environ:
+            continue
         require(
             errors,
-            os.environ["ELMOS_ENV_FILE"] == str(path),
-            "process ELMOS_ENV_FILE must equal --compose-environment-file",
+            os.environ[name] == compose_environment.get(name),
+            f"process {name} must equal the Compose interpolation manifest",
         )
     for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST):
         if name not in os.environ:
@@ -637,6 +957,65 @@ def validate_compose_environment_binding(
                 os.environ[name] == spring_environment[name],
                 f"process environment Spring value differs from SPRING_ENV_FILE for {name}",
             )
+
+
+def validate_environment_file_role_isolation(
+    errors: list[str],
+    *,
+    secret_root: Path,
+    environment_files: Mapping[
+        str, tuple[Path, EnvironmentFileSnapshot | None]
+    ],
+) -> None:
+    """Keep credential directories and per-service env objects physically distinct."""
+
+    try:
+        secret_details = secret_root.lstat()
+        secret_resolved = secret_root.resolve(strict=True)
+    except OSError:
+        errors.append("Compose ELMOS_SECRET_ROOT must be an existing directory")
+        return
+    if (
+        stat.S_ISLNK(secret_details.st_mode)
+        or not stat.S_ISDIR(secret_details.st_mode)
+        or has_symbolic_link_parent(secret_root)
+    ):
+        errors.append(
+            "Compose ELMOS_SECRET_ROOT must be a non-symlink directory without symlink parents"
+        )
+        return
+
+    secret_identity = (secret_details.st_dev, secret_details.st_ino)
+    file_identities: dict[tuple[int, int], str] = {}
+    for role, (path, snapshot) in environment_files.items():
+        if snapshot is None:
+            continue
+        try:
+            resolved = path.resolve(strict=True)
+            parent_resolved = path.parent.resolve(strict=True)
+            parent_details = path.parent.lstat()
+        except OSError:
+            errors.append(f"{role} environment file changed during isolation validation")
+            continue
+        require(
+            errors,
+            not paths_overlap(secret_resolved, resolved)
+            and not paths_overlap(secret_resolved, parent_resolved),
+            f"{role} environment file and parent directory must be isolated from ELMOS_SECRET_ROOT",
+        )
+        require(
+            errors,
+            (parent_details.st_dev, parent_details.st_ino) != secret_identity,
+            f"{role} environment parent must not bind-alias ELMOS_SECRET_ROOT",
+        )
+        metadata = snapshot[1]
+        identity = (metadata[0], metadata[1])
+        prior = file_identities.setdefault(identity, role)
+        require(
+            errors,
+            prior == role,
+            f"service environment files must use distinct filesystem objects; {role} aliases {prior}",
+        )
 
 
 def deployment_configuration_digest(
@@ -1012,7 +1391,11 @@ def validate_code(errors: list[str]) -> None:
     studio = STUDIO.read_text(encoding="utf-8")
     compose = COMPOSE.read_text(encoding="utf-8")
     spring_application_compose = SPRING_APPLICATION_COMPOSE.read_text(encoding="utf-8")
-    env_example = ENV_EXAMPLE.read_text(encoding="utf-8")
+    compose_env_example = COMPOSE_ENV_EXAMPLE.read_text(encoding="utf-8")
+    service_env_examples = {
+        service: path.read_text(encoding="utf-8")
+        for service, path in SERVICE_ENV_EXAMPLES.items()
+    }
     engine_auth = ENGINE_AUTH.read_text(encoding="utf-8")
     engine_filter = ENGINE_FILTER.read_text(encoding="utf-8")
     require(errors, f'LAUNCH_ROUTE_ID = "{EXPECTED_ROUTE}"' in catalog, "Java catalog lacks exact launch route authority")
@@ -1055,14 +1438,92 @@ def validate_code(errors: list[str]) -> None:
     )
     require(errors, 'ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"' in compose, "production experimental routes must be hard disabled")
     require(errors, 'ELMOS_SPRING_CODING_AGENT_ENABLED: "false"' in compose, "production long-tail coding agent must be hard disabled")
-    require(errors, "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID=" not in env_example, "production env template still declares a single-tenant Spring identity")
-    application_environment_names = set(
-        re.findall(r"^([A-Z][A-Z0-9_]*)=", env_example, re.MULTILINE)
+    compose_manifest_names = set(
+        re.findall(r"^([A-Z][A-Z0-9_]*)=", compose_env_example, re.MULTILINE)
     )
     require(
         errors,
-        not application_environment_names.intersection(SPRING_ENVIRONMENT_ALLOWLIST),
-        "application env template must not inject Spring launch keys into web-console",
+        compose_manifest_names == COMPOSE_ENVIRONMENT_ALLOWLIST,
+        "Compose interpolation manifest example must contain the exact service path inventory",
+    )
+    require(
+        errors,
+        all(
+            name == "ELMOS_SECRET_ROOT"
+            or SECRET_SHAPED_ENVIRONMENT_NAME.search(normalized_environment_name(name)) is None
+            for name in compose_manifest_names
+        ),
+        "Compose interpolation manifest example must not contain credentials",
+    )
+    for service, contents in service_env_examples.items():
+        names = set(re.findall(r"^([A-Z][A-Z0-9_]*)=", contents, re.MULTILINE))
+        require(
+            errors,
+            names == SERVICE_ENVIRONMENT_ALLOWLISTS[service],
+            f"{service} env example must contain its exact runtime allowlist",
+        )
+        require(
+            errors,
+            not names.intersection(SPRING_ENVIRONMENT_ALLOWLIST),
+            f"{service} env example must not contain Spring launch keys",
+        )
+
+    def service_block(service: str) -> str:
+        match = re.search(
+            rf"(?ms)^  {re.escape(service)}:\n(.*?)(?=^  [a-zA-Z0-9][a-zA-Z0-9_-]*:\n|^volumes:\n|\Z)",
+            compose,
+        )
+        return match.group(0) if match is not None else ""
+
+    java_anchor = compose.split("networks:", 1)[0]
+    require(
+        errors,
+        "env_file:" not in java_anchor,
+        "shared Java service anchor must not inject any runtime env file",
+    )
+    for key, service in COMPOSE_ENVIRONMENT_FILE_KEYS.items():
+        block = service_block(service)
+        require(errors, bool(block), f"production Compose lacks {service}")
+        require(
+            errors,
+            block.count("env_file:") == 1 and f'${{{key}:?' in block,
+            f"{service} must consume only its exact service-specific env file",
+        )
+    for service in ("java-engine-worker",):
+        block = service_block(service)
+        require(
+            errors,
+            block.count("env_file:") == 1 and "env_file: []" in block,
+            f"{service} must explicitly receive no env file",
+        )
+    require(
+        errors,
+        '${ELMOS_WEB_ENV_FILE:?' in spring_application_compose,
+        "Spring activation overlay must reassert the web-only runtime env file",
+    )
+    require(
+        errors,
+        "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/web/resend-api-key:/run/secrets/elmos/resend-api-key:ro"
+        in compose,
+        "web-console must mount only its exact web Resend secret",
+    )
+    require(
+        errors,
+        "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/control-plane:/run/secrets/elmos:ro"
+        in compose,
+        "control-plane must mount only its service secret domain",
+    )
+    require(
+        errors,
+        "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/commercial-api:/run/secrets/elmos:ro"
+        in compose,
+        "commercial-api must mount only its service secret domain",
+    )
+    require(
+        errors,
+        '"${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}:/run/secrets/elmos:ro"'
+        not in compose,
+        "no service may mount the complete ELMOS_SECRET_ROOT",
     )
 
 
@@ -1108,13 +1569,8 @@ def validate_external(
     if len(errors) != initial_error_count:
         return None
     try:
-        if str(ROOT) not in sys.path:
-            sys.path.insert(0, str(ROOT))
-        from scripts.batch30.spring_launch_evidence import (
-            verify_spring_launch_receipt_file,
-        )
-
-        result = verify_spring_launch_receipt_file(
+        evidence = load_spring_evidence_module()
+        result = evidence.verify_spring_launch_receipt_file(
             path,
             trust_store=trust_store,
             evidence_roots=evidence_roots,
@@ -1168,6 +1624,83 @@ def paths_overlap(left: Path, right: Path) -> bool:
     )
 
 
+def validate_mount_role_identity_isolation(
+    errors: list[str],
+    *,
+    directory_roles: Mapping[str, tuple[int, int]],
+    secret_ancestor_roles: Mapping[str, tuple[tuple[int, int], ...]],
+) -> None:
+    """Reject bind aliases to another role or a controlled secret ancestor."""
+
+    directory_items = list(directory_roles.items())
+    if len({identity for _, identity in directory_items}) != len(directory_items):
+        errors.append(
+            "Spring workspace and replay directory roles must use distinct filesystem objects"
+        )
+    secret_ancestor_identities = {
+        identity
+        for identities in secret_ancestor_roles.values()
+        for identity in identities
+    }
+    for name, identity in directory_items:
+        if identity in secret_ancestor_identities:
+            errors.append(
+                f"{name} must not alias a Spring or application secret parent directory or controlled ancestor"
+            )
+
+
+def controlled_secret_ancestor_identities(
+    path: Path,
+    *,
+    expected_uid: int,
+    expected_gid: int,
+) -> tuple[tuple[int, int], ...]:
+    """Capture the owner-controlled suffix of a secret's ancestor chain.
+
+    Walking stops before shared system boundaries such as / or /srv: only
+    owner-only directories owned by the runtime identity are role-bearing.
+    """
+
+    identities: list[tuple[int, int]] = []
+    for parent in path.parents:
+        if parent == Path(parent.anchor):
+            break
+        details = parent.lstat()
+        if (
+            not stat.S_ISDIR(details.st_mode)
+            or stat.S_ISLNK(details.st_mode)
+            or details.st_uid != expected_uid
+            or details.st_gid != expected_gid
+            or stat.S_IMODE(details.st_mode) & 0o077
+        ):
+            break
+        identities.append((details.st_dev, details.st_ino))
+    return tuple(identities)
+
+
+def validate_production_mount_subtrees(
+    errors: list[str],
+    roots: Mapping[str, Path],
+    *,
+    _snapshot_provider=None,
+) -> tuple[object, ...] | None:
+    """Capture and validate a real Linux mountinfo view for protected roots."""
+
+    try:
+        evidence = load_spring_evidence_module()
+        provider = _snapshot_provider or evidence.read_current_process_mountinfo
+        snapshot = tuple(provider())
+        evidence.validate_no_strict_descendant_mounts(
+            snapshot,
+            roots,
+            context="production application host",
+        )
+        return snapshot
+    except (OSError, RuntimeError, TypeError, ValueError) as error:
+        errors.append(f"production mount topology validation failed: {error}")
+        return None
+
+
 def validate_environment(
     errors: list[str],
     environment: Mapping[str, str],
@@ -1179,6 +1712,13 @@ def validate_environment(
 ) -> None:
     runtime_uid = os.getuid() if expected_uid is None else expected_uid
     runtime_gid = os.getgid() if expected_gid is None else expected_gid
+    if production:
+        require(
+            errors,
+            os.getuid() == APPLICATION_RUNTIME_UID
+            and os.getgid() == APPLICATION_RUNTIME_GID,
+            "production launch gate must run as the dedicated application observer UID/GID 10001:10001",
+        )
     for name in REQUIRED_TRUE_ENVIRONMENT:
         require(errors, environment.get(name) == "true", f"{name} must equal true")
     for name in REQUIRED_FALSE_ENVIRONMENT:
@@ -1300,6 +1840,26 @@ def validate_environment(
             resolved_replay_paths.append(replay_resolved)
             if identity is not None:
                 replay_identities.append((replay_path, identity))
+    directory_role_identities: dict[str, tuple[int, int]] = {}
+    if workspace_identity is not None:
+        directory_role_identities["shared Spring workspace"] = workspace_identity
+    for index, (_path, identity) in enumerate(replay_identities):
+        directory_role_identities[f"Spring replay state {index}"] = identity
+    secret_ancestor_identities: dict[str, tuple[tuple[int, int], ...]] = {}
+    for name, snapshot in secret_snapshots.items():
+        try:
+            secret_ancestor_identities[name] = controlled_secret_ancestor_identities(
+                snapshot[0],
+                expected_uid=runtime_uid,
+                expected_gid=runtime_gid,
+            )
+        except OSError:
+            errors.append(f"{name} ancestry changed during role-isolation validation")
+    validate_mount_role_identity_isolation(
+        errors,
+        directory_roles=directory_role_identities,
+        secret_ancestor_roles=secret_ancestor_identities,
+    )
     if workspace_resolved is not None:
         for replay_resolved in resolved_replay_paths:
             require(
@@ -1312,6 +1872,15 @@ def validate_environment(
         protected_roots.append(("shared Spring workspace", workspace_resolved))
     protected_roots.extend(
         ("Spring replay state", path) for path in resolved_replay_paths
+    )
+    production_mount_roots = {
+        f"{label} {index}": path
+        for index, (label, path) in enumerate(protected_roots)
+    }
+    production_mount_snapshot = (
+        validate_production_mount_subtrees(errors, production_mount_roots)
+        if production
+        else None
     )
     for secret_path in resolved_secret_paths:
         for label, protected_root in protected_roots:
@@ -1359,6 +1928,16 @@ def validate_environment(
         final_secret_snapshots == secret_snapshots,
         "Spring application secret set changed during environment validation",
     )
+    if production and production_mount_snapshot is not None:
+        final_mount_snapshot = validate_production_mount_subtrees(
+            errors, production_mount_roots
+        )
+        require(
+            errors,
+            final_mount_snapshot is not None
+            and final_mount_snapshot == production_mount_snapshot,
+            "production mount topology changed during environment validation",
+        )
 
 
 def derive_launch_environment_binding(
@@ -1366,6 +1945,7 @@ def derive_launch_environment_binding(
     *,
     environment_file: Path | None,
     compose_environment_file: Path | None,
+    web_environment_file: Path | None,
     production: bool,
 ) -> LaunchEnvironmentBinding:
     """Securely read, validate, and derive one complete launch binding snapshot."""
@@ -1394,17 +1974,70 @@ def derive_launch_environment_binding(
         )
         if environment_file is None:
             errors.append("--compose-environment-file requires --environment-file")
+        if web_environment_file is None:
+            errors.append("--compose-environment-file requires --web-environment-file")
         else:
             validate_compose_environment_binding(
                 errors,
                 path=compose_environment_file,
+                web_environment_path=web_environment_file,
                 compose_environment=compose_environment,
                 spring_environment=spring_environment,
             )
+    elif web_environment_file is not None:
+        errors.append("--web-environment-file requires --compose-environment-file")
+
+    service_environments: dict[str, dict[str, str]] = {}
+    service_file_snapshots: list[tuple[str, EnvironmentFileSnapshot]] = []
+    web_environment: dict[str, str] = {}
+    web_snapshots: list[EnvironmentFileSnapshot] = []
+    if compose_environment_file is not None and web_environment_file is not None:
+        for key, service in COMPOSE_ENVIRONMENT_FILE_KEYS.items():
+            configured = compose_environment.get(key, "")
+            service_path = web_environment_file if service == "web-console" else Path(configured)
+            snapshots = web_snapshots if service == "web-console" else []
+            values = parse_service_environment_file(
+                errors,
+                service_path,
+                service=service,
+                snapshot_out=snapshots,
+            )
+            service_environments[service] = values
+            if service == "web-console":
+                web_environment = values
+            elif len(snapshots) == 1:
+                service_file_snapshots.append((service, snapshots[0]))
+
+        snapshot_by_service = dict(service_file_snapshots)
+        environment_file_roles: dict[
+            str, tuple[Path, EnvironmentFileSnapshot | None]
+        ] = {
+            "compose": (
+                compose_environment_file,
+                compose_snapshots[0] if len(compose_snapshots) == 1 else None,
+            ),
+            "web-console": (
+                web_environment_file,
+                web_snapshots[0] if len(web_snapshots) == 1 else None,
+            ),
+        }
+        for key, service in COMPOSE_ENVIRONMENT_FILE_KEYS.items():
+            if service == "web-console":
+                continue
+            environment_file_roles[service] = (
+                Path(compose_environment.get(key, "")),
+                snapshot_by_service.get(service),
+            )
+        validate_environment_file_role_isolation(
+            errors,
+            secret_root=Path(compose_environment.get("ELMOS_SECRET_ROOT", "")),
+            environment_files=environment_file_roles,
+        )
 
     effective = effective_environment(spring_environment)
     application_secret_path = (
         Path(compose_environment.get("ELMOS_SECRET_ROOT", "/srv/elmos/secrets"))
+        / "web"
         / "resend-api-key"
         if compose_environment_file is not None
         else None
@@ -1427,26 +2060,27 @@ def derive_launch_environment_binding(
     web_console_names_digest: str | None = None
     mount_sources_digest: str | None = None
     try:
-        if str(ROOT) not in sys.path:
-            sys.path.insert(0, str(ROOT))
-        from scripts.batch30.spring_launch_evidence import (
-            application_environment_commitment_digest,
-            application_mount_sources_digest,
-            expected_spring_worker_configuration_digest,
-            expected_web_console_environment,
-            expected_web_console_environment_names,
-            spring_environment_configuration_digest,
-            web_console_configuration_digest,
-            web_console_environment_names_digest,
-        )
-
-        spring_configuration_digest = spring_environment_configuration_digest(
+        evidence = load_spring_evidence_module()
+        spring_configuration_digest = evidence.spring_environment_configuration_digest(
             effective
         )
-        if compose_environment_file is not None:
-            application_commitment = application_environment_commitment_digest(
-                compose_environment
+        if web_environment_file is not None:
+            application_commitment = evidence.application_environment_commitment_digest(
+                web_environment
             )
+        if production:
+            try:
+                trusted_openssl = evidence.production_openssl_is_root_owned()
+            except OSError as error:
+                errors.append(
+                    f"production Ed25519 verifier trust validation failed: {error}"
+                )
+            else:
+                require(
+                    errors,
+                    trusted_openssl,
+                    "production Ed25519 verifier must be a root-owned non-writable system OpenSSL executable",
+                )
         configuration_digest = (
             deployment_configuration_digest(
                 spring_configuration_digest,
@@ -1455,16 +2089,16 @@ def derive_launch_environment_binding(
             if application_commitment is not None
             else spring_configuration_digest
         )
-        spring_worker_digest = expected_spring_worker_configuration_digest(effective)
+        spring_worker_digest = evidence.expected_spring_worker_configuration_digest(effective)
         if application_commitment is not None:
-            expected_web_environment = expected_web_console_environment(
-                compose_environment
+            expected_web_environment = evidence.expected_web_console_environment(
+                web_environment
             )
-            web_console_digest = web_console_configuration_digest(
+            web_console_digest = evidence.web_console_configuration_digest(
                 expected_web_environment
             )
-            web_console_names_digest = web_console_environment_names_digest(
-                expected_web_console_environment_names(compose_environment)
+            web_console_names_digest = evidence.web_console_environment_names_digest(
+                evidence.expected_web_console_environment_names(web_environment)
             )
             if application_secret_path is None:
                 raise ValueError(
@@ -1491,7 +2125,7 @@ def derive_launch_environment_binding(
                 ),
                 "web_resend_secret": str(application_secret_path),
             }
-            first_mount_sources_digest = application_mount_sources_digest(
+            first_mount_sources_digest = evidence.application_mount_sources_digest(
                 application_mount_sources,
                 expected_uid=runtime_uid,
                 expected_gid=runtime_gid,
@@ -1504,7 +2138,7 @@ def derive_launch_environment_binding(
                 application_secret_path=application_secret_path,
                 production=production,
             )
-            mount_sources_digest = application_mount_sources_digest(
+            mount_sources_digest = evidence.application_mount_sources_digest(
                 application_mount_sources,
                 expected_uid=runtime_uid,
                 expected_gid=runtime_gid,
@@ -1524,6 +2158,10 @@ def derive_launch_environment_binding(
         compose_file_snapshot=(
             compose_snapshots[0] if len(compose_snapshots) == 1 else None
         ),
+        service_environments=service_environments,
+        service_file_snapshots=tuple(sorted(service_file_snapshots)),
+        web_environment=web_environment,
+        web_file_snapshot=(web_snapshots[0] if len(web_snapshots) == 1 else None),
         effective_environment=effective,
         application_secret_path=application_secret_path,
         application_environment_commitment_digest=application_commitment,
@@ -1539,8 +2177,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate the bounded Spring launch profile without executing environment-file contents.",
         epilog=(
-            "The Spring file accepts only allowlisted KEY=VALUE data. The actual Compose env file is "
-            "parsed as inert data and bound by a secret-redacted commitment. Explicit process values take precedence for local "
+            "The Spring file accepts only allowlisted KEY=VALUE data. The Compose interpolation manifest contains only "
+            "service-file paths; the separate web runtime env is bound by a secret-redacted commitment. Explicit process values take precedence for local "
             "preflight; deployment binding requires them to equal the controlled files."
         ),
     )
@@ -1569,8 +2207,16 @@ def main() -> int:
         "--compose-environment-file",
         type=Path,
         help=(
-            "load and bind a secret-redacted commitment for the owner-only ELMOS_ENV_FILE used by the production "
-            "Compose deployment; requires --environment-file"
+            "load the owner-only, credential-free Compose interpolation manifest; requires --environment-file and "
+            "--web-environment-file"
+        ),
+    )
+    parser.add_argument(
+        "--web-environment-file",
+        type=Path,
+        help=(
+            "load and bind the exact owner-only web-console runtime env file named by the Compose manifest; "
+            "requires --compose-environment-file"
         ),
     )
     args = parser.parse_args()
@@ -1597,6 +2243,7 @@ def main() -> int:
         args.check_environment
         or args.environment_file is not None
         or args.compose_environment_file is not None
+        or args.web_environment_file is not None
     )
     production_identity = (
         args.require_production_evidence or args.external_evidence is not None
@@ -1606,6 +2253,7 @@ def main() -> int:
             errors,
             environment_file=args.environment_file,
             compose_environment_file=args.compose_environment_file,
+            web_environment_file=args.web_environment_file,
             production=production_identity,
         )
         if check_environment
@@ -1616,6 +2264,7 @@ def main() -> int:
         required_production_arguments = {
             "--environment-file": args.environment_file,
             "--compose-environment-file": args.compose_environment_file,
+            "--web-environment-file": args.web_environment_file,
             "--expected-revision": args.expected_revision,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
@@ -1635,6 +2284,7 @@ def main() -> int:
         required_intake_arguments = {
             "--environment-file": args.environment_file,
             "--compose-environment-file": args.compose_environment_file,
+            "--web-environment-file": args.web_environment_file,
             "--expected-revision": args.expected_revision,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
@@ -1716,6 +2366,7 @@ def main() -> int:
                 errors,
                 environment_file=args.environment_file,
                 compose_environment_file=args.compose_environment_file,
+                web_environment_file=args.web_environment_file,
                 production=production_identity,
             )
             require(
@@ -1738,7 +2389,8 @@ def main() -> int:
     if environment_binding is not None:
         print("ENVIRONMENT_PRECEDENCE=PROCESS_ENVIRONMENT_OVER_FILE")
         if environment_binding.application_environment_commitment_digest is not None:
-            print("COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED")
+            print("COMPOSE_ENVIRONMENT_BINDING=SERVICE_ENV_FILES_VERIFIED")
+            print("WEB_ENVIRONMENT_BINDING=ELMOS_WEB_ENV_FILE_VERIFIED")
             print(
                 "APPLICATION_ENVIRONMENT_COMMITMENT_DIGEST="
                 f"{environment_binding.application_environment_commitment_digest}"

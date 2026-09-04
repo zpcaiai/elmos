@@ -14,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -82,6 +85,77 @@ class FileNonceStoreTest {
                 "JAVA_ENGINE_WORKER",
                 NONCE,
                 expiry.plusSeconds(31)));
+    }
+
+    @Test
+    void clockRollbackAfterForwardPruneFailsClosedAcrossRestart() throws Exception {
+        MutableClock clock = new MutableClock(NOW);
+        Path root = temporary.toRealPath().resolve("rollback-replay");
+        FileNonceStore store = new FileNonceStore(root, clock);
+        Instant firstExpiry = NOW.plusSeconds(90);
+        assertTrue(store.claim(
+                SpringHmacProtocol.Role.RUNTIME,
+                "JAVA_ENGINE_WORKER",
+                NONCE,
+                firstExpiry));
+
+        clock.set(firstExpiry.plusSeconds(1));
+        assertTrue(store.claim(
+                SpringHmacProtocol.Role.RUNTIME,
+                "JAVA_ENGINE_WORKER",
+                "22345678-1234-4234-8234-123456789abc",
+                firstExpiry.plusSeconds(60)));
+
+        clock.set(NOW);
+        FileNonceStore restarted = new FileNonceStore(root, clock);
+        IllegalStateException rollback = assertThrows(
+                IllegalStateException.class,
+                () -> restarted.claim(
+                        SpringHmacProtocol.Role.RUNTIME,
+                        "JAVA_ENGINE_WORKER",
+                        NONCE,
+                        firstExpiry));
+        assertTrue(rollback.getMessage().contains("clock rollback"));
+    }
+
+    @Test
+    void concurrentClaimsSampleClockOnlyInsideTheSerializedClaimLock() throws Exception {
+        CoordinatedClock clock = new CoordinatedClock(NOW, NOW.plusSeconds(1));
+        Path root = temporary.toRealPath().resolve("clock-interleaving-replay");
+        FileNonceStore store = new FileNonceStore(root, clock);
+        Instant expiry = NOW.plusSeconds(300);
+        CountDownLatch secondStarted = new CountDownLatch(1);
+
+        try (var pool = Executors.newFixedThreadPool(2)) {
+            var first = pool.submit(() -> store.claim(
+                    SpringHmacProtocol.Role.RUNTIME,
+                    "JAVA_ENGINE_WORKER",
+                    NONCE,
+                    expiry));
+            assertTrue(clock.firstSampled.await(5, TimeUnit.SECONDS));
+
+            var second = pool.submit(() -> {
+                secondStarted.countDown();
+                return store.claim(
+                        SpringHmacProtocol.Role.RUNTIME,
+                        "JAVA_ENGINE_WORKER",
+                        "32345678-1234-4234-8234-123456789abc",
+                        expiry);
+            });
+            assertTrue(secondStarted.await(5, TimeUnit.SECONDS));
+            boolean secondSampledBeforeFirstClaimUnlocked;
+            try {
+                secondSampledBeforeFirstClaimUnlocked =
+                        clock.secondSampled.await(1, TimeUnit.SECONDS);
+            } finally {
+                clock.releaseFirst.countDown();
+            }
+
+            assertFalse(secondSampledBeforeFirstClaimUnlocked,
+                    "a competing claim must not sample a later time before the first claim locks it in");
+            assertTrue(first.get(5, TimeUnit.SECONDS));
+            assertTrue(second.get(5, TimeUnit.SECONDS));
+        }
     }
 
     @Test
@@ -193,6 +267,50 @@ class FileNonceStoreTest {
         @Override
         public Instant instant() {
             return instant;
+        }
+    }
+
+    private static final class CoordinatedClock extends Clock {
+        private final Instant first;
+        private final Instant second;
+        private final AtomicInteger samples = new AtomicInteger();
+        private final CountDownLatch firstSampled = new CountDownLatch(1);
+        private final CountDownLatch secondSampled = new CountDownLatch(1);
+        private final CountDownLatch releaseFirst = new CountDownLatch(1);
+
+        private CoordinatedClock(Instant first, Instant second) {
+            this.first = first;
+            this.second = second;
+        }
+
+        @Override
+        public ZoneId getZone() {
+            return ZoneOffset.UTC;
+        }
+
+        @Override
+        public Clock withZone(ZoneId zone) {
+            if (!ZoneOffset.UTC.equals(zone)) throw new IllegalArgumentException("UTC only");
+            return this;
+        }
+
+        @Override
+        public Instant instant() {
+            int sample = samples.incrementAndGet();
+            if (sample == 1) {
+                firstSampled.countDown();
+                try {
+                    if (!releaseFirst.await(5, TimeUnit.SECONDS)) {
+                        throw new IllegalStateException("first clock sample was not released");
+                    }
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("clock sample was interrupted", error);
+                }
+                return first;
+            }
+            secondSampled.countDown();
+            return second;
         }
     }
 }

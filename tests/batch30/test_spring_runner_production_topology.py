@@ -78,6 +78,220 @@ class SpringRunnerProductionTopologyTests(TestCase):
             self.assertEqual(1, unprivileged.returncode)
             self.assertEqual("PRIVILEGED_OBSERVER_REQUIRED", payload["mode"])
 
+    def test_docker_inspection_uses_fixed_cli_and_sanitized_environment(self) -> None:
+        command = TOPOLOGY.docker_command(
+            Path("/run/user/1001/docker.sock"), "info", "--format", "{{json .}}"
+        )
+        self.assertEqual("/usr/bin/docker", command[0])
+        self.assertNotIn("docker", command[:1])
+
+        completed = subprocess.CompletedProcess(command, 0, stdout='{"ok":true}\n', stderr="")
+        with mock.patch.object(
+            TOPOLOGY, "validate_trusted_system_executable"
+        ) as trusted, mock.patch.object(
+            TOPOLOGY.subprocess, "run", return_value=completed
+        ) as run:
+            self.assertEqual({"ok": True}, TOPOLOGY.command_json(command))
+        trusted.assert_called_once_with(
+            TOPOLOGY.TRUSTED_DOCKER_CLI, label="Docker CLI"
+        )
+        self.assertEqual(
+            {
+                "HOME": "/nonexistent",
+                "LANG": "C.UTF-8",
+                "LC_ALL": "C.UTF-8",
+                "PATH": "/usr/bin:/bin",
+            },
+            run.call_args.kwargs["env"],
+        )
+        with self.assertRaisesRegex(RuntimeError, "fixed trusted"):
+            TOPOLOGY.command_json(["docker", "info"])
+
+    def test_daemon_and_socket_binding_reject_identity_switch(self) -> None:
+        socket_identity = (1, 2, 3, 4, 5, 1, 6, 7)
+        changed_socket = (1, 99, 3, 4, 5, 1, 6, 8)
+        errors: list[str] = []
+        with mock.patch.object(
+            TOPOLOGY,
+            "trusted_unix_socket",
+            side_effect=(socket_identity, changed_socket),
+        ), mock.patch.object(
+            TOPOLOGY, "docker_daemon_identity", return_value=("ID=daemon",)
+        ):
+            binding = TOPOLOGY.observe_docker_endpoint(
+                errors,
+                Path("/run/user/1001/docker.sock"),
+                expected_uid=1001,
+                expected_gid=1001,
+            )
+        self.assertIsNone(binding)
+        self.assertTrue(any("socket changed" in item for item in errors), errors)
+
+    def test_running_rejects_endpoint_switch_after_host_phase(self) -> None:
+        socket_identity = (1, 2, 3, 1001, 1001, 1, 4, 5)
+        host_binding = TOPOLOGY.DockerEndpointBinding(
+            socket_identity, ("ID=daemon-a",)
+        )
+        changed_binding = TOPOLOGY.DockerEndpointBinding(
+            socket_identity, ("ID=daemon-b",)
+        )
+        control_identity = ("Id=control",)
+
+        def host(
+            _paths,
+            _environment,
+            *,
+            _docker_binding_out,
+            _control_network_out,
+        ):
+            _docker_binding_out.append(host_binding)
+            _control_network_out.append(control_identity)
+            return []
+
+        environment = self.valid_environment_values(Path("/secure/runner.env"))
+        environment["ELMOS_ROOTLESS_DOCKER_SOCKET"] = "/run/user/1001/docker.sock"
+        with mock.patch.object(TOPOLOGY, "validate_host", side_effect=host), mock.patch.object(
+            TOPOLOGY, "observe_docker_endpoint", return_value=changed_binding
+        ):
+            errors = TOPOLOGY.validate_running(environment=environment)
+        self.assertTrue(
+            any("between host and running validation" in item for item in errors),
+            errors,
+        )
+
+    def test_daemon_identity_binds_rootless_installation_fields(self) -> None:
+        record = {
+            "ID": "daemon-a",
+            "Name": "runner-host",
+            "DockerRootDir": "/home/runner/.local/share/docker",
+            "Driver": "overlay2",
+            "ServerVersion": "28.0.0",
+            "CgroupDriver": "systemd",
+            "CgroupVersion": "2",
+            "OperatingSystem": "Linux",
+            "OSType": "linux",
+            "Architecture": "x86_64",
+            "KernelVersion": "6.8.0",
+            "SecurityOptions": ["name=seccomp,profile=builtin", "name=rootless"],
+        }
+        with mock.patch.object(TOPOLOGY, "command_json", return_value=record):
+            first = TOPOLOGY.docker_daemon_identity(Path("/run/docker.sock"))
+        with mock.patch.object(
+            TOPOLOGY,
+            "command_json",
+            return_value={**record, "ServerVersion": "28.0.1"},
+        ):
+            second = TOPOLOGY.docker_daemon_identity(Path("/run/docker.sock"))
+        self.assertNotEqual(first, second)
+        with mock.patch.object(
+            TOPOLOGY,
+            "command_json",
+            return_value={**record, "SecurityOptions": ["name=seccomp"]},
+        ), self.assertRaisesRegex(ValueError, "name=rootless"):
+            TOPOLOGY.docker_daemon_identity(Path("/run/docker.sock"))
+
+    def test_network_identity_binds_id_policy_and_membership(self) -> None:
+        record = {
+            "Id": "a" * 64,
+            "Name": "elmos-spring-runner-broker",
+            "Created": "2026-09-05T00:00:00Z",
+            "Scope": "local",
+            "Driver": "bridge",
+            "EnableIPv6": False,
+            "Internal": True,
+            "Attachable": False,
+            "Ingress": False,
+            "IPAM": {"Driver": "default", "Config": [{"Subnet": "172.30.0.0/24"}]},
+            "Options": {},
+            "Labels": {"io.elmos.network.default-deny": "true"},
+            "Containers": {"b" * 64: {"Name": "spring-runner-broker"}},
+        }
+        baseline = TOPOLOGY.network_identity(record, label="broker")
+        changed = copy.deepcopy(record)
+        changed["Containers"]["c" * 64] = {"Name": "unexpected"}
+        self.assertNotEqual(
+            baseline, TOPOLOGY.network_identity(changed, label="broker")
+        )
+        missing = dict(record)
+        missing.pop("Internal")
+        with self.assertRaisesRegex(ValueError, "fields are incomplete"):
+            TOPOLOGY.network_identity(missing, label="broker")
+
+    def test_observer_contract_requires_exact_revision_digest_and_root(self) -> None:
+        self.assertTrue(
+            any(
+                "40-character" in item
+                for item in TOPOLOGY.validate_observer_execution(
+                    revision="main", expected_digest="sha256:" + "a" * 64
+                )
+            )
+        )
+        errors = TOPOLOGY.validate_observer_execution(
+            revision="a" * 40, expected_digest="invalid"
+        )
+        self.assertTrue(any("sha256" in item for item in errors), errors)
+
+    def test_observer_bundle_mode_checks_immutable_root_without_runner_owner_args(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                str(VALIDATOR_PATH),
+                "--check-observer-bundle",
+                "--observer-revision",
+                "a" * 40,
+                "--observer-bundle-digest",
+                "sha256:" + "b" * 64,
+                "--json",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        payload = json.loads(completed.stdout)
+        self.assertEqual(1, completed.returncode)
+        self.assertEqual("OBSERVER_BUNDLE_REJECTED", payload["mode"])
+        self.assertTrue(
+            any("/opt/elmos-spring-gate" in item for item in payload["errors"]),
+            payload,
+        )
+        self.assertFalse(
+            any("rootless-owner" in item for item in payload["errors"]),
+            payload,
+        )
+
+    def test_observer_bundle_digest_commits_every_file_byte(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-runner-observer-") as directory:
+            root = Path(directory).resolve()
+            first = root / "first"
+            second = root / "second"
+            first.write_bytes(b"one")
+            second.write_bytes(b"two")
+            with mock.patch.object(TOPOLOGY, "ROOT", root), mock.patch.object(
+                TOPOLOGY, "observer_bundle_files", return_value=(first, second)
+            ):
+                before = TOPOLOGY.observer_bundle_digest()
+                second.write_bytes(b"three")
+                after = TOPOLOGY.observer_bundle_digest()
+        self.assertRegex(before, r"^sha256:[0-9a-f]{64}$")
+        self.assertNotEqual(before, after)
+
+    def test_show_observer_bundle_digest_mode_has_no_false_argument_conflict(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(VALIDATOR_PATH), "--show-observer-bundle-digest"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(0, completed.returncode, completed.stdout + completed.stderr)
+        self.assertRegex(completed.stdout.strip(), r"^sha256:[0-9a-f]{64}$")
+
+    def test_observer_bundle_covers_application_launch_gate_inputs(self) -> None:
+        relative = {
+            path.relative_to(TOPOLOGY.ROOT).as_posix()
+            for path in TOPOLOGY.observer_bundle_files()
+        }
+        self.assertTrue(set(TOPOLOGY.APPLICATION_GATE_BUNDLE_PATHS) <= relative)
+
     def test_runner_is_separate_and_never_receives_engine_hmac(self) -> None:
         paths = TOPOLOGY.ContractPaths()
         runner = TOPOLOGY.read_yaml(paths.runner_compose)
@@ -265,8 +479,16 @@ class SpringRunnerProductionTopologyTests(TestCase):
                 "must clear dangerous path override SERVER_SERVLET_CONTEXT_PATH",
             ),
             "broad-env-file": (
-                "    env_file: []",
-                '    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]',
+                (
+                    "    # The Spring worker consumes only the explicit allowlist below and never\n"
+                    "    # receives any service runtime env file.\n"
+                    "    env_file: []"
+                ),
+                (
+                    "    # The Spring worker consumes only the explicit allowlist below and never\n"
+                    "    # receives any service runtime env file.\n"
+                    '    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]'
+                ),
                 "must not receive the broad application env_file",
             ),
         }
@@ -1231,6 +1453,59 @@ class SpringRunnerProductionTopologyTests(TestCase):
                     baseline,
                     TOPOLOGY.runtime_generation(changed, label="ingress"),
                 )
+
+    def test_ingress_materials_must_predate_container_start_and_remain_exact(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-runner-startup-material-") as directory:
+            root = Path(directory).resolve()
+            config = root / "nginx.conf"
+            certificate = root / "tls.crt"
+            key = root / "tls.key"
+            config.write_bytes(
+                TOPOLOGY.ContractPaths().ingress_config.read_bytes()
+            )
+            certificate.write_bytes(b"certificate")
+            key.write_bytes(b"k" * 32)
+            environment = {
+                "ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH": str(config),
+                "ELMOS_SPRING_INGRESS_TLS_CERT_HOST_PATH": str(certificate),
+                "ELMOS_SPRING_INGRESS_TLS_KEY_HOST_PATH": str(key),
+            }
+            future_record = {"State": {"StartedAt": "2099-01-01T00:00:00.123456789Z"}}
+            materials = TOPOLOGY.ingress_startup_materials(
+                environment, future_record
+            )
+            self.assertEqual(
+                TOPOLOGY.EXPECTED_INGRESS_CONFIG_SHA256,
+                materials["installed Spring ingress config"][7],
+            )
+
+            # Models an in-place overwrite after nginx loaded an older object:
+            # the current bytes are reviewed, but ctime/mtime postdate StartedAt.
+            stale_process_record = {
+                "State": {"StartedAt": "2000-01-01T00:00:00Z"}
+            }
+            with self.assertRaisesRegex(
+                RuntimeError, "modified after the ingress container StartedAt"
+            ):
+                TOPOLOGY.ingress_startup_materials(
+                    environment, stale_process_record
+                )
+
+    def test_docker_started_at_parser_rejects_noncanonical_or_invalid_time(self) -> None:
+        self.assertEqual(
+            1_000_000_001,
+            TOPOLOGY.parse_docker_started_at_ns(
+                "1970-01-01T00:00:01.000000001Z", label="ingress"
+            ),
+        )
+        for value in (
+            "2026-09-05T00:00:00+00:00",
+            "2026-09-05 00:00:00Z",
+            "2026-13-05T00:00:00Z",
+            "later",
+        ):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                TOPOLOGY.parse_docker_started_at_ns(value, label="ingress")
 
     def test_linux_live_mount_observer_detects_atomic_source_replacement_and_socket(self) -> None:
         if sys.platform != "linux" or not hasattr(os, "O_PATH"):

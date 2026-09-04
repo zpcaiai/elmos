@@ -31,8 +31,10 @@ actors/organizations/keys, and self-certification all fail closed.
 The environment manifest must validate against
 `schemas/batch30/spring-launch-environment-manifest.schema.json`. Its
 `configuration_digest` is the exact `SPRING_CONFIGURATION_DIGEST` printed by
-the launch validator when it reads the same `/controlled/spring/spring.env` and actual
-application environment commitment used for interpolation. That commitment
+the launch validator when it reads the same `/controlled/spring/spring.env`,
+credential-free `/srv/elmos/config/compose.env` manifest and actual
+`/srv/elmos/config/web-console.env`. The application commitment covers the Web
+runtime environment rather than a shared application secret inventory. That commitment
 contains exact key names and presence/empty state, plus only explicitly
 allowlisted non-secret values; it never hashes DB, OIDC, session, provider or
 API secret values into an offline guessing oracle. The manifest also binds
@@ -44,28 +46,41 @@ the other three `schemas/batch30/spring-launch-*.schema.json` contracts.
 
 ## Operator flow
 
-Keep the trust store, private signing keys, evidence roots, environment file and
+Keep the trust store, private signing keys, evidence roots, environment files and
 final receipt outside the repository. Public keys may be distributed to the
-gate host; private keys never belong on that host.
+gate host; private keys never belong on that host. Production verification runs
+as the dedicated UID/GID 10001 application observer from a root-owned immutable
+`/opt/elmos-spring-gate/<revision>` mirror with root-owned Python, dependencies
+and an Ed25519-capable OpenSSL 3. A mutable developer checkout is local preflight
+only.
 
-The two environment files have deliberately separate authority. Create
-`/srv/elmos/config` and `/controlled/spring` as deploy-user-owned `0700`
-directories; use `/srv/elmos/config/elmos.env` and
-`/controlled/spring/spring.env` respectively. The latter must contain exactly
-the 20 keys in `spring-launch.env.example`.
-`ELMOS_ENV_FILE` is the application service `env_file` and must contain no
-Spring launch, servlet/server/management, JVM or proxy overrides.
-`SPRING_ENV_FILE` is only inert gate input and Compose interpolation input; the
-Spring worker has `env_file: []`, while the application overlay writes the
-small exact web/worker Spring allowlist. Never merge or copy the Spring keys
-into `ELMOS_ENV_FILE`.
+The rootless Docker daemon and its owner are part of the Runner TCB for a local
+topology snapshot; that API is not independent evidence. The root observer
+detects ordinary socket/daemon replacement and cross-check drift, but a
+compromised owner can equivocate (including an `A -> B -> A` view). Suspected
+owner compromise, or absence of a signed runtime attestation produced outside
+that permission domain, invalidates the local result and keeps launch `BLOCKED`.
+
+The inputs have deliberately separate authority. Create `/srv/elmos/config`
+and `/controlled/spring` as UID/GID 10001-owned `0700` directories. Use
+`/srv/elmos/config/compose.env` only as the credential-free Compose interpolation
+manifest, `/srv/elmos/config/web-console.env` only for Web/BFF runtime values,
+and `/controlled/spring/spring.env` for exactly the 20 keys in
+`spring-launch.env.example`. The other backend services each use their own file
+under `/srv/elmos/config`; none shares the Web, database or payment credential
+set. `SPRING_ENV_FILE` is inert gate input and Compose interpolation input. The
+Spring worker has `env_file: []`, while the overlay writes the small exact
+web/worker Spring allowlist. Never merge Spring or service credentials into
+`ELMOS_ENV_FILE`.
 
 ```bash
 # Validate the exact inert-data environment file used by the Spring Compose
 # overlay and retain the printed SPRING_CONFIGURATION_DIGEST for the manifest.
-python3 scripts/batch30/validate_spring_launch_readiness.py \
+sudo -u elmos-spring-app /usr/bin/python3 -I \
+  /opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION/scripts/batch30/validate_spring_launch_readiness.py \
   --environment-file /controlled/spring/spring.env \
-  --compose-environment-file /srv/elmos/config/elmos.env
+  --compose-environment-file /srv/elmos/config/compose.env \
+  --web-environment-file /srv/elmos/config/web-console.env
 
 # Validate both live application containers in memory and write only a sanitized record.
 # The raw web docker inspect includes env-file secrets and neither its bytes nor
@@ -73,16 +88,23 @@ python3 scripts/batch30/validate_spring_launch_readiness.py \
 # Docker inspect has no
 # inode data, so this command must run on the Linux Docker host with permission
 # to compare every source FD to /proc/<container-pid>/root/<mount-target>.
-make spring-web-runtime-attestation \
+sudo -u elmos-spring-app /usr/bin/env -i \
+  HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  SPRING_EXPECTED_REVISION="$DEPLOYED_GIT_REVISION" \
+  SPRING_OBSERVER_BUNDLE_DIGEST="$APPROVED_SPRING_OBSERVER_BUNDLE_DIGEST" \
   SPRING_WEB_CONTAINER=elmos-staging-web-console-1 \
   SPRING_WEB_IMAGE_DIGEST="$PINNED_WEB_IMAGE_ID" \
   SPRING_WORKER_CONTAINER=elmos-staging-java-engine-worker-1 \
   SPRING_WORKER_IMAGE_DIGEST="$PINNED_WORKER_IMAGE_ID" \
   SPRING_WEB_COLLECTOR_ID=staging-runtime-collector \
-  SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=/controlled/evidence/web-console.runtime-attestation.json
+  SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=/controlled/evidence/web-console.runtime-attestation.json \
+  /usr/bin/python3 -I \
+  /opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION/scripts/batch30/run_spring_production_gate.py \
+  spring-web-runtime-attestation
 
 # Hash bytes that already exist. This command does not create a pass claim.
-python3 scripts/batch30/spring_launch_evidence.py reference \
+sudo -u elmos-spring-app /usr/bin/python3 -I \
+  /opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION/scripts/batch30/spring_launch_evidence.py reference \
   /controlled/evidence/staging-deployment.json \
   --evidence-root /controlled/evidence \
   --media-type application/json \
@@ -90,7 +112,8 @@ python3 scripts/batch30/spring_launch_evidence.py reference \
 
 # External systems/people create the required Ed25519 envelopes. The repository
 # verifier only adds the canonical receipt digest to an otherwise complete draft.
-python3 scripts/batch30/spring_launch_evidence.py assemble \
+sudo -u elmos-spring-app /usr/bin/python3 -I \
+  /opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION/scripts/batch30/spring_launch_evidence.py assemble \
   /controlled/drafts/spring-launch-draft.json \
   --output /controlled/evidence/spring-launch-receipt.json \
   --trust-store /controlled/trust/spring-trust-store.json \
@@ -111,20 +134,30 @@ python3 scripts/batch30/spring_launch_evidence.py assemble \
   --expected-worker-application-artifact-digest "$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST"
 
 # The launch gate re-verifies every byte, signature, role and revision binding.
-make spring-launch-gate \
+# The production launcher uses fixed /usr/bin/python3 -I and never PATH-resolved uv.
+# make, Python, system dependencies and their parents are root-owned and immutable to UID 10001.
+# SPRING_OBSERVER_BUNDLE_DIGEST is supplied by the independent approval channel;
+# it covers the observer plus every static application-launch input consumed here.
+sudo -u elmos-spring-app /usr/bin/env -i \
+  HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
   SPRING_ENV_FILE=/controlled/spring/spring.env \
-  ELMOS_ENV_FILE=/srv/elmos/config/elmos.env \
+  ELMOS_ENV_FILE=/srv/elmos/config/compose.env \
+  ELMOS_WEB_ENV_FILE=/srv/elmos/config/web-console.env \
   SPRING_EXTERNAL_EVIDENCE=/controlled/evidence/spring-launch-receipt.json \
   SPRING_TRUST_STORE=/controlled/trust/spring-trust-store.json \
   SPRING_TRUST_STORE_DIGEST="$APPROVED_SPRING_TRUST_STORE_DIGEST" \
   SPRING_EVIDENCE_ROOT=/controlled/evidence \
   SPRING_EXPECTED_REVISION="$DEPLOYED_GIT_REVISION" \
+  SPRING_OBSERVER_BUNDLE_DIGEST="$APPROVED_SPRING_OBSERVER_BUNDLE_DIGEST" \
   SPRING_ENVIRONMENT_ID=spring-staging-cn-1 \
   SPRING_DEPLOYMENT_ID="$SPRING_DEPLOYMENT_ID" \
   SPRING_PROVIDER=private-linux \
   SPRING_REGION=cn-north-1 \
   SPRING_ENVIRONMENT_CLASS=STAGING \
-  SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST="$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST"
+  SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST="$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST" \
+  /usr/bin/python3 -I \
+  /opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION/scripts/batch30/run_spring_production_gate.py \
+  spring-launch-gate
 ```
 
 `SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST` must come from the controlled build
@@ -155,6 +188,12 @@ Manager or equivalent non-echoing controlled writer. Each must be a distinct
 `10001:10001/0700`. The workspace path must already be a real cross-host storage
 mount before its `runs` directory is set to `10001:10001/0700`; a local `mkdir`
 is not evidence that Worker and Runner share storage.
+
+The workspace and both replay directories must have pairwise-distinct
+device/inode identities, and none may equal the device/inode identity of any
+Secret parent. Canonical path-string inequality is insufficient: a bind-mount
+alias is rejected by environment validation, the signed commitment and live
+mount attestation.
 
 `SPRING_EXPECTED_REVISION` must be the independently recorded 40-character
 revision actually deployed. The production Make gate passes it explicitly; it

@@ -112,22 +112,6 @@
           "if": {
             "properties": {
               "verification": {
-                "properties": {"mode": {"const": "LOCAL_BYTES"}},
-                "required": ["mode"]
-              }
-            },
-            "required": ["verification"]
-          },
-          "then": {
-            "properties": {
-              "uri": {"pattern": "^file://(?:localhost)?/[^\\s]+$"}
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "verification": {
                 "properties": {"mode": {"const": "CONTROLLED_INDEX"}},
                 "required": ["mode"]
               }

@@ -12,6 +12,8 @@ from unittest import mock
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/batch30/validate_spring_launch_readiness.py"
 ENV_TEMPLATE = ROOT / "deploy/production/spring-launch.env.example"
+COMPOSE_ENV_TEMPLATE = ROOT / "deploy/production/.env.example"
+SERVICE_ENV_TEMPLATE_ROOT = ROOT / "deploy/production/env"
 MAKEFILE = ROOT / "Makefile.batch30"
 
 SPRING_ENVIRONMENT_KEYS = (
@@ -50,6 +52,10 @@ DANGEROUS_DEPLOYMENT_KEYS = (
     "SPRING_CONFIG_IMPORT",
     "SPRING_PROFILES_ACTIVE",
     "SPRING_PROFILES_INCLUDE",
+    "PYTHONHOME",
+    "PYTHONPATH",
+    "PYTHONSTARTUP",
+    "PYTHONUSERBASE",
 )
 
 
@@ -62,7 +68,17 @@ def sanitized_environment() -> dict[str, str]:
             or name.startswith("ELMOS_VERIFIER_")
             or name.startswith("ELMOS_TRANSFORMER_")
             or name == "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID"
-            or name == "ELMOS_ENV_FILE"
+            or name in {
+                "ELMOS_ENV_FILE",
+                "ELMOS_WEB_ENV_FILE",
+                "ELMOS_CONTROL_PLANE_ENV_FILE",
+                "ELMOS_COMMERCIAL_API_ENV_FILE",
+                "ELMOS_WORKSPACE_SERVICE_ENV_FILE",
+                "ELMOS_DATABASE_DATA_ENGINE_ENV_FILE",
+                "ELMOS_EGRESS_PROXY_ENV_FILE",
+                "ELMOS_MINIO_ENV_FILE",
+                "ELMOS_SECRET_ROOT",
+            }
             or name in DANGEROUS_DEPLOYMENT_KEYS
         ):
             environment.pop(name)
@@ -81,7 +97,11 @@ def complete_environment(root: Path) -> dict[str, str]:
         secret.write_bytes(bytes([65 + index]) * 32)
         secret.chmod(0o600)
         secrets.append(secret)
-    resend_secret = root / "resend-api-key"
+    application_secret_root = root / "application-secrets"
+    application_secret_root.mkdir(mode=0o700)
+    web_secret_root = application_secret_root / "web"
+    web_secret_root.mkdir(mode=0o700)
+    resend_secret = web_secret_root / "resend-api-key"
     resend_secret.write_bytes(b"E" * 32)
     resend_secret.chmod(0o600)
     return {
@@ -120,14 +140,85 @@ def write_compose_environment_file(
     path: Path,
     spring_values: dict[str, str],
     extra_lines: tuple[str, ...] = (),
+    *,
+    secret_root: Path | None = None,
 ) -> None:
+    service_paths = {
+        "ELMOS_WEB_ENV_FILE": path.parent / "web-console.env",
+        "ELMOS_CONTROL_PLANE_ENV_FILE": path.parent / "control-plane.env",
+        "ELMOS_COMMERCIAL_API_ENV_FILE": path.parent / "commercial-api.env",
+        "ELMOS_WORKSPACE_SERVICE_ENV_FILE": path.parent / "workspace-service.env",
+        "ELMOS_DATABASE_DATA_ENGINE_ENV_FILE": path.parent / "database-data-engine.env",
+        "ELMOS_EGRESS_PROXY_ENV_FILE": path.parent / "egress-proxy.env",
+        "ELMOS_MINIO_ENV_FILE": path.parent / "minio.env",
+    }
+    for variable, service_path in service_paths.items():
+        service = {
+            "ELMOS_WEB_ENV_FILE": "web-console",
+            "ELMOS_CONTROL_PLANE_ENV_FILE": "control-plane",
+            "ELMOS_COMMERCIAL_API_ENV_FILE": "commercial-api",
+            "ELMOS_WORKSPACE_SERVICE_ENV_FILE": "workspace-service",
+            "ELMOS_DATABASE_DATA_ENGINE_ENV_FILE": "database-data-engine-worker",
+            "ELMOS_EGRESS_PROXY_ENV_FILE": "egress-proxy",
+            "ELMOS_MINIO_ENV_FILE": "minio",
+        }[variable]
+        template_name = (
+            "database-data-engine"
+            if service == "database-data-engine-worker"
+            else service
+        )
+        template = SERVICE_ENV_TEMPLATE_ROOT / f"{template_name}.env.example"
+        service_values = {
+            line.split("=", 1)[0]: line.split("=", 1)[1]
+            for line in template.read_text(encoding="utf-8").splitlines()
+            if line and not line.startswith("#")
+        }
+        write_environment_file(service_path, service_values)
     values = {
         "ELMOS_ENV_FILE": str(path),
-        "ELMOS_SECRET_ROOT": str(path.parent),
-        "NODE_ENV": "production",
-        "ELMOS_DATABASE_URL": "jdbc:postgresql://database.example/elmos?sslmode=require",
+        "ELMOS_SECRET_ROOT": str(secret_root or path.parent.parent / "application-secrets"),
+        **{name: str(service_path) for name, service_path in service_paths.items()},
     }
     write_environment_file(path, values, extra_lines)
+
+
+def web_environment_file_for(compose_file: Path) -> Path:
+    return compose_file.parent / "web-console.env"
+
+
+def compose_environment_path(root: Path, name: str = "compose.env") -> Path:
+    config = root / "config"
+    config.mkdir(mode=0o700, exist_ok=True)
+    return config / name
+
+
+def write_web_environment_file(
+    compose_file: Path,
+    *,
+    overrides: dict[str, str] | None = None,
+    extra_lines: tuple[str, ...] = (),
+) -> Path:
+    template = SERVICE_ENV_TEMPLATE_ROOT / "web-console.env.example"
+    values = {
+        line.split("=", 1)[0]: line.split("=", 1)[1]
+        for line in template.read_text(encoding="utf-8").splitlines()
+        if line and not line.startswith("#")
+    }
+    values.update(overrides or {})
+    destination = web_environment_file_for(compose_file)
+    write_environment_file(destination, values, extra_lines)
+    return destination
+
+
+def launch_environment_arguments(spring_file: Path, compose_file: Path) -> list[str]:
+    return [
+        "--environment-file",
+        str(spring_file),
+        "--compose-environment-file",
+        str(compose_file),
+        "--web-environment-file",
+        str(web_environment_file_for(compose_file)),
+    ]
 
 
 class SpringLaunchReadinessTests(unittest.TestCase):
@@ -158,6 +249,9 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         self.assertIn("production evidence is required", result.stderr)
         self.assertIn(
             "production evidence requires --compose-environment-file", result.stderr
+        )
+        self.assertIn(
+            "production evidence requires --web-environment-file", result.stderr
         )
         self.assertIn(
             "production evidence requires --expected-revision", result.stderr
@@ -366,16 +460,13 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             root = Path(temporary).resolve()
             values = complete_environment(root)
             spring_file = root / "spring.env"
-            compose_file = root / "elmos.env"
+            compose_file = compose_environment_path(root, "elmos.env")
             write_environment_file(spring_file, values)
             write_compose_environment_file(compose_file, values)
             command = [
                 sys.executable,
                 str(SCRIPT),
-                "--environment-file",
-                str(spring_file),
-                "--compose-environment-file",
-                str(compose_file),
+                *launch_environment_arguments(spring_file, compose_file),
             ]
 
             first = subprocess.run(
@@ -386,7 +477,10 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             )
             self.assertEqual(0, first.returncode, first.stdout + first.stderr)
             self.assertIn(
-                "COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED", first.stdout
+                "COMPOSE_ENVIRONMENT_BINDING=SERVICE_ENV_FILES_VERIFIED", first.stdout
+            )
+            self.assertIn(
+                "WEB_ENVIRONMENT_BINDING=ELMOS_WEB_ENV_FILE_VERIFIED", first.stdout
             )
             first_digest = next(
                 line
@@ -419,10 +513,9 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 if line.startswith("EXPECTED_APPLICATION_MOUNT_SOURCES_DIGEST=")
             )
 
-            write_compose_environment_file(
+            write_web_environment_file(
                 compose_file,
-                values,
-                ("ELMOS_DEPLOYMENT_MARKER=second-revision",),
+                overrides={"ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED": "true"},
             )
             second = subprocess.run(
                 command,
@@ -467,8 +560,8 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 second_application_environment_commitment,
             )
             self.assertEqual(first_worker_digest, second_worker_digest)
-            self.assertEqual(first_web_digest, second_web_digest)
-            self.assertNotEqual(first_web_names_digest, second_web_names_digest)
+            self.assertNotEqual(first_web_digest, second_web_digest)
+            self.assertEqual(first_web_names_digest, second_web_names_digest)
             self.assertEqual(first_mounts_digest, second_mounts_digest)
 
     def test_application_environment_commitment_never_hashes_secret_values(self):
@@ -476,23 +569,20 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             root = Path(temporary).resolve()
             values = complete_environment(root)
             spring_file = root / "spring.env"
-            compose_file = root / "elmos.env"
+            compose_file = compose_environment_path(root, "elmos.env")
             write_environment_file(spring_file, values)
             command = [
                 sys.executable,
                 str(SCRIPT),
-                "--environment-file",
-                str(spring_file),
-                "--compose-environment-file",
-                str(compose_file),
+                *launch_environment_arguments(spring_file, compose_file),
             ]
 
             commitments = []
             for secret in ("guessable-secret-one", "guessable-secret-two"):
-                write_compose_environment_file(
+                write_compose_environment_file(compose_file, values)
+                write_web_environment_file(
                     compose_file,
-                    values,
-                    (f"ELMOS_DATABASE_PASSWORD={secret}",),
+                    overrides={"ELMOS_OIDC_CLIENT_SECRET": secret},
                 )
                 result = subprocess.run(
                     command,
@@ -513,13 +603,12 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 )
             self.assertEqual(commitments[0], commitments[1])
 
-            write_compose_environment_file(
+            write_web_environment_file(
                 compose_file,
-                values,
-                (
-                    "ELMOS_DATABASE_PASSWORD=guessable-secret-two",
-                    "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED=true",
-                ),
+                overrides={
+                    "ELMOS_OIDC_CLIENT_SECRET": "guessable-secret-two",
+                    "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED": "true",
+                },
             )
             changed = subprocess.run(
                 command,
@@ -535,12 +624,260 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             )
             self.assertNotEqual(commitments[1], changed_commitment)
 
+    def test_compose_manifest_rejects_credentials_and_service_cross_leaks(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = complete_environment(root)
+            spring_file = root / "spring.env"
+            compose_file = compose_environment_path(root)
+            write_environment_file(spring_file, values)
+            write_compose_environment_file(
+                compose_file,
+                values,
+                ("ELMOS_DATABASE_PASSWORD=must-not-be-here",),
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    *launch_environment_arguments(spring_file, compose_file),
+                ],
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn("must not contain secret-shaped key", result.stderr)
+
+            write_compose_environment_file(compose_file, values)
+            write_web_environment_file(
+                compose_file,
+                extra_lines=("ELMOS_COMMERCIAL_DATABASE_PASSWORD=cross-leak",),
+            )
+            result = subprocess.run(
+                [
+                    sys.executable,
+                    str(SCRIPT),
+                    *launch_environment_arguments(spring_file, compose_file),
+                ],
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(2, result.returncode)
+            self.assertIn(
+                "web-console runtime environment uses key outside its exact allowlist: ELMOS_COMMERCIAL_DATABASE_PASSWORD",
+                result.stderr,
+            )
+
+    def test_service_environment_values_reject_ambiguous_compose_syntax(self):
+        for value in ('"quoted"', "value # comment", "value\\escape"):
+            with self.subTest(value=value), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary).resolve()
+                spring_values = complete_environment(root)
+                spring_file = root / "spring.env"
+                compose_file = compose_environment_path(root)
+                write_environment_file(spring_file, spring_values)
+                write_compose_environment_file(compose_file, spring_values)
+                write_web_environment_file(
+                    compose_file,
+                    overrides={"ELMOS_OIDC_CLIENT_ID": value},
+                )
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        *launch_environment_arguments(spring_file, compose_file),
+                    ],
+                    text=True,
+                    capture_output=True,
+                    env=sanitized_environment(),
+                )
+                self.assertEqual(2, result.returncode)
+                self.assertIn("contains ambiguous quoting", result.stderr)
+
+    def test_secret_root_and_environment_file_objects_are_isolated(self):
+        validator = self.load_validator("spring_launch_env_role_isolation")
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            secret_root = root / "secrets"
+            secret_root.mkdir(mode=0o700)
+            first = root / "config-a.env"
+            second = root / "config-b.env"
+            first.write_text("x", encoding="utf-8")
+            second.write_text("y", encoding="utf-8")
+            errors: list[str] = []
+            duplicate_identity = (b"", (1, 42, 0, 0, 0, 1, 0, 0, 0), ())
+            validator.validate_environment_file_role_isolation(
+                errors,
+                secret_root=secret_root,
+                environment_files={
+                    "compose": (first, duplicate_identity),
+                    "web-console": (second, duplicate_identity),
+                },
+            )
+            self.assertTrue(any("distinct filesystem objects" in item for item in errors))
+
+            nested = secret_root / "config"
+            nested.mkdir(mode=0o700)
+            nested_file = nested / "compose.env"
+            nested_file.write_text("x", encoding="utf-8")
+            details = nested_file.stat()
+            snapshot = (
+                b"x",
+                (
+                    details.st_dev,
+                    details.st_ino,
+                    details.st_mode,
+                    details.st_uid,
+                    details.st_gid,
+                    details.st_nlink,
+                    details.st_size,
+                    details.st_mtime_ns,
+                    details.st_ctime_ns,
+                ),
+                (),
+            )
+            errors = []
+            validator.validate_environment_file_role_isolation(
+                errors,
+                secret_root=secret_root,
+                environment_files={"compose": (nested_file, snapshot)},
+            )
+            self.assertTrue(any("isolated from ELMOS_SECRET_ROOT" in item for item in errors))
+
+    def test_production_gate_requires_dedicated_observer_identity(self):
+        validator = self.load_validator("spring_launch_dedicated_observer")
+        for uid, gid in ((0, 0), (10002, 10002), (10001, 10002)):
+            with self.subTest(uid=uid, gid=gid):
+                errors: list[str] = []
+                with (
+                    mock.patch.object(validator.os, "getuid", return_value=uid),
+                    mock.patch.object(validator.os, "getgid", return_value=gid),
+                ):
+                    validator.validate_environment(errors, {}, production=True)
+                self.assertIn(
+                    "production launch gate must run as the dedicated application observer UID/GID 10001:10001",
+                    errors,
+                )
+
+    def test_production_mount_subtree_validation_rejects_nested_mounts(self):
+        validator = self.load_validator("spring_launch_mount_subtrees")
+        evidence = validator.load_spring_evidence_module()
+        safe = evidence.parse_linux_mountinfo(
+            b"36 25 0:32 / / rw,relatime - overlay overlay rw\n"
+            b"37 36 0:33 / /srv/elmos/workspace rw - tmpfs tmpfs rw\n"
+        )
+        errors: list[str] = []
+        snapshot = validator.validate_production_mount_subtrees(
+            errors,
+            {"workspace": Path("/srv/elmos/workspace")},
+            _snapshot_provider=lambda: safe,
+        )
+        self.assertEqual(safe, snapshot)
+        self.assertEqual([], errors)
+
+        nested = evidence.parse_linux_mountinfo(
+            b"36 25 0:32 / / rw,relatime - overlay overlay rw\n"
+            b"37 36 0:33 / /srv/elmos/workspace/cache rw - tmpfs tmpfs rw\n"
+        )
+        snapshot = validator.validate_production_mount_subtrees(
+            errors,
+            {"workspace": Path("/srv/elmos/workspace")},
+            _snapshot_provider=lambda: nested,
+        )
+        self.assertIsNone(snapshot)
+        self.assertTrue(
+            any("contains a nested mountpoint" in error for error in errors),
+            errors,
+        )
+
+    def test_production_mount_subtree_validation_requires_real_snapshot(self):
+        validator = self.load_validator("spring_launch_mountinfo_required")
+
+        def unavailable():
+            raise OSError("proc unavailable")
+
+        errors: list[str] = []
+        snapshot = validator.validate_production_mount_subtrees(
+            errors,
+            {"workspace": Path("/srv/elmos/workspace")},
+            _snapshot_provider=unavailable,
+        )
+        self.assertIsNone(snapshot)
+        self.assertTrue(
+            any("production mount topology validation failed" in item for item in errors),
+            errors,
+        )
+
+    def test_nonproduction_environment_does_not_require_linux_mountinfo(self):
+        validator = self.load_validator("spring_launch_static_without_mountinfo")
+        with tempfile.TemporaryDirectory() as temporary:
+            values = complete_environment(Path(temporary).resolve())
+            errors: list[str] = []
+            with mock.patch.object(
+                validator,
+                "validate_production_mount_subtrees",
+                side_effect=AssertionError("static validation read mountinfo"),
+            ) as mountinfo_validator:
+                validator.validate_environment(errors, values, production=False)
+            mountinfo_validator.assert_not_called()
+        self.assertEqual([], errors)
+
+    def test_non_web_service_secret_rotation_does_not_change_web_commitment(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary).resolve()
+            values = complete_environment(root)
+            spring_file = root / "spring.env"
+            compose_file = compose_environment_path(root)
+            write_environment_file(spring_file, values)
+            write_compose_environment_file(compose_file, values)
+            command = [
+                sys.executable,
+                str(SCRIPT),
+                *launch_environment_arguments(spring_file, compose_file),
+            ]
+            first = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(0, first.returncode, first.stdout + first.stderr)
+            first_commitment = next(
+                line
+                for line in first.stdout.splitlines()
+                if line.startswith("APPLICATION_ENVIRONMENT_COMMITMENT_DIGEST=")
+            )
+
+            control_file = compose_file.parent / "control-plane.env"
+            control_values = {
+                line.split("=", 1)[0]: line.split("=", 1)[1]
+                for line in control_file.read_text(encoding="utf-8").splitlines()
+                if line and not line.startswith("#")
+            }
+            control_values["ELMOS_DATABASE_PASSWORD"] = "rotated-control-secret"
+            write_environment_file(control_file, control_values)
+            second = subprocess.run(
+                command,
+                text=True,
+                capture_output=True,
+                env=sanitized_environment(),
+            )
+            self.assertEqual(0, second.returncode, second.stdout + second.stderr)
+            second_commitment = next(
+                line
+                for line in second.stdout.splitlines()
+                if line.startswith("APPLICATION_ENVIRONMENT_COMMITMENT_DIGEST=")
+            )
+            self.assertEqual(first_commitment, second_commitment)
+
     def test_actual_compose_environment_must_match_spring_file_and_self_bind(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
             values = complete_environment(root)
             spring_file = root / "spring.env"
-            compose_file = root / "elmos.env"
+            compose_file = compose_environment_path(root, "elmos.env")
             write_environment_file(spring_file, values)
             write_compose_environment_file(
                 compose_file,
@@ -551,10 +888,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 [
                     sys.executable,
                     str(SCRIPT),
-                    "--environment-file",
-                    str(spring_file),
-                    "--compose-environment-file",
-                    str(compose_file),
+                    *launch_environment_arguments(spring_file, compose_file),
                 ],
                 text=True,
                 capture_output=True,
@@ -562,26 +896,26 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             )
             self.assertEqual(2, result.returncode)
             self.assertIn(
-                "must not leak Spring launch key ELMOS_SPRING_PROXY_ENABLED",
+                "must not contain Spring launch key ELMOS_SPRING_PROXY_ENABLED",
                 result.stderr,
             )
 
+            write_compose_environment_file(compose_file, values)
+            compose_values = {
+                line.split("=", 1)[0]: line.split("=", 1)[1]
+                for line in compose_file.read_text(encoding="utf-8").splitlines()
+                if line and not line.startswith("#")
+            }
+            compose_values["ELMOS_ENV_FILE"] = "/different/deployment.env"
             write_environment_file(
                 compose_file,
-                {
-                    "ELMOS_ENV_FILE": "/different/deployment.env",
-                    "NODE_ENV": "production",
-                    **values,
-                },
+                compose_values,
             )
             result = subprocess.run(
                 [
                     sys.executable,
                     str(SCRIPT),
-                    "--environment-file",
-                    str(spring_file),
-                    "--compose-environment-file",
-                    str(compose_file),
+                    *launch_environment_arguments(spring_file, compose_file),
                 ],
                 text=True,
                 capture_output=True,
@@ -602,7 +936,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 root = Path(temporary).resolve()
                 values = complete_environment(root)
                 spring_file = root / "spring.env"
-                compose_file = root / "elmos.env"
+                compose_file = compose_environment_path(root, "elmos.env")
                 write_environment_file(spring_file, values)
                 write_compose_environment_file(
                     compose_file,
@@ -613,10 +947,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                     [
                         sys.executable,
                         str(SCRIPT),
-                        "--environment-file",
-                        str(spring_file),
-                        "--compose-environment-file",
-                        str(compose_file),
+                        *launch_environment_arguments(spring_file, compose_file),
                     ],
                     text=True,
                     capture_output=True,
@@ -625,7 +956,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
 
             self.assertEqual(2, result.returncode)
             self.assertIn(
-                f"must not leak Spring launch key {name}", result.stderr
+                f"must not contain Spring launch key {name}", result.stderr
             )
 
     def test_actual_compose_environment_rejects_dangerous_or_equivalent_overrides(self):
@@ -638,17 +969,14 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 root = Path(temporary).resolve()
                 values = complete_environment(root)
                 spring_file = root / "spring.env"
-                compose_file = root / "elmos.env"
+                compose_file = compose_environment_path(root, "elmos.env")
                 write_environment_file(spring_file, values)
                 write_compose_environment_file(compose_file, values, (f"{key}=attacker",))
                 result = subprocess.run(
                     [
                         sys.executable,
                         str(SCRIPT),
-                        "--environment-file",
-                        str(spring_file),
-                        "--compose-environment-file",
-                        str(compose_file),
+                        *launch_environment_arguments(spring_file, compose_file),
                     ],
                     text=True,
                     capture_output=True,
@@ -664,16 +992,13 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             root = Path(temporary).resolve()
             values = complete_environment(root)
             spring_file = root / "spring.env"
-            compose_file = root / "elmos.env"
+            compose_file = compose_environment_path(root, "elmos.env")
             write_environment_file(spring_file, values)
             write_compose_environment_file(compose_file, values)
             command = [
                 sys.executable,
                 str(SCRIPT),
-                "--environment-file",
-                str(spring_file),
-                "--compose-environment-file",
-                str(compose_file),
+                *launch_environment_arguments(spring_file, compose_file),
             ]
 
             environment = sanitized_environment()
@@ -721,7 +1046,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             root = Path(temporary).resolve()
             values = complete_environment(root)
             spring_file = root / "spring.env"
-            compose_file = root / "elmos.env"
+            compose_file = compose_environment_path(root, "elmos.env")
             missing = dict(values)
             missing.pop("ELMOS_SPRING_PROXY_ENABLED")
             write_environment_file(spring_file, missing)
@@ -733,10 +1058,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 [
                     sys.executable,
                     str(SCRIPT),
-                    "--environment-file",
-                    str(spring_file),
-                    "--compose-environment-file",
-                    str(compose_file),
+                    *launch_environment_arguments(spring_file, compose_file),
                 ],
                 text=True,
                 capture_output=True,
@@ -1293,6 +1615,40 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             self.assertEqual(2, result.returncode)
             self.assertIn(f"Spring HMAC secrets must be isolated from {expected}", result.stderr)
 
+    def test_mount_role_identity_isolation_rejects_bind_aliases(self):
+        validator = self.load_validator("spring_launch_validator_role_alias")
+        errors: list[str] = []
+        validator.validate_mount_role_identity_isolation(
+            errors,
+            directory_roles={"workspace": (1, 10), "replay": (1, 10)},
+            secret_ancestor_roles={"engine": ((1, 20),)},
+        )
+        self.assertTrue(any("distinct filesystem objects" in item for item in errors))
+
+        errors = []
+        validator.validate_mount_role_identity_isolation(
+            errors,
+            directory_roles={"workspace": (1, 20), "replay": (1, 30)},
+            secret_ancestor_roles={
+                "engine": ((1, 21), (1, 20)),
+                "verifier": ((1, 40),),
+            },
+        )
+        self.assertTrue(any("controlled ancestor" in item for item in errors))
+
+    def test_mount_role_identity_rejects_secret_grandparent_bind_alias(self):
+        validator = self.load_validator("spring_launch_validator_grandparent_alias")
+        errors: list[str] = []
+        validator.validate_mount_role_identity_isolation(
+            errors,
+            directory_roles={"workspace": (9, 90), "replay": (9, 91)},
+            secret_ancestor_roles={
+                "engine": ((9, 92), (9, 90)),
+                "verifier": ((9, 93), (9, 94)),
+            },
+        )
+        self.assertTrue(any("controlled ancestor" in item for item in errors), errors)
+
     def test_web_console_resend_secret_is_owner_only_and_not_reused(self):
         cases = {
             "missing": "web-console Resend secret",
@@ -1305,9 +1661,9 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 root = Path(temporary).resolve()
                 values = complete_environment(root)
                 spring_file = root / "spring.env"
-                compose_file = root / "elmos.env"
-                resend = root / "resend-api-key"
-                secret_root = root
+                compose_file = compose_environment_path(root, "elmos.env")
+                secret_root = root / "application-secrets"
+                resend = secret_root / "web" / "resend-api-key"
                 if case == "missing":
                     resend.unlink()
                 elif case == "permissions":
@@ -1318,29 +1674,21 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                     secret_root = Path(
                         values["ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH"]
                     )
-                    resend = secret_root / "resend-api-key"
+                    (secret_root / "web").mkdir(mode=0o700)
+                    resend = secret_root / "web" / "resend-api-key"
                     resend.write_bytes(b"E" * 32)
                     resend.chmod(0o600)
                 write_environment_file(spring_file, values)
-                write_environment_file(
+                write_compose_environment_file(
                     compose_file,
-                    {
-                        "ELMOS_ENV_FILE": str(compose_file),
-                        "ELMOS_SECRET_ROOT": str(secret_root),
-                        "NODE_ENV": "production",
-                        "ELMOS_DATABASE_URL": (
-                            "jdbc:postgresql://database.example/elmos?sslmode=require"
-                        ),
-                    },
+                    values,
+                    secret_root=secret_root,
                 )
                 result = subprocess.run(
                     [
                         sys.executable,
                         str(SCRIPT),
-                        "--environment-file",
-                        str(spring_file),
-                        "--compose-environment-file",
-                        str(compose_file),
+                        *launch_environment_arguments(spring_file, compose_file),
                     ],
                     text=True,
                     capture_output=True,
@@ -1448,6 +1796,8 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         self.assertIn('--environment-file "$${SPRING_ENV_FILE}"', makefile)
         self.assertIn('test -n "$${ELMOS_ENV_FILE}"', makefile)
         self.assertIn('--compose-environment-file "$${ELMOS_ENV_FILE}"', makefile)
+        self.assertIn('test -n "$${ELMOS_WEB_ENV_FILE}"', makefile)
+        self.assertIn('--web-environment-file "$${ELMOS_WEB_ENV_FILE}"', makefile)
         self.assertIn('test -n "$${SPRING_TRUST_STORE}"', makefile)
         self.assertIn('--trust-store "$${SPRING_TRUST_STORE}"', makefile)
         self.assertIn('test -n "$${SPRING_TRUST_STORE_DIGEST}"', makefile)
@@ -1459,6 +1809,12 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         self.assertIn('--evidence-root "$${SPRING_EVIDENCE_ROOT}"', makefile)
         self.assertIn('test -n "$${SPRING_EXPECTED_REVISION}"', makefile)
         self.assertIn('--expected-revision "$${SPRING_EXPECTED_REVISION}"', makefile)
+        self.assertIn('test -n "$${SPRING_OBSERVER_BUNDLE_DIGEST}"', makefile)
+        self.assertIn("--check-observer-bundle", makefile)
+        self.assertIn(
+            '--observer-bundle-digest "$${SPRING_OBSERVER_BUNDLE_DIGEST}"',
+            makefile,
+        )
         self.assertIn(
             'test -n "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}"', makefile
         )
@@ -1471,6 +1827,10 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             '--expected-worker-image-digest "$${SPRING_WORKER_IMAGE_DIGEST}"',
             makefile,
         )
+        self.assertIn(
+            "-m unittest discover -s tests/batch30 -t . -p 'test_*.py'",
+            makefile,
+        )
         for variable, option in (
             ("SPRING_ENVIRONMENT_ID", "--expected-environment-id"),
             ("SPRING_DEPLOYMENT_ID", "--expected-deployment-id"),
@@ -1480,13 +1840,54 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         ):
             self.assertIn(f'test -n "$${{{variable}}}"', makefile)
             self.assertIn(f'{option} "$${{{variable}}}"', makefile)
-        self.assertIn("spring-launch-gate: spring-runner-validate", makefile)
+        self.assertIn("spring-launch-gate: spring-runner-production-validate", makefile)
+        self.assertIn(
+            "spring-web-runtime-attestation: spring-runner-production-validate",
+            makefile,
+        )
+        self.assertIn("production Spring targets require /usr/bin/make -f Makefile.batch30", makefile)
+
+    def test_exact_evidence_loader_ignores_pythonpath_scripts_package(self):
+        with tempfile.TemporaryDirectory(prefix="spring-pythonpath-shadow-") as directory:
+            root = Path(directory).resolve()
+            marker = root / "shadow-imported"
+            package = root / "scripts" / "batch30"
+            package.mkdir(parents=True)
+            (root / "scripts" / "__init__.py").write_text("", encoding="utf-8")
+            (package / "__init__.py").write_text("", encoding="utf-8")
+            (package / "spring_launch_evidence.py").write_text(
+                "from pathlib import Path\nPath(" + repr(str(marker)) + ").touch()\n",
+                encoding="utf-8",
+            )
+            code = (
+                "import importlib.util, pathlib, sys; "
+                f"p=pathlib.Path({str(SCRIPT)!r}); "
+                "s=importlib.util.spec_from_file_location('readiness_exact_test', p); "
+                "m=importlib.util.module_from_spec(s); sys.modules[s.name]=m; "
+                "s.loader.exec_module(m); print(pathlib.Path(m.load_spring_evidence_module().__file__).resolve())"
+            )
+            environment = dict(os.environ)
+            environment["PYTHONPATH"] = str(root)
+            result = subprocess.run(
+                [sys.executable, "-c", code],
+                cwd=root,
+                env=environment,
+                text=True,
+                capture_output=True,
+            )
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertEqual(
+                (ROOT / "scripts/batch30/spring_launch_evidence.py").resolve(),
+                Path(result.stdout.strip()),
+            )
+            self.assertFalse(marker.exists())
 
     def test_make_targets_do_not_shell_interpolate_external_parameters(self):
         launch_values = {
             "SPRING_EXTERNAL_EVIDENCE": "/evidence/receipt.json",
             "SPRING_ENV_FILE": "/config/spring.env",
             "ELMOS_ENV_FILE": "/config/elmos.env",
+            "ELMOS_WEB_ENV_FILE": "/config/web-console.env",
             "SPRING_TRUST_STORE": "/evidence/trust.json",
             "SPRING_TRUST_STORE_DIGEST": "sha256:" + "a" * 64,
             "SPRING_EVIDENCE_ROOT": "/evidence",
@@ -1496,9 +1897,12 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             "SPRING_REGION": "region-1",
             "SPRING_ENVIRONMENT_CLASS": "PRODUCTION",
             "SPRING_EXPECTED_REVISION": "b" * 40,
+            "SPRING_OBSERVER_BUNDLE_DIGEST": "sha256:" + "f" * 64,
             "SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST": "sha256:" + "c" * 64,
         }
         web_values = {
+            "SPRING_EXPECTED_REVISION": "b" * 40,
+            "SPRING_OBSERVER_BUNDLE_DIGEST": "sha256:" + "f" * 64,
             "SPRING_WEB_CONTAINER": "elmos-web-1",
             "SPRING_WEB_IMAGE_DIGEST": "sha256:" + "d" * 64,
             "SPRING_WORKER_CONTAINER": "elmos-worker-1",
@@ -1541,7 +1945,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                             text=True,
                             capture_output=True,
                         )
-                        self.assertEqual(
+                        self.assertNotEqual(
                             0, result.returncode, result.stdout + result.stderr
                         )
                         self.assertFalse(
@@ -1595,6 +1999,142 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         )
         self.assertEqual(0, valid.returncode, valid.stdout + valid.stderr)
 
+    def test_make_security_targets_cannot_replace_the_validator_command(self):
+        result = subprocess.run(
+            [
+                "make",
+                "--no-print-directory",
+                "-f",
+                str(MAKEFILE),
+                "spring-launch-gate",
+                "BATCH30_PYTHON=true",
+                "BATCH30_RESOLVED_UV=/usr/bin/true",
+                "UV=true",
+                "SPRING_EXTERNAL_EVIDENCE=/missing/receipt.json",
+                "SPRING_ENV_FILE=/missing/spring.env",
+                "ELMOS_ENV_FILE=/missing/compose.env",
+                "ELMOS_WEB_ENV_FILE=/missing/web.env",
+                "SPRING_TRUST_STORE=/missing/trust.json",
+                "SPRING_TRUST_STORE_DIGEST=sha256:" + "a" * 64,
+                "SPRING_EVIDENCE_ROOT=/missing",
+                "SPRING_ENVIRONMENT_ID=production-1",
+                "SPRING_DEPLOYMENT_ID=deployment-1",
+                "SPRING_PROVIDER=provider-1",
+                "SPRING_REGION=region-1",
+                "SPRING_ENVIRONMENT_CLASS=PRODUCTION",
+                "SPRING_EXPECTED_REVISION=" + "b" * 40,
+                "SPRING_OBSERVER_BUNDLE_DIGEST=sha256:" + "f" * 64,
+                "SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST=sha256:" + "c" * 64,
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, result.returncode)
+        self.assertNotIn("SPRING_LAUNCH_GATE=", result.stdout)
+
+    def test_spring_launch_gate_never_executes_uv_discovered_from_path(self):
+        with tempfile.TemporaryDirectory(prefix="spring-fake-uv-") as temporary:
+            fake_bin = Path(temporary)
+            marker = fake_bin / "executed"
+            fake_uv = fake_bin / "uv"
+            fake_uv.write_text(
+                f"#!/bin/sh\n/usr/bin/touch {marker}\nexit 0\n",
+                encoding="utf-8",
+            )
+            fake_uv.chmod(0o755)
+            environment = dict(os.environ)
+            environment["PATH"] = f"{fake_bin}:{environment.get('PATH', '')}"
+            result = subprocess.run(
+                [
+                    "make",
+                    "--no-print-directory",
+                    "-f",
+                    str(MAKEFILE),
+                    "spring-launch-gate",
+                    "BATCH30_PYTHON=true",
+                    "BATCH30_RESOLVED_UV=/usr/bin/true",
+                    "SPRING_PRODUCTION_PYTHON=/usr/bin/true",
+                    "SPRING_EXTERNAL_EVIDENCE=/missing/receipt.json",
+                    "SPRING_ENV_FILE=/missing/spring.env",
+                    "ELMOS_ENV_FILE=/missing/compose.env",
+                    "ELMOS_WEB_ENV_FILE=/missing/web.env",
+                    "SPRING_TRUST_STORE=/missing/trust.json",
+                    "SPRING_TRUST_STORE_DIGEST=sha256:" + "a" * 64,
+                    "SPRING_EVIDENCE_ROOT=/missing",
+                    "SPRING_ENVIRONMENT_ID=production-1",
+                    "SPRING_DEPLOYMENT_ID=deployment-1",
+                    "SPRING_PROVIDER=provider-1",
+                    "SPRING_REGION=region-1",
+                    "SPRING_ENVIRONMENT_CLASS=PRODUCTION",
+                    "SPRING_EXPECTED_REVISION=" + "b" * 40,
+                    "SPRING_OBSERVER_BUNDLE_DIGEST=sha256:" + "f" * 64,
+                    "SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST=sha256:" + "c" * 64,
+                ],
+                cwd=ROOT,
+                env=environment,
+                text=True,
+                capture_output=True,
+            )
+            self.assertNotEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertFalse(marker.exists(), result.stdout + result.stderr)
+            self.assertIn("/usr/bin/python3 -I", result.stdout + result.stderr)
+
+    def test_production_spring_target_rejects_top_level_makefile_include_graph(self):
+        for extra in ((), ("MAKEFILE_LIST=Makefile.batch30",)):
+            with self.subTest(extra=extra):
+                result = subprocess.run(
+                    [
+                        "make",
+                        "--no-print-directory",
+                        "spring-launch-gate",
+                        *extra,
+                    ],
+                    cwd=ROOT,
+                    text=True,
+                    capture_output=True,
+                )
+                self.assertNotEqual(0, result.returncode)
+                self.assertIn(
+                    "production Spring targets require /usr/bin/make -f Makefile.batch30",
+                    result.stdout + result.stderr,
+                )
+
+    def test_make_security_targets_freeze_resolved_tool_and_shell(self):
+        dry_run = subprocess.run(
+            [
+                "make",
+                "--no-print-directory",
+                "-n",
+                "-f",
+                str(MAKEFILE),
+                "spring-launch-validate",
+                "BATCH30_RESOLVED_UV=/usr/bin/true",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertEqual(0, dry_run.returncode, dry_run.stdout + dry_run.stderr)
+        self.assertNotIn("/usr/bin/true run", dry_run.stdout)
+        self.assertIn(" run --quiet --with jsonschema --with pyyaml python -I", dry_run.stdout)
+
+        shell_attack = subprocess.run(
+            [
+                "make",
+                "--no-print-directory",
+                "-f",
+                str(MAKEFILE),
+                "b30-pack-validate",
+                "SHELL=/usr/bin/true",
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+        )
+        self.assertNotEqual(0, shell_attack.returncode)
+        self.assertIn("PACK", shell_attack.stdout + shell_attack.stderr)
+
     def test_external_verification_rechecks_environment_and_mount_snapshots(self):
         specification = importlib.util.spec_from_file_location(
             "spring_launch_validator_post_external_snapshot", SCRIPT
@@ -1616,7 +2156,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 ):
                     values[name] = "https://runner.spring.acme"
                 spring_file = root / "spring.env"
-                compose_file = root / "elmos.env"
+                compose_file = compose_environment_path(root, "elmos.env")
                 write_environment_file(spring_file, values)
                 write_compose_environment_file(compose_file, values)
                 engine_secret = Path(
@@ -1642,10 +2182,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
 
                 arguments = [
                     str(SCRIPT),
-                    "--environment-file",
-                    str(spring_file),
-                    "--compose-environment-file",
-                    str(compose_file),
+                    *launch_environment_arguments(spring_file, compose_file),
                     "--external-evidence",
                     str(root / "receipt.json"),
                     "--trust-store",
