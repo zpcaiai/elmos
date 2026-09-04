@@ -113,3 +113,4 @@ _cloudstage/
 survey-engines-mac.sh
 .vercel
 .env*
+!deploy/production/.env.example

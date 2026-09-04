@@ -10,6 +10,8 @@
 
 services:
   web-console:
+    # Reassert the narrow web-only file at the Spring activation boundary.
+    env_file: ["${ELMOS_WEB_ENV_FILE:?web-console env file is required}"]
     environment:
       ELMOS_SPRING_PROXY_ENABLED: "true"
       ELMOS_SPRING_PROXY_MULTI_TENANT: "true"

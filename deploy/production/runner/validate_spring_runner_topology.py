@@ -10,6 +10,7 @@ the modes creates external evidence or changes certification state.
 from __future__ import annotations
 
 import argparse
+import datetime as dt
 import hashlib
 import ipaddress
 import json
@@ -31,6 +32,39 @@ except ImportError as error:  # pragma: no cover - exercised by CLI environments
 
 
 ROOT = Path(__file__).resolve().parents[3]
+TRUSTED_DOCKER_CLI = Path("/usr/bin/docker")
+TRUSTED_PYTHON = Path("/usr/bin/python3")
+OBSERVER_ROOT = Path("/opt/elmos-spring-gate")
+GIT_REVISION = re.compile(r"^[0-9a-f]{40}$")
+SHA256_DIGEST = re.compile(r"^sha256:[0-9a-f]{64}$")
+
+APPLICATION_GATE_BUNDLE_PATHS = (
+    "Makefile.batch30",
+    "scripts/batch30/run_spring_production_gate.py",
+    "scripts/batch30/validate_spring_launch_readiness.py",
+    "scripts/batch30/spring_launch_evidence.py",
+    "scripts/precision_migration/trust.py",
+    "deploy/production/spring-launch-profile.json",
+    "deploy/production/.env.example",
+    "deploy/production/env/web-console.env.example",
+    "deploy/production/env/control-plane.env.example",
+    "deploy/production/env/commercial-api.env.example",
+    "deploy/production/env/workspace-service.env.example",
+    "deploy/production/env/database-data-engine.env.example",
+    "deploy/production/env/egress-proxy.env.example",
+    "deploy/production/env/minio.env.example",
+    "schemas/batch30/spring-launch-environment-manifest.schema.json",
+    "schemas/batch30/spring-launch-evidence-index.schema.json",
+    "schemas/batch30/spring-launch-external-evidence.schema.json",
+    "schemas/batch30/spring-launch-trust-store.schema.json",
+    "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringRouteCatalog.java",
+    "apps/java-engine-worker/src/main/java/io/elmos/worker/LocalSpringUpgradeExecutionPort.java",
+    "apps/java-engine-worker/src/main/java/io/elmos/worker/SpringEngineRequestAuthenticationFilter.java",
+    "apps/java-engine-worker/src/main/resources/application.yml",
+    "apps/java-engine-worker/pom.xml",
+    "apps/web-console/app/spring/SpringModernizationStudio.tsx",
+    "apps/web-console/app/api/spring-upgrades/springEngineAuth.ts",
+)
 
 
 @dataclass(frozen=True)
@@ -48,6 +82,18 @@ class ContractPaths:
     environment_example: Path = ROOT / "deploy/production/elmos-commercial.env.example"
     rootless_readme: Path = ROOT / "deploy/rootless-docker/README.md"
     production_readme: Path = ROOT / "deploy/production/README.md"
+
+
+SocketIdentity = tuple[int, int, int, int, int, int, int, int]
+DaemonIdentity = tuple[str, ...]
+NetworkIdentity = tuple[str, ...]
+MaterialIdentity = tuple[int, int, int, int, int, int, int, str]
+
+
+@dataclass(frozen=True)
+class DockerEndpointBinding:
+    socket: SocketIdentity
+    daemon: DaemonIdentity
 
 
 IMAGE_ENVIRONMENTS = (
@@ -879,16 +925,40 @@ def validate_documentation(errors: list[str], paths: ContractPaths) -> None:
         "EXTERNAL_EVIDENCE_INTAKE=NOT_RUN" in production,
         "production runbook must retain external evidence intake as NOT_RUN",
     )
+    require(
+        errors,
+        "sudo uv run --quiet --with pyyaml" not in production,
+        "production runbook must not execute uv or checkout-controlled dependencies as root",
+    )
     for token in (
-        "sudo uv run --quiet --with pyyaml",
+        "/usr/bin/python3 -I",
+        "scripts/batch30/run_spring_production_gate.py",
+        "/opt/elmos-spring-gate/",
+        '--observer-revision "$REVISION"',
+        '--observer-bundle-digest "$OBSERVER_BUNDLE_DIGEST"',
         '--rootless-owner-uid "$RUNNER_UID"',
         '--rootless-owner-gid "$RUNNER_GID"',
         "Docker daemon\n# 仍必须是 rootless",
+        "不是独立验证者",
+        "A -> B -> A",
+        "保持上线 `BLOCKED`",
     ):
         require(
             errors,
             token in production,
             f"production runbook lacks controlled root observer contract: {token}",
+        )
+    for forbidden_command in (
+        "make spring-launch-gate",
+        "make spring-web-runtime-attestation",
+        "/usr/bin/make -f Makefile.batch30 spring-launch-gate",
+        "/usr/bin/make -f Makefile.batch30 spring-web-runtime-attestation",
+    ):
+        require(
+            errors,
+            forbidden_command not in production,
+            "production runbook must use the fixed launcher, not a direct Make entry: "
+            + forbidden_command,
         )
     runner_keys = {
         line.split("=", 1)[0]
@@ -1403,13 +1473,13 @@ def trusted_unix_socket(
     *,
     expected_uid: int,
     expected_gid: int,
-) -> None:
+) -> SocketIdentity | None:
     """Validate the rootless Docker endpoint without following replaceable paths."""
 
     label = "rootless Docker socket"
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         errors.append(f"{label} must be a normalized absolute non-root path")
-        return
+        return None
     ancestor_metadata, ancestor_error = safe_ancestor_metadata(
         path,
         allowed_uids={0, os.getuid(), expected_uid},
@@ -1417,14 +1487,15 @@ def trusted_unix_socket(
     )
     if ancestor_error is not None:
         errors.append(ancestor_error)
-        return
+        return None
     try:
         details = path.lstat()
         parent_details = path.parent.lstat()
         resolved = path.resolve(strict=True)
     except OSError:
         errors.append(f"{label} is missing")
-        return
+        return None
+    initial_error_count = len(errors)
     require(errors, not resolved.is_relative_to(ROOT.resolve()), f"{label} must be outside the repository")
     require(
         errors,
@@ -1447,12 +1518,24 @@ def trusted_unix_socket(
         after = path.lstat()
     except OSError:
         errors.append(f"{label} changed while it was being validated")
-        return
+        return None
     require(
         errors,
         stable_file_metadata(details) == stable_file_metadata(after)
         and ancestors_remain_stable(ancestor_metadata),
         f"{label} or an ancestor changed while it was being validated",
+    )
+    if len(errors) != initial_error_count:
+        return None
+    return (
+        details.st_dev,
+        details.st_ino,
+        details.st_mode,
+        details.st_uid,
+        details.st_gid,
+        details.st_nlink,
+        details.st_mtime_ns,
+        details.st_ctime_ns,
     )
 
 
@@ -1541,13 +1624,58 @@ def ordinary_directory(
     )
 
 
+def validate_trusted_system_executable(path: Path, *, label: str) -> None:
+    """Reject PATH lookup and mutable/non-root-owned executable chains."""
+
+    if not path.is_absolute() or path != Path(os.path.normpath(path)):
+        raise RuntimeError(f"{label} must use a fixed normalized absolute path")
+    try:
+        link_details = path.lstat()
+        resolved = path.resolve(strict=True)
+        target_details = resolved.lstat()
+    except OSError as error:
+        raise RuntimeError(f"{label} is missing") from error
+    if not (stat.S_ISREG(target_details.st_mode) and os.access(resolved, os.X_OK)):
+        raise RuntimeError(f"{label} must resolve to an executable regular file")
+    if link_details.st_uid != 0 or target_details.st_uid != 0:
+        raise RuntimeError(f"{label} and its target must be root-owned")
+    link_writable = (
+        not stat.S_ISLNK(link_details.st_mode) and bool(link_details.st_mode & 0o022)
+    )
+    if link_writable or target_details.st_mode & 0o022:
+        raise RuntimeError(f"{label} and its target must not be group/other-writable")
+    for candidate in {path.parent, *path.parents, resolved.parent, *resolved.parents}:
+        try:
+            details = candidate.lstat()
+        except OSError as error:
+            raise RuntimeError(f"{label} has an unreadable executable ancestry") from error
+        if (
+            not stat.S_ISDIR(details.st_mode)
+            or stat.S_ISLNK(details.st_mode)
+            or details.st_uid != 0
+            or details.st_mode & 0o022
+        ):
+            raise RuntimeError(
+                f"{label} executable ancestry must be root-owned, non-symlink, and non-writable"
+            )
+
+
 def command_json(command: Sequence[str]) -> Any:
+    if not command or command[0] != str(TRUSTED_DOCKER_CLI):
+        raise RuntimeError("Docker inspection must use the fixed trusted /usr/bin/docker CLI")
+    validate_trusted_system_executable(TRUSTED_DOCKER_CLI, label="Docker CLI")
     completed = subprocess.run(
         list(command),
         check=False,
         capture_output=True,
         text=True,
         timeout=30,
+        env={
+            "HOME": "/nonexistent",
+            "LANG": "C.UTF-8",
+            "LC_ALL": "C.UTF-8",
+            "PATH": "/usr/bin:/bin",
+        },
     )
     if completed.returncode:
         detail = completed.stderr.strip().splitlines()[-1] if completed.stderr.strip() else "command failed"
@@ -1556,7 +1684,7 @@ def command_json(command: Sequence[str]) -> Any:
 
 
 def docker_command(socket_path: Path, *arguments: str) -> list[str]:
-    return ["docker", "--host", f"unix://{socket_path}", *arguments]
+    return [str(TRUSTED_DOCKER_CLI), "--host", f"unix://{socket_path}", *arguments]
 
 
 def stable_file_metadata(details: os.stat_result) -> tuple[int, ...]:
@@ -1571,6 +1699,446 @@ def stable_file_metadata(details: os.stat_result) -> tuple[int, ...]:
         details.st_mtime_ns,
         details.st_ctime_ns,
     )
+
+
+def docker_daemon_identity(socket_path: Path) -> DaemonIdentity:
+    """Return the stable security/installation identity of one Docker daemon."""
+
+    value = command_json(docker_command(socket_path, "info", "--format", "{{json .}}"))
+    if not isinstance(value, dict):
+        raise TypeError("Docker daemon info must be exactly one JSON object")
+    required = (
+        "ID",
+        "Name",
+        "DockerRootDir",
+        "Driver",
+        "ServerVersion",
+        "CgroupDriver",
+        "CgroupVersion",
+        "OperatingSystem",
+        "OSType",
+        "Architecture",
+        "KernelVersion",
+        "SecurityOptions",
+    )
+    if any(name not in value for name in required):
+        raise ValueError("Docker daemon identity fields are incomplete")
+    security_options = value.get("SecurityOptions")
+    if not isinstance(security_options, list) or not all(
+        isinstance(item, str) for item in security_options
+    ):
+        raise TypeError("Docker daemon SecurityOptions must be a string list")
+    if not any(item.split(",", 1)[0] == "name=rootless" for item in security_options):
+        raise ValueError("Docker daemon SecurityOptions must contain name=rootless")
+    root = value.get("DockerRootDir")
+    if not isinstance(root, str) or not Path(root).is_absolute():
+        raise ValueError("Docker daemon DockerRootDir must be absolute")
+    projection: list[str] = []
+    for name in required:
+        field = sorted(value[name]) if name == "SecurityOptions" else value[name]
+        projection.append(
+            name
+            + "="
+            + json.dumps(field, ensure_ascii=True, separators=(",", ":"), sort_keys=True)
+        )
+    return tuple(projection)
+
+
+def observe_docker_endpoint(
+    errors: list[str],
+    socket_path: Path,
+    *,
+    expected_uid: int,
+    expected_gid: int,
+) -> DockerEndpointBinding | None:
+    """Bind an inspection phase to one stable Unix socket and daemon identity."""
+
+    before = trusted_unix_socket(
+        errors, socket_path, expected_uid=expected_uid, expected_gid=expected_gid
+    )
+    if before is None:
+        return None
+    try:
+        daemon = docker_daemon_identity(socket_path)
+    except (RuntimeError, TypeError, ValueError, json.JSONDecodeError) as error:
+        errors.append(str(error))
+        return None
+    after = trusted_unix_socket(
+        errors, socket_path, expected_uid=expected_uid, expected_gid=expected_gid
+    )
+    require(
+        errors,
+        after is not None and before == after,
+        "rootless Docker socket changed while daemon identity was captured",
+    )
+    return DockerEndpointBinding(before, daemon) if after == before else None
+
+
+def network_identity(record: Mapping[str, Any], *, label: str) -> NetworkIdentity:
+    """Canonical stable identity/security projection for one Docker network."""
+
+    required = (
+        "Id",
+        "Name",
+        "Created",
+        "Scope",
+        "Driver",
+        "EnableIPv6",
+        "Internal",
+        "Attachable",
+        "Ingress",
+        "IPAM",
+        "Options",
+        "Labels",
+        "Containers",
+    )
+    if any(name not in record for name in required):
+        raise ValueError(f"{label} network identity fields are incomplete")
+    identifier = record.get("Id")
+    name = record.get("Name")
+    if not isinstance(identifier, str) or re.fullmatch(r"[0-9a-f]{64}", identifier) is None:
+        raise ValueError(f"{label} network ID must be a full lowercase Docker ID")
+    if not isinstance(name, str) or not name:
+        raise ValueError(f"{label} network name is required")
+    return tuple(
+        field
+        + "="
+        + json.dumps(
+            record[field], ensure_ascii=True, separators=(",", ":"), sort_keys=True
+        )
+        for field in required
+    )
+
+
+def inspect_network(socket_path: Path, name: str) -> tuple[dict[str, Any], NetworkIdentity]:
+    value = command_json(docker_command(socket_path, "network", "inspect", name))
+    if (
+        not isinstance(value, list)
+        or len(value) != 1
+        or not isinstance(value[0], dict)
+    ):
+        raise TypeError(f"running network {name} must resolve to exactly one object")
+    record = value[0]
+    if record.get("Name") != name:
+        raise ValueError(f"running network {name} resolved to a different network name")
+    return record, network_identity(record, label=name)
+
+
+def parse_docker_started_at_ns(value: Any, *, label: str) -> int:
+    """Parse Docker's canonical UTC RFC3339Nano timestamp without truncation."""
+
+    if not isinstance(value, str):
+        raise TypeError(f"{label} State.StartedAt must be canonical UTC RFC3339Nano")
+    match = re.fullmatch(
+        r"(?P<date>[0-9]{4}-[0-9]{2}-[0-9]{2})T"
+        r"(?P<time>[0-9]{2}:[0-9]{2}:[0-9]{2})"
+        r"(?:\.(?P<fraction>[0-9]{1,9}))?Z",
+        value,
+    )
+    if match is None:
+        raise ValueError(f"{label} State.StartedAt must be canonical UTC RFC3339Nano")
+    try:
+        base = dt.datetime.fromisoformat(
+            match.group("date") + "T" + match.group("time") + "+00:00"
+        )
+    except ValueError as error:
+        raise ValueError(
+            f"{label} State.StartedAt must be canonical UTC RFC3339Nano"
+        ) from error
+    fraction = (match.group("fraction") or "").ljust(9, "0")
+    return int(base.timestamp()) * 1_000_000_000 + int(fraction or "0")
+
+
+def observe_material(path: Path, *, label: str, maximum_size: int) -> MaterialIdentity:
+    """Read/hash one startup material while binding all replacement metadata."""
+
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = -1
+    try:
+        before = path.lstat()
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or stat.S_ISLNK(before.st_mode)
+            or before.st_nlink != 1
+            or not 1 <= before.st_size <= maximum_size
+        ):
+            raise RuntimeError(f"{label} must remain a bounded single-link regular file")
+        descriptor = os.open(path, flags)
+        opened = os.fstat(descriptor)
+        if stable_file_metadata(opened) != stable_file_metadata(before):
+            raise RuntimeError(f"{label} changed while startup material was opened")
+        chunks: list[bytes] = []
+        remaining = maximum_size + 1
+        while remaining:
+            chunk = os.read(descriptor, min(65536, remaining))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            remaining -= len(chunk)
+        payload = b"".join(chunks)
+        after = os.fstat(descriptor)
+        path_after = path.lstat()
+        if (
+            len(payload) != opened.st_size
+            or stable_file_metadata(after) != stable_file_metadata(opened)
+            or stable_file_metadata(path_after) != stable_file_metadata(opened)
+        ):
+            raise RuntimeError(f"{label} changed while startup material was read")
+        return (
+            opened.st_dev,
+            opened.st_ino,
+            opened.st_mode,
+            opened.st_uid,
+            opened.st_gid,
+            opened.st_mtime_ns,
+            opened.st_ctime_ns,
+            hashlib.sha256(payload).hexdigest(),
+        )
+    except OSError as error:
+        raise RuntimeError(f"{label} could not be observed safely") from error
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+
+def ingress_startup_materials(
+    environment: Mapping[str, str], record: Mapping[str, Any]
+) -> dict[str, MaterialIdentity]:
+    state = record.get("State")
+    if not isinstance(state, dict):
+        raise TypeError("spring-runner-ingress State is malformed")
+    started_ns = parse_docker_started_at_ns(
+        state.get("StartedAt"), label="spring-runner-ingress"
+    )
+    inputs = {
+        "installed Spring ingress config": (
+            environment_path("ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH", environment),
+            1024 * 1024,
+        ),
+        "Spring ingress TLS certificate": (
+            environment_path("ELMOS_SPRING_INGRESS_TLS_CERT_HOST_PATH", environment),
+            1024 * 1024,
+        ),
+        "Spring ingress TLS key": (
+            environment_path("ELMOS_SPRING_INGRESS_TLS_KEY_HOST_PATH", environment),
+            65536,
+        ),
+    }
+    result: dict[str, MaterialIdentity] = {}
+    for label, (path, maximum_size) in inputs.items():
+        identity = observe_material(path, label=label, maximum_size=maximum_size)
+        if max(identity[5], identity[6]) > started_ns:
+            raise RuntimeError(
+                f"{label} was modified after the ingress container StartedAt; restart is required"
+            )
+        result[label] = identity
+    expected = result["installed Spring ingress config"][7]
+    if expected != EXPECTED_INGRESS_CONFIG_SHA256:
+        raise RuntimeError("installed Spring ingress config reviewed digest drift")
+    return result
+
+
+def observer_bundle_files(paths: ContractPaths | None = None) -> tuple[Path, ...]:
+    paths = paths or ContractPaths()
+    ordered = (
+        Path(__file__).resolve(),
+        paths.runner_compose,
+        paths.application_compose,
+        paths.application_spring_overlay,
+        paths.ingress_config,
+        paths.runner_environment_example,
+        paths.spring_launch_environment_example,
+        paths.environment_example,
+        paths.rootless_readme,
+        paths.production_readme,
+        *(ROOT / relative for relative in APPLICATION_GATE_BUNDLE_PATHS),
+    )
+    if len(set(ordered)) != len(ordered):
+        raise ValueError("observer bundle file inventory contains aliases")
+    return ordered
+
+
+def read_observer_bundle_file(path: Path) -> bytes:
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    descriptor = -1
+    try:
+        before = path.lstat()
+        if (
+            not stat.S_ISREG(before.st_mode)
+            or stat.S_ISLNK(before.st_mode)
+            or before.st_nlink != 1
+        ):
+            raise RuntimeError("observer bundle input must be a single-link regular file")
+        descriptor = os.open(path, flags)
+        opened = os.fstat(descriptor)
+        if stable_file_metadata(opened) != stable_file_metadata(before):
+            raise RuntimeError("observer bundle input changed while it was opened")
+        chunks: list[bytes] = []
+        while True:
+            chunk = os.read(descriptor, 1024 * 1024)
+            if not chunk:
+                break
+            chunks.append(chunk)
+        payload = b"".join(chunks)
+        after = os.fstat(descriptor)
+        path_after = path.lstat()
+        if (
+            len(payload) != opened.st_size
+            or stable_file_metadata(after) != stable_file_metadata(opened)
+            or stable_file_metadata(path_after) != stable_file_metadata(opened)
+        ):
+            raise RuntimeError("observer bundle input changed while it was read")
+        return payload
+    except OSError as error:
+        raise RuntimeError("observer bundle input could not be read safely") from error
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+
+def observer_bundle_digest(paths: ContractPaths | None = None) -> str:
+    """Content-address every static input consumed by the root observer."""
+
+    digest = hashlib.sha256()
+    for path in observer_bundle_files(paths):
+        try:
+            relative = path.relative_to(ROOT).as_posix().encode("utf-8")
+            payload = read_observer_bundle_file(path)
+        except (OSError, ValueError) as error:
+            raise RuntimeError("observer bundle contains a missing or out-of-root file") from error
+        digest.update(len(relative).to_bytes(8, "big"))
+        digest.update(relative)
+        digest.update(len(payload).to_bytes(8, "big"))
+        digest.update(payload)
+    return "sha256:" + digest.hexdigest()
+
+
+def validate_observer_execution(
+    *,
+    revision: str | None,
+    expected_digest: str | None,
+    paths: ContractPaths | None = None,
+) -> list[str]:
+    """Validate the immutable, out-of-band-approved root-observer TCB."""
+
+    errors: list[str] = []
+    paths = paths or ContractPaths()
+    if revision is None or GIT_REVISION.fullmatch(revision) is None:
+        errors.append("--observer-revision must be a full 40-character lowercase Git revision")
+        return errors
+    if expected_digest is None or SHA256_DIGEST.fullmatch(expected_digest) is None:
+        errors.append("--observer-bundle-digest must be sha256:<64 lowercase hex>")
+        return errors
+    expected_root = OBSERVER_ROOT / revision
+    require(
+        errors,
+        ROOT == expected_root,
+        "root observer must execute from /opt/elmos-spring-gate/<exact-revision>",
+    )
+    require(
+        errors,
+        sys.flags.isolated == 1,
+        "root observer must run Python in isolated mode (-I)",
+    )
+    try:
+        require(
+            errors,
+            Path(sys.executable).resolve(strict=True)
+            == TRUSTED_PYTHON.resolve(strict=True),
+            "root observer must use the fixed /usr/bin/python3 interpreter",
+        )
+        validate_trusted_system_executable(TRUSTED_PYTHON, label="root observer Python")
+    except (OSError, RuntimeError) as error:
+        errors.append(str(error))
+
+    trusted_directories = {expected_root, OBSERVER_ROOT, OBSERVER_ROOT.parent}
+    for entry in sys.path:
+        if entry:
+            candidate = Path(entry)
+            try:
+                if candidate.exists():
+                    resolved_candidate = candidate.resolve(strict=True)
+                    trusted_directories.add(resolved_candidate)
+                    trusted_directories.update(resolved_candidate.parents)
+            except OSError:
+                errors.append("root observer sys.path contains an unreadable entry")
+    yaml_origin = getattr(yaml, "__file__", None)
+    if not isinstance(yaml_origin, str) or not yaml_origin:
+        errors.append("root observer PyYAML origin is unavailable")
+    else:
+        try:
+            yaml_path = Path(yaml_origin).resolve(strict=True)
+            trusted_directories.add(yaml_path.parent)
+            trusted_directories.update(yaml_path.parent.parents)
+            details = yaml_path.lstat()
+            require(
+                errors,
+                stat.S_ISREG(details.st_mode)
+                and details.st_uid == 0
+                and details.st_mode & 0o022 == 0,
+                "root observer PyYAML must be root-owned and non-writable",
+            )
+        except OSError:
+            errors.append("root observer PyYAML origin is unreadable")
+    bundle_files = observer_bundle_files(paths)
+    for path in bundle_files:
+        trusted_directories.add(path.parent)
+        trusted_directories.update(path.parent.parents)
+    for directory in sorted(trusted_directories, key=str):
+        try:
+            details = directory.lstat()
+        except OSError:
+            errors.append(f"root observer trusted directory is missing: {directory}")
+            continue
+        require(
+            errors,
+            stat.S_ISDIR(details.st_mode)
+            and not stat.S_ISLNK(details.st_mode)
+            and details.st_uid == 0
+            and details.st_mode & 0o022 == 0,
+            f"root observer trusted directory must be root-owned, non-symlink, and non-writable: {directory}",
+        )
+
+    initial_metadata: dict[Path, tuple[int, ...]] = {}
+    for path in bundle_files:
+        try:
+            require(
+                errors,
+                path.is_relative_to(expected_root),
+                f"observer bundle file escapes the exact revision root: {path}",
+            )
+            details = path.lstat()
+            require(
+                errors,
+                stat.S_ISREG(details.st_mode)
+                and not stat.S_ISLNK(details.st_mode)
+                and details.st_nlink == 1
+                and details.st_uid == 0
+                and details.st_mode & 0o022 == 0,
+                f"observer bundle file must be root-owned, single-link, and non-writable: {path}",
+            )
+            initial_metadata[path] = stable_file_metadata(details)
+        except OSError:
+            errors.append(f"observer bundle file is missing: {path}")
+    try:
+        actual_digest = observer_bundle_digest(paths)
+        require(
+            errors,
+            actual_digest == expected_digest,
+            "observer bundle digest does not match the independently supplied approval",
+        )
+    except (RuntimeError, ValueError) as error:
+        errors.append(str(error))
+    for path, before in initial_metadata.items():
+        try:
+            require(
+                errors,
+                stable_file_metadata(path.lstat()) == before,
+                f"observer bundle file changed during trust validation: {path}",
+            )
+        except OSError:
+            errors.append(f"observer bundle file disappeared during trust validation: {path}")
+    return errors
 
 
 def secure_environment_file_bytes(
@@ -1776,9 +2344,14 @@ def load_environment_file(
 def validate_host(
     paths: ContractPaths | None = None,
     environment: Mapping[str, str] | None = None,
+    *,
+    _docker_binding_out: list[DockerEndpointBinding] | None = None,
+    _control_network_out: list[NetworkIdentity] | None = None,
 ) -> list[str]:
     paths = paths or ContractPaths()
     errors = validate_static(paths)
+    if errors:
+        return errors
     environment = environment if environment is not None else os.environ
     try:
         rootless_uid = environment_integer("ELMOS_ROOTLESS_UID", environment)
@@ -1984,30 +2557,21 @@ def validate_host(
         except ValueError as error:
             errors.append(str(error))
 
-    trusted_unix_socket(
+    if errors:
+        return errors
+    initial_endpoint = observe_docker_endpoint(
         errors,
         socket_path,
         expected_uid=rootless_uid,
         expected_gid=rootless_gid,
     )
+    if initial_endpoint is None:
+        return errors
 
     for name in IMAGE_ENVIRONMENTS:
         require(errors, bool(PINNED_IMAGE.fullmatch(environment.get(name, ""))), f"{name} must be name@sha256:<64 lowercase hex>")
     for name in CHILD_IMAGE_DIGEST_ENVIRONMENTS:
         require(errors, bool(SHA256_ID.fullmatch(environment.get(name, ""))), f"{name} must be sha256:<64 lowercase hex>")
-
-    try:
-        security_options = command_json(
-            docker_command(socket_path, "info", "--format", "{{json .SecurityOptions}}")
-        )
-        require(
-            errors,
-            isinstance(security_options, list)
-            and any(str(item).split(",", 1)[0] == "name=rootless" for item in security_options),
-            "Docker daemon SecurityOptions must contain name=rootless",
-        )
-    except (RuntimeError, json.JSONDecodeError) as error:
-        errors.append(str(error))
 
     for name in IMAGE_ENVIRONMENTS + CHILD_IMAGE_DIGEST_ENVIRONMENTS:
         reference = environment.get(name, "")
@@ -2034,18 +2598,49 @@ def validate_host(
             errors.append(str(error))
 
     control_network = environment.get("ELMOS_SPRING_RUNNER_CONTROL_NETWORK", "").strip()
+    initial_control_identity: NetworkIdentity | None = None
     if not control_network:
         errors.append("ELMOS_SPRING_RUNNER_CONTROL_NETWORK is required")
     else:
         try:
-            inspected = command_json(docker_command(socket_path, "network", "inspect", control_network))
-            record = inspected[0] if isinstance(inspected, list) and inspected else {}
+            record, initial_control_identity = inspect_network(socket_path, control_network)
             labels = record.get("Labels") or {}
             require(errors, record.get("Internal") is True, "Spring control network must be internal")
             require(errors, labels.get("io.elmos.network.default-deny") == "true", "Spring control network must carry default-deny=true label")
             require(errors, labels.get("io.elmos.network.purpose") == "spring-runner-control", "Spring control network purpose label mismatch")
-        except (RuntimeError, json.JSONDecodeError) as error:
+        except (RuntimeError, TypeError, ValueError, json.JSONDecodeError) as error:
             errors.append(str(error))
+
+    final_endpoint = observe_docker_endpoint(
+        errors,
+        socket_path,
+        expected_uid=rootless_uid,
+        expected_gid=rootless_gid,
+    )
+    require(
+        errors,
+        initial_endpoint is not None
+        and final_endpoint is not None
+        and initial_endpoint == final_endpoint,
+        "rootless Docker socket or daemon identity changed during host validation",
+    )
+    final_control_identity: NetworkIdentity | None = None
+    if control_network and initial_control_identity is not None:
+        try:
+            _record, final_control_identity = inspect_network(socket_path, control_network)
+        except (RuntimeError, TypeError, ValueError, json.JSONDecodeError) as error:
+            errors.append(str(error))
+        require(
+            errors,
+            final_control_identity is not None
+            and final_control_identity == initial_control_identity,
+            "Spring control network identity changed during host validation",
+        )
+    if not errors:
+        if _docker_binding_out is not None and initial_endpoint is not None:
+            _docker_binding_out.append(initial_endpoint)
+        if _control_network_out is not None and initial_control_identity is not None:
+            _control_network_out.append(initial_control_identity)
 
     return errors
 
@@ -3157,11 +3752,37 @@ def validate_running(
 ) -> list[str]:
     paths = paths or ContractPaths()
     environment = environment if environment is not None else os.environ
-    errors = validate_host(paths, environment)
+    host_endpoints: list[DockerEndpointBinding] = []
+    host_control_networks: list[NetworkIdentity] = []
+    errors = validate_host(
+        paths,
+        environment,
+        _docker_binding_out=host_endpoints,
+        _control_network_out=host_control_networks,
+    )
     if errors:
         return errors
     try:
+        if len(host_endpoints) != 1 or len(host_control_networks) != 1:
+            raise RuntimeError("host validation did not return stable Docker/network bindings")
         socket_path = environment_path("ELMOS_ROOTLESS_DOCKER_SOCKET", environment)
+        rootless_uid = environment_integer("ELMOS_ROOTLESS_UID", environment)
+        rootless_gid = environment_integer("ELMOS_ROOTLESS_GID", environment)
+        initial_endpoint = observe_docker_endpoint(
+            errors,
+            socket_path,
+            expected_uid=rootless_uid,
+            expected_gid=rootless_gid,
+        )
+        if initial_endpoint is None:
+            return errors
+        require(
+            errors,
+            initial_endpoint == host_endpoints[0],
+            "Docker socket or daemon identity changed between host and running validation",
+        )
+        if errors:
+            return errors
         bind_address, bind_port = private_https_endpoint(environment)
         identifiers = compose_container_ids(socket_path, environment, paths)
     except (TypeError, ValueError, RuntimeError, json.JSONDecodeError) as error:
@@ -3238,30 +3859,38 @@ def validate_running(
             errors.append("Runner live mount process identities are incomplete")
         return errors
 
-    for network_name in ("elmos-spring-runner-edge", "elmos-spring-runner-broker"):
+    network_names = (
+        "elmos-spring-runner-edge",
+        "elmos-spring-runner-broker",
+        environment["ELMOS_SPRING_RUNNER_CONTROL_NETWORK"],
+    )
+    initial_networks: dict[str, NetworkIdentity] = {}
+    for network_name in network_names:
         try:
-            inspected = command_json(
-                docker_command(socket_path, "network", "inspect", network_name)
-            )
-            record = (
-                inspected[0]
-                if isinstance(inspected, list)
-                and len(inspected) == 1
-                and isinstance(inspected[0], dict)
-                else {}
-            )
-            require(
-                errors,
-                bool(record),
-                f"running network {network_name} must resolve to exactly one object",
-            )
+            record, identity = inspect_network(socket_path, network_name)
+            initial_networks[network_name] = identity
             require(
                 errors,
                 record.get("Internal") is True,
                 f"running network {network_name} must remain internal/default-deny",
             )
-        except (RuntimeError, json.JSONDecodeError) as error:
+        except (RuntimeError, TypeError, ValueError, json.JSONDecodeError) as error:
             errors.append(str(error))
+
+    control_network = environment["ELMOS_SPRING_RUNNER_CONTROL_NETWORK"]
+    require(
+        errors,
+        initial_networks.get(control_network) == host_control_networks[0],
+        "Spring control network identity changed between host and running validation",
+    )
+
+    initial_materials: dict[str, MaterialIdentity] = {}
+    try:
+        initial_materials = ingress_startup_materials(
+            environment, records["spring-runner-ingress"]
+        )
+    except (OSError, RuntimeError, TypeError, ValueError) as error:
+        errors.append(str(error))
 
     if errors:
         return errors
@@ -3321,6 +3950,34 @@ def validate_running(
             final_process_identities == initial_process_identities,
             "Runner process or mount namespace identities changed during live validation",
         )
+        final_materials = ingress_startup_materials(
+            environment, final_records["spring-runner-ingress"]
+        )
+        require(
+            errors,
+            final_materials == initial_materials,
+            "Spring ingress nginx/TLS startup materials changed during live validation",
+        )
+        final_networks: dict[str, NetworkIdentity] = {}
+        for network_name in network_names:
+            _record, identity = inspect_network(socket_path, network_name)
+            final_networks[network_name] = identity
+        require(
+            errors,
+            final_networks == initial_networks,
+            "Runner Docker network identities changed during live validation",
+        )
+        final_endpoint = observe_docker_endpoint(
+            errors,
+            socket_path,
+            expected_uid=rootless_uid,
+            expected_gid=rootless_gid,
+        )
+        require(
+            errors,
+            final_endpoint is not None and final_endpoint == initial_endpoint,
+            "rootless Docker socket or daemon identity changed during running validation",
+        )
     except (RuntimeError, json.JSONDecodeError, IndexError, KeyError, TypeError, ValueError) as error:
         errors.append(f"Runner stable reinspection failed: {error}")
     return errors
@@ -3352,6 +4009,16 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--check-host", action="store_true", help="inspect prepared rootless host without mutation")
     mode.add_argument("--check-running", action="store_true", help="inspect an already-running Runner deployment")
+    mode.add_argument(
+        "--check-observer-bundle",
+        action="store_true",
+        help="verify the independently approved immutable observer/application-gate bundle without host access",
+    )
+    mode.add_argument(
+        "--show-observer-bundle-digest",
+        action="store_true",
+        help="print the candidate digest for an independently approved immutable observer bundle",
+    )
     parser.add_argument(
         "--environment-file",
         type=Path,
@@ -3367,12 +4034,54 @@ def main() -> int:
         type=int,
         help="independently supplied non-root GID that owns the rootless daemon and Runner env",
     )
+    parser.add_argument(
+        "--observer-revision",
+        help="independently supplied full Git revision naming the immutable /opt observer bundle",
+    )
+    parser.add_argument(
+        "--observer-bundle-digest",
+        help="independently supplied sha256 digest of every static root-observer input",
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
+    if args.show_observer_bundle_digest:
+        if any(
+            value is not None
+            for value in (
+                args.environment_file,
+                args.rootless_owner_uid,
+                args.rootless_owner_gid,
+                args.observer_revision,
+                args.observer_bundle_digest,
+            )
+        ):
+            return emit(
+                ["--show-observer-bundle-digest must be used without host/runtime arguments"],
+                mode="OBSERVER_DIGEST_INPUT_REJECTED",
+                as_json=args.json,
+            )
+        try:
+            print(observer_bundle_digest())
+            return 0
+        except (RuntimeError, ValueError) as error:
+            return emit([str(error)], mode="OBSERVER_DIGEST_FAILED", as_json=args.json)
     if (args.check_host or args.check_running) and not args.environment_file:
         return emit(
             ["--check-host and --check-running require --environment-file; shell sourcing is forbidden"],
             mode="ENVIRONMENT_FILE_REQUIRED",
+            as_json=args.json,
+        )
+    if args.check_observer_bundle and any(
+        value is not None
+        for value in (
+            args.environment_file,
+            args.rootless_owner_uid,
+            args.rootless_owner_gid,
+        )
+    ):
+        return emit(
+            ["--check-observer-bundle does not accept host environment or owner arguments"],
+            mode="OBSERVER_BUNDLE_INPUT_REJECTED",
             as_json=args.json,
         )
     if args.check_host or args.check_running:
@@ -3397,6 +4106,17 @@ def main() -> int:
                 mode="PRIVILEGED_OBSERVER_REQUIRED",
                 as_json=args.json,
             )
+    if args.check_host or args.check_running or args.check_observer_bundle:
+        observer_errors = validate_observer_execution(
+            revision=args.observer_revision,
+            expected_digest=args.observer_bundle_digest,
+        )
+        if observer_errors:
+            return emit(
+                observer_errors,
+                mode="OBSERVER_BUNDLE_REJECTED",
+                as_json=args.json,
+            )
     environment: Mapping[str, str] = os.environ
     environment_errors: list[str] = []
     if args.environment_file:
@@ -3415,6 +4135,12 @@ def main() -> int:
         )
     if environment_errors:
         return emit(environment_errors, mode="ENVIRONMENT_FILE_REJECTED", as_json=args.json)
+    if args.check_observer_bundle:
+        return emit(
+            validate_static(),
+            mode="IMMUTABLE_OBSERVER_BUNDLE",
+            as_json=args.json,
+        )
     if args.check_running:
         return emit(validate_running(environment=environment), mode="RUNNING_HOST_READ_ONLY", as_json=args.json)
     if args.check_host:

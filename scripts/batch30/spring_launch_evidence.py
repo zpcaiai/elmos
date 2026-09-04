@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import copy
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -25,22 +26,49 @@ from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any, Callable
 from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
-if str(ROOT) not in sys.path:
-    sys.path.insert(0, str(ROOT))
+TRUST_MODULE_PATH = ROOT / "scripts" / "precision_migration" / "trust.py"
 
-from scripts.precision_migration.trust import (  # noqa: E402
-    TrustedKey,
-    TrustStore,
-    canonical_bytes,
-    canonical_digest,
-    decode_signature,
-    read_regular_file_once,
+
+def _load_exact_module(path: Path, name: str) -> Any:
+    """Load repository code by exact path, independent of PYTHONPATH packages."""
+
+    expected = path.resolve(strict=True)
+    specification = importlib.util.spec_from_file_location(name, expected)
+    if specification is None or specification.loader is None:
+        raise RuntimeError(f"cannot load trusted module at {expected}")
+    module = importlib.util.module_from_spec(specification)
+    previous = sys.modules.get(name)
+    sys.modules[name] = module
+    try:
+        specification.loader.exec_module(module)
+    except BaseException:
+        if previous is None:
+            sys.modules.pop(name, None)
+        else:
+            sys.modules[name] = previous
+        raise
+    origin = Path(str(getattr(module, "__file__", ""))).resolve(strict=True)
+    if origin != expected:
+        raise RuntimeError(f"trusted module origin drift: {origin}")
+    return module
+
+
+_TRUST = _load_exact_module(
+    TRUST_MODULE_PATH, "_elmos_batch30_precision_migration_trust"
 )
+TrustedKey = _TRUST.TrustedKey
+TrustStore = _TRUST.TrustStore
+canonical_bytes = _TRUST.canonical_bytes
+canonical_digest = _TRUST.canonical_digest
+decode_signature = _TRUST.decode_signature
+read_regular_file_once = _TRUST.read_regular_file_once
+run_trusted_openssl = _TRUST.run_trusted_openssl
+production_openssl_is_root_owned = _TRUST.production_openssl_is_root_owned
 
 NAMESPACE = "batch30-spring-launch-external-evidence"
 BUSINESS_LINE = "spring-legacy-modernization"
@@ -50,6 +78,17 @@ DEFAULT_MAX_AGE = timedelta(hours=72)
 MAX_JSON_BYTES = 4 * 1024 * 1024
 MAX_CONTENT_BYTES = 5 * 1024 * 1024 * 1024
 MAX_GATE_EVIDENCE_BYTES = 512 * 1024 * 1024
+MAX_MOUNTINFO_BYTES = 4 * 1024 * 1024
+MAX_MOUNTINFO_LINES = 32 * 1024
+MAX_MOUNTINFO_LINE_BYTES = 64 * 1024
+MAX_MOUNTINFO_NUMERIC_DIGITS = 20
+TRUSTED_DOCKER_CLI = Path("/usr/bin/docker")
+DOCKER_INSPECT_ENVIRONMENT = {
+    "HOME": "/nonexistent",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "PATH": "/usr/bin:/bin",
+}
 ED25519_SPKI_DER_PREFIX = bytes.fromhex("302a300506032b6570032100")
 ED25519_SIGNATURE_BYTES = 64
 
@@ -317,7 +356,12 @@ APPLICATION_MOUNT_BINDINGS = {
 APPLICATION_DIRECTORY_MOUNT_SOURCES = frozenset(
     {"worker_workspace", "worker_engine_replay"}
 )
-WEB_RUNTIME_ATTESTATION_METHOD = "SANITIZED_DOCKER_INSPECT_MOUNT_OBJECTS_V3"
+APPLICATION_DIRECTORY_MOUNT_TARGETS = frozenset(
+    destination
+    for semantic_name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+    for _service, destination in APPLICATION_MOUNT_BINDINGS[semantic_name]
+)
+WEB_RUNTIME_ATTESTATION_METHOD = "SANITIZED_DOCKER_INSPECT_MOUNT_OBJECTS_V4"
 WORKER_IMAGE_ARTIFACT_ATTESTATION_METHOD = "OCI_IMAGE_CONTENT_EXTRACTION_V1"
 DOCKER_ENVIRONMENT_ASSIGNMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.DOTALL)
 DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
@@ -505,6 +549,20 @@ class OpenedMountSource:
 
 
 @dataclass(frozen=True)
+class MountInfoEntry:
+    mount_id: int
+    parent_id: int
+    device: str
+    root: str
+    mount_point: str
+    mount_options: str
+    optional_fields: tuple[str, ...]
+    filesystem_type: str
+    mount_source: str
+    super_options: str
+
+
+@dataclass(frozen=True)
 class SecureFileSnapshot:
     content: bytes
     stat_result: os.stat_result
@@ -669,6 +727,204 @@ def _stat_identity(value: os.stat_result) -> tuple[int, ...]:
         value.st_mtime_ns,
         value.st_ctime_ns,
     )
+
+
+_MOUNTINFO_ESCAPES = {
+    b"040": b" ",
+    b"011": b"\t",
+    b"012": b"\n",
+    b"134": b"\\",
+}
+
+
+def _decode_mountinfo_field(raw: bytes, label: str) -> str:
+    """Decode the only octal escapes emitted by Linux mountinfo."""
+
+    if not raw:
+        raise SpringLaunchEvidenceError(f"{label} is empty")
+    decoded = bytearray()
+    index = 0
+    while index < len(raw):
+        value = raw[index]
+        if value != ord("\\"):
+            decoded.append(value)
+            index += 1
+            continue
+        end = index + 4
+        if end > len(raw):
+            raise SpringLaunchEvidenceError(f"{label} has a truncated escape")
+        escape = raw[index + 1 : end]
+        replacement = _MOUNTINFO_ESCAPES.get(escape)
+        if replacement is None:
+            raise SpringLaunchEvidenceError(
+                f"{label} has an unsupported mountinfo escape"
+            )
+        decoded.extend(replacement)
+        index = end
+    try:
+        rendered = bytes(decoded).decode("utf-8", errors="strict")
+    except UnicodeDecodeError as exc:
+        raise SpringLaunchEvidenceError(f"{label} is not valid UTF-8") from exc
+    if "\x00" in rendered:
+        raise SpringLaunchEvidenceError(f"{label} contains NUL")
+    return rendered
+
+
+def _canonical_mountinfo_path(raw: bytes, label: str) -> str:
+    rendered = _decode_mountinfo_field(raw, label)
+    candidate = PurePosixPath(rendered)
+    if (
+        not candidate.is_absolute()
+        or rendered.startswith("//")
+        or str(candidate) != rendered
+        or any(part in {"", ".", ".."} for part in candidate.parts[1:])
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label} must be an absolute normalized POSIX path"
+        )
+    return rendered
+
+
+def parse_linux_mountinfo(content: bytes) -> tuple[MountInfoEntry, ...]:
+    """Parse a bounded Linux ``/proc/<pid>/mountinfo`` snapshot fail closed."""
+
+    if not isinstance(content, bytes):
+        raise SpringLaunchEvidenceError("mountinfo snapshot must be bytes")
+    if not content:
+        raise SpringLaunchEvidenceError("mountinfo snapshot is empty")
+    if len(content) > MAX_MOUNTINFO_BYTES:
+        raise SpringLaunchEvidenceError("mountinfo snapshot exceeds the byte budget")
+    if not content.endswith(b"\n"):
+        raise SpringLaunchEvidenceError("mountinfo snapshot is truncated")
+    raw_lines = content[:-1].split(b"\n")
+    if len(raw_lines) > MAX_MOUNTINFO_LINES:
+        raise SpringLaunchEvidenceError("mountinfo snapshot exceeds the line budget")
+
+    entries: list[MountInfoEntry] = []
+    mount_ids: set[int] = set()
+    for line_number, line in enumerate(raw_lines, start=1):
+        label = f"mountinfo line {line_number}"
+        if not line:
+            raise SpringLaunchEvidenceError(f"{label} is empty")
+        if len(line) > MAX_MOUNTINFO_LINE_BYTES:
+            raise SpringLaunchEvidenceError(f"{label} exceeds the line byte budget")
+        if any(value < 0x20 or value == 0x7F for value in line):
+            raise SpringLaunchEvidenceError(f"{label} contains an invalid raw byte")
+        fields = line.split(b" ")
+        if any(not field for field in fields):
+            raise SpringLaunchEvidenceError(f"{label} has invalid field spacing")
+        separators = [index for index, field in enumerate(fields) if field == b"-"]
+        if len(separators) != 1:
+            raise SpringLaunchEvidenceError(
+                f"{label} must contain one mountinfo separator"
+            )
+        separator = separators[0]
+        if separator < 6 or len(fields) - separator - 1 != 3:
+            raise SpringLaunchEvidenceError(f"{label} has an invalid field count")
+
+        mount_id_raw, parent_id_raw, device_raw = fields[:3]
+        device_parts = device_raw.split(b":")
+        numeric_fields = (mount_id_raw, parent_id_raw, *device_parts)
+        if (
+            len(device_parts) != 2
+            or any(
+                not value.isdigit()
+                or len(value) > MAX_MOUNTINFO_NUMERIC_DIGITS
+                for value in numeric_fields
+            )
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} has an invalid mount or device identity"
+            )
+        mount_id = int(mount_id_raw)
+        parent_id = int(parent_id_raw)
+        if mount_id <= 0 or parent_id <= 0 or mount_id in mount_ids:
+            raise SpringLaunchEvidenceError(
+                f"{label} has a duplicate or invalid mount identity"
+            )
+        mount_ids.add(mount_id)
+
+        root = _canonical_mountinfo_path(fields[3], f"{label} root")
+        mount_point = _canonical_mountinfo_path(fields[4], f"{label} mount point")
+        mount_options = _decode_mountinfo_field(
+            fields[5], f"{label} mount options"
+        )
+        optional_fields = tuple(
+            _decode_mountinfo_field(field, f"{label} optional field")
+            for field in fields[6:separator]
+        )
+        filesystem_type = _decode_mountinfo_field(
+            fields[separator + 1], f"{label} filesystem type"
+        )
+        mount_source = _decode_mountinfo_field(
+            fields[separator + 2], f"{label} mount source"
+        )
+        super_options = _decode_mountinfo_field(
+            fields[separator + 3], f"{label} super options"
+        )
+        entries.append(
+            MountInfoEntry(
+                mount_id=mount_id,
+                parent_id=parent_id,
+                device=device_raw.decode("ascii", errors="strict"),
+                root=root,
+                mount_point=mount_point,
+                mount_options=mount_options,
+                optional_fields=optional_fields,
+                filesystem_type=filesystem_type,
+                mount_source=mount_source,
+                super_options=super_options,
+            )
+        )
+    return tuple(entries)
+
+
+def validate_no_strict_descendant_mounts(
+    entries: Iterable[MountInfoEntry],
+    roots: Mapping[str, str | Path],
+    *,
+    context: str,
+) -> None:
+    """Reject mounts below protected bind roots while permitting the root itself."""
+
+    snapshot = tuple(entries)
+    if len(snapshot) > MAX_MOUNTINFO_LINES:
+        raise SpringLaunchEvidenceError("mountinfo snapshot exceeds the line budget")
+    protected: list[tuple[str, PurePosixPath]] = []
+    for label, raw_root in roots.items():
+        if not isinstance(label, str) or not label:
+            raise SpringLaunchEvidenceError("mount subtree label is invalid")
+        rendered = str(raw_root)
+        root = PurePosixPath(rendered)
+        if (
+            not root.is_absolute()
+            or root == PurePosixPath("/")
+            or rendered.startswith("//")
+            or str(root) != rendered
+            or any(part in {"", ".", ".."} for part in root.parts[1:])
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{context} {label} root must be an absolute normalized non-root path"
+            )
+        protected.append((label, root))
+
+    for entry in snapshot:
+        if not isinstance(entry, MountInfoEntry):
+            raise SpringLaunchEvidenceError("mountinfo snapshot contains an invalid entry")
+        mount_point = PurePosixPath(entry.mount_point)
+        if (
+            not mount_point.is_absolute()
+            or entry.mount_point.startswith("//")
+            or str(mount_point) != entry.mount_point
+        ):
+            raise SpringLaunchEvidenceError(
+                "mountinfo snapshot contains a non-canonical mount point"
+            )
+        for label, root in protected:
+            if mount_point != root and root in mount_point.parents:
+                raise SpringLaunchEvidenceError(
+                    f"{context} {label} contains a nested mountpoint beneath its root"
+                )
 
 
 def _open_local_file(
@@ -1023,6 +1279,13 @@ def _immutable_uri(value: Any, digest: str, label: str) -> str:
         "gs": {"generation"},
         "az": {"versionid", "snapshot"},
     }
+    allowed_query_keys = {"sha256", "digest"} | scheme_version_keys[parsed.scheme]
+    unknown_query_keys = sorted(set(query) - allowed_query_keys)
+    if unknown_query_keys:
+        raise SpringLaunchEvidenceError(
+            f"{label} remote URI contains unsupported query keys: "
+            + ", ".join(unknown_query_keys)
+        )
     version_values = [
         item
         for key in scheme_version_keys[parsed.scheme]
@@ -1138,11 +1401,9 @@ def _validate_trust_store_path(path: Path, evidence_roots: tuple[Path, ...]) -> 
 @lru_cache(maxsize=256)
 def _canonical_ed25519_spki(public_key_bytes: bytes) -> bytes:
     try:
-        completed = subprocess.run(
-            ["openssl", "pkey", "-pubin", "-outform", "DER"],
-            input=public_key_bytes,
-            check=False,
-            capture_output=True,
+        completed = run_trusted_openssl(
+            ["pkey", "-pubin", "-outform", "DER"],
+            input_bytes=public_key_bytes,
             timeout=10,
         )
     except (OSError, subprocess.TimeoutExpired) as exc:
@@ -1411,7 +1672,7 @@ def _expected_revision(value: str | None, repo_root: Path) -> str:
             )
         return value
     completed = subprocess.run(
-        ["git", "rev-parse", "HEAD"],
+        ["/usr/bin/git", "rev-parse", "HEAD"],
         cwd=repo_root,
         check=False,
         capture_output=True,
@@ -1450,7 +1711,7 @@ def _committed_file_bytes(
     object_name = f"{revision}:{relative.as_posix()}"
     try:
         size_result = subprocess.run(
-            ["git", "cat-file", "-s", object_name],
+            ["/usr/bin/git", "cat-file", "-s", object_name],
             cwd=canonical_root,
             check=False,
             capture_output=True,
@@ -1473,7 +1734,7 @@ def _committed_file_bytes(
         )
     try:
         blob_result = subprocess.run(
-            ["git", "cat-file", "blob", object_name],
+            ["/usr/bin/git", "cat-file", "blob", object_name],
             cwd=canonical_root,
             check=False,
             capture_output=True,
@@ -2061,6 +2322,8 @@ def _application_mount_source_identities_digest(
             "application mount source identities must contain the exact controlled set"
         )
     normalized: dict[str, dict[str, Any]] = {}
+    object_keys: dict[str, tuple[int, int]] = {}
+    controlled_ancestor_keys: dict[str, set[tuple[int, int]]] = {}
     for name in sorted(APPLICATION_MOUNT_SOURCE_NAMES):
         record = _object(
             identities.get(name), f"application mount source identity {name}"
@@ -2099,6 +2362,21 @@ def _application_mount_source_identities_digest(
             raise SpringLaunchEvidenceError(
                 f"application mount source identity {name} parent does not match its ancestry"
             )
+        object_keys[name] = (object_identity["device"], object_identity["inode"])
+        controlled: set[tuple[int, int]] = set()
+        # Only the owner-only suffix is a role-bearing secret domain. Stop at
+        # shared system boundaries (normally root-owned /srv and /) so common
+        # infrastructure ancestry cannot make otherwise isolated roles collide.
+        for ancestor in reversed(ancestor_identities):
+            if (
+                ancestor["object_type"] != "DIRECTORY"
+                or ancestor["uid"] != parent_identity["uid"]
+                or ancestor["gid"] != parent_identity["gid"]
+                or ancestor["mode"] & 0o077
+            ):
+                break
+            controlled.add((ancestor["device"], ancestor["inode"]))
+        controlled_ancestor_keys[name] = controlled
         # Writable workspace/replay directories legitimately change size,
         # link count and ctime as jobs execute.  Their stable inode/security
         # fields are bound here and their lifecycle is separately bound by the
@@ -2151,6 +2429,23 @@ def _application_mount_source_identities_digest(
                 for ancestor in ancestor_identities
             ],
         }
+    directory_keys = {
+        name: object_keys[name] for name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+    }
+    if len(set(directory_keys.values())) != len(directory_keys):
+        raise SpringLaunchEvidenceError(
+            "application workspace and replay roles must use distinct filesystem objects"
+        )
+    secret_ancestor_keys = {
+        identity
+        for name in APPLICATION_MOUNT_SOURCE_NAMES - APPLICATION_DIRECTORY_MOUNT_SOURCES
+        for identity in controlled_ancestor_keys[name]
+    }
+    for name, identity in directory_keys.items():
+        if identity in secret_ancestor_keys:
+            raise SpringLaunchEvidenceError(
+                f"application directory role {name} must not alias a secret parent directory or controlled ancestor"
+            )
     return canonical_digest(
         {
             "schema_version": 1,
@@ -2388,6 +2683,122 @@ def _proc_process_identity(
     )
 
 
+def _read_proc_mountinfo(
+    process_descriptor: int, label: str
+) -> tuple[MountInfoEntry, ...]:
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    descriptor = -1
+    try:
+        descriptor = os.open("mountinfo", flags, dir_fd=process_descriptor)
+        opened = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened.st_mode)
+            or opened.st_size < 0
+            or opened.st_size > MAX_MOUNTINFO_BYTES
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} is not a bounded regular proc file"
+            )
+        chunks: list[bytes] = []
+        total = 0
+        while total <= MAX_MOUNTINFO_BYTES:
+            chunk = os.read(
+                descriptor,
+                min(64 * 1024, MAX_MOUNTINFO_BYTES + 1 - total),
+            )
+            if not chunk:
+                break
+            chunks.append(chunk)
+            total += len(chunk)
+        if total > MAX_MOUNTINFO_BYTES:
+            raise SpringLaunchEvidenceError(f"{label} exceeds the byte budget")
+        completed = os.fstat(descriptor)
+        if _stat_identity(opened) != _stat_identity(completed):
+            raise SpringLaunchEvidenceError(f"{label} changed while it was read")
+        return parse_linux_mountinfo(b"".join(chunks))
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"{label} could not be read safely: {exc}"
+        ) from exc
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+
+def read_current_process_mountinfo() -> tuple[MountInfoEntry, ...]:
+    """Read this Linux process' real proc mount table through stable descriptors."""
+
+    if sys.platform != "linux":
+        raise SpringLaunchEvidenceError(
+            "production mount topology validation requires a Linux /proc"
+        )
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    proc_descriptor = -1
+    process_descriptor = -1
+    process_id = os.getpid()
+    try:
+        proc_descriptor = os.open("/proc", directory_flags)
+        proc_opened = os.fstat(proc_descriptor)
+        proc_path = os.stat("/proc", follow_symlinks=False)
+        if (
+            not stat.S_ISDIR(proc_opened.st_mode)
+            or _stat_identity(proc_opened) != _stat_identity(proc_path)
+        ):
+            raise SpringLaunchEvidenceError(
+                "production mount topology /proc changed while it was opened"
+            )
+        process_descriptor = os.open(
+            str(process_id), directory_flags, dir_fd=proc_descriptor
+        )
+        process_before = _proc_process_identity(
+            process_descriptor, process_id, "production mount topology process"
+        )
+        snapshot = _read_proc_mountinfo(
+            process_descriptor, "production mount topology mountinfo"
+        )
+        process_after = _proc_process_identity(
+            process_descriptor, process_id, "production mount topology process"
+        )
+        if process_before != process_after:
+            raise SpringLaunchEvidenceError(
+                "production mount topology process changed while it was read"
+            )
+        if not any(entry.mount_point == "/" for entry in snapshot):
+            raise SpringLaunchEvidenceError(
+                "production mount topology mountinfo has no namespace root"
+            )
+        return snapshot
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"production mount topology could not read the Linux /proc safely: {exc}"
+        ) from exc
+    finally:
+        if process_descriptor >= 0:
+            os.close(process_descriptor)
+        if proc_descriptor >= 0:
+            os.close(proc_descriptor)
+
+
+def _validate_live_mountinfo_subtree(
+    entries: Iterable[MountInfoEntry], destination: str, label: str
+) -> None:
+    validate_no_strict_descendant_mounts(
+        entries,
+        {label: destination},
+        context="live application target",
+    )
+
+
 def _observe_live_bind_mount(
     source: str,
     process_id: int,
@@ -2427,6 +2838,7 @@ def _observe_live_bind_mount(
     root_descriptor = -1
     target_parent_descriptor = -1
     target_descriptor = -1
+    mountinfo_before: tuple[MountInfoEntry, ...] | None = None
     directory_flags = (
         os.O_RDONLY
         | getattr(os, "O_CLOEXEC", 0)
@@ -2457,6 +2869,13 @@ def _observe_live_bind_mount(
         process_before = _proc_process_identity(
             process_descriptor, process_id, f"{label}.process"
         )
+        if destination in APPLICATION_DIRECTORY_MOUNT_TARGETS:
+            mountinfo_before = _read_proc_mountinfo(
+                process_descriptor, f"{label}.mountinfo"
+            )
+            _validate_live_mountinfo_subtree(
+                mountinfo_before, destination, label
+            )
         # /proc/<pid>/root is an intentional kernel magic link into the
         # already authenticated process mount namespace.  Every component
         # below that root is still opened with O_NOFOLLOW.
@@ -2502,6 +2921,17 @@ def _observe_live_bind_mount(
                 )
             )
         target_after = os.fstat(target_descriptor)
+        if mountinfo_before is not None:
+            mountinfo_after = _read_proc_mountinfo(
+                process_descriptor, f"{label}.mountinfo"
+            )
+            _validate_live_mountinfo_subtree(
+                mountinfo_after, destination, label
+            )
+            if mountinfo_before != mountinfo_after:
+                raise SpringLaunchEvidenceError(
+                    f"{label} mount topology changed during live mount collection"
+                )
         process_after = _proc_process_identity(
             process_descriptor, process_id, f"{label}.process"
         )
@@ -4537,7 +4967,7 @@ def _register_signer(
 def verify_spring_launch_receipt(
     value: Any,
     *,
-    trust_store: Path | LoadedTrust,
+    trust_store: Path,
     evidence_roots: Iterable[Path],
     expected_revision: str | None = None,
     expected_profile_path: Path = PROFILE,
@@ -4663,11 +5093,11 @@ def verify_spring_launch_receipt(
             "execution, verifier, and reviewer organizations must be distinct"
         )
 
-    if isinstance(trust_store, Path):
-        loaded = _load_trust(trust_store, evidence_roots=roots)
-    else:
-        loaded = trust_store
-        _validate_trust_store_path(loaded.store.path, roots)
+    if not isinstance(trust_store, Path):
+        raise SpringLaunchEvidenceError(
+            "trust_store must be an out-of-band filesystem Path"
+        )
+    loaded = _load_trust(trust_store, evidence_roots=roots)
     if expected_trust_store_digest is not None:
         _digest(expected_trust_store_digest, "expected trust store digest")
         if loaded.store.digest != expected_trust_store_digest:
@@ -5120,7 +5550,7 @@ def verify_spring_launch_receipt(
 def verify_spring_launch_receipt_file(
     path: Path,
     *,
-    trust_store: Path | LoadedTrust,
+    trust_store: Path,
     evidence_roots: Iterable[Path],
     expected_revision: str | None = None,
     expected_profile_path: Path = PROFILE,
@@ -5405,6 +5835,57 @@ def _write_new_owner_only(path: Path, content: bytes) -> None:
             os.close(parent_descriptor)
 
 
+def _validate_trusted_system_executable(path: Path, *, label: str) -> None:
+    """Reject PATH lookup and mutable/non-root-owned executable chains."""
+
+    if not path.is_absolute() or path != Path(os.path.normpath(path)):
+        raise SpringLaunchEvidenceError(
+            f"{label} must use a fixed normalized absolute path"
+        )
+    try:
+        executable_before = path.lstat()
+        resolved = path.resolve(strict=True)
+        ancestor_before = [(candidate, candidate.lstat()) for candidate in path.parents]
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(f"{label} is missing") from exc
+    if resolved != path or stat.S_ISLNK(executable_before.st_mode):
+        raise SpringLaunchEvidenceError(f"{label} must not be a symlink")
+    if not stat.S_ISREG(executable_before.st_mode) or not os.access(path, os.X_OK):
+        raise SpringLaunchEvidenceError(
+            f"{label} must be an executable regular file"
+        )
+    if executable_before.st_uid != 0:
+        raise SpringLaunchEvidenceError(f"{label} must be root-owned")
+    if executable_before.st_mode & 0o022:
+        raise SpringLaunchEvidenceError(
+            f"{label} must not be group/other-writable"
+        )
+    for candidate, details in ancestor_before:
+        if (
+            not stat.S_ISDIR(details.st_mode)
+            or stat.S_ISLNK(details.st_mode)
+            or details.st_uid != 0
+            or details.st_mode & 0o022
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} executable ancestry must be root-owned, non-symlink, and non-writable"
+            )
+    try:
+        executable_after = path.lstat()
+        ancestor_after = [candidate.lstat() for candidate, _ in ancestor_before]
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"{label} or its executable ancestry changed during validation"
+        ) from exc
+    if _stat_identity(executable_before) != _stat_identity(executable_after) or any(
+        _stat_identity(before) != _stat_identity(after)
+        for (_, before), after in zip(ancestor_before, ancestor_after, strict=True)
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label} or its executable ancestry changed during validation"
+        )
+
+
 def _bounded_docker_inspect(
     docker_host: str, container: str, *, timeout_seconds: float = 20.0
 ) -> bytes:
@@ -5413,9 +5894,10 @@ def _bounded_docker_inspect(
     process: subprocess.Popen[bytes] | None = None
     selector = selectors.DefaultSelector()
     try:
+        _validate_trusted_system_executable(TRUSTED_DOCKER_CLI, label="Docker CLI")
         process = subprocess.Popen(
             [
-                "docker",
+                str(TRUSTED_DOCKER_CLI),
                 "--host",
                 docker_host,
                 "inspect",
@@ -5426,6 +5908,7 @@ def _bounded_docker_inspect(
             stdin=subprocess.DEVNULL,
             stdout=subprocess.PIPE,
             stderr=subprocess.DEVNULL,
+            env=dict(DOCKER_INSPECT_ENVIRONMENT),
         )
         if process.stdout is None:
             raise SpringLaunchEvidenceError("Docker inspect stdout was not created")

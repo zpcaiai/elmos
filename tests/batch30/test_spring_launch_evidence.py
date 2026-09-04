@@ -15,6 +15,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from unittest import mock
 
+import scripts.batch30.spring_launch_evidence as spring_evidence
 from scripts.batch30.spring_launch_evidence import (
     APPROVER_ROLE,
     BUSINESS_LINE,
@@ -49,17 +50,145 @@ from scripts.batch30.spring_launch_evidence import (
     verify_spring_launch_receipt,
     verify_spring_launch_receipt_file,
 )
-from scripts.precision_migration.trust import (
-    TrustStore,
-    canonical_bytes,
-    canonical_digest,
-)
+TrustStore = spring_evidence.TrustStore
+canonical_bytes = spring_evidence.canonical_bytes
+canonical_digest = spring_evidence.canonical_digest
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/batch30/spring_launch_evidence.py"
 
 
 class SpringLaunchEvidenceTests(unittest.TestCase):
+    @staticmethod
+    def mountinfo(*lines: bytes) -> bytes:
+        return b"\n".join(lines) + b"\n"
+
+    def test_mountinfo_parser_accepts_safe_exact_roots(self) -> None:
+        entries = spring_evidence.parse_linux_mountinfo(
+            self.mountinfo(
+                b"36 25 0:32 / / rw,relatime - overlay overlay rw",
+                b"37 36 0:33 / /workspace/private-runner rw - tmpfs tmpfs rw",
+                b"38 36 0:34 / /var/lib/unrelated rw - tmpfs tmpfs rw",
+            )
+        )
+
+        spring_evidence.validate_no_strict_descendant_mounts(
+            entries,
+            {
+                "workspace": "/workspace/private-runner",
+                "replay": "/var/lib/elmos/spring-engine-auth-replay",
+            },
+            context="synthetic host",
+        )
+        self.assertEqual("/workspace/private-runner", entries[1].mount_point)
+
+    def test_mountinfo_subtree_rejects_nested_mount(self) -> None:
+        entries = spring_evidence.parse_linux_mountinfo(
+            self.mountinfo(
+                b"36 25 0:32 / / rw,relatime - overlay overlay rw",
+                b"37 36 0:33 / /srv/elmos/workspace/cache rw - tmpfs tmpfs rw",
+            )
+        )
+
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "contains a nested mountpoint"
+        ):
+            spring_evidence.validate_no_strict_descendant_mounts(
+                entries,
+                {"workspace": "/srv/elmos/workspace"},
+                context="synthetic host",
+            )
+
+    def test_mountinfo_parser_decodes_only_kernel_path_escapes(self) -> None:
+        entries = spring_evidence.parse_linux_mountinfo(
+            self.mountinfo(
+                b"36 25 0:32 / / rw,relatime - overlay overlay rw",
+                b"37 36 0:33 / /srv/elmos/workspace/cache\\040volume rw - tmpfs tmpfs rw",
+            )
+        )
+        self.assertEqual(
+            "/srv/elmos/workspace/cache volume", entries[1].mount_point
+        )
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "contains a nested mountpoint"
+        ):
+            spring_evidence.validate_no_strict_descendant_mounts(
+                entries,
+                {"workspace": "/srv/elmos/workspace"},
+                context="synthetic host",
+            )
+
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "unsupported mountinfo escape"
+        ):
+            spring_evidence.parse_linux_mountinfo(
+                self.mountinfo(
+                    b"36 25 0:32 / /srv/elmos/workspace/cache\\041volume rw - tmpfs tmpfs rw"
+                )
+            )
+
+    def test_mountinfo_parser_rejects_malformed_and_unbounded_input(self) -> None:
+        cases = {
+            "truncated": b"36 25 0:32 / / rw - overlay overlay rw",
+            "spacing": self.mountinfo(
+                b"36  25 0:32 / / rw - overlay overlay rw"
+            ),
+            "separator": self.mountinfo(
+                b"36 25 0:32 / / rw overlay overlay rw"
+            ),
+            "path": self.mountinfo(
+                b"36 25 0:32 / /srv/elmos/../workspace rw - tmpfs tmpfs rw"
+            ),
+            "line-budget": self.mountinfo(
+                b"36 25 0:32 / / "
+                + b"x" * spring_evidence.MAX_MOUNTINFO_LINE_BYTES
+                + b" - overlay overlay rw"
+            ),
+            "mount-id-digits": self.mountinfo(
+                b"1" * (spring_evidence.MAX_MOUNTINFO_NUMERIC_DIGITS + 1)
+                + b" 25 0:32 / / rw - overlay overlay rw"
+            ),
+            "parent-id-digits": self.mountinfo(
+                b"36 "
+                + b"2" * (spring_evidence.MAX_MOUNTINFO_NUMERIC_DIGITS + 1)
+                + b" 0:32 / / rw - overlay overlay rw"
+            ),
+            "device-major-digits": self.mountinfo(
+                b"36 25 "
+                + b"3" * (spring_evidence.MAX_MOUNTINFO_NUMERIC_DIGITS + 1)
+                + b":32 / / rw - overlay overlay rw"
+            ),
+            "device-minor-digits": self.mountinfo(
+                b"36 25 0:"
+                + b"4" * (spring_evidence.MAX_MOUNTINFO_NUMERIC_DIGITS + 1)
+                + b" / / rw - overlay overlay rw"
+            ),
+        }
+        for name, content in cases.items():
+            with self.subTest(name=name), self.assertRaises(
+                SpringLaunchEvidenceError
+            ):
+                spring_evidence.parse_linux_mountinfo(content)
+
+    def test_live_application_target_rejects_nested_mount(self) -> None:
+        entries = spring_evidence.parse_linux_mountinfo(
+            self.mountinfo(
+                b"36 25 0:32 / / rw,relatime - overlay overlay rw",
+                b"37 36 0:33 / /workspace/private-runner rw - tmpfs tmpfs rw",
+                b"38 37 0:34 / /workspace/private-runner/injected rw - tmpfs tmpfs rw",
+            )
+        )
+
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError,
+            "live application target .* contains a nested mountpoint",
+        ):
+            spring_evidence._validate_live_mountinfo_subtree(
+                entries,
+                "/workspace/private-runner",
+                "worker_workspace",
+            )
+
     def test_reference_binds_existing_bytes_below_an_explicit_root(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             evidence_root = Path(temporary).resolve()
@@ -276,6 +405,120 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
             '--expected-worker-application-artifact-digest "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}"',
             makefile,
         )
+
+    def test_live_docker_inspect_uses_fixed_cli_and_sanitized_environment(self) -> None:
+        inherited = {
+            "PATH": "/attacker/bin",
+            "DOCKER_HOST": "tcp://attacker.invalid:2375",
+            "DOCKER_CONTEXT": "attacker",
+            "LD_PRELOAD": "/attacker/preload.so",
+            "PYTHONPATH": "/attacker/python",
+        }
+        with mock.patch.dict(os.environ, inherited), mock.patch.object(
+            spring_evidence, "_validate_trusted_system_executable"
+        ) as trusted, mock.patch.object(
+            spring_evidence.subprocess,
+            "Popen",
+            side_effect=OSError("test execution stop"),
+        ) as popen:
+            with self.assertRaisesRegex(
+                SpringLaunchEvidenceError,
+                "live Docker inspect could not be executed safely",
+            ):
+                spring_evidence._bounded_docker_inspect(
+                    "unix:///run/docker.sock", "web-console"
+                )
+
+        trusted.assert_called_once_with(
+            Path("/usr/bin/docker"), label="Docker CLI"
+        )
+        command = popen.call_args.args[0]
+        self.assertEqual("/usr/bin/docker", command[0])
+        self.assertEqual(
+            [
+                "/usr/bin/docker",
+                "--host",
+                "unix:///run/docker.sock",
+                "inspect",
+                "--type",
+                "container",
+                "web-console",
+            ],
+            command,
+        )
+        self.assertEqual(
+            {
+                "HOME": "/nonexistent",
+                "LANG": "C.UTF-8",
+                "LC_ALL": "C.UTF-8",
+                "PATH": "/usr/bin:/bin",
+            },
+            popen.call_args.kwargs["env"],
+        )
+
+    def test_path_shadowed_docker_is_never_executed(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="shadow-docker-") as directory:
+            root = Path(directory)
+            marker = root / "executed"
+            shadow = root / "docker"
+            shadow.write_text(
+                "#!/bin/sh\n: > '" + str(marker) + "'\nprintf '[]'\n",
+                encoding="utf-8",
+            )
+            shadow.chmod(0o755)
+            with mock.patch.dict(os.environ, {"PATH": directory}):
+                try:
+                    spring_evidence._bounded_docker_inspect(
+                        "unix:///definitely-missing/elmos-docker.sock",
+                        "web-console",
+                        timeout_seconds=1.0,
+                    )
+                except SpringLaunchEvidenceError:
+                    pass
+            self.assertFalse(marker.exists())
+
+    def test_fixed_docker_cli_missing_or_untrusted_fails_before_execution(self) -> None:
+        for failure in (
+            "Docker CLI is missing",
+            "Docker CLI must be root-owned",
+            "Docker CLI must not be a symlink",
+        ):
+            with self.subTest(failure=failure), mock.patch.object(
+                spring_evidence,
+                "_validate_trusted_system_executable",
+                side_effect=SpringLaunchEvidenceError(failure),
+            ), mock.patch.object(spring_evidence.subprocess, "Popen") as popen:
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, failure):
+                    spring_evidence._bounded_docker_inspect(
+                        "unix:///run/docker.sock", "web-console"
+                    )
+                popen.assert_not_called()
+
+        with tempfile.TemporaryDirectory(prefix="untrusted-docker-") as directory:
+            root = Path(directory).resolve()
+            missing = root / "missing-docker"
+            with self.assertRaisesRegex(SpringLaunchEvidenceError, "is missing"):
+                spring_evidence._validate_trusted_system_executable(
+                    missing, label="Docker CLI"
+                )
+
+            untrusted = root / "docker"
+            untrusted.write_text("#!/bin/sh\nexit 0\n", encoding="utf-8")
+            untrusted.chmod(0o777)
+            with self.assertRaisesRegex(
+                SpringLaunchEvidenceError,
+                "root-owned|group/other-writable",
+            ):
+                spring_evidence._validate_trusted_system_executable(
+                    untrusted, label="Docker CLI"
+                )
+
+            symlink = root / "docker-link"
+            symlink.symlink_to(untrusted)
+            with self.assertRaisesRegex(SpringLaunchEvidenceError, "must not be a symlink"):
+                spring_evidence._validate_trusted_system_executable(
+                    symlink, label="Docker CLI"
+                )
 
 
 class SignedSpringLaunchReceiptTests(unittest.TestCase):
@@ -1704,6 +1947,58 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 _identity_provider=short_resend,
             )
 
+        def aliased_roles(name: str, source: str) -> dict[str, object]:
+            snapshot = self.mount_source_snapshot(source)
+            if name == "worker_engine_replay":
+                workspace = self.mount_source_snapshot(
+                    self.application_mount_sources["worker_workspace"]
+                )
+                snapshot["object_identity"] = dict(workspace["object_identity"])
+            return snapshot
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "distinct filesystem objects"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=aliased_roles,
+            )
+
+        def secret_parent_alias(name: str, source: str) -> dict[str, object]:
+            snapshot = self.mount_source_snapshot(source)
+            if name == "worker_verifier_hmac":
+                workspace = self.mount_source_snapshot(
+                    self.application_mount_sources["worker_workspace"]
+                )
+                parent = dict(workspace["object_identity"])
+                snapshot["parent_identity"] = parent
+                ancestors = [dict(item) for item in snapshot["ancestor_identities"]]
+                ancestors[-1] = parent
+                snapshot["ancestor_identities"] = ancestors
+            return snapshot
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "secret parent directory"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=secret_parent_alias,
+            )
+
+        def secret_grandparent_alias(name: str, source: str) -> dict[str, object]:
+            snapshot = self.mount_source_snapshot(source)
+            if name == "worker_verifier_hmac":
+                workspace = self.mount_source_snapshot(
+                    self.application_mount_sources["worker_workspace"]
+                )
+                ancestors = [dict(item) for item in snapshot["ancestor_identities"]]
+                self.assertGreaterEqual(len(ancestors), 2)
+                ancestors[-2] = dict(workspace["object_identity"])
+                snapshot["ancestor_identities"] = ancestors
+            return snapshot
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "controlled ancestor"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=secret_grandparent_alias,
+            )
+
         def ancestor_mode(mode: int):
             def provide(name: str, source: str) -> dict[str, object]:
                 snapshot = self.mount_source_snapshot(source)
@@ -2437,6 +2732,76 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 "s3://spring-evidence/staging.json?versionId=%20",
                 "sha256:" + "1" * 64,
                 "test evidence URI",
+            )
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "unsupported query keys"):
+            _immutable_uri(
+                "https://evidence.example/staging.json?sha256="
+                + "1" * 64
+                + "&access_token=must-not-leak",
+                "sha256:" + "1" * 64,
+                "test evidence URI",
+            )
+
+    def test_local_bytes_schema_accepts_an_immutable_advertised_uri(self) -> None:
+        from jsonschema import Draft202012Validator
+
+        schema = json.loads(
+            (ROOT / "schemas/batch30/spring-launch-external-evidence.schema.json").read_text()
+        )
+        reference = {
+            "uri": "https://evidence.example/object?sha256=" + "1" * 64,
+            "digest": "sha256:" + "1" * 64,
+            "size_bytes": 1,
+            "media_type": "application/json",
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": "file:///controlled/evidence/object.json",
+            },
+        }
+        reference_schema = {
+            "$schema": schema["$schema"],
+            "$defs": schema["$defs"],
+            "$ref": "#/$defs/evidenceReference",
+        }
+        self.assertEqual(
+            [],
+            list(Draft202012Validator(reference_schema).iter_errors(reference)),
+        )
+
+    def test_verifier_ignores_path_shadowed_openssl_and_rejects_bad_signature(self) -> None:
+        receipt = self.make_receipt()
+        receipt["gates"][0]["execution_attestation"]["signature"] = (
+            base64.urlsafe_b64encode(b"x" * 64).decode("ascii").rstrip("=")
+        )
+        receipt["receipt_digest"] = receipt_digest(receipt)
+        with tempfile.TemporaryDirectory(prefix="fake-openssl-") as directory:
+            marker = Path(directory) / "executed"
+            fake = Path(directory) / "openssl"
+            fake.write_text(
+                "#!/bin/sh\n/usr/bin/touch '" + str(marker) + "'\nexit 0\n",
+                encoding="utf-8",
+            )
+            fake.chmod(0o755)
+            spring_evidence._canonical_ed25519_spki.cache_clear()
+            with mock.patch.dict(os.environ, {"PATH": directory}):
+                with self.assertRaisesRegex(
+                    SpringLaunchEvidenceError, "signature verification failed"
+                ):
+                    self.verify(receipt)
+            self.assertFalse(marker.exists())
+
+    def test_public_verifier_rejects_preloaded_trust_objects(self) -> None:
+        receipt = self.make_receipt()
+        loaded = _load_trust(self.trust_path)
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "out-of-band filesystem Path"
+        ):
+            verify_spring_launch_receipt(
+                receipt,
+                trust_store=loaded,  # type: ignore[arg-type]
+                evidence_roots=[self.evidence_root],
+                expected_revision=self.REVISION,
+                now=self.NOW,
             )
 
     def test_trust_store_requires_owner_only_out_of_band_file(self) -> None:

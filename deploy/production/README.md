@@ -8,7 +8,9 @@ RISK-DEPLOY-001 与 RISK-SRE-001 保持 `OPEN`，直到在 staging 真实起停�
 deploy/production/
 ├── README.md                              本文件
 ├── SPRING_LAUNCH_EVIDENCE.md              Spring 签名外部证据接入与重放流程
-├── elmos-commercial.env.example           全部生产环境变量模板
+├── .env.example                           无凭据 Compose 插值清单模板（永不注入容器）
+├── env/                                   按服务拆分的最小运行环境模板
+├── elmos-commercial.env.example           旧版全量变量清单（仅迁移参考，禁止运行时使用）
 ├── compose/
 │   ├── docker-compose.production.yml      应用安全域 Tier 1 编排（YAML 已校验，未执行）
 │   ├── docker-compose.spring-application.yml Spring 应用域显式激活 overlay（未执行）
@@ -40,7 +42,7 @@ deploy/production/
 
 | 制品 | 已验证 | 未验证 |
 |---|---|---|
-| `docker-compose.production.yml` + `docker-compose.spring-application.yml` | 非 Spring 基线不挂载 engine HMAC；显式 overlay 才向 BFF/Worker 精确挂载同一文件并启用多租户认证；Spring 静态首发合同已校验 | **从未 `up` 过**；`read_only`/`user` 标记 VERIFY-REQUIRED 的项依赖镜像实际写入路径，Spring 外部证据仍 `NOT_RUN` |
+| `docker-compose.production.yml` + `docker-compose.spring-application.yml` | Compose 清单不再注入任何容器；Web、Control Plane、Commercial API、Workspace Service、MinIO 使用互不共享的最小 env file；Spring Worker 保持 `env_file: []`；显式 overlay 才向 BFF/Worker 精确挂载同一 engine HMAC | **从未 `up` 过**；`read_only`/`user` 标记 VERIFY-REQUIRED 的项依赖镜像实际写入路径，Spring 外部证据仍 `NOT_RUN` |
 | `docker-compose.spring-runner.yml` | 独立安全域、三服务、Rootless socket 单一持有者、内部 edge/broker 网络、proxy-only 执行出网、精确 HTTPS 路由与 owner-only Secret 契约可由静态 validator 重放 | **从未 `up` 过**；真实 Rootless daemon 的 internal bridge + published-port 可达性、私有数据库 endpoint、TLS、网络策略、镜像和跨主机共享存储均 `NOT_RUN` |
 | `prometheus-rules.yml` | `promtool check rules` → SUCCESS: 12 rules found | 未对接指标源；无一条告警被真实触发/恢复；阈值未用基线校准 |
 | `provision_runner_host.sh` | `bash -n` 通过；`--check` 与 4 类危险路径守卫已实测（退出码 3/4 符合预期） | `--apply` 从未在真实主机执行 |
@@ -53,19 +55,51 @@ deploy/production/
 ## 起步顺序
 
 ```bash
-# 1. 环境变量
-# 以实际 deploy user 执行；两个立即父目录必须由该 UID:GID 持有且为 0700。
-DEPLOY_UID="$(id -u)"; DEPLOY_GID="$(id -g)"
-sudo install -d -o "$DEPLOY_UID" -g "$DEPLOY_GID" -m 0700 /srv/elmos/config /controlled/spring
-cp deploy/production/elmos-commercial.env.example /srv/elmos/config/elmos.env
-chmod 0600 /srv/elmos/config/elmos.env
-# 逐项填写；未填项对应能力会失败关闭，这是预期行为
+# 1. 创建唯一的应用部署/门禁身份。该账号、容器和宿主 bind source 使用同一
+# 精确 UID/GID 10001；不要以另一个 deploy user 创建配置后再放宽权限。
+sudo groupadd --system --gid 10001 elmos-spring-app
+sudo useradd --system --uid 10001 --gid 10001 --home-dir /nonexistent \
+  --shell /usr/sbin/nologin elmos-spring-app
+test "$(id -u elmos-spring-app)" = 10001
+test "$(id -g elmos-spring-app)" = 10001
+sudo install -d -o 10001 -g 10001 -m 0700 \
+  /srv/elmos/config /controlled/spring /controlled/evidence \
+  /controlled/drafts /controlled/trust
+
+# Compose 插值清单只包含自身路径、七个服务 env 路径和 Secret 根路径，禁止凭据。
+# 七份 service env 互不共享；逐项通过 Secret Manager/受控无回显流程填写。
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/.env.example /srv/elmos/config/compose.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/web-console.env.example /srv/elmos/config/web-console.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/control-plane.env.example /srv/elmos/config/control-plane.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/commercial-api.env.example /srv/elmos/config/commercial-api.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/workspace-service.env.example /srv/elmos/config/workspace-service.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/database-data-engine.env.example /srv/elmos/config/database-data-engine.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/egress-proxy.env.example /srv/elmos/config/egress-proxy.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/env/minio.env.example /srv/elmos/config/minio.env
+sudo install -o 10001 -g 10001 -m 0600 \
+  deploy/production/spring-launch.env.example /controlled/spring/spring.env
+# `elmos-commercial.env.example` 是字段迁移清单，不得复制成 Compose/service env_file。
 
 # 管理员登录邮件 Secret：Web 容器以 UID 10001 运行，文件必须 owner-only 且可读。
-sudo install -d -o 10001 -g 10001 -m 0700 /srv/elmos/secrets
-sudo install -o 10001 -g 10001 -m 0600 /dev/null /srv/elmos/secrets/resend-api-key
+sudo install -d -o 10001 -g 10001 -m 0700 \
+  /srv/elmos/secrets /srv/elmos/secrets/web \
+  /srv/elmos/secrets/control-plane /srv/elmos/secrets/commercial-api
+sudo install -o 10001 -g 10001 -m 0600 /dev/null \
+  /srv/elmos/secrets/web/resend-api-key
 # 通过 Secret Manager 或无回显的受控流程写入 Resend API Key；不要写入 shell 历史。
 # 网络策略仅为 Web Console 放行 api.resend.com:443；禁止重定向与其他邮件端点。
+# Control Plane 的对象存储/GitHub/identity 文件只写入
+# `/srv/elmos/secrets/control-plane`；Commercial API 的支付宝文件只写入
+# `/srv/elmos/secrets/commercial-api`。Compose 只把各自子目录挂给对应服务，任何
+# 服务都不得挂载 `/srv/elmos/secrets` 根目录或其他服务子目录。
 
 # 非 Spring 基线不需要也不会挂载 engine HMAC。启用 Spring 前先准备应用主机边界：
 # 所有中间祖先必须由 root 或 UID 10001 持有，且不得是无 sticky bit 的 group/other
@@ -83,6 +117,12 @@ sudo chmod 0700 /srv/elmos/spring-shared/runs
 # 10001:10001、0400（轮换窗口可 0600）、单 hard link；四份 effective bytes 必须互异。
 # /srv/elmos/spring-secrets/application/{engine,verifier,transformer,runtime}.hmac
 # 写入完成后只校验 metadata/长度，绝不输出内容。
+
+# 受控发布流水线还必须把精确 revision 安装到：
+#   /opt/elmos-spring-gate/<40-hex-revision>/
+# 该目录、Git object database、/usr/bin/python3、系统 PyYAML/jsonschema/OpenSSL 3
+# 及其完整祖先链都必须 root-owned 且不可由 UID 10001 或 Runner daemon owner 写入。
+# 应用 gate 与 root observer 都只从这个 detached、只读、精确 revision 镜像执行。
 
 # 2. PostgreSQL 迁移完成后配置 NOBYPASSRLS 运行角色与对象后端
 scripts/operations/configure_control_plane_runtime_role.sh
@@ -105,7 +145,7 @@ uv run --quiet --with pyyaml \
 # 6. 在 Spring 专用 Linux 主机、以 rootless daemon owner 身份预置控制网络。
 # 该 internal 网络还必须接入唯一批准的私有 PostgreSQL proxy/endpoint；后者的
 # 外联由宿主防火墙单独 allowlist，并保留外部证明。
-docker network create --internal \
+/usr/bin/docker network create --internal \
   --label io.elmos.network.default-deny=true \
   --label io.elmos.network.purpose=spring-runner-control \
   elmos-spring-runner-control
@@ -120,75 +160,108 @@ docker network create --internal \
 # --check-host 验证 rootless SecurityOptions、internal 控制网络、digest 格式、
 # socket、目录、Secret owner/mode/inode/value separation 和 TLS/config。root 权限
 # 仅用于读取 mapped-UID/0400 Secret 及 /proc/<container-pid>/root；Docker daemon
-# 仍必须是 rootless。独立参数不得从 runner.env 自行推导。该检查不制造 attestation。
-RUNNER_UID="$(id -u elmos-spring-runner)"
-RUNNER_GID="$(id -g elmos-spring-runner)"
-sudo uv run --quiet --with pyyaml \
-  python deploy/production/runner/validate_spring_runner_topology.py \
+# 仍必须是 rootless。独立参数不得从 runner.env 自行推导。observer 只能从
+# root-owned immutable revision mirror 执行，且 bundle digest 必须先由 CI 计算并
+# 经独立审批渠道固定；digest 同时覆盖 Runner observer、application launch gate、
+# Makefile、Schema、Compose、env 合同及其读取的 Java/TypeScript 静态输入。该检查不制造 attestation。
+RUNNER_UID="$(/usr/bin/id -u elmos-spring-runner)"
+RUNNER_GID="$(/usr/bin/id -g elmos-spring-runner)"
+REVISION="$DEPLOYED_GIT_REVISION"
+/usr/bin/python3 -I /opt/elmos-spring-gate/$REVISION/deploy/production/runner/validate_spring_runner_topology.py \
+  --show-observer-bundle-digest
+# 将上一行 sha256 结果送独立审批系统；生产检查只接受审批系统回传值。
+OBSERVER_BUNDLE_DIGEST="$APPROVED_SPRING_OBSERVER_BUNDLE_DIGEST"
+sudo /usr/bin/env -i HOME=/root LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  /usr/bin/python3 -I /opt/elmos-spring-gate/$REVISION/deploy/production/runner/validate_spring_runner_topology.py \
   --environment-file /srv/elmos/spring-runner/runner.env \
-  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" --check-host
+  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" \
+  --observer-revision "$REVISION" \
+  --observer-bundle-digest "$OBSERVER_BUNDLE_DIGEST" --check-host
 
 # 8. 在该独立主机启动 Runner；绝不能与应用 compose 叠加。
-sudo -u elmos-spring-runner docker compose --env-file /srv/elmos/spring-runner/runner.env \
-  -f deploy/production/compose/docker-compose.spring-runner.yml up -d
-sudo uv run --quiet --with pyyaml \
-  python deploy/production/runner/validate_spring_runner_topology.py \
+sudo -u elmos-spring-runner /usr/bin/docker compose \
+  --env-file /srv/elmos/spring-runner/runner.env \
+  -f /opt/elmos-spring-gate/$REVISION/deploy/production/compose/docker-compose.spring-runner.yml up -d
+sudo /usr/bin/env -i HOME=/root LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  /usr/bin/python3 -I /opt/elmos-spring-gate/$REVISION/deploy/production/runner/validate_spring_runner_topology.py \
   --environment-file /srv/elmos/spring-runner/runner.env \
-  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" --check-running
+  --rootless-owner-uid "$RUNNER_UID" --rootless-owner-gid "$RUNNER_GID" \
+  --observer-revision "$REVISION" \
+  --observer-bundle-digest "$OBSERVER_BUNDLE_DIGEST" --check-running
 
 # spring-runner-edge 与 spring-runner-broker 都是 internal bridge。Rootless 端口
 # 转发必须仍能把批准的宿主私网地址映射到 ingress:8443；从应用主机执行 TLS 握手和
 # 经 HMAC 的 canary 请求并归档收据。若所选引擎不能同时满足 internal + published
 # port，保持上线 BLOCKED，不得把 edge 改成可任意出网的普通 bridge。
 
-# 9. 应用主机（先在 staging）。把 spring-launch.env.example 复制到仓库外，
-# 由同一受控配置源生成 Compose 与门禁使用的 Spring 值；chmod 0600，禁止 source/eval。
-# `/srv/elmos/config/elmos.env` 只供 application service env_file，必须不含任何 Spring、
-# servlet/server/management、JVM 或 proxy override；Spring 值只放在
-# `/controlled/spring/spring.env`，用于 gate 与 `docker compose --env-file` 插值。
-python3 scripts/batch30/validate_spring_launch_readiness.py
-python3 scripts/batch30/validate_spring_launch_readiness.py \
+# 9. 应用主机（先在 staging）。compose.env 仅做变量插值，永不注入服务；
+# web-console.env 和六个后端 env 各自只进入对应服务。Spring 值只放在
+# /controlled/spring/spring.env。全部文件归 UID/GID 10001，父目录 0700，文件
+# 0400/0600；门禁和 Compose 都以 elmos-spring-app 身份执行，不放宽权限。
+GATE_ROOT="/opt/elmos-spring-gate/$DEPLOYED_GIT_REVISION"
+sudo -u elmos-spring-app /usr/bin/env -i HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  /usr/bin/python3 -I "$GATE_ROOT/scripts/batch30/validate_spring_launch_readiness.py"
+sudo -u elmos-spring-app /usr/bin/env -i HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  /usr/bin/python3 -I "$GATE_ROOT/scripts/batch30/validate_spring_launch_readiness.py" \
   --environment-file /controlled/spring/spring.env \
-  --compose-environment-file /srv/elmos/config/elmos.env
-docker compose --env-file /srv/elmos/config/elmos.env \
-  -f deploy/production/compose/docker-compose.production.yml up -d
-docker compose --env-file /srv/elmos/config/elmos.env \
+  --compose-environment-file /srv/elmos/config/compose.env \
+  --web-environment-file /srv/elmos/config/web-console.env
+sudo -u elmos-spring-app /usr/bin/docker compose \
+  --env-file /srv/elmos/config/compose.env \
+  -f "$GATE_ROOT/deploy/production/compose/docker-compose.production.yml" up -d
+sudo -u elmos-spring-app /usr/bin/docker compose \
+  --env-file /srv/elmos/config/compose.env \
   --env-file /controlled/spring/spring.env \
-  -f deploy/production/compose/docker-compose.production.yml \
-  -f deploy/production/compose/docker-compose.spring-application.yml \
+  -f "$GATE_ROOT/deploy/production/compose/docker-compose.production.yml" \
+  -f "$GATE_ROOT/deploy/production/compose/docker-compose.spring-application.yml" \
   --profile spring up -d                           # 只在售卖 Spring 升级时
 
 # web-console 的 raw inspect 含 env_file 明文，禁止落盘；collector 在 Linux Docker
 # 宿主内存中同时校验 web/worker，并通过 /proc/<pid>/root 比较每个 bind 的源/目标
 # inode；collector 必须由具备受控只读 /proc 权限的 host observer 执行。仅输出
 # 脱敏、content-addressed attestation，不携带 raw web inspect 摘要
-# （避免弱密钥离线猜测 oracle），不签名、不生成外部通过状态。
-make spring-web-runtime-attestation \
+# （避免弱密钥离线猜测 oracle），不签名、不生成外部通过状态。生产入口是 bundle
+# 内的固定 launcher；它不接受 Make flag/第二个 -f，并只会 exec root-owned
+# /usr/bin/make -f Makefile.batch30 的两个 allowlisted target。
+sudo -u elmos-spring-app /usr/bin/env -i \
+  HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
+  SPRING_EXPECTED_REVISION="$DEPLOYED_GIT_REVISION" \
+  SPRING_OBSERVER_BUNDLE_DIGEST="$APPROVED_SPRING_OBSERVER_BUNDLE_DIGEST" \
   SPRING_WEB_CONTAINER=elmos-staging-web-console-1 \
   SPRING_WEB_IMAGE_DIGEST="$PINNED_WEB_IMAGE_ID" \
   SPRING_WORKER_CONTAINER=elmos-staging-java-engine-worker-1 \
   SPRING_WORKER_IMAGE_DIGEST="$PINNED_WORKER_IMAGE_ID" \
   SPRING_WEB_COLLECTOR_ID=staging-runtime-collector \
-  SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=/controlled/evidence/web-console.runtime-attestation.json
+  SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=/controlled/evidence/web-console.runtime-attestation.json \
+  /usr/bin/python3 -I "$GATE_ROOT/scripts/batch30/run_spring_production_gate.py" \
+  spring-web-runtime-attestation
 
 # 10. 正式放量必须再提供签名外部证据、独立信任库和证据字节根；
 # 模板中的 NOT_RUN、URL/摘要自报、单方签名或仓库内收据都不能通过。
 # APPROVED_SPRING_TRUST_STORE_DIGEST 必须来自独立审批/配置系统，禁止在同一
-# 命令里从待验证 trust store 临时计算后自我固定。
-make spring-launch-gate \
+# 命令里从待验证 trust store 临时计算后自我固定。受控交接副本必须归 UID 10001，
+# 但审批 digest 与私钥仍来自独立系统。生产门禁固定使用 /usr/bin/python3 -I
+# 执行 bundle 内 launcher，不解析 PATH 中的 uv，也不接受任意 Make 参数；make、
+# Python、系统依赖及其祖先必须 root-owned 且 UID 10001 不可写。
+sudo -u elmos-spring-app /usr/bin/env -i \
+  HOME=/nonexistent LANG=C LC_ALL=C PATH=/usr/bin:/bin \
   SPRING_ENV_FILE=/controlled/spring/spring.env \
-  ELMOS_ENV_FILE=/srv/elmos/config/elmos.env \
+  ELMOS_ENV_FILE=/srv/elmos/config/compose.env \
+  ELMOS_WEB_ENV_FILE=/srv/elmos/config/web-console.env \
   SPRING_EXTERNAL_EVIDENCE=/controlled/evidence/spring-launch-receipt.json \
   SPRING_TRUST_STORE=/controlled/trust/spring-trust-store.json \
   SPRING_TRUST_STORE_DIGEST="$APPROVED_SPRING_TRUST_STORE_DIGEST" \
   SPRING_EVIDENCE_ROOT=/controlled/evidence \
   SPRING_EXPECTED_REVISION="$DEPLOYED_GIT_REVISION" \
+  SPRING_OBSERVER_BUNDLE_DIGEST="$APPROVED_SPRING_OBSERVER_BUNDLE_DIGEST" \
   SPRING_ENVIRONMENT_ID=spring-staging-cn-1 \
   SPRING_DEPLOYMENT_ID="$SPRING_DEPLOYMENT_ID" \
   SPRING_PROVIDER=private-linux \
   SPRING_REGION=cn-north-1 \
   SPRING_ENVIRONMENT_CLASS=STAGING \
-  SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST="$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST"
+  SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST="$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST" \
+  /usr/bin/python3 -I "$GATE_ROOT/scripts/batch30/run_spring_production_gate.py" \
+  spring-launch-gate
 
 # 11. 告警
 promtool check rules deploy/production/observability/prometheus-rules.yml
@@ -202,12 +275,14 @@ python3 scripts/commercial/validate_pricing_catalog_publication.py --check-publi
 ```
 
 `SPRING_ENV_FILE` 是精确 20-key Spring-only gate 与 application overlay 插值输入；
-实际应用 `ELMOS_ENV_FILE` 必须完全不含 Spring launch、servlet/server/management、
-JVM 或 proxy override，并把 `ELMOS_ENV_FILE` 自身设置为同一绝对路径。门禁以无
-shell、无插值的数据解析器稳定读取两者。应用 env 的 portable commitment 仅绑定
+`ELMOS_ENV_FILE` 是无凭据 Compose 清单，只允许自身绝对路径、七个 service env
+绝对路径和 `ELMOS_SECRET_ROOT`。它从不成为 service `env_file`。Web/BFF 的实际
+运行环境由 `ELMOS_WEB_ENV_FILE` 单独提供；数据库、支付与后端 OIDC 凭据留在各自
+后端文件，门禁会拒绝出现在 Web 文件或 Compose 清单。门禁以无 shell、无插值的
+数据解析器稳定读取三者。Web env 的 portable commitment 仅绑定
 exact key、presence/empty 以及严格 allowlist 的非秘密值，绝不把 DB/OIDC/session/
 provider/API secret value 或原始文件摘要写入 stdout/收据形成离线猜测 oracle。
-两份文件与调用进程均不得设置
+三份门禁输入与调用进程均不得设置
 `SPRING_APPLICATION_JSON`、`JAVA_TOOL_OPTIONS`、`_JAVA_OPTIONS`、
 `JDK_JAVA_OPTIONS`、servlet/context path 或 Spring config/profile 覆盖；不要
 `source`/`eval` 任一文件。生产 overlay 同时在 Worker 容器边界清空 JVM/JSON/path
@@ -217,7 +292,9 @@ application-host mount commitment 对 secret file 绑定 path digest、dev/inode
 size/mode/UID/GID/nlink/ctime；对会正常增长的 workspace/replay directory 绑定稳定
 dev/inode/type/mode/UID/GID，并对完整父目录链绑定 dev/inode/type/mode/UID/GID；secret
 的立即父目录必须为 10001:10001/0700，所有祖先必须由 root/10001 持有且不得是不带
-sticky bit 的 group/other writable 目录。签名 `deployment_id` 充当可写目录生命周期 epoch。collector
+sticky bit 的 group/other writable 目录。workspace 与各 replay 目录的 dev/inode
+必须两两不同，且任何一个都不得等于任一 Secret 父目录；不同路径名或 bind-mount
+别名不能绕过此检查。签名 `deployment_id` 充当可写目录生命周期 epoch。collector
 在所有 canary 操作后最后执行，过程中任一容器 restart 或同路径 source replacement
 都会 fail closed；正常目录子项写入不会仅因 ctime/size 变化使 72 小时收据失效。
 
@@ -241,8 +318,12 @@ Batch 30 保守认证门禁，也不授权部署或开售。
 
 ## Spring 两个安全域与 Secret 所有权
 
-应用主机运行 Web BFF 和 Java Engine Worker，二者都使用容器 UID/GID
-`10001:10001`。该主机上的 Secret 父目录为 `0700`、owner `10001:10001`，四个
+应用主机的唯一部署/门禁账号 `elmos-spring-app`、Web BFF 和 Java Engine Worker
+都使用 UID/GID `10001:10001`。Compose 清单、七个 service env、Spring env、受控
+证据/信任库交接副本和 Secret 都只允许该账号读取；父目录为 `0700`，文件为
+`0400/0600`。因此门禁无需 root，也不需要 group/other 权限。门禁代码和解释器来自
+root-owned immutable revision mirror，账号 10001 不得修改它们。该主机上的 Secret
+父目录为 `0700`、owner `10001:10001`，四个
 文件为 `0400`（受控轮换期间可为 `0600`）：
 
 - `engine.hmac`：仅 BFF 与 Worker，绝不进入 Runner；
@@ -261,6 +342,13 @@ Runner host/running validator 由受控 root observer 读取这些 mapped-UID/`0
 mount namespace。该 observer 不是 Docker daemon；daemon 必须继续以独立非 root
 身份运行并通过 `name=rootless` 检查。以 daemon owner 直接执行会因正确的文件和
 ptrace 权限而失败，因此不得通过放宽 Secret mode 或容器 UID 绕过。
+
+威胁模型边界：rootless Docker daemon 及其 owner 是本地拓扑观测的 Runner TCB，
+不是独立验证者。root observer 会绑定 socket/daemon identity 并拒绝普通替换、漂移
+和跨检查变化，但无法从同一个 Docker API 自证 daemon owner 没有失陷或进行
+`A -> B -> A` 响应欺骗。若 owner/daemon 有失陷嫌疑，或缺少其权限域之外的签名
+runtime attestation，本地检查结果必须作废并保持上线 `BLOCKED`；不得用它满足独立
+外部证据或认证门禁。
 
 应用 Worker 与 Runner broker 必须把同一个租户/Run 内容寻址 POSIX 文件系统挂到
 `ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH`。该路径相同只是校验条件，不足以证明是同一
