@@ -1828,22 +1828,45 @@ def validate_host(
 
     try:
         certificate = environment_path("ELMOS_SPRING_INGRESS_TLS_CERT_HOST_PATH", environment)
-        details = certificate.lstat()
-        require(errors, stat.S_ISREG(details.st_mode) and not stat.S_ISLNK(details.st_mode), "TLS certificate must be a regular non-symlink file")
-        require(errors, details.st_size > 0, "TLS certificate must not be empty")
-        require(errors, details.st_mode & stat.S_IWOTH == 0, "TLS certificate must not be world-writable")
-    except (ValueError, OSError):
-        errors.append("Spring ingress TLS certificate is missing or invalid")
+        require(
+            errors,
+            certificate.parent == tls_root,
+            "TLS certificate must be a direct child of ELMOS_SPRING_INGRESS_TLS_SECRET_ROOT",
+        )
+        trusted_regular_file(
+            errors,
+            certificate,
+            label="Spring ingress TLS certificate",
+            expected_uid=ingress_uid,
+            expected_gid=ingress_gid,
+            expected_parent_uid=rootless_uid,
+            expected_parent_gid=rootless_gid,
+            maximum_size=1024 * 1024,
+        )
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
 
     try:
         installed_config = environment_path("ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH", environment)
+        runner_env_file = environment_path("ELMOS_SPRING_RUNNER_ENV_FILE", environment)
         require(
             errors,
-            installed_config.resolve(strict=True).read_bytes() == paths.ingress_config.read_bytes(),
-            "installed Spring ingress config must be byte-identical to the repository contract",
+            installed_config.parent == runner_env_file.parent,
+            "installed Spring ingress config and Runner environment must share one trusted parent",
         )
-    except (ValueError, OSError):
-        errors.append("installed Spring ingress config is missing or invalid")
+        trusted_regular_file(
+            errors,
+            installed_config,
+            label="installed Spring ingress config",
+            expected_uid=rootless_uid,
+            expected_gid=rootless_gid,
+            expected_parent_uid=rootless_uid,
+            expected_parent_gid=rootless_gid,
+            maximum_size=1024 * 1024,
+            expected_sha256=EXPECTED_INGRESS_CONFIG_SHA256,
+        )
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
 
     try:
         env_file = environment_path("ELMOS_SPRING_RUNNER_ENV_FILE", environment)
@@ -1865,17 +1888,22 @@ def validate_host(
         "ELMOS_VERIFIER_EVIDENCE_HOST_PATH",
     ):
         try:
-            ordinary_directory(errors, environment_path(name, environment), label=name)
+            ordinary_directory(
+                errors,
+                environment_path(name, environment),
+                label=name,
+                allowed_uids={0, os.getuid(), rootless_uid, broker_uid},
+                allowed_gids={0, os.getgid(), rootless_gid, broker_gid},
+            )
         except ValueError as error:
             errors.append(str(error))
 
-    try:
-        socket_details = socket_path.lstat()
-        require(errors, stat.S_ISSOCK(socket_details.st_mode) and not stat.S_ISLNK(socket_details.st_mode), "rootless Docker endpoint must be a Unix socket")
-        require(errors, socket_details.st_uid == rootless_uid, "rootless Docker socket owner mismatch")
-        require(errors, socket_details.st_mode & 0o007 == 0, "rootless Docker socket must not grant other permissions")
-    except OSError:
-        errors.append("rootless Docker socket is missing")
+    trusted_unix_socket(
+        errors,
+        socket_path,
+        expected_uid=rootless_uid,
+        expected_gid=rootless_gid,
+    )
 
     for name in IMAGE_ENVIRONMENTS:
         require(errors, bool(PINNED_IMAGE.fullmatch(environment.get(name, ""))), f"{name} must be name@sha256:<64 lowercase hex>")
