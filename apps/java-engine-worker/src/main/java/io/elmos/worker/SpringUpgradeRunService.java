@@ -307,7 +307,8 @@ final class SpringUpgradeRunService {
                     source.request.startAfterVerification(),
                     retryIdempotencyKey,
                     source.request.targetSpringBoot(),
-                    source.request.targetJava()
+                    source.request.targetJava(),
+                    source.request.allowExperimentalRoutes()
             );
             RunState state = newState(request, runId, source.attempt + 1);
             runs.put(state.runId, state);

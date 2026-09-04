@@ -1,9 +1,9 @@
 {
   "authority": "local-engineering-validation",
   "engine_source_manifest": {
-    "bytes": 12554,
+    "bytes": 12572,
     "path": "certification/formal-artifacts/engine-source-manifest.json",
-    "sha256": "sha256:fb90480ef25612dbd56e80b7a008b6ae049cb4d1cc528e33f380e1ac449617cb"
+    "sha256": "sha256:207e6f74e1e7f0fb768b4d69570a41a03d324db615ab0aa0f5bf93321400504d"
   },
   "external_certification": "NOT_RUN",
   "independent_verification": "NOT_RUN",
@@ -11,7 +11,7 @@
   "python": "3.12.12 | packaged by conda-forge | (main, Oct 22 2025, 23:34:53) [Clang 19.1.7 ]",
   "route_engine_lock": {
     "path": "engines/polyglot-route-engine/uv.lock",
-    "sha256": "sha256:c1e5482d096cca9090c19d32deaa71b716a07afacf181e178392946b1dd4d942"
+    "sha256": "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
   },
   "route_key": "java-to-csharp",
   "schema_version": 1,

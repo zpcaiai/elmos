@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "components": [],
+  "budget": {
+    "max_components": 5,
+    "prohibited_domains": [
+      "money",
+      "security",
+      "transaction-core"
+    ],
+    "max_emulated_object_ratio": 0.1
+  }
+}

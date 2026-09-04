@@ -127,6 +127,8 @@ def _route_semantic_warnings(
     source_dialect: str,
     target_dialect: str,
     statements: list[exp.Expression],
+    integer_division_mode: str | None = None,
+    quote_identifiers_mode: str | None = None,
 ) -> list[Diagnostic]:
     """Value-level divergences that are legal SQL on both sides.
 
@@ -136,8 +138,10 @@ def _route_semantic_warnings(
     warnings: list[Diagnostic] = []
     truncates_source = source_dialect in _INTEGER_DIVISION_TRUNCATES
     truncates_target = target_dialect in _INTEGER_DIVISION_TRUNCATES
-    if truncates_source != truncates_target and any(
-        statement.find(exp.Div) is not None for statement in statements
+    if (
+        integer_division_mode is None
+        and truncates_source != truncates_target
+        and any(statement.find(exp.Div) is not None for statement in statements)
     ):
         truncating, fractional = (
             (source_dialect, target_dialect)
@@ -160,7 +164,7 @@ def _route_semantic_warnings(
 
     source_folding = _IDENTIFIER_FOLDING.get(source_dialect)
     target_folding = _IDENTIFIER_FOLDING.get(target_dialect)
-    if source_folding != target_folding:
+    if quote_identifiers_mode != "all" and source_folding != target_folding:
         unfolded = [
             identifier.this
             for statement in statements
@@ -434,6 +438,42 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                         after=canonical_statement,
                     )
                 )
+            if request.quote_identifiers_mode == "all":
+                before_quote = canonical_statement.copy()
+                for ident in canonical_statement.find_all(exp.Identifier):
+                    ident.set("quoted", True)
+                rule_trace.append(
+                    _transformation_trace(
+                        statement_index=index,
+                        rule_id="core.quote-all-identifiers",
+                        action="QUOTE_IDENTIFIERS_TO_PREVENT_FOLDING",
+                        before=before_quote,
+                        after=canonical_statement,
+                    )
+                )
+
+            if request.integer_division_mode == "truncate":
+                before_div = canonical_statement.copy()
+                has_div = False
+                for div_node in canonical_statement.find_all(exp.Div):
+                    has_div = True
+                    if target.dialect == "mysql":
+                        div_node.replace(
+                            exp.IntDiv(this=div_node.this, expression=div_node.expression)
+                        )
+                    elif target.dialect == "oracle":
+                        div_node.replace(exp.Anonymous(this="TRUNC", expressions=[div_node.copy()]))
+                if has_div:
+                    rule_trace.append(
+                        _transformation_trace(
+                            statement_index=index,
+                            rule_id="core.normalize-integer-division-truncate",
+                            action="NORMALIZE_INTEGER_DIVISION",
+                            before=before_div,
+                            after=canonical_statement,
+                        )
+                    )
+
             emission = target_adapter.emit(canonical_statement)
             if (
                 emission.adapter_id != target_adapter.adapter_id
@@ -564,7 +604,13 @@ def transpile(request: TranspileRequest) -> TranspileResult:
                 target_reparse="PASSED",
             )
     diagnostics.extend(
-        _route_semantic_warnings(source.dialect, target.dialect, source_statements)
+        _route_semantic_warnings(
+            source.dialect,
+            target.dialect,
+            source_statements,
+            integer_division_mode=request.integer_division_mode,
+            quote_identifiers_mode=request.quote_identifiers_mode,
+        )
     )
     if "RESULT_ORDER_UNDEFINED" in all_obligations:
         diagnostics.append(

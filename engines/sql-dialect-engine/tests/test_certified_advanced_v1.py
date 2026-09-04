@@ -18,7 +18,7 @@ from elmos_sql_dialect.advanced import (
     parse_row_policy,
 )
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError, RowPolicyCommand, RowPolicyMode
+from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError, RowPolicyCommand, RowPolicyMode, TypeMigrationPolicy
 from elmos_sql_dialect.parser import parse_create_table
 from elmos_sql_dialect.routine import parse_routine_identity
 from elmos_sql_dialect.scan import SourceSchemaCatalog
@@ -491,3 +491,33 @@ def test_qualified_parser_model_retains_schema_for_direct_consumers() -> None:
         namespace_map={"app": "tenant"},
     )
     assert table.schema == "tenant"
+
+
+def test_mysql_column_comment_with_type_policy_and_shim() -> None:
+    catalog = _CommentCatalog("CREATE TABLE audit_events (id INT, metadata JSONB, tags TEXT[])")
+    comment_jsonb = parse_comment(
+        "COMMENT ON COLUMN audit_events.metadata IS 'event metadata'",
+        Dialect.POSTGRES,
+    )
+    comment_array = parse_comment(
+        "COMMENT ON COLUMN audit_events.tags IS 'event tags'",
+        Dialect.POSTGRES,
+    )
+    policy = TypeMigrationPolicy(json_binary="json", array="json")
+
+    # With type policy, rendered as JSON on MySQL
+    emitted_jsonb = emit_comment(comment_jsonb, Dialect.MYSQL, catalog=catalog, type_policy=policy)
+    assert emitted_jsonb == "ALTER TABLE audit_events MODIFY COLUMN metadata JSON COMMENT 'event metadata'"
+
+    emitted_array = emit_comment(comment_array, Dialect.MYSQL, catalog=catalog, type_policy=policy)
+    assert emitted_array == "ALTER TABLE audit_events MODIFY COLUMN tags JSON COMMENT 'event tags'"
+
+    # Without policy, fails closed by default
+    with pytest.raises(DialectError) as exc:
+        emit_comment(comment_jsonb, Dialect.MYSQL, catalog=catalog)
+    assert exc.value.code == "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED"
+
+    # With allow_comment_shim, falls back to comment shim
+    shimmed = emit_comment(comment_jsonb, Dialect.MYSQL, catalog=catalog, allow_comment_shim=True)
+    assert shimmed.startswith("-- COMMENT ON COLUMN")
+

@@ -86,6 +86,8 @@ class TranspileRequest:
     target_profile: str
     sql: str
     parameters: tuple[ParameterContract, ...] = ()
+    integer_division_mode: str | None = None
+    quote_identifiers_mode: str | None = None
 
 
 @dataclass(frozen=True)

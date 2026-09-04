@@ -72,6 +72,7 @@ from .models import (
     RenameColumn,
     RoutineIdentity,
     Table,
+    TypeMigrationPolicy,
 )
 from .parser import (
     _parse_source_statements,
@@ -80,9 +81,11 @@ from .parser import (
     parse_create_index,
     parse_create_schema,
     parse_create_table,
+    parse_delete,
     parse_drop_table,
     parse_insert_statement,
     parse_row_security,
+    parse_truncate_table,
     parse_update,
     strip_leading_comments,
 )
@@ -826,7 +829,9 @@ def _record_catalog_statement(
     catalog: SourceSchemaCatalog,
     statement: exp.Expression,
     dialect: Dialect,
-    namespace_map: Mapping[str, str] | None,
+    namespace_map: Mapping[str, str] | None = None,
+    type_policy: TypeMigrationPolicy | None = None,
+    allow_alter_column: bool = False,
 ) -> None:
     """Add only source statements whose typed schema facts parse cleanly."""
     try:
@@ -863,7 +868,7 @@ def _record_catalog_statement(
                 }
             )
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-            table = parse_create_table(statement, dialect, namespace_map)
+            table = parse_create_table(statement, dialect, namespace_map, type_policy=type_policy)
             catalog.add_table(table)
             catalog.evidence.append(
                 {
@@ -907,7 +912,7 @@ def _record_catalog_statement(
                 }
             )
         elif isinstance(statement, exp.Alter):
-            alter = parse_alter_table(statement, dialect, namespace_map)
+            alter = parse_alter_table(statement, dialect, namespace_map, allow_alter_column=allow_alter_column)
             catalog.apply_alter(alter)
             catalog.evidence.append(
                 {
@@ -928,6 +933,8 @@ def _classify(
     raw_sql: str | None = None,
     namespace_map: Mapping[str, str] | None = None,
     catalog: SourceSchemaCatalog | None = None,
+    type_policy: TypeMigrationPolicy | None = None,
+    allow_alter_column: bool = False,
 ) -> tuple[FindingStatus, str | None, str | None]:
     """Parse one statement through the real certified parser.
 
@@ -990,7 +997,7 @@ def _classify(
             if len(recovered) == 1 and not isinstance(recovered[0], exp.Command):
                 statement = recovered[0]
         if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-            parse_create_table(statement, dialect, namespace_map)
+            parse_create_table(statement, dialect, namespace_map, type_policy=type_policy)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "INDEX":
             parse_create_index(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "SCHEMA":
@@ -1023,19 +1030,28 @@ def _classify(
         elif isinstance(statement, exp.Alter):
             # certified-alter-v1. Routed here so the coverage number tracks
             # what the engine can really do rather than one profile of it.
-            parse_alter_table(statement, dialect)
+            parse_alter_table(
+                statement,
+                dialect,
+                namespace_map,
+                allow_alter_column=allow_alter_column,
+            )
         elif isinstance(statement, exp.Drop):
             parse_drop_table(statement, dialect)
         elif isinstance(statement, exp.Insert):
             parse_insert_statement(raw_sql or statement, dialect, namespace_map)
         elif isinstance(statement, exp.Update):
             parse_update(raw_sql or statement, dialect, namespace_map, catalog)
+        elif isinstance(statement, exp.Delete):
+            parse_delete(raw_sql or statement, dialect, namespace_map)
+        elif isinstance(statement, exp.TruncateTable):
+            parse_truncate_table(raw_sql or statement, dialect, namespace_map)
         else:
             # Not covered by any certified DDL profile. This is the single
             # most important number in the report, so it is produced by the
             # same fail-closed path as everything else rather than by a
             # special case that could drift from the parser.
-            parse_create_table(statement, dialect)
+            parse_create_table(statement, dialect, namespace_map, type_policy=type_policy)
         return "IN_SUBSET", None, None
     except DialectError as exc:
         return "OUT_OF_SUBSET", exc.code, exc.message
@@ -1051,6 +1067,8 @@ def _recover_statements(
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
     catalog: SourceSchemaCatalog | None = None,
+    type_policy: TypeMigrationPolicy | None = None,
+    allow_alter_column: bool = False,
 ) -> list[ScanFinding]:
     """Classify a file the parser refused as a whole, statement by statement.
 
@@ -1123,6 +1141,8 @@ def _recover_statements(
             strip_leading_comments(raw.text),
             namespace_map,
             catalog,
+            type_policy=type_policy,
+            allow_alter_column=allow_alter_column,
         )
         family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
         findings.append(
@@ -1139,7 +1159,14 @@ def _recover_statements(
             )
         )
         if catalog is not None:
-            _record_catalog_statement(catalog, statement, source_dialect, namespace_map)
+            _record_catalog_statement(
+                catalog,
+                statement,
+                source_dialect,
+                namespace_map,
+                type_policy=type_policy,
+                allow_alter_column=allow_alter_column,
+            )
     return findings
 
 
@@ -1150,6 +1177,8 @@ def scan_repository(
     include_all_findings: bool = False,
     namespace_map: Mapping[str, str] | None = None,
     namespace_profile: NamespaceProfile | None = None,
+    type_policy: TypeMigrationPolicy | None = None,
+    allow_alter_column: bool = False,
 ) -> FeasibilityReport:
     """Parse every statement in every `.sql` file and report subset membership."""
     root = Path(repository)
@@ -1192,7 +1221,17 @@ def scan_repository(
             # each of the five had exactly one offending statement -- while
             # every coverage ratio was flattered, because those files
             # contributed 1 to the denominator instead of hundreds.
-            findings.extend(_recover_statements(text, relative, source_dialect, active_namespace_map, catalog))
+            findings.extend(
+                _recover_statements(
+                    text,
+                    relative,
+                    source_dialect,
+                    active_namespace_map,
+                    catalog,
+                    type_policy=type_policy,
+                    allow_alter_column=allow_alter_column,
+                )
+            )
             continue
 
         index = 0
@@ -1203,7 +1242,15 @@ def scan_repository(
                 continue  # a comment or trailing separator, not a statement
             index += 1
             raw_sql = raw_by_index[index - 1].text if raw_by_index else None
-            status, code, reason = _classify(statement, source_dialect, raw_sql, active_namespace_map, catalog)
+            status, code, reason = _classify(
+                statement,
+                source_dialect,
+                raw_sql,
+                active_namespace_map,
+                catalog,
+                type_policy=type_policy,
+                allow_alter_column=allow_alter_column,
+            )
             family = BLOCKER_CATALOG.get(code or "", (None, ""))[0] if code else None
             findings.append(
                 ScanFinding(
@@ -1218,7 +1265,14 @@ def scan_repository(
                     _disposition(status, code),
                 )
             )
-            _record_catalog_statement(catalog, statement, source_dialect, active_namespace_map)
+            _record_catalog_statement(
+                catalog,
+                statement,
+                source_dialect,
+                active_namespace_map,
+                type_policy=type_policy,
+                allow_alter_column=allow_alter_column,
+            )
 
     return _build_report(
         root,

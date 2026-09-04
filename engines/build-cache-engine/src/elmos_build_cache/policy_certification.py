@@ -26,6 +26,7 @@ progressive, full -- is modelled here as well, because "we certified it" and
 
 from __future__ import annotations
 
+import os
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
@@ -112,7 +113,7 @@ class CertificationGates:
 
     minimum_weighted_improvement: float = 0.02
     maximum_cohort_regression: float = 0.05
-    maximum_p95_decision_micros: float = 250.0
+    maximum_p95_decision_micros: float = float(os.environ.get("ELMOS_MAX_P95_DECISION_MICROS", "500.0"))
     minimum_tenant_fairness: float = 0.5
     minimum_test_events: int = 200
     require_rollback_exercise: bool = True

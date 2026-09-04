@@ -1,0 +1,10 @@
+[package]
+name = "elmos-archive-guard"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+elmos-repo-scanner = { path = "../repo-scanner" }
+serde = { workspace = true }
+serde_json = { workspace = true }
+memchr = { workspace = true }

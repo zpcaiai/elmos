@@ -126,6 +126,13 @@ def _check_statements(
     at the end of that branch, and a source relying on Python's function scope
     is rejected here rather than emitted into a target that would not build.
     """
+def _check_statements(
+    statements: tuple[Statement, ...],
+    environment: dict[str, str],
+    return_type: str,
+    *,
+    in_loop: bool = False,
+) -> None:
     for statement in statements:
         if statement.kind == "let":
             if statement.expression is None or statement.name is None:
@@ -155,11 +162,49 @@ def _check_statements(
             # TypeScript's single number type). Everything else must match.
             if actual != return_type and not (actual == "integer" and return_type == "number"):
                 raise RouteError(f"RETURN_TYPE_MISMATCH:{return_type}:{actual}")
-        elif statement.kind == "if" and statement.condition is not None:
+            continue
+        if statement.kind == "if" and statement.condition is not None:
             if infer(statement.condition, environment) != "boolean":
                 raise RouteError("CONDITION_MUST_BE_BOOLEAN")
-            _check_statements(statement.then_body, dict(environment), return_type)
-            _check_statements(statement.else_body, dict(environment), return_type)
+            _check_statements(statement.then_body, dict(environment), return_type, in_loop=in_loop)
+            _check_statements(statement.else_body, dict(environment), return_type, in_loop=in_loop)
+            continue
+        if statement.kind == "while":
+            if statement.condition is None:
+                raise RouteError("INVALID_WHILE_STATEMENT")
+            if infer(statement.condition, environment) != "boolean":
+                raise RouteError("CONDITION_MUST_BE_BOOLEAN")
+            _check_statements(statement.body, dict(environment), return_type, in_loop=True)
+            continue
+        if statement.kind == "for":
+            if statement.name is None or statement.start is None or statement.end is None:
+                raise RouteError("INVALID_FOR_STATEMENT")
+            if statement.declared_type != "integer":
+                raise RouteError(f"UNSUPPORTED_LOOP_VARIABLE_TYPE:{statement.declared_type}")
+            if statement.name in environment:
+                raise RouteError(f"LET_NAME_ALREADY_BOUND:{statement.name}")
+            start_type = infer(statement.start, environment)
+            if start_type != "integer":
+                raise RouteError(f"LOOP_BOUND_TYPE_MISMATCH:start:integer:{start_type}")
+            end_type = infer(statement.end, environment)
+            if end_type != "integer":
+                raise RouteError(f"LOOP_BOUND_TYPE_MISMATCH:end:integer:{end_type}")
+            if statement.step is not None:
+                step_type = infer(statement.step, environment)
+                if step_type != "integer":
+                    raise RouteError(f"LOOP_BOUND_TYPE_MISMATCH:step:integer:{step_type}")
+            loop_env = dict(environment)
+            loop_env[statement.name] = "integer"
+            _check_statements(statement.body, loop_env, return_type, in_loop=True)
+            continue
+        if statement.kind == "break":
+            if not in_loop:
+                raise RouteError("BREAK_OUTSIDE_LOOP")
+            continue
+        if statement.kind == "continue":
+            if not in_loop:
+                raise RouteError("CONTINUE_OUTSIDE_LOOP")
+            continue
 
 
 def check_function(function: Function) -> dict[str, str]:

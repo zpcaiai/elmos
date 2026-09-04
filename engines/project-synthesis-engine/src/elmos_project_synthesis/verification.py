@@ -281,6 +281,23 @@ _TRANSIENT_DEPENDENCY_FETCH_MARKERS = (
 )
 
 
+def _go_module_cache_roots(cwd: Path) -> tuple[Path, Path]:
+    configured_gomod = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOMODCACHE", "").strip()
+    configured_gocache = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOCACHE", "").strip()
+    gomod_cache = Path(configured_gomod) if configured_gomod else (cwd / ".elmos-go-cache" / "mod")
+    go_cache = Path(configured_gocache) if configured_gocache else (cwd / ".elmos-go-cache" / "build")
+    if not gomod_cache.is_absolute() or gomod_cache.is_symlink():
+        raise ValueError("GO_CACHE_PATH_UNSAFE")
+    if not go_cache.is_absolute() or go_cache.is_symlink():
+        raise ValueError("GO_CACHE_PATH_UNSAFE")
+    for cache_path in (gomod_cache, go_cache):
+        cache_path.mkdir(parents=True, mode=0o700, exist_ok=True)
+        cache_path.chmod(0o700)
+        if cache_path.stat().st_mode & 0o077:
+            raise ValueError("GO_CACHE_PERMISSIONS_UNSAFE")
+    return gomod_cache, go_cache
+
+
 def _configured_command_timeout_seconds() -> int:
     """The default timeout, from the environment when it is set.
 
@@ -342,6 +359,10 @@ def _run(
     try:
         process_environment = os.environ.copy()
         process_environment.update(environment or {})
+        if language == "go":
+            gomod_cache, go_cache = _go_module_cache_roots(cwd)
+            process_environment["GOMODCACHE"] = str(gomod_cache)
+            process_environment["GOCACHE"] = str(go_cache)
         # An ambient virtualenv from the synthesis engine is never the
         # generated workspace's environment. Let uv/direct workspace tools
         # resolve the generated `.venv` without inheriting a misleading path.

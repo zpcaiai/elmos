@@ -957,6 +957,37 @@ class AlterActionKind(str, Enum):
     RENAME_COLUMN = "RENAME_COLUMN"
     ADD_CONSTRAINT = "ADD_CONSTRAINT"
     DROP_CONSTRAINT = "DROP_CONSTRAINT"
+    SET_NOT_NULL = "SET_NOT_NULL"
+    DROP_NOT_NULL = "DROP_NOT_NULL"
+    ALTER_COLUMN_TYPE = "ALTER_COLUMN_TYPE"
+
+
+@dataclass(frozen=True)
+class SetNotNull:
+    column: str
+    kind: AlterActionKind = AlterActionKind.SET_NOT_NULL
+
+
+@dataclass(frozen=True)
+class DropNotNull:
+    column: str
+    kind: AlterActionKind = AlterActionKind.DROP_NOT_NULL
+
+
+@dataclass(frozen=True)
+class AlterColumnType:
+    column: str
+    type_ref: CanonicalTypeRef
+    kind: AlterActionKind = AlterActionKind.ALTER_COLUMN_TYPE
+
+
+@dataclass(frozen=True)
+class TypeMigrationPolicy:
+    unsigned_bigint: str = "ask"  # "ask" | "decimal20" | "checked_bigint"
+    unbounded_decimal: str = "fail-closed"  # "fail-closed" | "decimal38_10" | "decimal28_8"
+    unbounded_varchar: str = "postgres-only"  # "postgres-only" | "text"
+    json_binary: str = "fail-closed"  # "fail-closed" | "json"
+    array: str = "fail-closed"  # "fail-closed" | "json"
 
 
 @dataclass(frozen=True)
@@ -1008,7 +1039,16 @@ class DropConstraint:
     kind: AlterActionKind = AlterActionKind.DROP_CONSTRAINT
 
 
-AlterAction = AddColumn | DropColumn | RenameColumn | AddConstraint | DropConstraint
+AlterAction = (
+    AddColumn
+    | DropColumn
+    | RenameColumn
+    | AddConstraint
+    | DropConstraint
+    | SetNotNull
+    | DropNotNull
+    | AlterColumnType
+)
 
 
 @dataclass(frozen=True)
@@ -1087,6 +1127,7 @@ class InsertStatement:
     columns: tuple[str, ...]
     rows: tuple[tuple[InsertLiteral, ...], ...]
     schema: str | None = None
+    on_conflict_do_nothing: bool = False
 
     def __post_init__(self) -> None:
         if not self.columns:
@@ -1295,6 +1336,23 @@ class UpdateStatement:
             )
 
 
+@dataclass(frozen=True)
+class DeleteStatement:
+    """A typed single-table DELETE with optional WHERE predicate."""
+
+    table: str
+    predicate: CheckExpression | None = None
+    schema: str | None = None
+
+
+@dataclass(frozen=True)
+class TruncateTable:
+    """A portable TRUNCATE TABLE statement."""
+
+    table: str
+    schema: str | None = None
+
+
 # ---------------------------------------------------------------------------
 # certified-routine-v1
 #
@@ -1489,19 +1547,71 @@ class RoutineAssignment:
 
 
 @dataclass(frozen=True)
-class Procedure:
-    """A deliberately bounded procedure IR.
+class SavepointStatement:
+    name: str
 
-    The first procedural slice only admits assignments to declared OUT/INOUT
-    parameters. It has no table effects, transaction commands, dynamic SQL,
-    cursors, exception swallowing, or hidden side effects.
-    """
+
+@dataclass(frozen=True)
+class RollbackSavepointStatement:
+    name: str
+
+
+@dataclass(frozen=True)
+class CursorLoop:
+    cursor_name: str
+    record_variable: str = ""
+    query_sql: str = ""
+    assignments: tuple[RoutineAssignment, ...] = ()
+    body_statements: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class ExceptionHandler:
+    condition: str  # e.g. "NO_DATA_FOUND", "DUP_VAL_ON_INDEX", "OTHERS"
+    assignments: tuple[RoutineAssignment, ...] = ()
+    action_statements: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class IfBranch:
+    condition: str
+    statements: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class IfElseStatement:
+    branches: tuple[IfBranch, ...]
+    else_statements: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class WhileLoop:
+    condition: str
+    body_statements: tuple[str, ...]
+
+
+@dataclass(frozen=True)
+class DynamicExecuteStatement:
+    query_expression: str
+    into_variable: str | None = None
+
+
+@dataclass(frozen=True)
+class Procedure:
+    """A bounded procedure IR supporting assignments, savepoints, cursors, control flow, dynamic execution and exceptions."""
 
     name: str
     parameters: tuple[RoutineParameter, ...]
-    assignments: tuple[RoutineAssignment, ...]
+    assignments: tuple[RoutineAssignment, ...] = ()
     schema: str | None = None
     or_replace: bool = False
+    savepoints: tuple[SavepointStatement, ...] = ()
+    rollback_savepoints: tuple[RollbackSavepointStatement, ...] = ()
+    cursor_loops: tuple[CursorLoop, ...] = ()
+    exception_handlers: tuple[ExceptionHandler, ...] = ()
+    if_statements: tuple[IfElseStatement, ...] = ()
+    while_loops: tuple[WhileLoop, ...] = ()
+    dynamic_executes: tuple[DynamicExecuteStatement, ...] = ()
 
     def __post_init__(self) -> None:
         names = {p.name.casefold(): p for p in self.parameters}

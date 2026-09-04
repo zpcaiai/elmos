@@ -29,7 +29,7 @@ from elmos_polyglot_route.identifier_hygiene import (
     target_ir_view,
 )
 from elmos_polyglot_route.models import REPOSITORY_SURFACE_LANGUAGES, Language, RouteError, SemanticIR
-from elmos_polyglot_route.native import analyze
+from elmos_polyglot_route.source_analyzer import analyze
 
 ROOT = Path(__file__).resolve().parents[1]
 

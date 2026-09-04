@@ -85,8 +85,8 @@ _JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
 _JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
 _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-_TYPESCRIPT_ANALYZER_SHA256 = "8e5e51cf0f7a8636606284159fb1862d78add0846b70b5fb02dc42cdec7f62f1"
-_TYPESCRIPT_ANALYZER_BYTES = 34_502
+_TYPESCRIPT_ANALYZER_SHA256 = "68146cebf7b8edf25aeb2c86111e6e89ea001c40eef610f9376d6a3fdaeef0cf"
+_TYPESCRIPT_ANALYZER_BYTES = 41_723
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
 _PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
@@ -725,6 +725,16 @@ _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
         "JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_ANNOTATED_DECLARATION_WITHOUT_VALUE",
+        "JAVA_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_ENHANCED_FOR_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET",
+        "JAVA_FOR_CONDITION_NON_MONOTONIC",
+        "JAVA_FOR_UPDATE_NON_MONOTONIC",
     }
 )
 _CSHARP_ANALYZER_KIND = "elmos.csharp-semantic-cli-build-receipt"
@@ -8103,10 +8113,24 @@ def analyze(
         if emitted_target:
             arguments.append("--emitted-target")
             project = ENGINE_ROOT / "native" / "csharp"
-            value = _run(
-                [toolchain.executable, "run", "--project", str(project), "--", *arguments],
-                cwd=REPOSITORY_ROOT,
-            )
+            dll = project / "bin" / "Release" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
+            if not dll.is_file():
+                subprocess.run(
+                    [toolchain.executable, "build", str(project), "-c", "Release", "--nologo"],
+                    cwd=project,
+                    check=False,
+                    capture_output=True,
+                )
+            if dll.is_file():
+                value = _run(
+                    [toolchain.executable, str(dll), *arguments],
+                    cwd=dll.parent,
+                )
+            else:
+                value = _run(
+                    [toolchain.executable, "run", "--project", str(project), "--", *arguments],
+                    cwd=REPOSITORY_ROOT,
+                )
         else:
             value, _ = _run_csharp_semantic_cli(toolchain, arguments)
     elif language == "go":

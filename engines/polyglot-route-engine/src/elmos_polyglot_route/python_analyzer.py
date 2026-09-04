@@ -218,6 +218,59 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                     "expression": _expression(node.value, emitted_target=emitted_target),
                 }
             )
+        elif isinstance(node, ast.While):
+            if node.orelse:
+                raise RouteError("PYTHON_WHILE_ORELSE_OUTSIDE_CERTIFIED_SUBSET")
+            result.append(
+                {
+                    "kind": "while",
+                    "condition": _expression(node.test, emitted_target=emitted_target),
+                    "body": _statements(node.body, emitted_target=emitted_target),
+                }
+            )
+        elif isinstance(node, ast.For):
+            if node.orelse:
+                raise RouteError("PYTHON_FOR_ORELSE_OUTSIDE_CERTIFIED_SUBSET")
+            if not isinstance(node.target, ast.Name):
+                raise RouteError("PYTHON_FOR_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            if not (
+                isinstance(node.iter, ast.Call)
+                and isinstance(node.iter.func, ast.Name)
+                and node.iter.func.id == "range"
+            ):
+                raise RouteError("PYTHON_NON_RANGE_FOR_OUTSIDE_CERTIFIED_SUBSET")
+            if node.iter.keywords:
+                raise RouteError("PYTHON_RANGE_KEYWORDS_UNSUPPORTED")
+            args = node.iter.args
+            if len(args) == 1:
+                start: dict[str, Any] = {"kind": "literal", "value": 0}
+                end = _expression(args[0], emitted_target=emitted_target)
+                step = None
+            elif len(args) == 2:
+                start = _expression(args[0], emitted_target=emitted_target)
+                end = _expression(args[1], emitted_target=emitted_target)
+                step = None
+            elif len(args) == 3:
+                start = _expression(args[0], emitted_target=emitted_target)
+                end = _expression(args[1], emitted_target=emitted_target)
+                step = _expression(args[2], emitted_target=emitted_target)
+            else:
+                raise RouteError(f"PYTHON_RANGE_ARITY_INVALID:{len(args)}")
+            for_dict: dict[str, Any] = {
+                "kind": "for",
+                "name": node.target.id,
+                "type": "integer",
+                "start": start,
+                "end": end,
+                "body": _statements(node.body, emitted_target=emitted_target),
+            }
+            if step is not None:
+                for_dict["step"] = step
+            result.append(for_dict)
+        elif isinstance(node, ast.Break):
+            result.append({"kind": "break"})
+        elif isinstance(node, ast.Continue):
+            result.append({"kind": "continue"})
         elif isinstance(node, ast.Assign):
             # Named apart from the generic rejection so the message says what
             # to do: annotate it. `PYTHON_UNSUPPORTED_STATEMENT:Assign` would
@@ -278,6 +331,21 @@ def _check_statements(statements: tuple[Statement, ...], environment: dict[str, 
         if statement.kind == "let" and statement.name is not None and statement.declared_type is not None:
             # After its own initializer, never before.
             environment[statement.name] = statement.declared_type
+            continue
+        if statement.kind == "while":
+            _check_statements(statement.body, dict(environment))
+            continue
+        if statement.kind == "for":
+            if statement.start is not None:
+                _reject_python_only_arithmetic(statement.start, environment)
+            if statement.end is not None:
+                _reject_python_only_arithmetic(statement.end, environment)
+            if statement.step is not None:
+                _reject_python_only_arithmetic(statement.step, environment)
+            loop_env = dict(environment)
+            if statement.name is not None:
+                loop_env[statement.name] = "integer"
+            _check_statements(statement.body, loop_env)
             continue
         _check_statements(statement.then_body, dict(environment))
         _check_statements(statement.else_body, dict(environment))

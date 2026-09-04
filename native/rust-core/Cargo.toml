@@ -1,0 +1,61 @@
+[workspace]
+resolver = "2"
+members = [
+    ".",
+    "crates/sql-splitter",
+    "crates/data-reconciler",
+    "crates/cst-parser",
+    "crates/symbol-graph",
+    "crates/dep-solver",
+    "crates/bytecode-scanner",
+    "crates/shadow-diff",
+    "crates/cas-core",
+    "crates/mutation-core",
+    "crates/j2p-core",
+    "crates/repo-scanner",
+    "crates/archive-guard",
+    "crates/foundry-graph",
+    "crates/contract-diff",
+    "crates/blast-radius",
+    "crates/attestation-core",
+]
+
+[workspace.dependencies]
+serde = { version = "=1.0.219", features = ["derive"] }
+serde_json = { version = "=1.0.143" }
+memchr = { version = "=2.8.3" }
+
+[patch.crates-io]
+serde = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde-1.0.219" }
+serde_derive = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde_derive-1.0.219" }
+serde_json = { path = "../../engines/polyglot-route-engine/native/rust/vendor/serde_json-1.0.143" }
+memchr = { path = "../../engines/polyglot-route-engine/native/rust/vendor/memchr-2.8.3" }
+
+[package]
+name = "elmos-native-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "elmos_native"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+elmos-sql-splitter = { path = "crates/sql-splitter" }
+elmos-data-reconciler = { path = "crates/data-reconciler" }
+elmos-cst-parser = { path = "crates/cst-parser" }
+elmos-symbol-graph = { path = "crates/symbol-graph" }
+elmos-dep-solver = { path = "crates/dep-solver" }
+elmos-bytecode-scanner = { path = "crates/bytecode-scanner" }
+elmos-shadow-diff = { path = "crates/shadow-diff" }
+elmos-cas-core = { path = "crates/cas-core" }
+elmos-mutation-core = { path = "crates/mutation-core" }
+elmos-j2p-core = { path = "crates/j2p-core" }
+elmos-repo-scanner = { path = "crates/repo-scanner" }
+elmos-archive-guard = { path = "crates/archive-guard" }
+elmos-foundry-graph = { path = "crates/foundry-graph" }
+elmos-contract-diff = { path = "crates/contract-diff" }
+elmos-blast-radius = { path = "crates/blast-radius" }
+elmos-attestation-core = { path = "crates/attestation-core" }
+serde = { workspace = true }
+serde_json = { workspace = true }

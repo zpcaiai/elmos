@@ -1206,7 +1206,7 @@ def _parameter_bindings(
 
 
 def _local_bindings_in_order(statements: tuple[Statement, ...]) -> list[Statement]:
-    """Every `let` in one function, in the order a reader meets them.
+    """Every `let` and `for` loop variable in one function, in the order a reader meets them.
 
     Depth-first in statement order -- an `if`'s condition cannot bind, so a
     branch's bindings follow the branch. The order is what gives each local a
@@ -1219,6 +1219,11 @@ def _local_bindings_in_order(statements: tuple[Statement, ...]) -> list[Statemen
         elif statement.kind == "if":
             found.extend(_local_bindings_in_order(statement.then_body))
             found.extend(_local_bindings_in_order(statement.else_body))
+        elif statement.kind == "while":
+            found.extend(_local_bindings_in_order(statement.body))
+        elif statement.kind == "for":
+            found.append(statement)
+            found.extend(_local_bindings_in_order(statement.body))
     return found
 
 
@@ -1273,6 +1278,46 @@ def _rename_statements(
                     else_body=_rename_statements(statement.else_body, dict(names), role),
                 )
             )
+        elif statement.kind == "while" and statement.condition is not None:
+            result.append(
+                replace(
+                    statement,
+                    condition=_rename_expression(statement.condition, names, role),
+                    body=_rename_statements(statement.body, dict(names), role),
+                )
+            )
+        elif (
+            statement.kind == "for"
+            and statement.name is not None
+            and statement.start is not None
+            and statement.end is not None
+        ):
+            renamed_start = _rename_expression(statement.start, names, role)
+            renamed_end = _rename_expression(statement.end, names, role)
+            renamed_step = (
+                _rename_expression(statement.step, names, role)
+                if statement.step is not None
+                else None
+            )
+            target_name = names.get(_LOCAL_BINDER_PREFIX + statement.name)
+            if target_name is None:
+                raise RouteError(f"IDENTIFIER_{role}_LOCAL_UNMAPPED:{statement.name}")
+            body_names = dict(names)
+            body_names[statement.name] = target_name
+            result.append(
+                replace(
+                    statement,
+                    name=target_name,
+                    start=renamed_start,
+                    end=renamed_end,
+                    step=renamed_step,
+                    body=_rename_statements(statement.body, body_names, role),
+                )
+            )
+        elif statement.kind == "break":
+            result.append(statement)
+        elif statement.kind == "continue":
+            result.append(statement)
         else:
             raise RouteError(f"IDENTIFIER_{role}_STATEMENT_UNSUPPORTED:{statement.kind}")
     return tuple(result)

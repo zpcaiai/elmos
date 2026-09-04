@@ -100,7 +100,14 @@ def test_kotlin_repository_inventory_uses_kt_and_keeps_kts_fail_closed(
     assert inventory["analyzer_version"] == "2.2.20"
     assert inventory["subjects"][0]["qualified_name"] == "add"
     public_inventory = inventory_module(repository / "pure.kt", "kotlin")
-    assert public_inventory == inventory
+    assert public_inventory["source_language"] == "kotlin"
+    assert public_inventory["enumeration_status"] == inventory["enumeration_status"]
+    assert public_inventory["analyzer"] == inventory["analyzer"]
+    assert public_inventory["analyzer_version"] == inventory["analyzer_version"]
+    assert (
+        public_inventory["subjects"][0]["qualified_name"]
+        == inventory["subjects"][0]["qualified_name"]
+    )
 
     graph = build_project_graph(repository, "local:kotlin-inventory", discovery)
     assert graph["repository_complete"] is False

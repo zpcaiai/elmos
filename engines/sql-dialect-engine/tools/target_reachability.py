@@ -50,6 +50,7 @@ from elmos_sql_dialect.models import (
     DropColumn,
     RenameColumn,
     Table,
+    TypeMigrationPolicy,
 )
 from elmos_sql_dialect.parser import (
     _parse_source_statements,
@@ -80,7 +81,9 @@ DDL_TYPES = (
     "Revoke",
     "Insert",
     "Update",
+    "Delete",
     "Truncate",
+    "TruncateTable",
 )
 ALL_DIALECTS = (Dialect.POSTGRES, Dialect.MYSQL, Dialect.ORACLE, Dialect.TSQL)
 
@@ -180,35 +183,72 @@ def emit_to(
     namespace_map: dict[str, str] | None = None,
     comment_catalog: ReachabilityCommentCatalog | None = None,
     source_catalog: SourceSchemaCatalog | None = None,
+    allow_trigger_shim: bool = False,
+    allow_alter_column: bool = False,
+    type_policy: TypeMigrationPolicy | None = None,
+    allow_index_shim: bool = False,
+    allow_if_not_exists_shim: bool = False,
+    allow_schema_shim: bool = False,
+    allow_rls_shim: bool = False,
+    allow_privilege_shim: bool = False,
+    allow_comment_shim: bool = False,
+    allow_index_expression_shim: bool = False,
+    allow_routine_shim: bool = False,
+    allow_mysql_text_prefix: bool = False,
+    allow_check_shim: bool = False,
+    allow_mysql_text_default: bool = False,
+    allow_reserved_word_shim: bool = False,
 ) -> str | None:
     """Emitted SQL, or None with the refusal recorded by the caller."""
     if isinstance(statement, exp.Command) and looks_like_row_security(statement.sql(), source):
-        return emitter.emit_row_security(parse_row_security(statement.sql(), source, namespace_map), target)
+        return emitter.emit_row_security(
+            parse_row_security(statement.sql(), source, namespace_map),
+            target,
+            allow_rls_shim=allow_rls_shim,
+        )
     if isinstance(statement, exp.Command) and looks_like_role_comment(statement.sql(), source):
         return emit_comment(
             parse_comment(statement.sql(), source, namespace_map),
             target,
             comment_catalog,
             source_catalog,
+            allow_comment_shim=allow_comment_shim,
+            type_policy=type_policy,
         )
     if isinstance(statement, exp.Command) and statement.sql().lstrip().upper().startswith("CREATE POLICY"):
         return emit_row_policy(
             parse_row_policy(statement.sql(), source, namespace_map),
             target,
+            allow_rls_shim=allow_rls_shim,
         )
     if isinstance(statement, exp.Create):
         kind = str(statement.args.get("kind", "")).upper()
         if kind == "TABLE":
             return emitter.emit_create_table(
-                parser.parse_create_table(statement, source, namespace_map), target
+                parser.parse_create_table(statement, source, namespace_map, type_policy=type_policy),
+                target,
+                type_policy=type_policy,
+                allow_if_not_exists_shim=allow_if_not_exists_shim,
+                allow_mysql_text_prefix=allow_mysql_text_prefix,
+                allow_check_shim=allow_check_shim,
+                allow_mysql_text_default=allow_mysql_text_default,
+                allow_reserved_word_shim=allow_reserved_word_shim,
             )
         if kind == "SCHEMA":
             return emitter.emit_create_schema(
-                parser.parse_create_schema(statement, source, namespace_map), target
+                parser.parse_create_schema(statement, source, namespace_map),
+                target,
+                allow_schema_shim=allow_schema_shim,
+                allow_if_not_exists_shim=allow_if_not_exists_shim,
             )
         if kind == "INDEX":
             return emitter.emit_create_index(
-                parser.parse_create_index(statement, source, namespace_map), target
+                parser.parse_create_index(statement, source, namespace_map),
+                target,
+                allow_index_shim=allow_index_shim,
+                allow_if_not_exists_shim=allow_if_not_exists_shim,
+                allow_index_expression_shim=allow_index_expression_shim,
+                allow_mysql_text_prefix=allow_mysql_text_prefix,
             )
         if kind == "VIEW":
             return emit_view(parse_create_view(statement, source, namespace_map), target)
@@ -218,16 +258,31 @@ def emit_to(
             except DialectError as exc:
                 if exc.code != "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
                     raise
-                return emit_create_function(parse_create_routine(statement, source, namespace_map), target)
+                return emit_create_function(
+                    parse_create_routine(statement, source, namespace_map),
+                    target,
+                    allow_routine_shim=allow_routine_shim,
+                )
         if kind == "PROCEDURE":
             return emit_procedure(parse_procedure(statement, source, namespace_map), target)
         if kind == "TRIGGER":
-            return emit_trigger(parse_trigger(statement, source, namespace_map), target)
+            return emit_trigger(
+                parse_trigger(statement, source, namespace_map),
+                target,
+                allow_trigger_shim=allow_trigger_shim,
+            )
     if isinstance(statement, exp.Command) and statement.sql().lstrip().upper().startswith("DO"):
         return emit_static_do(parse_static_do(statement.sql(), source, namespace_map), target, source_catalog)
     if isinstance(statement, exp.Alter):
         return emitter.emit_alter_table(
-            parser.parse_alter_table(statement, source, namespace_map), target
+            parser.parse_alter_table(statement, source, namespace_map, allow_alter_column=allow_alter_column),
+            target,
+            catalog=source_catalog,
+            type_policy=type_policy,
+            allow_mysql_text_prefix=allow_mysql_text_prefix,
+            allow_check_shim=allow_check_shim,
+            allow_mysql_text_default=allow_mysql_text_default,
+            allow_reserved_word_shim=allow_reserved_word_shim,
         )
     if isinstance(statement, exp.Drop):
         return emitter.emit_drop_table(
@@ -242,15 +297,30 @@ def emit_to(
         return emitter.emit_update(
             parser.parse_update(statement, source, namespace_map, source_catalog), target
         )
+    if isinstance(statement, exp.Delete):
+        return emitter.emit_delete(
+            parser.parse_delete(statement, source, namespace_map), target
+        )
+    if isinstance(statement, exp.TruncateTable):
+        return emitter.emit_truncate_table(
+            parser.parse_truncate_table(statement, source, namespace_map), target
+        )
     if isinstance(statement, exp.Comment):
         return emit_comment(
             parse_comment(statement, source, namespace_map),
             target,
             comment_catalog,
             source_catalog,
+            allow_comment_shim=allow_comment_shim,
+            type_policy=type_policy,
         )
     if isinstance(statement, exp.Grant | exp.Revoke):
-        return emit_privilege(parse_privilege(statement, source, namespace_map), target, source_catalog)
+        return emit_privilege(
+            parse_privilege(statement, source, namespace_map),
+            target,
+            source_catalog,
+            allow_privilege_shim=allow_privilege_shim,
+        )
     raise DialectError("UNROUTED", "no emitter for this statement kind")
 
 
@@ -267,6 +337,102 @@ def main() -> int:
         "--namespace-profile",
         default=None,
         help="JSON namespace profile with name, mapping and optional digest",
+    )
+    ap.add_argument(
+        "--allow-trigger-shim",
+        action="store_true",
+        default=False,
+        help="Allow trigger routine dispatch shims for targets lacking native triggers",
+    )
+    ap.add_argument(
+        "--allow-alter-column",
+        action="store_true",
+        default=False,
+        help="Allow catalog-driven ALTER COLUMN TYPE and SET/DROP NOT NULL conversions",
+    )
+    ap.add_argument(
+        "--policy-json-binary",
+        choices=["fail-closed", "json"],
+        default="fail-closed",
+        help="Policy for JSONB / binary JSON mapping to target dialects",
+    )
+    ap.add_argument(
+        "--policy-array",
+        choices=["fail-closed", "json"],
+        default="fail-closed",
+        help="Policy for ARRAY mapping to target dialects",
+    )
+    ap.add_argument(
+        "--allow-index-shim",
+        action="store_true",
+        default=False,
+        help="Allow index shim for targets lacking partial indexes",
+    )
+    ap.add_argument(
+        "--allow-if-not-exists-shim",
+        action="store_true",
+        default=False,
+        help="Allow IF NOT EXISTS shim for targets without native DDL clause",
+    )
+    ap.add_argument(
+        "--allow-schema-shim",
+        action="store_true",
+        default=False,
+        help="Allow schema shim for Oracle targets",
+    )
+    ap.add_argument(
+        "--allow-rls-shim",
+        action="store_true",
+        default=False,
+        help="Allow RLS and row policy shim calls for non-Postgres targets",
+    )
+    ap.add_argument(
+        "--allow-privilege-shim",
+        action="store_true",
+        default=False,
+        help="Allow privilege principal mapping shims",
+    )
+    ap.add_argument(
+        "--allow-comment-shim",
+        action="store_true",
+        default=False,
+        help="Allow comment emission shims for non-native metadata targets",
+    )
+    ap.add_argument(
+        "--allow-index-expression-shim",
+        action="store_true",
+        default=False,
+        help="Allow functional index expression shims across dialect boundaries",
+    )
+    ap.add_argument(
+        "--allow-routine-shim",
+        action="store_true",
+        default=False,
+        help="Allow routine signature and STRICT behavior shims",
+    )
+    ap.add_argument(
+        "--allow-mysql-text-prefix",
+        action="store_true",
+        default=False,
+        help="Allow MySQL TEXT column index prefix length (255)",
+    )
+    ap.add_argument(
+        "--allow-check-shim",
+        action="store_true",
+        default=False,
+        help="Allow check constraint shims across dialect boundaries",
+    )
+    ap.add_argument(
+        "--allow-mysql-text-default",
+        action="store_true",
+        default=False,
+        help="Allow MySQL TEXT column DEFAULT values (supported in MySQL 8.0.13+)",
+    )
+    ap.add_argument(
+        "--allow-reserved-word-shim",
+        action="store_true",
+        default=False,
+        help="Allow quoted reserved word identifiers for MySQL",
     )
     args = ap.parse_args()
 
@@ -294,6 +460,10 @@ def main() -> int:
         namespace_profile = NamespaceProfile.from_payload(raw_profile)
     active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
     namespace_map = active_namespace_profile
+    type_policy = TypeMigrationPolicy(
+        json_binary=args.policy_json_binary,
+        array=args.policy_array,
+    )
 
     admitted = 0
     discovered = 0
@@ -362,6 +532,21 @@ def main() -> int:
                                 namespace_map,
                                 comment_catalog,
                                 source_catalog,
+                                allow_trigger_shim=args.allow_trigger_shim,
+                                allow_alter_column=args.allow_alter_column,
+                                type_policy=type_policy,
+                                allow_index_shim=args.allow_index_shim,
+                                allow_if_not_exists_shim=args.allow_if_not_exists_shim,
+                                allow_schema_shim=args.allow_schema_shim,
+                                allow_rls_shim=args.allow_rls_shim,
+                                allow_privilege_shim=args.allow_privilege_shim,
+                                allow_comment_shim=args.allow_comment_shim,
+                                allow_index_expression_shim=args.allow_index_expression_shim,
+                                allow_routine_shim=args.allow_routine_shim,
+                                allow_mysql_text_prefix=args.allow_mysql_text_prefix,
+                                allow_check_shim=args.allow_check_shim,
+                                allow_mysql_text_default=args.allow_mysql_text_default,
+                                allow_reserved_word_shim=args.allow_reserved_word_shim,
                             )
                         reachable_per_target[target.value] += 1
                     except DialectError as refusal:
@@ -377,9 +562,9 @@ def main() -> int:
                 else:
                     all_four += 1
                 if isinstance(statement, exp.Create) and str(statement.args.get("kind", "")).upper() == "TABLE":
-                    comment_catalog.add_table(parser.parse_create_table(statement, source, namespace_map))
+                    comment_catalog.add_table(parser.parse_create_table(statement, source, namespace_map, type_policy=type_policy))
                 elif isinstance(statement, exp.Alter):
-                    comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map))
+                    comment_catalog.apply_alter(parser.parse_alter_table(statement, source, namespace_map, allow_alter_column=args.allow_alter_column))
 
     target_priority = sorted(
         (dialect.value for dialect in ALL_DIALECTS),

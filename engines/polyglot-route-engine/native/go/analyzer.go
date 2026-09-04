@@ -177,6 +177,134 @@ func statements(block *ast.BlockStmt, emittedTarget bool) []map[string]any {
 			result = append(result, map[string]any{"kind": "return", "expression": expression(statement.Results[0], emittedTarget)})
 		case *ast.IfStmt:
 			result = append(result, ifStatement(statement, emittedTarget))
+		case *ast.DeclStmt:
+			genDecl, ok := statement.Decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.VAR {
+				fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", statement.Decl))
+			}
+			if len(genDecl.Specs) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			valueSpec, ok := genDecl.Specs[0].(*ast.ValueSpec)
+			if !ok {
+				fail("GO_UNSUPPORTED_DECLARATION_SPEC")
+			}
+			if len(valueSpec.Names) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			if len(valueSpec.Values) == 0 {
+				fail("GO_ANNOTATED_DECLARATION_WITHOUT_VALUE")
+			}
+			if len(valueSpec.Values) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			if valueSpec.Type == nil {
+				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			result = append(result, map[string]any{
+				"kind":       "let",
+				"name":       valueSpec.Names[0].Name,
+				"type":       canonicalType(valueSpec.Type),
+				"expression": expression(valueSpec.Values[0], emittedTarget),
+			})
+		case *ast.AssignStmt:
+			if statement.Tok == token.DEFINE {
+				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			fail("GO_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET")
+		case *ast.BranchStmt:
+			if statement.Label != nil {
+				fail("GO_LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			switch statement.Tok {
+			case token.BREAK:
+				result = append(result, map[string]any{"kind": "break"})
+			case token.CONTINUE:
+				result = append(result, map[string]any{"kind": "continue"})
+			case token.GOTO:
+				fail("GO_GOTO_OUTSIDE_CERTIFIED_SUBSET")
+			case token.FALLTHROUGH:
+				fail("GO_FALLTHROUGH_OUTSIDE_CERTIFIED_SUBSET")
+			default:
+				fail(fmt.Sprintf("GO_UNSUPPORTED_BRANCH:%s", statement.Tok))
+			}
+		case *ast.ForStmt:
+			if statement.Init == nil && statement.Post == nil {
+				if statement.Cond == nil {
+					fail("GO_INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				result = append(result, map[string]any{
+					"kind":      "while",
+					"condition": expression(statement.Cond, emittedTarget),
+					"body":      statements(statement.Body, emittedTarget),
+				})
+			} else if statement.Init != nil && statement.Cond != nil && statement.Post != nil {
+				assign, ok := statement.Init.(*ast.AssignStmt)
+				if !ok || (assign.Tok != token.DEFINE && assign.Tok != token.ASSIGN) || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+					fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				ident, ok := assign.Lhs[0].(*ast.Ident)
+				if !ok {
+					fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				varName := ident.Name
+				var startExpr map[string]any
+				if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+					if callFun, ok := call.Fun.(*ast.Ident); ok && callFun.Name == "int64" && len(call.Args) == 1 {
+						startExpr = expression(call.Args[0], emittedTarget)
+					} else {
+						fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+					}
+				} else {
+					startExpr = expression(assign.Rhs[0], emittedTarget)
+				}
+
+				binCond, ok := statement.Cond.(*ast.BinaryExpr)
+				if !ok {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				leftIdent, ok := binCond.X.(*ast.Ident)
+				if !ok || leftIdent.Name != varName {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				if binCond.Op != token.LSS {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				endExpr := expression(binCond.Y, emittedTarget)
+
+				var stepExpr map[string]any
+				if inc, ok := statement.Post.(*ast.IncDecStmt); ok {
+					postIdent, ok := inc.X.(*ast.Ident)
+					if !ok || postIdent.Name != varName || inc.Tok != token.INC {
+						fail("GO_FOR_POST_NON_MONOTONIC")
+					}
+				} else if postAssign, ok := statement.Post.(*ast.AssignStmt); ok {
+					postIdent, ok := postAssign.Lhs[0].(*ast.Ident)
+					if !ok || postIdent.Name != varName || postAssign.Tok != token.ADD_ASSIGN || len(postAssign.Rhs) != 1 {
+						fail("GO_FOR_POST_NON_MONOTONIC")
+					}
+					stepExpr = expression(postAssign.Rhs[0], emittedTarget)
+				} else {
+					fail("GO_FOR_POST_NON_MONOTONIC")
+				}
+
+				forLoop := map[string]any{
+					"kind":  "for",
+					"name":  varName,
+					"type":  "integer",
+					"start": startExpr,
+					"end":   endExpr,
+					"body":  statements(statement.Body, emittedTarget),
+				}
+				if stepExpr != nil {
+					forLoop["step"] = stepExpr
+				}
+				result = append(result, forLoop)
+			} else {
+				fail("GO_FOR_SHAPE_OUTSIDE_CERTIFIED_SUBSET")
+			}
+		case *ast.RangeStmt:
+			fail("GO_RANGE_LOOP_OUTSIDE_CERTIFIED_SUBSET")
 		default:
 			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", raw))
 		}

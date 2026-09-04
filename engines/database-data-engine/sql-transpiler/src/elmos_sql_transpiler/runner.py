@@ -24,6 +24,7 @@ import duckdb
 import psycopg
 
 from .models import TranspileRequest
+from .plan_analyzer import analyze_plan, compare_plan_structural_intent
 from .profiles import profile_by_id
 from .transpiler import transpile
 
@@ -782,6 +783,21 @@ def _query_evidence(
         ordering_equal = source_result["rows"] == target_result["rows"]
         passed = all((values_equal, cardinality_equal, columns_equal, types_equal, ordering_equal))
         all_passed = all_passed and passed
+        source_plan = source.explain(source_connection, case.sql)
+        target_plan = target.explain(target_connection, result.target_sql)
+        source_plans[case.id] = source_plan
+        target_plans[case.id] = target_plan
+
+        plan_structural_comparison = None
+        try:
+            source_profile = analyze_plan(source.profile_id, source_plan)
+            target_profile = analyze_plan(target.profile_id, target_plan)
+            plan_structural_comparison = compare_plan_structural_intent(
+                source_profile, target_profile
+            )
+        except Exception:
+            pass
+
         query_reports.append(
             {
                 "queryId": case.id,
@@ -797,13 +813,18 @@ def _query_evidence(
                     "duplicates": (
                         "PASSED" if case.id != "duplicates-union-all" or values_equal else "FAILED"
                     ),
+                    "planStructuralEquivalence": (
+                        "PASSED"
+                        if plan_structural_comparison
+                        and plan_structural_comparison.get("equivalent")
+                        else "INCONCLUSIVE"
+                    ),
                 },
+                "planStructuralComparison": plan_structural_comparison,
                 "source": source_result,
                 "target": target_result,
             }
         )
-        source_plans[case.id] = source.explain(source_connection, case.sql)
-        target_plans[case.id] = target.explain(target_connection, result.target_sql)
     return query_reports, source_plans, target_plans, all_passed
 
 

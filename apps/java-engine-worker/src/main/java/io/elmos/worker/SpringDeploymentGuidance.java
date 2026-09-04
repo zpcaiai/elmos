@@ -64,6 +64,7 @@ final class SpringDeploymentGuidance {
                 && SpringRouteCatalog.MAVEN_BUILD_TOOL.equals(buildTool)) {
             writeMvcExecutableWarContainer(migratedRepository);
         }
+        writeMigrationDiagnostics(migratedRepository, buildTool, route);
     }
 
     private static void writeMvcExecutableWarContainer(Path migratedRepository) {
@@ -249,6 +250,7 @@ final class SpringDeploymentGuidance {
                 **/*.pem
                 **/*.key
                 """);
+        writeMigrationDiagnostics(migratedRepository, buildTool, null);
     }
 
     static void writeTo(Path migratedRepository) {
@@ -444,6 +446,29 @@ final class SpringDeploymentGuidance {
                   ]
                 }
                 """);
+        writeMigrationDiagnostics(migratedRepository, "maven", null);
+    }
+
+    static void writeMigrationDiagnostics(Path migratedRepository, String buildTool, SpringRouteCatalog.SpringRoute route) {
+        String routeInfo = route != null ? route.routeId() + " (" + route.targetBoot() + " / Java " + route.targetJava() + ")" : "Spring Boot 3.5.3 / Java 21";
+        write(migratedRepository.resolve("docs/MIGRATION_DIAGNOSTICS.md"), """
+                # Spring Boot 迁移诊断与非标准组件处理指南
+
+                ## 1. 构建工具与自动化注入
+                - 当前构建工具：`%s`
+                - 目标路线：`%s`
+                - Gradle 自动化支持：Elmos 具备基于 `initscript` 的动态 OpenRewrite 插件与配方注入能力，支持未预先配置 OpenRewrite 的标准 Gradle 项目自动升级。
+
+                ## 2. 常见非标准组件与长尾修复建议
+                - **javax 到 jakarta 命名空间迁移**：
+                  若项目中存在遗留的 `javax.validation.*`、`javax.persistence.*`、`javax.servlet.*`，Spring Boot 3+ / 4+ 已全面切换为 `jakarta.*`。OpenRewrite 会自动重写标准注解；若有定制反序列化器或三方校验扩展，请确保使用 `jakarta.validation` 对应类型。
+                - **Spring Security 弃用配置适配**：
+                  若项目中使用了 `WebSecurityConfigurerAdapter`，在 Spring Security 6+ 已被废弃移除。请迁移为基于 `@Bean SecurityFilterChain` 的组件声明模型，并显式配置 `authorizeHttpRequests`。
+                - **自定义或非官方 Spring Boot Starter**：
+                  对于非官方维护的 starter 依赖，需升级至支持 Spring Boot 3 / 4 及 Jakarta EE 10+ 的对应版本；若无新版，可将自动配置拆解为独立的 `@Configuration` Bean 声明。
+                - **Gradle 遗留语法与配置**：
+                  在 Gradle 7+ / 8+ 中，已完全移除废弃的 `compile`、`testCompile` 配置关键字，需全部更新为 `implementation` 与 `testImplementation`。
+                """.formatted(buildTool, routeInfo));
     }
 
     private static void appendReadme(Path readme) {
@@ -454,6 +479,7 @@ final class SpringDeploymentGuidance {
 
                 - [`docs/LOCAL_RUN.md`](docs/LOCAL_RUN.md)：精确软硬件配置、验证、启动和健康检查。
                 - [`docs/CLOUD_DEPLOYMENT.md`](docs/CLOUD_DEPLOYMENT.md)：可选云平台和推荐 Cloud Run 步骤。
+                - [`docs/MIGRATION_DIAGNOSTICS.md`](docs/MIGRATION_DIAGNOSTICS.md)：构建工具自动化注入与非标准组件长尾诊断。
                 - [`deploy/cloud-run/deployment-profile.json`](deploy/cloud-run/deployment-profile.json)：
                   机器可读、默认失败关闭的云配置清单。
 

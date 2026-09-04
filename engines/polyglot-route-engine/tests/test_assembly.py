@@ -48,6 +48,7 @@ from elmos_polyglot_route.models import (
     repository_language_lifecycle,
 )
 from elmos_polyglot_route.repository import plan_repository
+from elmos_polyglot_route.toolchains import exact_toolchain
 
 
 def assemble_project(
@@ -689,19 +690,26 @@ def test_assembly_process_uses_a_private_environment_without_ambient_hooks(
 
     observed: dict[str, str] = {}
 
-    def fake_run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
-        environment = kwargs["env"]
-        assert isinstance(environment, dict)
-        observed.update(environment)
-        assert not set(hostile).intersection(environment)
-        for key in ("HOME", "TMPDIR", "XDG_CACHE_HOME"):
-            path = Path(environment[key])
-            assert path.is_dir()
-            assert stat.S_IMODE(path.stat().st_mode) == 0o700
-        assert environment["PATH"].split(":") == ["/usr/bin", "/bin", "/usr/sbin", "/sbin"]
-        return subprocess.CompletedProcess(command, 0, "", "")
+    class FakePopen:
+        def __init__(self, command: list[str], **kwargs: Any) -> None:
+            self.command = command
+            self.pid = 99999
+            self.returncode = 0
+            environment = kwargs["env"]
+            assert isinstance(environment, dict)
+            observed.update(environment)
+            assert not set(hostile).intersection(environment)
+            for key in ("HOME", "TMPDIR", "XDG_CACHE_HOME"):
+                path = Path(environment[key])
+                assert path.is_dir()
+                assert stat.S_IMODE(path.stat().st_mode) == 0o700
+            assert environment["PATH"].split(":") == ["/usr/bin", "/bin", "/usr/sbin", "/sbin"]
 
-    monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.run", fake_run)
+        def communicate(self, timeout: int | None = None) -> tuple[str, str]:
+            del timeout
+            return ("", "")
+
+    monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.Popen", FakePopen)
     result = assembly._run(["/usr/bin/true"], tmp_path)
 
     assert result.returncode == 0
@@ -727,11 +735,18 @@ def test_assembly_process_failure_preserves_bounded_sanitized_dual_streams(
         + f"\n/private/runtime/welcome PASSWORD={stderr_value}\nfirst-run warning"
     )
 
-    def fake_run(command: list[str], **kwargs: Any) -> subprocess.CompletedProcess[str]:
-        del kwargs
-        return subprocess.CompletedProcess(command, 23, stdout, stderr)
+    class FakePopen:
+        def __init__(self, command: list[str], **kwargs: Any) -> None:
+            del kwargs
+            self.command = command
+            self.pid = 99999
+            self.returncode = 23
 
-    monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.run", fake_run)
+        def communicate(self, timeout: int | None = None) -> tuple[str, str]:
+            del timeout
+            return (stdout, stderr)
+
+    monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.Popen", FakePopen)
 
     with pytest.raises(RouteError) as captured:
         assembly._run(["/private/toolchains/secret-tool"], tmp_path)
@@ -832,7 +847,7 @@ def test_assembly_manifest_rejects_a_forged_cmake_runtime_binding(tmp_path: Path
     manifest["build_verification_status"] = "PASSED"
     manifest["build_verification"] = {
         "toolchain_language": "cpp",
-        "toolchain_version": "Apple clang version 17.0.0",
+        "toolchain_version": exact_toolchain("cpp").version,
         "commands": [{"command": ["cmake", "--build", "build"], "stdout": "", "stderr": ""}],
         "cmake_runtime": {
             "kind": "private-content-addressed-cmake-runtime-v1",

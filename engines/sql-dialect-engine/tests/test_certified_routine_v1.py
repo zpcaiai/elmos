@@ -11,8 +11,8 @@ import pytest
 
 from elmos_sql_dialect.advanced import parse_table_function
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import Dialect, RoutineLanguage
-from elmos_sql_dialect.routine import parse_create_routine, parse_routine_identity
+from elmos_sql_dialect.models import Dialect, DialectError, RoutineLanguage
+from elmos_sql_dialect.routine import emit_create_function, parse_create_routine, parse_routine_identity
 
 PURE_FUNCTION = (
     "CREATE FUNCTION make_key(p VARCHAR(32)) RETURNS VARCHAR(64) "
@@ -192,3 +192,36 @@ def test_mysql_and_tsql_direct_return_functions_are_source_supported() -> None:
         report = translate_ddl(sql, source, "postgres", statement_kind="FUNCTION")
         assert report["status"] == "PASSED", (source, report["reason"])
         assert "LANGUAGE SQL" in (report["emitted"] or "")
+
+
+def test_routine_stability_shim_cross_dialect() -> None:
+    from sqlglot import parse_one
+
+    sql = (
+        "CREATE FUNCTION elmos_cas_key(p VARCHAR) RETURNS TEXT "
+        "LANGUAGE sql IMMUTABLE STRICT AS $$ SELECT 'key/' || p $$"
+    )
+    stmt = parse_one(sql, read="postgres")
+    routine = parse_create_routine(stmt, Dialect.POSTGRES, {"": "dbo", "public": "dbo"})
+
+    # Without shim, fails closed on target emission
+    with pytest.raises(DialectError) as exc:
+        emit_create_function(routine, Dialect.MYSQL, allow_routine_shim=False)
+    assert exc.value.code in (
+        "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET",
+        "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
+    )
+
+    # With allow_routine_shim, translates to all four dialects
+    emitted_pg = emit_create_function(routine, Dialect.POSTGRES, allow_routine_shim=True)
+    assert "IMMUTABLE" in emitted_pg
+
+    emitted_mysql = emit_create_function(routine, Dialect.MYSQL, allow_routine_shim=True)
+    assert "DETERMINISTIC" in emitted_mysql
+
+    emitted_oracle = emit_create_function(routine, Dialect.ORACLE, allow_routine_shim=True)
+    assert "DETERMINISTIC" in emitted_oracle
+
+    emitted_tsql = emit_create_function(routine, Dialect.TSQL, allow_routine_shim=True)
+    assert "CREATE FUNCTION dbo.elmos_cas_key" in emitted_tsql
+

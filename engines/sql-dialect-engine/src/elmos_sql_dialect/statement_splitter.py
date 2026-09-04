@@ -142,6 +142,13 @@ def _skip_whitespace(source: str, index: int, line: int) -> tuple[int, int]:
 
 
 def split_statements(source: str, dialect: str | None = None) -> list[RawStatement]:
+    try:
+        from .native_bridge import native_split_statements
+        native_res = native_split_statements(source, dialect)
+        if native_res is not None:
+            return [RawStatement(text=item["text"], start_line=item["start_line"]) for item in native_res]
+    except Exception:
+        pass
     statements: list[RawStatement] = []
     buffer: list[str] = []
     line = 1

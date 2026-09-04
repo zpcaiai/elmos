@@ -35,6 +35,7 @@ function typeName(node) {
   if (!node) throw new Error("TYPESCRIPT_EXPLICIT_TYPE_REQUIRED");
   const value = node.getText(sourceFile);
   if (value === "number") return "number";
+  if (value === "integer") return "integer";
   if (value === "boolean") return "boolean";
   if (value === "string") return "string";
   throw new Error(`TYPESCRIPT_UNSUPPORTED_TYPE:${value}`);
@@ -502,6 +503,44 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
       }
       continue;
     }
+    if (ts.isBreakStatement(node) || ts.isContinueStatement(node)) {
+      continue;
+    }
+    if (ts.isWhileStatement(node)) {
+      validateEmittedArithmeticExpression(node.expression, environment);
+      validateEmittedArithmeticStatements(
+        statementNodes(node.statement),
+        new Map(environment),
+        numericReturnContract,
+        liftedReturn,
+      );
+      continue;
+    }
+    if (ts.isForStatement(node)) {
+      const loopEnv = new Map(environment);
+      if (node.initializer && ts.isVariableDeclarationList(node.initializer)) {
+        const decl = node.initializer.declarations[0];
+        if (decl && ts.isIdentifier(decl.name)) {
+          if (decl.initializer) {
+            validateEmittedArithmeticExpression(decl.initializer, environment);
+          }
+          loopEnv.set(decl.name.text, "integer");
+        }
+      }
+      if (node.condition) {
+        validateEmittedArithmeticExpression(node.condition, loopEnv);
+      }
+      if (node.incrementor && ts.isBinaryExpression(node.incrementor)) {
+        validateEmittedArithmeticExpression(node.incrementor.right, loopEnv);
+      }
+      validateEmittedArithmeticStatements(
+        statementNodes(node.statement),
+        loopEnv,
+        numericReturnContract,
+        liftedReturn,
+      );
+      continue;
+    }
     if (ts.isVariableStatement(node)) {
       const declList = node.declarationList;
       if (!(declList.flags & ts.NodeFlags.Const)) {
@@ -520,8 +559,11 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      const canonicalType = typeName(decl.type);
+      let canonicalType = typeName(decl.type);
       validateEmittedArithmeticExpression(decl.initializer, environment);
+      if (canonicalType === "number" && emittedExpressionType(decl.initializer, environment) === "integer") {
+        canonicalType = "integer";
+      }
       environment.set(decl.name.text, canonicalType);
       continue;
     }
@@ -539,6 +581,83 @@ function statementNodes(node) {
   return ts.isBlock(node) ? [...node.statements] : [node];
 }
 
+function parseForStatement(node, parseExpr, parseStmts) {
+  if (!node.initializer || !ts.isVariableDeclarationList(node.initializer)) {
+    throw new Error("TYPESCRIPT_FOR_INITIALIZER_OUTSIDE_CERTIFIED_SUBSET");
+  }
+  const initList = node.initializer;
+  if ((initList.flags & ts.NodeFlags.Const) || !(initList.flags & ts.NodeFlags.Let)) {
+    throw new Error("TYPESCRIPT_FOR_VARIABLE_MUST_BE_LET");
+  }
+  if (initList.declarations.length !== 1) {
+    throw new Error("TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET");
+  }
+  const decl = initList.declarations[0];
+  if (!ts.isIdentifier(decl.name)) {
+    throw new Error("TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET");
+  }
+  const varName = decl.name.text;
+  if (!decl.type) {
+    throw new Error("TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
+  }
+  const declaredType = typeName(decl.type);
+  if (declaredType !== "number" && declaredType !== "integer") {
+    throw new Error(`TYPESCRIPT_FOR_VARIABLE_TYPE_INVALID:${declaredType}`);
+  }
+  if (!decl.initializer) {
+    throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
+  }
+  const startExpr = parseExpr(decl.initializer);
+
+  if (!node.condition || !ts.isBinaryExpression(node.condition)) {
+    throw new Error("TYPESCRIPT_FOR_CONDITION_NON_MONOTONIC");
+  }
+  if (node.condition.operatorToken.kind !== ts.SyntaxKind.LessThanToken) {
+    throw new Error("TYPESCRIPT_FOR_CONDITION_NON_MONOTONIC");
+  }
+  if (!ts.isIdentifier(node.condition.left) || node.condition.left.text !== varName) {
+    throw new Error("TYPESCRIPT_FOR_CONDITION_NON_MONOTONIC");
+  }
+  const endExpr = parseExpr(node.condition.right);
+
+  if (!node.incrementor) {
+    throw new Error("TYPESCRIPT_FOR_UPDATE_NON_MONOTONIC");
+  }
+  let stepExpr = null;
+  if (
+    (ts.isPostfixUnaryExpression(node.incrementor) || ts.isPrefixUnaryExpression(node.incrementor))
+    && node.incrementor.operator === ts.SyntaxKind.PlusPlusToken
+  ) {
+    if (!ts.isIdentifier(node.incrementor.operand) || node.incrementor.operand.text !== varName) {
+      throw new Error("TYPESCRIPT_FOR_UPDATE_NON_MONOTONIC");
+    }
+  } else if (
+    ts.isBinaryExpression(node.incrementor)
+    && node.incrementor.operatorToken.kind === ts.SyntaxKind.PlusEqualsToken
+  ) {
+    if (!ts.isIdentifier(node.incrementor.left) || node.incrementor.left.text !== varName) {
+      throw new Error("TYPESCRIPT_FOR_UPDATE_NON_MONOTONIC");
+    }
+    stepExpr = parseExpr(node.incrementor.right);
+  } else {
+    throw new Error("TYPESCRIPT_FOR_UPDATE_NON_MONOTONIC");
+  }
+
+  const bodyStmts = parseStmts(statementNodes(node.statement));
+  const res = {
+    kind: "for",
+    name: varName,
+    type: "integer",
+    start: startExpr,
+    end: endExpr,
+    body: bodyStmts,
+  };
+  if (stepExpr !== null) {
+    res.step = stepExpr;
+  }
+  return res;
+}
+
 function sourceStatements(nodes) {
   return nodes.map((node) => {
     if (ts.isReturnStatement(node) && node.expression) {
@@ -551,6 +670,36 @@ function sourceStatements(nodes) {
         then: sourceStatements(statementNodes(node.thenStatement)),
         else: node.elseStatement ? sourceStatements(statementNodes(node.elseStatement)) : [],
       };
+    }
+    if (ts.isWhileStatement(node)) {
+      return {
+        kind: "while",
+        condition: sourceExpression(node.expression),
+        body: sourceStatements(statementNodes(node.statement)),
+      };
+    }
+    if (ts.isForStatement(node)) {
+      return parseForStatement(node, sourceExpression, sourceStatements);
+    }
+    if (ts.isBreakStatement(node)) {
+      if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+      return { kind: "break" };
+    }
+    if (ts.isContinueStatement(node)) {
+      if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+      return { kind: "continue" };
+    }
+    if (ts.isDoStatement(node)) {
+      throw new Error("TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isForOfStatement(node)) {
+      throw new Error("TYPESCRIPT_FOR_OF_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isForInStatement(node)) {
+      throw new Error("TYPESCRIPT_FOR_IN_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isLabeledStatement(node)) {
+      throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
     }
     if (ts.isVariableStatement(node)) {
       const declList = node.declarationList;
@@ -570,7 +719,13 @@ function sourceStatements(nodes) {
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      const canonicalType = typeName(decl.type);
+      let canonicalType = typeName(decl.type);
+      if (canonicalType === "number" && ts.isNumericLiteral(decl.initializer)) {
+        const text = decl.initializer.text;
+        if (!/[.eE]/.test(text)) {
+          canonicalType = "integer";
+        }
+      }
       return {
         kind: "let",
         name: decl.name.text,
@@ -595,6 +750,36 @@ function emittedStatements(nodes) {
         else: node.elseStatement ? emittedStatements(statementNodes(node.elseStatement)) : [],
       };
     }
+    if (ts.isWhileStatement(node)) {
+      return {
+        kind: "while",
+        condition: emittedExpression(node.expression),
+        body: emittedStatements(statementNodes(node.statement)),
+      };
+    }
+    if (ts.isForStatement(node)) {
+      return parseForStatement(node, emittedExpression, emittedStatements);
+    }
+    if (ts.isBreakStatement(node)) {
+      if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+      return { kind: "break" };
+    }
+    if (ts.isContinueStatement(node)) {
+      if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+      return { kind: "continue" };
+    }
+    if (ts.isDoStatement(node)) {
+      throw new Error("TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isForOfStatement(node)) {
+      throw new Error("TYPESCRIPT_FOR_OF_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isForInStatement(node)) {
+      throw new Error("TYPESCRIPT_FOR_IN_OUTSIDE_CERTIFIED_SUBSET");
+    }
+    if (ts.isLabeledStatement(node)) {
+      throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
+    }
     if (ts.isVariableStatement(node)) {
       const declList = node.declarationList;
       if (!(declList.flags & ts.NodeFlags.Const)) {
@@ -613,7 +798,13 @@ function emittedStatements(nodes) {
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      const canonicalType = typeName(decl.type);
+      let canonicalType = typeName(decl.type);
+      if (canonicalType === "number" && ts.isNumericLiteral(decl.initializer)) {
+        const text = decl.initializer.text;
+        if (!/[.eE]/.test(text)) {
+          canonicalType = "integer";
+        }
+      }
       return {
         kind: "let",
         name: decl.name.text,
@@ -632,6 +823,12 @@ function returnExpressions(nodes) {
     if (ts.isIfStatement(node)) {
       values.push(...returnExpressions(statementNodes(node.thenStatement)));
       if (node.elseStatement) values.push(...returnExpressions(statementNodes(node.elseStatement)));
+    }
+    if (ts.isWhileStatement(node)) {
+      values.push(...returnExpressions(statementNodes(node.statement)));
+    }
+    if (ts.isForStatement(node)) {
+      values.push(...returnExpressions(statementNodes(node.statement)));
     }
   }
   return values;

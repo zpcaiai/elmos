@@ -38,6 +38,11 @@ final class SpringCapabilityFingerprint {
             ".git", "target", "build", ".gradle", ".idea", ".vscode", ".elmos", "node_modules");
     private static final Set<String> SOURCE_SUFFIXES = Set.of(
             ".java", ".kt", ".groovy", ".xml", ".properties", ".yml", ".yaml");
+    private static final Pattern NON_STANDARD_STARTER_GRADLE = Pattern.compile(
+            "['\"](?!org\\.springframework\\.boot:)[^'\"]+:(?:spring-boot-starter-[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+-spring-boot-starter)(?::|['\"])");
+    private static final Pattern NON_STANDARD_STARTER_MAVEN = Pattern.compile(
+            "<dependency>\\s*<groupId>(?!org\\.springframework\\.boot<)[^<]+</groupId>\\s*<artifactId>(?:spring-boot-starter-[a-zA-Z0-9_-]+|[a-zA-Z0-9_-]+-spring-boot-starter)</artifactId>",
+            Pattern.DOTALL);
 
     enum EvidenceState {
         OBSERVED("observed"),
@@ -346,7 +351,28 @@ final class SpringCapabilityFingerprint {
                             "\\bApplicationContextInitializer\\b", "application context initializer",
                             "\\bClassPathBeanDefinitionScanner\\b", "programmatic component scanning"),
                     "capture-runtime-bean-graph", "preserve-registration-and-post-processor-order",
-                    "preserve-environment-and-classpath-conditions", "require-safe-runtime-introspection"));
+                    "preserve-environment-and-classpath-conditions", "require-safe-runtime-introspection"),
+            rule("legacy-javax-validation", "validation",
+                    builds("javax.validation", "validation-api"),
+                    sources(
+                            "javax\\.validation\\.", "legacy javax.validation import",
+                            "@(NotNull|NotEmpty|NotBlank|Size|Min|Max|Pattern|Valid)\\b", "legacy validation constraint"),
+                    "migrate-javax-to-jakarta-validation", "verify-validation-message-and-payload"),
+            rule("deprecated-websecurity-adapter", "security",
+                    builds(),
+                    sources(
+                            "\\bWebSecurityConfigurerAdapter\\b", "deprecated WebSecurityConfigurerAdapter"),
+                    "migrate-adapter-to-security-filter-chain", "verify-security-matcher-and-filter-order"),
+            rule("legacy-gradle-configurations", "build",
+                    builds("compile", "testCompile"),
+                    sources(
+                            "(?:^|\\s)(?:compile|testCompile)\\s*[\"'(]", "deprecated Gradle configuration"),
+                    "migrate-compile-to-implementation", "verify-dependency-classpath-visibility"),
+            rule("custom-spring-boot-starter", "integration",
+                    builds(),
+                    sources(
+                            "(?<!org\\.springframework\\.boot:)spring-boot-starter-[a-zA-Z0-9_-]+", "third-party or custom Spring Boot starter"),
+                    "verify-starter-boot3-compatibility", "check-jakarta-namespace-compatibility"));
 
     private SpringCapabilityFingerprint() {}
 
@@ -371,6 +397,25 @@ final class SpringCapabilityFingerprint {
                             List.of());
                 }
             }
+        }
+
+        Matcher starterGradle = NON_STANDARD_STARTER_GRADLE.matcher(safeBuildModel);
+        while (starterGradle.find()) {
+            int line = lineNumber(safeBuildModel, starterGradle.start());
+            facts.get("custom-spring-boot-starter").add(
+                    EvidenceState.DECLARED_ONLY,
+                    trace(EvidenceState.DECLARED_ONLY, "build-model", safeBuildName, line,
+                            starterGradle.group(), List.of()),
+                    List.of());
+        }
+        Matcher starterMaven = NON_STANDARD_STARTER_MAVEN.matcher(safeBuildModel);
+        while (starterMaven.find()) {
+            int line = lineNumber(safeBuildModel, starterMaven.start());
+            facts.get("custom-spring-boot-starter").add(
+                    EvidenceState.DECLARED_ONLY,
+                    trace(EvidenceState.DECLARED_ONLY, "build-model", safeBuildName, line,
+                            starterMaven.group(), List.of()),
+                    List.of());
         }
 
         for (Path file : sourceFiles(root)) {
@@ -453,6 +498,18 @@ final class SpringCapabilityFingerprint {
         }
         if (containsTrace(traces, "transactions", "multi-resource transaction manager")) {
             unknowns.add("multi-resource-transaction-semantics-require-provider-contract");
+        }
+        if (traces.containsKey("legacy-javax-validation")) {
+            unknowns.add("legacy-javax-validation-requires-jakarta-migration");
+        }
+        if (traces.containsKey("deprecated-websecurity-adapter")) {
+            unknowns.add("deprecated-websecurity-adapter-requires-security-filter-chain");
+        }
+        if (traces.containsKey("legacy-gradle-configurations")) {
+            unknowns.add("legacy-gradle-configurations-require-modernization");
+        }
+        if (traces.containsKey("custom-spring-boot-starter")) {
+            unknowns.add("custom-spring-boot-starter-requires-compatibility-verification");
         }
         return new Analysis(active, unknowns.stream().toList(), traces, immutableFacts,
                 SpringFeatureCatalog.merge(List.of(), features));
@@ -785,7 +842,8 @@ final class SpringCapabilityFingerprint {
     }
 
     private static String domainFor(String id) {
-        if (id.equals("authentication") || id.equals("authorization") || id.equals("security")) return "security";
+        if (id.equals("authentication") || id.equals("authorization") || id.equals("security")
+                || id.equals("deprecated-websecurity-adapter")) return "security";
         if (id.startsWith("persistence") || id.startsWith("database-provider")) return "persistence";
         if (id.equals("transactions")) return "transaction";
         if (id.startsWith("messaging")) return "messaging";
@@ -793,9 +851,11 @@ final class SpringCapabilityFingerprint {
         if (id.equals("scheduler")) return "scheduler";
         if (id.equals("spring-mvc") || id.equals("spring-mvc-xml")
                 || id.equals("servlet-initializer") || id.equals("web")) return "web";
-        if (id.equals("validation")) return "validation";
+        if (id.equals("validation") || id.equals("legacy-javax-validation")) return "validation";
         if (id.equals("actuator")) return "operations";
         if (id.equals("dynamic-spring-registration")) return "lifecycle";
+        if (id.equals("legacy-gradle-configurations")) return "build";
+        if (id.equals("custom-spring-boot-starter")) return "integration";
         return "build-or-framework";
     }
 

@@ -1002,14 +1002,14 @@ def _render_routine_value(
     raise TypeError(f"unhandled routine IR node: {type(value).__name__}")  # pragma: no cover
 
 
-def _require_emittable(routine: Routine, target_dialect: Dialect) -> None:
+def _require_emittable(routine: Routine, target_dialect: Dialect, allow_routine_shim: bool = False) -> None:
     if routine.or_replace:
         if target_dialect not in (Dialect.POSTGRES, Dialect.ORACLE):
             raise DialectError(
                 "CERTIFIED_ROUTINE_REPLACE_UNSUPPORTED_BY_TARGET",
                 f"{target_dialect.value} has no exact CREATE OR REPLACE FUNCTION spelling",
             )
-    if routine.strict:
+    if routine.strict and not allow_routine_shim:
         raise DialectError(
             "CERTIFIED_ROUTINE_STRICT_UNSUPPORTED_BY_TARGET",
             "PostgreSQL STRICT null short-circuiting is routine metadata; this profile does not "
@@ -1021,7 +1021,7 @@ def _require_emittable(routine: Routine, target_dialect: Dialect) -> None:
             "SECURITY DEFINER and SET search_path bind execution identity and name resolution; "
             "no target security mapping was authorized for this route",
         )
-    if routine.stability is not None:
+    if routine.stability is not None and not allow_routine_shim:
         raise DialectError(
             "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
             f"{routine.stability.value} is not one exact cross-dialect routine contract; "
@@ -1039,9 +1039,9 @@ def _require_emittable(routine: Routine, target_dialect: Dialect) -> None:
         )
 
 
-def emit_create_function(routine: Routine, target_dialect: Dialect) -> str:
+def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routine_shim: bool = False) -> str:
     """Emit one scalar SQL function in native target syntax."""
-    _require_emittable(routine, target_dialect)
+    _require_emittable(routine, target_dialect, allow_routine_shim=allow_routine_shim)
     assert routine.return_type is not None and routine.body is not None
 
     def routine_type(type_ref: CanonicalTypeRef) -> str:
@@ -1095,15 +1095,25 @@ def emit_create_function(routine: Routine, target_dialect: Dialect) -> str:
     tsql_variables = target_dialect is Dialect.TSQL
     if isinstance(routine.body, RoutineSelectBody):
         value = _render_routine_value(routine.body.expression, target_dialect, tsql_parameters=tsql_variables)
+        if routine.strict and allow_routine_shim and target_dialect is not Dialect.POSTGRES and routine.parameters:
+            null_cond = " OR ".join(
+                f"{('@' if tsql_variables else '') + quote_identifier(p.name, target_dialect)} IS NULL"
+                for p in routine.parameters
+            )
+            value = f"CASE WHEN {null_cond} THEN NULL ELSE {value} END"
         if target_dialect is Dialect.POSTGRES:
+            det = f" {routine.stability.value}" if routine.stability is not None else ""
+            strict_clause = " STRICT" if routine.strict else ""
             return (
                 f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} "
-                f"LANGUAGE SQL AS $$ SELECT {value} $$"
+                f"LANGUAGE SQL{det}{strict_clause} AS $$ SELECT {value} $$"
             )
         if target_dialect is Dialect.MYSQL:
-            return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} RETURN {value}"
+            det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
+            return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det} RETURN {value}"
         if target_dialect is Dialect.ORACLE:
-            return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type} IS BEGIN RETURN {value}; END;"
+            det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
+            return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det} IS BEGIN RETURN {value}; END;"
         return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} AS BEGIN RETURN {value} END"
 
     body = routine.body
@@ -1117,7 +1127,6 @@ def emit_create_function(routine: Routine, target_dialect: Dialect) -> str:
             elif variable.default.kind is DefaultKind.CURRENT_TIMESTAMP:
                 default_value = "CURRENT_TIMESTAMP"
             elif variable.default.kind is DefaultKind.STRING:
-                assert default_value is not None
                 default_value = "'" + default_value.replace("'", "''") + "'"
             elif variable.default.kind is DefaultKind.BOOLEAN and target_dialect in (Dialect.ORACLE, Dialect.TSQL):
                 default_value = "1" if default_value == "true" else "0"
@@ -1143,18 +1152,28 @@ def emit_create_function(routine: Routine, target_dialect: Dialect) -> str:
         else:
             assignments.append(f"{left} := {right};")
     returned = _render_routine_value(body.return_expression, target_dialect, tsql_parameters=tsql_variables)
+    if routine.strict and allow_routine_shim and target_dialect is not Dialect.POSTGRES and routine.parameters:
+        null_cond = " OR ".join(
+            f"{('@' if tsql_variables else '') + quote_identifier(p.name, target_dialect)} IS NULL"
+            for p in routine.parameters
+        )
+        returned = f"CASE WHEN {null_cond} THEN NULL ELSE {returned} END"
     if target_dialect is Dialect.POSTGRES:
         declaration_sql = " ".join(item + ";" for item in declarations)
+        det = f" {routine.stability.value}" if routine.stability is not None else ""
+        strict_clause = " STRICT" if routine.strict else ""
         return (
-            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} LANGUAGE plpgsql AS $$ "
+            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} LANGUAGE plpgsql{det}{strict_clause} AS $$ "
             f"DECLARE {declaration_sql} BEGIN {' '.join(assignments)} RETURN {returned}; END $$"
         )
     if target_dialect is Dialect.MYSQL:
-        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} BEGIN " \
+        det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
+        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det} BEGIN " \
             + " ".join(f"DECLARE {item};" for item in declarations) \
             + " " + " ".join(assignments) + f" RETURN {returned}; END"
     if target_dialect is Dialect.ORACLE:
-        return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type} IS " \
+        det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
+        return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det} IS " \
             + " ".join(item + ";" for item in declarations) \
             + " BEGIN " + " ".join(assignments) + f" RETURN {returned}; END;"
     return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} AS BEGIN " \

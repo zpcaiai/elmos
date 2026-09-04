@@ -1431,12 +1431,89 @@ def _statements(
                     lines.append(f"{prefix}}}")
             else:
                 lines.append(f"{prefix}if ({condition}) {{")
-                lines.extend(_statements(context, statement.then_body, environment, indent + 1, return_type))
+                lines.extend(_statements(context, statement.then_body, dict(environment), indent + 1, return_type))
                 lines.append(f"{prefix}}}")
                 if statement.else_body:
                     lines.append(f"{prefix}else {{")
                     lines.extend(_statements(context, statement.else_body, dict(environment), indent + 1, return_type))
                     lines.append(f"{prefix}}}")
+            continue
+        if statement.kind == "while" and statement.condition is not None:
+            condition = _expression(context, statement.condition, environment, top_level=True)
+            if language == "python":
+                lines.append(f"{prefix}while {condition}:")
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+            elif language == "go":
+                lines.append(f"{prefix}for {condition} {{")
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language in {"rust", "swift"}:
+                lines.append(f"{prefix}while {condition} {{")
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            else:
+                lines.append(f"{prefix}while ({condition}) {{")
+                lines.extend(_statements(context, statement.body, dict(environment), indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            continue
+        if statement.kind == "for":
+            if statement.name is None or statement.start is None or statement.end is None:
+                raise RouteError("UNSUPPORTED_EMISSION_STATEMENT:for")
+            var_name = _variable(language, statement.name)
+            start = _expression(context, statement.start, environment, top_level=True)
+            end = _expression(context, statement.end, environment, top_level=True)
+            step = _expression(context, statement.step, environment, top_level=True) if statement.step is not None else None
+            loop_env = dict(environment)
+            loop_env[statement.name] = "integer"
+            inc = f"{var_name}++" if step is None else f"{var_name} += {step}"
+            if language == "python":
+                range_expr = f"range({start}, {end})" if step is None else f"range({start}, {end}, {step})"
+                lines.append(f"{prefix}for {var_name} in {range_expr}:")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+            elif language == "go":
+                lines.append(f"{prefix}for {var_name} := int64({start}); {var_name} < {end}; {inc} {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language == "rust":
+                range_expr = f"{start}..{end}" if step is None else f"({start}..{end}).step_by({step} as usize)"
+                lines.append(f"{prefix}for {var_name} in {range_expr} {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language == "swift":
+                range_expr = f"{start}..<{end}" if step is None else f"stride(from: {start}, to: {end}, by: {step})"
+                lines.append(f"{prefix}for {var_name} in {range_expr} {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language == "kotlin":
+                range_expr = f"{start} until {end}" if step is None else f"{start} until {end} step {step}"
+                lines.append(f"{prefix}for ({var_name} in {range_expr}) {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language in {"typescript", "react"}:
+                lines.append(f"{prefix}for (let {var_name}: number = {start}; {var_name} < {end}; {inc}) {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language == "javascript":
+                lines.append(f"{prefix}for (let {var_name} = {start}; {var_name} < {end}; {inc}) {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            elif language == "php":
+                lines.append(f"{prefix}for ({var_name} = {start}; {var_name} < {end}; {inc}) {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            else:
+                type_spelling = _type(language, "integer")
+                lines.append(f"{prefix}for ({type_spelling} {var_name} = {start}; {var_name} < {end}; {inc}) {{")
+                lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
+                lines.append(f"{prefix}}}")
+            continue
+        if statement.kind == "break":
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
+            lines.append(f"{prefix}break{suffix}")
+            continue
+        if statement.kind == "continue":
+            suffix = ";" if language in _SEMICOLON_LANGUAGES else ""
+            lines.append(f"{prefix}continue{suffix}")
             continue
         raise RouteError(f"UNSUPPORTED_EMISSION_STATEMENT:{statement.kind}")
     return lines

@@ -11,6 +11,11 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any, Dict, List, Mapping, Optional
 
+try:
+    from .native_contract_diff_bridge import diff_specs_native
+except Exception:
+    diff_specs_native = None
+
 
 _METHODS = frozenset(
     {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS", "TRACE"}
@@ -152,6 +157,33 @@ class ApiContractDiffer:
         started = time.perf_counter()
         source_endpoints = _validate_spec(source_spec, "source_spec")
         target_endpoints = _validate_spec(target_spec, "target_spec")
+
+        if diff_specs_native is not None:
+            try:
+                native_rep = diff_specs_native(source_spec, target_spec)
+                if native_rep and "changes" in native_rep:
+                    items = [
+                        ContractDiffItem(
+                            endpoint=c["endpoint"],
+                            category=c["category"],
+                            severity=c["severity"],
+                            description=c["description"],
+                            field_name=c.get("field_name"),
+                        )
+                        for c in native_rep["changes"]
+                    ]
+                    return ContractDiffReport(
+                        total_changes=native_rep["total_changes"],
+                        breaking_changes_count=native_rep["breaking_changes_count"],
+                        warnings_count=native_rep["warnings_count"],
+                        non_breaking_count=native_rep["non_breaking_count"],
+                        is_backward_compatible=native_rep["is_backward_compatible"],
+                        duration_ms=round((time.perf_counter() - started) * 1000, 3),
+                        changes=items,
+                    )
+            except Exception:
+                pass
+
         changes: List[ContractDiffItem] = []
 
         for endpoint_key, source_endpoint in source_endpoints.items():

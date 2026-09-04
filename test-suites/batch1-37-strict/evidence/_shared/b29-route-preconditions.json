@@ -1,8 +1,11 @@
 {
   "route": "routes/java-to-csharp",
-  "preconditions_met": true,
+  "preconditions_met": false,
   "checks_total": 6,
-  "blocked_by": [],
+  "blocked_by": [
+    "route-contract-validates",
+    "route-gate-runs"
+  ],
   "checks": [
     {
       "check": "route-contract-present",
@@ -11,13 +14,13 @@
     },
     {
       "check": "route-contract-validates",
-      "ok": true,
-      "detail": "OK: routes/java-to-csharp"
+      "ok": false,
+      "detail": "ERROR: engine source manifest live file drifted: scripts/operations/validate_translation_route_matrix.py"
     },
     {
       "check": "route-gate-runs",
-      "ok": true,
-      "detail": "GATE PASS: java-to-csharp status=limited decision=NOT_CERTIFIED"
+      "ok": false,
+      "detail": "GATE WALL: 2.480s"
     },
     {
       "check": "route-corpora-present",

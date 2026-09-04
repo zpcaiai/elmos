@@ -12,6 +12,8 @@ import time
 from dataclasses import asdict, dataclass
 from typing import Any, Callable, Dict, List, Optional
 
+from . import native_mutation_bridge
+
 
 @dataclass
 class Mutant:
@@ -154,6 +156,20 @@ def run_mutation_testing(
     source_code: str = "public int calculateDiscount(int price) { if (price > 100) return price - 20; return price; }",
 ) -> Dict[str, Any]:
     """Execute mutation testing and return JSON report."""
+    if native_mutation_bridge.is_native_available():
+        native_res = native_mutation_bridge.native_evaluate_mutants(source_code)
+        if native_res is not None:
+            score = native_res.get("mutation_score", 1.0)
+            return {
+                "status": "MUTATION_TEST_PASSED" if score >= 0.8 else "MUTATION_SCORE_LOW",
+                "source_digest": native_res.get("source_digest", ""),
+                "mutation_score": score,
+                "total_mutants": native_res.get("total_mutants", 0),
+                "killed_mutants": native_res.get("killed_mutants", 0),
+                "survived_mutants": native_res.get("survived_mutants", 0),
+                "duration_ms": native_res.get("analysis_duration_ms", 0.0),
+                "mutants": native_res.get("mutants", []),
+            }
     report = _mutation_engine.evaluate_mutants(source_code)
     return {
         "status": "MUTATION_TEST_PASSED" if report.mutation_score >= 0.8 else "MUTATION_SCORE_LOW",

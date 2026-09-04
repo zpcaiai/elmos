@@ -3,36 +3,29 @@
   "pack_key": "postgresql-17-5-self-service-billing",
   "capabilities": [
     {
-      "id": "postgresql-local-empty-schema-replay",
-      "status": "experimental",
-      "owner": "elmos-database-platform",
-      "evidence_refs": [
-        "modules/persistence/src/test/java/io/elmos/persistence/JdbcSelfServiceBillingLiveTest.java"
-      ],
-      "reason": "Real local PostgreSQL 17.5 is exercised; independent execution is NOT_RUN."
-    },
-    {
-      "id": "tenant-rls-and-concurrent-hard-stop",
-      "status": "experimental",
+      "id": "schema-type-constraint",
       "owner": "elmos-commercial-billing",
+      "status": "experimental",
+      "reason": "Typed CNY money, integer Token/Credit quantities, row-locked quota admission, append-only facts, trial lifecycle, payment reconciliation and tenant RLS. Local evidence passes; independent certification is NOT_RUN.",
       "evidence_refs": [
-        "modules/persistence/src/main/resources/db/migration/V49__self_service_billing_and_usage.sql"
-      ],
-      "reason": "Local negative and concurrent workloads pass; production workload remains NOT_RUN."
+        "certification/evidence.json"
+      ]
     },
     {
-      "id": "neon-production-migration",
-      "status": "blocked",
-      "owner": "elmos-database-platform",
-      "evidence_refs": [],
-      "reason": "Exact Neon project, branch, database, credentials and approval are not configured."
+      "id": "tenant-isolation-rls",
+      "owner": "elmos-commercial-billing",
+      "status": "experimental",
+      "reason": "Tenant isolation via PostgreSQL RLS policies. Local evidence passes; independent certification is NOT_RUN.",
+      "evidence_refs": [
+        "certification/evidence.json"
+      ]
     },
     {
-      "id": "production-cutover-and-rollback",
+      "id": "neon-production-cutover",
+      "owner": "elmos-commercial-billing",
       "status": "blocked",
-      "owner": "NOT_ASSIGNED",
-      "evidence_refs": [],
-      "reason": "Requires accountable data owner, approved window and independent verification."
+      "reason": "Requires Neon cloud credential lease, production workflow approval, and live reconciliation.",
+      "evidence_refs": []
     }
   ]
 }

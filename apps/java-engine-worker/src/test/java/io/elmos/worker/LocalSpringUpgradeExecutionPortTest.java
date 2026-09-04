@@ -513,6 +513,24 @@ class LocalSpringUpgradeExecutionPortTest {
                         "unix:ino"));
     }
 
+    @Test void gradleInitScriptInjectsOpenRewritePluginAndRecipesDynamically() throws Exception {
+        Path root = temporaryDirectory.resolve("gradle-project");
+        Files.createDirectories(root);
+        Path recipe = root.resolve(".elmos/rewrite.yml");
+        Files.createDirectories(recipe.getParent());
+        Files.writeString(recipe, "type: specs.openrewrite.org/v1beta/recipe\\nname: test");
+
+        Path script = LocalSpringUpgradeExecutionPort.installGradleRewriteInitScript(root, recipe);
+        assertTrue(Files.exists(script));
+        String content = Files.readString(script);
+
+        assertTrue(content.contains("initscript {"));
+        assertTrue(content.contains("classpath \"org.openrewrite:plugin:6.44.0\""));
+        assertTrue(content.contains("p.apply plugin: org.openrewrite.gradle.RewritePlugin"));
+        assertTrue(content.contains("add(\"rewrite\", \"org.openrewrite.recipe:rewrite-spring:6.8.0\")"));
+        assertTrue(content.contains("add(\"rewrite\", \"io.elmos:elmos-java-recipes:0.1.0-SNAPSHOT\")"));
+    }
+
     private static void makeReadOnly(Path root) throws Exception {
         try (var paths = Files.walk(root)) {
             for (Path path : paths.sorted(java.util.Comparator.reverseOrder()).toList()) {

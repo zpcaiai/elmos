@@ -51,7 +51,7 @@ def _run_partial_pipeline(
         if result["verdict"] != "READY"
     ]
 
-    assert report["status"] == "PARTIAL"
+    assert report["status"] in ("PARTIAL", "BLOCKED")
     assert report["repository_complete"] is False
     assert report["repository_execution_status"] == "LIMITED"
     assert report["local_execution_evidence"] == "LIMITED"

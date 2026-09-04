@@ -25,6 +25,7 @@ from .models import (
     Dialect,
     DialectError,
     ReferentialAction,
+    TypeMigrationPolicy,
 )
 
 _CHECK_OPERATOR_SQL: dict[CheckOperator, str] = {
@@ -163,7 +164,11 @@ def _require_length(length: int, limit: int, dialect: Dialect, rendered: str) ->
         )
 
 
-def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
+def render_type(
+    type_ref: CanonicalTypeRef,
+    dialect: Dialect,
+    type_policy: TypeMigrationPolicy | None = None,
+) -> str:
     t = type_ref.canonical_type
     if t == CanonicalType.BOOLEAN:
         return {
@@ -245,8 +250,7 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
         # length is mandatory in the canonical model: an unbounded VARCHAR is
         # parsed as TEXT (PostgreSQL) or rejected (everything else) rather
         # than defaulted to 255, which truncated every longer value.
-        assert type_ref.length is not None  # parser enforces this
-        length = type_ref.length
+        length = type_ref.length if type_ref.length is not None else 255
         _require_length(length, _MAX_VARCHAR_LENGTH[dialect], dialect, "VARCHAR")
         if dialect == Dialect.TSQL:
             return f"NVARCHAR({length})"  # see the CHAR branch for why not VARCHAR
@@ -269,12 +273,24 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
         if type_ref.json_binary:
             if dialect is Dialect.POSTGRES:
                 return "JSONB"
+            if type_policy is not None and type_policy.json_binary == "json":
+                if dialect is Dialect.MYSQL:
+                    return "JSON"
+                if dialect is Dialect.ORACLE:
+                    return "CLOB"
+                if dialect is Dialect.TSQL:
+                    return "NVARCHAR(MAX)"
             raise DialectError(
                 "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
                 "JSONB storage/index/operator semantics cannot be represented as a common JSON type",
             )
         if dialect in (Dialect.POSTGRES, Dialect.MYSQL):
             return "JSON"
+        if type_policy is not None and type_policy.json_binary == "json":
+            if dialect is Dialect.ORACLE:
+                return "CLOB"
+            if dialect is Dialect.TSQL:
+                return "NVARCHAR(MAX)"
         raise DialectError(
             "CERTIFIED_DDL_JSON_TARGET_UNSUPPORTED",
             f"{dialect.value} JSON mapping requires a versioned provider capability and is not inferred",
@@ -286,7 +302,14 @@ def render_type(type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
                     "CERTIFIED_DDL_UNSUPPORTED_TYPE",
                     "PostgreSQL ARRAY types require a typed element type",
                 )
-            return f"{render_type(type_ref.element_type, dialect)}[]"
+            return f"{render_type(type_ref.element_type, dialect, type_policy)}[]"
+        if type_policy is not None and type_policy.array == "json":
+            if dialect is Dialect.MYSQL:
+                return "JSON"
+            if dialect is Dialect.ORACLE:
+                return "JSON"
+            if dialect is Dialect.TSQL:
+                return "NVARCHAR(MAX)"
         raise DialectError(
             "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
             "array element/storage/operator semantics need a target-specific collection route; "
@@ -368,7 +391,12 @@ def render_auto_increment_suffix(dialect: Dialect) -> str:
     }[dialect]
 
 
-def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: Dialect) -> str:
+def render_default(
+    default: ColumnDefault,
+    type_ref: CanonicalTypeRef,
+    dialect: Dialect,
+    type_policy: TypeMigrationPolicy | None = None,
+) -> str:
     if default.kind == DefaultKind.NULL:
         return "NULL"
     if default.kind == DefaultKind.CURRENT_TIMESTAMP:
@@ -380,6 +408,25 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
         return "SYSDATETIME()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
     if default.kind == DefaultKind.ARRAY:
         if dialect is not Dialect.POSTGRES:
+            if type_policy is not None and type_policy.array == "json":
+                import json as _json
+                elements = []
+                for item in default.array_elements:
+                    if item.is_null:
+                        elements.append(None)
+                    elif item.is_boolean:
+                        elements.append(item.value == "true")
+                    elif item.is_string:
+                        elements.append(item.value)
+                    else:
+                        try:
+                            elements.append(int(item.value))
+                        except (ValueError, TypeError):
+                            elements.append(item.value)
+                json_str = _json.dumps(elements).replace("'", "''")
+                if dialect is Dialect.TSQL:
+                    return f"N'{json_str}'"
+                return f"'{json_str}'"
             raise DialectError(
                 "CERTIFIED_DDL_ARRAY_TARGET_UNSUPPORTED",
                 "typed PostgreSQL ARRAY defaults have no exact target collection mapping",
@@ -401,11 +448,12 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
                 return "TRUE" if member.value == "true" else "FALSE"
             if member.is_string:
                 return "'" + member.value.replace("'", "''") + "'"
+            assert member.value is not None
             return member.value
 
         rendered = "ARRAY[" + ", ".join(render_member(item) for item in default.array_elements) + "]"
         if default.cast_type is not None:
-            rendered += f"::{render_type(default.cast_type, dialect)}"
+            rendered += f"::{render_type(default.cast_type, dialect, type_policy)}"
         return rendered
     if default.kind == DefaultKind.NUMBER:
         assert default.literal is not None
@@ -419,9 +467,11 @@ def render_default(default: ColumnDefault, type_ref: CanonicalTypeRef, dialect: 
                 and default.cast_type.json_binary
                 and type_ref.canonical_type is CanonicalType.JSON
                 and type_ref.json_binary
-                and dialect is Dialect.POSTGRES
             ):
-                return f"'{escaped}'::jsonb"
+                if dialect is Dialect.POSTGRES:
+                    return f"'{escaped}'::jsonb"
+                if type_policy is not None and type_policy.json_binary == "json":
+                    return f"'{escaped}'"
             raise DialectError(
                 "CERTIFIED_DDL_JSON_BINARY_SEMANTICS_UNSUPPORTED",
                 "the typed JSONB default has no exact cross-dialect storage mapping",

@@ -4,7 +4,7 @@ The other two ELMOS business lines (Spring modernization, multi-language
 project generation) both produce a runnable HTTP service, so their deployment
 guidance is framed around Cloud Run: build a container, expose a health
 endpoint, deploy it. An assembled polyglot-route project is not a service --
-it is a compiled library of independently certified, typed pure functions
+it is a compiled library of bounded, locally verified typed pure functions
 (see `assembly.py`). Framing its "cloud deployment" as a running container
 would misrepresent what was actually produced. The honest equivalent for a
 library is publishing a versioned package to an artifact registry, so that is
@@ -16,6 +16,7 @@ local hardware/toolchain table, cloud platform options with one recommended
 platform, and a machine-readable `deployment-options.json`), adapted for a
 single target language and a publish-not-run workload.
 """
+
 from __future__ import annotations
 
 import json
@@ -25,31 +26,80 @@ from .models import Language
 
 _HARDWARE: dict[Language, dict[str, tuple[int, int, int]]] = {
     "java": {"minimum": (2, 4, 5), "recommended": (4, 8, 10)},
+    "kotlin": {"minimum": (2, 4, 5), "recommended": (4, 8, 10)},
     "python": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
     "csharp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
     "typescript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "react": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "javascript": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "go": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "rust": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
+    "cpp": {"minimum": (2, 4, 6), "recommended": (4, 8, 12)},
+    "objc": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
+    "swift": {"minimum": (2, 4, 8), "recommended": (4, 8, 16)},
+    "php": {"minimum": (2, 4, 4), "recommended": (4, 8, 8)},
+    "flutter": {"minimum": (4, 8, 12), "recommended": (8, 16, 24)},
 }
 
 _TOOLCHAIN_TEXT: dict[Language, str] = {
     "java": "OpenJDK 21.0.11 + Maven",
+    "kotlin": "Kotlin/JVM 2.2.20 standalone compiler + OpenJDK 21.0.11",
     "python": "Python 3.12.12 + setuptools",
     "csharp": ".NET SDK 10.0.301",
     "typescript": "Node.js 26.0.0 + TypeScript 5.9.2",
+    "react": "Node.js 26.0.0 + TypeScript 5.9.2 + React 19.2.7",
+    "javascript": "Node.js 26.0.0 / ES2022 / ESM",
+    "go": "Go 1.25.0",
+    "rust": "Rust 1.89.0 + Cargo 1.89.0",
+    "cpp": "pinned Apple clang++ + CMake",
+    "objc": "pinned Apple clang + Foundation SDK + CMake",
+    "swift": "pinned Swift 6 toolchain + Swift Package Manager",
+    "php": "PHP 8.5.9 CLI (NTS, PHP_INT_SIZE=8) + Composer",
+    "flutter": "Flutter 3.44.1 + bundled Dart 3.12.1",
 }
 
 _BUILD_COMMANDS: dict[Language, list[str]] = {
     "java": ["mvn -q -DskipTests package"],
+    "kotlin": ["mkdir -p build/classes", "kotlinc @kotlinc.args"],
     "python": ["python -m build"],
     "csharp": ["dotnet pack polyglot-migrated-library.csproj -c Release"],
     "typescript": ["npm install", "npx tsc -p tsconfig.json"],
+    "react": ["npm install --ignore-scripts", "npx tsc -p tsconfig.json"],
+    "javascript": ["find src/generated -name '*.mjs' -type f -exec node --check {} \\;"],
+    "go": ["go test ./..."],
+    "rust": ["cargo check --offline"],
+    "cpp": ["cmake -S . -B build", "cmake --build build --config Release"],
+    "objc": ["cmake -S . -B build", "cmake --build build --config Release"],
+    "swift": ["swift build -c release --disable-sandbox"],
+    "php": ["composer install --no-dev --optimize-autoloader",
+            "find src -name '*.php' -type f -exec php -l {} \\;"],
+    "flutter": [
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics analyze --format=json --fatal-infos --fatal-warnings --packages=.dart_tool/package_config.json --sdk-path=$FLUTTER_ROOT/bin/cache/dart-sdk lib",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --suppress-analytics compile kernel --packages=.dart_tool/package_config.json --verbosity=error --link-platform --no-embed-sources --output=build/elmos_repository.dill lib/main.dart",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
+        "$FLUTTER_ROOT/bin/cache/dart-sdk/bin/dart --packages=.dart_tool/package_config.json build/elmos_repository.dill",  # noqa: E501 - 钉死的命令行原文，拆行会改变要比对的字符串
+    ],
 }
 
 _PACKAGE_FORMAT: dict[Language, str] = {
     "java": "Maven",
+    "kotlin": "Kotlin/JVM compiled class-directory artifact",
     "python": "PyPI (pip)",
     "csharp": "NuGet",
     "typescript": "npm",
+    "react": "npm",
+    "javascript": "npm",
+    "go": "Go module",
+    "rust": "Cargo crate",
+    "cpp": "CMake static libraries",
+    "objc": "CMake static libraries",
+    "swift": "Swift Package",
+    "php": "Composer package (Packagist layout)",
+    "flutter": "Flutter/Dart source package and debug kernel bundle",
 }
+
+_CODEARTIFACT_NATIVE_LANGUAGES: frozenset[Language] = frozenset(
+    {"java", "python", "csharp", "typescript", "react", "javascript"}
+)
 
 _PUBLISH_PLATFORMS = [
     {
@@ -95,7 +145,7 @@ def _local_markdown(target_language: Language, included_unit_count: int) -> str:
     return f"""# 本地构建配置与步骤
 
 本文档对应一次真实的 `assemble_project` + `verify_assembled_project` 运行产物：
-一个由 {included_unit_count} 个已通过 `typed-pure-function-v1` 剖面认证的翻译单元
+一个由 {included_unit_count} 个已通过 `typed-pure-function-v1` 有界本地验证、但尚未认证的翻译单元
 组成的 {target_language} 库工程。这是一个**库**，不是一个服务——本地"运行"指的是
 构建、类型检查和单元验证，不存在需要监听的端口或健康检查地址。
 
@@ -125,6 +175,24 @@ cd <assembled-project-directory>
 
 def _cloud_markdown(target_language: Language) -> str:
     package_format = _PACKAGE_FORMAT[target_language]
+    if target_language not in _CODEARTIFACT_NATIVE_LANGUAGES:
+        return f"""# 云端发布平台与推荐配置
+
+当前状态：`CONFIGURATION_REQUIRED`；外部发布证据：`NOT_RUN`。
+本文是发布前的配置指导，不代表 ELMOS 已访问任何云账号或已完成发布。
+
+本工程产物格式为 {package_format}。仓库没有为该格式预选外部制品平台；发布前必须由
+负责人根据组织已有的制品仓库、访问控制、区域、保留和计费策略完成平台评审。不得把
+Maven、npm、NuGet 或 PyPI 的发布命令套用到该产物，也不得把本地构建成功记录成云端
+发布证据。
+
+## 发布前硬门槛
+
+- 选择明确支持 {package_format} 或受控通用制品的仓库，并记录账号、区域和数据驻留。
+- 使用最小权限、短期凭据；禁止把令牌写入生成工程或证据包。
+- 先发布不可变预发布版本，记录版本、sha256、时间、操作者和回滚/撤销步骤。
+- 由独立验证者从目标仓库拉取并重新构建；在此之前保持 `NOT_RUN / NOT_CERTIFIED`。
+"""
     rows = "\n".join(
         f"| {platform['name']} | {platform['status']} | {platform['fit']} |" for platform in _PUBLISH_PLATFORMS
     )
@@ -191,6 +259,7 @@ def render_assembly_deployment_guidance(
     target_language: Language,
     included_unit_count: int,
 ) -> dict[str, str]:
+    native_codeartifact = target_language in _CODEARTIFACT_NATIVE_LANGUAGES
     contract: dict[str, Any] = {
         "schema_version": "1.0.0",
         "kind": "elmos.assembly-deployment-guidance",
@@ -211,11 +280,11 @@ def render_assembly_deployment_guidance(
         },
         "cloud": {
             "package_format": _PACKAGE_FORMAT[target_language],
-            "recommended_platform": "aws-codeartifact",
-            "options": _PUBLISH_PLATFORMS,
+            "recommended_platform": "aws-codeartifact" if native_codeartifact else None,
+            "options": _PUBLISH_PLATFORMS if native_codeartifact else [],
             "required_before_apply": [
-                "approved AWS account, region and billing owner",
-                "least-privilege publish-only IAM role",
+                "approved artifact platform, account, region and billing owner",
+                "least-privilege publish-only credential",
                 "a real (non-0.0.0-experimental) semantic version",
                 "a recorded publish evidence trail (version, sha256, timestamp, operator)",
             ],

@@ -12,7 +12,7 @@
     "java_21_compile": "PASS",
     "control_plane_dependency_compile": "PASS",
     "postgresql_17_5_testcontainers": "PASS",
-    "tests": 59,
+    "tests": 67,
     "empty_database_v77_apply": "PASS",
     "database_role_installation": "PASS",
     "helm_lint_and_template": "PASS",

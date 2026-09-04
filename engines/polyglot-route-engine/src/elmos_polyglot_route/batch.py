@@ -89,7 +89,11 @@ def _rewrite_checkpoint(path: Path, entries: list[dict[str, Any]]) -> None:
     temporary = path.with_suffix(f"{path.suffix}.tmp")
     if temporary.is_symlink() or (temporary.exists() and not temporary.is_file()):
         raise RouteError("BATCH_CHECKPOINT_UNSAFE")
-    payload = "".join(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n" for entry in entries)
+    clean_entries = [
+        {k: v for k, v in entry.items() if k != "resumed_from_checkpoint"}
+        for entry in entries
+    ]
+    payload = "".join(json.dumps(entry, ensure_ascii=False, sort_keys=True) + "\n" for entry in clean_entries)
     temporary.write_text(payload, encoding="utf-8")
     temporary.replace(path)
 

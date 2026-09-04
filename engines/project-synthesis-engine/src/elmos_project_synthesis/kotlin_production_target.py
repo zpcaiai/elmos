@@ -12,7 +12,7 @@ import json
 from importlib.resources import files
 
 from .container_images import GRADLE_IMAGE, TEMURIN_JRE_IMAGE
-from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
+from .models import FieldSpec, SynthesisRequest, pascal
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
     ENV_AUTH_ISSUER,
@@ -23,9 +23,7 @@ from .production_contract import (
     TENANT_CLAIM,
     TENANT_SETTING,
     all_entity_sql,
-    fixture_chain,
     production_contract,
-    relation_parents,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (

@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "tuples": [
+    {
+      "source_engine": "postgresql",
+      "source_version": "17.5",
+      "source_edition": "community",
+      "target_engine": "postgresql",
+      "target_version": "17.5",
+      "target_edition": "neon-managed",
+      "status": "research",
+      "evidence_refs": []
+    }
+  ],
+  "recertification_triggers": []
+}

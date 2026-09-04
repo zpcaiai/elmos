@@ -442,6 +442,12 @@ class Statement:
     #: `let` only: the bound name and its declared canonical type.
     name: str | None = None
     declared_type: str | None = None
+    #: `for` only: monotonic iteration loop
+    start: Expression | None = None
+    end: Expression | None = None
+    step: Expression | None = None
+    #: `while` and `for` loop body
+    body: tuple[Statement, ...] = ()
     source_span: SourceSpan | None = None
 
     @classmethod
@@ -491,18 +497,6 @@ class Statement:
             )
         if kind == "let":
             # A single-assignment local binding.
-            #
-            # Deliberately *not* an assignment: the name binds once, and only
-            # for the statements after it. Rebinding would make the function's
-            # meaning depend on statement order in a way the equivalence model
-            # has no way to compare, and the profile's whole claim is that a
-            # function is a typed pure expression tree.
-            #
-            # The type is declared rather than inferred. The frontend has
-            # already resolved it against the source language's own type
-            # system, and writing it into the IR is what lets `types.check`
-            # disagree instead of silently adopting whatever the expression
-            # happened to produce.
             _require_exact_keys(
                 value,
                 frozenset({"kind", "name", "type", "expression"}),
@@ -523,6 +517,74 @@ class Statement:
                 expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
                 source_span=_optional_source_span(value, _path),
             )
+        if kind == "while":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "condition", "body"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            condition = value["condition"]
+            if type(condition) is not dict:
+                raise RouteError(f"INVALID_WHILE_STATEMENT:{_path}")
+            parsed_body = _require_mapping_list(value["body"], f"{_path}.body")
+            return cls(
+                kind=kind,
+                condition=Expression.from_mapping(condition, _path=f"{_path}.condition"),
+                body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
+                    for index, item in enumerate(parsed_body)
+                ),
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "for":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "name", "type", "start", "end", "body"}),
+                frozenset({"step", "source_span"}),
+                _path,
+            )
+            name = _require_string(value["name"], f"{_path}.name")
+            if not name:
+                raise RouteError(f"FOR_NAME_REQUIRED:{_path}")
+            declared_type = _require_string(value["type"], f"{_path}.type")
+            start = value["start"]
+            end = value["end"]
+            if type(start) is not dict or type(end) is not dict:
+                raise RouteError(f"INVALID_FOR_STATEMENT:{_path}")
+            step = value.get("step")
+            if step is not None and type(step) is not dict:
+                raise RouteError(f"INVALID_FOR_STEP:{_path}")
+            parsed_body = _require_mapping_list(value["body"], f"{_path}.body")
+            return cls(
+                kind=kind,
+                name=name,
+                declared_type=declared_type,
+                start=Expression.from_mapping(start, _path=f"{_path}.start"),
+                end=Expression.from_mapping(end, _path=f"{_path}.end"),
+                step=Expression.from_mapping(step, _path=f"{_path}.step") if step is not None else None,
+                body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
+                    for index, item in enumerate(parsed_body)
+                ),
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "break":
+            _require_exact_keys(
+                value,
+                frozenset({"kind"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            return cls(kind=kind, source_span=_optional_source_span(value, _path))
+        if kind == "continue":
+            _require_exact_keys(
+                value,
+                frozenset({"kind"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            return cls(kind=kind, source_span=_optional_source_span(value, _path))
         raise RouteError(f"UNSUPPORTED_STATEMENT:{kind}")
 
     def semantic_mapping(self) -> dict[str, Any]:
@@ -542,6 +604,28 @@ class Statement:
                 "type": self.declared_type,
                 "expression": self.expression.semantic_mapping(),
             }
+        if self.kind == "while" and self.condition is not None:
+            return {
+                "kind": "while",
+                "condition": self.condition.semantic_mapping(),
+                "body": [item.semantic_mapping() for item in self.body],
+            }
+        if self.kind == "for" and self.name is not None and self.start is not None and self.end is not None:
+            res: dict[str, Any] = {
+                "kind": "for",
+                "name": self.name,
+                "type": self.declared_type,
+                "start": self.start.semantic_mapping(),
+                "end": self.end.semantic_mapping(),
+                "body": [item.semantic_mapping() for item in self.body],
+            }
+            if self.step is not None:
+                res["step"] = self.step.semantic_mapping()
+            return res
+        if self.kind == "break":
+            return {"kind": "break"}
+        if self.kind == "continue":
+            return {"kind": "continue"}
         raise RouteError("INVALID_STATEMENT")
 
     def to_mapping(self) -> dict[str, Any]:
@@ -562,6 +646,27 @@ class Statement:
                 "type": self.declared_type,
                 "expression": self.expression.to_mapping(),
             }
+        elif self.kind == "while" and self.condition is not None:
+            result = {
+                "kind": "while",
+                "condition": self.condition.to_mapping(),
+                "body": [item.to_mapping() for item in self.body],
+            }
+        elif self.kind == "for" and self.name is not None and self.start is not None and self.end is not None:
+            result = {
+                "kind": "for",
+                "name": self.name,
+                "type": self.declared_type,
+                "start": self.start.to_mapping(),
+                "end": self.end.to_mapping(),
+                "body": [item.to_mapping() for item in self.body],
+            }
+            if self.step is not None:
+                result["step"] = self.step.to_mapping()
+        elif self.kind == "break":
+            result = {"kind": "break"}
+        elif self.kind == "continue":
+            result = {"kind": "continue"}
         else:
             raise RouteError("INVALID_STATEMENT")
         if self.source_span is not None:

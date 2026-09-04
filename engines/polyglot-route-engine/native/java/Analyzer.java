@@ -1,7 +1,15 @@
+import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.BlockTree;
+import com.sun.source.tree.BreakTree;
 import com.sun.source.tree.CompilationUnitTree;
+import com.sun.source.tree.CompoundAssignmentTree;
+import com.sun.source.tree.ContinueTree;
+import com.sun.source.tree.DoWhileLoopTree;
+import com.sun.source.tree.EnhancedForLoopTree;
+import com.sun.source.tree.ExpressionStatementTree;
 import com.sun.source.tree.ExpressionTree;
+import com.sun.source.tree.ForLoopTree;
 import com.sun.source.tree.IdentifierTree;
 import com.sun.source.tree.IfTree;
 import com.sun.source.tree.ImportTree;
@@ -15,6 +23,7 @@ import com.sun.source.tree.StatementTree;
 import com.sun.source.tree.Tree;
 import com.sun.source.tree.UnaryTree;
 import com.sun.source.tree.VariableTree;
+import com.sun.source.tree.WhileLoopTree;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.SourcePositions;
 import com.sun.source.util.TreePathScanner;
@@ -563,7 +572,17 @@ public final class Analyzer {
 
     private enum CertifiedSubsetDomainError {
         INTEGER_WIDTH_INT("JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"),
-        STRING_REFERENCE_EQUALITY("JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET");
+        STRING_REFERENCE_EQUALITY("JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"),
+        MUTABLE_LOCAL("JAVA_MUTABLE_LOCAL_OUTSIDE_CERTIFIED_SUBSET"),
+        UNANNOTATED_ASSIGNMENT("JAVA_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET"),
+        DECLARATION_WITHOUT_VALUE("JAVA_ANNOTATED_DECLARATION_WITHOUT_VALUE"),
+        DO_WHILE_OUTSIDE_CERTIFIED_SUBSET("JAVA_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET"),
+        ENHANCED_FOR_OUTSIDE_CERTIFIED_SUBSET("JAVA_ENHANCED_FOR_OUTSIDE_CERTIFIED_SUBSET"),
+        LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET("JAVA_LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET"),
+        INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET("JAVA_INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET"),
+        FOR_INIT_OUTSIDE_CERTIFIED_SUBSET("JAVA_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET"),
+        FOR_CONDITION_NON_MONOTONIC("JAVA_FOR_CONDITION_NON_MONOTONIC"),
+        FOR_UPDATE_NON_MONOTONIC("JAVA_FOR_UPDATE_NON_MONOTONIC");
 
         private final String reason;
 
@@ -593,6 +612,36 @@ public final class Analyzer {
                                 "kind", "return",
                                 "expression", expression(
                                         returning.getExpression(), emittedTarget, environment, spans))));
+            } else if (statement instanceof VariableTree variable) {
+                if (variable.getInitializer() == null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.DECLARATION_WITHOUT_VALUE);
+                }
+                long typeEnd = spans.positions().getEndPosition(spans.unit(), variable.getType());
+                if (typeEnd <= 0) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.UNANNOTATED_ASSIGNMENT);
+                }
+                long varStart = spans.positions().getStartPosition(spans.unit(), variable);
+                String prefix = spans.sourceText().substring(Math.toIntExact(varStart), Math.toIntExact(typeEnd)).trim();
+                if (prefix.contains("var")) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.UNANNOTATED_ASSIGNMENT);
+                }
+                if (!variable.getModifiers().getFlags().contains(Modifier.FINAL)) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.MUTABLE_LOCAL);
+                }
+                String declaredType = variable.getType().toString().trim();
+                String canonical = type(declaredType);
+                Map<String, Object> expr = expression(
+                        variable.getInitializer(), emittedTarget, environment, spans);
+                String name = variable.getName().toString();
+                environment.put(name, canonical);
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("kind", "let");
+                item.put("name", name);
+                item.put("type", canonical);
+                item.put("expression", expr);
+                result.add(withSpan(statement, spans, item));
+            } else if (statement instanceof ExpressionStatementTree exprStmt && exprStmt.getExpression() instanceof AssignmentTree) {
+                throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.MUTABLE_LOCAL);
             } else if (statement instanceof IfTree conditional) {
                 Map<String, Object> item = new LinkedHashMap<>();
                 item.put("kind", "if");
@@ -604,6 +653,91 @@ public final class Analyzer {
                         ? List.of()
                         : statementBody(conditional.getElseStatement(), emittedTarget, environment, spans));
                 result.add(withSpan(statement, spans, item));
+            } else if (statement instanceof BreakTree breakTree) {
+                if (breakTree.getLabel() != null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                result.add(withSpan(statement, spans, Map.of("kind", "break")));
+            } else if (statement instanceof ContinueTree continueTree) {
+                if (continueTree.getLabel() != null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                result.add(withSpan(statement, spans, Map.of("kind", "continue")));
+            } else if (statement instanceof WhileLoopTree whileLoop) {
+                if (whileLoop.getCondition() == null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("kind", "while");
+                item.put("condition", expression(whileLoop.getCondition(), emittedTarget, environment, spans));
+                item.put("body", statementBody(whileLoop.getStatement(), emittedTarget, new LinkedHashMap<>(environment), spans));
+                result.add(withSpan(statement, spans, item));
+            } else if (statement instanceof ForLoopTree forLoop) {
+                List<? extends StatementTree> inits = forLoop.getInitializer();
+                if (inits.size() != 1 || !(inits.get(0) instanceof VariableTree initVar)) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_INIT_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                if (initVar.getInitializer() == null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_INIT_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                String varName = initVar.getName().toString();
+                String rawType = initVar.getType().toString().trim();
+                String varType = type(rawType);
+                if (!"integer".equals(varType)) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_INIT_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                Map<String, Object> start = expression(initVar.getInitializer(), emittedTarget, environment, spans);
+
+                ExpressionTree cond = forLoop.getCondition();
+                if (cond == null) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET);
+                }
+                if (!(cond instanceof BinaryTree binCond) || binCond.getKind() != Tree.Kind.LESS_THAN) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_CONDITION_NON_MONOTONIC);
+                }
+                if (!(binCond.getLeftOperand() instanceof IdentifierTree leftIdent) || !leftIdent.getName().contentEquals(varName)) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_CONDITION_NON_MONOTONIC);
+                }
+                Map<String, Object> end = expression(binCond.getRightOperand(), emittedTarget, environment, spans);
+
+                List<? extends ExpressionStatementTree> updates = forLoop.getUpdate();
+                if (updates.size() != 1) {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
+                }
+                ExpressionTree updateExpr = updates.get(0).getExpression();
+                Map<String, Object> step = null;
+                if (updateExpr instanceof UnaryTree unary && unary.getKind() == Tree.Kind.POSTFIX_INCREMENT) {
+                    if (!(unary.getExpression() instanceof IdentifierTree id) || !id.getName().contentEquals(varName)) {
+                        throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
+                    }
+                } else if (updateExpr instanceof CompoundAssignmentTree compound && compound.getKind() == Tree.Kind.PLUS_ASSIGNMENT) {
+                    if (!(compound.getVariable() instanceof IdentifierTree id) || !id.getName().contentEquals(varName)) {
+                        throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
+                    }
+                    step = expression(compound.getExpression(), emittedTarget, environment, spans);
+                } else {
+                    throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.FOR_UPDATE_NON_MONOTONIC);
+                }
+
+                Map<String, String> loopEnv = new LinkedHashMap<>(environment);
+                loopEnv.put(varName, "integer");
+                List<Map<String, Object>> body = statementBody(forLoop.getStatement(), emittedTarget, loopEnv, spans);
+
+                Map<String, Object> item = new LinkedHashMap<>();
+                item.put("kind", "for");
+                item.put("name", varName);
+                item.put("type", "integer");
+                item.put("start", start);
+                item.put("end", end);
+                if (step != null) {
+                    item.put("step", step);
+                }
+                item.put("body", body);
+                result.add(withSpan(statement, spans, item));
+            } else if (statement instanceof DoWhileLoopTree) {
+                throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.DO_WHILE_OUTSIDE_CERTIFIED_SUBSET);
+            } else if (statement instanceof EnhancedForLoopTree) {
+                throw new CertifiedSubsetDomainException(CertifiedSubsetDomainError.ENHANCED_FOR_OUTSIDE_CERTIFIED_SUBSET);
             } else {
                 throw new IllegalArgumentException("JAVA_UNSUPPORTED_STATEMENT:" + statement.getKind());
             }
@@ -616,10 +750,11 @@ public final class Analyzer {
             boolean emittedTarget,
             Map<String, String> environment,
             SpanContext spans) {
+        Map<String, String> branchEnv = new LinkedHashMap<>(environment);
         if (statement instanceof BlockTree block) {
-            return statements(block.getStatements(), emittedTarget, environment, spans);
+            return statements(block.getStatements(), emittedTarget, branchEnv, spans);
         }
-        return statements(List.of(statement), emittedTarget, environment, spans);
+        return statements(List.of(statement), emittedTarget, branchEnv, spans);
     }
 
     private static boolean isStringExpression(

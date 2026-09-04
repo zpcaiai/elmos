@@ -49,6 +49,14 @@ class SpringDeploymentGuidanceTest {
         assertTrue(profile.contains("\"status\": \"CONFIGURATION_REQUIRED\""));
         assertTrue(profile.contains("\"external_execution_evidence\": \"NOT_RUN\""));
         assertTrue(profile.contains("\"image_reference_policy\": \"DIGEST_REQUIRED\""));
+
+        Path diagnosticsPath = temporaryDirectory.resolve("docs/MIGRATION_DIAGNOSTICS.md");
+        assertTrue(Files.exists(diagnosticsPath));
+        String diagnostics = Files.readString(diagnosticsPath);
+        assertTrue(diagnostics.contains("Spring Boot 迁移诊断与非标准组件处理指南"));
+        assertTrue(diagnostics.contains("initscript"));
+        assertTrue(diagnostics.contains("jakarta"));
+        assertTrue(diagnostics.contains("WebSecurityConfigurerAdapter"));
     }
 
     @Test void writesGradleSpecificLocalAndContainerGuidance() throws Exception {

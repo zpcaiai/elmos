@@ -22,6 +22,7 @@ from .production_contract import (
     ENV_OIDC_PRIVATE_KEY_FILE,
     TENANT_CLAIM,
     TENANT_SETTING,
+    EntitySql,
     all_entity_sql,
     fixture_chain,
     production_contract,
@@ -108,7 +109,7 @@ def _ts_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
     return "\n          ".join(lines)
 
 
-def _ts_entity_store(entity: EntitySpec, sql: object) -> str:
+def _ts_entity_store(entity: EntitySpec, sql: EntitySql) -> str:
     entity_class = pascal(entity.singular)
     field_types = "\n          ".join(f"{field.name}: {_ts_type(field)};" for field in entity.fields)
     upsert_values = ", ".join(f"payload.{field.name}" for field in entity.fields)

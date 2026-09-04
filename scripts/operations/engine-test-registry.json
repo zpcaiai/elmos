@@ -265,7 +265,7 @@
           "timeout_seconds": 1800,
           "project": "engines/functional-assurance-engine",
           "tests": ["engines/functional-assurance-engine/tests"],
-          "uv_args": ["--locked", "--extra", "dev"],
+          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
           "pythonpath": [],
           "environment": {}
         }
