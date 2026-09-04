@@ -30,7 +30,7 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
-from .models import Dialect, DialectError, InsertStatement, RouteError
+from .models import Dialect, DialectError, InsertStatement, RouteError, TypeMigrationPolicy
 from .profiles import NamespaceProfile, resolve_namespace_profile
 from .static_do import emit_static_do, parse_static_do
 from .validator import validate
@@ -55,6 +55,9 @@ def translate_ddl(
     catalog: emitter.ColumnCatalogLike | None = None,
     comment_catalog: emitter.CommentColumnCatalogLike | None = None,
     routine_catalog: RoutineIdentityCatalogLike | None = None,
+    allow_routine_shim: bool = False,
+    allow_rls_shim: bool = False,
+    type_policy: TypeMigrationPolicy | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
@@ -130,7 +133,11 @@ def translate_ddl(
         active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
         active_namespace_map = active_namespace_profile
         if statement_kind == "TABLE":
-            emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, active_namespace_map), target)
+            emitted = emitter.emit_create_table(
+                parser.parse_create_table(sql, source, active_namespace_map, type_policy=type_policy),
+                target,
+                type_policy=type_policy,
+            )
         elif statement_kind == "INSERT":
             insert = parser.parse_insert_statement(sql, source, active_namespace_map)
             if isinstance(insert, InsertStatement):
@@ -168,7 +175,9 @@ def translate_ddl(
             emitted = emitter.emit_create_schema(parser.parse_create_schema(sql, source, active_namespace_map), target)
         elif statement_kind == "RLS":
             emitted = emitter.emit_row_security(
-                parser.parse_row_security(sql, source, active_namespace_map), target
+                parser.parse_row_security(sql, source, active_namespace_map),
+                target,
+                allow_rls_shim=allow_rls_shim,
             )
         elif statement_kind == "FUNCTION":
             from .routine import emit_create_function, parse_create_routine
@@ -177,7 +186,11 @@ def translate_ddl(
                 table_function = parse_table_function(sql, source, active_namespace_map)
             except DialectError as exc:
                 if exc.code == "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
-                    emitted = emit_create_function(parse_create_routine(sql, source, active_namespace_map), target)
+                    emitted = emit_create_function(
+                        parse_create_routine(sql, source, active_namespace_map),
+                        target,
+                        allow_routine_shim=allow_routine_shim,
+                    )
                 else:
                     # A RETURNS TABLE declaration is still a routine even
                     # when its body is outside the table-function subset.
@@ -187,7 +200,7 @@ def translate_ddl(
                     # the generic scalar table-return refusal.
                     raise exc
             else:
-                emitted = emit_table_function(table_function, target)
+                emitted = emit_table_function(table_function, target, allow_routine_shim=allow_routine_shim)
         elif statement_kind == "PROCEDURE":
             emitted = emit_procedure(parse_procedure(sql, source, active_namespace_map), target)
         elif statement_kind == "TRIGGER":
@@ -207,6 +220,7 @@ def translate_ddl(
             emitted = emit_row_policy(
                 parse_row_policy(sql, source, active_namespace_map),
                 target,
+                allow_rls_shim=allow_rls_shim,
             )
         elif statement_kind == "DO":
             emitted = emit_static_do(parse_static_do(sql, source, active_namespace_map), target, catalog)
