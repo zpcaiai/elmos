@@ -207,7 +207,7 @@ export function proxyNotConfiguredResponse() {
   return Response.json(
     {
       errorCode: "SPRING_UPGRADE_PROXY_NOT_CONFIGURED",
-      message: "Spring 迁移代理尚未绑定可信的单租户组织与 Java Engine；未执行任何客户代码。",
+      message: "Spring 迁移代理尚未绑定可信的多租户身份边界、服务认证与 Java Engine；未执行任何客户代码。",
       retryable: false,
     },
     { status: 503, headers: { "cache-control": "no-store" } },

@@ -14,6 +14,7 @@ import {
 } from "node:fs";
 import {
   access,
+  chmod,
   mkdir,
   mkdtemp,
   lstat,
@@ -1052,10 +1053,30 @@ function generationStoragePolicy(): GenerationStoragePolicy {
   };
 }
 
-async function boundedDirectoryBytes(root: string): Promise<number> {
+type DirectoryUsage = {
+  bytes: number;
+  jobBytes: Map<string, number>;
+};
+
+async function boundedDirectoryUsage(root: string): Promise<DirectoryUsage> {
   const pending = [root];
   let fileCount = 0;
   let total = 0;
+  const jobBytes = new Map<string, number>();
+  const addBytes = (candidate: string, bytes: number) => {
+    total += bytes;
+    if (!Number.isSafeInteger(total)) {
+      throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
+    }
+    const segments = path.relative(root, candidate).split(path.sep);
+    if (segments[0] === "jobs" && segments[1] && jobIdPattern.test(segments[1])) {
+      const next = (jobBytes.get(segments[1]) ?? 0) + bytes;
+      if (!Number.isSafeInteger(next)) {
+        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
+      }
+      jobBytes.set(segments[1], next);
+    }
+  };
   while (pending.length > 0) {
     const directory = pending.pop();
     if (!directory) break;
@@ -1079,8 +1100,8 @@ async function boundedDirectoryBytes(root: string): Promise<number> {
         // Build tools legitimately create virtual-environment/toolchain links.
         // Count only the link inode and never resolve or follow its target.
         fileCount += 1;
-        total += info.size;
-        if (fileCount > 250_000 || !Number.isSafeInteger(total)) {
+        addBytes(candidate, info.size);
+        if (fileCount > 250_000) {
           throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
         }
         continue;
@@ -1096,13 +1117,14 @@ async function boundedDirectoryBytes(root: string): Promise<number> {
       if (fileCount > 250_000) {
         throw new GenerationRunnerError(507, "GENERATION_STORAGE_SCAN_LIMIT");
       }
-      total += info.size;
-      if (!Number.isSafeInteger(total)) {
-        throw new GenerationRunnerError(507, "GENERATION_STORAGE_SIZE_INVALID");
-      }
+      addBytes(candidate, info.size);
     }
   }
-  return total;
+  return { bytes: total, jobBytes };
+}
+
+async function boundedDirectoryBytes(root: string): Promise<number> {
+  return (await boundedDirectoryUsage(root)).bytes;
 }
 
 async function enforceTenantJobStorage(
@@ -1115,7 +1137,12 @@ async function enforceTenantJobStorage(
   await mkdir(jobsRoot, { recursive: true, mode: 0o700 });
   await sweepExpiredTenantInputs(runner, context);
   let retainedJobs = 0;
-  const retainedBytes = await boundedDirectoryBytes(tenantRoot);
+  // Scan the tenant tree exactly once.  A generated workspace can contain a
+  // full virtual environment, so rescanning every job after scanning the
+  // parent makes admission O(2N) in retained files and can consume the whole
+  // client polling window before a job is even accepted.
+  const usage = await boundedDirectoryUsage(tenantRoot);
+  const retainedBytes = usage.bytes;
   let outstandingReservationBytes = 0;
   const allStatuses = new Set<GenerationJob["status"]>([
     "QUEUED", "ANALYZING", "GENERATING", "VERIFYING", "ARCHIVING",
@@ -1147,7 +1174,7 @@ async function enforceTenantJobStorage(
       || record.tenantId !== context.tenantId
       || !allStatuses.has(record.status)
     ) throw new GenerationRunnerError(409, "GENERATION_JOB_RECORD_INVALID");
-    const jobBytes = await boundedDirectoryBytes(root);
+    const jobBytes = usage.jobBytes.get(entry.name) ?? 0;
     retainedJobs += 1;
     if (!terminalStatuses.has(record.status)) {
       outstandingReservationBytes += Math.max(0, policy.reservationBytes - jobBytes);
@@ -1734,14 +1761,43 @@ function commandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
   };
 }
 
-function engineCommandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
+function engineCommandEnvironment(
+  runner: RunnerConfig,
+  mypyCache?: string,
+): NodeJS.ProcessEnv {
+  const configuredCommandTimeout =
+    process.env.ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS?.trim();
   return {
     ...commandEnvironment(runner),
     // Load the audited source tree directly. The synthesis CLI intentionally
     // has no third-party runtime dependencies; generated projects own their
     // language-specific dependencies and lockfiles.
     PYTHONPATH: path.join(runner.engineRoot, "src"),
+    ...(configuredCommandTimeout
+      ? { ELMOS_PROJECT_SYNTHESIS_COMMAND_TIMEOUT_SECONDS: configuredCommandTimeout }
+      : {}),
+    ...(mypyCache ? { MYPY_CACHE_DIR: mypyCache } : {}),
   };
+}
+
+async function ensureTenantMypyCache(
+  runner: RunnerConfig,
+  context: AuthorizedContext,
+): Promise<string> {
+  const tenantDigest = createHash("sha256").update(context.tenantId).digest("hex");
+  const cache = confined(runner.root, "dependency-cache", "mypy", tenantDigest);
+  await mkdir(cache, { recursive: true, mode: 0o700 });
+  await chmod(cache, 0o700);
+  const info = await lstat(cache);
+  if (
+    info.isSymbolicLink()
+    || !info.isDirectory()
+    || (info.mode & 0o077) !== 0
+    || (typeof process.getuid === "function" && info.uid !== process.getuid())
+  ) {
+    throw new GenerationRunnerError(503, "PROJECT_SYNTHESIS_MYPY_CACHE_UNSAFE");
+  }
+  return await realpath(cache);
 }
 
 function rootlessCommandEnvironment(runner: RunnerConfig): NodeJS.ProcessEnv {
@@ -2128,6 +2184,9 @@ async function executeCommand(
   args: string[],
 ): Promise<CommandResult> {
   await ensureRunnerHome(runner);
+  const mypyCache = stage === "pipeline"
+    ? await ensureTenantMypyCache(runner, context)
+    : undefined;
   job.stage = stage;
   if (stage === "analyze") {
     job.status = "ANALYZING";
@@ -2141,7 +2200,7 @@ async function executeCommand(
   return new Promise((resolve, reject) => {
     const child = spawn(runner.uv, args, {
       cwd: runner.engineRoot,
-      env: engineCommandEnvironment(runner),
+      env: engineCommandEnvironment(runner, mypyCache),
       detached: true,
       stdio: ["ignore", "pipe", "pipe"],
     });

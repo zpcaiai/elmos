@@ -60,13 +60,20 @@ def native_split_statements(source: str, dialect: str | None = None) -> list[dic
         ptr = lib.elmos_sql_split(src_bytes, dialect_bytes)
         if not ptr:
             return None
-        raw_str = ctypes.string_at(ptr).decode("utf-8")
+        raw_bytes = ctypes.string_at(ptr)
         lib.elmos_free_string(ptr)
-        payload: object = json.loads(raw_str)
-        if not isinstance(payload, list) or not all(
-            isinstance(item, dict) for item in payload
-        ):
+        decoded: object = json.loads(raw_bytes.decode("utf-8"))
+        if not isinstance(decoded, list):
             return None
-        return [dict(item) for item in payload]
+        result: list[dict[str, Any]] = []
+        for item in decoded:
+            if not isinstance(item, dict):
+                return None
+            text = item.get("text")
+            start_line = item.get("start_line")
+            if not isinstance(text, str) or not isinstance(start_line, int) or isinstance(start_line, bool):
+                return None
+            result.append({"text": text, "start_line": start_line})
+        return result
     except Exception:
         return None

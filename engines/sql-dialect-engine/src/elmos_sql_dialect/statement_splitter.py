@@ -145,8 +145,8 @@ def split_statements(source: str, dialect: str | None = None) -> list[RawStateme
         native_res = native_split_statements(source, dialect)
         if native_res is not None:
             return [RawStatement(text=item["text"], start_line=item["start_line"]) for item in native_res]
-    except (ImportError, KeyError, TypeError):
-        native_res = None
+    except Exception:  # noqa: S110 - the optional native accelerator must fail closed to the Python parser
+        pass
     statements: list[RawStatement] = []
     buffer: list[str] = []
     line = 1

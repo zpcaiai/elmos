@@ -18,7 +18,7 @@ elmos:
     enabled: ${ELMOS_CHINADB_SQL_PREFLIGHT_ENABLED:false}
     base-url: ${ELMOS_CHINADB_SQL_PREFLIGHT_BASE_URL:http://chinadb-sql-preflight:8101}
     connect-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_CONNECT_TIMEOUT:2s}
-    request-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_REQUEST_TIMEOUT:15s}
+    request-timeout: ${ELMOS_CHINADB_SQL_PREFLIGHT_REQUEST_TIMEOUT:50s}
 management:
   endpoint:
     health:

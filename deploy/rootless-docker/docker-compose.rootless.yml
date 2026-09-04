@@ -1,3 +1,6 @@
+# LOCAL_NON_CERTIFYING integration override only.
+# Production Spring Runner deployment uses the standalone
+# deploy/production/compose/docker-compose.spring-runner.yml on a dedicated host.
 services:
   web-console:
     networks:
@@ -5,6 +8,7 @@ services:
       - java-upgrade
     environment:
       ELMOS_SPRING_PROXY_ENABLED: "true"
+      ELMOS_SPRING_PROXY_MULTI_TENANT: "false"
       ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID: "${ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID:?required}"
       ELMOS_CONTROL_PLANE_BASE_URL: "http://control-plane:8080"
       ELMOS_GENERATION_GLOBAL_CAPACITY: "${ELMOS_GENERATION_GLOBAL_CAPACITY:-2}"
@@ -108,7 +112,10 @@ services:
       - snapshot-staging:/var/lib/elmos/snapshot-staging
   workspace-service:
     ports: !reset []
-    user: "${ELMOS_ROOTLESS_UID:?required}:${ELMOS_ROOTLESS_GID:?required}"
+    user: "10001:10001"
+    # Container group 0 maps to the unprivileged rootless-daemon group and is
+    # used only for the owner/group-only Docker socket.
+    group_add: ["0"]
     networks:
       - default
       - java-upgrade
@@ -149,9 +156,9 @@ services:
       - "${ELMOS_PROVIDER_SECRET_HOST_PATH:?required}:/run/elmos/provider-secrets"
       - "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?required}:/var/lib/elmos/java-upgrade-runs:ro"
       - "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?required}:/var/lib/elmos/java-verifier-evidence"
-      - "${ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-runtime-hmac:ro"
-      - "${ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-verifier-hmac:ro"
-      - "${ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-transformer-hmac:ro"
+      - "${ELMOS_SPRING_BROKER_RUNTIME_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-runtime-hmac:ro"
+      - "${ELMOS_SPRING_BROKER_VERIFIER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-verifier-hmac:ro"
+      - "${ELMOS_SPRING_BROKER_TRANSFORMER_HMAC_SECRET_HOST_PATH:?required}:/run/secrets/elmos-transformer-hmac:ro"
     healthcheck:
       test: ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/8082"]
       interval: 10s

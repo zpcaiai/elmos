@@ -1,4 +1,9 @@
-# Rootless Docker Workspace 主机
+# Rootless Docker Workspace 本地集成拓扑
+
+本目录是 `LOCAL_NON_CERTIFYING` 的单机集成 override，不是生产部署清单，也不能产生
+`ROOTLESS_ISOLATION_ATTESTATION` 或 `DEFAULT_DENY_NETWORK_ATTESTATION`。生产多租户
+Spring 业务线必须使用独立主机上的
+`deploy/production/compose/docker-compose.spring-runner.yml`，并执行其只读 preflight。
 
 Workspace Service 只能连接到 `docker info --format '{{json .SecurityOptions}}'` 明确包含 `name=rootless` 的 daemon。客户 Workspace 永远不能获得 Docker socket；socket 只属于独立部署的 Workspace Service 安全域。
 
@@ -29,6 +34,10 @@ ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH=/run/elmos/java-verifier-hmac
 ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH=/run/elmos/java-transformer-hmac
 ELMOS_VERIFIER_EVIDENCE_HOST_PATH=/srv/elmos/java-verifier-evidence
 ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH=/run/elmos/java-runtime-hmac
+# 同一三个逻辑密钥在 broker 安全域内的 owner-only 副本；值分别对应，但文件不共享。
+ELMOS_SPRING_BROKER_VERIFIER_HMAC_SECRET_HOST_PATH=/run/elmos/broker/java-verifier-hmac
+ELMOS_SPRING_BROKER_TRANSFORMER_HMAC_SECRET_HOST_PATH=/run/elmos/broker/java-transformer-hmac
+ELMOS_SPRING_BROKER_RUNTIME_HMAC_SECRET_HOST_PATH=/run/elmos/broker/java-runtime-hmac
 ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST=sha256:<64 hex>
 ELMOS_EGRESS_PROXY_IMAGE_DIGEST=sha256:<64 hex>
 ELMOS_JAVA_RUNTIME_IMAGE_DIGEST=sha256:<64 hex>
@@ -41,10 +50,21 @@ ELMOS_SPRING_UPGRADE_VERIFIER_ID=<independently identified verifier>
 ELMOS_ALLOWED_GIT_HOSTS=github.com
 ```
 
-三个长期 HMAC 文件必须分别由部署系统生成至少 32 字节的随机值，放在 owner-only
-`0700` 父目录中。由于 Rootless user namespace 内的 Worker UID 与 Workspace Service
-UID 不同，共享的只读文件应为 `0444`，并由父目录阻止其他宿主用户遍历；部署 Gate
-必须验证该父目录的 owner、ACL 和 mount target。不得提交到 Git 或写入环境变量。验证器只读
+三个长期 HMAC 逻辑密钥必须分别由部署系统生成至少 32 字节的随机值；Verifier、
+Transformer、Runtime 三个角色不得复用。每个安全域持有自己的文件副本：应用 Worker
+副本由容器 UID `10001` 对应的宿主 UID/GID 持有，broker 副本由 Rootless user
+namespace 中容器 UID/GID `10001` 对应的 mapped host UID/GID 持有。两个域中每个文件均
+为 `0400`（轮换原子替换需要 owner 写权限时可短暂使用 `0600`），group/other 权限必须为
+零；父目录由该域部署身份持有且为 `0700`。Rootless Docker socket 通过容器 supplementary
+group `0` 单独授权，不能靠放宽 Secret 文件权限解决。部署后必须分别从 Worker 和
+Workspace Service 容器做只读可读性检查，并确认非消费者容器不可读。
+
+两个域中对应文件的**值**相同，文件 inode、owner 与路径不同；轮换必须先双写下一版本，
+切换调用方，再撤销旧版本。不得使用硬链接、`0444`、环境变量或 Git 来跨域共享密钥。
+生产环境还有第四份 BFF-to-engine HMAC，它只属于应用安全域，绝不能挂载到 Runner 主机；
+本地 override 不把它纳入上述三个 Runner broker 协议。
+
+验证器只读
 挂载候选 Artifact，验证 Evidence 使用独立持久卷，镜像中不包含 OpenRewrite
 转换模块。Workspace Service 为每个验证请求创建短生命周期验证器容器，只挂载该
 Run 的候选文件、Evidence 子目录和一次性 HMAC；长期 Worker-to-broker HMAC 不会

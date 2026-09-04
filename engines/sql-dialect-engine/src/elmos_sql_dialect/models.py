@@ -1590,7 +1590,7 @@ class DynamicExecuteStatement:
 
 @dataclass(frozen=True)
 class Procedure:
-    """Bounded procedure IR for assignments, savepoints, cursors, control flow, dynamic execution and exceptions."""
+    """Bounded procedure IR for assignments, savepoints, cursors, control flow, dynamic SQL and exceptions."""
 
     name: str
     parameters: tuple[RoutineParameter, ...]

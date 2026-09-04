@@ -1,6 +1,16 @@
 UV ?= uv
 BATCH30_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
-.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-launch-validate spring-launch-gate
+SPRING_ENV_FILE ?=
+SPRING_EXTERNAL_EVIDENCE ?=
+SPRING_TRUST_STORE ?=
+SPRING_TRUST_STORE_DIGEST ?=
+SPRING_EVIDENCE_ROOT ?=
+SPRING_ENVIRONMENT_ID ?=
+SPRING_DEPLOYMENT_ID ?=
+SPRING_PROVIDER ?=
+SPRING_REGION ?=
+SPRING_ENVIRONMENT_CLASS ?=
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-runner-validate spring-launch-validate spring-launch-gate
 b30-skills-test:
 	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
 	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
@@ -10,8 +20,29 @@ b30-pack-validate:
 b30-pack-gate:
 	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
 	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py framework-packs/$(PACK)
-spring-launch-validate:
+spring-runner-validate:
+	$(BATCH30_PYTHON) deploy/production/runner/validate_spring_runner_topology.py
+spring-launch-validate: spring-runner-validate
 	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py
-spring-launch-gate:
+spring-launch-gate: spring-runner-validate
 	@test -n "$(SPRING_EXTERNAL_EVIDENCE)" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
-	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py --check-environment --require-production-evidence --external-evidence "$(SPRING_EXTERNAL_EVIDENCE)"
+	@test -n "$(SPRING_ENV_FILE)" || (echo "SPRING_ENV_FILE=<owner-only spring.env> required" && exit 2)
+	@test -n "$(SPRING_TRUST_STORE)" || (echo "SPRING_TRUST_STORE=<trust-store.json> required" && exit 2)
+	@test -n "$(SPRING_TRUST_STORE_DIGEST)" || (echo "SPRING_TRUST_STORE_DIGEST=sha256:<pinned digest> required" && exit 2)
+	@test -n "$(SPRING_EVIDENCE_ROOT)" || (echo "SPRING_EVIDENCE_ROOT=<approved-evidence-directory> required" && exit 2)
+	@test -n "$(SPRING_ENVIRONMENT_ID)" || (echo "SPRING_ENVIRONMENT_ID=<exact environment identity> required" && exit 2)
+	@test -n "$(SPRING_DEPLOYMENT_ID)" || (echo "SPRING_DEPLOYMENT_ID=<exact deployment identity> required" && exit 2)
+	@test -n "$(SPRING_PROVIDER)" || (echo "SPRING_PROVIDER=<exact provider identity> required" && exit 2)
+	@test -n "$(SPRING_REGION)" || (echo "SPRING_REGION=<exact region identity> required" && exit 2)
+	@test -n "$(SPRING_ENVIRONMENT_CLASS)" || (echo "SPRING_ENVIRONMENT_CLASS=STAGING|PRODUCTION required" && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py \
+		--environment-file "$(SPRING_ENV_FILE)" --require-production-evidence \
+		--external-evidence "$(SPRING_EXTERNAL_EVIDENCE)" \
+		--trust-store "$(SPRING_TRUST_STORE)" \
+		--expected-trust-store-digest "$(SPRING_TRUST_STORE_DIGEST)" \
+		--evidence-root "$(SPRING_EVIDENCE_ROOT)" \
+		--expected-environment-id "$(SPRING_ENVIRONMENT_ID)" \
+		--expected-deployment-id "$(SPRING_DEPLOYMENT_ID)" \
+		--expected-provider "$(SPRING_PROVIDER)" \
+		--expected-region "$(SPRING_REGION)" \
+		--expected-environment-class "$(SPRING_ENVIRONMENT_CLASS)"

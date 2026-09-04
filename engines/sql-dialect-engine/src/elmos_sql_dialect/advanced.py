@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import Protocol
+from typing import Protocol, cast
 
 import sqlglot
 from sqlglot import exp
@@ -1718,10 +1718,8 @@ def emit_privilege(
             object_clause = f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
         else:
             if not allow_privilege_shim:
-                if (
-                    routine_catalog is None
-                    or privilege.routine_argument_type_refs is None
-                ):
+                argument_type_refs = privilege.routine_argument_type_refs
+                if routine_catalog is None or argument_type_refs is None:
                     raise DialectError(
                         "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
                         f"{target_dialect.value} routine privileges cannot safely drop the source "
@@ -1731,7 +1729,7 @@ def emit_privilege(
                     privilege.object_kind,
                     privilege.schema,
                     privilege.object_name,
-                    privilege.routine_argument_type_refs,
+                    argument_type_refs,
                 ):
                     raise DialectError(
                         "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",

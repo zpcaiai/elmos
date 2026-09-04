@@ -1617,6 +1617,35 @@ def test_runtime_plan_is_allowlisted_and_workspace_confined(tmp_path: Path) -> N
         assert Path(plan["command"][0]).name in {"uv", "pnpm"}
         assert all("\n" not in argument and "\x00" not in argument for argument in plan["command"])
         assert plan["environment"]["HOST"] == "127.0.0.1"
+    python_plan = next(plan for plan in plans if plan["language"] == "python")
+    assert python_plan["command"][1:3] == ["run", "--no-sync"]
+
+
+def test_python_postgres_runtime_plan_keeps_bounded_real_probe_budgets(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    request = approve_request(
+        create_draft(
+            name="runtime-budget-service",
+            description="Durable authenticated and tenant-isolated order API.",
+            entity="order",
+            languages=("python",),
+            persistence="postgresql",
+            auth_mode="jwt",
+            permissions=allow_crud("order"),
+        ),
+        actor="user:test",
+    )
+    generate_workspace(
+        request,
+        workspace,
+    )
+
+    [plan] = runtime_commands(workspace)
+
+    assert plan["command"][1:3] == ["run", "--no-sync"]
+    assert plan["integration_command"][1:3] == ["run", "--no-sync"]
+    assert plan["startup_timeout_seconds"] == 180
+    assert plan["integration_timeout_seconds"] == 180
 
 
 def test_every_profile_open_target_declares_an_integration_command() -> None:

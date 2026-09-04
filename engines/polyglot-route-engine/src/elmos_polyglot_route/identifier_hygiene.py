@@ -1227,7 +1227,12 @@ def _local_bindings_in_order(statements: tuple[Statement, ...]) -> list[Statemen
     return found
 
 
-def _rename_expression(expression: Expression, names: dict[str, str], role: str) -> Expression:
+def _rename_expression(
+    expression: Expression,
+    names: dict[str, str],
+    role: str,
+    function_names: dict[str, str] | None = None,
+) -> Expression:
     if expression.kind == "name":
         source_name = str(expression.value)
         target_name = names.get(source_name)
@@ -1239,20 +1244,38 @@ def _rename_expression(expression: Expression, names: dict[str, str], role: str)
     if expression.kind == "binary" and expression.left is not None and expression.right is not None:
         return replace(
             expression,
-            left=_rename_expression(expression.left, names, role),
-            right=_rename_expression(expression.right, names, role),
+            left=_rename_expression(expression.left, names, role, function_names),
+            right=_rename_expression(expression.right, names, role, function_names),
         )
     if expression.kind == "member_access" and expression.target is not None:
         return replace(
             expression,
-            target=_rename_expression(expression.target, names, role),
+            target=_rename_expression(expression.target, names, role, function_names),
         )
     if expression.kind == "record_construct":
         return replace(
             expression,
             arguments=tuple(
-                (arg_name, _rename_expression(arg_expr, names, role))
+                (arg_name, _rename_expression(arg_expr, names, role, function_names))
                 for arg_name, arg_expr in expression.arguments
+            ),
+        )
+    if expression.kind == "call":
+        if expression.function_name is None:
+            raise RouteError(f"IDENTIFIER_{role}_CALL_TARGET_MISSING")
+        target_fn = (
+            function_names.get(expression.function_name)
+            if function_names is not None
+            else None
+        )
+        if target_fn is None:
+            raise RouteError(f"IDENTIFIER_{role}_FUNCTION_UNMAPPED:{expression.function_name}")
+        return replace(
+            expression,
+            function_name=target_fn,
+            call_arguments=tuple(
+                _rename_expression(arg, names, role, function_names)
+                for arg in expression.call_arguments
             ),
         )
     raise RouteError(f"IDENTIFIER_{role}_EXPRESSION_UNSUPPORTED:{expression.kind}")
@@ -1262,13 +1285,14 @@ def _rename_statements(
     statements: tuple[Statement, ...],
     names: dict[str, str],
     role: str,
+    function_names: dict[str, str] | None = None,
 ) -> tuple[Statement, ...]:
     result: list[Statement] = []
     for statement in statements:
         if statement.kind == "let" and statement.expression is not None and statement.name is not None:
             # The initializer is renamed under the names visible *before* this
             # binding; the binding becomes visible only afterwards.
-            renamed = _rename_expression(statement.expression, names, role)
+            renamed = _rename_expression(statement.expression, names, role, function_names)
             target_name = names.get(_LOCAL_BINDER_PREFIX + statement.name)
             if target_name is None:
                 raise RouteError(f"IDENTIFIER_{role}_LOCAL_UNMAPPED:{statement.name}")
@@ -1279,24 +1303,24 @@ def _rename_statements(
             result.append(
                 replace(
                     statement,
-                    expression=_rename_expression(statement.expression, names, role),
+                    expression=_rename_expression(statement.expression, names, role, function_names),
                 )
             )
         elif statement.kind == "if" and statement.condition is not None:
             result.append(
                 replace(
                     statement,
-                    condition=_rename_expression(statement.condition, names, role),
-                    then_body=_rename_statements(statement.then_body, dict(names), role),
-                    else_body=_rename_statements(statement.else_body, dict(names), role),
+                    condition=_rename_expression(statement.condition, names, role, function_names),
+                    then_body=_rename_statements(statement.then_body, dict(names), role, function_names),
+                    else_body=_rename_statements(statement.else_body, dict(names), role, function_names),
                 )
             )
         elif statement.kind == "while" and statement.condition is not None:
             result.append(
                 replace(
                     statement,
-                    condition=_rename_expression(statement.condition, names, role),
-                    body=_rename_statements(statement.body, dict(names), role),
+                    condition=_rename_expression(statement.condition, names, role, function_names),
+                    body=_rename_statements(statement.body, dict(names), role, function_names),
                 )
             )
         elif (
@@ -1305,10 +1329,10 @@ def _rename_statements(
             and statement.start is not None
             and statement.end is not None
         ):
-            renamed_start = _rename_expression(statement.start, names, role)
-            renamed_end = _rename_expression(statement.end, names, role)
+            renamed_start = _rename_expression(statement.start, names, role, function_names)
+            renamed_end = _rename_expression(statement.end, names, role, function_names)
             renamed_step = (
-                _rename_expression(statement.step, names, role)
+                _rename_expression(statement.step, names, role, function_names)
                 if statement.step is not None
                 else None
             )
@@ -1324,7 +1348,7 @@ def _rename_statements(
                     start=renamed_start,
                     end=renamed_end,
                     step=renamed_step,
-                    body=_rename_statements(statement.body, body_names, role),
+                    body=_rename_statements(statement.body, body_names, role, function_names),
                 )
             )
         elif statement.kind == "break":
@@ -1368,6 +1392,7 @@ def _target_function_view_validated(
     function_ordinal: int,
     plan: IdentifierPlan,
     records_env: dict[str, RecordDefinition] | None = None,
+    functions_env: dict[str, Function] | None = None,
 ) -> Function:
     function_binding = _function_binding(plan, function_ordinal, function)
     parameter_bindings = _parameter_bindings(plan, function_binding, function)
@@ -1382,6 +1407,11 @@ def _target_function_view_validated(
             for local, binding in zip(_local_bindings_in_order(function.body), local_bindings, strict=True)
         }
     )
+    function_names = {
+        b.source_name: b.target_name
+        for b in plan.bindings
+        if b.role == "function"
+    }
     target = replace(
         function,
         name=function_binding.target_name,
@@ -1389,9 +1419,9 @@ def _target_function_view_validated(
             replace(parameter, name=binding.target_name)
             for parameter, binding in zip(function.parameters, parameter_bindings, strict=True)
         ),
-        body=_rename_statements(function.body, name_map, "SOURCE"),
+        body=_rename_statements(function.body, name_map, "SOURCE", function_names=function_names),
     )
-    types.check_function(target, records_env)
+    types.check_function(target, records_env, functions_env)
     return target
 
 
@@ -1407,7 +1437,20 @@ def target_function_view(
     if len(ordinals) != 1:
         raise RouteError("IDENTIFIER_SOURCE_FUNCTION_NOT_UNIQUE")
     records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
-    return _target_function_view_validated(function, ordinals[0], plan, records_env)
+    target_functions_env: dict[str, Function] = {}
+    for ordinal, fn in enumerate(source_ir.functions):
+        fn_binding = _function_binding(plan, ordinal, fn)
+        p_bindings = _parameter_bindings(plan, fn_binding, fn)
+        target_fn = replace(
+            fn,
+            name=fn_binding.target_name,
+            parameters=tuple(
+                replace(param, name=b.target_name)
+                for param, b in zip(fn.parameters, p_bindings, strict=True)
+            ),
+        )
+        target_functions_env[fn_binding.target_name] = target_fn
+    return _target_function_view_validated(function, ordinals[0], plan, records_env, target_functions_env)
 
 
 def target_ir_view(source_ir: SemanticIR, plan: IdentifierPlan) -> SemanticIR:
@@ -1415,10 +1458,23 @@ def target_ir_view(source_ir: SemanticIR, plan: IdentifierPlan) -> SemanticIR:
 
     validate_identifier_plan(source_ir, plan)
     records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
+    target_functions_env: dict[str, Function] = {}
+    for ordinal, fn in enumerate(source_ir.functions):
+        fn_binding = _function_binding(plan, ordinal, fn)
+        p_bindings = _parameter_bindings(plan, fn_binding, fn)
+        target_fn = replace(
+            fn,
+            name=fn_binding.target_name,
+            parameters=tuple(
+                replace(param, name=b.target_name)
+                for param, b in zip(fn.parameters, p_bindings, strict=True)
+            ),
+        )
+        target_functions_env[fn_binding.target_name] = target_fn
     return replace(
         source_ir,
         functions=tuple(
-            _target_function_view_validated(function, ordinal, plan, records_env)
+            _target_function_view_validated(function, ordinal, plan, records_env, target_functions_env)
             for ordinal, function in enumerate(source_ir.functions)
         ),
     )
@@ -1437,8 +1493,22 @@ def alpha_normalize_target(
     if raw_target_ir.diagnostics:
         raise RouteError("IDENTIFIER_TARGET_DIAGNOSTICS_PRESENT")
     records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
+    target_functions_env: dict[str, Function] = {}
+    for ordinal, fn in enumerate(source_ir.functions):
+        fn_binding = _function_binding(plan, ordinal, fn)
+        p_bindings = _parameter_bindings(plan, fn_binding, fn)
+        target_fn = replace(
+            fn,
+            name=fn_binding.target_name,
+            parameters=tuple(
+                replace(param, name=b.target_name)
+                for param, b in zip(fn.parameters, p_bindings, strict=True)
+            ),
+        )
+        target_functions_env[fn_binding.target_name] = target_fn
     expected_views = tuple(
-        _target_function_view_validated(function, ordinal, plan, records_env) for ordinal, function in enumerate(source_ir.functions)
+        _target_function_view_validated(function, ordinal, plan, records_env, target_functions_env)
+        for ordinal, function in enumerate(source_ir.functions)
     )
     raw_index: dict[str, Function] = {}
     for function in raw_target_ir.functions:
@@ -1449,6 +1519,12 @@ def alpha_normalize_target(
     if set(raw_index) != expected_names:
         raise RouteError("IDENTIFIER_RAW_TARGET_FUNCTION_SET_MISMATCH")
 
+    source_functions_env = {fn.name: fn for fn in source_ir.functions}
+    reverse_functions = {
+        b.target_name: b.source_name
+        for b in plan.bindings
+        if b.role == "function"
+    }
     normalized_functions: list[Function] = []
     for source_function, expected_view in zip(source_ir.functions, expected_views, strict=True):
         raw_function = raw_index[expected_view.name]
@@ -1474,9 +1550,9 @@ def alpha_normalize_target(
             raw_function,
             name=source_function.name,
             parameters=tuple(normalized_parameters),
-            body=_rename_statements(raw_function.body, reverse_names, "TARGET"),
+            body=_rename_statements(raw_function.body, reverse_names, "TARGET", function_names=reverse_functions),
         )
         records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
-        types.check_function(normalized, records_env)
+        types.check_function(normalized, records_env, source_functions_env)
         normalized_functions.append(normalized)
     return replace(raw_target_ir, functions=tuple(normalized_functions))

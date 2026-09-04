@@ -94,6 +94,7 @@ def _expression(
     *,
     record_names: set[str] | None = None,
     record_defs: dict[str, RecordDefinition] | None = None,
+    function_names: set[str] | None = None,
     emitted_target: bool = False,
 ) -> dict[str, Any]:
     folded = _signed_literal(node)
@@ -115,8 +116,8 @@ def _expression(
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
-                "right": _expression(node.right, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+                "right": _expression(node.right, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
             }
     if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
         operator = {
@@ -131,8 +132,8 @@ def _expression(
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
-                "right": _expression(node.comparators[0], record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+                "right": _expression(node.comparators[0], record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
             }
     if isinstance(node, ast.BoolOp) and len(node.values) >= 2:
         # Python's parser FLATTENS `a and b and c` into one three-value node,
@@ -148,13 +149,13 @@ def _expression(
         # NOT named `folded`: that name already holds the signed-literal fold
         # at the top of this function, and reusing it makes mypy read the two
         # as one variable of two incompatible types.
-        chain = _expression(node.values[0], record_names=record_names, record_defs=record_defs, emitted_target=emitted_target)
+        chain = _expression(node.values[0], record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target)
         for value in node.values[1:]:
             chain = {
                 "kind": "binary",
                 "operator": operator,
                 "left": chain,
-                "right": _expression(value, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+                "right": _expression(value, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
             }
         return chain
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
@@ -168,7 +169,7 @@ def _expression(
         return {
             "kind": "binary",
             "operator": "==",
-            "left": _expression(node.operand, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+            "left": _expression(node.operand, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
             "right": {"kind": "literal", "value": False},
         }
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
@@ -189,6 +190,7 @@ def _expression(
                 node.value,
                 record_names=record_names,
                 record_defs=record_defs,
+                function_names=function_names,
                 emitted_target=emitted_target,
             ),
             "member": node.attr,
@@ -222,6 +224,7 @@ def _expression(
                     args_dict[f.name],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 for f in rec.fields
@@ -231,6 +234,23 @@ def _expression(
                 "record_name": rec.name,
                 "arguments": args_dict_evaluated,
             }
+        if isinstance(node.func, ast.Name) and function_names and node.func.id in function_names:
+            if node.keywords:
+                raise RouteError("PYTHON_CALL_KEYWORDS_UNSUPPORTED")
+            return {
+                "kind": "call",
+                "function_name": node.func.id,
+                "arguments": [
+                    _expression(
+                        arg,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        function_names=function_names,
+                        emitted_target=emitted_target,
+                    )
+                    for arg in node.args
+                ],
+            }
     raise RouteError(f"PYTHON_UNSUPPORTED_EXPRESSION:{type(node).__name__}")
 
 
@@ -239,6 +259,7 @@ def _statements(
     *,
     record_names: set[str] | None = None,
     record_defs: dict[str, RecordDefinition] | None = None,
+    function_names: set[str] | None = None,
     emitted_target: bool = False,
 ) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
@@ -251,6 +272,7 @@ def _statements(
                         node.value,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                 }
@@ -263,18 +285,21 @@ def _statements(
                         node.test,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                     "then": _statements(
                         node.body,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                     "else": _statements(
                         node.orelse,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                 }
@@ -308,6 +333,7 @@ def _statements(
                         node.value,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                 }
@@ -322,12 +348,14 @@ def _statements(
                         node.test,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                     "body": _statements(
                         node.body,
                         record_names=record_names,
                         record_defs=record_defs,
+                        function_names=function_names,
                         emitted_target=emitted_target,
                     ),
                 }
@@ -352,6 +380,7 @@ def _statements(
                     args[0],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 step = None
@@ -360,12 +389,14 @@ def _statements(
                     args[0],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 end = _expression(
                     args[1],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 step = None
@@ -374,18 +405,21 @@ def _statements(
                     args[0],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 end = _expression(
                     args[1],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
                 step = _expression(
                     args[2],
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 )
             else:
@@ -400,6 +434,7 @@ def _statements(
                     node.body,
                     record_names=record_names,
                     record_defs=record_defs,
+                    function_names=function_names,
                     emitted_target=emitted_target,
                 ),
             }
@@ -425,6 +460,7 @@ def _reject_python_only_arithmetic(
     expression: Expression,
     environment: dict[str, str],
     records_env: dict[str, RecordDefinition] | None = None,
+    functions_env: dict[str, Function] | None = None,
 ) -> None:
     """Refuse the two Python operators whose meaning does not survive lifting.
 
@@ -442,23 +478,35 @@ def _reject_python_only_arithmetic(
     means something else. Python's `//` is already outside the subset (it is
     not in the lifted operator table) for the same reason: it floors.
     """
+    if expression.kind == "call":
+        for arg in expression.call_arguments:
+            _reject_python_only_arithmetic(arg, environment, records_env, functions_env)
+        return
+    if expression.kind == "member_access" and expression.target is not None:
+        _reject_python_only_arithmetic(expression.target, environment, records_env, functions_env)
+        return
+    if expression.kind == "record_construct":
+        for _, arg in expression.arguments:
+            _reject_python_only_arithmetic(arg, environment, records_env, functions_env)
+        return
     if expression.kind != "binary" or expression.left is None or expression.right is None:
         return
     if expression.operator == "%":
         raise RouteError("PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET")
     if expression.operator == "/":
-        left = types.infer(expression.left, environment, records_env)
-        right = types.infer(expression.right, environment, records_env)
+        left = types.infer(expression.left, environment, records_env, functions_env)
+        right = types.infer(expression.right, environment, records_env, functions_env)
         if left == "integer" and right == "integer":
             raise RouteError("PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET")
-    _reject_python_only_arithmetic(expression.left, environment, records_env)
-    _reject_python_only_arithmetic(expression.right, environment, records_env)
+    _reject_python_only_arithmetic(expression.left, environment, records_env, functions_env)
+    _reject_python_only_arithmetic(expression.right, environment, records_env, functions_env)
 
 
 def _check_statements(
     statements: tuple[Statement, ...],
     environment: dict[str, str],
     records_env: dict[str, RecordDefinition] | None = None,
+    functions_env: dict[str, Function] | None = None,
 ) -> None:
     """Walk for the Python-only arithmetic rejection, carrying the same scope
     rule `types._check_statements` uses.
@@ -472,42 +520,43 @@ def _check_statements(
     """
     for statement in statements:
         if statement.expression is not None:
-            _reject_python_only_arithmetic(statement.expression, environment, records_env)
+            _reject_python_only_arithmetic(statement.expression, environment, records_env, functions_env)
         if statement.condition is not None:
-            _reject_python_only_arithmetic(statement.condition, environment, records_env)
+            _reject_python_only_arithmetic(statement.condition, environment, records_env, functions_env)
         if statement.kind == "let" and statement.name is not None and statement.declared_type is not None:
             # After its own initializer, never before.
             environment[statement.name] = statement.declared_type
             continue
         if statement.kind == "while":
-            _check_statements(statement.body, dict(environment), records_env)
+            _check_statements(statement.body, dict(environment), records_env, functions_env)
             continue
         if statement.kind == "for":
             if statement.start is not None:
-                _reject_python_only_arithmetic(statement.start, environment, records_env)
+                _reject_python_only_arithmetic(statement.start, environment, records_env, functions_env)
             if statement.end is not None:
-                _reject_python_only_arithmetic(statement.end, environment, records_env)
+                _reject_python_only_arithmetic(statement.end, environment, records_env, functions_env)
             if statement.step is not None:
-                _reject_python_only_arithmetic(statement.step, environment, records_env)
+                _reject_python_only_arithmetic(statement.step, environment, records_env, functions_env)
             loop_env = dict(environment)
             if statement.name is not None:
                 loop_env[statement.name] = "integer"
-            _check_statements(statement.body, loop_env, records_env)
+            _check_statements(statement.body, loop_env, records_env, functions_env)
             continue
-        _check_statements(statement.then_body, dict(environment), records_env)
-        _check_statements(statement.else_body, dict(environment), records_env)
+        _check_statements(statement.then_body, dict(environment), records_env, functions_env)
+        _check_statements(statement.else_body, dict(environment), records_env, functions_env)
 
 
 def _check_function(
     function: Function,
     records_env: dict[str, RecordDefinition] | None = None,
+    functions_env: dict[str, Function] | None = None,
 ) -> None:
     # The canonical checker mutates and returns its environment, so its result
     # contains every top-level `let`.  The Python-only arithmetic walk must
     # instead start with parameters and bind locals in source order; otherwise
     # a later declaration is incorrectly visible to an earlier statement.
-    types.check_function(function, records_env)
-    _check_statements(function.body, types.environment_of(function, records_env), records_env)
+    types.check_function(function, records_env, functions_env)
+    _check_statements(function.body, types.environment_of(function, records_env), records_env, functions_env)
 
 
 def _emitted_body(nodes: list[ast.stmt], parameters: list[dict[str, str]]) -> list[ast.stmt]:
@@ -635,16 +684,14 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
             records_list.append(rec)
     record_names = set(record_defs.keys())
 
-    candidate = next(
-        (
-            node
-            for node in tree.body
-            if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef) and node.name == function_name
-        ),
-        None,
-    )
-    if candidate is None:
-        raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}")
+def _parse_function(
+    candidate: ast.FunctionDef | ast.AsyncFunctionDef,
+    *,
+    record_names: set[str],
+    record_defs: dict[str, RecordDefinition],
+    function_names: set[str],
+    emitted_target: bool,
+) -> tuple[dict[str, Any], Function]:
     if isinstance(candidate, ast.AsyncFunctionDef):
         raise RouteError("ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET")
     parameters = []
@@ -669,26 +716,87 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
         "name": candidate.name,
         "parameters": parameters,
         "return_type": return_type,
-        "body": _statements(body, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+        "body": _statements(
+            body,
+            record_names=record_names,
+            record_defs=record_defs,
+            function_names=function_names,
+            emitted_target=emitted_target,
+        ),
     }
     if documentation is not None:
         function_mapping["documentation"] = documentation
+    return function_mapping, Function.from_mapping(function_mapping)
+
+
+def analyze_python(path: Path, function_name: str, *, emitted_target: bool = False) -> SemanticIR:
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=path.name, feature_version=(3, 12))
+    records_list: list[RecordDefinition] = []
+    record_defs: dict[str, RecordDefinition] = {}
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and _is_dataclass(node):
+            if node.name in record_defs:
+                raise RouteError(f"PYTHON_DUPLICATE_RECORD_NAME:{node.name}")
+            rec = _parse_record(node, set(record_defs.keys()))
+            record_defs[rec.name] = rec
+            records_list.append(rec)
+    record_names = set(record_defs.keys())
+
+    module_function_nodes: dict[str, ast.FunctionDef | ast.AsyncFunctionDef] = {}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef):
+            if node.name in module_function_nodes:
+                raise RouteError(f"PYTHON_DUPLICATE_FUNCTION_NAME:{node.name}")
+            module_function_nodes[node.name] = node
+
+    if function_name not in module_function_nodes:
+        raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}")
+
+    all_function_names = set(module_function_nodes.keys())
+    parsed_functions: dict[str, Function] = {}
+    function_mappings: dict[str, dict[str, Any]] = {}
+    queue = [function_name]
+    visited = {function_name}
+
+    while queue:
+        curr_name = queue.pop(0)
+        mapping, fn = _parse_function(
+            module_function_nodes[curr_name],
+            record_names=record_names,
+            record_defs=record_defs,
+            function_names=all_function_names,
+            emitted_target=emitted_target,
+        )
+        parsed_functions[curr_name] = fn
+        function_mappings[curr_name] = mapping
+        callees = types.extract_function_callees(fn)
+        for callee in callees:
+            if callee in module_function_nodes:
+                if callee not in visited:
+                    visited.add(callee)
+                    queue.append(callee)
+            else:
+                raise RouteError(f"UNKNOWN_FUNCTION:{callee}")
+
+    sorted_functions = types.topological_sort_functions(tuple(parsed_functions.values()))
+
     raw_semantic: dict[str, Any] = {
         "schema_version": "1.0.0",
         "source_language": "python",
         "source_file": path.name,
         "analyzer": "CPython ast",
         "analyzer_version": platform.python_version(),
-        "functions": [function_mapping],
+        "functions": [function_mappings[f.name] for f in sorted_functions],
         "diagnostics": [],
     }
     if records_list:
         raw_semantic["records"] = [rec.to_mapping() for rec in records_list]
     semantic = SemanticIR.from_mapping(raw_semantic)
-    records_env = {r.name: r for r in semantic.records} if semantic.records else None
-    for function in semantic.functions:
-        if emitted_target:
-            types.check_function(function, records_env)
-        else:
-            _check_function(function, records_env)
+    types.check(semantic)
+    if not emitted_target:
+        functions_env = {f.name: f for f in semantic.functions}
+        records_env = {r.name: r for r in semantic.records} if semantic.records else None
+        for function in semantic.functions:
+            _check_statements(function.body, types.environment_of(function, records_env), records_env, functions_env)
     return semantic
