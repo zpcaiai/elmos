@@ -1969,10 +1969,12 @@ def _private_snapshot(
     """Write one immutable-by-convention input below a private replay root."""
 
     destination_root = root / role
-    destination_root.mkdir(mode=0o700, parents=True, exist_ok=False)
+    destination_root.mkdir(mode=0o700, parents=True, exist_ok=True)
     destination = destination_root / logical_name
     if destination.name != logical_name or not logical_name:
         raise ValueError(f"unsafe snapshot logical name: {logical_name!r}")
+    if destination.exists():
+        raise FileExistsError(f"snapshot artifact already exists: {destination}")
     destination.write_bytes(content)
     destination.chmod(0o400)
     return destination
@@ -9429,7 +9431,7 @@ def _validate_module_whole_file_closure(
     snapshot_owner = tempfile.TemporaryDirectory(
         prefix="elmos-module-validator-snapshot-"
     )
-    snapshot_root = Path(snapshot_owner.name)
+    snapshot_root = Path(snapshot_owner.name).resolve(strict=True)
     snapshot_root.chmod(0o700)
     try:
         source_bytes = source_artifact_record[1].read_bytes()

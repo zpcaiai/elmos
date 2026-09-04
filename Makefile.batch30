@@ -11,7 +11,23 @@ SPRING_DEPLOYMENT_ID ?=
 SPRING_PROVIDER ?=
 SPRING_REGION ?=
 SPRING_ENVIRONMENT_CLASS ?=
-.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-runner-validate spring-launch-validate spring-launch-gate
+SPRING_EXPECTED_REVISION ?=
+SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST ?=
+SPRING_WEB_CONTAINER ?=
+SPRING_WEB_IMAGE_DIGEST ?=
+SPRING_WORKER_CONTAINER ?=
+SPRING_WORKER_IMAGE_DIGEST ?=
+SPRING_WEB_COLLECTOR_ID ?=
+SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT ?=
+export SPRING_ENV_FILE ELMOS_ENV_FILE SPRING_EXTERNAL_EVIDENCE
+export SPRING_TRUST_STORE SPRING_TRUST_STORE_DIGEST SPRING_EVIDENCE_ROOT
+export SPRING_ENVIRONMENT_ID SPRING_DEPLOYMENT_ID SPRING_PROVIDER SPRING_REGION
+export SPRING_ENVIRONMENT_CLASS SPRING_EXPECTED_REVISION
+export SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST
+export SPRING_WEB_CONTAINER SPRING_WEB_IMAGE_DIGEST SPRING_WEB_COLLECTOR_ID
+export SPRING_WORKER_CONTAINER SPRING_WORKER_IMAGE_DIGEST
+export SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-runner-validate spring-launch-validate spring-web-runtime-attestation spring-launch-gate
 b30-skills-test:
 	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
 	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
@@ -25,27 +41,45 @@ spring-runner-validate:
 	$(BATCH30_PYTHON) deploy/production/runner/validate_spring_runner_topology.py
 spring-launch-validate: spring-runner-validate
 	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py
+spring-web-runtime-attestation:
+	@test -n "$${SPRING_WEB_CONTAINER}" || (echo "SPRING_WEB_CONTAINER=<exact container name/id> required" && exit 2)
+	@test -n "$${SPRING_WEB_IMAGE_DIGEST}" || (echo "SPRING_WEB_IMAGE_DIGEST=sha256:<pinned image ID> required" && exit 2)
+	@test -n "$${SPRING_WORKER_CONTAINER}" || (echo "SPRING_WORKER_CONTAINER=<exact container name/id> required" && exit 2)
+	@test -n "$${SPRING_WORKER_IMAGE_DIGEST}" || (echo "SPRING_WORKER_IMAGE_DIGEST=sha256:<pinned image ID> required" && exit 2)
+	@test -n "$${SPRING_WEB_COLLECTOR_ID}" || (echo "SPRING_WEB_COLLECTOR_ID=<collector identity> required" && exit 2)
+	@test -n "$${SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT}" || (echo "SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=<new file outside repository> required" && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/spring_launch_evidence.py collect-web-runtime \
+		--container "$${SPRING_WEB_CONTAINER}" \
+		--expected-image-digest "$${SPRING_WEB_IMAGE_DIGEST}" \
+		--worker-container "$${SPRING_WORKER_CONTAINER}" \
+		--expected-worker-image-digest "$${SPRING_WORKER_IMAGE_DIGEST}" \
+		--collector-identity "$${SPRING_WEB_COLLECTOR_ID}" \
+		--output "$${SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT}"
 spring-launch-gate: spring-runner-validate
-	@test -n "$(SPRING_EXTERNAL_EVIDENCE)" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
-	@test -n "$(SPRING_ENV_FILE)" || (echo "SPRING_ENV_FILE=<owner-only spring.env> required" && exit 2)
-	@test -n "$(ELMOS_ENV_FILE)" || (echo "ELMOS_ENV_FILE=<actual owner-only Compose env file> required" && exit 2)
-	@test -n "$(SPRING_TRUST_STORE)" || (echo "SPRING_TRUST_STORE=<trust-store.json> required" && exit 2)
-	@test -n "$(SPRING_TRUST_STORE_DIGEST)" || (echo "SPRING_TRUST_STORE_DIGEST=sha256:<pinned digest> required" && exit 2)
-	@test -n "$(SPRING_EVIDENCE_ROOT)" || (echo "SPRING_EVIDENCE_ROOT=<approved-evidence-directory> required" && exit 2)
-	@test -n "$(SPRING_ENVIRONMENT_ID)" || (echo "SPRING_ENVIRONMENT_ID=<exact environment identity> required" && exit 2)
-	@test -n "$(SPRING_DEPLOYMENT_ID)" || (echo "SPRING_DEPLOYMENT_ID=<exact deployment identity> required" && exit 2)
-	@test -n "$(SPRING_PROVIDER)" || (echo "SPRING_PROVIDER=<exact provider identity> required" && exit 2)
-	@test -n "$(SPRING_REGION)" || (echo "SPRING_REGION=<exact region identity> required" && exit 2)
-	@test -n "$(SPRING_ENVIRONMENT_CLASS)" || (echo "SPRING_ENVIRONMENT_CLASS=STAGING|PRODUCTION required" && exit 2)
+	@test -n "$${SPRING_EXTERNAL_EVIDENCE}" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
+	@test -n "$${SPRING_ENV_FILE}" || (echo "SPRING_ENV_FILE=<owner-only spring.env> required" && exit 2)
+	@test -n "$${ELMOS_ENV_FILE}" || (echo "ELMOS_ENV_FILE=<actual owner-only Compose env file> required" && exit 2)
+	@test -n "$${SPRING_TRUST_STORE}" || (echo "SPRING_TRUST_STORE=<trust-store.json> required" && exit 2)
+	@test -n "$${SPRING_TRUST_STORE_DIGEST}" || (echo "SPRING_TRUST_STORE_DIGEST=sha256:<pinned digest> required" && exit 2)
+	@test -n "$${SPRING_EVIDENCE_ROOT}" || (echo "SPRING_EVIDENCE_ROOT=<approved-evidence-directory> required" && exit 2)
+	@test -n "$${SPRING_ENVIRONMENT_ID}" || (echo "SPRING_ENVIRONMENT_ID=<exact environment identity> required" && exit 2)
+	@test -n "$${SPRING_DEPLOYMENT_ID}" || (echo "SPRING_DEPLOYMENT_ID=<exact deployment identity> required" && exit 2)
+	@test -n "$${SPRING_PROVIDER}" || (echo "SPRING_PROVIDER=<exact provider identity> required" && exit 2)
+	@test -n "$${SPRING_REGION}" || (echo "SPRING_REGION=<exact region identity> required" && exit 2)
+	@test -n "$${SPRING_ENVIRONMENT_CLASS}" || (echo "SPRING_ENVIRONMENT_CLASS=STAGING|PRODUCTION required" && exit 2)
+	@test -n "$${SPRING_EXPECTED_REVISION}" || (echo "SPRING_EXPECTED_REVISION=<40-char deployed Git revision> required" && exit 2)
+	@test -n "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}" || (echo "SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST=sha256:<CI-pinned /app/app.jar digest> required" && exit 2)
 	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py \
-		--environment-file "$(SPRING_ENV_FILE)" \
-		--compose-environment-file "$(ELMOS_ENV_FILE)" --require-production-evidence \
-		--external-evidence "$(SPRING_EXTERNAL_EVIDENCE)" \
-		--trust-store "$(SPRING_TRUST_STORE)" \
-		--expected-trust-store-digest "$(SPRING_TRUST_STORE_DIGEST)" \
-		--evidence-root "$(SPRING_EVIDENCE_ROOT)" \
-		--expected-environment-id "$(SPRING_ENVIRONMENT_ID)" \
-		--expected-deployment-id "$(SPRING_DEPLOYMENT_ID)" \
-		--expected-provider "$(SPRING_PROVIDER)" \
-		--expected-region "$(SPRING_REGION)" \
-		--expected-environment-class "$(SPRING_ENVIRONMENT_CLASS)"
+		--environment-file "$${SPRING_ENV_FILE}" \
+		--compose-environment-file "$${ELMOS_ENV_FILE}" --require-production-evidence \
+		--external-evidence "$${SPRING_EXTERNAL_EVIDENCE}" \
+		--trust-store "$${SPRING_TRUST_STORE}" \
+		--expected-trust-store-digest "$${SPRING_TRUST_STORE_DIGEST}" \
+		--evidence-root "$${SPRING_EVIDENCE_ROOT}" \
+		--expected-revision "$${SPRING_EXPECTED_REVISION}" \
+		--expected-environment-id "$${SPRING_ENVIRONMENT_ID}" \
+		--expected-deployment-id "$${SPRING_DEPLOYMENT_ID}" \
+		--expected-provider "$${SPRING_PROVIDER}" \
+		--expected-region "$${SPRING_REGION}" \
+		--expected-environment-class "$${SPRING_ENVIRONMENT_CLASS}" \
+		--expected-worker-application-artifact-digest "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}"

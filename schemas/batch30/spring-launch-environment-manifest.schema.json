@@ -18,11 +18,13 @@
     "launch_profile_digest",
     "artifact_digest",
     "configuration_digest",
-    "compose_environment_file_digest",
+    "application_environment_commitment_digest",
     "container_inspect",
-    "web_console_container_inspect",
+    "web_console_runtime_attestation",
     "effective_spring_configuration_digest",
     "effective_web_console_configuration_digest",
+    "web_console_environment_names_digest",
+    "application_mount_sources_digest",
     "worker_image_artifact_attestation",
     "worker_application_artifact_digest",
     "network_policy_digest",
@@ -45,11 +47,13 @@
     "launch_profile_digest": {"$ref": "#/$defs/digest"},
     "artifact_digest": {"$ref": "#/$defs/digest"},
     "configuration_digest": {"$ref": "#/$defs/digest"},
-    "compose_environment_file_digest": {"$ref": "#/$defs/digest"},
+    "application_environment_commitment_digest": {"$ref": "#/$defs/digest"},
     "container_inspect": {"$ref": "#/$defs/localJsonEvidenceReference"},
-    "web_console_container_inspect": {"$ref": "#/$defs/localJsonEvidenceReference"},
+    "web_console_runtime_attestation": {"$ref": "#/$defs/localJsonEvidenceReference"},
     "effective_spring_configuration_digest": {"$ref": "#/$defs/digest"},
     "effective_web_console_configuration_digest": {"$ref": "#/$defs/digest"},
+    "web_console_environment_names_digest": {"$ref": "#/$defs/digest"},
+    "application_mount_sources_digest": {"$ref": "#/$defs/digest"},
     "worker_image_artifact_attestation": {"$ref": "#/$defs/localJsonEvidenceReference"},
     "worker_application_artifact_digest": {"$ref": "#/$defs/digest"},
     "network_policy_digest": {"$ref": "#/$defs/digest"},
@@ -57,9 +61,14 @@
     "runtime_image_digests": {
       "type": "object",
       "required": ["worker", "web", "proxy", "transformer", "runner"],
-      "minProperties": 5,
-      "propertyNames": {"$ref": "#/$defs/identity"},
-      "additionalProperties": {"$ref": "#/$defs/digest"}
+      "additionalProperties": false,
+      "properties": {
+        "worker": {"$ref": "#/$defs/digest"},
+        "web": {"$ref": "#/$defs/digest"},
+        "proxy": {"$ref": "#/$defs/digest"},
+        "transformer": {"$ref": "#/$defs/digest"},
+        "runner": {"$ref": "#/$defs/digest"}
+      }
     },
     "captured_at": {"$ref": "#/$defs/utcInstant"},
     "secrets_embedded": {"const": false}
@@ -69,7 +78,7 @@
       "type": "string",
       "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$"
     },
-    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "digest": {"type": "string", "pattern": "^sha256:(?!0{64}$)[0-9a-f]{64}$"},
     "localJsonEvidenceReference": {
       "type": "object",
       "additionalProperties": false,

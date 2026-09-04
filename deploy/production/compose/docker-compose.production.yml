@@ -71,6 +71,7 @@ services:
     build: { context: ../../.., dockerfile: apps/web-console/Dockerfile }
     user: "10001:10001"          # 与 deploy/compose 一致，已在开发环境验证
     read_only: true
+    pids_limit: 512
     tmpfs:
       - "/tmp:rw,noexec,nosuid,size=64m"
     env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]

@@ -274,7 +274,7 @@ _JAVASCRIPT_HELPERS: dict[str, str] = {
     ),
     "exact_record": (
         "function _elmosRequireRecord(value) {\n"
-        '  if (typeof value !== "object" || value === null) {\n'
+        '  if (typeof value !== "object" || value === null || Array.isArray(value)) {\n'
         '    throw new TypeError("ELMOS_RECORD_REQUIRED");\n'
         "  }\n"
         "  return value;\n"

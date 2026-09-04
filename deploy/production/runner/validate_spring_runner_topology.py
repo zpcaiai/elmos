@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import ipaddress
 import json
 import os
 import re
 import stat
 import subprocess
 import sys
+from collections import Counter
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
@@ -40,6 +42,9 @@ class ContractPaths:
     )
     ingress_config: Path = ROOT / "deploy/production/runner/nginx.spring-runner.conf"
     runner_environment_example: Path = ROOT / "deploy/production/runner/spring-runner.env.example"
+    spring_launch_environment_example: Path = (
+        ROOT / "deploy/production/spring-launch.env.example"
+    )
     environment_example: Path = ROOT / "deploy/production/elmos-commercial.env.example"
     rootless_readme: Path = ROOT / "deploy/rootless-docker/README.md"
     production_readme: Path = ROOT / "deploy/production/README.md"
@@ -95,6 +100,135 @@ EXPECTED_RUNNER_SERVICES = {
     "spring-runner-broker",
     "spring-runner-egress-proxy",
 }
+SERVICE_IMAGE_ENVIRONMENTS = {
+    "spring-runner-ingress": "ELMOS_SPRING_INGRESS_IMAGE",
+    "spring-runner-broker": "ELMOS_SPRING_WORKSPACE_SERVICE_IMAGE",
+    "spring-runner-egress-proxy": "ELMOS_SPRING_EGRESS_PROXY_IMAGE",
+}
+SERVICE_USERS = {
+    "spring-runner-ingress": "10004:10004",
+    "spring-runner-broker": "10001:10001",
+    "spring-runner-egress-proxy": "10001:10001",
+}
+OPERATIONAL_ROOT_ENVIRONMENTS = (
+    "ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH",
+    "ELMOS_COMMAND_ARTIFACT_HOST_PATH",
+    "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH",
+    "ELMOS_VERIFIER_EVIDENCE_HOST_PATH",
+    RUNNER_REPLAY_ENVIRONMENT,
+)
+SENSITIVE_PATH_ENVIRONMENTS = (
+    "ELMOS_SPRING_BROKER_SECRET_ROOT",
+    "ELMOS_SPRING_INGRESS_TLS_SECRET_ROOT",
+    "ELMOS_SPRING_INGRESS_TLS_KEY_HOST_PATH",
+    "ELMOS_SPRING_RUNNER_ENV_FILE",
+) + BROKER_SECRET_ENVIRONMENTS
+RUNNER_SERVICE_ENVIRONMENT_CONTRACT: dict[str, dict[str, str]] = {
+    "spring-runner-ingress": {},
+    "spring-runner-broker": {
+        "ELMOS_DATABASE_URL": "${ELMOS_SPRING_RUNNER_DATABASE_URL:?runner database URL is required}",
+        "ELMOS_DATABASE_USER": "${ELMOS_SPRING_RUNNER_DATABASE_USER:?runner database user is required}",
+        "ELMOS_DATABASE_PASSWORD": "${ELMOS_SPRING_RUNNER_DATABASE_PASSWORD:?runner database password is required}",
+        "ELMOS_WORKSPACE_DOCKER_ENABLED": "true",
+        "ELMOS_WORKSPACE_SECRETS_ENABLED": "false",
+        "ELMOS_SNAPSHOT_ARTIFACT_ROOT": "/var/lib/elmos/snapshot-artifacts",
+        "ELMOS_COMMAND_ARTIFACT_ROOT": "/var/lib/elmos/command-artifacts",
+        "ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST": "${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:?snapshot helper digest is required}",
+        "ELMOS_EGRESS_PROXY_IMAGE_DIGEST": "${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:?egress proxy digest is required}",
+        "ELMOS_SPRING_RUNTIME_ENABLED": "true",
+        "ELMOS_JAVA_RUNTIME_IMAGE_DIGEST": "${ELMOS_JAVA_RUNTIME_IMAGE_DIGEST:?runtime digest is required}",
+        "ELMOS_JAVA_UPGRADE_ARTIFACT_ROOT": "/var/lib/elmos/java-verifier-evidence",
+        "ELMOS_JAVA_UPGRADE_ARTIFACT_HOST_ROOT": "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?evidence host root is required}",
+        "ELMOS_SPRING_RUNTIME_HMAC_SECRET_FILE": "/run/secrets/elmos-runtime-hmac",
+        "ELMOS_SPRING_RUNTIME_REPLAY_ROOT": "/var/lib/elmos/spring-auth-replay/runtime",
+        "ELMOS_EPHEMERAL_SPRING_VERIFIER_ENABLED": "true",
+        "ELMOS_SPRING_VERIFIER_IMAGE_DIGEST": "${ELMOS_SPRING_VERIFIER_IMAGE_DIGEST:?verifier digest is required}",
+        "ELMOS_SPRING_VERIFIER_ID": "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:?verifier identity is required}",
+        "ELMOS_JAVA_UPGRADE_INTERNAL_NETWORK": "elmos-spring-runner-broker",
+        "ELMOS_JAVA_UPGRADE_EGRESS_PROXY_URL": "http://spring-runner-egress-proxy:8080",
+        "ELMOS_SPRING_VERIFIER_SERVICE_INPUT_ROOT": "/var/lib/elmos/java-upgrade-runs",
+        "ELMOS_SPRING_VERIFIER_HOST_INPUT_ROOT": "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?shared workspace is required}",
+        "ELMOS_SPRING_VERIFIER_SERVICE_EVIDENCE_ROOT": "/var/lib/elmos/java-verifier-evidence",
+        "ELMOS_SPRING_VERIFIER_HOST_EVIDENCE_ROOT": "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?evidence host root is required}",
+        "ELMOS_SPRING_VERIFIER_HMAC_SECRET_FILE": "/run/secrets/elmos-verifier-hmac",
+        "ELMOS_SPRING_VERIFIER_REPLAY_ROOT": "/var/lib/elmos/spring-auth-replay/verifier",
+        "ELMOS_EPHEMERAL_SPRING_TRANSFORMER_ENABLED": "true",
+        "ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST": "${ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST:?transformer digest is required}",
+        "ELMOS_SPRING_TRANSFORMER_SERVICE_RUN_ROOT": "/var/lib/elmos/java-upgrade-runs",
+        "ELMOS_SPRING_TRANSFORMER_HOST_RUN_ROOT": "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?shared workspace is required}",
+        "ELMOS_SPRING_TRANSFORMER_HMAC_SECRET_FILE": "/run/secrets/elmos-transformer-hmac",
+        "ELMOS_SPRING_TRANSFORMER_REPLAY_ROOT": "/var/lib/elmos/spring-auth-replay/transformer",
+        "ELMOS_ALLOWED_GIT_HOSTS": "${ELMOS_ALLOWED_GIT_HOSTS:-github.com}",
+        "ELMOS_SHUTDOWN_TIMEOUT": "30s",
+    },
+    "spring-runner-egress-proxy": {
+        "ELMOS_PROXY_PORT": "8080",
+        "ELMOS_WORKSPACE_ID": "spring-production-runner",
+        "ELMOS_NETWORK_POLICY_ID": "spring-production-default-deny",
+        "ELMOS_NETWORK_POLICY_VERSION": "${ELMOS_NETWORK_POLICY_VERSION:?approved policy version is required}",
+        "ELMOS_EGRESS_ALLOWED_HOSTS": "${ELMOS_JAVA_UPGRADE_EGRESS_HOSTS:-github.com,api.github.com,objects.githubusercontent.com}",
+    },
+}
+RUNNER_SERVICE_MOUNT_CONTRACT: dict[str, dict[str, tuple[str, bool]]] = {
+    "spring-runner-ingress": {
+        "/etc/nginx/nginx.conf": ("ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH", False),
+        "/run/secrets/tls/tls.crt": ("ELMOS_SPRING_INGRESS_TLS_CERT_HOST_PATH", False),
+        "/run/secrets/tls/tls.key": ("ELMOS_SPRING_INGRESS_TLS_KEY_HOST_PATH", False),
+    },
+    "spring-runner-broker": {
+        "/run/docker.sock": ("ELMOS_ROOTLESS_DOCKER_SOCKET", True),
+        "/var/lib/elmos/snapshot-artifacts": ("ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH", False),
+        "/var/lib/elmos/command-artifacts": ("ELMOS_COMMAND_ARTIFACT_HOST_PATH", True),
+        "/var/lib/elmos/java-upgrade-runs": ("ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH", False),
+        "/var/lib/elmos/java-verifier-evidence": ("ELMOS_VERIFIER_EVIDENCE_HOST_PATH", True),
+        "/run/secrets/elmos-runtime-hmac": ("ELMOS_SPRING_BROKER_RUNTIME_HMAC_SECRET_HOST_PATH", False),
+        "/run/secrets/elmos-verifier-hmac": ("ELMOS_SPRING_BROKER_VERIFIER_HMAC_SECRET_HOST_PATH", False),
+        "/run/secrets/elmos-transformer-hmac": ("ELMOS_SPRING_BROKER_TRANSFORMER_HMAC_SECRET_HOST_PATH", False),
+        "/var/lib/elmos/spring-auth-replay": (RUNNER_REPLAY_ENVIRONMENT, True),
+    },
+    "spring-runner-egress-proxy": {},
+}
+RUNNER_SERVICE_TMPFS_CONTRACT = {
+    "spring-runner-ingress": ["/tmp:rw,noexec,nosuid,size=32m"],
+    "spring-runner-broker": ["/tmp:rw,noexec,nosuid,size=256m"],
+    "spring-runner-egress-proxy": ["/tmp:rw,noexec,nosuid,size=32m"],
+}
+RUNNER_SERVICE_RESOURCE_CONTRACT = {
+    "spring-runner-ingress": {"mem_limit": "256m", "cpus": 1, "pids_limit": 128},
+    "spring-runner-broker": {"mem_limit": "4g", "cpus": 4, "pids_limit": 512},
+    "spring-runner-egress-proxy": {"mem_limit": "512m", "cpus": 1, "pids_limit": 128},
+}
+RUNNER_SERVICE_HEALTHCHECK_CONTRACT: dict[str, dict[str, Any] | None] = {
+    "spring-runner-ingress": {
+        "test": ["CMD", "nginx", "-t", "-c", "/etc/nginx/nginx.conf"],
+        "interval": "15s",
+        "timeout": "3s",
+        "retries": 4,
+        "start_period": "10s",
+    },
+    "spring-runner-broker": {
+        "test": ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/8082"],
+        "interval": "10s",
+        "timeout": "3s",
+        "retries": 10,
+        "start_period": "20s",
+    },
+    "spring-runner-egress-proxy": None,
+}
+RUNNER_LOGGING_CONTRACT = {
+    "driver": "json-file",
+    "options": {"max-size": "20m", "max-file": "5"},
+}
+RUNNER_SERVICE_RUNTIME_RESOURCE_CONTRACT = {
+    "spring-runner-ingress": {"Memory": 256 * 1024 * 1024, "NanoCpus": 1_000_000_000},
+    "spring-runner-broker": {"Memory": 4 * 1024 * 1024 * 1024, "NanoCpus": 4_000_000_000},
+    "spring-runner-egress-proxy": {"Memory": 512 * 1024 * 1024, "NanoCpus": 1_000_000_000},
+}
+RUNNER_SERVICE_TMPFS_SIZE_CONTRACT = {
+    "spring-runner-ingress": {"32m", str(32 * 1024 * 1024)},
+    "spring-runner-broker": {"256m", str(256 * 1024 * 1024)},
+    "spring-runner-egress-proxy": {"32m", str(32 * 1024 * 1024)},
+}
 RUNNER_ENVIRONMENT_ALLOWLIST = frozenset(
     IMAGE_ENVIRONMENTS
     + CHILD_IMAGE_DIGEST_ENVIRONMENTS
@@ -134,6 +268,9 @@ PINNED_IMAGE = re.compile(r"^[^\s@]+(?::[^\s@]+)?@sha256:[0-9a-f]{64}$")
 SHA256_ID = re.compile(r"^sha256:[0-9a-f]{64}$")
 ENVIRONMENT_NAME = re.compile(r"^ELMOS_[A-Z0-9_]+$")
 ENVIRONMENT_VALUE = re.compile(r"^[A-Za-z0-9_./:@?=,+%&\[\]-]+$")
+COMPOSE_INTERPOLATION = re.compile(
+    r"^\$\{(?P<name>[A-Z][A-Z0-9_]*)(?::(?P<operator>[-?])(?P<fallback>.*))?\}$"
+)
 
 
 def read_yaml(path: Path) -> dict[str, Any]:
@@ -185,14 +322,37 @@ def volume_for_target(service: Mapping[str, Any], target: str) -> dict[str, Any]
 
 
 def validate_hardening(errors: list[str], name: str, service: Mapping[str, Any]) -> None:
+    require(errors, service.get("init") is True, f"{name} must run with an init process")
+    require(errors, service.get("restart") == "unless-stopped", f"{name} restart policy drift")
     require(errors, service.get("read_only") is True, f"{name} root filesystem must be read-only")
+    require(errors, service.get("privileged") in (None, False), f"{name} must not be privileged")
+    require(errors, service.get("cap_add") in (None, []), f"{name} must not add capabilities")
     require(errors, service.get("cap_drop") == ["ALL"], f"{name} must drop all capabilities")
     require(
         errors,
-        "no-new-privileges:true" in service.get("security_opt", []),
-        f"{name} must enable no-new-privileges",
+        service.get("security_opt") == ["no-new-privileges:true"],
+        f"{name} must enable only no-new-privileges",
     )
-    require(errors, isinstance(service.get("pids_limit"), int), f"{name} must have a PID limit")
+    require(
+        errors,
+        isinstance(service.get("pids_limit"), int)
+        and not isinstance(service.get("pids_limit"), bool)
+        and service["pids_limit"] > 0,
+        f"{name} must have a positive PID limit",
+    )
+    for field in (
+        "network_mode",
+        "pid",
+        "ipc",
+        "uts",
+        "userns_mode",
+        "devices",
+        "device_cgroup_rules",
+        "volumes_from",
+        "extra_hosts",
+        "dns",
+    ):
+        require(errors, field not in service, f"{name} must not override {field}")
 
 
 def validate_runner_compose(errors: list[str], compose: Mapping[str, Any]) -> None:
@@ -223,9 +383,95 @@ def validate_runner_compose(errors: list[str], compose: Mapping[str, Any]) -> No
         }[name]
         require(
             errors,
-            image.startswith("${" + expected_env + ":?"),
+            re.fullmatch(
+                rf"\$\{{{re.escape(expected_env)}:\?[^{{}}]+\}}", image
+            )
+            is not None,
             f"{name} image must be supplied by required {expected_env}",
         )
+        require(
+            errors,
+            service.get("environment", {})
+            == RUNNER_SERVICE_ENVIRONMENT_CONTRACT[name],
+            f"{name} environment contract drift",
+        )
+        require(
+            errors,
+            service.get("tmpfs") == RUNNER_SERVICE_TMPFS_CONTRACT[name],
+            f"{name} tmpfs contract drift",
+        )
+        for resource, expected in RUNNER_SERVICE_RESOURCE_CONTRACT[name].items():
+            require(
+                errors,
+                service.get(resource) == expected,
+                f"{name} {resource} contract drift",
+            )
+        require(
+            errors,
+            service.get("logging") == RUNNER_LOGGING_CONTRACT,
+            f"{name} logging contract drift",
+        )
+        require(
+            errors,
+            service.get("healthcheck")
+            == RUNNER_SERVICE_HEALTHCHECK_CONTRACT[name],
+            f"{name} healthcheck contract drift",
+        )
+        for field in ("entrypoint", "command", "working_dir", "configs", "secrets"):
+            require(
+                errors,
+                field not in service,
+                f"{name} must inherit its digest-pinned image {field}",
+            )
+        raw_mounts = service.get("volumes", [])
+        mounts = service_volumes(service)
+        require(
+            errors,
+            isinstance(raw_mounts, list)
+            and all(isinstance(item, dict) for item in raw_mounts)
+            and len(raw_mounts) == len(mounts),
+            f"{name} mounts must use parseable long-form bind records",
+        )
+        mounts_by_target = {
+            str(mount.get("target")): mount
+            for mount in mounts
+            if isinstance(mount.get("target"), str)
+        }
+        expected_mounts = RUNNER_SERVICE_MOUNT_CONTRACT[name]
+        require(
+            errors,
+            len(mounts) == len(mounts_by_target)
+            and set(mounts_by_target) == set(expected_mounts),
+            f"{name} mount inventory drift",
+        )
+        for target, (variable, read_write) in expected_mounts.items():
+            mount = mounts_by_target.get(target)
+            if mount is None:
+                continue
+            require(
+                errors,
+                mount.get("type") == "bind",
+                f"{name} mount {target} must remain a bind mount",
+            )
+            require(
+                errors,
+                re.fullmatch(
+                    rf"\$\{{{re.escape(variable)}:\?[^{{}}]+\}}",
+                    str(mount.get("source", "")),
+                )
+                is not None,
+                f"{name} mount {target} must use {variable}",
+            )
+            require(
+                errors,
+                mount.get("read_only") is (not read_write),
+                f"{name} mount {target} access mode drift",
+            )
+            require(
+                errors,
+                mount.get("bind", {}).get("create_host_path") is False,
+                f"{name} mount {target} must not auto-create its host source",
+            )
 
     ingress = services.get("spring-runner-ingress", {})
     broker = services.get("spring-runner-broker", {})
@@ -236,10 +482,23 @@ def validate_runner_compose(errors: list[str], compose: Mapping[str, Any]) -> No
         service_networks(ingress) == {"spring-runner-edge", "spring-runner-broker"},
         "HTTPS ingress may join only edge and broker networks",
     )
-    require(errors, bool(ingress.get("ports")), "HTTPS ingress must be the external listener")
+    require(
+        errors,
+        ingress.get("ports")
+        == [
+            {
+                "target": 8443,
+                "published": "${ELMOS_SPRING_RUNNER_HTTPS_PORT:?HTTPS port is required}",
+                "host_ip": "${ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS:?private bind address is required}",
+                "protocol": "tcp",
+            }
+        ],
+        "HTTPS ingress must publish only its exact configured private 8443 binding",
+    )
     require(errors, not broker.get("ports"), "Spring broker must not publish a host port")
     require(errors, not proxy.get("ports"), "egress proxy must not publish a host port")
     require(errors, broker.get("user") == "10001:10001", "Spring broker must use UID 10001")
+    require(errors, proxy.get("user") == "10001:10001", "egress proxy must use UID 10001")
     require(errors, broker.get("group_add") == ["0"], "Spring broker needs only rootless socket group 0")
     require(
         errors,
@@ -353,9 +612,11 @@ def validate_runner_compose(errors: list[str], compose: Mapping[str, Any]) -> No
         )
         require(
             errors,
-            str(networks.get("spring-runner-control", {}).get("name", "")).startswith(
-                "${ELMOS_SPRING_RUNNER_CONTROL_NETWORK:?"
-            ),
+            re.fullmatch(
+                r"\$\{ELMOS_SPRING_RUNNER_CONTROL_NETWORK:\?[^{}]+\}",
+                str(networks.get("spring-runner-control", {}).get("name", "")),
+            )
+            is not None,
             "control network name must be explicitly supplied",
         )
 
@@ -581,15 +842,17 @@ def validate_ingress(errors: list[str], config: str) -> None:
 
 def validate_documentation(errors: list[str], paths: ContractPaths) -> None:
     environment = paths.environment_example.read_text(encoding="utf-8")
+    spring_launch = paths.spring_launch_environment_example.read_text(encoding="utf-8")
     rootless = paths.rootless_readme.read_text(encoding="utf-8")
     production = paths.production_readme.read_text(encoding="utf-8")
     runner_environment = paths.runner_environment_example.read_text(encoding="utf-8")
     require(errors, "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID=" not in environment, "production env must not contain a single-tenant identity")
+    require(errors, "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID=" not in spring_launch, "spring launch env must not contain a single-tenant identity")
     for variable in APPLICATION_SECRET_ENVIRONMENTS + (
         ENGINE_SECRET_ENVIRONMENT,
         ENGINE_REPLAY_ENVIRONMENT,
     ):
-        require(errors, f"{variable}=" in environment, f"production env example lacks {variable}")
+        require(errors, f"{variable}=" in spring_launch, f"spring launch env example lacks {variable}")
     require(
         errors,
         "共享的只读文件应为 `0444`" not in rootless,
@@ -616,7 +879,7 @@ def validate_documentation(errors: list[str], paths: ContractPaths) -> None:
     require(errors, ENGINE_SECRET_ENVIRONMENT not in runner_environment, "Runner env example must exclude the BFF-to-engine HMAC")
     assignments = {
         line.split("=", 1)[0]: line.split("=", 1)[1]
-        for line in environment.splitlines()
+        for line in spring_launch.splitlines()
         if line and not line.startswith("#") and "=" in line
     }
     application_paths = [
@@ -645,7 +908,12 @@ def validate_documentation(errors: list[str], paths: ContractPaths) -> None:
         "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH",
         "ELMOS_SPRING_UPGRADE_VERIFIER_ID",
     }
-    leaked_runner_keys = sorted(runner_only_keys & assignments.keys())
+    app_assignments = {
+        line.split("=", 1)[0]: line.split("=", 1)[1]
+        for line in environment.splitlines()
+        if line and not line.startswith("#") and "=" in line
+    }
+    leaked_runner_keys = sorted(runner_only_keys & app_assignments.keys())
     require(
         errors,
         not leaked_runner_keys,
@@ -681,6 +949,8 @@ def environment_path(name: str, environment: Mapping[str, str]) -> Path:
     path = Path(value)
     if not path.is_absolute():
         raise ValueError(f"{name} must be absolute")
+    if path != Path(os.path.normpath(path)):
+        raise ValueError(f"{name} must be normalized")
     return path
 
 
@@ -689,6 +959,80 @@ def environment_integer(name: str, environment: Mapping[str, str]) -> int:
     if not value.isdigit():
         raise ValueError(f"{name} must be a non-negative integer")
     return int(value)
+
+
+def private_https_endpoint(
+    environment: Mapping[str, str],
+) -> tuple[str, int]:
+    """Return a canonical private unicast bind address and valid TCP port."""
+
+    raw_address = environment.get("ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS", "").strip()
+    try:
+        address = ipaddress.ip_address(raw_address)
+    except ValueError as error:
+        raise ValueError(
+            "ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS must be a canonical private unicast IP"
+        ) from error
+    private_networks = (
+        ipaddress.ip_network("10.0.0.0/8"),
+        ipaddress.ip_network("172.16.0.0/12"),
+        ipaddress.ip_network("192.168.0.0/16"),
+        ipaddress.ip_network("127.0.0.0/8"),
+        ipaddress.ip_network("fc00::/7"),
+        ipaddress.ip_network("::1/128"),
+    )
+    if str(address) != raw_address or not any(
+        address.version == network.version and address in network
+        for network in private_networks
+    ):
+        raise ValueError(
+            "ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS must be a canonical private unicast IP"
+        )
+    raw_port = environment.get("ELMOS_SPRING_RUNNER_HTTPS_PORT", "").strip()
+    if not raw_port.isdigit() or str(int(raw_port)) != raw_port:
+        raise ValueError("ELMOS_SPRING_RUNNER_HTTPS_PORT must be an integer from 1 to 65535")
+    port = int(raw_port)
+    if not 1 <= port <= 65535:
+        raise ValueError("ELMOS_SPRING_RUNNER_HTTPS_PORT must be an integer from 1 to 65535")
+    return str(address), port
+
+
+def paths_overlap(left: Path, right: Path) -> bool:
+    """Compare lexical paths and, when present, their resolved identities."""
+
+    lexical_overlap = (
+        left == right
+        or left.is_relative_to(right)
+        or right.is_relative_to(left)
+    )
+    if lexical_overlap:
+        return True
+    try:
+        resolved_left = left.resolve(strict=True)
+        resolved_right = right.resolve(strict=True)
+    except OSError:
+        return False
+    return (
+        resolved_left == resolved_right
+        or resolved_left.is_relative_to(resolved_right)
+        or resolved_right.is_relative_to(resolved_left)
+    )
+
+
+def validate_sensitive_path_isolation(
+    errors: list[str],
+    sensitive_paths: Mapping[str, Path],
+    operational_roots: Mapping[str, Path],
+) -> None:
+    """Keep credentials and secret roots outside every mutable runtime tree."""
+
+    for sensitive_name, sensitive_path in sensitive_paths.items():
+        for root_name, root_path in operational_roots.items():
+            require(
+                errors,
+                not paths_overlap(sensitive_path, root_path),
+                f"{sensitive_name} must not equal, contain, or be contained by {root_name}",
+            )
 
 
 def owner_only_file(
@@ -812,12 +1156,21 @@ def protected_directory(
 
 
 def ordinary_directory(errors: list[str], path: Path, *, label: str) -> None:
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        errors.append(f"{label} must be a normalized absolute non-root path")
+        return
     try:
+        for parent in path.parents:
+            parent_details = parent.lstat()
+            if not stat.S_ISDIR(parent_details.st_mode) or stat.S_ISLNK(parent_details.st_mode):
+                errors.append(
+                    f"{label} must not traverse symbolic-link or non-directory parents"
+                )
+                return
         details = path.lstat()
     except OSError:
         errors.append(f"{label} is missing")
         return
-    require(errors, path.is_absolute(), f"{label} must be absolute")
     require(errors, stat.S_ISDIR(details.st_mode) and not stat.S_ISLNK(details.st_mode), f"{label} must be a non-symlink directory")
     require(errors, details.st_mode & stat.S_IWOTH == 0, f"{label} must not be world-writable")
 
@@ -1075,6 +1428,32 @@ def validate_host(
         and not replay_root.is_relative_to(tls_root),
         "Spring Runner replay root must be isolated from secret roots",
     )
+    try:
+        private_https_endpoint(environment)
+    except ValueError as error:
+        errors.append(str(error))
+
+    operational_roots: dict[str, Path] = {RUNNER_REPLAY_ENVIRONMENT: replay_root}
+    for name in OPERATIONAL_ROOT_ENVIRONMENTS:
+        if name == RUNNER_REPLAY_ENVIRONMENT:
+            continue
+        try:
+            operational_roots[name] = environment_path(name, environment)
+        except (TypeError, ValueError) as error:
+            errors.append(str(error))
+    sensitive_paths: dict[str, Path] = {
+        "ELMOS_SPRING_BROKER_SECRET_ROOT": secret_root,
+        "ELMOS_SPRING_INGRESS_TLS_SECRET_ROOT": tls_root,
+    }
+    for name in SENSITIVE_PATH_ENVIRONMENTS:
+        if name in sensitive_paths:
+            continue
+        try:
+            sensitive_paths[name] = environment_path(name, environment)
+        except (TypeError, ValueError) as error:
+            errors.append(str(error))
+    validate_sensitive_path_isolation(errors, sensitive_paths, operational_roots)
+
     secret_records: list[tuple[int, int, str]] = []
     for name in BROKER_SECRET_ENVIRONMENTS:
         try:
@@ -1119,7 +1498,7 @@ def validate_host(
             minimum_size=32,
             maximum_size=65536,
         )
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         errors.append(str(error))
 
     try:
@@ -1151,7 +1530,7 @@ def validate_host(
             expected_gid=rootless_gid,
             maximum_size=65536,
         )
-    except ValueError as error:
+    except (TypeError, ValueError) as error:
         errors.append(str(error))
 
     for name in (
@@ -1232,16 +1611,642 @@ def validate_host(
     return errors
 
 
-def compose_container_ids(socket_path: Path, environment: Mapping[str, str]) -> dict[str, str]:
+def compose_value(value: Any, environment: Mapping[str, str]) -> str:
+    """Resolve the small, full-value interpolation grammar used by Runner Compose."""
+
+    text = str(value)
+    match = COMPOSE_INTERPOLATION.fullmatch(text)
+    if match is None:
+        if "${" in text:
+            raise ValueError("Runner Compose contains unsupported interpolation")
+        return text
+    name = match.group("name")
+    configured = environment.get(name, "")
+    operator = match.group("operator")
+    if configured:
+        return configured
+    if operator == "-":
+        return match.group("fallback")
+    raise ValueError(f"Runner Compose requires {name}")
+
+
+def environment_entries(
+    errors: list[str], entries: Any, *, label: str
+) -> dict[str, str] | None:
+    if entries is None:
+        return {}
+    if not isinstance(entries, list):
+        errors.append(f"{label} environment must be a list")
+        return None
+    values: dict[str, str] = {}
+    for entry in entries:
+        if not isinstance(entry, str) or "=" not in entry:
+            errors.append(f"{label} environment contains a malformed entry")
+            return None
+        name, value = entry.split("=", 1)
+        if not name or name in values:
+            errors.append(f"{label} environment contains a duplicate or empty name")
+            return None
+        values[name] = value
+    return values
+
+
+def expected_service_environment(
+    service: Mapping[str, Any],
+    image_record: Mapping[str, Any],
+    environment: Mapping[str, str],
+    errors: list[str],
+    *,
+    label: str,
+) -> dict[str, str] | None:
+    image_config = image_record.get("Config", {})
+    if not isinstance(image_config, dict):
+        errors.append(f"{label} image Config must be an object")
+        return None
+    result = environment_entries(
+        errors, image_config.get("Env"), label=f"{label} image"
+    )
+    if result is None:
+        return None
+    declared = service.get("environment", {})
+    if not isinstance(declared, dict):
+        errors.append(f"{label} Compose environment must be an object")
+        return None
+    try:
+        for name, value in declared.items():
+            result[str(name)] = compose_value(value, environment)
+    except ValueError as error:
+        errors.append(str(error))
+        return None
+    return result
+
+
+def compose_network_name(
+    compose: Mapping[str, Any], logical_name: str, environment: Mapping[str, str]
+) -> str:
+    networks = compose.get("networks", {})
+    if not isinstance(networks, dict):
+        raise TypeError("Runner Compose networks must be an object")
+    definition = networks.get(logical_name, {})
+    if not isinstance(definition, dict):
+        raise TypeError(f"Runner Compose network {logical_name} is invalid")
+    configured = definition.get("name")
+    if configured is None:
+        return f"elmos-spring-runner_{logical_name}"
+    return compose_value(configured, environment)
+
+
+def expected_service_networks(
+    compose: Mapping[str, Any],
+    service: Mapping[str, Any],
+    environment: Mapping[str, str],
+) -> list[str]:
+    declared = service.get("networks", [])
+    if isinstance(declared, dict) or (
+        isinstance(declared, list) and all(isinstance(item, str) for item in declared)
+    ):
+        logical_names = list(declared)
+    else:
+        raise ValueError("Runner service networks must be a string list or object")
+    return [compose_network_name(compose, name, environment) for name in logical_names]
+
+
+def expected_service_mounts(
+    service: Mapping[str, Any], environment: Mapping[str, str]
+) -> dict[str, tuple[str, bool]]:
+    result: dict[str, tuple[str, bool]] = {}
+    for mount in service_volumes(service):
+        target = mount.get("target")
+        source = mount.get("source")
+        if not isinstance(target, str) or not isinstance(source, str) or target in result:
+            raise ValueError("Runner Compose mounts must have unique string source/target pairs")
+        result[target] = (
+            compose_value(source, environment),
+            not bool(mount.get("read_only")),
+        )
+    return result
+
+
+def container_port_key(value: Any, protocol: str = "tcp") -> str:
+    text = str(value)
+    if "/" in text:
+        port, declared_protocol = text.rsplit("/", 1)
+        text = port
+        protocol = declared_protocol
+    if not text.isdigit() or not 1 <= int(text) <= 65535 or protocol not in {"tcp", "udp"}:
+        raise ValueError("Runner Compose contains an invalid exposed port")
+    return f"{int(text)}/{protocol}"
+
+
+def expected_exposed_ports(
+    service: Mapping[str, Any], image_record: Mapping[str, Any]
+) -> set[str]:
+    image_config = image_record.get("Config", {})
+    if not isinstance(image_config, dict):
+        raise TypeError("Runner image Config must be an object")
+    image_ports = image_config.get("ExposedPorts") or {}
+    if not isinstance(image_ports, dict):
+        raise TypeError("Runner image ExposedPorts must be an object")
+    result = {container_port_key(item) for item in image_ports}
+    exposed = service.get("expose", [])
+    if not isinstance(exposed, list):
+        raise TypeError("Runner Compose expose must be a list")
+    result.update(container_port_key(item) for item in exposed)
+    ports = service.get("ports", [])
+    if not isinstance(ports, list):
+        raise TypeError("Runner Compose ports must be a list")
+    for port in ports:
+        if not isinstance(port, dict):
+            raise TypeError("Runner Compose long-form ports are required")
+        result.add(container_port_key(port.get("target"), str(port.get("protocol", "tcp"))))
+    return result
+
+
+def duration_nanoseconds(value: Any) -> int:
+    match = re.fullmatch(r"([1-9][0-9]*)(ns|us|ms|s|m|h)", str(value))
+    if match is None:
+        raise ValueError("Runner Compose health duration is invalid")
+    multipliers = {
+        "ns": 1,
+        "us": 1_000,
+        "ms": 1_000_000,
+        "s": 1_000_000_000,
+        "m": 60 * 1_000_000_000,
+        "h": 60 * 60 * 1_000_000_000,
+    }
+    return int(match.group(1)) * multipliers[match.group(2)]
+
+
+def normalized_healthcheck(value: Any) -> dict[str, Any] | None:
+    if value is None:
+        return None
+    if not isinstance(value, dict):
+        raise TypeError("Runner healthcheck must be an object")
+    allowed = {
+        "Test",
+        "Interval",
+        "Timeout",
+        "StartPeriod",
+        "StartInterval",
+        "Retries",
+    }
+    if set(value) - allowed:
+        raise ValueError("Runner healthcheck contains undeclared fields")
+    test = value.get("Test")
+    if not isinstance(test, list) or not test or not all(
+        isinstance(item, str) for item in test
+    ):
+        raise TypeError("Runner healthcheck Test must be a non-empty string array")
+    result: dict[str, Any] = {"Test": list(test)}
+    for name in ("Interval", "Timeout", "StartPeriod", "StartInterval", "Retries"):
+        configured = value.get(name, 0)
+        if (
+            not isinstance(configured, int)
+            or isinstance(configured, bool)
+            or configured < 0
+        ):
+            raise TypeError(f"Runner healthcheck {name} must be a non-negative integer")
+        result[name] = configured
+    return result
+
+
+def expected_runtime_healthcheck(
+    service_name: str, image_record: Mapping[str, Any]
+) -> dict[str, Any] | None:
+    declared = RUNNER_SERVICE_HEALTHCHECK_CONTRACT[service_name]
+    if declared is None:
+        image_config = image_record.get("Config", {})
+        if not isinstance(image_config, dict):
+            raise TypeError("Runner image Config must be an object")
+        return normalized_healthcheck(image_config.get("Healthcheck"))
+    return normalized_healthcheck(
+        {
+            "Test": declared["test"],
+            "Interval": duration_nanoseconds(declared["interval"]),
+            "Timeout": duration_nanoseconds(declared["timeout"]),
+            "StartPeriod": duration_nanoseconds(declared["start_period"]),
+            "Retries": declared["retries"],
+        }
+    )
+
+
+def published_port_bindings(
+    errors: list[str], raw: Any, *, label: str
+) -> list[tuple[str, str, str]] | None:
+    if raw is None:
+        return []
+    if not isinstance(raw, dict):
+        errors.append(f"{label} port bindings must be an object")
+        return None
+    result: list[tuple[str, str, str]] = []
+    for container_port, bindings in raw.items():
+        if bindings is None or bindings == []:
+            continue
+        if not isinstance(bindings, list):
+            errors.append(f"{label} port bindings contain a malformed list")
+            return None
+        for binding in bindings:
+            if not isinstance(binding, dict):
+                errors.append(f"{label} port bindings contain a malformed record")
+                return None
+            host_ip = binding.get("HostIp")
+            host_port = binding.get("HostPort")
+            if not isinstance(host_ip, str) or not isinstance(host_port, str):
+                errors.append(f"{label} port binding lacks an exact host IP or port")
+                return None
+            result.append((str(container_port), host_ip, host_port))
+    return sorted(result)
+
+
+def validate_runtime_mounts(
+    errors: list[str],
+    *,
+    service_name: str,
+    actual: Any,
+    expected: Mapping[str, tuple[str, bool]],
+) -> None:
+    if not isinstance(actual, list):
+        errors.append(f"{service_name} runtime mounts must be a list")
+        return
+    by_target: dict[str, Mapping[str, Any]] = {}
+    for mount in actual:
+        if not isinstance(mount, dict) or not isinstance(mount.get("Destination"), str):
+            errors.append(f"{service_name} runtime mounts contain a malformed record")
+            return
+        target = mount["Destination"]
+        if target in by_target:
+            errors.append(f"{service_name} runtime mounts contain a duplicate destination")
+            return
+        by_target[target] = mount
+    require(
+        errors,
+        set(by_target) == set(expected),
+        f"{service_name} runtime mount inventory drift",
+    )
+    for target, (source, read_write) in expected.items():
+        mount = by_target.get(target)
+        if mount is None:
+            continue
+        require(errors, mount.get("Type") == "bind", f"{service_name} mount {target} must remain a bind mount")
+        require(errors, mount.get("Source") == source, f"{service_name} mount {target} source drift")
+        require(errors, mount.get("RW") is read_write, f"{service_name} mount {target} access mode drift")
+        require(
+            errors,
+            mount.get("Mode") == ("rw" if read_write else "ro"),
+            f"{service_name} mount {target} mode drift",
+        )
+        require(
+            errors,
+            mount.get("Propagation") == "rprivate",
+            f"{service_name} mount {target} propagation drift",
+        )
+
+
+def validate_runtime_service(
+    errors: list[str],
+    *,
+    service_name: str,
+    service: Mapping[str, Any],
+    compose: Mapping[str, Any],
+    record: Mapping[str, Any],
+    image_record: Mapping[str, Any],
+    environment: Mapping[str, str],
+    bind_address: str,
+    bind_port: int,
+) -> None:
+    config = record.get("Config", {})
+    host = record.get("HostConfig", {})
+    network_settings = record.get("NetworkSettings", {})
+    state = record.get("State", {})
+    if not all(isinstance(item, dict) for item in (config, host, network_settings, state)):
+        errors.append(f"{service_name} inspect record is incomplete")
+        return
+
+    image_environment = SERVICE_IMAGE_ENVIRONMENTS[service_name]
+    expected_image = environment.get(image_environment, "")
+    require(errors, config.get("Image") == expected_image, f"{service_name} runtime image reference drift")
+    require(errors, image_record.get("Id") == record.get("Image"), f"{service_name} runtime image ID drift")
+    require(
+        errors,
+        expected_image in (image_record.get("RepoDigests") or []),
+        f"{service_name} runtime image RepoDigest drift",
+    )
+    require(errors, config.get("User") == SERVICE_USERS[service_name], f"{service_name} runtime user drift")
+
+    image_config = image_record.get("Config", {})
+    if not isinstance(image_config, dict):
+        errors.append(f"{service_name} image Config must be an object")
+    else:
+        expected_entrypoint = service.get("entrypoint", image_config.get("Entrypoint"))
+        expected_command = service.get("command", image_config.get("Cmd"))
+        require(errors, config.get("Entrypoint") == expected_entrypoint, f"{service_name} runtime Entrypoint drift")
+        require(errors, config.get("Cmd") == expected_command, f"{service_name} runtime Cmd drift")
+        expected_working_directory = service.get(
+            "working_dir", image_config.get("WorkingDir", "")
+        )
+        require(
+            errors,
+            config.get("WorkingDir", "") == expected_working_directory,
+            f"{service_name} runtime working directory drift",
+        )
+        process_parts: list[str] = []
+        for value in (expected_entrypoint, expected_command):
+            if value is None:
+                continue
+            if not isinstance(value, list) or not all(
+                isinstance(item, str) for item in value
+            ):
+                errors.append(
+                    f"{service_name} controlled image process must use exec-form arrays"
+                )
+                process_parts = []
+                break
+            process_parts.extend(value)
+        if process_parts:
+            require(errors, record.get("Path") == process_parts[0], f"{service_name} runtime process path drift")
+            require(errors, record.get("Args") == process_parts[1:], f"{service_name} runtime process arguments drift")
+        try:
+            exposed_ports = expected_exposed_ports(service, image_record)
+        except (TypeError, ValueError) as error:
+            errors.append(str(error))
+            exposed_ports = set()
+        actual_exposed_ports = config.get("ExposedPorts") or {}
+        require(
+            errors,
+            isinstance(actual_exposed_ports, dict)
+            and set(actual_exposed_ports) == exposed_ports,
+            f"{service_name} runtime exposed port inventory drift",
+        )
+
+    expected_environment = expected_service_environment(
+        service,
+        image_record,
+        environment,
+        errors,
+        label=service_name,
+    )
+    actual_environment = environment_entries(
+        errors, config.get("Env"), label=f"{service_name} runtime"
+    )
+    if expected_environment is not None and actual_environment is not None:
+        require(
+            errors,
+            actual_environment == expected_environment,
+            f"{service_name} runtime environment drift",
+        )
+    try:
+        expected_healthcheck = expected_runtime_healthcheck(
+            service_name, image_record
+        )
+        actual_healthcheck = normalized_healthcheck(config.get("Healthcheck"))
+        require(
+            errors,
+            actual_healthcheck == expected_healthcheck,
+            f"{service_name} runtime healthcheck configuration drift",
+        )
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
+        expected_healthcheck = None
+
+    require(errors, host.get("Privileged") is False, f"{service_name} must not be privileged")
+    require(errors, host.get("ReadonlyRootfs") is True, f"{service_name} runtime root filesystem must be read-only")
+    require(errors, host.get("AutoRemove") is False, f"{service_name} runtime AutoRemove drift")
+    require(errors, host.get("Init") is True, f"{service_name} runtime init contract drift")
+    require(
+        errors,
+        host.get("PidsLimit") == service.get("pids_limit"),
+        f"{service_name} runtime PID limit drift",
+    )
+    for field, expected in RUNNER_SERVICE_RUNTIME_RESOURCE_CONTRACT[service_name].items():
+        require(
+            errors,
+            type(host.get(field)) is int and host.get(field) == expected,
+            f"{service_name} runtime {field} resource limit drift",
+        )
+    require(
+        errors,
+        host.get("LogConfig")
+        == {
+            "Type": RUNNER_LOGGING_CONTRACT["driver"],
+            "Config": RUNNER_LOGGING_CONTRACT["options"],
+        },
+        f"{service_name} runtime logging contract drift",
+    )
+    require(errors, host.get("CapAdd") in (None, []), f"{service_name} runtime must not add capabilities")
+    require(errors, host.get("CapDrop") == ["ALL"], f"{service_name} runtime must drop exactly all capabilities")
+    require(
+        errors,
+        host.get("SecurityOpt") == ["no-new-privileges:true"],
+        f"{service_name} runtime security options drift",
+    )
+    require(errors, host.get("PublishAllPorts") is False, f"{service_name} must not publish undeclared ports")
+    expected_groups = ["0"] if service_name == "spring-runner-broker" else []
+    require(
+        errors,
+        (host.get("GroupAdd") or []) == expected_groups,
+        f"{service_name} supplementary groups drift",
+    )
+    exact_namespaces = {
+        "PidMode": "",
+        "IpcMode": "private",
+        "UTSMode": "",
+        "UsernsMode": "",
+        "CgroupnsMode": "private",
+    }
+    for field, expected in exact_namespaces.items():
+        require(
+            errors,
+            host.get(field) == expected,
+            f"{service_name} {field} runtime namespace drift",
+        )
+    for field in (
+        "Devices",
+        "DeviceRequests",
+        "VolumesFrom",
+        "Links",
+        "ExtraHosts",
+        "Dns",
+        "DnsOptions",
+        "DnsSearch",
+    ):
+        require(
+            errors,
+            host.get(field) in (None, []),
+            f"{service_name} runtime {field} must be empty",
+        )
+    require(
+        errors,
+        host.get("Sysctls") in (None, {}),
+        f"{service_name} runtime Sysctls must be empty",
+    )
+    restart_policy = host.get("RestartPolicy") or {}
+    require(
+        errors,
+        isinstance(restart_policy, dict)
+        and restart_policy.get("Name") == "unless-stopped"
+        and restart_policy.get("MaximumRetryCount", 0) == 0,
+        f"{service_name} runtime restart policy drift",
+    )
+
+    try:
+        expected_networks = expected_service_networks(compose, service, environment)
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
+        expected_networks = []
+    if expected_networks:
+        require(
+            errors,
+            host.get("NetworkMode") in expected_networks,
+            f"{service_name} runtime primary network must select a controlled network",
+        )
+        actual_networks = network_settings.get("Networks", {})
+        require(
+            errors,
+            isinstance(actual_networks, dict)
+            and set(actual_networks) == set(expected_networks),
+            f"{service_name} runtime network membership drift",
+        )
+
+    expected_bindings = (
+        [("8443/tcp", bind_address, str(bind_port))]
+        if service_name == "spring-runner-ingress"
+        else []
+    )
+    expected_binding_object = (
+        {"8443/tcp": [{"HostIp": bind_address, "HostPort": str(bind_port)}]}
+        if service_name == "spring-runner-ingress"
+        else {}
+    )
+    host_bindings = published_port_bindings(
+        errors, host.get("PortBindings"), label=f"{service_name} HostConfig"
+    )
+    runtime_bindings = published_port_bindings(
+        errors, network_settings.get("Ports"), label=f"{service_name} NetworkSettings"
+    )
+    if host_bindings is not None:
+        require(errors, host_bindings == expected_bindings, f"{service_name} HostConfig port bindings drift")
+        require(
+            errors,
+            (host.get("PortBindings") or {}) == expected_binding_object,
+            f"{service_name} HostConfig port binding shape drift",
+        )
+    if runtime_bindings is not None:
+        require(errors, runtime_bindings == expected_bindings, f"{service_name} runtime published ports drift")
+        try:
+            all_exposed_ports = expected_exposed_ports(service, image_record)
+        except (TypeError, ValueError):
+            all_exposed_ports = set()
+        expected_runtime_ports: dict[str, Any] = {
+            name: None for name in all_exposed_ports
+        }
+        expected_runtime_ports.update(expected_binding_object)
+        require(
+            errors,
+            (network_settings.get("Ports") or {}) == expected_runtime_ports,
+            f"{service_name} runtime port inventory drift",
+        )
+
+    try:
+        expected_mounts = expected_service_mounts(service, environment)
+    except ValueError as error:
+        errors.append(str(error))
+        expected_mounts = {}
+    validate_runtime_mounts(
+        errors,
+        service_name=service_name,
+        actual=record.get("Mounts"),
+        expected=expected_mounts,
+    )
+    expected_binds = sorted(
+        f"{source}:{target}:{'rw' if read_write else 'ro'}"
+        for target, (source, read_write) in expected_mounts.items()
+    )
+    actual_binds = host.get("Binds")
+    require(
+        errors,
+        isinstance(actual_binds, list)
+        and sorted(actual_binds) == expected_binds
+        and len(actual_binds) == len(expected_binds),
+        f"{service_name} runtime bind inventory drift",
+    )
+    expected_tmpfs = {
+        str(item).split(":", 1)[0]
+        for item in service.get("tmpfs", [])
+        if isinstance(item, str)
+    }
+    actual_tmpfs = host.get("Tmpfs") or {}
+    require(
+        errors,
+        isinstance(actual_tmpfs, dict) and set(actual_tmpfs) == expected_tmpfs,
+        f"{service_name} runtime tmpfs inventory drift",
+    )
+    if isinstance(actual_tmpfs, dict):
+        for target, options in actual_tmpfs.items():
+            rendered_options = str(options).split(",")
+            size_options = [
+                item for item in rendered_options if item.startswith("size=")
+            ]
+            non_size_options = [
+                item for item in rendered_options if not item.startswith("size=")
+            ]
+            require(
+                errors,
+                len(non_size_options) == 3
+                and set(non_size_options) == {"rw", "noexec", "nosuid"}
+                and len(size_options) == 1
+                and size_options[0].removeprefix("size=")
+                in RUNNER_SERVICE_TMPFS_SIZE_CONTRACT[service_name],
+                f"{service_name} tmpfs {target} hardening drift",
+            )
+
+    labels = config.get("Labels") or {}
+    require(
+        errors,
+        isinstance(labels, dict)
+        and labels.get("com.docker.compose.project") == "elmos-spring-runner"
+        and labels.get("com.docker.compose.service") == service_name,
+        f"{service_name} Compose identity labels drift",
+    )
+    require(
+        errors,
+        state.get("Running") is True
+        and state.get("Restarting") is False
+        and state.get("Paused") is False
+        and state.get("Dead") is False
+        and state.get("OOMKilled") is False,
+        f"{service_name} must be stably running",
+    )
+    health = state.get("Health")
+    require(
+        errors,
+        (
+            health is None
+            if expected_healthcheck is None
+            else isinstance(health, dict) and health.get("Status") == "healthy"
+        ),
+        f"{service_name} healthcheck is not healthy",
+    )
+
+
+def compose_container_ids(
+    socket_path: Path,
+    environment: Mapping[str, str],
+    paths: ContractPaths | None = None,
+) -> dict[str, str]:
+    paths = paths or ContractPaths()
     env_file = environment_path("ELMOS_SPRING_RUNNER_ENV_FILE", environment)
     command = docker_command(
         socket_path,
         "compose",
+        "--project-name",
+        "elmos-spring-runner",
         "--env-file",
         str(env_file),
         "-f",
-        str(ContractPaths().runner_compose),
+        str(paths.runner_compose),
         "ps",
+        "--all",
+        "--no-trunc",
         "--format",
         "json",
     )
@@ -1250,11 +2255,19 @@ def compose_container_ids(socket_path: Path, environment: Mapping[str, str]) -> 
         rows = [rows]
     if not isinstance(rows, list):
         raise TypeError("docker compose ps did not return a JSON list")
-    return {
-        str(row.get("Service")): str(row.get("ID"))
-        for row in rows
-        if isinstance(row, dict) and row.get("Service") and row.get("ID")
-    }
+    if len(rows) != 3 or not all(isinstance(row, dict) for row in rows):
+        raise ValueError("docker compose ps must return exactly three container records")
+    services = [str(row.get("Service", "")) for row in rows]
+    identifiers = [str(row.get("ID", "")) for row in rows]
+    counts = Counter(services)
+    if counts != Counter({name: 1 for name in EXPECTED_RUNNER_SERVICES}):
+        raise ValueError("docker compose ps must return exactly one container for each Runner service")
+    if (
+        any(re.fullmatch(r"[0-9a-f]{64}", identifier) is None for identifier in identifiers)
+        or len(set(identifiers)) != 3
+    ):
+        raise ValueError("docker compose ps must return three distinct full container IDs")
+    return dict(zip(services, identifiers, strict=True))
 
 
 def validate_running(
@@ -1264,61 +2277,79 @@ def validate_running(
     paths = paths or ContractPaths()
     environment = environment if environment is not None else os.environ
     errors = validate_host(paths, environment)
+    if errors:
+        return errors
     try:
         socket_path = environment_path("ELMOS_ROOTLESS_DOCKER_SOCKET", environment)
-        identifiers = compose_container_ids(socket_path, environment)
+        bind_address, bind_port = private_https_endpoint(environment)
+        identifiers = compose_container_ids(socket_path, environment, paths)
     except (TypeError, ValueError, RuntimeError, json.JSONDecodeError) as error:
         errors.append(str(error))
         return errors
-    require(errors, set(identifiers) == EXPECTED_RUNNER_SERVICES, "all three Spring Runner services must be running")
-    if set(identifiers) != EXPECTED_RUNNER_SERVICES:
-        return errors
-
     records: dict[str, dict[str, Any]] = {}
+    image_records: dict[str, dict[str, Any]] = {}
     for service, identifier in identifiers.items():
         try:
             inspected = command_json(docker_command(socket_path, "inspect", identifier))
+            if not isinstance(inspected, list) or len(inspected) != 1 or not isinstance(inspected[0], dict):
+                raise TypeError("docker inspect must return exactly one object")
+            if inspected[0].get("Id") != identifier:
+                raise TypeError("docker inspect container identity does not match Compose ps")
             records[service] = inspected[0]
+            image_reference = environment[SERVICE_IMAGE_ENVIRONMENTS[service]]
+            inspected_image = command_json(
+                docker_command(socket_path, "image", "inspect", image_reference)
+            )
+            if (
+                not isinstance(inspected_image, list)
+                or len(inspected_image) != 1
+                or not isinstance(inspected_image[0], dict)
+            ):
+                raise TypeError("docker image inspect must return exactly one object")
+            image_records[service] = inspected_image[0]
         except (RuntimeError, json.JSONDecodeError, IndexError, TypeError) as error:
             errors.append(f"{service} inspection failed: {error}")
-    if set(records) != EXPECTED_RUNNER_SERVICES:
+    if set(records) != EXPECTED_RUNNER_SERVICES or set(image_records) != EXPECTED_RUNNER_SERVICES:
         return errors
 
-    expected_networks = {
-        "spring-runner-ingress": {"elmos-spring-runner-edge", "elmos-spring-runner-broker"},
-        "spring-runner-broker": {
-            "elmos-spring-runner-broker",
-            environment.get("ELMOS_SPRING_RUNNER_CONTROL_NETWORK", ""),
-        },
-        "spring-runner-egress-proxy": {
-            "elmos-spring-runner-broker",
-            "elmos-spring-runner-egress",
-        },
-    }
-    for service, record in records.items():
-        actual_networks = set(record.get("NetworkSettings", {}).get("Networks", {}))
-        require(errors, actual_networks == expected_networks[service], f"{service} runtime network membership drift")
-        require(errors, record.get("State", {}).get("Running") is True, f"{service} must be running")
-        require(errors, record.get("State", {}).get("Health", {}).get("Status") in {None, "healthy"}, f"{service} healthcheck is not healthy")
+    compose = read_yaml(paths.runner_compose)
+    services = compose.get("services", {})
+    if not isinstance(services, dict):
+        return errors + ["runner Compose services must be an object"]
+    for service in sorted(EXPECTED_RUNNER_SERVICES):
+        service_config = services.get(service)
+        if not isinstance(service_config, dict):
+            errors.append(f"runner service {service} is missing")
+            continue
+        validate_runtime_service(
+            errors,
+            service_name=service,
+            service=service_config,
+            compose=compose,
+            record=records[service],
+            image_record=image_records[service],
+            environment=environment,
+            bind_address=bind_address,
+            bind_port=bind_port,
+        )
 
-    broker_record = records["spring-runner-broker"]
-    ingress_record = records["spring-runner-ingress"]
-    broker_mounts = {item.get("Destination") for item in broker_record.get("Mounts", [])}
-    require(errors, "/run/docker.sock" in broker_mounts, "running Spring broker lacks the rootless socket")
-    for service, record in records.items():
-        if service != "spring-runner-broker":
-            mounts = {item.get("Destination") for item in record.get("Mounts", [])}
-            require(errors, "/run/docker.sock" not in mounts, f"{service} must not receive the Docker socket")
-    published = ingress_record.get("NetworkSettings", {}).get("Ports", {}).get("8443/tcp")
-    require(errors, isinstance(published, list) and len(published) == 1, "HTTPS ingress must publish exactly one 8443 binding")
-    broker_ports = broker_record.get("NetworkSettings", {}).get("Ports", {}).get("8082/tcp")
-    require(errors, broker_ports is None or broker_ports == [], "Spring broker port must not be published")
     for network_name in ("elmos-spring-runner-edge", "elmos-spring-runner-broker"):
         try:
             inspected = command_json(
                 docker_command(socket_path, "network", "inspect", network_name)
             )
-            record = inspected[0] if isinstance(inspected, list) and inspected else {}
+            record = (
+                inspected[0]
+                if isinstance(inspected, list)
+                and len(inspected) == 1
+                and isinstance(inspected[0], dict)
+                else {}
+            )
+            require(
+                errors,
+                bool(record),
+                f"running network {network_name} must resolve to exactly one object",
+            )
             require(
                 errors,
                 record.get("Internal") is True,

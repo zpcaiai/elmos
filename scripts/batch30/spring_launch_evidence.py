@@ -16,15 +16,17 @@ import hashlib
 import json
 import os
 import re
+import selectors
 import stat
 import subprocess
 import sys
+import time
 from collections.abc import Iterable, Mapping
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import parse_qs, unquote, urlparse
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -241,6 +243,9 @@ WEB_CONSOLE_CONFIGURATION_ENVIRONMENT = {
     "NEXT_TELEMETRY_DISABLED": "1",
     "HOSTNAME": "0.0.0.0",
     "PORT": "3000",
+    "NODE_VERSION": "24.14.0",
+    "YARN_VERSION": "1.22.22",
+    "HOME": "/tmp",
     "PATH": "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
     "NODE_OPTIONS": "",
     "ELMOS_SPRING_PROXY_ENABLED": "true",
@@ -250,7 +255,70 @@ WEB_CONSOLE_CONFIGURATION_ENVIRONMENT = {
     "ELMOS_TRUSTED_INTERNAL_HTTP": "true",
     "JAVA_ENGINE_BASE_URL": "http://java-engine-worker:8081",
     "ELMOS_CONTROL_PLANE_BASE_URL": "http://control-plane:8080",
+    "ELMOS_COMMERCIAL_API_URL": "http://commercial-api:8085",
+    "ELMOS_WORKSPACE_SERVICE_URL": "http://workspace-service:8082",
+    "ELMOS_REPOSITORY_WORKSPACE_BASE_URL": "http://control-plane:8080",
+    "ELMOS_HOSTED_EXECUTION_ENABLED": "true",
+    "ELMOS_LOCAL_RUNNER_ENABLED": "false",
 }
+WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED = {
+    "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED": frozenset({"true", "false"}),
+}
+WEB_CONSOLE_FORBIDDEN_ENVIRONMENT_NORMALIZED = frozenset(
+    {
+        "ELMOSTRUSTEDSINGLETENANTORGANIZATIONID",
+        "HTTPPROXY",
+        "HTTPSPROXY",
+        "ALLPROXY",
+        "NOPROXY",
+        "NODEUSEENVPROXY",
+        "NODEEXTRAHEADERS",
+        "NODEOPTIONS",
+        "NODEPATH",
+        "BASHENV",
+        "ENV",
+        "CLASSPATH",
+        "JAVATOOLOPTIONS",
+        "JDKJAVAOPTIONS",
+        "JAVAOPTS",
+        "MAVENOPTS",
+        "GRADLEOPTS",
+        "GITASKPASS",
+        "GITSSHCOMMAND",
+        "SSLCERTFILE",
+        "SSLKEYLOGFILE",
+    }
+)
+APPLICATION_MOUNT_SOURCE_NAMES = frozenset(
+    {
+        "worker_workspace",
+        "worker_verifier_hmac",
+        "worker_transformer_hmac",
+        "worker_runtime_hmac",
+        "application_engine_hmac",
+        "worker_engine_replay",
+        "web_resend_secret",
+    }
+)
+APPLICATION_MOUNT_BINDINGS = {
+    "worker_workspace": (("java-engine-worker", "/workspace/private-runner"),),
+    "worker_verifier_hmac": (("java-engine-worker", "/run/secrets/elmos-verifier-hmac"),),
+    "worker_transformer_hmac": (("java-engine-worker", "/run/secrets/elmos-transformer-hmac"),),
+    "worker_runtime_hmac": (("java-engine-worker", "/run/secrets/elmos-runtime-hmac"),),
+    "application_engine_hmac": (
+        ("java-engine-worker", "/run/secrets/elmos-spring-engine-hmac"),
+        ("web-console", "/run/secrets/elmos-spring-engine-hmac"),
+    ),
+    "worker_engine_replay": (
+        ("java-engine-worker", "/var/lib/elmos/spring-engine-auth-replay"),
+    ),
+    "web_resend_secret": (("web-console", "/run/secrets/elmos/resend-api-key"),),
+}
+APPLICATION_DIRECTORY_MOUNT_SOURCES = frozenset(
+    {"worker_workspace", "worker_engine_replay"}
+)
+WEB_RUNTIME_ATTESTATION_METHOD = "SANITIZED_DOCKER_INSPECT_MOUNT_OBJECTS_V3"
+WORKER_IMAGE_ARTIFACT_ATTESTATION_METHOD = "OCI_IMAGE_CONTENT_EXTRACTION_V1"
 DOCKER_ENVIRONMENT_ASSIGNMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.DOTALL)
 DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
     {
@@ -275,7 +343,7 @@ DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
     }
 )
 
-DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+DIGEST_RE = re.compile(r"^sha256:(?!0{64}$)[0-9a-f]{64}$")
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
 IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}$")
 UTC_INSTANT_RE = re.compile(
@@ -401,7 +469,23 @@ class ContainerRuntimeObservation:
     container_id: str
     container_name: str
     compose_project: str
+    process_id: int
     sanitized_runtime_shape: dict[str, Any]
+
+
+@dataclass(frozen=True)
+class WebRuntimeObservation:
+    image_digest: str
+    configured_image: str
+    engine_secret_source_digest: str
+    backend_network: str
+    mount_source_digests: dict[str, str]
+    environment_names_digest: str
+    configuration_digest: str
+    raw_inspect_digest: str
+    worker_inspect_digest: str
+    worker_container_id: str
+    application_mount_sources_digest: str
 
 
 @dataclass(frozen=True)
@@ -410,6 +494,15 @@ class OpenedLocalFile:
     parent_descriptor: int
     filename: str
     path: Path
+
+
+@dataclass(frozen=True)
+class OpenedMountSource:
+    descriptor: int
+    parent_descriptor: int
+    filename: str
+    path: Path
+    ancestor_descriptors: tuple[int, ...]
 
 
 @dataclass(frozen=True)
@@ -497,7 +590,7 @@ def _is_non_success_sentinel(value: str) -> bool:
 def _digest(value: Any, label: str) -> str:
     if not isinstance(value, str) or DIGEST_RE.fullmatch(value) is None:
         raise SpringLaunchEvidenceError(
-            f"{label} must be sha256:<64 lowercase hex>"
+            f"{label} must be a non-zero sha256:<64 lowercase hex>"
         )
     return value
 
@@ -1505,44 +1598,6 @@ def expected_spring_worker_configuration_digest(
     )
 
 
-def expected_web_console_environment() -> dict[str, str]:
-    """Return the exact non-secret environment of the production Web BFF.
-
-    The environment is intentionally closed: accepting extra variables here
-    would let a deployment redirect trusted internal traffic or weaken the
-    Spring engine authentication boundary without changing its receipt.
-    """
-
-    return dict(WEB_CONSOLE_CONFIGURATION_ENVIRONMENT)
-
-
-def web_console_configuration_digest(environment: Mapping[str, str]) -> str:
-    """Digest the exact Web BFF environment bound by container evidence."""
-
-    expected = expected_web_console_environment()
-    if set(environment) != set(expected):
-        raise SpringLaunchEvidenceError(
-            "effective Web console environment does not match the controlled key set"
-        )
-    values: dict[str, str] = {}
-    for name in sorted(expected):
-        value = environment[name]
-        if not isinstance(value, str) or value != expected[name]:
-            raise SpringLaunchEvidenceError(
-                f"effective Web console environment {name} does not match the controlled value"
-            )
-        values[name] = value
-    return canonical_digest(
-        {
-            "schema_version": 1,
-            "namespace": NAMESPACE,
-            "contract": "spring-launch-effective-web-console-environment-v1",
-            "service": "web-console",
-            "values": values,
-        }
-    )
-
-
 def spring_worker_configuration_digest(environment: Mapping[str, str]) -> str:
     """Digest normalized, non-secret configuration for ``java-engine-worker``.
 
@@ -1562,6 +1617,641 @@ def spring_worker_configuration_digest(environment: Mapping[str, str]) -> str:
             "values": values,
         }
     )
+
+
+def expected_web_console_environment(
+    compose_environment: Mapping[str, str] | None = None,
+) -> dict[str, str]:
+    """Derive the exact web environment from env-file names plus controlled overrides.
+
+    The returned mapping is for in-memory comparison only and may contain the
+    supplied application secret values.  Callers must never serialize it into
+    evidence.  The collector serializes only names and the required non-secret
+    subset.
+    """
+
+    expected: dict[str, str] = {}
+    for name, value in (compose_environment or {}).items():
+        if not isinstance(name, str) or not isinstance(value, str):
+            raise SpringLaunchEvidenceError(
+                "compose web-console environment names and values must be strings"
+            )
+        normalized = _normalized_environment_name(name)
+        if (
+            normalized.startswith("ELMOSSPRING")
+            or normalized.startswith("SPRING")
+            or normalized.startswith("SERVER")
+            or normalized.startswith("MANAGEMENT")
+            or normalized == "ELMOSTRUSTEDSINGLETENANTORGANIZATIONID"
+            or normalized in WEB_CONSOLE_FORBIDDEN_ENVIRONMENT_NORMALIZED
+            or normalized.startswith("LD")
+            or normalized.startswith("DYLD")
+        ):
+            raise SpringLaunchEvidenceError(
+                f"application Compose env file must not declare Spring or process override {name}"
+            )
+        expected[name] = value
+    for name, allowed in WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED.items():
+        value = expected.get(name, "false")
+        if value not in allowed:
+            raise SpringLaunchEvidenceError(
+                f"expected web-console dynamic value {name} is invalid"
+            )
+        expected[name] = value
+    expected.update(WEB_CONSOLE_CONFIGURATION_ENVIRONMENT)
+    _validate_web_console_environment(
+        expected, label="expected controlled web-console environment"
+    )
+    return expected
+
+
+def expected_web_console_environment_names(
+    compose_environment: Mapping[str, str],
+) -> tuple[str, ...]:
+    """Return the independently derived exact Docker environment-name inventory."""
+
+    return tuple(sorted(expected_web_console_environment(compose_environment)))
+
+
+def application_environment_commitment_digest(
+    environment: Mapping[str, str],
+) -> str:
+    """Commit to app env shape without creating an offline secret-value oracle.
+
+    Every exact key and whether its value is empty is bound.  Only the one
+    explicitly non-secret feature flag used by the Spring deployment contract
+    contributes its value.  Database, OIDC, provider, API and session secret
+    values are never copied or hashed into this portable receipt commitment.
+    """
+
+    variables: dict[str, dict[str, Any]] = {}
+    normalized_names: dict[str, str] = {}
+    for name in sorted(environment):
+        value = environment[name]
+        if (
+            not isinstance(name, str)
+            or not isinstance(value, str)
+            or DOCKER_ENVIRONMENT_ASSIGNMENT.fullmatch(f"{name}=") is None
+        ):
+            raise SpringLaunchEvidenceError(
+                "application environment names and values must be exact strings"
+            )
+        normalized = _normalized_environment_name(name)
+        prior = normalized_names.setdefault(normalized, name)
+        if prior != name:
+            raise SpringLaunchEvidenceError(
+                f"application environment contains relaxed-binding aliases {prior} and {name}"
+            )
+        record: dict[str, Any] = {"present": True, "empty": value == ""}
+        if name in WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED:
+            if value not in WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED[name]:
+                raise SpringLaunchEvidenceError(
+                    f"application environment non-secret value {name} is invalid"
+                )
+            record["non_secret_value"] = value
+        variables[name] = record
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-application-environment-redacted-commitment-v1",
+            "variables": variables,
+        }
+    )
+
+
+def web_console_configuration_digest(environment: Mapping[str, str]) -> str:
+    """Digest only required non-secret web-console configuration values.
+
+    The full web container inherits application secrets.  Those values must
+    never be copied into launch evidence or hashed into a reusable offline
+    dictionary oracle.  The separate environment-name digest binds the exact
+    key inventory, while the launch configuration binds the source env-file
+    bytes out of band.
+    """
+
+    values: dict[str, dict[str, Any]] = {}
+    for name in sorted(
+        {*WEB_CONSOLE_CONFIGURATION_ENVIRONMENT, *WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED}
+    ):
+        if name not in environment:
+            values[name] = {"present": False}
+            continue
+        value = environment[name]
+        if not isinstance(value, str):
+            raise SpringLaunchEvidenceError(
+                f"web-console environment value {name} must be a string"
+            )
+        values[name] = {"present": True, "value": value}
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-effective-web-console-environment-v1",
+            "service": "web-console",
+            "values": values,
+        }
+    )
+
+
+def web_console_environment_names_digest(names: Iterable[str]) -> str:
+    """Digest an exact, alias-free web-console environment-name inventory."""
+
+    ordered: list[str] = []
+    normalized: dict[str, str] = {}
+    for raw in names:
+        if not isinstance(raw, str) or DOCKER_ENVIRONMENT_ASSIGNMENT.fullmatch(
+            f"{raw}="
+        ) is None:
+            raise SpringLaunchEvidenceError(
+                "web-console environment names must be exact Docker variable names"
+            )
+        if raw in ordered:
+            raise SpringLaunchEvidenceError(
+                f"web-console environment names contain duplicate key {raw}"
+            )
+        normalized_name = _normalized_environment_name(raw)
+        prior = normalized.setdefault(normalized_name, raw)
+        if prior != raw:
+            raise SpringLaunchEvidenceError(
+                f"web-console environment names contain relaxed-binding aliases {prior} and {raw}"
+            )
+        ordered.append(raw)
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-web-console-environment-names-v1",
+            "names": sorted(ordered),
+        }
+    )
+
+
+MOUNT_OBJECT_IDENTITY_FIELDS = frozenset(
+    {
+        "device",
+        "inode",
+        "object_type",
+        "size_bytes",
+        "mode",
+        "uid",
+        "gid",
+        "link_count",
+        "ctime_ns",
+    }
+)
+
+
+def _mount_source_path_digest(source: str) -> str:
+    return "sha256:" + hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
+def _mount_object_identity(value: os.stat_result) -> dict[str, Any]:
+    if stat.S_ISREG(value.st_mode):
+        object_type = "REGULAR_FILE"
+    elif stat.S_ISDIR(value.st_mode):
+        object_type = "DIRECTORY"
+    else:
+        raise SpringLaunchEvidenceError(
+            "application mount source must be a regular file or directory"
+        )
+    return {
+        "device": value.st_dev,
+        "inode": value.st_ino,
+        "object_type": object_type,
+        "size_bytes": value.st_size,
+        "mode": stat.S_IMODE(value.st_mode),
+        "uid": value.st_uid,
+        "gid": value.st_gid,
+        "link_count": value.st_nlink,
+        "ctime_ns": value.st_ctime_ns,
+    }
+
+
+def _validated_mount_object_identity(value: Any, label: str) -> dict[str, Any]:
+    identity = _object(value, label)
+    _exact_fields(identity, MOUNT_OBJECT_IDENTITY_FIELDS, label)
+    for name in MOUNT_OBJECT_IDENTITY_FIELDS - {"object_type"}:
+        item = identity.get(name)
+        if type(item) is not int or item < 0:
+            raise SpringLaunchEvidenceError(f"{label}.{name} must be a non-negative integer")
+    if identity.get("device") == 0 or identity.get("inode") == 0:
+        raise SpringLaunchEvidenceError(
+            f"{label} must bind a non-zero filesystem device and inode"
+        )
+    if identity.get("object_type") not in {"REGULAR_FILE", "DIRECTORY"}:
+        raise SpringLaunchEvidenceError(
+            f"{label}.object_type must be REGULAR_FILE or DIRECTORY"
+        )
+    if identity.get("link_count") < 1:
+        raise SpringLaunchEvidenceError(f"{label}.link_count must be positive")
+    if identity.get("mode") > 0o7777:
+        raise SpringLaunchEvidenceError(f"{label}.mode is invalid")
+    return dict(identity)
+
+
+def _validate_application_mount_object_contract(
+    semantic_name: str,
+    identity: Mapping[str, Any],
+    parent_identity: Mapping[str, Any],
+    ancestor_identities: Iterable[Mapping[str, Any]],
+    *,
+    expected_uid: int,
+    expected_gid: int,
+    label: str,
+) -> None:
+    if (
+        type(expected_uid) is not int
+        or expected_uid < 0
+        or type(expected_gid) is not int
+        or expected_gid < 0
+    ):
+        raise SpringLaunchEvidenceError("expected mount UID/GID must be non-negative integers")
+    ancestors = list(ancestor_identities)
+    if not ancestors or ancestors[-1] != parent_identity:
+        raise SpringLaunchEvidenceError(
+            f"{label} ancestry must end at the captured immediate parent"
+        )
+    seen_ancestors: set[tuple[int, int]] = set()
+    for index, ancestor in enumerate(ancestors):
+        inode_key = (ancestor["device"], ancestor["inode"])
+        if inode_key in seen_ancestors:
+            raise SpringLaunchEvidenceError(f"{label} ancestry contains a cycle")
+        seen_ancestors.add(inode_key)
+        writable_without_sticky = bool(ancestor["mode"] & 0o022) and not bool(
+            ancestor["mode"] & stat.S_ISVTX
+        )
+        if (
+            ancestor["object_type"] != "DIRECTORY"
+            or writable_without_sticky
+            or ancestor["uid"] not in {0, expected_uid}
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} ancestor {index} must be root/deploy-owned and not unsafely group/other writable"
+            )
+    expected_type = (
+        "DIRECTORY"
+        if semantic_name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+        else "REGULAR_FILE"
+    )
+    if expected_type == "REGULAR_FILE" and (
+        parent_identity["object_type"] != "DIRECTORY"
+        or parent_identity["mode"] != 0o700
+        or parent_identity["uid"] != expected_uid
+        or parent_identity["gid"] != expected_gid
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label} immediate parent must be a 0700 directory owned by UID/GID {expected_uid}:{expected_gid}"
+        )
+    if identity["object_type"] != expected_type:
+        raise SpringLaunchEvidenceError(
+            f"{label} must bind a {expected_type.lower()}"
+        )
+    if identity["uid"] != expected_uid or identity["gid"] != expected_gid:
+        raise SpringLaunchEvidenceError(
+            f"{label} must be owned by UID/GID {expected_uid}:{expected_gid}"
+        )
+    if expected_type == "DIRECTORY":
+        if identity["mode"] != 0o700:
+            raise SpringLaunchEvidenceError(f"{label} directory mode must be 0700")
+        return
+    if identity["mode"] not in {0o400, 0o600}:
+        raise SpringLaunchEvidenceError(f"{label} secret mode must be 0400 or 0600")
+    if identity["link_count"] != 1:
+        raise SpringLaunchEvidenceError(f"{label} secret must have exactly one hard link")
+    if not 32 <= identity["size_bytes"] <= 4096:
+        raise SpringLaunchEvidenceError(
+            f"{label} secret size must be 32-4096 bytes"
+        )
+
+
+def _open_absolute_mount_source(path: Path, label: str) -> OpenedMountSource:
+    """Open a file or directory by walking every component without symlinks."""
+
+    supplied = path.expanduser()
+    if not supplied.is_absolute() or supplied == Path("/"):
+        raise SpringLaunchEvidenceError(f"{label} path must be absolute and non-root")
+    if supplied != Path(os.path.normpath(supplied)):
+        raise SpringLaunchEvidenceError(f"{label} path must be normalized")
+    components = supplied.parts[1:]
+    if not components or any(part in {"", ".", ".."} for part in components):
+        raise SpringLaunchEvidenceError(f"{label} path is invalid")
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    object_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    ancestor_descriptors: list[int] = []
+    object_descriptor = -1
+    try:
+        current_descriptor = os.open(Path(supplied.anchor), directory_flags)
+        ancestor_descriptors.append(current_descriptor)
+        for part in components[:-1]:
+            next_descriptor = os.open(part, directory_flags, dir_fd=current_descriptor)
+            opened = os.fstat(next_descriptor)
+            if not stat.S_ISDIR(opened.st_mode):
+                os.close(next_descriptor)
+                raise SpringLaunchEvidenceError(
+                    f"{label} contains a non-directory path component"
+                )
+            current_descriptor = next_descriptor
+            ancestor_descriptors.append(current_descriptor)
+        filename = components[-1]
+        object_descriptor = os.open(filename, object_flags, dir_fd=current_descriptor)
+        opened = os.fstat(object_descriptor)
+        if not (stat.S_ISREG(opened.st_mode) or stat.S_ISDIR(opened.st_mode)):
+            raise SpringLaunchEvidenceError(
+                f"{label} must be a regular file or directory"
+            )
+        return OpenedMountSource(
+            descriptor=object_descriptor,
+            parent_descriptor=current_descriptor,
+            filename=filename,
+            path=supplied,
+            ancestor_descriptors=tuple(ancestor_descriptors),
+        )
+    except (OSError, SpringLaunchEvidenceError) as exc:
+        if object_descriptor >= 0:
+            os.close(object_descriptor)
+        for descriptor in reversed(ancestor_descriptors):
+            os.close(descriptor)
+        if isinstance(exc, SpringLaunchEvidenceError):
+            raise
+        raise SpringLaunchEvidenceError(
+            f"{label} could not be opened without following links: {exc}"
+        ) from exc
+
+
+def _snapshot_mount_source_identity(source: str, label: str) -> dict[str, Any]:
+    opened_source = _open_absolute_mount_source(Path(source), label)
+    try:
+        before = os.fstat(opened_source.descriptor)
+        ancestor_before = [
+            os.fstat(descriptor)
+            for descriptor in opened_source.ancestor_descriptors
+        ]
+        path_value = os.stat(
+            opened_source.filename,
+            dir_fd=opened_source.parent_descriptor,
+            follow_symlinks=False,
+        )
+        after = os.fstat(opened_source.descriptor)
+        ancestor_after = [
+            os.fstat(descriptor)
+            for descriptor in opened_source.ancestor_descriptors
+        ]
+        ancestor_path_after = [
+            os.stat(opened_source.path.anchor, follow_symlinks=False)
+        ]
+        for index, part in enumerate(opened_source.path.parts[1:-1], start=1):
+            ancestor_path_after.append(
+                os.stat(
+                    part,
+                    dir_fd=opened_source.ancestor_descriptors[index - 1],
+                    follow_symlinks=False,
+                )
+            )
+        if (
+            _stat_identity(before) != _stat_identity(path_value)
+            or _stat_identity(before) != _stat_identity(after)
+            or any(
+                _stat_identity(left) != _stat_identity(right)
+                for left, right in zip(
+                    ancestor_before, ancestor_after, strict=True
+                )
+            )
+            or any(
+                _stat_identity(left) != _stat_identity(right)
+                for left, right in zip(
+                    ancestor_before, ancestor_path_after, strict=True
+                )
+            )
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} changed while its object identity was captured"
+            )
+        return {
+            "object_identity": _mount_object_identity(before),
+            "parent_identity": _mount_object_identity(ancestor_before[-1]),
+            "ancestor_identities": [
+                _mount_object_identity(value) for value in ancestor_before
+            ],
+        }
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"{label} object identity could not be captured safely: {exc}"
+        ) from exc
+    finally:
+        os.close(opened_source.descriptor)
+        for descriptor in reversed(opened_source.ancestor_descriptors):
+            os.close(descriptor)
+
+
+def _application_mount_source_identities_digest(
+    identities: Mapping[str, Mapping[str, Any]],
+) -> str:
+    if set(identities) != APPLICATION_MOUNT_SOURCE_NAMES:
+        raise SpringLaunchEvidenceError(
+            "application mount source identities must contain the exact controlled set"
+        )
+    normalized: dict[str, dict[str, Any]] = {}
+    for name in sorted(APPLICATION_MOUNT_SOURCE_NAMES):
+        record = _object(
+            identities.get(name), f"application mount source identity {name}"
+        )
+        _exact_fields(
+            record,
+            {
+                "source_path_digest",
+                "object_identity",
+                "parent_identity",
+                "ancestor_identities",
+            },
+            f"application mount source identity {name}",
+        )
+        object_identity = _validated_mount_object_identity(
+            record.get("object_identity"),
+            f"application mount source identity {name}.object_identity",
+        )
+        parent_identity = _validated_mount_object_identity(
+            record.get("parent_identity"),
+            f"application mount source identity {name}.parent_identity",
+        )
+        raw_ancestors = record.get("ancestor_identities")
+        if not isinstance(raw_ancestors, list) or not raw_ancestors:
+            raise SpringLaunchEvidenceError(
+                f"application mount source identity {name}.ancestor_identities must be non-empty"
+            )
+        ancestor_identities = [
+            _validated_mount_object_identity(
+                item,
+                f"application mount source identity {name}.ancestor_identities[{index}]",
+            )
+            for index, item in enumerate(raw_ancestors)
+        ]
+        if ancestor_identities[-1] != parent_identity:
+            raise SpringLaunchEvidenceError(
+                f"application mount source identity {name} parent does not match its ancestry"
+            )
+        # Writable workspace/replay directories legitimately change size,
+        # link count and ctime as jobs execute.  Their stable inode/security
+        # fields are bound here and their lifecycle is separately bound by the
+        # signed deployment_id.  Secret files retain every change-sensitive
+        # field so in-place rotation changes the commitment.
+        digest_identity = (
+            {
+                field: object_identity[field]
+                for field in (
+                    "device",
+                    "inode",
+                    "object_type",
+                    "mode",
+                    "uid",
+                    "gid",
+                )
+            }
+            if name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+            else object_identity
+        )
+        normalized[name] = {
+            "source_path_digest": _digest(
+                record.get("source_path_digest"),
+                f"application mount source identity {name}.source_path_digest",
+            ),
+            "object_identity": digest_identity,
+            "parent_identity": {
+                field: parent_identity[field]
+                for field in (
+                    "device",
+                    "inode",
+                    "object_type",
+                    "mode",
+                    "uid",
+                    "gid",
+                )
+            },
+            "ancestor_identities": [
+                {
+                    field: ancestor[field]
+                    for field in (
+                        "device",
+                        "inode",
+                        "object_type",
+                        "mode",
+                        "uid",
+                        "gid",
+                    )
+                }
+                for ancestor in ancestor_identities
+            ],
+        }
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-application-mount-source-objects-v4",
+            "source_identities": normalized,
+        }
+    )
+
+
+def application_mount_sources_digest(
+    sources: Mapping[str, str],
+    *,
+    _identity_provider: Callable[[str, str], Mapping[str, Any]] | None = None,
+    expected_uid: int = 10001,
+    expected_gid: int = 10001,
+) -> str:
+    """Digest exact host path and stable object identities without returning paths.
+
+    The production path uses no-follow descriptor snapshots.  The private
+    provider seam exists only so platform-independent unit tests can exercise
+    receipt logic without manufacturing Linux container mount namespaces.
+    """
+
+    if set(sources) != APPLICATION_MOUNT_SOURCE_NAMES:
+        raise SpringLaunchEvidenceError(
+            "application mount sources must contain the exact controlled set"
+        )
+    identities: dict[str, dict[str, Any]] = {}
+    normalized_paths: set[str] = set()
+    for name in sorted(APPLICATION_MOUNT_SOURCE_NAMES):
+        source = sources[name]
+        if (
+            not isinstance(source, str)
+            or not source
+            or source != source.strip()
+            or "\x00" in source
+            or not Path(source).is_absolute()
+            or Path(source) == Path("/")
+            or Path(source) != Path(os.path.normpath(source))
+        ):
+            raise SpringLaunchEvidenceError(
+                f"application mount source {name} must be a normalized absolute non-root path"
+            )
+        if source in normalized_paths:
+            # engine HMAC is represented once even though both services consume it;
+            # every other semantic source must be isolated.
+            raise SpringLaunchEvidenceError(
+                "application mount sources must be distinct by semantic role"
+            )
+        normalized_paths.add(source)
+        snapshot = (
+            _identity_provider(name, source)
+            if _identity_provider is not None
+            else _snapshot_mount_source_identity(
+                source, f"application mount source {name}"
+            )
+        )
+        snapshot_value = _object(snapshot, f"application mount source {name}.snapshot")
+        _exact_fields(
+            snapshot_value,
+            {"object_identity", "parent_identity", "ancestor_identities"},
+            f"application mount source {name}.snapshot",
+        )
+        validated_identity = _validated_mount_object_identity(
+            snapshot_value.get("object_identity"),
+            f"application mount source {name}.object_identity",
+        )
+        validated_parent = _validated_mount_object_identity(
+            snapshot_value.get("parent_identity"),
+            f"application mount source {name}.parent_identity",
+        )
+        raw_ancestors = snapshot_value.get("ancestor_identities")
+        if not isinstance(raw_ancestors, list) or not raw_ancestors:
+            raise SpringLaunchEvidenceError(
+                f"application mount source {name}.ancestor_identities must be non-empty"
+            )
+        ancestor_identities = [
+            _validated_mount_object_identity(
+                item,
+                f"application mount source {name}.ancestor_identities[{index}]",
+            )
+            for index, item in enumerate(raw_ancestors)
+        ]
+        _validate_application_mount_object_contract(
+            name,
+            validated_identity,
+            validated_parent,
+            ancestor_identities,
+            expected_uid=expected_uid,
+            expected_gid=expected_gid,
+            label=f"application mount source {name}",
+        )
+        identities[name] = {
+            "source_path_digest": _mount_source_path_digest(source),
+            "object_identity": validated_identity,
+            "parent_identity": validated_parent,
+            "ancestor_identities": ancestor_identities,
+        }
+    return _application_mount_source_identities_digest(identities)
 
 
 def _snapshot_local_json_evidence_reference(
@@ -1629,8 +2319,568 @@ def _container_environment_assignments(value: Any, label: str) -> dict[str, str]
     return values
 
 
-def _mount_source_identity_digest(source: str) -> str:
-    return "sha256:" + hashlib.sha256(source.encode("utf-8")).hexdigest()
+def _read_small_proc_file(parent_descriptor: int, name: str, label: str) -> bytes:
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    descriptor = -1
+    try:
+        descriptor = os.open(name, flags, dir_fd=parent_descriptor)
+        opened = os.fstat(descriptor)
+        if not stat.S_ISREG(opened.st_mode) or opened.st_size > 16 * 1024:
+            raise SpringLaunchEvidenceError(f"{label} is not a bounded regular proc file")
+        chunks: list[bytes] = []
+        total = 0
+        while total <= 16 * 1024:
+            chunk = os.read(descriptor, min(4096, 16 * 1024 + 1 - total))
+            if not chunk:
+                break
+            chunks.append(chunk)
+            total += len(chunk)
+        if total > 16 * 1024:
+            raise SpringLaunchEvidenceError(f"{label} exceeds the byte budget")
+        completed = os.fstat(descriptor)
+        if _stat_identity(opened) != _stat_identity(completed):
+            raise SpringLaunchEvidenceError(f"{label} changed while it was read")
+        return b"".join(chunks)
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(f"{label} could not be read safely: {exc}") from exc
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
+
+
+def _proc_process_identity(
+    process_descriptor: int, process_id: int, label: str
+) -> str:
+    raw_stat = _read_small_proc_file(process_descriptor, "stat", f"{label}.stat")
+    try:
+        rendered = raw_stat.decode("ascii", errors="strict").strip()
+    except UnicodeDecodeError as exc:
+        raise SpringLaunchEvidenceError(f"{label}.stat is not ASCII") from exc
+    close_parenthesis = rendered.rfind(")")
+    fields = rendered[close_parenthesis + 1 :].strip().split()
+    if close_parenthesis < 2 or len(fields) < 20 or not fields[19].isdigit():
+        raise SpringLaunchEvidenceError(f"{label}.stat has an invalid process identity")
+    try:
+        namespace = os.stat(
+            "ns/mnt", dir_fd=process_descriptor, follow_symlinks=True
+        )
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"{label} mount namespace identity could not be read"
+        ) from exc
+    process_stat = os.fstat(process_descriptor)
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-container-process-identity-v1",
+            "pid": process_id,
+            "process_directory_device": process_stat.st_dev,
+            "process_directory_inode": process_stat.st_ino,
+            "start_time_ticks": fields[19],
+            "mount_namespace_device": namespace.st_dev,
+            "mount_namespace_inode": namespace.st_ino,
+        }
+    )
+
+
+def _observe_live_bind_mount(
+    source: str,
+    process_id: int,
+    destination: str,
+    label: str,
+) -> tuple[
+    Mapping[str, Any],
+    Mapping[str, Any],
+    Mapping[str, Any],
+    list[Mapping[str, Any]],
+    str,
+]:
+    """Compare a host bind source with the inode visible in a live container.
+
+    Docker inspect exposes only path strings.  On Linux the trusted host
+    collector therefore opens both the host source and the target through the
+    container process' mount namespace.  No file content or raw path is emitted.
+    """
+
+    if sys.platform != "linux":
+        raise SpringLaunchEvidenceError(
+            "live mount-object collection requires a Linux Docker host"
+        )
+    if type(process_id) is not int or process_id <= 1:
+        raise SpringLaunchEvidenceError(f"{label} process ID is invalid")
+    if (
+        not isinstance(destination, str)
+        or not destination.startswith("/")
+        or Path(destination) == Path("/")
+        or Path(destination) != Path(os.path.normpath(destination))
+    ):
+        raise SpringLaunchEvidenceError(f"{label} destination is invalid")
+
+    source_opened = _open_absolute_mount_source(Path(source), f"{label}.source")
+    proc_descriptor = -1
+    process_descriptor = -1
+    root_descriptor = -1
+    target_parent_descriptor = -1
+    target_descriptor = -1
+    directory_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    root_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_DIRECTORY", 0)
+    )
+    object_flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        source_before = os.fstat(source_opened.descriptor)
+        source_ancestor_before = [
+            os.fstat(descriptor)
+            for descriptor in source_opened.ancestor_descriptors
+        ]
+        proc_descriptor = os.open("/proc", directory_flags)
+        process_descriptor = os.open(
+            str(process_id), directory_flags, dir_fd=proc_descriptor
+        )
+        process_before = _proc_process_identity(
+            process_descriptor, process_id, f"{label}.process"
+        )
+        # /proc/<pid>/root is an intentional kernel magic link into the
+        # already authenticated process mount namespace.  Every component
+        # below that root is still opened with O_NOFOLLOW.
+        root_descriptor = os.open("root", root_flags, dir_fd=process_descriptor)
+        target_parent_descriptor = root_descriptor
+        root_descriptor = -1
+        parts = Path(destination).parts[1:]
+        for part in parts[:-1]:
+            next_descriptor = os.open(
+                part, directory_flags, dir_fd=target_parent_descriptor
+            )
+            os.close(target_parent_descriptor)
+            target_parent_descriptor = next_descriptor
+        target_descriptor = os.open(
+            parts[-1], object_flags, dir_fd=target_parent_descriptor
+        )
+        target_before = os.fstat(target_descriptor)
+        if not (
+            stat.S_ISREG(target_before.st_mode) or stat.S_ISDIR(target_before.st_mode)
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} container target must be a regular file or directory"
+            )
+        source_path_after = os.stat(
+            source_opened.filename,
+            dir_fd=source_opened.parent_descriptor,
+            follow_symlinks=False,
+        )
+        source_after = os.fstat(source_opened.descriptor)
+        source_ancestor_after = [
+            os.fstat(descriptor)
+            for descriptor in source_opened.ancestor_descriptors
+        ]
+        source_ancestor_path_after = [
+            os.stat(source_opened.path.anchor, follow_symlinks=False)
+        ]
+        for index, part in enumerate(source_opened.path.parts[1:-1], start=1):
+            source_ancestor_path_after.append(
+                os.stat(
+                    part,
+                    dir_fd=source_opened.ancestor_descriptors[index - 1],
+                    follow_symlinks=False,
+                )
+            )
+        target_after = os.fstat(target_descriptor)
+        process_after = _proc_process_identity(
+            process_descriptor, process_id, f"{label}.process"
+        )
+        if (
+            _stat_identity(source_before) != _stat_identity(source_path_after)
+            or _stat_identity(source_before) != _stat_identity(source_after)
+            or any(
+                _stat_identity(left) != _stat_identity(right)
+                for left, right in zip(
+                    source_ancestor_before, source_ancestor_after, strict=True
+                )
+            )
+            or any(
+                _stat_identity(left) != _stat_identity(right)
+                for left, right in zip(
+                    source_ancestor_before,
+                    source_ancestor_path_after,
+                    strict=True,
+                )
+            )
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} host source changed during live mount collection"
+            )
+        if _stat_identity(target_before) != _stat_identity(target_after):
+            raise SpringLaunchEvidenceError(
+                f"{label} container target changed during live mount collection"
+            )
+        if _stat_identity(source_before) != _stat_identity(target_before):
+            raise SpringLaunchEvidenceError(
+                f"{label} container target does not expose the current host source object"
+            )
+        if process_before != process_after:
+            raise SpringLaunchEvidenceError(
+                f"{label} container process restarted during live mount collection"
+            )
+        return (
+            _mount_object_identity(source_before),
+            _mount_object_identity(target_before),
+            _mount_object_identity(source_ancestor_before[-1]),
+            [
+                _mount_object_identity(value)
+                for value in source_ancestor_before
+            ],
+            process_before,
+        )
+    except OSError as exc:
+        raise SpringLaunchEvidenceError(
+            f"{label} live mount identity could not be captured safely: {exc}"
+        ) from exc
+    finally:
+        for descriptor in (
+            target_descriptor,
+            target_parent_descriptor,
+            root_descriptor,
+            process_descriptor,
+            proc_descriptor,
+            source_opened.descriptor,
+        ):
+            if descriptor >= 0:
+                os.close(descriptor)
+        for descriptor in reversed(source_opened.ancestor_descriptors):
+            os.close(descriptor)
+
+
+LiveMountObserver = Callable[
+    [str, int, str, str],
+    tuple[
+        Mapping[str, Any],
+        Mapping[str, Any],
+        Mapping[str, Any],
+        list[Mapping[str, Any]],
+        str,
+    ],
+]
+
+
+def _runtime_for_service(
+    service: str,
+    worker: ContainerRuntimeObservation,
+    web: ContainerRuntimeObservation,
+) -> ContainerRuntimeObservation:
+    if service == "java-engine-worker":
+        return worker
+    if service == "web-console":
+        return web
+    raise SpringLaunchEvidenceError(f"unsupported application mount service {service}")
+
+
+def _collect_application_mount_observations(
+    worker: ContainerRuntimeObservation,
+    web: ContainerRuntimeObservation,
+    *,
+    observer: LiveMountObserver,
+) -> dict[str, dict[str, Any]]:
+    observations: dict[str, dict[str, Any]] = {}
+    for semantic_name in sorted(APPLICATION_MOUNT_SOURCE_NAMES):
+        expected_bindings = APPLICATION_MOUNT_BINDINGS[semantic_name]
+        source: str | None = None
+        object_identity: dict[str, Any] | None = None
+        parent_identity: dict[str, Any] | None = None
+        ancestor_identities: list[dict[str, Any]] | None = None
+        bindings: list[dict[str, Any]] = []
+        for service, destination in expected_bindings:
+            runtime = _runtime_for_service(service, worker, web)
+            observed_source = runtime.mount_sources[destination]
+            if source is None:
+                source = observed_source
+            elif observed_source != source:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} must use one identical host source across services"
+                )
+            (
+                raw_host,
+                raw_target,
+                raw_parent,
+                raw_ancestors,
+                process_identity,
+            ) = observer(
+                observed_source,
+                runtime.process_id,
+                destination,
+                f"application mount {semantic_name} ({service})",
+            )
+            host_identity = _validated_mount_object_identity(
+                raw_host, f"application mount {semantic_name} host object"
+            )
+            target_identity = _validated_mount_object_identity(
+                raw_target, f"application mount {semantic_name} container object"
+            )
+            validated_parent = _validated_mount_object_identity(
+                raw_parent, f"application mount {semantic_name} source parent"
+            )
+            if not isinstance(raw_ancestors, list) or not raw_ancestors:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} source ancestry must be non-empty"
+                )
+            validated_ancestors = [
+                _validated_mount_object_identity(
+                    item,
+                    f"application mount {semantic_name} source ancestry[{index}]",
+                )
+                for index, item in enumerate(raw_ancestors)
+            ]
+            if host_identity != target_identity:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} container target does not match the host source object"
+                )
+            expected_type = (
+                "DIRECTORY"
+                if semantic_name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+                else "REGULAR_FILE"
+            )
+            if host_identity["object_type"] != expected_type:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} must bind a {expected_type.lower()}"
+                )
+            _validate_application_mount_object_contract(
+                semantic_name,
+                host_identity,
+                validated_parent,
+                validated_ancestors,
+                expected_uid=10001,
+                expected_gid=10001,
+                label=f"application mount {semantic_name}",
+            )
+            if object_identity is None:
+                object_identity = host_identity
+            elif object_identity != host_identity:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} changed between container observations"
+                )
+            if parent_identity is None:
+                parent_identity = validated_parent
+                ancestor_identities = validated_ancestors
+            elif (
+                parent_identity != validated_parent
+                or ancestor_identities != validated_ancestors
+            ):
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} ancestry changed between container observations"
+                )
+            bindings.append(
+                {
+                    "service": service,
+                    "container_id": runtime.container_id,
+                    "process_id": runtime.process_id,
+                    "process_identity_digest": _digest(
+                        process_identity,
+                        f"application mount {semantic_name} process identity",
+                    ),
+                    "destination": destination,
+                }
+            )
+        assert (
+            source is not None
+            and object_identity is not None
+            and parent_identity is not None
+            and ancestor_identities is not None
+        )
+        observations[semantic_name] = {
+            "source_path_digest": _mount_source_path_digest(source),
+            "object_identity": object_identity,
+            "parent_identity": parent_identity,
+            "ancestor_identities": ancestor_identities,
+            "bindings": bindings,
+        }
+    return observations
+
+
+def _validate_application_mount_observations(
+    value: Any,
+    *,
+    worker: ContainerRuntimeObservation,
+    web_container_id: str,
+    web_process_id: int,
+    web_mount_source_digests: Mapping[str, str],
+) -> tuple[dict[str, dict[str, Any]], str]:
+    raw_observations = _object(value, "web-console runtime attestation.mount_sources")
+    if set(raw_observations) != APPLICATION_MOUNT_SOURCE_NAMES:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation mount sources must contain the exact controlled set"
+        )
+    normalized: dict[str, dict[str, Any]] = {}
+    for semantic_name in sorted(APPLICATION_MOUNT_SOURCE_NAMES):
+        raw = _object(
+            raw_observations.get(semantic_name),
+            f"web-console runtime attestation.mount_sources.{semantic_name}",
+        )
+        _exact_fields(
+            raw,
+            {
+                "source_path_digest",
+                "object_identity",
+                "parent_identity",
+                "ancestor_identities",
+                "bindings",
+            },
+            f"web-console runtime attestation.mount_sources.{semantic_name}",
+        )
+        expected_bindings = APPLICATION_MOUNT_BINDINGS[semantic_name]
+        source_path_digest: str | None = None
+        expected_binding_values: list[dict[str, Any]] = []
+        for service, destination in expected_bindings:
+            if service == "java-engine-worker":
+                container_id = worker.container_id
+                process_id = worker.process_id
+                observed_source_digest = _mount_source_path_digest(
+                    worker.mount_sources[destination]
+                )
+            elif service == "web-console":
+                container_id = web_container_id
+                process_id = web_process_id
+                observed_source_digest = web_mount_source_digests[destination]
+            else:
+                raise SpringLaunchEvidenceError(
+                    f"unsupported application mount service {service}"
+                )
+            if source_path_digest is None:
+                source_path_digest = observed_source_digest
+            elif source_path_digest != observed_source_digest:
+                raise SpringLaunchEvidenceError(
+                    f"application mount {semantic_name} has inconsistent inspected host sources"
+                )
+            expected_binding_values.append(
+                {
+                    "service": service,
+                    "container_id": container_id,
+                    "process_id": process_id,
+                    "destination": destination,
+                }
+            )
+        assert source_path_digest is not None
+        if raw.get("source_path_digest") != source_path_digest:
+            raise SpringLaunchEvidenceError(
+                f"application mount {semantic_name} source path digest does not match docker inspect"
+            )
+        object_identity = _validated_mount_object_identity(
+            raw.get("object_identity"),
+            f"web-console runtime attestation.mount_sources.{semantic_name}.object_identity",
+        )
+        parent_identity = _validated_mount_object_identity(
+            raw.get("parent_identity"),
+            f"web-console runtime attestation.mount_sources.{semantic_name}.parent_identity",
+        )
+        raw_ancestors = raw.get("ancestor_identities")
+        if not isinstance(raw_ancestors, list) or not raw_ancestors:
+            raise SpringLaunchEvidenceError(
+                f"application mount {semantic_name} ancestry must be non-empty"
+            )
+        ancestor_identities = [
+            _validated_mount_object_identity(
+                item,
+                f"web-console runtime attestation.mount_sources.{semantic_name}.ancestor_identities[{index}]",
+            )
+            for index, item in enumerate(raw_ancestors)
+        ]
+        expected_type = (
+            "DIRECTORY"
+            if semantic_name in APPLICATION_DIRECTORY_MOUNT_SOURCES
+            else "REGULAR_FILE"
+        )
+        if object_identity["object_type"] != expected_type:
+            raise SpringLaunchEvidenceError(
+                f"application mount {semantic_name} has the wrong object type"
+            )
+        _validate_application_mount_object_contract(
+            semantic_name,
+            object_identity,
+            parent_identity,
+            ancestor_identities,
+            expected_uid=10001,
+            expected_gid=10001,
+            label=f"application mount {semantic_name}",
+        )
+        raw_bindings = raw.get("bindings")
+        if not isinstance(raw_bindings, list) or len(raw_bindings) != len(
+            expected_binding_values
+        ):
+            raise SpringLaunchEvidenceError(
+                f"application mount {semantic_name} bindings are incomplete"
+            )
+        normalized_bindings: list[dict[str, Any]] = []
+        for index, (raw_binding, expected) in enumerate(
+            zip(raw_bindings, expected_binding_values, strict=True)
+        ):
+            binding = _object(
+                raw_binding,
+                f"web-console runtime attestation.mount_sources.{semantic_name}.bindings[{index}]",
+            )
+            _exact_fields(
+                binding,
+                {
+                    "service",
+                    "container_id",
+                    "process_id",
+                    "process_identity_digest",
+                    "destination",
+                },
+                f"web-console runtime attestation.mount_sources.{semantic_name}.bindings[{index}]",
+            )
+            for field, expected_value in expected.items():
+                actual = binding.get(field)
+                if type(actual) is not type(expected_value) or actual != expected_value:
+                    raise SpringLaunchEvidenceError(
+                        f"application mount {semantic_name} binding {field} does not match the inspected container"
+                    )
+            normalized_bindings.append(
+                {
+                    **expected,
+                    "process_identity_digest": _digest(
+                        binding.get("process_identity_digest"),
+                        f"application mount {semantic_name} process identity",
+                    ),
+                }
+            )
+        normalized[semantic_name] = {
+            "source_path_digest": _digest(
+                raw.get("source_path_digest"),
+                f"application mount {semantic_name} source path digest",
+            ),
+            "object_identity": object_identity,
+            "parent_identity": parent_identity,
+            "ancestor_identities": ancestor_identities,
+            "bindings": normalized_bindings,
+        }
+    aggregate = _application_mount_source_identities_digest(
+        {
+            name: {
+                "source_path_digest": item["source_path_digest"],
+                "object_identity": item["object_identity"],
+                "parent_identity": item["parent_identity"],
+                "ancestor_identities": item["ancestor_identities"],
+            }
+            for name, item in normalized.items()
+        }
+    )
+    return normalized, aggregate
 
 
 def _validated_mount_sources(
@@ -1644,6 +2894,11 @@ def _validated_mount_sources(
     sources: dict[str, str] = {}
     for index, item in enumerate(value):
         mount = _object(item, f"{label}[{index}]")
+        _exact_fields(
+            mount,
+            {"Type", "Source", "Destination", "Mode", "RW", "Propagation"},
+            f"{label}[{index}]",
+        )
         destination = mount.get("Destination")
         if not isinstance(destination, str) or destination not in expected_destinations:
             raise SpringLaunchEvidenceError(
@@ -1758,11 +3013,15 @@ def _validate_container_runtime_security(
         or state.get("Dead") is not False
     ):
         raise SpringLaunchEvidenceError(f"{label}.State must be stably running")
+    process_id = state.get("Pid")
+    if type(process_id) is not int or process_id <= 1:
+        raise SpringLaunchEvidenceError(
+            f"{label}.State.Pid must be a positive live host process ID"
+        )
     image_digest = _digest(container.get("Image"), f"{label}.Image")
     if image_digest != expected_image_digest:
-        image_label = "worker" if service == "java-engine-worker" else service
         raise SpringLaunchEvidenceError(
-            f"{label} immutable {image_label} image digest does not match the signed environment manifest"
+            f"{label} immutable {service} image digest does not match the signed environment manifest"
         )
     configured_image = config.get("Image")
     if (
@@ -1826,6 +3085,9 @@ def _validate_container_runtime_security(
         "PublishAllPorts": False,
         "Init": True,
         "PidsLimit": expected_pids_limit,
+        "Runtime": "runc",
+        "Isolation": "",
+        "OomKillDisable": False,
     }
     for name, expected in exact.items():
         actual = host.get(name)
@@ -1904,6 +3166,7 @@ def _validate_container_runtime_security(
         "container_name": container_name,
         "compose_project": project,
         "service": service,
+        "process_id": process_id,
         "image_digest": image_digest,
         "image_reference": configured_image,
         "path": expected_entrypoint[0],
@@ -1912,8 +3175,34 @@ def _validate_container_runtime_security(
         "command": [] if expected_command is None else list(expected_command),
         "working_directory": expected_working_directory,
         "user": "10001:10001",
+        "running": True,
+        "restarting": False,
+        "dead": False,
         "readonly_rootfs": True,
         "privileged": False,
+        "init": True,
+        "pids_limit": expected_pids_limit,
+        "oci_runtime": "runc",
+        "isolation": "",
+        "oom_kill_disable": False,
+        "publish_all_ports": False,
+        "published_ports": [],
+        "exposed_port": expected_exposed_port,
+        "restart_policy": "unless-stopped",
+        "namespace_modes": {
+            "pid": "",
+            "ipc": "private",
+            "uts": "",
+            "user": "",
+            "cgroup": "private",
+        },
+        "tmpfs": {
+            destination: (
+                "rw,noexec,nosuid,size="
+                + min(expected_tmpfs_sizes[destination], key=len)
+            )
+            for destination in sorted(expected_tmpfs_sizes)
+        },
         "cap_drop": ["ALL"],
         "security_opt": ["no-new-privileges:true"],
         "network_names": sorted(networks),
@@ -1924,7 +3213,7 @@ def _validate_container_runtime_security(
                 "read_write": expected_mounts[destination],
                 "mode": "rw" if expected_mounts[destination] else "ro",
                 "propagation": "rprivate",
-                "source_identity_digest": _mount_source_identity_digest(source),
+                "source_path_digest": _mount_source_path_digest(source),
             }
             for destination, source in sorted(sources.items())
         ],
@@ -1939,6 +3228,7 @@ def _validate_container_runtime_security(
         container_id=container_id,
         container_name=container_name,
         compose_project=project,
+        process_id=process_id,
         sanitized_runtime_shape=sanitized_runtime_shape,
     )
 
@@ -2021,17 +3311,87 @@ def _spring_worker_environment_from_inspect(
     return runtime
 
 
-def _web_console_environment_from_inspect(
-    content: bytes,
-    *,
-    label: str,
-    expected_image_digest: str,
-) -> ContainerRuntimeObservation:
-    document = _load_strict_json_bytes(content, label)
-    if not isinstance(document, list) or len(document) != 1:
-        raise SpringLaunchEvidenceError(
-            f"{label} must contain exactly one web-console container"
+def _validate_web_console_environment(
+    environment: Mapping[str, str], *, label: str
+) -> tuple[dict[str, str], list[str], str]:
+    canonical_required = {
+        _normalized_environment_name(name): name
+        for name in (
+            *WEB_CONSOLE_CONFIGURATION_ENVIRONMENT,
+            *WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED,
         )
+    }
+    for name, value in environment.items():
+        if not isinstance(name, str) or not isinstance(value, str):
+            raise SpringLaunchEvidenceError(
+                f"{label} names and values must be strings"
+            )
+        normalized = _normalized_environment_name(name)
+        canonical = canonical_required.get(normalized)
+        if canonical is not None:
+            if name != canonical:
+                raise SpringLaunchEvidenceError(
+                    f"{label} override {name} must use exact key {canonical}"
+                )
+            continue
+        if (
+            normalized in WEB_CONSOLE_FORBIDDEN_ENVIRONMENT_NORMALIZED
+            or normalized.startswith("SPRING")
+            or normalized.startswith("SERVER")
+            or normalized.startswith("MANAGEMENT")
+            or normalized.startswith("ELMOSSPRING")
+            or normalized.startswith("LD")
+            or normalized.startswith("DYLD")
+            or normalized.startswith("NODE")
+            or normalized.startswith("YARN")
+            or normalized.startswith("JAVA")
+            or normalized.startswith("JDK")
+            or normalized.startswith("MAVEN")
+            or normalized.startswith("GRADLE")
+            or normalized.startswith("GIT")
+            or normalized.startswith("SSL")
+            or normalized.startswith("TLS")
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} dangerous process or routing override {name} must be absent"
+            )
+    required: dict[str, str] = {}
+    for name, expected in WEB_CONSOLE_CONFIGURATION_ENVIRONMENT.items():
+        actual = environment.get(name)
+        if actual != expected:
+            raise SpringLaunchEvidenceError(
+                f"{label} required non-secret value {name} must equal {expected!r}"
+            )
+        required[name] = actual
+    for name, allowed in WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED.items():
+        actual = environment.get(name)
+        if actual not in allowed:
+            raise SpringLaunchEvidenceError(
+                f"{label} required non-secret value {name} is invalid"
+            )
+        required[name] = actual
+    names = sorted(environment)
+    return required, names, web_console_environment_names_digest(names)
+
+
+def _utc_instant_text(value: datetime) -> str:
+    if value.tzinfo is None or value.utcoffset() != timedelta(0):
+        raise SpringLaunchEvidenceError("collector clock must be timezone-aware UTC")
+    return value.astimezone(timezone.utc).isoformat(timespec="seconds").replace(
+        "+00:00", "Z"
+    )
+
+
+def _web_console_runtime_from_inspect(
+    raw_inspect: bytes, *, expected_image_digest: str, label: str
+) -> ContainerRuntimeObservation:
+    if not isinstance(raw_inspect, bytes) or not raw_inspect:
+        raise SpringLaunchEvidenceError(f"{label} bytes are required")
+    if len(raw_inspect) > MAX_JSON_BYTES:
+        raise SpringLaunchEvidenceError(f"{label} exceeds the byte budget")
+    document = _load_strict_json_bytes(raw_inspect, label)
+    if not isinstance(document, list) or len(document) != 1:
+        raise SpringLaunchEvidenceError(f"{label} must contain exactly one container")
     container = _object(document[0], f"{label}[0]")
     config = _object(container.get("Config"), f"{label}[0].Config")
     runtime = _validate_container_runtime_security(
@@ -2049,11 +3409,555 @@ def _web_console_environment_from_inspect(
         },
         expected_network_suffixes=frozenset({"_edge", "_backend"}),
         expected_tmpfs_sizes={"/tmp": frozenset({"64m", "67108864"})},
-        expected_pids_limit=0,
+        expected_pids_limit=512,
         expected_exposed_port="3000/tcp",
     )
-    web_console_configuration_digest(runtime.environment)
+    if runtime.sanitized_runtime_shape["network_mode"] != (
+        f"{runtime.compose_project}_edge"
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label} HostConfig.NetworkMode must select the controlled edge network"
+        )
+    _validate_web_console_environment(runtime.environment, label=f"{label} Config.Env")
     return runtime
+
+
+def collect_web_console_runtime_attestation(
+    raw_inspect: bytes,
+    *,
+    raw_worker_inspect: bytes,
+    expected_image_digest: str,
+    expected_worker_image_digest: str,
+    collector_identity: str,
+    stable_reinspect: Callable[[], tuple[bytes, bytes]],
+    captured_at: datetime | None = None,
+    _live_mount_observer: LiveMountObserver = _observe_live_bind_mount,
+) -> dict[str, Any]:
+    """Validate both live containers and return a secret-free runtime record.
+
+    Docker inspect does not expose bind-mount inodes.  The trusted Linux host
+    collector therefore compares every source descriptor with the object seen
+    through ``/proc/<pid>/root`` and re-inspects both containers after those
+    checks.  The output contains only environment names, required non-secret
+    values, path digests and filesystem metadata; it never contains inherited
+    secret values or raw host paths.  No signature or external pass is created.
+    """
+
+    expected_image = _digest(expected_image_digest, "expected web image digest")
+    expected_worker_image = _digest(
+        expected_worker_image_digest, "expected worker image digest"
+    )
+    collector = _identity(collector_identity, "collector identity")
+    if not callable(stable_reinspect):
+        raise SpringLaunchEvidenceError(
+            "a trusted stable Docker reinspection callback is required"
+        )
+    web_runtime = _web_console_runtime_from_inspect(
+        raw_inspect,
+        expected_image_digest=expected_image,
+        label="live web-console docker inspect",
+    )
+    if not isinstance(raw_worker_inspect, bytes) or not raw_worker_inspect:
+        raise SpringLaunchEvidenceError(
+            "live java-engine-worker docker inspect bytes are required"
+        )
+    if len(raw_worker_inspect) > MAX_JSON_BYTES:
+        raise SpringLaunchEvidenceError(
+            "live java-engine-worker docker inspect exceeds the byte budget"
+        )
+    worker_runtime = _spring_worker_environment_from_inspect(
+        raw_worker_inspect,
+        label="live java-engine-worker docker inspect",
+        expected_image_digest=expected_worker_image,
+    )
+    if web_runtime.compose_project != worker_runtime.compose_project:
+        raise SpringLaunchEvidenceError(
+            "live web-console and worker must belong to one Compose project"
+        )
+    if web_runtime.backend_network != worker_runtime.backend_network:
+        raise SpringLaunchEvidenceError(
+            "live web-console and worker must share the controlled backend network"
+        )
+    mount_observations = _collect_application_mount_observations(
+        worker_runtime,
+        web_runtime,
+        observer=_live_mount_observer,
+    )
+    application_mount_digest = _application_mount_source_identities_digest(
+        {
+            name: {
+                "source_path_digest": value["source_path_digest"],
+                "object_identity": value["object_identity"],
+                "parent_identity": value["parent_identity"],
+                "ancestor_identities": value["ancestor_identities"],
+            }
+            for name, value in mount_observations.items()
+        }
+    )
+    try:
+        raw_web_after, raw_worker_after = stable_reinspect()
+    except Exception as exc:  # noqa: BLE001 - adapters must fail closed
+        raise SpringLaunchEvidenceError(
+            "trusted Docker reinspection failed closed"
+        ) from exc
+    web_after = _web_console_runtime_from_inspect(
+        raw_web_after,
+        expected_image_digest=expected_image,
+        label="stable web-console Docker reinspection",
+    )
+    worker_after = _spring_worker_environment_from_inspect(
+        raw_worker_after,
+        label="stable java-engine-worker Docker reinspection",
+        expected_image_digest=expected_worker_image,
+    )
+    if web_runtime != web_after or worker_runtime != worker_after:
+        raise SpringLaunchEvidenceError(
+            "web-console or worker changed during live runtime collection"
+        )
+    required, names, names_digest = _validate_web_console_environment(
+        web_runtime.environment,
+        label="live web-console Config.Env",
+    )
+    captured = captured_at or datetime.now(timezone.utc)
+    return {
+        "schema_version": 1,
+        "namespace": NAMESPACE,
+        "method": WEB_RUNTIME_ATTESTATION_METHOD,
+        "captured_at": _utc_instant_text(captured),
+        "collector_identity": collector,
+        "raw_inspect_digest": "sha256:" + hashlib.sha256(raw_inspect).hexdigest(),
+        "raw_inspect_size_bytes": len(raw_inspect),
+        "raw_worker_inspect_digest": "sha256:"
+        + hashlib.sha256(raw_worker_inspect).hexdigest(),
+        "raw_worker_inspect_size_bytes": len(raw_worker_inspect),
+        "worker_container_id": worker_runtime.container_id,
+        "runtime": web_runtime.sanitized_runtime_shape,
+        "mount_sources": mount_observations,
+        "application_mount_sources_digest": application_mount_digest,
+        "stable_reinspection": True,
+        "environment_names": names,
+        "environment_names_digest": names_digest,
+        "required_environment": required,
+        "effective_web_console_configuration_digest": (
+            web_console_configuration_digest(required)
+        ),
+        "secrets_embedded": False,
+    }
+
+
+def _validate_sanitized_runtime_shape(
+    value: Any, *, expected_image_digest: str
+) -> tuple[dict[str, str], str, str, str, int]:
+    runtime = _object(value, "web-console runtime attestation.runtime")
+    fields = {
+        "container_id",
+        "container_name",
+        "compose_project",
+        "service",
+        "process_id",
+        "image_digest",
+        "image_reference",
+        "path",
+        "args",
+        "entrypoint",
+        "command",
+        "working_directory",
+        "user",
+        "running",
+        "restarting",
+        "dead",
+        "readonly_rootfs",
+        "privileged",
+        "init",
+        "pids_limit",
+        "oci_runtime",
+        "isolation",
+        "oom_kill_disable",
+        "publish_all_ports",
+        "published_ports",
+        "exposed_port",
+        "restart_policy",
+        "namespace_modes",
+        "tmpfs",
+        "cap_drop",
+        "security_opt",
+        "network_names",
+        "network_mode",
+        "mounts",
+    }
+    _exact_fields(runtime, fields, "web-console runtime attestation.runtime")
+    container_id = runtime.get("container_id")
+    if not isinstance(container_id, str) or re.fullmatch(r"[0-9a-f]{64}", container_id) is None:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation container_id is invalid"
+        )
+    process_id = runtime.get("process_id")
+    if type(process_id) is not int or process_id <= 1:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation process_id is invalid"
+        )
+    project = _identity(
+        runtime.get("compose_project"),
+        "web-console runtime attestation compose_project",
+    )
+    container_name = runtime.get("container_name")
+    if (
+        not isinstance(container_name, str)
+        or not container_name.startswith("/")
+        or "web-console" not in container_name
+        or project not in container_name
+        or runtime.get("service") != "web-console"
+    ):
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation container identity is invalid"
+        )
+    if runtime.get("image_digest") != expected_image_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation image digest does not match the signed manifest"
+        )
+    _digest(runtime.get("image_digest"), "web-console runtime image digest")
+    image_reference = runtime.get("image_reference")
+    if (
+        not isinstance(image_reference, str)
+        or not image_reference
+        or len(image_reference) > 512
+        or any(character.isspace() or ord(character) < 0x20 for character in image_reference)
+        or image_reference.casefold() == "latest"
+        or image_reference.casefold().endswith(":latest")
+    ):
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation image_reference is invalid"
+        )
+    expected_args = list(WEB_CONSOLE_CONTAINER_COMMAND)
+    exact_values = {
+        "path": WEB_CONSOLE_CONTAINER_ENTRYPOINT[0],
+        "args": expected_args,
+        "entrypoint": list(WEB_CONSOLE_CONTAINER_ENTRYPOINT),
+        "command": expected_args,
+        "working_directory": "/workspace/apps/web-console",
+        "user": "10001:10001",
+        "running": True,
+        "restarting": False,
+        "dead": False,
+        "readonly_rootfs": True,
+        "privileged": False,
+        "init": True,
+        "pids_limit": 512,
+        "oci_runtime": "runc",
+        "isolation": "",
+        "oom_kill_disable": False,
+        "publish_all_ports": False,
+        "published_ports": [],
+        "exposed_port": "3000/tcp",
+        "restart_policy": "unless-stopped",
+        "namespace_modes": {
+            "pid": "",
+            "ipc": "private",
+            "uts": "",
+            "user": "",
+            "cgroup": "private",
+        },
+        "tmpfs": {"/tmp": "rw,noexec,nosuid,size=64m"},
+        "cap_drop": ["ALL"],
+        "security_opt": ["no-new-privileges:true"],
+        "network_names": sorted({f"{project}_edge", f"{project}_backend"}),
+        "network_mode": f"{project}_edge",
+    }
+    for name, expected in exact_values.items():
+        actual = runtime.get(name)
+        if type(actual) is not type(expected) or actual != expected:
+            raise SpringLaunchEvidenceError(
+                f"web-console runtime attestation.runtime.{name} is invalid"
+            )
+    raw_mounts = runtime.get("mounts")
+    if not isinstance(raw_mounts, list):
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation.runtime.mounts must be an array"
+        )
+    expected_destinations = {
+        "/run/secrets/elmos/resend-api-key",
+        "/run/secrets/elmos-spring-engine-hmac",
+    }
+    mounts: dict[str, str] = {}
+    for index, raw in enumerate(raw_mounts):
+        mount = _object(raw, f"web-console runtime attestation.runtime.mounts[{index}]")
+        _exact_fields(
+            mount,
+            {
+                "destination",
+                "read_write",
+                "mode",
+                "propagation",
+                "source_path_digest",
+            },
+            f"web-console runtime attestation.runtime.mounts[{index}]",
+        )
+        destination = mount.get("destination")
+        if destination not in expected_destinations or destination in mounts:
+            raise SpringLaunchEvidenceError(
+                "web-console runtime attestation contains an undeclared or duplicate mount"
+            )
+        if (
+            mount.get("read_write") is not False
+            or mount.get("mode") != "ro"
+            or mount.get("propagation") != "rprivate"
+        ):
+            raise SpringLaunchEvidenceError(
+                f"web-console runtime mount {destination} must be an exact ro rprivate bind"
+            )
+        mounts[destination] = _digest(
+            mount.get("source_path_digest"),
+            f"web-console runtime mount {destination} source path digest",
+        )
+    if set(mounts) != expected_destinations or len(set(mounts.values())) != 2:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation must contain two distinct controlled mounts"
+        )
+    return mounts, project, image_reference, container_id, process_id
+
+
+def _validate_web_console_runtime_attestation(
+    observation: ContentObservation,
+    *,
+    expected_image_digest: str,
+    worker: ContainerRuntimeObservation,
+    worker_inspect_digest: str,
+    worker_inspect_size_bytes: int,
+    observed_at: datetime,
+    max_age: timedelta,
+) -> WebRuntimeObservation:
+    document = _canonical_json_document(
+        observation.content, "web-console runtime attestation"
+    )
+    fields = {
+        "schema_version",
+        "namespace",
+        "method",
+        "captured_at",
+        "collector_identity",
+        "raw_inspect_digest",
+        "raw_inspect_size_bytes",
+        "raw_worker_inspect_digest",
+        "raw_worker_inspect_size_bytes",
+        "worker_container_id",
+        "runtime",
+        "mount_sources",
+        "application_mount_sources_digest",
+        "stable_reinspection",
+        "environment_names",
+        "environment_names_digest",
+        "required_environment",
+        "effective_web_console_configuration_digest",
+        "secrets_embedded",
+    }
+    _exact_fields(document, fields, "web-console runtime attestation")
+    if (
+        type(document.get("schema_version")) is not int
+        or document.get("schema_version") != 1
+        or document.get("namespace") != NAMESPACE
+        or document.get("method") != WEB_RUNTIME_ATTESTATION_METHOD
+    ):
+        raise SpringLaunchEvidenceError("web-console runtime attestation identity is invalid")
+    _identity(document.get("collector_identity"), "web-console collector identity")
+    captured = _utc_instant(
+        document.get("captured_at"), "web-console runtime attestation.captured_at"
+    )
+    if captured > observed_at:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation cannot be captured after receipt.observed_at"
+        )
+    if observed_at - captured > max_age:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation is older than the allowed evidence age"
+        )
+    raw_digest = _digest(
+        document.get("raw_inspect_digest"),
+        "web-console runtime attestation.raw_inspect_digest",
+    )
+    raw_size = _positive_size(
+        document.get("raw_inspect_size_bytes"),
+        "web-console runtime attestation.raw_inspect_size_bytes",
+    )
+    if raw_size > MAX_JSON_BYTES:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation raw inspect exceeds the byte budget"
+        )
+    if document.get("raw_worker_inspect_digest") != worker_inspect_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation worker inspect digest does not match the signed raw worker evidence"
+        )
+    _digest(
+        document.get("raw_worker_inspect_digest"),
+        "web-console runtime attestation.raw_worker_inspect_digest",
+    )
+    raw_worker_size = _positive_size(
+        document.get("raw_worker_inspect_size_bytes"),
+        "web-console runtime attestation.raw_worker_inspect_size_bytes",
+    )
+    if raw_worker_size != worker_inspect_size_bytes or raw_worker_size > MAX_JSON_BYTES:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation worker inspect byte size mismatch"
+        )
+    if document.get("worker_container_id") != worker.container_id:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation worker container identity does not match raw inspect"
+        )
+    if document.get("stable_reinspection") is not True:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation must prove stable reinspection"
+        )
+    if document.get("secrets_embedded") is not False:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation.secrets_embedded must be exactly false"
+        )
+    mounts, project, image_reference, web_container_id, web_process_id = (
+        _validate_sanitized_runtime_shape(
+        document.get("runtime"), expected_image_digest=expected_image_digest
+        )
+    )
+    _, application_mount_digest = _validate_application_mount_observations(
+        document.get("mount_sources"),
+        worker=worker,
+        web_container_id=web_container_id,
+        web_process_id=web_process_id,
+        web_mount_source_digests=mounts,
+    )
+    if document.get("application_mount_sources_digest") != application_mount_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation application mount object digest mismatch"
+        )
+    raw_names = document.get("environment_names")
+    if (
+        not isinstance(raw_names, list)
+        or any(not isinstance(name, str) for name in raw_names)
+        or raw_names != sorted(raw_names)
+        or len(set(raw_names)) != len(raw_names)
+    ):
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation.environment_names must be a sorted unique string array"
+        )
+    names_digest = web_console_environment_names_digest(raw_names)
+    if document.get("environment_names_digest") != names_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation environment names digest mismatch"
+        )
+    required = _object(
+        document.get("required_environment"),
+        "web-console runtime attestation.required_environment",
+    )
+    _exact_fields(
+        required,
+        {
+            *WEB_CONSOLE_CONFIGURATION_ENVIRONMENT,
+            *WEB_CONSOLE_DYNAMIC_ENVIRONMENT_ALLOWED,
+        },
+        "web-console runtime attestation.required_environment",
+    )
+    # Apply the same dangerous-name and exact-value policy without needing raw
+    # secret values: placeholder values are sufficient for all non-required keys.
+    synthetic_environment = {name: "<redacted>" for name in raw_names}
+    synthetic_environment.update(required)
+    checked_required, _, checked_names_digest = _validate_web_console_environment(
+        synthetic_environment,
+        label="web-console runtime attestation environment",
+    )
+    if checked_names_digest != names_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation environment inventory mismatch"
+        )
+    configuration_digest = web_console_configuration_digest(checked_required)
+    if document.get("effective_web_console_configuration_digest") != configuration_digest:
+        raise SpringLaunchEvidenceError(
+            "web-console runtime attestation effective configuration digest mismatch"
+        )
+    return WebRuntimeObservation(
+        image_digest=expected_image_digest,
+        configured_image=image_reference,
+        engine_secret_source_digest=mounts[
+            "/run/secrets/elmos-spring-engine-hmac"
+        ],
+        backend_network=f"{project}_backend",
+        mount_source_digests=mounts,
+        environment_names_digest=names_digest,
+        configuration_digest=configuration_digest,
+        raw_inspect_digest=raw_digest,
+        worker_inspect_digest=worker_inspect_digest,
+        worker_container_id=worker.container_id,
+        application_mount_sources_digest=application_mount_digest,
+    )
+
+
+def _validate_worker_image_artifact_attestation(
+    observation: ContentObservation,
+    *,
+    binding: Mapping[str, Any],
+    worker: ContainerRuntimeObservation,
+    worker_application_artifact_digest: str,
+    observed_at: datetime,
+    max_age: timedelta,
+) -> dict[str, Any]:
+    document = _canonical_json_document(
+        observation.content, "worker image artifact attestation"
+    )
+    fields = {
+        "schema_version",
+        "namespace",
+        "method",
+        "builder_identity",
+        "build_invocation_id",
+        "deployed_revision",
+        "image_digest",
+        "image_reference",
+        "artifact_path",
+        "worker_application_artifact_digest",
+        "extracted_at",
+        "outcome",
+        "synthetic",
+        "unknowns",
+        "not_run",
+    }
+    _exact_fields(document, fields, "worker image artifact attestation")
+    if (
+        type(document.get("schema_version")) is not int
+        or document.get("schema_version") != 1
+        or document.get("namespace") != NAMESPACE
+        or document.get("method") != WORKER_IMAGE_ARTIFACT_ATTESTATION_METHOD
+    ):
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation identity is invalid"
+        )
+    _identity(document.get("builder_identity"), "worker image artifact builder")
+    _identity(document.get("build_invocation_id"), "worker image build invocation")
+    expected = {
+        "deployed_revision": binding["deployed_revision"],
+        "image_digest": worker.image_digest,
+        "image_reference": worker.configured_image,
+        "artifact_path": "/app/app.jar",
+        "worker_application_artifact_digest": worker_application_artifact_digest,
+        "outcome": "VERIFIED",
+        "synthetic": False,
+        "unknowns": [],
+        "not_run": [],
+    }
+    for name, expected_value in expected.items():
+        actual = document.get(name)
+        if type(actual) is not type(expected_value) or actual != expected_value:
+            raise SpringLaunchEvidenceError(
+                f"worker image artifact attestation binding mismatch: {name}"
+            )
+    extracted = _utc_instant(
+        document.get("extracted_at"), "worker image artifact attestation.extracted_at"
+    )
+    if extracted > observed_at:
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation cannot postdate receipt.observed_at"
+        )
+    if observed_at - extracted > max_age:
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation is older than the allowed evidence age"
+        )
+    _reject_non_success(document, "worker image artifact attestation")
+    return document
 
 
 def _validate_environment_manifest(
@@ -2083,11 +3987,13 @@ def _validate_environment_manifest(
         "launch_profile_digest",
         "artifact_digest",
         "configuration_digest",
-        "compose_environment_file_digest",
+        "application_environment_commitment_digest",
         "container_inspect",
-        "web_console_container_inspect",
+        "web_console_runtime_attestation",
         "effective_spring_configuration_digest",
         "effective_web_console_configuration_digest",
+        "web_console_environment_names_digest",
+        "application_mount_sources_digest",
         "worker_image_artifact_attestation",
         "worker_application_artifact_digest",
         "network_policy_digest",
@@ -2119,9 +4025,11 @@ def _validate_environment_manifest(
         )
     for name in (
         "configuration_digest",
-        "compose_environment_file_digest",
+        "application_environment_commitment_digest",
         "effective_spring_configuration_digest",
         "effective_web_console_configuration_digest",
+        "web_console_environment_names_digest",
+        "application_mount_sources_digest",
         "worker_application_artifact_digest",
         "network_policy_digest",
         "rootless_policy_digest",
@@ -2130,13 +4038,13 @@ def _validate_environment_manifest(
     images = document.get("runtime_image_digests")
     if (
         not isinstance(images, dict)
-        or not REQUIRED_RUNTIME_IMAGE_NAMES.issubset(images)
+        or set(images) != REQUIRED_RUNTIME_IMAGE_NAMES
         or any(not isinstance(name, str) or not name for name in images)
         or any(DIGEST_RE.fullmatch(str(value)) is None for value in images.values())
         or len(set(images.values())) != len(images)
     ):
         raise SpringLaunchEvidenceError(
-            "environment manifest.runtime_image_digests must contain distinct digest-pinned worker, web, proxy, transformer, and runner images"
+            "environment manifest.runtime_image_digests must contain exactly five distinct digest-pinned application images"
         )
     captured_at = _utc_instant(
         document.get("captured_at"), "environment manifest.captured_at"
@@ -2158,132 +4066,87 @@ def _validate_environment_manifest(
         roots=roots,
         label="environment manifest.container_inspect",
     )
-    if container_inspect.digest in {
-        observation.digest,
-        binding["launch_profile"]["digest"],
-        binding["artifact"]["digest"],
-    }:
-        raise SpringLaunchEvidenceError(
-            "container inspect bytes must be distinct from the environment manifest, launch profile, and artifact"
-        )
-    worker_environment = _spring_worker_environment_from_inspect(
-        container_inspect.content,
-        label="environment manifest.container_inspect.local_bytes",
-        expected_image_digest=images["worker"],
-    )
-    effective_digest = spring_worker_configuration_digest(worker_environment.environment)
-    if document.get("effective_spring_configuration_digest") != effective_digest:
-        raise SpringLaunchEvidenceError(
-            "environment manifest effective Spring configuration digest does not match container inspect bytes"
-        )
-    web_console_inspect = _snapshot_local_json_evidence_reference(
-        document.get("web_console_container_inspect"),
+    web_runtime_attestation = _snapshot_local_json_evidence_reference(
+        document.get("web_console_runtime_attestation"),
         roots=roots,
-        label="environment manifest.web_console_container_inspect",
+        label="environment manifest.web_console_runtime_attestation",
     )
-    image_attestation = _snapshot_local_json_evidence_reference(
+    image_artifact_attestation = _snapshot_local_json_evidence_reference(
         document.get("worker_image_artifact_attestation"),
         roots=roots,
         label="environment manifest.worker_image_artifact_attestation",
     )
-    protected_digests = {
+    supporting_digests = {
+        container_inspect.digest,
+        web_runtime_attestation.digest,
+        image_artifact_attestation.digest,
         observation.digest,
         binding["launch_profile"]["digest"],
         binding["artifact"]["digest"],
-        container_inspect.digest,
     }
-    if web_console_inspect.digest in protected_digests:
+    if len(supporting_digests) != 6:
         raise SpringLaunchEvidenceError(
-            "Web console inspect bytes must be distinct from the other primary evidence"
+            "worker inspect, sanitized web runtime, image artifact attestation, manifest, profile, and customer artifact bytes must be content-distinct"
         )
-    protected_digests.add(web_console_inspect.digest)
-    if image_attestation.digest in protected_digests:
+    worker = _spring_worker_environment_from_inspect(
+        container_inspect.content,
+        label="environment manifest.container_inspect.local_bytes",
+        expected_image_digest=images["worker"],
+    )
+    worker_effective_digest = spring_worker_configuration_digest(worker.environment)
+    if document.get("effective_spring_configuration_digest") != worker_effective_digest:
         raise SpringLaunchEvidenceError(
-            "worker image artifact attestation must be distinct from the other primary evidence"
+            "environment manifest effective Spring configuration digest does not match container inspect bytes"
         )
-    web_runtime = _web_console_environment_from_inspect(
-        web_console_inspect.content,
-        label="environment manifest.web_console_container_inspect.local_bytes",
+    web = _validate_web_console_runtime_attestation(
+        web_runtime_attestation,
         expected_image_digest=images["web"],
+        worker=worker,
+        worker_inspect_digest=container_inspect.digest,
+        worker_inspect_size_bytes=container_inspect.size_bytes,
+        observed_at=captured_at,
+        max_age=max_age,
     )
-    web_digest = web_console_configuration_digest(web_runtime.environment)
-    if document.get("effective_web_console_configuration_digest") != web_digest:
+    if document.get("effective_web_console_configuration_digest") != web.configuration_digest:
         raise SpringLaunchEvidenceError(
-            "environment manifest effective Web console configuration digest does not match container inspect bytes"
+            "environment manifest effective web-console configuration digest does not match the sanitized runtime attestation"
         )
-    if (
-        worker_environment.engine_secret_source != web_runtime.engine_secret_source
-        or worker_environment.backend_network != web_runtime.backend_network
-        or worker_environment.compose_project != web_runtime.compose_project
-        or worker_environment.container_id == web_runtime.container_id
-        or worker_environment.container_name == web_runtime.container_name
-    ):
+    if document.get("web_console_environment_names_digest") != web.environment_names_digest:
         raise SpringLaunchEvidenceError(
-            "worker and Web console container evidence does not bind one shared authenticated deployment"
+            "environment manifest web-console environment names digest does not match the sanitized runtime attestation"
         )
-
-    attestation = _canonical_json_document(
-        image_attestation.content,
-        "worker image artifact attestation",
+    worker_application_digest = _digest(
+        document.get("worker_application_artifact_digest"),
+        "environment manifest.worker_application_artifact_digest",
     )
-    _exact_fields(
-        attestation,
-        {
-            "schema_version",
-            "namespace",
-            "method",
-            "builder_identity",
-            "build_invocation_id",
-            "deployed_revision",
-            "image_digest",
-            "image_reference",
-            "artifact_path",
-            "artifact_digest",
-            "extracted_at",
-            "outcome",
-            "synthetic",
-            "unknowns",
-            "not_run",
-        },
-        "worker image artifact attestation",
-    )
-    if (
-        type(attestation.get("schema_version")) is not int
-        or attestation.get("schema_version") != 1
-        or attestation.get("namespace") != NAMESPACE
-        or attestation.get("method") != "OCI_IMAGE_CONTENT_EXTRACTION"
-        or attestation.get("deployed_revision") != binding["deployed_revision"]
-        or attestation.get("image_digest") != worker_environment.image_digest
-        or attestation.get("image_reference") != worker_environment.configured_image
-        or attestation.get("artifact_path") != "/app/app.jar"
-        or attestation.get("artifact_digest")
-        != document.get("worker_application_artifact_digest")
-        or attestation.get("outcome") != "VERIFIED"
-        or attestation.get("synthetic") is not False
-        or attestation.get("unknowns") != []
-        or attestation.get("not_run") != []
-    ):
+    if worker_application_digest == binding["artifact"]["digest"]:
         raise SpringLaunchEvidenceError(
-            "worker image artifact attestation does not match the deployed worker image and artifact"
+            "worker application artifact digest must be distinct from the migrated customer artifact digest"
         )
-    _identity(attestation.get("builder_identity"), "worker image artifact attestation.builder_identity")
-    _identity(attestation.get("build_invocation_id"), "worker image artifact attestation.build_invocation_id")
-    extracted_at = _utc_instant(
-        attestation.get("extracted_at"),
-        "worker image artifact attestation.extracted_at",
+    _validate_worker_image_artifact_attestation(
+        image_artifact_attestation,
+        binding=binding,
+        worker=worker,
+        worker_application_artifact_digest=worker_application_digest,
+        observed_at=captured_at,
+        max_age=max_age,
     )
-    if extracted_at > captured_at or observed_at - extracted_at > max_age:
+    worker_engine_digest = _mount_source_path_digest(
+        worker.mount_sources["/run/secrets/elmos-spring-engine-hmac"]
+    )
+    if web.engine_secret_source_digest != worker_engine_digest:
         raise SpringLaunchEvidenceError(
-            "worker image artifact attestation is not fresh for the captured deployment"
+            "web-console and worker must consume the same application engine HMAC host source path"
         )
-    document["web_console_container_inspect"] = {
-        **document["web_console_container_inspect"],
-        "digest": web_console_inspect.digest,
-    }
-    document["worker_image_artifact_attestation"] = {
-        **document["worker_image_artifact_attestation"],
-        "digest": image_attestation.digest,
-    }
+    if web.backend_network != worker.backend_network:
+        raise SpringLaunchEvidenceError(
+            "web-console and worker must share the same controlled backend network"
+        )
+    mount_sources_digest = web.application_mount_sources_digest
+    if document.get("application_mount_sources_digest") != mount_sources_digest:
+        raise SpringLaunchEvidenceError(
+            "environment manifest application mount source digest does not match observed runtime mounts"
+        )
     expected = {
         "deployed_revision": binding["deployed_revision"],
         "launch_profile_digest": binding["launch_profile"]["digest"],
@@ -2703,8 +4566,12 @@ def verify_spring_launch_receipt(
     expected_region: str | None = None,
     expected_environment_class: str | None = None,
     expected_configuration_digest: str | None = None,
-    expected_compose_environment_file_digest: str | None = None,
+    expected_application_environment_commitment_digest: str | None = None,
     expected_effective_spring_configuration_digest: str | None = None,
+    expected_effective_web_console_configuration_digest: str | None = None,
+    expected_web_console_environment_names_digest: str | None = None,
+    expected_application_mount_sources_digest: str | None = None,
+    expected_worker_application_artifact_digest: str | None = None,
     repo_root: Path = ROOT,
     now: datetime | None = None,
     max_age: timedelta = DEFAULT_MAX_AGE,
@@ -2753,9 +4620,23 @@ def verify_spring_launch_receipt(
         "region": expected_region,
         "environment_class": expected_environment_class,
         "configuration_digest": expected_configuration_digest,
-        "compose_environment_file_digest": expected_compose_environment_file_digest,
+        "application_environment_commitment_digest": (
+            expected_application_environment_commitment_digest
+        ),
         "effective_spring_configuration_digest": (
             expected_effective_spring_configuration_digest
+        ),
+        "effective_web_console_configuration_digest": (
+            expected_effective_web_console_configuration_digest
+        ),
+        "web_console_environment_names_digest": (
+            expected_web_console_environment_names_digest
+        ),
+        "application_mount_sources_digest": (
+            expected_application_mount_sources_digest
+        ),
+        "worker_application_artifact_digest": (
+            expected_worker_application_artifact_digest
         ),
     }
     for field, expected_value in expected_environment_values.items():
@@ -2862,12 +4743,12 @@ def verify_spring_launch_receipt(
             "all nine external gates must bind content-distinct evidence"
         )
     primary_digests = {item.digest for item in primary.values()}
-    primary_digests.add(environment_manifest["container_inspect"]["digest"])
-    primary_digests.add(
-        environment_manifest["web_console_container_inspect"]["digest"]
-    )
-    primary_digests.add(
-        environment_manifest["worker_image_artifact_attestation"]["digest"]
+    primary_digests.update(
+        {
+            environment_manifest["container_inspect"]["digest"],
+            environment_manifest["web_console_runtime_attestation"]["digest"],
+            environment_manifest["worker_image_artifact_attestation"]["digest"],
+        }
     )
     if primary_digests.intersection(evidence_digests):
         raise SpringLaunchEvidenceError(
@@ -3201,15 +5082,21 @@ def verify_spring_launch_receipt(
         "environment_digest": primary["environment"].digest.removeprefix("sha256:"),
         "environment_id": environment_manifest["environment_id"],
         "deployment_id": environment_manifest["deployment_id"],
+        "environment_class": environment_manifest["environment_class"],
+        "provider": environment_manifest["provider"],
+        "region": environment_manifest["region"],
         "configuration_digest": environment_manifest["configuration_digest"],
-        "compose_environment_file_digest": environment_manifest[
-            "compose_environment_file_digest"
+        "application_environment_commitment_digest": environment_manifest[
+            "application_environment_commitment_digest"
         ],
         "container_inspect_digest": environment_manifest["container_inspect"][
             "digest"
         ],
-        "web_console_container_inspect_digest": environment_manifest[
-            "web_console_container_inspect"
+        "web_console_runtime_attestation_digest": environment_manifest[
+            "web_console_runtime_attestation"
+        ]["digest"],
+        "worker_image_artifact_attestation_digest": environment_manifest[
+            "worker_image_artifact_attestation"
         ]["digest"],
         "effective_spring_configuration_digest": environment_manifest[
             "effective_spring_configuration_digest"
@@ -3217,9 +5104,12 @@ def verify_spring_launch_receipt(
         "effective_web_console_configuration_digest": environment_manifest[
             "effective_web_console_configuration_digest"
         ],
-        "worker_image_artifact_attestation_digest": environment_manifest[
-            "worker_image_artifact_attestation"
-        ]["digest"],
+        "web_console_environment_names_digest": environment_manifest[
+            "web_console_environment_names_digest"
+        ],
+        "application_mount_sources_digest": environment_manifest[
+            "application_mount_sources_digest"
+        ],
         "worker_application_artifact_digest": environment_manifest[
             "worker_application_artifact_digest"
         ],
@@ -3259,8 +5149,12 @@ def verify_spring_launch_receipt_file(
     expected_region: str | None = None,
     expected_environment_class: str | None = None,
     expected_configuration_digest: str | None = None,
-    expected_compose_environment_file_digest: str | None = None,
+    expected_application_environment_commitment_digest: str | None = None,
     expected_effective_spring_configuration_digest: str | None = None,
+    expected_effective_web_console_configuration_digest: str | None = None,
+    expected_web_console_environment_names_digest: str | None = None,
+    expected_application_mount_sources_digest: str | None = None,
+    expected_worker_application_artifact_digest: str | None = None,
     repo_root: Path = ROOT,
     now: datetime | None = None,
     max_age: timedelta = DEFAULT_MAX_AGE,
@@ -3293,11 +5187,23 @@ def verify_spring_launch_receipt_file(
         expected_region=expected_region,
         expected_environment_class=expected_environment_class,
         expected_configuration_digest=expected_configuration_digest,
-        expected_compose_environment_file_digest=(
-            expected_compose_environment_file_digest
+        expected_application_environment_commitment_digest=(
+            expected_application_environment_commitment_digest
         ),
         expected_effective_spring_configuration_digest=(
             expected_effective_spring_configuration_digest
+        ),
+        expected_effective_web_console_configuration_digest=(
+            expected_effective_web_console_configuration_digest
+        ),
+        expected_web_console_environment_names_digest=(
+            expected_web_console_environment_names_digest
+        ),
+        expected_application_mount_sources_digest=(
+            expected_application_mount_sources_digest
+        ),
+        expected_worker_application_artifact_digest=(
+            expected_worker_application_artifact_digest
         ),
         repo_root=repo_root,
         now=now,
@@ -3517,6 +5423,76 @@ def _write_new_owner_only(path: Path, content: bytes) -> None:
             os.close(parent_descriptor)
 
 
+def _bounded_docker_inspect(
+    docker_host: str, container: str, *, timeout_seconds: float = 20.0
+) -> bytes:
+    """Read one Docker inspect response into bounded memory only."""
+
+    process: subprocess.Popen[bytes] | None = None
+    selector = selectors.DefaultSelector()
+    try:
+        process = subprocess.Popen(
+            [
+                "docker",
+                "--host",
+                docker_host,
+                "inspect",
+                "--type",
+                "container",
+                container,
+            ],
+            stdin=subprocess.DEVNULL,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+        )
+        if process.stdout is None:
+            raise SpringLaunchEvidenceError("Docker inspect stdout was not created")
+        os.set_blocking(process.stdout.fileno(), False)
+        selector.register(process.stdout, selectors.EVENT_READ)
+        deadline = time.monotonic() + timeout_seconds
+        chunks: list[bytes] = []
+        total = 0
+        reached_eof = False
+        while not reached_eof:
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise SpringLaunchEvidenceError("live Docker inspect timed out")
+            events = selector.select(remaining)
+            if not events:
+                raise SpringLaunchEvidenceError("live Docker inspect timed out")
+            for key, _ in events:
+                chunk = os.read(key.fileobj.fileno(), 64 * 1024)
+                if not chunk:
+                    reached_eof = True
+                    break
+                total += len(chunk)
+                if total > MAX_JSON_BYTES:
+                    raise SpringLaunchEvidenceError(
+                        "live Docker inspect exceeds the byte budget"
+                    )
+                chunks.append(chunk)
+        remaining = max(0.001, deadline - time.monotonic())
+        return_code = process.wait(timeout=remaining)
+        if return_code != 0:
+            raise SpringLaunchEvidenceError("live Docker inspect failed closed")
+        content = b"".join(chunks)
+        if not content:
+            raise SpringLaunchEvidenceError("live Docker inspect returned no bytes")
+        return content
+    except (OSError, subprocess.SubprocessError) as exc:
+        raise SpringLaunchEvidenceError(
+            "live Docker inspect could not be executed safely"
+        ) from exc
+    finally:
+        selector.close()
+        if process is not None and process.poll() is None:
+            process.kill()
+            try:
+                process.wait(timeout=2)
+            except subprocess.SubprocessError:
+                pass
+
+
 def _verification_options(args: argparse.Namespace) -> dict[str, Any]:
     return {
         "trust_store": args.trust_store,
@@ -3530,11 +5506,23 @@ def _verification_options(args: argparse.Namespace) -> dict[str, Any]:
         "expected_region": args.expected_region,
         "expected_environment_class": args.expected_environment_class,
         "expected_configuration_digest": args.expected_configuration_digest,
-        "expected_compose_environment_file_digest": (
-            args.expected_compose_environment_file_digest
+        "expected_application_environment_commitment_digest": (
+            args.expected_application_environment_commitment_digest
         ),
         "expected_effective_spring_configuration_digest": (
             args.expected_effective_spring_configuration_digest
+        ),
+        "expected_effective_web_console_configuration_digest": (
+            args.expected_effective_web_console_configuration_digest
+        ),
+        "expected_web_console_environment_names_digest": (
+            args.expected_web_console_environment_names_digest
+        ),
+        "expected_application_mount_sources_digest": (
+            args.expected_application_mount_sources_digest
+        ),
+        "expected_worker_application_artifact_digest": (
+            args.expected_worker_application_artifact_digest
         ),
         "max_age": timedelta(seconds=args.max_age_seconds),
     }
@@ -3556,10 +5544,20 @@ def _add_verification_arguments(parser: argparse.ArgumentParser) -> None:
         required=True,
     )
     parser.add_argument("--expected-configuration-digest", required=True)
-    parser.add_argument("--expected-compose-environment-file-digest", required=True)
+    parser.add_argument(
+        "--expected-application-environment-commitment-digest", required=True
+    )
     parser.add_argument(
         "--expected-effective-spring-configuration-digest", required=True
     )
+    parser.add_argument(
+        "--expected-effective-web-console-configuration-digest", required=True
+    )
+    parser.add_argument(
+        "--expected-web-console-environment-names-digest", required=True
+    )
+    parser.add_argument("--expected-application-mount-sources-digest", required=True)
+    parser.add_argument("--expected-worker-application-artifact-digest", required=True)
     parser.add_argument(
         "--max-age-seconds",
         type=int,
@@ -3593,6 +5591,20 @@ def main(argv: list[str] | None = None) -> int:
         "digest", help="calculate a receipt canonical digest without signing"
     )
     digest_parser.add_argument("receipt", type=Path)
+
+    collector_parser = subparsers.add_parser(
+        "collect-web-runtime",
+        help="validate live docker inspect in memory and write a secret-free web runtime attestation",
+    )
+    collector_parser.add_argument("--container", required=True)
+    collector_parser.add_argument("--worker-container", required=True)
+    collector_parser.add_argument("--expected-image-digest", required=True)
+    collector_parser.add_argument("--expected-worker-image-digest", required=True)
+    collector_parser.add_argument("--collector-identity", required=True)
+    collector_parser.add_argument("--output", required=True, type=Path)
+    collector_parser.add_argument(
+        "--docker-host", default="unix:///var/run/docker.sock"
+    )
 
     verify_parser = subparsers.add_parser(
         "verify", help="authenticate a complete signed receipt"
@@ -3636,6 +5648,65 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "digest":
             value = _load_cli_json(args.receipt, "Spring launch receipt")
             print(receipt_digest(value))
+            return 0
+        if args.command == "collect-web-runtime":
+            if (
+                IDENTITY_RE.fullmatch(args.container) is None
+                or IDENTITY_RE.fullmatch(args.worker_container) is None
+                or args.container == args.worker_container
+            ):
+                raise SpringLaunchEvidenceError(
+                    "--container and --worker-container must be distinct exact Docker identities"
+                )
+            parsed_host = urlparse(args.docker_host)
+            if (
+                parsed_host.scheme != "unix"
+                or parsed_host.netloc
+                or not parsed_host.path.startswith("/")
+                or parsed_host.query
+                or parsed_host.fragment
+            ):
+                raise SpringLaunchEvidenceError(
+                    "--docker-host must be an absolute unix:// socket URI"
+                )
+            raw_web = _bounded_docker_inspect(args.docker_host, args.container)
+            raw_worker = _bounded_docker_inspect(
+                args.docker_host, args.worker_container
+            )
+
+            def stable_reinspect() -> tuple[bytes, bytes]:
+                return (
+                    _bounded_docker_inspect(args.docker_host, args.container),
+                    _bounded_docker_inspect(args.docker_host, args.worker_container),
+                )
+
+            attestation = collect_web_console_runtime_attestation(
+                raw_web,
+                raw_worker_inspect=raw_worker,
+                expected_image_digest=args.expected_image_digest,
+                expected_worker_image_digest=args.expected_worker_image_digest,
+                collector_identity=args.collector_identity,
+                stable_reinspect=stable_reinspect,
+            )
+            rendered = canonical_bytes(attestation)
+            _write_new_owner_only(args.output, rendered)
+            print(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "namespace": NAMESPACE,
+                        "output_digest": "sha256:"
+                        + hashlib.sha256(rendered).hexdigest(),
+                        "output_size_bytes": len(rendered),
+                        "captured_at": attestation["captured_at"],
+                        "secrets_embedded": False,
+                        "external_status_created": False,
+                        "signature_created": False,
+                    },
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
             return 0
         if args.command == "verify":
             result = verify_spring_launch_receipt_file(

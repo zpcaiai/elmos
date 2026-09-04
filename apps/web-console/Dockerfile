@@ -25,6 +25,9 @@ ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
     HOSTNAME=0.0.0.0 \
     PORT=3000 \
+    NODE_VERSION=24.14.0 \
+    YARN_VERSION=1.22.22 \
+    HOME=/tmp \
     PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     NODE_OPTIONS=
 RUN addgroup -S -g 10001 elmos \

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import importlib.util
 import json
 import os
@@ -266,6 +267,87 @@ class SpringRunnerProductionTopologyTests(TestCase):
             errors,
         )
 
+    def test_static_contract_rejects_process_environment_and_mount_expansion(self) -> None:
+        paths = TOPOLOGY.ContractPaths()
+        source = paths.runner_compose.read_text(encoding="utf-8")
+        cases = {
+            "process": (
+                '    image: "${ELMOS_SPRING_INGRESS_IMAGE:?',
+                (
+                    '    command: ["/bin/sh"]\n'
+                    '    image: "${ELMOS_SPRING_INGRESS_IMAGE:?'
+                ),
+                "inherit its digest-pinned image command",
+            ),
+            "environment": (
+                ("    environment:\n" "      ELMOS_DATABASE_URL:"),
+                (
+                    "    environment:\n"
+                    "      ELMOS_UNDECLARED_RUNTIME_FLAG: true\n"
+                    "      ELMOS_DATABASE_URL:"
+                ),
+                "environment contract drift",
+            ),
+            "mount": (
+                (
+                    "    networks: [spring-runner-broker, spring-runner-control]\n"
+                    "    expose: [\"8082\"]"
+                ),
+                (
+                    "      - type: bind\n"
+                    "        source: /host/escape\n"
+                    "        target: /escape\n"
+                    "        read_only: false\n"
+                    "        bind: { create_host_path: false }\n"
+                    "    networks: [spring-runner-broker, spring-runner-control]\n"
+                    "    expose: [\"8082\"]"
+                ),
+                "mount inventory drift",
+            ),
+        }
+        for label, (before, after, expected) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(
+                prefix=f"spring-runner-static-{label}-"
+            ) as directory:
+                self.assertIn(before, source)
+                mutated = Path(directory) / "runner.yml"
+                mutated.write_text(source.replace(before, after, 1), encoding="utf-8")
+                errors = TOPOLOGY.validate_static(
+                    TOPOLOGY.ContractPaths(runner_compose=mutated)
+                )
+            self.assertTrue(any(expected in item for item in errors), errors)
+
+    def test_static_contract_rejects_interpolation_suffix_bypass(self) -> None:
+        paths = TOPOLOGY.ContractPaths()
+        source = paths.runner_compose.read_text(encoding="utf-8")
+        cases = {
+            "image": (
+                "digest-pinned ingress image is required}",
+                "digest-pinned ingress image is required}-suffix",
+                "image must be supplied by required ELMOS_SPRING_INGRESS_IMAGE",
+            ),
+            "mount": (
+                "ingress config is required}",
+                "ingress config is required}-suffix",
+                "mount /etc/nginx/nginx.conf must use ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH",
+            ),
+            "network": (
+                "internal control network is required}",
+                "internal control network is required}-suffix",
+                "control network name must be explicitly supplied",
+            ),
+        }
+        for label, (before, after, expected) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(
+                prefix=f"spring-runner-interpolation-{label}-"
+            ) as directory:
+                mutated = Path(directory) / "runner.yml"
+                mutated.write_text(source.replace(before, after, 1), encoding="utf-8")
+                errors = TOPOLOGY.validate_static(
+                    TOPOLOGY.ContractPaths(runner_compose=mutated)
+                )
+            self.assertTrue(any(expected in item for item in errors), errors)
+
     def test_ingress_and_broker_networks_are_internal_default_deny(self) -> None:
         runner = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
 
@@ -336,6 +418,41 @@ class SpringRunnerProductionTopologyTests(TestCase):
                 )
                 errors = TOPOLOGY.validate_static(custom)
             self.assertTrue(any(expected in item for item in errors), errors)
+
+    def test_static_contract_rejects_wildcard_or_additional_ingress_binding(self) -> None:
+        paths = TOPOLOGY.ContractPaths()
+        source = paths.runner_compose.read_text(encoding="utf-8")
+        cases = {
+            "wildcard": (
+                '        host_ip: "${ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS:?private bind address is required}"',
+                '        host_ip: "0.0.0.0"',
+            ),
+            "additional": (
+                "        protocol: tcp\n    volumes:",
+                (
+                    "        protocol: tcp\n"
+                    "      - target: 9443\n"
+                    "        published: 9443\n"
+                    "        host_ip: 127.0.0.1\n"
+                    "        protocol: tcp\n"
+                    "    volumes:"
+                ),
+            ),
+        }
+        for label, (before, after) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(
+                prefix=f"spring-runner-port-{label}-"
+            ) as directory:
+                self.assertIn(before, source)
+                mutated = Path(directory) / "runner.yml"
+                mutated.write_text(source.replace(before, after, 1), encoding="utf-8")
+                errors = TOPOLOGY.validate_static(
+                    TOPOLOGY.ContractPaths(runner_compose=mutated)
+                )
+            self.assertTrue(
+                any("publish only its exact configured private 8443 binding" in item for item in errors),
+                errors,
+            )
 
     def test_owner_only_secret_rejects_world_readable_mode(self) -> None:
         with tempfile.TemporaryDirectory(prefix="spring-runner-secret-") as directory:
@@ -535,6 +652,428 @@ class SpringRunnerProductionTopologyTests(TestCase):
 
         self.assertEqual({}, parsed)
         self.assertTrue(any("changed while it was being read" in item for item in errors))
+
+    def test_https_bind_requires_canonical_private_unicast_and_valid_port(self) -> None:
+        valid = {
+            "ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS": "10.20.30.40",
+            "ELMOS_SPRING_RUNNER_HTTPS_PORT": "8443",
+        }
+        self.assertEqual(("10.20.30.40", 8443), TOPOLOGY.private_https_endpoint(valid))
+        self.assertEqual(
+            ("127.0.0.1", 8443),
+            TOPOLOGY.private_https_endpoint(
+                {**valid, "ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS": "127.0.0.1"}
+            ),
+        )
+        cases = (
+            ("0.0.0.0", "8443"),
+            ("::", "8443"),
+            ("8.8.8.8", "8443"),
+            ("169.254.1.1", "8443"),
+            ("10.20.30.40", "0"),
+            ("10.20.30.40", "65536"),
+            ("10.20.30.40", "08443"),
+        )
+        for address, port in cases:
+            with self.subTest(address=address, port=port), self.assertRaises(ValueError):
+                TOPOLOGY.private_https_endpoint(
+                    {
+                        "ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS": address,
+                        "ELMOS_SPRING_RUNNER_HTTPS_PORT": port,
+                    }
+                )
+
+    def test_sensitive_paths_cannot_overlap_mutable_runtime_roots(self) -> None:
+        cases = (
+            (Path("/srv/secrets/key"), Path("/srv/secrets")),
+            (Path("/srv/runtime"), Path("/srv/runtime/evidence")),
+            (Path("/srv/shared"), Path("/srv/shared")),
+        )
+        for secret, root in cases:
+            with self.subTest(secret=secret, root=root):
+                errors: list[str] = []
+                TOPOLOGY.validate_sensitive_path_isolation(
+                    errors,
+                    {"SECRET_PATH": secret},
+                    {"MUTABLE_ROOT": root},
+                )
+                self.assertTrue(any("must not equal, contain" in item for item in errors))
+
+        errors = []
+        TOPOLOGY.validate_sensitive_path_isolation(
+            errors,
+            {"SECRET_PATH": Path("/srv/secrets/key")},
+            {"MUTABLE_ROOT": Path("/srv/runtime")},
+        )
+        self.assertEqual([], errors)
+
+        with tempfile.TemporaryDirectory(prefix="spring-runner-overlap-") as directory:
+            base = Path(directory).resolve()
+            mutable = base / "mutable"
+            mutable.mkdir()
+            secret = mutable / "secret"
+            secret.write_bytes(b"x" * 32)
+            alias = base / "alias"
+            alias.symlink_to(mutable, target_is_directory=True)
+            errors = []
+            TOPOLOGY.validate_sensitive_path_isolation(
+                errors,
+                {"SECRET_PATH": secret},
+                {"MUTABLE_ROOT": alias},
+            )
+        self.assertTrue(any("must not equal, contain" in item for item in errors), errors)
+
+    def test_compose_ps_rejects_duplicate_missing_extra_and_reused_ids(self) -> None:
+        environment = {
+            "ELMOS_SPRING_RUNNER_ENV_FILE": "/secure/runner.env",
+        }
+        valid_rows = [
+            {"Service": service, "ID": f"{index + 1}" * 64}
+            for index, service in enumerate(sorted(TOPOLOGY.EXPECTED_RUNNER_SERVICES))
+        ]
+        cases = {
+            "duplicate-service": [valid_rows[0], valid_rows[0], valid_rows[2]],
+            "extra-record": valid_rows
+            + [{"Service": "spring-runner-broker", "ID": "4" * 64}],
+            "missing-record": valid_rows[:2],
+            "reused-id": [
+                valid_rows[0],
+                valid_rows[1],
+                {**valid_rows[2], "ID": valid_rows[0]["ID"]},
+            ],
+        }
+        for label, rows in cases.items():
+            with self.subTest(label=label), mock.patch.object(
+                TOPOLOGY, "command_json", return_value=rows
+            ), self.assertRaises(ValueError):
+                TOPOLOGY.compose_container_ids(Path("/run/user/1000/docker.sock"), environment)
+
+        with mock.patch.object(
+            TOPOLOGY, "command_json", return_value=valid_rows
+        ) as command_json:
+            identifiers = TOPOLOGY.compose_container_ids(
+                Path("/run/user/1000/docker.sock"), environment
+            )
+        self.assertEqual(TOPOLOGY.EXPECTED_RUNNER_SERVICES, set(identifiers))
+        command = command_json.call_args.args[0]
+        self.assertIn("--all", command)
+        self.assertIn("--no-trunc", command)
+        self.assertEqual(
+            "elmos-spring-runner",
+            command[command.index("--project-name") + 1],
+        )
+
+    def test_live_inspect_contract_binds_every_service_to_compose_and_image(self) -> None:
+        for service in sorted(TOPOLOGY.EXPECTED_RUNNER_SERVICES):
+            with self.subTest(service=service):
+                fixture = self.runtime_fixture(service)
+                errors: list[str] = []
+                TOPOLOGY.validate_runtime_service(errors, **fixture)
+                self.assertEqual([], errors)
+
+    def test_live_inspect_rejects_image_process_hardening_namespace_and_port_drift(self) -> None:
+        mutations = {
+            "image-ref": (
+                lambda record: record["Config"].__setitem__("Image", "registry.invalid/image@sha256:" + "f" * 64),
+                "image reference drift",
+            ),
+            "image-id": (
+                lambda record: record.__setitem__("Image", "sha256:" + "e" * 64),
+                "image ID drift",
+            ),
+            "user": (
+                lambda record: record["Config"].__setitem__("User", "0:0"),
+                "runtime user drift",
+            ),
+            "environment": (
+                lambda record: record["Config"]["Env"].append("UNDECLARED=value"),
+                "runtime environment drift",
+            ),
+            "entrypoint": (
+                lambda record: record["Config"].__setitem__("Entrypoint", ["/bin/sh"]),
+                "Entrypoint drift",
+            ),
+            "cmd": (
+                lambda record: record["Config"].__setitem__("Cmd", ["sleep", "infinity"]),
+                "Cmd drift",
+            ),
+            "privileged": (
+                lambda record: record["HostConfig"].__setitem__("Privileged", True),
+                "must not be privileged",
+            ),
+            "writable-root": (
+                lambda record: record["HostConfig"].__setitem__("ReadonlyRootfs", False),
+                "must be read-only",
+            ),
+            "capabilities": (
+                lambda record: record["HostConfig"].__setitem__("CapDrop", []),
+                "drop exactly all capabilities",
+            ),
+            "security-opt": (
+                lambda record: record["HostConfig"].__setitem__("SecurityOpt", []),
+                "security options drift",
+            ),
+            "memory": (
+                lambda record: record["HostConfig"].__setitem__("Memory", 0),
+                "Memory resource limit drift",
+            ),
+            "cpu": (
+                lambda record: record["HostConfig"].__setitem__("NanoCpus", 0),
+                "NanoCpus resource limit drift",
+            ),
+            "logging": (
+                lambda record: record["HostConfig"]["LogConfig"].__setitem__(
+                    "Type", "none"
+                ),
+                "logging contract drift",
+            ),
+            "healthcheck": (
+                lambda record: record["Config"]["Healthcheck"].__setitem__(
+                    "Retries", 1
+                ),
+                "healthcheck configuration drift",
+            ),
+            "tmpfs-size": (
+                lambda record: record["HostConfig"]["Tmpfs"].__setitem__(
+                    "/tmp", "rw,noexec,nosuid,size=1g"
+                ),
+                "tmpfs /tmp hardening drift",
+            ),
+            "restarting": (
+                lambda record: record["State"].__setitem__("Restarting", True),
+                "must be stably running",
+            ),
+            "pid-namespace": (
+                lambda record: record["HostConfig"].__setitem__("PidMode", "host"),
+                "PidMode runtime namespace drift",
+            ),
+            "network-mode": (
+                lambda record: record["HostConfig"].__setitem__("NetworkMode", "host"),
+                "primary network must select a controlled network",
+            ),
+            "extra-network": (
+                lambda record: record["NetworkSettings"]["Networks"].__setitem__("outside", {}),
+                "network membership drift",
+            ),
+            "wildcard-port": (
+                lambda record: record["NetworkSettings"]["Ports"]["8443/tcp"][0].__setitem__("HostIp", "0.0.0.0"),
+                "runtime published ports drift",
+            ),
+            "extra-port": (
+                lambda record: record["HostConfig"]["PortBindings"].__setitem__(
+                    "8080/tcp", [{"HostIp": "127.0.0.1", "HostPort": "8080"}]
+                ),
+                "HostConfig port bindings drift",
+            ),
+        }
+        for label, (mutate, expected) in mutations.items():
+            with self.subTest(label=label):
+                fixture = self.runtime_fixture("spring-runner-ingress")
+                mutate(fixture["record"])
+                errors: list[str] = []
+                TOPOLOGY.validate_runtime_service(errors, **fixture)
+                self.assertTrue(any(expected in item for item in errors), errors)
+
+    def test_live_inspect_rejects_tls_config_socket_hmac_replay_and_extra_mounts(self) -> None:
+        cases = (
+            ("spring-runner-ingress", "/etc/nginx/nginx.conf"),
+            ("spring-runner-ingress", "/run/secrets/tls/tls.crt"),
+            ("spring-runner-ingress", "/run/secrets/tls/tls.key"),
+            ("spring-runner-broker", "/run/docker.sock"),
+            ("spring-runner-broker", "/run/secrets/elmos-runtime-hmac"),
+            ("spring-runner-broker", "/run/secrets/elmos-verifier-hmac"),
+            ("spring-runner-broker", "/run/secrets/elmos-transformer-hmac"),
+            ("spring-runner-broker", "/var/lib/elmos/spring-auth-replay"),
+        )
+        for service, target in cases:
+            with self.subTest(service=service, target=target):
+                fixture = self.runtime_fixture(service)
+                mount = next(
+                    item for item in fixture["record"]["Mounts"]
+                    if item["Destination"] == target
+                )
+                mount["Source"] += "-drift"
+                errors: list[str] = []
+                TOPOLOGY.validate_runtime_service(errors, **fixture)
+                self.assertTrue(any(f"mount {target} source drift" in item for item in errors), errors)
+
+        for field, value, expected in (
+            ("RW", False, "access mode drift"),
+            ("Mode", "ro", "mode drift"),
+            ("Propagation", "shared", "propagation drift"),
+        ):
+            with self.subTest(field=field):
+                fixture = self.runtime_fixture("spring-runner-broker")
+                mount = next(
+                    item
+                    for item in fixture["record"]["Mounts"]
+                    if item["Destination"] == "/run/docker.sock"
+                )
+                mount[field] = value
+                errors = []
+                TOPOLOGY.validate_runtime_service(errors, **fixture)
+                self.assertTrue(any(expected in item for item in errors), errors)
+
+        fixture = self.runtime_fixture("spring-runner-egress-proxy")
+        fixture["record"]["Mounts"].append(
+            {
+                "Type": "bind",
+                "Source": "/host/escape",
+                "Destination": "/escape",
+                "RW": True,
+            }
+        )
+        errors = []
+        TOPOLOGY.validate_runtime_service(errors, **fixture)
+        self.assertTrue(any("runtime mount inventory drift" in item for item in errors), errors)
+
+    @classmethod
+    def runtime_fixture(cls, service_name: str) -> dict[str, object]:
+        compose = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
+        service = compose["services"][service_name]
+        environment = cls.valid_environment_values(Path("/secure/runner.env"))
+        image_reference = environment[TOPOLOGY.SERVICE_IMAGE_ENVIRONMENTS[service_name]]
+        image_id = "sha256:" + {
+            "spring-runner-ingress": "a",
+            "spring-runner-broker": "b",
+            "spring-runner-egress-proxy": "c",
+        }[service_name] * 64
+        image_record = {
+            "Id": image_id,
+            "RepoDigests": [image_reference],
+            "Config": {
+                "Env": ["PATH=/usr/local/bin:/usr/bin:/bin"],
+                "Entrypoint": ["/usr/local/bin/entrypoint"],
+                "Cmd": ["serve"],
+                "WorkingDir": "/opt/elmos",
+                "ExposedPorts": {},
+            },
+        }
+        expectation_errors: list[str] = []
+        expected_environment = TOPOLOGY.expected_service_environment(
+            service,
+            image_record,
+            environment,
+            expectation_errors,
+            label=service_name,
+        )
+        if expectation_errors or expected_environment is None:
+            raise AssertionError(expectation_errors)
+        networks = TOPOLOGY.expected_service_networks(compose, service, environment)
+        mounts = TOPOLOGY.expected_service_mounts(service, environment)
+        bindings = (
+            {"8443/tcp": [{"HostIp": "127.0.0.1", "HostPort": "8443"}]}
+            if service_name == "spring-runner-ingress"
+            else {}
+        )
+        record = {
+            "Image": image_id,
+            "Path": "/usr/local/bin/entrypoint",
+            "Args": ["serve"],
+            "Config": {
+                "Image": image_reference,
+                "User": TOPOLOGY.SERVICE_USERS[service_name],
+                "Env": [f"{name}={value}" for name, value in expected_environment.items()],
+                "Entrypoint": image_record["Config"]["Entrypoint"],
+                "Cmd": image_record["Config"]["Cmd"],
+                "WorkingDir": "/opt/elmos",
+                "ExposedPorts": {
+                    name: {}
+                    for name in TOPOLOGY.expected_exposed_ports(service, image_record)
+                },
+                "Healthcheck": TOPOLOGY.expected_runtime_healthcheck(
+                    service_name, image_record
+                ),
+                "Labels": {
+                    "com.docker.compose.project": "elmos-spring-runner",
+                    "com.docker.compose.service": service_name,
+                },
+            },
+            "HostConfig": {
+                "Privileged": False,
+                "ReadonlyRootfs": True,
+                "AutoRemove": False,
+                "Init": True,
+                "PidsLimit": service["pids_limit"],
+                **TOPOLOGY.RUNNER_SERVICE_RUNTIME_RESOURCE_CONTRACT[service_name],
+                "CapAdd": None,
+                "CapDrop": ["ALL"],
+                "SecurityOpt": ["no-new-privileges:true"],
+                "PublishAllPorts": False,
+                "GroupAdd": ["0"] if service_name == "spring-runner-broker" else [],
+                "PidMode": "",
+                "IpcMode": "private",
+                "UTSMode": "",
+                "UsernsMode": "",
+                "CgroupnsMode": "private",
+                "NetworkMode": networks[0],
+                "PortBindings": copy.deepcopy(bindings),
+                "Tmpfs": {
+                    "/tmp": "rw,noexec,nosuid,size="
+                    + {
+                        "spring-runner-ingress": "33554432",
+                        "spring-runner-broker": "268435456",
+                        "spring-runner-egress-proxy": "33554432",
+                    }[service_name]
+                },
+                "Binds": [
+                    f"{source}:{target}:{'rw' if read_write else 'ro'}"
+                    for target, (source, read_write) in mounts.items()
+                ],
+                "RestartPolicy": {
+                    "Name": "unless-stopped",
+                    "MaximumRetryCount": 0,
+                },
+                "LogConfig": {
+                    "Type": "json-file",
+                    "Config": {"max-size": "20m", "max-file": "5"},
+                },
+            },
+            "NetworkSettings": {
+                "Networks": {name: {} for name in networks},
+                "Ports": {
+                    **{
+                        name: None
+                        for name in TOPOLOGY.expected_exposed_ports(service, image_record)
+                    },
+                    **copy.deepcopy(bindings),
+                },
+            },
+            "Mounts": [
+                {
+                    "Type": "bind",
+                    "Source": source,
+                    "Destination": target,
+                    "RW": read_write,
+                    "Mode": "rw" if read_write else "ro",
+                    "Propagation": "rprivate",
+                }
+                for target, (source, read_write) in mounts.items()
+            ],
+            "State": {
+                "Running": True,
+                "Restarting": False,
+                "Paused": False,
+                "Dead": False,
+                "OOMKilled": False,
+                **(
+                    {"Health": {"Status": "healthy"}}
+                    if TOPOLOGY.expected_runtime_healthcheck(service_name, image_record)
+                    is not None
+                    else {}
+                ),
+            },
+        }
+        return {
+            "service_name": service_name,
+            "service": service,
+            "compose": compose,
+            "record": record,
+            "image_record": image_record,
+            "environment": environment,
+            "bind_address": "127.0.0.1",
+            "bind_port": 8443,
+        }
 
     @staticmethod
     def valid_environment_values(path: Path) -> dict[str, str]:

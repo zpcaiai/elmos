@@ -78,7 +78,7 @@ def run_case(language: str, auth_mode: str) -> dict[str, Any]:
             check=False,
             text=True,
             capture_output=True,
-            timeout=900,
+            timeout=int(os.environ.get("PRODUCTION_ACCEPTANCE_TIMEOUT", "1800")),
         )
     except subprocess.TimeoutExpired as error:
         return {
