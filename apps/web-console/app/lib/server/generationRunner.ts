@@ -1234,16 +1234,17 @@ function runtimeCommandShapeValid(
     case "python":
       return executable === "uv"
         && command[1] === "run"
-        && command[2] === "python"
+        && command[2] === "--no-sync"
+        && command[3] === "python"
         && (
           (
-            command.length === 5
-            && command[3] === "-m"
-            && pythonModulePattern.test(command[4])
+            command.length === 6
+            && command[4] === "-m"
+            && pythonModulePattern.test(command[5])
           )
           || (
-            command.length === 4
-            && command[3] === "scripts/local_runtime.py"
+            command.length === 5
+            && command[4] === "scripts/local_runtime.py"
           )
         );
     case "csharp":

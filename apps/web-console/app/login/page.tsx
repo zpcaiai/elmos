@@ -75,10 +75,9 @@ export default async function LoginPage({
               <span>邮箱</span>
               <input
                 name="email"
-                type="email"
+                type="text"
                 defaultValue="test@example.test"
                 autoComplete="username"
-                inputMode="email"
                 maxLength={254}
                 required
               />

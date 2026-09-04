@@ -48,6 +48,9 @@ export default defineConfig({
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
+    ...(process.env.https_proxy || process.env.http_proxy
+      ? { proxy: { server: (process.env.https_proxy || process.env.http_proxy)! } }
+      : {}),
   },
   projects: [
     {
