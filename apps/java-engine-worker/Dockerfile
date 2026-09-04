@@ -26,7 +26,13 @@ ENV PATH=/opt/java/openjdk/bin:/usr/share/maven/bin:/usr/local/sbin:/usr/local/b
     JAVA_HOME=/opt/java/openjdk \
     MAVEN_HOME=/usr/share/maven \
     MAVEN_CONFIG=/home/elmos/.m2 \
-    HOME=/home/elmos
+    MAVEN_VERSION=3.9.11 \
+    HOME=/home/elmos \
+    LANG=C.UTF-8 \
+    LANGUAGE=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    JAVA_VERSION=21
+WORKDIR /app
 USER 10001:10001
 EXPOSE 8081
 ENTRYPOINT ["/opt/java/openjdk/bin/java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]

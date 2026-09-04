@@ -1645,7 +1645,7 @@ def _javascript_descriptor_stable_projection(
         raise RouteError("JAVASCRIPT_ESM_DESCRIPTOR_INVALID_DURING_VALIDATION")
     normalized_digest = digest if digest.startswith("sha256:") else f"sha256:{digest}"
     return {
-        "logical_path": Path(os.path.relpath(descriptor_path, source.parent)).as_posix(),
+        "logical_path": Path(os.path.relpath(descriptor_path, source.resolve().parent)).as_posix(),
         "sha256": normalized_digest,
         "bytes": byte_count,
         "type": descriptor_type,

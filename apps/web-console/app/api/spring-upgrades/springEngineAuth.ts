@@ -80,7 +80,7 @@ export function signSpringEngineRequest(input: SignInput) {
   if (!Number.isSafeInteger(input.timestamp) || input.timestamp <= 0) {
     throw new Error("SPRING_ENGINE_TIMESTAMP_REJECTED");
   }
-  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(input.nonce)) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/.test(input.nonce)) {
     throw new Error("SPRING_ENGINE_NONCE_REJECTED");
   }
   if (input.secret.byteLength < 32 || input.secret.byteLength > 4_096) {

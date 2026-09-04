@@ -23,7 +23,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus
+        include: health,info
 elmos:
   worker:
     workspace-root: ${ELMOS_WORKSPACE_ROOT:/workspace}

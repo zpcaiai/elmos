@@ -80,11 +80,18 @@ SPRING_ENVIRONMENT_ALLOWLIST = frozenset(
         "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH",
     )
 )
+SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED = frozenset(
+    re.sub(r"[^A-Za-z0-9]", "", name).upper()
+    for name in SPRING_ENVIRONMENT_ALLOWLIST
+)
 FORBIDDEN_SINGLE_TENANT_ENVIRONMENT = "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID"
 MAX_ENVIRONMENT_FILE_BYTES = 64 * 1024
 ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Z][A-Z0-9_]*)=(.*)")
 SAFE_ENVIRONMENT_VALUE = re.compile(r"[A-Za-z0-9._~:/@,+%=-]*")
 EXACT_IDENTITY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}")
+SHA256_DIGEST = re.compile(r"sha256:[0-9a-f]{64}")
+GIT_REVISION = re.compile(r"[0-9a-f]{40}")
+DNS_LABEL = re.compile(r"[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?")
 COMPOSE_ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)=(.*)")
 DANGEROUS_DEPLOYMENT_ENVIRONMENT = frozenset(
     {
@@ -107,6 +114,13 @@ DANGEROUS_DEPLOYMENT_ENVIRONMENT_NORMALIZED = frozenset(
     re.sub(r"[^A-Za-z0-9]", "", name).upper()
     for name in DANGEROUS_DEPLOYMENT_ENVIRONMENT
 )
+APPLICATION_RUNTIME_UID = 10001
+APPLICATION_RUNTIME_GID = 10001
+EnvironmentFileSnapshot = tuple[
+    bytes,
+    tuple[int, ...],
+    tuple[tuple[int, ...], ...],
+]
 
 
 def load(path: Path) -> dict:
@@ -140,6 +154,17 @@ def stable_file_metadata(details: os.stat_result) -> tuple[int, ...]:
     )
 
 
+def stable_directory_identity(details: os.stat_result) -> tuple[int, ...]:
+    """Directory identity fields unaffected by unrelated child activity."""
+    return (
+        details.st_dev,
+        details.st_ino,
+        details.st_mode,
+        details.st_uid,
+        details.st_gid,
+    )
+
+
 def is_placeholder(value: str) -> bool:
     upper = value.upper()
     return (
@@ -149,43 +174,121 @@ def is_placeholder(value: str) -> bool:
     )
 
 
-def valid_https_endpoint(value: str) -> bool:
-    """Accept an exact production HTTPS endpoint without credentials or local hosts."""
+def https_endpoint_origin(
+    value: str, *, production: bool = False
+) -> tuple[str, str, int] | None:
+    """Return a canonical HTTPS origin for the one approved Runner ingress."""
+    if (
+        not isinstance(value, str)
+        or value != value.strip()
+        or any(ord(character) <= 0x20 or ord(character) == 0x7F for character in value)
+    ):
+        return None
     try:
         parsed = urlsplit(value)
-        host = (parsed.hostname or "").rstrip(".").lower()
-        _ = parsed.port
+        raw_host = parsed.hostname or ""
+        host = raw_host.lower()
+        port = parsed.port or 443
     except ValueError:
-        return False
+        return None
     if (
         parsed.scheme != "https"
         or not parsed.netloc
         or not host
+        or raw_host.endswith(".")
+        or "%" in host
         or parsed.username is not None
         or parsed.password is not None
+        or parsed.path not in {"", "/"}
+        or bool(parsed.query)
         or bool(parsed.fragment)
+        or not 1 <= port <= 65535
         or host == "localhost"
         or host.endswith((".localhost", ".invalid"))
     ):
-        return False
+        return None
     try:
         address = ipaddress.ip_address(host)
     except ValueError:
-        return True
-    return not (
+        try:
+            ascii_host = host.encode("idna").decode("ascii")
+        except UnicodeError:
+            return None
+        if (
+            ascii_host != host
+            or len(host) > 253
+            or "." not in host
+            or any(DNS_LABEL.fullmatch(label) is None for label in host.split("."))
+        ):
+            return None
+        if production and any(
+            host == suffix or host.endswith("." + suffix)
+            for suffix in (
+                "test",
+                "example",
+                "invalid",
+                "localhost",
+                "example.com",
+                "example.net",
+                "example.org",
+            )
+        ):
+            return None
+        return ("https", host, port)
+    if isinstance(address, ipaddress.IPv6Address) and address.ipv4_mapped is not None:
+        return None
+    if (
         address.is_loopback
         or address.is_unspecified
         or address.is_link_local
         or address.is_multicast
+    ):
+        return None
+    if production and any(
+        address in network
+        for network in (
+            ipaddress.ip_network("192.0.2.0/24"),
+            ipaddress.ip_network("198.51.100.0/24"),
+            ipaddress.ip_network("203.0.113.0/24"),
+            ipaddress.ip_network("2001:db8::/32"),
+        )
+    ):
+        return None
+    return ("https", address.compressed, port)
+
+
+def valid_https_endpoint(value: str) -> bool:
+    """Accept an exact root HTTPS endpoint without credentials or local hosts."""
+    return https_endpoint_origin(value) is not None
+
+
+def boundary_whitespace(code_point: int) -> bool:
+    """Language-neutral secret-boundary contract shared with Java and Node."""
+    return (
+        0x0009 <= code_point <= 0x000D
+        or code_point == 0x0020
+        or code_point == 0x0085
+        or code_point == 0x00A0
+        or code_point == 0x1680
+        or 0x2000 <= code_point <= 0x200A
+        or code_point in {0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF}
     )
 
 
 def secure_environment_file_bytes(
-    errors: list[str], path: Path, *, label: str
+    errors: list[str],
+    path: Path,
+    *,
+    label: str,
+    snapshot_out: list[EnvironmentFileSnapshot] | None = None,
 ) -> bytes | None:
     """Read one owner-only env file without following links or accepting path races."""
-    if not path.is_absolute():
-        errors.append(f"{label} path must be absolute")
+    if (
+        not path.is_absolute()
+        or path == Path("/")
+        or path != Path(os.path.normpath(path))
+    ):
+        errors.append(f"{label} must use a normalized absolute non-root path")
         return None
     ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
     try:
@@ -197,7 +300,24 @@ def secure_environment_file_bytes(
             if not stat.S_ISDIR(parent_details.st_mode):
                 errors.append(f"{label} parent path must contain directories only")
                 return None
-            ancestor_metadata.append((parent, stable_file_metadata(parent_details)))
+            if (
+                parent != path.parent
+                and stat.S_IMODE(parent_details.st_mode) & 0o022
+                and not parent_details.st_mode & stat.S_ISVTX
+            ):
+                errors.append(
+                    f"{label} must not traverse group/other-writable non-sticky ancestors"
+                )
+                return None
+            if (
+                parent != path.parent
+                and parent_details.st_uid not in {0, os.getuid()}
+            ):
+                errors.append(
+                    f"{label} must not traverse ancestors owned outside root/current UID"
+                )
+                return None
+            ancestor_metadata.append((parent, stable_directory_identity(parent_details)))
         details = path.lstat()
     except OSError:
         errors.append(f"{label} is missing or unreadable")
@@ -219,6 +339,16 @@ def secure_environment_file_bytes(
     if resolved.is_relative_to(ROOT.resolve()):
         errors.append(f"{label} must be mounted from outside the repository")
         return None
+    parent_details = path.parent.lstat()
+    if (
+        stat.S_IMODE(parent_details.st_mode) != 0o700
+        or parent_details.st_uid != os.getuid()
+        or parent_details.st_gid != os.getgid()
+    ):
+        errors.append(
+            f"{label} parent directory must be mode 0700 and owned by the current UID/GID"
+        )
+        return None
 
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
@@ -236,8 +366,11 @@ def secure_environment_file_bytes(
             errors.append(f"{label} changed while it was being validated")
             return None
         mode = stat.S_IMODE(opened_details.st_mode)
-        if opened_details.st_uid != os.getuid():
-            errors.append(f"{label} must be owned by the current user")
+        if (
+            opened_details.st_uid != os.getuid()
+            or opened_details.st_gid != os.getgid()
+        ):
+            errors.append(f"{label} must be owned by the current UID/GID")
             return None
         if mode not in {0o400, 0o600}:
             errors.append(f"{label} permissions must be 0400 or 0600")
@@ -258,7 +391,7 @@ def secure_environment_file_bytes(
         after_read_path_details = path.lstat()
         ancestors_unchanged = all(
             not stat.S_ISLNK((current := parent.lstat()).st_mode)
-            and stable_file_metadata(current) == before
+            and stable_directory_identity(current) == before
             for parent, before in ancestor_metadata
         )
         if (
@@ -277,12 +410,30 @@ def secure_environment_file_bytes(
     if len(raw) > MAX_ENVIRONMENT_FILE_BYTES:
         errors.append(f"{label} exceeds the 65536-byte limit")
         return None
+    if snapshot_out is not None:
+        snapshot_out.append(
+            (
+                raw,
+                stable_file_metadata(after_read_details),
+                tuple(before for _, before in ancestor_metadata),
+            )
+        )
     return raw
 
 
-def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
+def parse_environment_file(
+    errors: list[str],
+    path: Path,
+    *,
+    snapshot_out: list[EnvironmentFileSnapshot] | None = None,
+) -> dict[str, str]:
     """Parse a small Spring-only environment file as data, never as shell code."""
-    raw = secure_environment_file_bytes(errors, path, label="Spring environment file")
+    raw = secure_environment_file_bytes(
+        errors,
+        path,
+        label="Spring environment file",
+        snapshot_out=snapshot_out,
+    )
     if raw is None:
         return {}
     try:
@@ -334,22 +485,28 @@ def dangerous_deployment_environment_name(name: str) -> bool:
 
 
 def parse_compose_environment_file(
-    errors: list[str], path: Path
-) -> tuple[dict[str, str], str | None]:
-    """Parse the actual Compose env-file as inert data and bind its exact bytes."""
+    errors: list[str],
+    path: Path,
+    *,
+    snapshot_out: list[EnvironmentFileSnapshot] | None = None,
+) -> dict[str, str]:
+    """Parse the application env-file as inert data without hashing secret bytes."""
     raw = secure_environment_file_bytes(
-        errors, path, label="Compose deployment environment file"
+        errors,
+        path,
+        label="Compose deployment environment file",
+        snapshot_out=snapshot_out,
     )
     if raw is None:
-        return {}, None
+        return {}
     try:
         contents = raw.decode("utf-8")
     except UnicodeDecodeError:
         errors.append("Compose deployment environment file must be valid UTF-8")
-        return {}, None
+        return {}
     if "\x00" in contents:
         errors.append("Compose deployment environment file must not contain NUL bytes")
-        return {}, None
+        return {}
 
     values: dict[str, str] = {}
     seen: set[str] = set()
@@ -390,7 +547,7 @@ def parse_compose_environment_file(
             )
             continue
         values[name] = value
-    return values, "sha256:" + hashlib.sha256(raw).hexdigest()
+    return values
 
 
 def validate_compose_environment_binding(
@@ -406,18 +563,14 @@ def validate_compose_environment_binding(
         configured_path == str(path),
         "Compose deployment environment must set ELMOS_ENV_FILE to its exact validated path",
     )
-    for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST):
+    for name in sorted(compose_environment):
+        normalized = normalized_environment_name(name)
         require(
             errors,
-            name in compose_environment,
-            f"Compose deployment environment is missing Spring key {name}",
+            normalized not in SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED
+            and not normalized.startswith("ELMOSSPRING"),
+            f"Compose application environment must not leak Spring launch key {name} into application services",
         )
-        if name in compose_environment and name in spring_environment:
-            require(
-                errors,
-                compose_environment[name] == spring_environment[name],
-                f"Compose deployment environment Spring value differs from SPRING_ENV_FILE for {name}",
-            )
     require(
         errors,
         FORBIDDEN_SINGLE_TENANT_ENVIRONMENT not in compose_environment,
@@ -426,6 +579,21 @@ def validate_compose_environment_binding(
     for name in os.environ:
         if dangerous_deployment_environment_name(name):
             errors.append(f"process environment must not define dangerous override {name}")
+        normalized = normalized_environment_name(name)
+        if (
+            normalized in SPRING_ENVIRONMENT_ALLOWLIST_NORMALIZED
+            and name not in SPRING_ENVIRONMENT_ALLOWLIST
+        ):
+            errors.append(
+                f"process environment uses relaxed Spring launch alias {name}"
+            )
+        elif (
+            normalized.startswith("ELMOSSPRING")
+            and name not in SPRING_ENVIRONMENT_ALLOWLIST
+        ):
+            errors.append(
+                f"process environment defines unsupported Spring launch key {name}"
+            )
     if "ELMOS_ENV_FILE" in os.environ:
         require(
             errors,
@@ -433,7 +601,14 @@ def validate_compose_environment_binding(
             "process ELMOS_ENV_FILE must equal --compose-environment-file",
         )
     for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST):
-        if name in os.environ and name in spring_environment:
+        if name not in os.environ:
+            continue
+        require(
+            errors,
+            name in spring_environment,
+            f"process environment must not supply missing SPRING_ENV_FILE key {name}",
+        )
+        if name in spring_environment:
             require(
                 errors,
                 os.environ[name] == spring_environment[name],
@@ -442,14 +617,17 @@ def validate_compose_environment_binding(
 
 
 def deployment_configuration_digest(
-    spring_configuration_digest: str, compose_environment_digest: str
+    spring_configuration_digest: str,
+    application_environment_commitment_digest: str,
 ) -> str:
     payload = json.dumps(
         {
             "schema_version": 1,
-            "contract": "spring-launch-deployment-environment-v1",
+            "contract": "spring-launch-deployment-environment-v2",
             "spring_configuration_digest": spring_configuration_digest,
-            "compose_environment_file_digest": compose_environment_digest,
+            "application_environment_commitment_digest": (
+                application_environment_commitment_digest
+            ),
         },
         ensure_ascii=True,
         separators=(",", ":"),
@@ -469,16 +647,76 @@ def effective_environment(file_values: Mapping[str, str]) -> dict[str, str]:
 
 def inspect_secret_file(
     path: Path,
+    *,
+    expected_uid: int | None = None,
+    expected_gid: int | None = None,
 ) -> tuple[bool, tuple[int, int] | None, bytes | None, str | None]:
     """Return stable inode and content identities for a bounded non-symlink secret."""
-    if not path.is_absolute():
-        return False, None, None, "must use an absolute path"
+    owner_uid = os.getuid() if expected_uid is None else expected_uid
+    owner_gid = os.getgid() if expected_gid is None else expected_gid
+    if (
+        not path.is_absolute()
+        or path == Path("/")
+        or path != Path(os.path.normpath(path))
+    ):
+        return False, None, None, "must use a normalized absolute non-root path"
+    ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
     try:
-        if has_symbolic_link_parent(path):
-            return False, None, None, "must not traverse symbolic-link parent directories"
+        for parent in path.parents:
+            parent_details = parent.lstat()
+            if (
+                not stat.S_ISDIR(parent_details.st_mode)
+                or stat.S_ISLNK(parent_details.st_mode)
+            ):
+                return (
+                    False,
+                    None,
+                    None,
+                    "must not traverse symbolic-link parent directories or non-directory parents",
+                )
+            if (
+                parent != path.parent
+                and stat.S_IMODE(parent_details.st_mode) & 0o022
+                and not parent_details.st_mode & stat.S_ISVTX
+            ):
+                return (
+                    False,
+                    None,
+                    None,
+                    "must not traverse group/other-writable non-sticky ancestors",
+                )
+            if (
+                parent != path.parent
+                and parent_details.st_uid not in {0, owner_uid}
+            ):
+                return (
+                    False,
+                    None,
+                    None,
+                    f"must not traverse ancestors owned outside root/runtime UID {owner_uid}",
+                )
+            ancestor_metadata.append((parent, stable_directory_identity(parent_details)))
         path_details = path.lstat()
     except OSError:
         return False, None, None, None
+    try:
+        resolved = path.resolve(strict=True)
+    except OSError:
+        return False, None, None, None
+    if resolved.is_relative_to(ROOT.resolve()):
+        return False, None, None, "must be mounted from outside the repository"
+    parent_details = path.parent.lstat()
+    if (
+        stat.S_IMODE(parent_details.st_mode) != 0o700
+        or parent_details.st_uid != owner_uid
+        or parent_details.st_gid != owner_gid
+    ):
+        return (
+            False,
+            None,
+            None,
+            f"parent directory must be mode 0700 and owned by UID/GID {owner_uid}:{owner_gid}",
+        )
     if path_details.st_nlink != 1:
         return False, None, None, "must not be hard-linked"
     if (
@@ -488,6 +726,13 @@ def inspect_secret_file(
         or stat.S_IMODE(path_details.st_mode) not in {0o400, 0o600}
     ):
         return False, None, None, None
+    if path_details.st_uid != owner_uid or path_details.st_gid != owner_gid:
+        return (
+            False,
+            None,
+            None,
+            f"must be owned by application runtime UID/GID {owner_uid}:{owner_gid}",
+        )
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(path, flags)
@@ -515,17 +760,27 @@ def inspect_secret_file(
         contents = b"".join(chunks)
         after_read_details = os.fstat(descriptor)
         after_read_path_details = path.lstat()
+        ancestors_unchanged = all(
+            not stat.S_ISLNK((current := parent.lstat()).st_mode)
+            and stable_directory_identity(current) == before
+            for parent, before in ancestor_metadata
+        )
         if (
             stable_file_metadata(after_read_details) != stable_file_metadata(opened_details)
             or stable_file_metadata(after_read_path_details) != stable_file_metadata(opened_details)
             or len(contents) != opened_details.st_size
+            or not ancestors_unchanged
         ):
             return False, None, None, "changed while it was being read"
         try:
             decoded = contents.decode("utf-8", errors="strict")
         except UnicodeError:
             return False, None, None, "must contain canonical UTF-8 bytes"
-        if not decoded or decoded[0].isspace() or decoded[-1].isspace():
+        if (
+            not decoded
+            or boundary_whitespace(ord(decoded[0]))
+            or boundary_whitespace(ord(decoded[-1]))
+        ):
             return False, None, None, "must not have leading or trailing whitespace"
         return True, identity, hashlib.sha256(contents).digest(), None
     except OSError:
@@ -534,8 +789,120 @@ def inspect_secret_file(
         os.close(descriptor)
 
 
-def inspect_owner_only_directory(path: Path) -> tuple[bool, tuple[int, int] | None, str | None]:
+def inspect_secret_group(
+    entries: list[tuple[str, Path]],
+    *,
+    expected_uid: int,
+    expected_gid: int,
+) -> tuple[
+    dict[str, tuple[Path, tuple[int, int], bytes]],
+    dict[str, str | None],
+]:
+    """Hold every secret inode open and prove one stable cross-file snapshot."""
+
+    held: list[
+        tuple[str, Path, int, tuple[int, ...], tuple[int, int], bytes]
+    ] = []
+    failures: dict[str, str | None] = {}
+    results: dict[str, tuple[Path, tuple[int, int], bytes]] = {}
+    flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        for label, path in entries:
+            valid, identity, digest, failure = inspect_secret_file(
+                path,
+                expected_uid=expected_uid,
+                expected_gid=expected_gid,
+            )
+            if not valid or identity is None or digest is None:
+                failures[label] = failure
+                continue
+            descriptor = -1
+            try:
+                descriptor = os.open(path, flags)
+                details = os.fstat(descriptor)
+                path_details = path.lstat()
+                chunks: list[bytes] = []
+                remaining = 4097
+                while remaining:
+                    chunk = os.read(descriptor, remaining)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    remaining -= len(chunk)
+                contents = b"".join(chunks)
+                if (
+                    (details.st_dev, details.st_ino) != identity
+                    or stable_file_metadata(path_details)
+                    != stable_file_metadata(details)
+                    or len(contents) != details.st_size
+                    or hashlib.sha256(contents).digest() != digest
+                ):
+                    failures[label] = "changed while the secret group was opened"
+                    os.close(descriptor)
+                    continue
+                held.append(
+                    (
+                        label,
+                        path,
+                        descriptor,
+                        stable_file_metadata(details),
+                        identity,
+                        digest,
+                    )
+                )
+            except OSError:
+                failures[label] = "changed while the secret group was opened"
+                if descriptor >= 0:
+                    os.close(descriptor)
+
+        for label, path, descriptor, metadata, identity, digest in held:
+            try:
+                os.lseek(descriptor, 0, os.SEEK_SET)
+                chunks = []
+                remaining = 4097
+                while remaining:
+                    chunk = os.read(descriptor, remaining)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    remaining -= len(chunk)
+                contents = b"".join(chunks)
+                current = os.fstat(descriptor)
+                current_path = path.lstat()
+                valid, current_identity, current_digest, _ = inspect_secret_file(
+                    path,
+                    expected_uid=expected_uid,
+                    expected_gid=expected_gid,
+                )
+                if (
+                    stable_file_metadata(current) != metadata
+                    or stable_file_metadata(current_path) != metadata
+                    or len(contents) != current.st_size
+                    or hashlib.sha256(contents).digest() != digest
+                    or not valid
+                    or current_identity != identity
+                    or current_digest != digest
+                ):
+                    failures[label] = "changed during cross-file secret validation"
+                    continue
+                results[label] = (path.resolve(strict=True), identity, digest)
+            except OSError:
+                failures[label] = "changed during cross-file secret validation"
+    finally:
+        for _, _, descriptor, _, _, _ in held:
+            os.close(descriptor)
+    return results, failures
+
+
+def inspect_owner_only_directory(
+    path: Path,
+    *,
+    expected_uid: int | None = None,
+    expected_gid: int | None = None,
+) -> tuple[bool, tuple[int, int] | None, str | None]:
     """Validate the host bind root used for persistent anti-replay state."""
+    owner_uid = os.getuid() if expected_uid is None else expected_uid
+    owner_gid = os.getgid() if expected_gid is None else expected_gid
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         return False, None, "must use a normalized absolute non-root path"
     ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
@@ -544,7 +911,22 @@ def inspect_owner_only_directory(path: Path) -> tuple[bool, tuple[int, int] | No
             details = parent.lstat()
             if not stat.S_ISDIR(details.st_mode) or stat.S_ISLNK(details.st_mode):
                 return False, None, "must not traverse symbolic-link or non-directory parents"
-            ancestor_metadata.append((parent, stable_file_metadata(details)))
+            if (
+                stat.S_IMODE(details.st_mode) & 0o022
+                and not details.st_mode & stat.S_ISVTX
+            ):
+                return (
+                    False,
+                    None,
+                    "must not traverse group/other-writable non-sticky ancestors",
+                )
+            if details.st_uid not in {0, owner_uid}:
+                return (
+                    False,
+                    None,
+                    f"must not traverse ancestors owned outside root/runtime UID {owner_uid}",
+                )
+            ancestor_metadata.append((parent, stable_directory_identity(details)))
         before = path.lstat()
         resolved = path.resolve(strict=True)
         after = path.lstat()
@@ -556,14 +938,19 @@ def inspect_owner_only_directory(path: Path) -> tuple[bool, tuple[int, int] | No
         not stat.S_ISDIR(before.st_mode)
         or stat.S_ISLNK(before.st_mode)
         or stat.S_IMODE(before.st_mode) != 0o700
-        or before.st_uid != os.getuid()
-        or stable_file_metadata(before) != stable_file_metadata(after)
+        or before.st_uid != owner_uid
+        or before.st_gid != owner_gid
+        or stable_directory_identity(before) != stable_directory_identity(after)
     ):
-        return False, None, "must be an owner-only 0700 non-symlink directory owned by the current user"
+        return (
+            False,
+            None,
+            f"must be an owner-only 0700 non-symlink directory owned by UID/GID {owner_uid}:{owner_gid}",
+        )
     try:
         if not all(
             not stat.S_ISLNK((current := parent.lstat()).st_mode)
-            and stable_file_metadata(current) == expected
+            and stable_directory_identity(current) == expected
             for parent, expected in ancestor_metadata
         ):
             return False, None, "or a parent changed while it was being validated"
@@ -638,10 +1025,22 @@ def validate_code(errors: list[str]) -> None:
         "Spring worker authentication is not bound to a canonical application path",
     )
     require(errors, "micrometer-registry-prometheus" in worker_pom, "Spring worker must include the Prometheus registry")
-    require(errors, "include: health,info,prometheus" in worker_config, "Spring worker must expose internal health and Prometheus endpoints")
+    require(
+        errors,
+        "\n        include: health,info\n" in worker_config,
+        "Spring worker must expose only the minimal internal health and info endpoints",
+    )
     require(errors, 'ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"' in compose, "production experimental routes must be hard disabled")
     require(errors, 'ELMOS_SPRING_CODING_AGENT_ENABLED: "false"' in compose, "production long-tail coding agent must be hard disabled")
     require(errors, "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID=" not in env_example, "production env template still declares a single-tenant Spring identity")
+    application_environment_names = set(
+        re.findall(r"^([A-Z][A-Z0-9_]*)=", env_example, re.MULTILINE)
+    )
+    require(
+        errors,
+        not application_environment_names.intersection(SPRING_ENVIRONMENT_ALLOWLIST),
+        "application env template must not inject Spring launch keys into web-console",
+    )
 
 
 def validate_external(
@@ -658,8 +1057,12 @@ def validate_external(
     expected_region: str | None,
     expected_environment_class: str | None,
     expected_configuration_digest: str | None,
-    expected_compose_environment_file_digest: str | None,
+    expected_application_environment_commitment_digest: str | None,
     expected_effective_spring_configuration_digest: str | None,
+    expected_effective_web_console_configuration_digest: str | None,
+    expected_web_console_environment_names_digest: str | None,
+    expected_application_mount_sources_digest: str | None,
+    expected_worker_application_artifact_digest: str | None,
 ) -> dict | None:
     initial_error_count = len(errors)
     if not path.is_absolute():
@@ -701,15 +1104,27 @@ def validate_external(
             expected_region=expected_region,
             expected_environment_class=expected_environment_class,
             expected_configuration_digest=expected_configuration_digest,
-            expected_compose_environment_file_digest=(
-                expected_compose_environment_file_digest
+            expected_application_environment_commitment_digest=(
+                expected_application_environment_commitment_digest
             ),
             expected_effective_spring_configuration_digest=(
                 expected_effective_spring_configuration_digest
             ),
+            expected_effective_web_console_configuration_digest=(
+                expected_effective_web_console_configuration_digest
+            ),
+            expected_web_console_environment_names_digest=(
+                expected_web_console_environment_names_digest
+            ),
+            expected_application_mount_sources_digest=(
+                expected_application_mount_sources_digest
+            ),
+            expected_worker_application_artifact_digest=(
+                expected_worker_application_artifact_digest
+            ),
             repo_root=ROOT,
         )
-    except (OSError, ValueError) as error:
+    except (OSError, TypeError, ValueError) as error:
         errors.append(f"external evidence authentication failed: {error}")
         return None
     require(errors, result.get("evidence_status") == "VERIFIED_EXTERNAL_RECEIPT", "external evidence was not cryptographically verified")
@@ -721,7 +1136,26 @@ def validate_external(
     return result
 
 
-def validate_environment(errors: list[str], environment: Mapping[str, str]) -> None:
+def paths_overlap(left: Path, right: Path) -> bool:
+    """Return true when either canonical path contains the other."""
+    return (
+        left == right
+        or left.is_relative_to(right)
+        or right.is_relative_to(left)
+    )
+
+
+def validate_environment(
+    errors: list[str],
+    environment: Mapping[str, str],
+    *,
+    expected_uid: int | None = None,
+    expected_gid: int | None = None,
+    application_secret_path: Path | None = None,
+    production: bool = False,
+) -> None:
+    runtime_uid = os.getuid() if expected_uid is None else expected_uid
+    runtime_gid = os.getgid() if expected_gid is None else expected_gid
     for name in REQUIRED_TRUE_ENVIRONMENT:
         require(errors, environment.get(name) == "true", f"{name} must equal true")
     for name in REQUIRED_FALSE_ENVIRONMENT:
@@ -733,33 +1167,73 @@ def validate_environment(errors: list[str], environment: Mapping[str, str]) -> N
         EXACT_IDENTITY.fullmatch(verifier_id) is not None and not is_placeholder(verifier_id),
         "ELMOS_SPRING_UPGRADE_VERIFIER_ID must be an exact non-placeholder identity",
     )
+    runner_origins: list[tuple[str, str, int]] = []
     for name in SPRING_URL_ENVIRONMENT:
-        require(errors, valid_https_endpoint(environment.get(name, "")), f"{name} must use a non-local absolute https URL without credentials or fragments")
+        origin = https_endpoint_origin(
+            environment.get(name, ""), production=production
+        )
+        require(
+            errors,
+            origin is not None,
+            f"{name} must use a non-local absolute https URL at the Runner origin root without credentials, query, or fragments",
+        )
+        if origin is not None:
+            runner_origins.append(origin)
+    if len(runner_origins) == len(SPRING_URL_ENVIRONMENT):
+        require(
+            errors,
+            len(set(runner_origins)) == 1,
+            "Spring verifier, transformer, and runtime URLs must use one exact Runner HTTPS origin",
+        )
     workspace = Path(environment.get("ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH", ""))
-    workspace_valid = False
-    if workspace.is_absolute() and workspace != Path("/"):
-        try:
-            workspace_valid = (
-                workspace.is_dir()
-                and not workspace.is_symlink()
-                and not has_symbolic_link_parent(workspace)
-                and not workspace.resolve(strict=True).is_relative_to(ROOT.resolve())
-            )
-        except OSError:
-            workspace_valid = False
-    require(errors, workspace_valid, "shared Spring workspace must be an existing absolute non-symlink directory outside the repository")
-    secret_paths: list[Path] = []
-    secret_identities: list[tuple[int, int]] = []
-    secret_digests: list[bytes] = []
+    workspace_valid, workspace_identity, workspace_failure = inspect_owner_only_directory(
+        workspace,
+        expected_uid=runtime_uid,
+        expected_gid=runtime_gid,
+    )
+    if not workspace_valid:
+        errors.append(
+            "shared Spring workspace must be an existing owner-only absolute "
+            f"non-symlink directory outside the repository owned by UID/GID "
+            f"{runtime_uid}:{runtime_gid}"
+            + (f" ({workspace_failure})" if workspace_failure else "")
+        )
+    workspace_resolved = workspace.resolve(strict=True) if workspace_valid else None
+    secret_paths = [
+        Path(environment.get(name, "")) for name in SPRING_SECRET_PATH_ENVIRONMENT
+    ]
+    secret_entries = list(zip(SPRING_SECRET_PATH_ENVIRONMENT, secret_paths))
+    resend_label = "web-console Resend secret"
+    if application_secret_path is not None:
+        secret_entries.append((resend_label, application_secret_path))
+    secret_snapshots, secret_failures = inspect_secret_group(
+        secret_entries,
+        expected_uid=runtime_uid,
+        expected_gid=runtime_gid,
+    )
     for name in SPRING_SECRET_PATH_ENVIRONMENT:
-        path = Path(environment.get(name, ""))
-        secret_paths.append(path)
-        valid, identity, digest, failure = inspect_secret_file(path)
-        if not valid:
-            errors.append(f"{name} {failure}" if failure else f"{name} must be an owner-only regular 32-4096 byte file")
-        if identity is not None and digest is not None:
-            secret_identities.append(identity)
-            secret_digests.append(digest)
+        if name in secret_snapshots:
+            continue
+        failure = secret_failures.get(name)
+        errors.append(
+            f"{name} {failure}"
+            if failure
+            else f"{name} must be an owner-only regular 32-4096 byte file"
+        )
+    if application_secret_path is not None and resend_label not in secret_snapshots:
+        failure = secret_failures.get(resend_label)
+        errors.append(
+            f"{resend_label} "
+            + (failure or "must be an owner-only regular 32-4096 byte file")
+        )
+    hmac_snapshots = [
+        secret_snapshots[name]
+        for name in SPRING_SECRET_PATH_ENVIRONMENT
+        if name in secret_snapshots
+    ]
+    resolved_secret_paths = [snapshot[0] for snapshot in hmac_snapshots]
+    secret_identities = [snapshot[1] for snapshot in hmac_snapshots]
+    secret_digests = [snapshot[2] for snapshot in hmac_snapshots]
     require(
         errors,
         len({os.path.normpath(str(path)) for path in secret_paths}) == len(SPRING_SECRET_PATH_ENVIRONMENT),
@@ -768,27 +1242,100 @@ def validate_environment(errors: list[str], environment: Mapping[str, str]) -> N
     if len(secret_identities) == len(SPRING_SECRET_PATH_ENVIRONMENT):
         require(errors, len(set(secret_identities)) == len(secret_identities), "Spring HMAC secrets must use four distinct files/inodes")
         require(errors, len(set(secret_digests)) == len(secret_digests), "Spring HMAC secrets must use four distinct secret values")
+    application_secret_snapshot = secret_snapshots.get(resend_label)
+    application_secret_resolved = (
+        application_secret_snapshot[0]
+        if application_secret_snapshot is not None
+        else None
+    )
+    if application_secret_snapshot is not None:
+        require(
+            errors,
+            application_secret_snapshot[1] not in secret_identities,
+            "web-console Resend secret must not reuse a Spring HMAC file/inode",
+        )
+        require(
+            errors,
+            application_secret_snapshot[2] not in secret_digests,
+            "web-console Resend secret must not reuse a Spring HMAC value",
+        )
     replay_paths: list[Path] = []
+    resolved_replay_paths: list[Path] = []
+    replay_identities: list[tuple[Path, tuple[int, int]]] = []
     for name in SPRING_REPLAY_PATH_ENVIRONMENT:
         replay_path = Path(environment.get(name, ""))
         replay_paths.append(replay_path)
-        valid, _, failure = inspect_owner_only_directory(replay_path)
+        valid, identity, failure = inspect_owner_only_directory(
+            replay_path,
+            expected_uid=runtime_uid,
+            expected_gid=runtime_gid,
+        )
         if not valid:
             errors.append(f"{name} {failure}" if failure else f"{name} is invalid")
-    if workspace_valid and replay_paths:
-        try:
-            workspace_resolved = workspace.resolve(strict=True)
-            for replay_path in replay_paths:
-                replay_resolved = replay_path.resolve(strict=True)
-                require(
-                    errors,
-                    replay_resolved != workspace_resolved
-                    and not replay_resolved.is_relative_to(workspace_resolved)
-                    and not workspace_resolved.is_relative_to(replay_resolved),
-                    "Spring replay state must be isolated from the shared Spring workspace",
-                )
-        except OSError:
-            pass
+        else:
+            replay_resolved = replay_path.resolve(strict=True)
+            resolved_replay_paths.append(replay_resolved)
+            if identity is not None:
+                replay_identities.append((replay_path, identity))
+    if workspace_resolved is not None:
+        for replay_resolved in resolved_replay_paths:
+            require(
+                errors,
+                not paths_overlap(replay_resolved, workspace_resolved),
+                "Spring replay state must be isolated from the shared Spring workspace",
+            )
+    protected_roots: list[tuple[str, Path]] = []
+    if workspace_resolved is not None:
+        protected_roots.append(("shared Spring workspace", workspace_resolved))
+    protected_roots.extend(
+        ("Spring replay state", path) for path in resolved_replay_paths
+    )
+    for secret_path in resolved_secret_paths:
+        for label, protected_root in protected_roots:
+            require(
+                errors,
+                not secret_path.is_relative_to(protected_root),
+                f"Spring HMAC secrets must be isolated from {label}",
+            )
+    if application_secret_resolved is not None:
+        for label, protected_root in protected_roots:
+            require(
+                errors,
+                not application_secret_resolved.is_relative_to(protected_root),
+                f"web-console Resend secret must be isolated from {label}",
+            )
+    if workspace_identity is not None:
+        valid, current_identity, _ = inspect_owner_only_directory(
+            workspace,
+            expected_uid=runtime_uid,
+            expected_gid=runtime_gid,
+        )
+        require(
+            errors,
+            valid and current_identity == workspace_identity,
+            "shared Spring workspace changed during environment validation",
+        )
+    for replay_path, replay_identity in replay_identities:
+        valid, current_identity, _ = inspect_owner_only_directory(
+            replay_path,
+            expected_uid=runtime_uid,
+            expected_gid=runtime_gid,
+        )
+        require(
+            errors,
+            valid and current_identity == replay_identity,
+            "Spring replay state changed during environment validation",
+        )
+    final_secret_snapshots, _ = inspect_secret_group(
+        secret_entries,
+        expected_uid=runtime_uid,
+        expected_gid=runtime_gid,
+    )
+    require(
+        errors,
+        final_secret_snapshots == secret_snapshots,
+        "Spring application secret set changed during environment validation",
+    )
 
 
 def main() -> int:
@@ -796,7 +1343,7 @@ def main() -> int:
         description="Validate the bounded Spring launch profile without executing environment-file contents.",
         epilog=(
             "The Spring file accepts only allowlisted KEY=VALUE data. The actual Compose env file is "
-            "parsed as inert data and digest-bound. Explicit process values take precedence for local "
+            "parsed as inert data and bound by a secret-redacted commitment. Explicit process values take precedence for local "
             "preflight; deployment binding requires them to equal the controlled files."
         ),
     )
@@ -810,6 +1357,10 @@ def main() -> int:
     parser.add_argument("--expected-provider")
     parser.add_argument("--expected-region")
     parser.add_argument("--expected-environment-class", choices=("STAGING", "PRODUCTION"))
+    parser.add_argument(
+        "--expected-worker-application-artifact-digest",
+        help="trusted CI/build SHA-256 of the exact /app/app.jar deployed in the worker image",
+    )
     parser.add_argument("--require-production-evidence", action="store_true")
     parser.add_argument("--check-environment", action="store_true")
     parser.add_argument(
@@ -821,20 +1372,38 @@ def main() -> int:
         "--compose-environment-file",
         type=Path,
         help=(
-            "load and digest-bind the owner-only ELMOS_ENV_FILE used by the production "
+            "load and bind a secret-redacted commitment for the owner-only ELMOS_ENV_FILE used by the production "
             "Compose deployment; requires --environment-file"
         ),
     )
     args = parser.parse_args()
     errors: list[str] = []
+    if args.expected_revision is not None:
+        require(
+            errors,
+            GIT_REVISION.fullmatch(args.expected_revision) is not None,
+            "--expected-revision must be 40 lowercase hexadecimal characters",
+        )
+    if args.expected_worker_application_artifact_digest is not None:
+        require(
+            errors,
+            SHA256_DIGEST.fullmatch(
+                args.expected_worker_application_artifact_digest
+            )
+            is not None,
+            "--expected-worker-application-artifact-digest must be sha256 followed by 64 lowercase hexadecimal characters",
+        )
     profile = load(PROFILE)
     validate_contract(errors, profile)
     validate_code(errors)
     file_environment = parse_environment_file(errors, args.environment_file) if args.environment_file else {}
+    if args.environment_file is not None:
+        for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST - file_environment.keys()):
+            errors.append(f"SPRING_ENV_FILE is missing required key {name}")
     compose_environment: dict[str, str] = {}
-    compose_environment_digest: str | None = None
+    application_environment_commitment: str | None = None
     if args.compose_environment_file:
-        compose_environment, compose_environment_digest = parse_compose_environment_file(
+        compose_environment = parse_compose_environment_file(
             errors, args.compose_environment_file
         )
         if args.environment_file is None:
@@ -852,42 +1421,140 @@ def main() -> int:
         or args.compose_environment_file is not None
     )
     effective = effective_environment(file_environment)
+    application_secret_path = (
+        Path(compose_environment.get("ELMOS_SECRET_ROOT", "/srv/elmos/secrets"))
+        / "resend-api-key"
+        if args.compose_environment_file is not None
+        else None
+    )
     configuration_digest: str | None = None
     expected_effective_spring_configuration_digest: str | None = None
+    expected_effective_web_console_configuration_digest: str | None = None
+    expected_web_console_environment_names_digest: str | None = None
+    expected_application_mount_sources_digest: str | None = None
     if check_environment:
-        validate_environment(errors, effective)
+        production_identity = (
+            args.require_production_evidence or args.external_evidence is not None
+        )
+        runtime_uid = APPLICATION_RUNTIME_UID if production_identity else os.getuid()
+        runtime_gid = APPLICATION_RUNTIME_GID if production_identity else os.getgid()
+        validate_environment(
+            errors,
+            effective,
+            expected_uid=runtime_uid,
+            expected_gid=runtime_gid,
+            application_secret_path=application_secret_path,
+            production=production_identity,
+        )
         try:
             if str(ROOT) not in sys.path:
                 sys.path.insert(0, str(ROOT))
             from scripts.batch30.spring_launch_evidence import (
+                application_environment_commitment_digest as derive_application_environment_commitment,
+                application_mount_sources_digest,
+                expected_web_console_environment,
+                expected_web_console_environment_names,
                 expected_spring_worker_configuration_digest,
                 spring_environment_configuration_digest,
+                web_console_configuration_digest,
+                web_console_environment_names_digest,
             )
 
             spring_configuration_digest = spring_environment_configuration_digest(effective)
+            if args.compose_environment_file is not None:
+                application_environment_commitment = (
+                    derive_application_environment_commitment(compose_environment)
+                )
             configuration_digest = (
                 deployment_configuration_digest(
-                    spring_configuration_digest, compose_environment_digest
+                    spring_configuration_digest, application_environment_commitment
                 )
-                if compose_environment_digest is not None
+                if application_environment_commitment is not None
                 else spring_configuration_digest
             )
             expected_effective_spring_configuration_digest = (
                 expected_spring_worker_configuration_digest(effective)
             )
-        except (OSError, ValueError) as error:
+            if application_environment_commitment is not None:
+                expected_web_environment = expected_web_console_environment(
+                    compose_environment
+                )
+                expected_effective_web_console_configuration_digest = (
+                    web_console_configuration_digest(expected_web_environment)
+                )
+                expected_web_console_environment_names_digest = (
+                    web_console_environment_names_digest(
+                        expected_web_console_environment_names(compose_environment)
+                    )
+                )
+                if application_secret_path is None:
+                    raise ValueError(
+                        "application mount binding requires the Compose environment file"
+                    )
+                application_mount_sources = {
+                    "worker_workspace": effective.get(
+                        "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH", ""
+                    ),
+                    "worker_verifier_hmac": effective.get(
+                        "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH", ""
+                    ),
+                    "worker_transformer_hmac": effective.get(
+                        "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH", ""
+                    ),
+                    "worker_runtime_hmac": effective.get(
+                        "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH", ""
+                    ),
+                    "application_engine_hmac": effective.get(
+                        "ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH", ""
+                    ),
+                    "worker_engine_replay": effective.get(
+                        "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH", ""
+                    ),
+                    "web_resend_secret": str(application_secret_path),
+                }
+                first_mount_sources_digest = application_mount_sources_digest(
+                    application_mount_sources,
+                    expected_uid=runtime_uid,
+                    expected_gid=runtime_gid,
+                )
+                validate_environment(
+                    errors,
+                    effective,
+                    expected_uid=runtime_uid,
+                    expected_gid=runtime_gid,
+                    application_secret_path=application_secret_path,
+                    production=production_identity,
+                )
+                expected_application_mount_sources_digest = (
+                    application_mount_sources_digest(
+                        application_mount_sources,
+                        expected_uid=runtime_uid,
+                        expected_gid=runtime_gid,
+                    )
+                )
+                require(
+                    errors,
+                    expected_application_mount_sources_digest
+                    == first_mount_sources_digest,
+                    "application mount source objects changed during launch binding",
+                )
+        except (OSError, TypeError, ValueError) as error:
             errors.append(f"Spring environment configuration digest failed: {error}")
 
     if args.require_production_evidence:
         required_production_arguments = {
             "--environment-file": args.environment_file,
             "--compose-environment-file": args.compose_environment_file,
+            "--expected-revision": args.expected_revision,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
             "--expected-deployment-id": args.expected_deployment_id,
             "--expected-provider": args.expected_provider,
             "--expected-region": args.expected_region,
             "--expected-environment-class": args.expected_environment_class,
+            "--expected-worker-application-artifact-digest": (
+                args.expected_worker_application_artifact_digest
+            ),
         }
         for option, value in required_production_arguments.items():
             if value is None or (isinstance(value, str) and not value.strip()):
@@ -897,12 +1564,16 @@ def main() -> int:
         required_intake_arguments = {
             "--environment-file": args.environment_file,
             "--compose-environment-file": args.compose_environment_file,
+            "--expected-revision": args.expected_revision,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
             "--expected-deployment-id": args.expected_deployment_id,
             "--expected-provider": args.expected_provider,
             "--expected-region": args.expected_region,
             "--expected-environment-class": args.expected_environment_class,
+            "--expected-worker-application-artifact-digest": (
+                args.expected_worker_application_artifact_digest
+            ),
         }
         for option, value in required_intake_arguments.items():
             if value is None or (isinstance(value, str) and not value.strip()):
@@ -928,9 +1599,23 @@ def main() -> int:
                 expected_region=args.expected_region,
                 expected_environment_class=args.expected_environment_class,
                 expected_configuration_digest=configuration_digest,
-                expected_compose_environment_file_digest=compose_environment_digest,
+                expected_application_environment_commitment_digest=(
+                    application_environment_commitment
+                ),
                 expected_effective_spring_configuration_digest=(
                     expected_effective_spring_configuration_digest
+                ),
+                expected_effective_web_console_configuration_digest=(
+                    expected_effective_web_console_configuration_digest
+                ),
+                expected_web_console_environment_names_digest=(
+                    expected_web_console_environment_names_digest
+                ),
+                expected_application_mount_sources_digest=(
+                    expected_application_mount_sources_digest
+                ),
+                expected_worker_application_artifact_digest=(
+                    args.expected_worker_application_artifact_digest
                 ),
             )
     elif args.require_production_evidence:
@@ -945,14 +1630,32 @@ def main() -> int:
     )
     if check_environment:
         print("ENVIRONMENT_PRECEDENCE=PROCESS_ENVIRONMENT_OVER_FILE")
-        if compose_environment_digest is not None:
+        if application_environment_commitment is not None:
             print("COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED")
-            print(f"COMPOSE_ENVIRONMENT_FILE_DIGEST={compose_environment_digest}")
+            print(
+                "APPLICATION_ENVIRONMENT_COMMITMENT_DIGEST="
+                f"{application_environment_commitment}"
+            )
         print(f"SPRING_CONFIGURATION_DIGEST={configuration_digest}")
         print(
             "EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST="
             f"{expected_effective_spring_configuration_digest}"
         )
+        if expected_effective_web_console_configuration_digest is not None:
+            print(
+                "EXPECTED_WEB_CONSOLE_CONFIGURATION_DIGEST="
+                f"{expected_effective_web_console_configuration_digest}"
+            )
+        if expected_web_console_environment_names_digest is not None:
+            print(
+                "EXPECTED_WEB_CONSOLE_ENVIRONMENT_NAMES_DIGEST="
+                f"{expected_web_console_environment_names_digest}"
+            )
+        if expected_application_mount_sources_digest is not None:
+            print(
+                "EXPECTED_APPLICATION_MOUNT_SOURCES_DIGEST="
+                f"{expected_application_mount_sources_digest}"
+            )
     print("EXTERNAL_EVIDENCE_INTAKE=" + ("VALIDATED_NOT_CERTIFIED" if args.external_evidence else "NOT_RUN"))
     print("CERTIFICATION=NOT_CERTIFIED")
     return 0

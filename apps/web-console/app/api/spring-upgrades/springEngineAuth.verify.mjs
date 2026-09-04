@@ -54,6 +54,13 @@ assert.throws(
   () => signSpringEngineRequest({ ...input, organizationId: "../other" }),
   /SPRING_ENGINE_ORGANIZATION_REJECTED/,
 );
+assert.throws(
+  () => signSpringEngineRequest({
+    ...input,
+    nonce: "123e4567-e89b-12d3-a456-426614174000",
+  }),
+  /SPRING_ENGINE_NONCE_REJECTED/,
+);
 
 const directory = realpathSync(
   mkdtempSync(path.join(tmpdir(), "elmos-spring-engine-auth-")),
@@ -77,7 +84,7 @@ try {
   assert.match(headers.get("X-ELMOS-Engine-Timestamp") ?? "", /^[0-9]+$/);
   assert.match(
     headers.get("X-ELMOS-Engine-Nonce") ?? "",
-    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/,
   );
   assert.equal(headers.get("X-ELMOS-Engine-Body-SHA256"), signed.bodySha256);
   assert.match(headers.get("X-ELMOS-Engine-Signature") ?? "", /^[0-9a-f]{64}$/);

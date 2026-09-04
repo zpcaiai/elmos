@@ -6,6 +6,7 @@ import hashlib
 import json
 import os
 import re
+import stat
 import subprocess
 import sys
 import tempfile
@@ -33,11 +34,18 @@ from scripts.batch30.spring_launch_evidence import (
     _load_trust,
     _register_signer,
     _write_new_owner_only,
+    application_mount_sources_digest,
+    application_environment_commitment_digest,
     assemble_spring_launch_receipt,
+    collect_web_console_runtime_attestation,
     content_reference,
     expected_spring_worker_environment,
+    expected_web_console_environment,
+    expected_web_console_environment_names,
     receipt_digest,
     spring_worker_configuration_digest,
+    web_console_configuration_digest,
+    web_console_environment_names_digest,
     verify_spring_launch_receipt,
     verify_spring_launch_receipt_file,
 )
@@ -128,6 +136,18 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
                     spring_worker_configuration_digest(missing),
                 )
 
+        expected_web_names = expected_web_console_environment_names(
+            {"DATABASE_PASSWORD": "never-serialize-this"}
+        )
+        self.assertIn("DATABASE_PASSWORD", expected_web_names)
+        self.assertNotIn("never-serialize-this", expected_web_names)
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "must not declare Spring or process override"
+        ):
+            expected_web_console_environment_names(
+                {"ELMOS_SPRING_PROXY_ENABLED": "true"}
+            )
+
         application_yaml = (
             ROOT / "apps/java-engine-worker/src/main/resources/application.yml"
         ).read_text(encoding="utf-8")
@@ -139,10 +159,38 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(
-            'ENTRYPOINT ["java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]',
+            'ENTRYPOINT ["/opt/java/openjdk/bin/java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]',
             dockerfile,
         )
         self.assertRegex(dockerfile, r"(?m)^CMD \[\]$")
+
+    def test_application_environment_commitment_never_hashes_secret_values(self) -> None:
+        first = {
+            "DATABASE_PASSWORD": "correct-horse-battery-staple",
+            "OIDC_CLIENT_SECRET": "first-secret-value",
+            "EMPTY_OPTION": "",
+            "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED": "true",
+        }
+        rotated = {
+            **first,
+            "DATABASE_PASSWORD": "independently-rotated-secret",
+            "OIDC_CLIENT_SECRET": "second-secret-value",
+        }
+        digest = application_environment_commitment_digest(first)
+        self.assertEqual(digest, application_environment_commitment_digest(rotated))
+        self.assertNotIn("correct-horse", digest)
+        self.assertNotEqual(
+            digest,
+            application_environment_commitment_digest(
+                {**first, "EMPTY_OPTION": "now-present-and-nonempty"}
+            ),
+        )
+        self.assertNotEqual(
+            digest,
+            application_environment_commitment_digest(
+                {**first, "ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED": "false"}
+            ),
+        )
 
     def test_verify_cli_rejects_unsigned_placeholder_receipts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -175,10 +223,18 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
                     "STAGING",
                     "--expected-configuration-digest",
                     "sha256:" + "1" * 64,
-                    "--expected-compose-environment-file-digest",
+                    "--expected-application-environment-commitment-digest",
                     "sha256:" + "2" * 64,
                     "--expected-effective-spring-configuration-digest",
                     "sha256:" + "3" * 64,
+                    "--expected-effective-web-console-configuration-digest",
+                    "sha256:" + "4" * 64,
+                    "--expected-web-console-environment-names-digest",
+                    "sha256:" + "5" * 64,
+                    "--expected-application-mount-sources-digest",
+                    "sha256:" + "6" * 64,
+                    "--expected-worker-application-artifact-digest",
+                    "sha256:" + "7" * 64,
                 ],
                 cwd=ROOT,
                 check=False,
@@ -189,6 +245,37 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
         self.assertEqual(2, completed.returncode)
         self.assertIn("SPRING LAUNCH EVIDENCE FAIL", completed.stderr)
         self.assertIn("receipt fields are invalid", completed.stderr)
+
+    def test_sanitized_web_collector_and_worker_artifact_are_make_wired(self) -> None:
+        completed = subprocess.run(
+            [sys.executable, str(SCRIPT), "collect-web-runtime", "--help"],
+            cwd=ROOT,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        self.assertEqual(0, completed.returncode)
+        self.assertIn("--expected-image-digest", completed.stdout)
+        self.assertIn("--worker-container", completed.stdout)
+        self.assertIn("--expected-worker-image-digest", completed.stdout)
+        self.assertNotIn("--raw-inspect-file", completed.stdout)
+        makefile = (ROOT / "Makefile.batch30").read_text(encoding="utf-8")
+        self.assertIn("spring-web-runtime-attestation:", makefile)
+        self.assertIn("collect-web-runtime", makefile)
+        self.assertIn('--worker-container "$${SPRING_WORKER_CONTAINER}"', makefile)
+        self.assertIn(
+            '--expected-worker-image-digest "$${SPRING_WORKER_IMAGE_DIGEST}"',
+            makefile,
+        )
+        self.assertIn('test -n "$${SPRING_EXPECTED_REVISION}"', makefile)
+        self.assertIn('--expected-revision "$${SPRING_EXPECTED_REVISION}"', makefile)
+        self.assertIn(
+            'test -n "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}"', makefile
+        )
+        self.assertIn(
+            '--expected-worker-application-artifact-digest "$${SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST}"',
+            makefile,
+        )
 
 
 class SignedSpringLaunchReceiptTests(unittest.TestCase):
@@ -289,6 +376,92 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             media_type=media_type,
         )
 
+    @staticmethod
+    def mount_object_identity(source: str) -> dict[str, object]:
+        observed = os.stat(source, follow_symlinks=False)
+        uid = 0 if observed.st_uid == 0 else 10001
+        gid = 0 if observed.st_uid == 0 else 10001
+        return {
+            "device": observed.st_dev,
+            "inode": observed.st_ino,
+            "object_type": (
+                "DIRECTORY" if stat.S_ISDIR(observed.st_mode) else "REGULAR_FILE"
+            ),
+            "size_bytes": observed.st_size,
+            "mode": stat.S_IMODE(observed.st_mode),
+            # Production requires the application container identity.  Tests
+            # cannot chown temporary files without privilege, so the injected
+            # observer preserves all real inode/change fields and supplies the
+            # production ownership contract explicitly.
+            "uid": uid,
+            "gid": gid,
+            "link_count": observed.st_nlink,
+            "ctime_ns": observed.st_ctime_ns,
+        }
+
+    @classmethod
+    def mount_source_snapshot(cls, source: str) -> dict[str, object]:
+        path = Path(source)
+        ancestors: list[dict[str, object]] = []
+        current = Path(path.anchor)
+        ancestors.append(cls.mount_object_identity(str(current)))
+        for part in path.parts[1:-1]:
+            current /= part
+            ancestors.append(cls.mount_object_identity(str(current)))
+        return {
+            "object_identity": cls.mount_object_identity(source),
+            "parent_identity": dict(ancestors[-1]),
+            "ancestor_identities": ancestors,
+        }
+
+    def live_mount_observer(
+        self, source: str, process_id: int, destination: str, label: str
+    ) -> tuple[
+        dict[str, object],
+        dict[str, object],
+        dict[str, object],
+        list[dict[str, object]],
+        str,
+    ]:
+        snapshot = self.mount_source_snapshot(source)
+        identity = dict(snapshot["object_identity"])
+        process_digest = "sha256:" + hashlib.sha256(
+            f"{process_id}\0{destination}\0{label}".encode("utf-8")
+        ).hexdigest()
+        return (
+            identity,
+            dict(identity),
+            dict(snapshot["parent_identity"]),
+            [dict(item) for item in snapshot["ancestor_identities"]],
+            process_digest,
+        )
+
+    def collect_web_runtime(
+        self,
+        web_value: object,
+        *,
+        worker_bytes: bytes | None = None,
+        reinspection_web_value: object | None = None,
+        reinspection_worker_bytes: bytes | None = None,
+        observer: object | None = None,
+    ) -> dict[str, object]:
+        raw_web = canonical_bytes(web_value)
+        raw_worker = worker_bytes or self.worker_inspect_bytes
+        raw_web_after = canonical_bytes(
+            web_value if reinspection_web_value is None else reinspection_web_value
+        )
+        raw_worker_after = reinspection_worker_bytes or raw_worker
+        return collect_web_console_runtime_attestation(
+            raw_web,
+            raw_worker_inspect=raw_worker,
+            expected_image_digest="sha256:" + "9" * 64,
+            expected_worker_image_digest="sha256:" + "8" * 64,
+            collector_identity="staging-runtime-collector",
+            captured_at=datetime(2026, 9, 4, 8, 50, tzinfo=timezone.utc),
+            stable_reinspect=lambda: (raw_web_after, raw_worker_after),
+            _live_mount_observer=observer or self.live_mount_observer,
+        )
+
     def sign(self, key_name: str, payload: dict[str, object]) -> dict[str, object]:
         payload_bytes = canonical_bytes(payload)
         cache_key = (key_name, payload_bytes)
@@ -379,19 +552,58 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "ELMOS_SPRING_UPGRADE_VERIFIER_ID": "independent-verifier-one",
             }
         )
+        mount_root = self.case / "runtime-mounts"
+        workspace_source = mount_root / "workspace"
+        replay_source = mount_root / "engine-replay"
+        workspace_source.mkdir(parents=True, exist_ok=True)
+        replay_source.mkdir(exist_ok=True)
+        os.chmod(mount_root, 0o700)
+        os.chmod(workspace_source, 0o700)
+        os.chmod(replay_source, 0o700)
+        secret_sources: dict[str, Path] = {}
+        for name in ("verifier", "transformer", "runtime", "engine", "resend"):
+            path = mount_root / f"{name}.secret"
+            if not path.exists():
+                path.write_bytes((name.encode("ascii") + b"-") * 8)
+            os.chmod(path, 0o600)
+            secret_sources[name] = path
+        worker_mounts = {
+            "/workspace/private-runner": (str(workspace_source), True),
+            "/run/secrets/elmos-verifier-hmac": (str(secret_sources["verifier"]), False),
+            "/run/secrets/elmos-transformer-hmac": (str(secret_sources["transformer"]), False),
+            "/run/secrets/elmos-runtime-hmac": (str(secret_sources["runtime"]), False),
+            "/run/secrets/elmos-spring-engine-hmac": (str(secret_sources["engine"]), False),
+            "/var/lib/elmos/spring-engine-auth-replay": (str(replay_source), True),
+        }
         inspect_value = [
             {
-                "Name": "/elmos-java-engine-worker-1",
+                "Id": "a" * 64,
+                "Name": "/elmos-staging-java-engine-worker-1",
                 "Image": "sha256:" + "8" * 64,
+                "Path": "/opt/java/openjdk/bin/java",
+                "Args": [
+                    "-XX:MaxRAMPercentage=70",
+                    "-jar",
+                    "/app/app.jar",
+                ],
+                "State": {
+                    "Running": True,
+                    "Restarting": False,
+                    "Dead": False,
+                    "Pid": 41001,
+                },
                 "Config": {
                     "Image": "elmos-java-engine-worker:staging-one",
                     "Entrypoint": [
-                        "java",
+                        "/opt/java/openjdk/bin/java",
                         "-XX:MaxRAMPercentage=70",
                         "-jar",
                         "/app/app.jar",
                     ],
                     "Cmd": [],
+                    "User": "10001:10001",
+                    "WorkingDir": "/app",
+                    "ExposedPorts": {"8081/tcp": {}},
                     "Labels": {
                         "com.docker.compose.project": "elmos-staging",
                         "com.docker.compose.service": "java-engine-worker",
@@ -401,16 +613,231 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                         for name, value in sorted(worker_environment.items())
                     ],
                 },
+                "HostConfig": {
+                    "ReadonlyRootfs": True,
+                    "Privileged": False,
+                    "PidMode": "",
+                    "IpcMode": "private",
+                    "UTSMode": "",
+                    "UsernsMode": "",
+                    "CgroupnsMode": "private",
+                    "AutoRemove": False,
+                    "PublishAllPorts": False,
+                    "Init": True,
+                    "PidsLimit": 1024,
+                    "Runtime": "runc",
+                    "Isolation": "",
+                    "OomKillDisable": False,
+                    "CapAdd": None,
+                    "CapDrop": ["ALL"],
+                    "SecurityOpt": ["no-new-privileges:true"],
+                    "Devices": [],
+                    "DeviceRequests": None,
+                    "VolumesFrom": None,
+                    "Links": None,
+                    "RestartPolicy": {"Name": "unless-stopped"},
+                    "Tmpfs": {
+                        "/tmp": "rw,noexec,nosuid,size=512m",
+                        "/home/elmos/.m2": "rw,noexec,nosuid,size=512m",
+                    },
+                    "NetworkMode": "elmos-staging_backend",
+                    "PortBindings": {},
+                    "Binds": [
+                        f"{source}:{destination}:{'rw' if writable else 'ro'}"
+                        for destination, (source, writable) in worker_mounts.items()
+                    ],
+                },
+                "NetworkSettings": {
+                    "Networks": {"elmos-staging_backend": {}},
+                    "Ports": {"8081/tcp": None},
+                },
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": source,
+                        "Destination": destination,
+                        "RW": writable,
+                        "Mode": "rw" if writable else "ro",
+                        "Propagation": "rprivate",
+                    }
+                    for destination, (source, writable) in worker_mounts.items()
+                ],
             }
         ]
         container_inspect = self.evidence_root / "java-engine-worker.inspect.json"
         self.write_json(container_inspect, inspect_value)
+        self.worker_inspect_value = copy.deepcopy(inspect_value)
+        self.worker_inspect_bytes = container_inspect.read_bytes()
         container_inspect_ref = self.ref(container_inspect)
         container_inspect_evidence = {
             **container_inspect_ref,
             "verification": {
                 "mode": "LOCAL_BYTES",
                 "local_uri": container_inspect_ref["uri"],
+            },
+        }
+        web_environment = expected_web_console_environment()
+        web_mounts = {
+            "/run/secrets/elmos/resend-api-key": (str(secret_sources["resend"]), False),
+            "/run/secrets/elmos-spring-engine-hmac": (str(secret_sources["engine"]), False),
+        }
+        web_inspect_value = [
+            {
+                "Id": "b" * 64,
+                "Name": "/elmos-staging-web-console-1",
+                "Image": "sha256:" + "9" * 64,
+                "Path": "/usr/local/bin/docker-entrypoint.sh",
+                "Args": [
+                    "/usr/local/bin/node",
+                    "/workspace/apps/web-console/node_modules/next/dist/bin/next",
+                    "start",
+                    "--hostname",
+                    "0.0.0.0",
+                    "--port",
+                    "3000",
+                ],
+                "State": {
+                    "Running": True,
+                    "Restarting": False,
+                    "Dead": False,
+                    "Pid": 41002,
+                },
+                "Config": {
+                    "Image": "elmos-web-console:staging-one",
+                    "Entrypoint": ["/usr/local/bin/docker-entrypoint.sh"],
+                    "Cmd": [
+                        "/usr/local/bin/node",
+                        "/workspace/apps/web-console/node_modules/next/dist/bin/next",
+                        "start",
+                        "--hostname",
+                        "0.0.0.0",
+                        "--port",
+                        "3000",
+                    ],
+                    "User": "10001:10001",
+                    "WorkingDir": "/workspace/apps/web-console",
+                    "ExposedPorts": {"3000/tcp": {}},
+                    "Labels": {
+                        "com.docker.compose.project": "elmos-staging",
+                        "com.docker.compose.service": "web-console",
+                    },
+                    "Env": [
+                        f"{name}={value}"
+                        for name, value in sorted(web_environment.items())
+                    ],
+                },
+                "HostConfig": {
+                    "ReadonlyRootfs": True,
+                    "Privileged": False,
+                    "PidMode": "",
+                    "IpcMode": "private",
+                    "UTSMode": "",
+                    "UsernsMode": "",
+                    "CgroupnsMode": "private",
+                    "AutoRemove": False,
+                    "PublishAllPorts": False,
+                    "Init": True,
+                    "PidsLimit": 512,
+                    "Runtime": "runc",
+                    "Isolation": "",
+                    "OomKillDisable": False,
+                    "CapAdd": None,
+                    "CapDrop": ["ALL"],
+                    "SecurityOpt": ["no-new-privileges:true"],
+                    "Devices": [],
+                    "DeviceRequests": None,
+                    "VolumesFrom": None,
+                    "Links": None,
+                    "RestartPolicy": {"Name": "unless-stopped"},
+                    "Tmpfs": {"/tmp": "rw,noexec,nosuid,size=64m"},
+                    "NetworkMode": "elmos-staging_edge",
+                    "PortBindings": {},
+                    "Binds": [
+                        f"{source}:{destination}:{'rw' if writable else 'ro'}"
+                        for destination, (source, writable) in web_mounts.items()
+                    ],
+                },
+                "NetworkSettings": {
+                    "Networks": {
+                        "elmos-staging_edge": {},
+                        "elmos-staging_backend": {},
+                    },
+                    "Ports": {"3000/tcp": None},
+                },
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": source,
+                        "Destination": destination,
+                        "RW": writable,
+                        "Mode": "rw" if writable else "ro",
+                        "Propagation": "rprivate",
+                    }
+                    for destination, (source, writable) in web_mounts.items()
+                ],
+            }
+        ]
+        self.web_inspect_value = copy.deepcopy(web_inspect_value)
+        self.application_mount_sources = {
+            "worker_workspace": worker_mounts["/workspace/private-runner"][0],
+            "worker_verifier_hmac": worker_mounts[
+                "/run/secrets/elmos-verifier-hmac"
+            ][0],
+            "worker_transformer_hmac": worker_mounts[
+                "/run/secrets/elmos-transformer-hmac"
+            ][0],
+            "worker_runtime_hmac": worker_mounts[
+                "/run/secrets/elmos-runtime-hmac"
+            ][0],
+            "application_engine_hmac": worker_mounts[
+                "/run/secrets/elmos-spring-engine-hmac"
+            ][0],
+            "worker_engine_replay": worker_mounts[
+                "/var/lib/elmos/spring-engine-auth-replay"
+            ][0],
+            "web_resend_secret": web_mounts[
+                "/run/secrets/elmos/resend-api-key"
+            ][0],
+        }
+        web_runtime_value = self.collect_web_runtime(web_inspect_value)
+        web_runtime = self.evidence_root / "web-console.runtime-attestation.json"
+        self.write_json(web_runtime, web_runtime_value, canonical=True)
+        web_runtime_ref = self.ref(web_runtime)
+        web_runtime_evidence = {
+            **web_runtime_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": web_runtime_ref["uri"],
+            },
+        }
+        image_attestation = self.evidence_root / "worker-image-artifact-attestation.json"
+        self.write_json(
+            image_attestation,
+            {
+                "schema_version": 1,
+                "namespace": NAMESPACE,
+                "method": "OCI_IMAGE_CONTENT_EXTRACTION_V1",
+                "builder_identity": "staging-image-extractor",
+                "build_invocation_id": "build-one",
+                "deployed_revision": self.REVISION,
+                "image_digest": "sha256:" + "8" * 64,
+                "image_reference": "elmos-java-engine-worker:staging-one",
+                "artifact_path": "/app/app.jar",
+                "worker_application_artifact_digest": "sha256:" + "c" * 64,
+                "extracted_at": "2026-09-04T08:45:00Z",
+                "outcome": "VERIFIED",
+                "synthetic": False,
+                "unknowns": [],
+                "not_run": [],
+            },
+            canonical=True,
+        )
+        image_attestation_ref = self.ref(image_attestation)
+        image_attestation_evidence = {
+            **image_attestation_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": image_attestation_ref["uri"],
             },
         }
         environment_value = {
@@ -427,15 +854,31 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "launch_profile_digest": profile_ref["digest"],
             "artifact_digest": artifact_ref["digest"],
             "configuration_digest": "sha256:" + "1" * 64,
-            "compose_environment_file_digest": "sha256:" + "7" * 64,
+            "application_environment_commitment_digest": (
+                application_environment_commitment_digest({})
+            ),
             "container_inspect": container_inspect_evidence,
+            "web_console_runtime_attestation": web_runtime_evidence,
             "effective_spring_configuration_digest": spring_worker_configuration_digest(
                 worker_environment
             ),
+            "effective_web_console_configuration_digest": web_console_configuration_digest(
+                web_environment
+            ),
+            "web_console_environment_names_digest": web_console_environment_names_digest(
+                web_environment
+            ),
+            "application_mount_sources_digest": application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=lambda name, source: self.mount_source_snapshot(source),
+            ),
+            "worker_image_artifact_attestation": image_attestation_evidence,
+            "worker_application_artifact_digest": "sha256:" + "c" * 64,
             "network_policy_digest": "sha256:" + "2" * 64,
             "rootless_policy_digest": "sha256:" + "3" * 64,
             "runtime_image_digests": {
                 "worker": "sha256:" + "8" * 64,
+                "web": "sha256:" + "9" * 64,
                 "proxy": "sha256:" + "4" * 64,
                 "transformer": "sha256:" + "5" * 64,
                 "runner": "sha256:" + "6" * 64,
@@ -730,6 +1173,42 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         self.write_json(environment_path, environment, canonical=True)
         receipt["binding"]["environment"] = self.ref(environment_path)
 
+    def environment_document(
+        self, receipt: dict[str, object]
+    ) -> tuple[Path, dict[str, object]]:
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        return environment_path, json.loads(
+            environment_path.read_text(encoding="utf-8")
+        )
+
+    def rewrite_environment_document(
+        self, receipt: dict[str, object], environment: dict[str, object]
+    ) -> None:
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+
+    def rewrite_environment_supporting_document(
+        self,
+        receipt: dict[str, object],
+        field: str,
+        value: object,
+    ) -> None:
+        _, environment = self.environment_document(receipt)
+        reference = environment[field]
+        path = Path(reference["verification"]["local_uri"].removeprefix("file://"))
+        self.write_json(path, value, canonical=True)
+        updated = self.ref(path)
+        environment[field] = {
+            **updated,
+            "verification": {"mode": "LOCAL_BYTES", "local_uri": updated["uri"]},
+        }
+        self.rewrite_environment_document(receipt, environment)
+
     @staticmethod
     def container_inspect_document(receipt: dict[str, object]) -> list[object]:
         environment_path = Path(
@@ -843,9 +1322,23 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 expected_region="cn-test-one",
                 expected_environment_class="STAGING",
                 expected_configuration_digest="sha256:" + "1" * 64,
-                expected_compose_environment_file_digest="sha256:" + "7" * 64,
+                expected_application_environment_commitment_digest=(
+                    application_environment_commitment_digest({})
+                ),
                 expected_effective_spring_configuration_digest=environment[
                     "effective_spring_configuration_digest"
+                ],
+                expected_effective_web_console_configuration_digest=environment[
+                    "effective_web_console_configuration_digest"
+                ],
+                expected_web_console_environment_names_digest=environment[
+                    "web_console_environment_names_digest"
+                ],
+                expected_application_mount_sources_digest=environment[
+                    "application_mount_sources_digest"
+                ],
+                expected_worker_application_artifact_digest=environment[
+                    "worker_application_artifact_digest"
                 ],
             )
         self.assertEqual("VERIFIED_EXTERNAL_RECEIPT", result["evidence_status"])
@@ -854,12 +1347,20 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         self.assertEqual(list(GATE_IDS), result["verified_gate_ids"])
         self.assertEqual("sha256:" + "1" * 64, result["configuration_digest"])
         self.assertEqual(
-            "sha256:" + "7" * 64,
-            result["compose_environment_file_digest"],
+            application_environment_commitment_digest({}),
+            result["application_environment_commitment_digest"],
         )
         self.assertEqual(
             environment["container_inspect"]["digest"],
             result["container_inspect_digest"],
+        )
+        self.assertEqual(
+            environment["web_console_runtime_attestation"]["digest"],
+            result["web_console_runtime_attestation_digest"],
+        )
+        self.assertEqual(
+            "sha256:" + "c" * 64,
+            result["worker_application_artifact_digest"],
         )
         self.assertEqual("staging-one", result["environment_id"])
 
@@ -875,11 +1376,13 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             )
         with self.assertRaisesRegex(
             SpringLaunchEvidenceError,
-            "expected compose_environment_file_digest",
+            "expected application_environment_commitment_digest",
         ):
             self.verify(
                 self.make_receipt(),
-                expected_compose_environment_file_digest="sha256:" + "0" * 64,
+                expected_application_environment_commitment_digest=(
+                    "sha256:" + "0" * 64
+                ),
             )
         with self.assertRaisesRegex(
             SpringLaunchEvidenceError,
@@ -889,6 +1392,30 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 self.make_receipt(),
                 expected_effective_spring_configuration_digest="sha256:" + "0" * 64,
             )
+        for option, field in (
+            (
+                "expected_effective_web_console_configuration_digest",
+                "effective_web_console_configuration_digest",
+            ),
+            (
+                "expected_web_console_environment_names_digest",
+                "web_console_environment_names_digest",
+            ),
+            (
+                "expected_application_mount_sources_digest",
+                "application_mount_sources_digest",
+            ),
+            (
+                "expected_worker_application_artifact_digest",
+                "worker_application_artifact_digest",
+            ),
+        ):
+            with self.subTest(option=option):
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, f"expected {field}"):
+                    self.verify(
+                        self.make_receipt(),
+                        **{option: "sha256:" + "0" * 64},
+                    )
 
     def test_launch_profile_must_match_the_committed_revision(self) -> None:
         receipt = self.make_receipt()
@@ -972,7 +1499,7 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         document = self.container_inspect_document(receipt)
         document[0]["Image"] = "sha256:" + "9" * 64
         self.rewrite_container_inspect(receipt, value=document)
-        with self.assertRaisesRegex(SpringLaunchEvidenceError, "immutable worker image digest"):
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "immutable java-engine-worker image digest"):
             self.verify(receipt)
 
         for field, value, message in (
@@ -1043,6 +1570,14 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 "must use exact key SPRING_APPLICATION_JSON",
             ),
             (
+                "HTTPS_PROXY=http://attacker.invalid:8080",
+                "undeclared worker environment HTTPS_PROXY",
+            ),
+            (
+                "LD_PRELOAD=/workspace/private-runner/evil.so",
+                "dangerous override LD_PRELOAD",
+            ),
+            (
                 "SPRING_APPLICATION_JSON={}",
                 "dangerous override SPRING_APPLICATION_JSON must be exactly empty",
             ),
@@ -1072,7 +1607,7 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             receipt["binding"]["environment"]["uri"].removeprefix("file://")
         )
         environment = json.loads(environment_path.read_text(encoding="utf-8"))
-        environment["effective_spring_configuration_digest"] = "sha256:" + "0" * 64
+        environment["effective_spring_configuration_digest"] = "sha256:" + "a" * 64
         self.write_json(environment_path, environment, canonical=True)
         receipt["binding"]["environment"] = self.ref(environment_path)
         with self.assertRaisesRegex(
@@ -1080,6 +1615,444 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "does not match container inspect bytes",
         ):
             self.verify(receipt)
+
+    def test_worker_mount_sources_bind_the_signed_application_host_digest(self) -> None:
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        for mount in document[0]["Mounts"]:
+            if mount["Destination"] == "/workspace/private-runner":
+                mount["Source"] = "/srv/elmos/other-controlled-workspace"
+        document[0]["HostConfig"]["Binds"] = [
+            f"{mount['Source']}:{mount['Destination']}:{mount['Mode']}"
+            for mount in document[0]["Mounts"]
+        ]
+        self.rewrite_container_inspect(receipt, value=document)
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "worker inspect digest"
+        ):
+            self.verify(receipt)
+
+    def test_mount_object_commitment_detects_same_path_atomic_replacement(self) -> None:
+        self.make_receipt()
+        self.assertRegex(
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                expected_uid=os.getuid(),
+                expected_gid=os.getgid(),
+            ),
+            r"^sha256:[0-9a-f]{64}$",
+        )
+        before = application_mount_sources_digest(
+            self.application_mount_sources,
+            _identity_provider=lambda name, source: self.mount_source_snapshot(source),
+        )
+        workspace_child = (
+            Path(self.application_mount_sources["worker_workspace"]) / "completed-run"
+        )
+        workspace_child.write_text("content-addressed result", encoding="utf-8")
+        after_directory_write = application_mount_sources_digest(
+            self.application_mount_sources,
+            _identity_provider=lambda name, source: self.mount_source_snapshot(source),
+        )
+        self.assertEqual(before, after_directory_write)
+        secret = Path(self.application_mount_sources["worker_verifier_hmac"])
+        replacement = secret.with_name("replacement-verifier.secret")
+        replacement.write_bytes(b"replacement-verifier-secret-value")
+        os.chmod(replacement, 0o600)
+        os.replace(replacement, secret)
+        after = application_mount_sources_digest(
+            self.application_mount_sources,
+            _identity_provider=lambda name, source: self.mount_source_snapshot(source),
+        )
+        self.assertNotEqual(after_directory_write, after)
+
+        def wrong_owner(name: str, source: str) -> dict[str, object]:
+            snapshot = self.mount_source_snapshot(source)
+            snapshot["object_identity"] = {
+                **snapshot["object_identity"],
+                "uid": 10002,
+            }
+            return snapshot
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "UID/GID 10001:10001"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=wrong_owner,
+            )
+
+        def short_resend(name: str, source: str) -> dict[str, object]:
+            snapshot = self.mount_source_snapshot(source)
+            if name == "web_resend_secret":
+                snapshot["object_identity"] = {
+                    **snapshot["object_identity"],
+                    "size_bytes": 31,
+                }
+            return snapshot
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "32-4096 bytes"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=short_resend,
+            )
+
+        def ancestor_mode(mode: int):
+            def provide(name: str, source: str) -> dict[str, object]:
+                snapshot = self.mount_source_snapshot(source)
+                ancestors = [dict(item) for item in snapshot["ancestor_identities"]]
+                ancestors[0] = {**ancestors[0], "mode": mode, "uid": 0, "gid": 0}
+                snapshot["ancestor_identities"] = ancestors
+                return snapshot
+
+            return provide
+
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "unsafely group/other writable"):
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=ancestor_mode(0o777),
+            )
+        self.assertRegex(
+            application_mount_sources_digest(
+                self.application_mount_sources,
+                _identity_provider=ancestor_mode(0o1777),
+            ),
+            r"^sha256:[0-9a-f]{64}$",
+        )
+
+    def test_live_mount_collector_rejects_inode_and_restart_skew(self) -> None:
+        self.make_receipt()
+
+        def mismatched_target(
+            source: str, process_id: int, destination: str, label: str
+        ) -> tuple[
+            dict[str, object],
+            dict[str, object],
+            dict[str, object],
+            list[dict[str, object]],
+            str,
+        ]:
+            host, target, parent, ancestors, process = self.live_mount_observer(
+                source, process_id, destination, label
+            )
+            if destination == "/run/secrets/elmos-verifier-hmac":
+                target = {**target, "inode": int(target["inode"]) + 1}
+            return host, target, parent, ancestors, process
+
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "does not match the host source object"
+        ):
+            self.collect_web_runtime(
+                self.web_inspect_value, observer=mismatched_target
+            )
+
+        restarted_web = copy.deepcopy(self.web_inspect_value)
+        restarted_web[0]["State"]["Pid"] += 1
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "changed during"):
+            self.collect_web_runtime(
+                self.web_inspect_value,
+                reinspection_web_value=restarted_web,
+            )
+
+        restarted_worker = copy.deepcopy(self.worker_inspect_value)
+        restarted_worker[0]["Id"] = "d" * 64
+        restarted_worker_bytes = canonical_bytes(restarted_worker)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "changed during"):
+            self.collect_web_runtime(
+                self.web_inspect_value,
+                reinspection_worker_bytes=restarted_worker_bytes,
+            )
+
+    def test_web_runtime_collector_redacts_secrets_and_rejects_dangerous_env(self) -> None:
+        self.make_receipt()
+        raw_value = copy.deepcopy(self.web_inspect_value)
+        raw_value[0]["Config"]["Env"].append("DATABASE_PASSWORD=top-secret-value")
+        sanitized = self.collect_web_runtime(raw_value)
+        rendered = canonical_bytes(sanitized)
+        self.assertNotIn(b"top-secret-value", rendered)
+        for source in self.application_mount_sources.values():
+            self.assertNotIn(source.encode("utf-8"), rendered)
+        self.assertIn("DATABASE_PASSWORD", sanitized["environment_names"])
+        self.assertFalse(sanitized["secrets_embedded"])
+        self.assertTrue(sanitized["stable_reinspection"])
+        self.assertIn(
+            "inode",
+            sanitized["mount_sources"]["application_engine_hmac"][
+                "object_identity"
+            ],
+        )
+        self.assertIn(
+            "ancestor_identities",
+            sanitized["mount_sources"]["application_engine_hmac"],
+        )
+
+        for assignment, message in (
+            ("HTTPS_PROXY=http://attacker.invalid:8080", "dangerous process or routing"),
+            ("https_proxy=http://attacker.invalid:8080", "dangerous process or routing"),
+            ("ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID=attacker", "dangerous process or routing"),
+            ("SPRING_APPLICATION_JSON={}", "dangerous process or routing"),
+        ):
+            with self.subTest(assignment=assignment):
+                value = copy.deepcopy(self.web_inspect_value)
+                value[0]["Config"]["Env"].append(assignment)
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.collect_web_runtime(value)
+
+        value = copy.deepcopy(self.web_inspect_value)
+        value[0]["Config"]["Env"] = [
+            "JAVA_ENGINE_BASE_URL=http://attacker.invalid:8081"
+            if entry.startswith("JAVA_ENGINE_BASE_URL=")
+            else entry
+            for entry in value[0]["Config"]["Env"]
+        ]
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "JAVA_ENGINE_BASE_URL"):
+            self.collect_web_runtime(value)
+
+        value = copy.deepcopy(self.web_inspect_value)
+        value[0]["Config"]["Env"] = [
+            "java_engine_base_url=http://java-engine-worker:8081"
+            if entry.startswith("JAVA_ENGINE_BASE_URL=")
+            else entry
+            for entry in value[0]["Config"]["Env"]
+        ]
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "must use exact key"):
+            self.collect_web_runtime(value)
+
+    def test_web_runtime_attestation_binds_engine_source_and_never_references_raw(self) -> None:
+        receipt = self.make_receipt()
+        _, environment = self.environment_document(receipt)
+        reference = environment["web_console_runtime_attestation"]
+        self.assertNotIn("container_inspect", reference)
+        self.assertFalse((self.evidence_root / "web-console.inspect.json").exists())
+        attestation_path = Path(
+            reference["verification"]["local_uri"].removeprefix("file://")
+        )
+        attestation = json.loads(attestation_path.read_text(encoding="utf-8"))
+        self.assertNotIn("Env", json.dumps(attestation, sort_keys=True))
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(canonical_bytes(self.web_inspect_value)).hexdigest(),
+            attestation["raw_inspect_digest"],
+        )
+        self.assertEqual(
+            "sha256:" + hashlib.sha256(self.worker_inspect_bytes).hexdigest(),
+            attestation["raw_worker_inspect_digest"],
+        )
+
+        web_value = copy.deepcopy(self.web_inspect_value)
+        new_source_path = self.case / "runtime-mounts" / "other-engine.secret"
+        new_source_path.write_bytes(b"other-engine-secret-value-32-bytes")
+        os.chmod(new_source_path, 0o600)
+        new_source = str(new_source_path)
+        for mount in web_value[0]["Mounts"]:
+            if mount["Destination"] == "/run/secrets/elmos-spring-engine-hmac":
+                mount["Source"] = new_source
+        web_value[0]["HostConfig"]["Binds"] = [
+            f"{mount['Source']}:{mount['Destination']}:{mount['Mode']}"
+            for mount in web_value[0]["Mounts"]
+        ]
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "identical host source"):
+            self.collect_web_runtime(web_value)
+
+    def test_web_runtime_collector_rejects_process_mount_and_network_drift(self) -> None:
+        self.make_receipt()
+        mutations = (
+            (
+                "command",
+                lambda value: value[0]["Config"].update(
+                    {"Cmd": ["/usr/local/bin/node", "attacker.js"]}
+                ),
+                "Config.Cmd must exactly match",
+            ),
+            (
+                "privileged",
+                lambda value: value[0]["HostConfig"].update({"Privileged": True}),
+                "Privileged",
+            ),
+            (
+                "mount-propagation",
+                lambda value: value[0]["Mounts"][0].update(
+                    {"Propagation": "rshared"}
+                ),
+                "exact ro rprivate bind",
+            ),
+            (
+                "extra-network",
+                lambda value: value[0]["NetworkSettings"]["Networks"].update(
+                    {"attacker": {}}
+                ),
+                "networks must exactly match",
+            ),
+        )
+        for name, mutate, message in mutations:
+            with self.subTest(name=name):
+                value = copy.deepcopy(self.web_inspect_value)
+                mutate(value)
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.collect_web_runtime(value)
+
+    def test_sanitized_web_runtime_attestation_tamper_fails_closed(self) -> None:
+        mutations = (
+            (
+                "names-digest",
+                lambda value: value.update(
+                    {"environment_names_digest": "sha256:" + "a" * 64}
+                ),
+                "environment names digest mismatch",
+            ),
+            (
+                "required-url",
+                lambda value: value["required_environment"].update(
+                    {"JAVA_ENGINE_BASE_URL": "http://attacker.invalid:8081"}
+                ),
+                "JAVA_ENGINE_BASE_URL",
+            ),
+            (
+                "secrets-flag",
+                lambda value: value.update({"secrets_embedded": True}),
+                "secrets_embedded must be exactly false",
+            ),
+            (
+                "stale",
+                lambda value: value.update({"captured_at": "2026-08-01T00:00:00Z"}),
+                "older than",
+            ),
+            (
+                "published-port",
+                lambda value: value["runtime"].update(
+                    {"published_ports": ["0.0.0.0:3000"]}
+                ),
+                "published_ports is invalid",
+            ),
+            (
+                "mount-object",
+                lambda value: value["mount_sources"]["worker_verifier_hmac"][
+                    "object_identity"
+                ].update(
+                    {
+                        "inode": value["mount_sources"]["worker_verifier_hmac"][
+                            "object_identity"
+                        ]["inode"]
+                        + 1
+                    }
+                ),
+                "application mount object digest mismatch",
+            ),
+            (
+                "mount-unsafe-ancestor",
+                lambda value: value["mount_sources"]["worker_verifier_hmac"][
+                    "ancestor_identities"
+                ][0].update({"mode": 0o777}),
+                "unsafely group/other writable",
+            ),
+        )
+        for name, mutate, message in mutations:
+            with self.subTest(name=name):
+                receipt = self.make_receipt()
+                _, environment = self.environment_document(receipt)
+                reference = environment["web_console_runtime_attestation"]
+                path = Path(
+                    reference["verification"]["local_uri"].removeprefix("file://")
+                )
+                attestation = json.loads(path.read_text(encoding="utf-8"))
+                mutate(attestation)
+                self.rewrite_environment_supporting_document(
+                    receipt, "web_console_runtime_attestation", attestation
+                )
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.verify(receipt)
+
+    def test_worker_runtime_rejects_shadow_mounts_ports_and_security_drift(self) -> None:
+        mutations = (
+            (
+                "shadow-app",
+                lambda doc: doc[0]["Mounts"].append(
+                    {
+                        "Type": "bind",
+                        "Source": "/tmp/evil.jar",
+                        "Destination": "/app/app.jar",
+                        "RW": False,
+                        "Mode": "ro",
+                        "Propagation": "rprivate",
+                    }
+                ),
+                "undeclared mount destination",
+            ),
+            (
+                "docker-socket",
+                lambda doc: doc[0]["Mounts"].append(
+                    {
+                        "Type": "bind",
+                        "Source": "/var/run/docker.sock",
+                        "Destination": "/var/run/docker.sock",
+                        "RW": True,
+                        "Mode": "rw",
+                        "Propagation": "rprivate",
+                    }
+                ),
+                "undeclared mount destination",
+            ),
+            (
+                "propagation",
+                lambda doc: doc[0]["Mounts"][0].update({"Propagation": "rshared"}),
+                "exact rw rprivate bind",
+            ),
+            (
+                "privileged",
+                lambda doc: doc[0]["HostConfig"].update({"Privileged": True}),
+                "Privileged",
+            ),
+            (
+                "host-port",
+                lambda doc: doc[0]["HostConfig"].update(
+                    {"PortBindings": {"8081/tcp": [{"HostIp": "0.0.0.0", "HostPort": "8081"}]}}
+                ),
+                "PortBindings must be empty",
+            ),
+            (
+                "wrong-user",
+                lambda doc: doc[0]["Config"].update({"User": "0:0"}),
+                "Config.User must equal",
+            ),
+        )
+        for name, mutate, message in mutations:
+            with self.subTest(name=name):
+                receipt = self.make_receipt()
+                document = self.container_inspect_document(receipt)
+                mutate(document)
+                self.rewrite_container_inspect(receipt, value=document)
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.verify(receipt)
+
+    def test_worker_image_artifact_attestation_is_separate_and_bound(self) -> None:
+        receipt = self.make_receipt()
+        _, environment = self.environment_document(receipt)
+        self.assertNotEqual(
+            receipt["binding"]["artifact"]["digest"],
+            environment["worker_application_artifact_digest"],
+        )
+        environment["worker_application_artifact_digest"] = receipt["binding"]["artifact"]["digest"]
+        self.rewrite_environment_document(receipt, environment)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "distinct from the migrated customer artifact"):
+            self.verify(receipt)
+
+        for field, value, message in (
+            ("deployed_revision", "0" * 40, "deployed_revision"),
+            ("image_digest", "sha256:" + "0" * 64, "image_digest"),
+            ("image_reference", "other-worker:staging", "image_reference"),
+            ("artifact_path", "/customer/migrated.jar", "artifact_path"),
+            ("worker_application_artifact_digest", "sha256:" + "0" * 64, "worker_application_artifact_digest"),
+            ("extracted_at", "2026-08-01T00:00:00Z", "older than"),
+        ):
+            with self.subTest(field=field):
+                receipt = self.make_receipt()
+                _, environment = self.environment_document(receipt)
+                reference = environment["worker_image_artifact_attestation"]
+                path = Path(reference["verification"]["local_uri"].removeprefix("file://"))
+                attestation = json.loads(path.read_text(encoding="utf-8"))
+                attestation[field] = value
+                self.rewrite_environment_supporting_document(
+                    receipt, "worker_image_artifact_attestation", attestation
+                )
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.verify(receipt)
 
     def test_container_inspect_reference_must_be_local_bytes(self) -> None:
         receipt = self.make_receipt()
@@ -1150,9 +2123,15 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         Draft202012Validator(environment_schema).validate(environment)
 
         for required_field in (
-            "compose_environment_file_digest",
+            "application_environment_commitment_digest",
             "container_inspect",
+            "web_console_runtime_attestation",
             "effective_spring_configuration_digest",
+            "effective_web_console_configuration_digest",
+            "web_console_environment_names_digest",
+            "application_mount_sources_digest",
+            "worker_image_artifact_attestation",
+            "worker_application_artifact_digest",
         ):
             invalid = copy.deepcopy(environment)
             del invalid[required_field]
@@ -1160,6 +2139,16 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 list(Draft202012Validator(environment_schema).iter_errors(invalid)),
                 required_field,
             )
+        invalid_images = copy.deepcopy(environment)
+        invalid_images["runtime_image_digests"]["uncontrolled"] = "sha256:" + "d" * 64
+        self.assertTrue(
+            list(Draft202012Validator(environment_schema).iter_errors(invalid_images))
+        )
+        zero_digest = copy.deepcopy(environment)
+        zero_digest["worker_application_artifact_digest"] = "sha256:" + "0" * 64
+        self.assertTrue(
+            list(Draft202012Validator(environment_schema).iter_errors(zero_digest))
+        )
 
     def test_tampered_evidence_bytes_and_signature_fail_closed(self) -> None:
         receipt = self.make_receipt()

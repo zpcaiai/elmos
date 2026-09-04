@@ -1,6 +1,6 @@
 # deploy/production
 
-更新日期：2026-09-04
+更新日期：2026-09-05
 本目录是**第一版商业化部署的制品**。它们尚未在任何环境执行过——
 RISK-DEPLOY-001 与 RISK-SRE-001 保持 `OPEN`，直到在 staging 真实起停并留下证据。
 
@@ -54,8 +54,11 @@ deploy/production/
 
 ```bash
 # 1. 环境变量
-cp deploy/production/elmos-commercial.env.example /srv/elmos/elmos.env
-chmod 0600 /srv/elmos/elmos.env
+# 以实际 deploy user 执行；两个立即父目录必须由该 UID:GID 持有且为 0700。
+DEPLOY_UID="$(id -u)"; DEPLOY_GID="$(id -g)"
+sudo install -d -o "$DEPLOY_UID" -g "$DEPLOY_GID" -m 0700 /srv/elmos/config /controlled/spring
+cp deploy/production/elmos-commercial.env.example /srv/elmos/config/elmos.env
+chmod 0600 /srv/elmos/config/elmos.env
 # 逐项填写；未填项对应能力会失败关闭，这是预期行为
 
 # 管理员登录邮件 Secret：Web 容器以 UID 10001 运行，文件必须 owner-only 且可读。
@@ -64,9 +67,22 @@ sudo install -o 10001 -g 10001 -m 0600 /dev/null /srv/elmos/secrets/resend-api-k
 # 通过 Secret Manager 或无回显的受控流程写入 Resend API Key；不要写入 shell 历史。
 # 网络策略仅为 Web Console 放行 api.resend.com:443；禁止重定向与其他邮件端点。
 
-# 非 Spring 基线不需要也不会挂载 engine HMAC。仅在启用 Spring 前，由 Secret
-# Manager 在应用主机创建 launch env 指定的 owner-only engine HMAC 文件；不要用
-# /dev/null、目录自动创建、环境变量 Secret 或 group/other 读权限代替。
+# 非 Spring 基线不需要也不会挂载 engine HMAC。启用 Spring 前先准备应用主机边界：
+# 所有中间祖先必须由 root 或 UID 10001 持有，且不得是无 sticky bit 的 group/other
+# writable 目录。workspace 必须先挂载真实的跨主机外部存储；mkdir 本地目录不能
+# 冒充“共享存储已验证”的外部证据。
+sudo install -d -o 10001 -g 10001 -m 0700 \
+  /srv/elmos/spring-secrets/application \
+  /srv/elmos/spring-replay/application/engine
+# 外部共享存储挂载成功后，才校验/设置其既有 mount point：
+sudo chown 10001:10001 /srv/elmos/spring-shared/runs
+sudo chmod 0700 /srv/elmos/spring-shared/runs
+
+# 由 Secret Manager 或等价无回显受控流程原子写入以下四个不同文件；不得生成、打印
+# 或复制 Secret 到 shell/history。每个文件必须是 32..4096 bytes、UID:GID
+# 10001:10001、0400（轮换窗口可 0600）、单 hard link；四份 effective bytes 必须互异。
+# /srv/elmos/spring-secrets/application/{engine,verifier,transformer,runtime}.hmac
+# 写入完成后只校验 metadata/长度，绝不输出内容。
 
 # 2. PostgreSQL 迁移完成后配置 NOBYPASSRLS 运行角色与对象后端
 scripts/operations/configure_control_plane_runtime_role.sh
@@ -121,34 +137,50 @@ uv run --quiet --with pyyaml \
 
 # 9. 应用主机（先在 staging）。把 spring-launch.env.example 复制到仓库外，
 # 由同一受控配置源生成 Compose 与门禁使用的 Spring 值；chmod 0600，禁止 source/eval。
+# `/srv/elmos/config/elmos.env` 只供 application service env_file，必须不含任何 Spring、
+# servlet/server/management、JVM 或 proxy override；Spring 值只放在
+# `/controlled/spring/spring.env`，用于 gate 与 `docker compose --env-file` 插值。
 python3 scripts/batch30/validate_spring_launch_readiness.py
 python3 scripts/batch30/validate_spring_launch_readiness.py \
-  --environment-file /controlled/spring.env \
-  --compose-environment-file /srv/elmos/elmos.env
-docker compose --env-file /srv/elmos/elmos.env \
+  --environment-file /controlled/spring/spring.env \
+  --compose-environment-file /srv/elmos/config/elmos.env
+docker compose --env-file /srv/elmos/config/elmos.env \
   -f deploy/production/compose/docker-compose.production.yml up -d
-docker compose --env-file /srv/elmos/elmos.env \
-  --env-file /controlled/spring.env \
+docker compose --env-file /srv/elmos/config/elmos.env \
+  --env-file /controlled/spring/spring.env \
   -f deploy/production/compose/docker-compose.production.yml \
   -f deploy/production/compose/docker-compose.spring-application.yml \
   --profile spring up -d                           # 只在售卖 Spring 升级时
+
+# web-console 的 raw inspect 含 env_file 明文，禁止落盘；collector 在 Linux Docker
+# 宿主内存中同时校验 web/worker，并通过 /proc/<pid>/root 比较每个 bind 的源/目标
+# inode；仅输出脱敏、content-addressed attestation，不签名、不生成外部通过状态。
+make spring-web-runtime-attestation \
+  SPRING_WEB_CONTAINER=elmos-staging-web-console-1 \
+  SPRING_WEB_IMAGE_DIGEST="$PINNED_WEB_IMAGE_ID" \
+  SPRING_WORKER_CONTAINER=elmos-staging-java-engine-worker-1 \
+  SPRING_WORKER_IMAGE_DIGEST="$PINNED_WORKER_IMAGE_ID" \
+  SPRING_WEB_COLLECTOR_ID=staging-runtime-collector \
+  SPRING_WEB_RUNTIME_ATTESTATION_OUTPUT=/controlled/evidence/web-console.runtime-attestation.json
 
 # 10. 正式放量必须再提供签名外部证据、独立信任库和证据字节根；
 # 模板中的 NOT_RUN、URL/摘要自报、单方签名或仓库内收据都不能通过。
 # APPROVED_SPRING_TRUST_STORE_DIGEST 必须来自独立审批/配置系统，禁止在同一
 # 命令里从待验证 trust store 临时计算后自我固定。
 make spring-launch-gate \
-  SPRING_ENV_FILE=/controlled/spring.env \
-  ELMOS_ENV_FILE=/srv/elmos/elmos.env \
+  SPRING_ENV_FILE=/controlled/spring/spring.env \
+  ELMOS_ENV_FILE=/srv/elmos/config/elmos.env \
   SPRING_EXTERNAL_EVIDENCE=/controlled/evidence/spring-launch-receipt.json \
   SPRING_TRUST_STORE=/controlled/trust/spring-trust-store.json \
   SPRING_TRUST_STORE_DIGEST="$APPROVED_SPRING_TRUST_STORE_DIGEST" \
   SPRING_EVIDENCE_ROOT=/controlled/evidence \
+  SPRING_EXPECTED_REVISION="$DEPLOYED_GIT_REVISION" \
   SPRING_ENVIRONMENT_ID=spring-staging-cn-1 \
   SPRING_DEPLOYMENT_ID="$SPRING_DEPLOYMENT_ID" \
   SPRING_PROVIDER=private-linux \
   SPRING_REGION=cn-north-1 \
-  SPRING_ENVIRONMENT_CLASS=STAGING
+  SPRING_ENVIRONMENT_CLASS=STAGING \
+  SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST="$SPRING_WORKER_APPLICATION_ARTIFACT_DIGEST"
 
 # 11. 告警
 promtool check rules deploy/production/observability/prometheus-rules.yml
@@ -161,14 +193,25 @@ python3 scripts/commercial/validate_pricing_catalog_publication.py
 python3 scripts/commercial/validate_pricing_catalog_publication.py --check-publishable
 ```
 
-`SPRING_ENV_FILE` 的 19 个 Spring 值必须与实际 `ELMOS_ENV_FILE` 完全一致；后者
-还必须把 `ELMOS_ENV_FILE` 自身设置为同一绝对路径。门禁以无 shell、无插值的数据
-解析器稳定读取两者，并把实际 Compose env 文件的字节摘要纳入
-`SPRING_CONFIGURATION_DIGEST`。两份文件与调用进程均不得设置
+`SPRING_ENV_FILE` 是精确 20-key Spring-only gate 与 application overlay 插值输入；
+实际应用 `ELMOS_ENV_FILE` 必须完全不含 Spring launch、servlet/server/management、
+JVM 或 proxy override，并把 `ELMOS_ENV_FILE` 自身设置为同一绝对路径。门禁以无
+shell、无插值的数据解析器稳定读取两者。应用 env 的 portable commitment 仅绑定
+exact key、presence/empty 以及严格 allowlist 的非秘密值，绝不把 DB/OIDC/session/
+provider/API secret value 或原始文件摘要写入 stdout/收据形成离线猜测 oracle。
+两份文件与调用进程均不得设置
 `SPRING_APPLICATION_JSON`、`JAVA_TOOL_OPTIONS`、`_JAVA_OPTIONS`、
 `JDK_JAVA_OPTIONS`、servlet/context path 或 Spring config/profile 覆盖；不要
 `source`/`eval` 任一文件。生产 overlay 同时在 Worker 容器边界清空 JVM/JSON/path
 覆盖且不向 Worker 注入宽泛应用 env_file。
+
+application-host mount commitment 对 secret file 绑定 path digest、dev/inode/type/
+size/mode/UID/GID/nlink/ctime；对会正常增长的 workspace/replay directory 绑定稳定
+dev/inode/type/mode/UID/GID，并对完整父目录链绑定 dev/inode/type/mode/UID/GID；secret
+的立即父目录必须为 10001:10001/0700，所有祖先必须由 root/10001 持有且不得是不带
+sticky bit 的 group/other writable 目录。签名 `deployment_id` 充当可写目录生命周期 epoch。collector
+在所有 canary 操作后最后执行，过程中任一容器 restart 或同路径 source replacement
+都会 fail closed；正常目录子项写入不会仅因 ctime/size 变化使 72 小时收据失效。
 
 外部 staging 收据还必须引用并摘要绑定该部署的原始容器 inspect 产物，证明镜像
 `ENV`、Compose 合并和运行时层之后的 Worker effective environment 仍与签名配置

@@ -1544,20 +1544,25 @@ function inventoryModule() {
             && supportedParameters,
           ),
         name.startsWith("_elmos")
-          ? helperSignature ?? {}
+          ? helperSignature ?? { visibility: "not-applicable", storage: "not-applicable" }
           : {
             parameters: statement.parameters.map((parameter) => ({
               name: ts.isIdentifier(parameter.name) ? parameter.name.text : parameter.name.getText(sourceFile),
               source_type: parameter.type?.getText(sourceFile) ?? "",
             })),
             source_return_type: statement.type?.getText(sourceFile) ?? "",
+            visibility: statement.modifiers?.some((m) => m.kind === ts.SyntaxKind.ExportKeyword) ? "public" : "internal",
+            storage: "file-scope",
           },
       );
       continue;
     }
     if (ts.isClassDeclaration(statement)) {
       const className = statement.name?.text ?? `<anonymous-class@${statement.pos}>`;
-      add(statement, className, className, "ClassDeclaration", false, {});
+      add(statement, className, className, "ClassDeclaration", false, {
+        visibility: "not-applicable",
+        storage: "not-applicable",
+      });
       for (const member of statement.members) {
         const memberName = "name" in member && member.name
           ? member.name.getText(sourceFile)
@@ -1568,7 +1573,10 @@ function inventoryModule() {
           `${className}.${memberName}`,
           ts.SyntaxKind[member.kind],
           false,
-          {},
+          {
+            visibility: "not-applicable",
+            storage: "not-applicable",
+          },
         );
       }
       continue;
@@ -1584,7 +1592,11 @@ function inventoryModule() {
           name,
           callable ? "FunctionValueDeclaration" : "VariableDeclaration",
           false,
-          { source_type: declaration.type?.getText(sourceFile) ?? "" },
+          {
+            source_type: declaration.type?.getText(sourceFile) ?? "",
+            visibility: "not-applicable",
+            storage: "not-applicable",
+          },
         );
       }
       continue;
@@ -1593,22 +1605,34 @@ function inventoryModule() {
       const moduleName = statement.moduleSpecifier && ts.isStringLiteral(statement.moduleSpecifier)
         ? statement.moduleSpecifier.text
         : `<${ts.SyntaxKind[statement.kind]}@${statement.pos}>`;
-      add(statement, moduleName, moduleName, ts.SyntaxKind[statement.kind], false, {});
+      add(statement, moduleName, moduleName, ts.SyntaxKind[statement.kind], false, {
+        visibility: "not-applicable",
+        storage: "not-applicable",
+      });
       continue;
     }
     if (ts.isInterfaceDeclaration(statement)) {
       const name = statement.name.text;
-      add(statement, name, name, "InterfaceDeclaration", false, {});
+      add(statement, name, name, "InterfaceDeclaration", false, {
+        visibility: "not-applicable",
+        storage: "not-applicable",
+      });
       continue;
     }
     if (ts.isTypeAliasDeclaration(statement)) {
       const name = statement.name.text;
-      add(statement, name, name, "TypeAliasDeclaration", false, {});
+      add(statement, name, name, "TypeAliasDeclaration", false, {
+        visibility: "not-applicable",
+        storage: "not-applicable",
+      });
       continue;
     }
     if (ts.isEmptyStatement(statement)) continue;
     const name = `<${ts.SyntaxKind[statement.kind]}@${statement.pos}>`;
-    add(statement, name, name, ts.SyntaxKind[statement.kind], false, {});
+    add(statement, name, name, ts.SyntaxKind[statement.kind], false, {
+      visibility: "not-applicable",
+      storage: "not-applicable",
+    });
   }
 
   return {

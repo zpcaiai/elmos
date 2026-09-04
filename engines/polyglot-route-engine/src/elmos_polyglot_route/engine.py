@@ -229,7 +229,7 @@ def _javascript_descriptor_input(source: Path) -> tuple[dict[str, Any], bytes] |
     return (
         {
             "observed_origin_path": str(descriptor_path),
-            "logical_path": Path(os.path.relpath(descriptor_path, source.parent)).as_posix(),
+            "logical_path": Path(os.path.relpath(descriptor_path, source.resolve().parent)).as_posix(),
             "sha256": _digest(content),
             "bytes": len(content),
             "type": "module",
