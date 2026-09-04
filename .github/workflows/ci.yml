@@ -180,8 +180,8 @@ jobs:
           # runner-writable checkout path, and /usr/bin/python3 is root-owned.
           test -x /usr/bin/python3
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -213,8 +213,8 @@ jobs:
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"
@@ -883,6 +883,15 @@ jobs:
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
         run: make precision-migration-b01-44-check
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
 
@@ -909,6 +918,15 @@ jobs:
         run: |
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Install exact browser engines

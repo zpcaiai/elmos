@@ -8,7 +8,6 @@ from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import (
     AlterColumnType,
     CanonicalType,
-    CanonicalTypeRef,
     Dialect,
     DialectError,
     DropNotNull,

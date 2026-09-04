@@ -1,0 +1,4 @@
+interface:
+  display_name: "Migration Pack M29-M34 Integration"
+  short_description: "Integrate migration certification packs safely"
+  default_prompt: "Use $migration-pack-m29-m34-integration to integrate or verify Migration Packs M29-M34 without self-certification."

@@ -151,9 +151,9 @@ PY
     ;;
   frontend-formal)
     if [[ "${ImageOS:-}" != "macos15" \
-      || "${ImageVersion:-}" != "20260727.0256.1" \
+      || "${ImageVersion:-}" != "20260829.0321.1" \
       || "$(sw_vers -productVersion)" != 15.* ]]; then
-      printf 'The frontend formal Node closure requires GitHub macos15 image 20260727.0256.1.\n' >&2
+      printf 'The frontend formal Node closure requires GitHub macos15 image 20260829.0321.1.\n' >&2
       exit 2
     fi
     ;;
@@ -212,7 +212,7 @@ install_pinned_formula() {
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-core/${commit}/${source_path}"
 
   download_verified "${url}" "${source_sha256}" "${source}"
-  python3 - "${source}" "${target}" <<'PY'
+  python3 - "${source}" "${target}" "${token}" <<'PY'
 from pathlib import Path
 import sys
 
@@ -233,6 +233,16 @@ if autobump_lines:
     # no_autobump! is official-tap publication metadata. Homebrew rejects it
     # in a local tap; removing it does not alter source or bottle identity.
     source = source.replace(autobump_lines[0], "", 1)
+token = sys.argv[3]
+if token == "openssl@3":
+    # The pinned formula uses the newer `overwrite:` spelling, while the
+    # hosted runner's Homebrew DSL accepts the equivalent, long-supported
+    # `force:` keyword. Bind this compatibility transform to one exact token
+    # and one exact source occurrence so upstream drift still fails closed.
+    overwrite = "overwrite: true"
+    if source.count(overwrite) != 1:
+        raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
+    source = source.replace(overwrite, "force: true", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',

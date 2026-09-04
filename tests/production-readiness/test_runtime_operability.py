@@ -72,7 +72,7 @@ class RuntimeOperabilityTests(unittest.TestCase):
 
     def test_spring_capability_response_never_outpaces_exact_route_evidence(self) -> None:
         source = (
-            ROOT / "apps/web-console/app/api/capabilities/spring/route.ts"
+            ROOT / "apps/web-console/app/api/capabilities/spring/_route.ts"
         ).read_text(encoding="utf-8")
 
         self.assertIn('build: "Maven 3.9.11"', source)

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import pytest
+import sqlglot
 
 from elmos_sql_dialect.dynamic_sql import (
     extract_and_transpile_dynamic_sql,
     fold_constant_sql_expression,
 )
 from elmos_sql_dialect.models import Dialect, DialectError
-import sqlglot
 
 
 def test_dynamic_sql_literal_transpilation() -> None:

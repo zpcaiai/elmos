@@ -87,9 +87,7 @@ def _routine_signature_statement(
     """
     if not isinstance(statement, exp.Command):
         return (
-            statement
-            if isinstance(statement, exp.Expression)
-            else _require_single_statement(statement, source_dialect)
+            statement if isinstance(statement, exp.Expression) else _require_single_statement(statement, source_dialect)
         )
     expression = statement.args.get("expression")
     _require(
@@ -152,10 +150,7 @@ def _parse_routine_identity_type(data_type: exp.DataType, source_dialect: Dialec
     try:
         return _parse_type(data_type, source_dialect)
     except DialectError as exc:
-        if (
-            exc.code == "CERTIFIED_DDL_UNBOUNDED_DECIMAL"
-            and data_type.this is exp.DataType.Type.DECIMAL
-        ):
+        if exc.code == "CERTIFIED_DDL_UNBOUNDED_DECIMAL" and data_type.this is exp.DataType.Type.DECIMAL:
             return CanonicalTypeRef(canonical_type=CanonicalType.DECIMAL)
         raise
 
@@ -1069,8 +1064,14 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
         elif item.default.kind is DefaultKind.CURRENT_TIMESTAMP:
             rendered = "CURRENT_TIMESTAMP"
         elif item.default.kind is DefaultKind.BOOLEAN:
-            rendered = "1" if target_dialect in (Dialect.ORACLE, Dialect.TSQL) and value == "true" else (
-                "0" if target_dialect in (Dialect.ORACLE, Dialect.TSQL) else ("TRUE" if value == "true" else "FALSE")
+            rendered = (
+                "1"
+                if target_dialect in (Dialect.ORACLE, Dialect.TSQL) and value == "true"
+                else (
+                    "0"
+                    if target_dialect in (Dialect.ORACLE, Dialect.TSQL)
+                    else ("TRUE" if value == "true" else "FALSE")
+                )
             )
         elif item.default.kind is DefaultKind.STRING:
             assert value is not None
@@ -1118,7 +1119,10 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
             return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det}{sec_my} RETURN {value}"
         if target_dialect is Dialect.ORACLE:
             det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-            return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} IS BEGIN RETURN {value}; END;"
+            return (
+                f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} "
+                f"IS BEGIN RETURN {value}; END;"
+            )
         return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{sec_tsql} AS BEGIN RETURN {value} END"
 
     body = routine.body
@@ -1137,15 +1141,8 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
                 default_value = "1" if default_value == "true" else "0"
             assert default_value is not None
             default = (
-                (
-                    " = "
-                    if target_dialect is Dialect.TSQL
-                    else " := "
-                    if target_dialect is Dialect.ORACLE
-                    else " DEFAULT "
-                )
-                + default_value
-            )
+                " = " if target_dialect is Dialect.TSQL else " := " if target_dialect is Dialect.ORACLE else " DEFAULT "
+            ) + default_value
         variable_name = ("@" if tsql_variables else "") + quote_identifier(variable.name, target_dialect)
         declarations.append(f"{variable_name} {routine_type(variable.type_ref)}{default}")
     assignments = []
@@ -1168,19 +1165,32 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
         det = f" {routine.stability.value}" if routine.stability is not None else ""
         strict_clause = " STRICT" if routine.strict else ""
         return (
-            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} LANGUAGE plpgsql{det}{strict_clause}{sec_pg} AS $$ "
+            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} "
+            f"LANGUAGE plpgsql{det}{strict_clause}{sec_pg} AS $$ "
             f"DECLARE {declaration_sql} BEGIN {' '.join(assignments)} RETURN {returned}; END $$"
         )
     if target_dialect is Dialect.MYSQL:
         det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det}{sec_my} BEGIN " \
-            + " ".join(f"DECLARE {item};" for item in declarations) \
-            + " " + " ".join(assignments) + f" RETURN {returned}; END"
+        return (
+            f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det}{sec_my} BEGIN "
+            + " ".join(f"DECLARE {item};" for item in declarations)
+            + " "
+            + " ".join(assignments)
+            + f" RETURN {returned}; END"
+        )
     if target_dialect is Dialect.ORACLE:
         det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-        return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} IS " \
-            + " ".join(item + ";" for item in declarations) \
-            + " BEGIN " + " ".join(assignments) + f" RETURN {returned}; END;"
-    return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{sec_tsql} AS BEGIN " \
-        + " ".join(f"DECLARE {item};" for item in declarations) \
-        + " " + " ".join(assignments) + f" RETURN {returned} END"
+        return (
+            f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} IS "
+            + " ".join(item + ";" for item in declarations)
+            + " BEGIN "
+            + " ".join(assignments)
+            + f" RETURN {returned}; END;"
+        )
+    return (
+        f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{sec_tsql} AS BEGIN "
+        + " ".join(f"DECLARE {item};" for item in declarations)
+        + " "
+        + " ".join(assignments)
+        + f" RETURN {returned} END"
+    )

@@ -9,7 +9,6 @@ constant concatenations, they can be statically folded, validated, and safely tr
 from __future__ import annotations
 
 import re
-from typing import Sequence
 
 import sqlglot
 from sqlglot import exp
@@ -106,9 +105,6 @@ def extract_and_transpile_dynamic_sql(
     elif target_dialect is Dialect.MYSQL:
         # MySQL PREPARE + EXECUTE pattern
         return (
-            f"SET @dyn_stmt = '{escaped_query}';\n"
-            f"PREPARE stmt FROM @dyn_stmt;\n"
-            f"EXECUTE stmt;\n"
-            f"DEALLOCATE PREPARE stmt;"
+            f"SET @dyn_stmt = '{escaped_query}';\nPREPARE stmt FROM @dyn_stmt;\nEXECUTE stmt;\nDEALLOCATE PREPARE stmt;"
         )
     return f"EXECUTE IMMEDIATE '{escaped_query}';"

@@ -26,9 +26,6 @@ from .models import (
     AlterTable,
     CanonicalType,
     CanonicalTypeRef,
-    DeleteStatement,
-    DropNotNull,
-    SetNotNull,
     CheckComparison,
     CheckConstraint,
     CheckExpression,
@@ -38,6 +35,7 @@ from .models import (
     CheckValueFunction,
     CheckValueOperator,
     Column,
+    DeleteStatement,
     Dialect,
     DialectError,
     DmlAggregate,
@@ -49,6 +47,7 @@ from .models import (
     DmlPredicate,
     DropColumn,
     DropConstraint,
+    DropNotNull,
     DropTable,
     ForeignKey,
     Index,
@@ -60,6 +59,7 @@ from .models import (
     RenameColumn,
     RowSecurityCommand,
     Schema,
+    SetNotNull,
     Table,
     TruncateTable,
     TypeMigrationPolicy,
@@ -81,6 +81,11 @@ class CommentColumnCatalogLike(Protocol):
 
 def _render_literal(value: str, is_string: bool) -> str:
     return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
+
+
+def _compose_sql(*parts: str) -> str:
+    """Compose SQL from separately validated identifiers and rendered literals."""
+    return "".join(parts)
 
 
 def _render_check_literal(literal: CheckLiteral, dialect: Dialect, allow_check_shim: bool = False) -> str:
@@ -173,10 +178,7 @@ def _render_tsql_regex_check(column: str, pattern: str, allow_check_shim: bool =
         )
 
     if pattern == "^[0-9]+$":
-        return (
-            f"(DATALENGTH(CONVERT(nvarchar(max), {column})) >= 2 "
-            f"AND {value} NOT LIKE N'%[^0-9]%')"
-        )
+        return f"(DATALENGTH(CONVERT(nvarchar(max), {column})) >= 2 AND {value} NOT LIKE N'%[^0-9]%')"
 
     if allow_check_shim:
         return "(1=1)"
@@ -260,7 +262,12 @@ def _render_check_comparison(
         elif comparison.left_expression.function is CheckValueFunction.ARRAY_POSITION:
             if dialect is not Dialect.POSTGRES:
                 if type_policy is not None and type_policy.array == "json":
-                    left = f"JSON_CONTAINS({left}, {_render_check_literal(comparison.left_expression.argument, dialect, allow_check_shim=allow_check_shim)})"
+                    argument = _render_check_literal(
+                        comparison.left_expression.argument,
+                        dialect,
+                        allow_check_shim=allow_check_shim,
+                    )
+                    left = f"JSON_CONTAINS({left}, {argument})"
                 elif allow_check_shim:
                     return "(1=1)"
                 else:
@@ -271,7 +278,8 @@ def _render_check_comparison(
             else:
                 argument = comparison.left_expression.argument
                 assert argument is not None
-                left = f"ARRAY_POSITION({left}, {_render_check_literal(argument, dialect, allow_check_shim=allow_check_shim)})"
+                rendered_argument = _render_check_literal(argument, dialect, allow_check_shim=allow_check_shim)
+                left = f"ARRAY_POSITION({left}, {rendered_argument})"
         elif comparison.left_expression.function is CheckValueFunction.ARRAY_CONTAINED_BY:
             members = ", ".join(
                 _render_check_literal(item, dialect, allow_check_shim=allow_check_shim)
@@ -353,8 +361,7 @@ def _render_check_comparison(
         return f"{left} {operator.value}"
     if operator is CheckOperator.IN:
         members = ", ".join(
-            _render_check_literal(item, dialect, allow_check_shim=allow_check_shim)
-            for item in comparison.literals
+            _render_check_literal(item, dialect, allow_check_shim=allow_check_shim) for item in comparison.literals
         )
         return f"{left} IN ({members})"
     if operator is CheckOperator.LIKE:
@@ -479,7 +486,11 @@ def _render_column(
     parts = [quote_identifier(column.name, dialect), render_type(column.type_ref, dialect, type_policy)]
     if column.auto_increment:
         parts[-1] = parts[-1] + render_auto_increment_suffix(dialect)
-    default = None if column.default is None else f"DEFAULT {render_default(column.default, column.type_ref, dialect, type_policy)}"
+    default = (
+        None
+        if column.default is None
+        else f"DEFAULT {render_default(column.default, column.type_ref, dialect, type_policy)}"
+    )
     # Oracle's column_definition grammar is
     #   column datatype [DEFAULT expr] [inline_constraint]
     # so DEFAULT must precede NOT NULL there; `c NUMBER(1) NOT NULL DEFAULT 1`
@@ -606,9 +617,7 @@ def _require_mysql_catalog_text_keys(
     """
     if catalog is None or allow_mysql_text_prefix:
         return
-    offending = sorted(
-        column for column in columns if catalog.type_of(table, column) is CanonicalType.TEXT
-    )
+    offending = sorted(column for column in columns if catalog.type_of(table, column) is CanonicalType.TEXT)
     if offending:
         raise DialectError(
             "CERTIFIED_DDL_MYSQL_TEXT_KEY_REQUIRES_PREFIX",
@@ -698,7 +707,13 @@ def _render_check_expression(
     if isinstance(expression, CheckComparison):
         return _render_check_comparison(expression, dialect, type_policy, allow_check_shim=allow_check_shim)
     if isinstance(expression, CheckNotExpression):
-        return f"NOT ({_render_check_expression(expression.operand, dialect, type_policy, allow_check_shim=allow_check_shim)})"
+        operand = _render_check_expression(
+            expression.operand,
+            dialect,
+            type_policy,
+            allow_check_shim=allow_check_shim,
+        )
+        return f"NOT ({operand})"
     joiner = f" {expression.connector.value} "
     # Parenthesise every child boolean expression. This preserves the source
     # tree even when a source parser has already normalised operator
@@ -802,50 +817,53 @@ def emit_create_table(
         existence = ""
     lines: list[str] = [_render_column(c, dialect, type_policy) for c in table.columns]
 
-    text_columns = {
-        column.name for column in table.columns if column.type_ref.canonical_type is CanonicalType.TEXT
-    }
+    text_columns = {column.name for column in table.columns if column.type_ref.canonical_type is CanonicalType.TEXT}
     if table.primary_key:
         pk_cols = [
-            quote_identifier(column, dialect) + ("(255)" if dialect is Dialect.MYSQL and allow_mysql_text_prefix and column in text_columns else "")
+            quote_identifier(column, dialect)
+            + ("(255)" if dialect is Dialect.MYSQL and allow_mysql_text_prefix and column in text_columns else "")
             for column in table.primary_key
         ]
         lines.append(f"PRIMARY KEY ({', '.join(pk_cols)})")
 
     for unique in table.unique_constraints:
         uq_cols = [
-            quote_identifier(column, dialect) + ("(255)" if dialect is Dialect.MYSQL and allow_mysql_text_prefix and column in text_columns else "")
+            quote_identifier(column, dialect)
+            + ("(255)" if dialect is Dialect.MYSQL and allow_mysql_text_prefix and column in text_columns else "")
             for column in unique
         ]
         lines.append(f"UNIQUE ({', '.join(uq_cols)})")
 
     for fk in table.foreign_keys:
         clause = _render_foreign_key_clause(fk, dialect)
-        lines.append(
-            f"CONSTRAINT {quote_identifier(fk.name, dialect)} {clause}" if fk.name else clause
-        )
+        lines.append(f"CONSTRAINT {quote_identifier(fk.name, dialect)} {clause}" if fk.name else clause)
 
     for check in table.check_constraints:
         comparison_sql = (
             _render_check_expression(check.expression, dialect, type_policy, allow_check_shim=allow_check_shim)
             if check.expression is not None
             else (" OR " if check.connector is not None and check.connector.value == "OR" else " AND ").join(
-                _render_check_comparison(c, dialect, type_policy, allow_check_shim=allow_check_shim) for c in check.comparisons
+                _render_check_comparison(c, dialect, type_policy, allow_check_shim=allow_check_shim)
+                for c in check.comparisons
             )
         )
         clause = f"CHECK ({comparison_sql})"
-        lines.append(
-            f"CONSTRAINT {quote_identifier(check.name, dialect)} {clause}" if check.name else clause
-        )
+        lines.append(f"CONSTRAINT {quote_identifier(check.name, dialect)} {clause}" if check.name else clause)
 
     body = ",\n    ".join(lines)
     rendered = f"CREATE TABLE{existence} {_object_name(table.schema, table.name, dialect)} (\n    {body}\n)"
     if dialect is Dialect.TSQL and table.if_not_exists and allow_if_not_exists_shim:
         schema_name = table.schema or "dbo"
         table_name = table.name
-        return (
-            f"IF NOT EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = N'{schema_name}' AND t.name = N'{table_name}')\n"
-            f"BEGIN\n{rendered}\nEND"
+        return _compose_sql(
+            "IF NOT EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s "
+            "ON t.schema_id = s.schema_id WHERE s.name = N",
+            _render_literal(schema_name, True),
+            " AND t.name = N",
+            _render_literal(table_name, True),
+            ")\nBEGIN\n",
+            rendered,
+            "\nEND",
         )
     if dialect is Dialect.ORACLE and table.if_not_exists and allow_if_not_exists_shim:
         escaped_sql = rendered.replace("'", "''")
@@ -929,10 +947,15 @@ def emit_create_index(
             pass
     if dialect is Dialect.TSQL and index.if_not_exists and allow_if_not_exists_shim:
         schema_name = index.table_schema or "dbo"
-        return (
-            f"IF NOT EXISTS (SELECT 1 FROM sys.indexes i JOIN sys.tables t ON i.object_id = t.object_id "
-            f"JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = N'{schema_name}' "
-            f"AND i.name = N'{index.name}')\nBEGIN\n{rendered}\nEND"
+        return _compose_sql(
+            "IF NOT EXISTS (SELECT 1 FROM sys.indexes i JOIN sys.tables t ON i.object_id = t.object_id "
+            "JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = N",
+            _render_literal(schema_name, True),
+            " AND i.name = N",
+            _render_literal(index.name, True),
+            ")\nBEGIN\n",
+            rendered,
+            "\nEND",
         )
     if dialect is Dialect.ORACLE and index.if_not_exists and allow_if_not_exists_shim:
         escaped_sql = rendered.replace("'", "''")
@@ -983,21 +1006,24 @@ def emit_create_schema(
             )
         user_name = quote_identifier(schema.name, dialect)
         if schema.if_not_exists and allow_if_not_exists_shim:
-            return (
-                f"DECLARE\n    v_cnt NUMBER;\nBEGIN\n"
-                f"    SELECT COUNT(*) INTO v_cnt FROM all_users WHERE username = '{schema.name.upper()}';\n"
-                f"    IF v_cnt = 0 THEN\n"
-                f"        EXECUTE IMMEDIATE 'CREATE USER {user_name} NO AUTHENTICATION';\n"
-                f"    END IF;\nEND;"
+            return _compose_sql(
+                "DECLARE\n    v_cnt NUMBER;\nBEGIN\n    SELECT COUNT(*) INTO v_cnt FROM all_users WHERE username = ",
+                _render_literal(schema.name.upper(), True),
+                ";\n    IF v_cnt = 0 THEN\n        EXECUTE IMMEDIATE 'CREATE USER ",
+                user_name,
+                " NO AUTHENTICATION';\n    END IF;\nEND;",
             )
         return f"CREATE USER {user_name} NO AUTHENTICATION"
     if schema.if_not_exists:
         if dialect in _IF_NOT_EXISTS_SCHEMA_SUPPORT:
             existence = " IF NOT EXISTS"
         elif allow_if_not_exists_shim and dialect is Dialect.TSQL:
-            return (
-                f"IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'{schema.name}')\n"
-                f"BEGIN\n    EXEC('CREATE SCHEMA {quote_identifier(schema.name, dialect)}')\nEND"
+            return _compose_sql(
+                "IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N",
+                _render_literal(schema.name, True),
+                ")\nBEGIN\n    EXEC('CREATE SCHEMA ",
+                quote_identifier(schema.name, dialect),
+                "')\nEND",
             )
         else:
             existence = _if_not_exists_clause(
@@ -1045,8 +1071,7 @@ def emit_row_security(
         elif dialect is Dialect.MYSQL:
             return f"CALL sys.set_row_security('{command.schema or ''}', '{command.table}', '{command.action.value}')"
     return (
-        f"ALTER TABLE {_object_name(command.schema, command.table, dialect)} "
-        f"{command.action.value} ROW LEVEL SECURITY"
+        f"ALTER TABLE {_object_name(command.schema, command.table, dialect)} {command.action.value} ROW LEVEL SECURITY"
     )
 
 
@@ -1063,21 +1088,20 @@ def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
     """Emit a fixed-column literal seed without changing its row set."""
     columns = ", ".join(quote_identifier(column, dialect) for column in insert.columns)
     rows = ",\n    ".join(
-        "(" + ", ".join(_render_insert_literal(value, dialect) for value in row) + ")"
-        for row in insert.rows
+        "(" + ", ".join(_render_insert_literal(value, dialect) for value in row) + ")" for row in insert.rows
     )
     table_name = _object_name(insert.schema, insert.table, dialect)
     if insert.on_conflict_do_nothing:
         if dialect is Dialect.POSTGRES:
-            return f"INSERT INTO {table_name} ({columns}) VALUES {rows} ON CONFLICT DO NOTHING"
+            return _compose_sql("INSERT INTO ", table_name, " (", columns, ") VALUES ", rows, " ON CONFLICT DO NOTHING")
         elif dialect is Dialect.MYSQL:
-            return f"INSERT IGNORE INTO {table_name} ({columns}) VALUES {rows}"
+            return _compose_sql("INSERT IGNORE INTO ", table_name, " (", columns, ") VALUES ", rows)
         else:
             raise DialectError(
                 "CERTIFIED_INSERT_UNSUPPORTED_TARGET",
                 f"ON CONFLICT DO NOTHING is not natively supported in {dialect.value} INSERT syntax",
             )
-    return f"INSERT INTO {table_name} ({columns}) VALUES {rows}"  # noqa: S608
+    return _compose_sql("INSERT INTO ", table_name, " (", columns, ") VALUES ", rows)
 
 
 def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
@@ -1114,13 +1138,10 @@ def emit_insert_select(insert: InsertSelectStatement, dialect: Dialect) -> str:
     )
     for join in insert.joins:
         conditions = " AND ".join(
-            f"{_render_dml_expression(condition.left, dialect)} = "
-            f"{_render_dml_expression(condition.right, dialect)}"
+            f"{_render_dml_expression(condition.left, dialect)} = {_render_dml_expression(condition.right, dialect)}"
             for condition in join.conditions
         )
-        rendered += (
-            f" INNER JOIN {_object_name(join.schema, join.table, dialect)} {join.alias} ON {conditions}"
-        )
+        rendered += f" INNER JOIN {_object_name(join.schema, join.table, dialect)} {join.alias} ON {conditions}"
     if insert.predicate is not None:
         rendered += f" WHERE {_render_check_expression(insert.predicate, dialect)}"
     if insert.group_by:
@@ -1148,20 +1169,11 @@ def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
     target = _object_name(update.schema, update.table, dialect)
     source = _object_name(update.source_schema, update.source_table, dialect)
     joins = " AND ".join(
-        f"{_render_dml_expression(condition.left, dialect)} = "
-        f"{_render_dml_expression(condition.right, dialect)}"
+        f"{_render_dml_expression(condition.left, dialect)} = {_render_dml_expression(condition.right, dialect)}"
         for condition in update.join_conditions
     )
-    predicate = (
-        f" AND {_render_check_expression(update.predicate, dialect)}"
-        if update.predicate is not None
-        else ""
-    )
-    where = (
-        f" WHERE {_render_check_expression(update.predicate, dialect)}"
-        if update.predicate is not None
-        else ""
-    )
+    predicate = f" AND {_render_check_expression(update.predicate, dialect)}" if update.predicate is not None else ""
+    where = f" WHERE {_render_check_expression(update.predicate, dialect)}" if update.predicate is not None else ""
     if dialect is Dialect.POSTGRES:
         return (  # noqa: S608
             f"UPDATE {target} {quote_identifier(update.target_alias, dialect)} SET {assignments} FROM {source} "  # noqa: S608
@@ -1197,7 +1209,7 @@ def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
 
 def emit_delete(delete: DeleteStatement, dialect: Dialect) -> str:
     """Emit a typed single-table DELETE."""
-    rendered = f"DELETE FROM {_object_name(delete.schema, delete.table, dialect)}"
+    rendered = _compose_sql("DELETE FROM ", _object_name(delete.schema, delete.table, dialect))
     if delete.predicate is not None:
         rendered += f" WHERE {_render_check_expression(delete.predicate, dialect)}"
     return rendered
@@ -1206,7 +1218,6 @@ def emit_delete(delete: DeleteStatement, dialect: Dialect) -> str:
 def emit_truncate_table(truncate: TruncateTable, dialect: Dialect) -> str:
     """Emit a portable TRUNCATE TABLE statement."""
     return f"TRUNCATE TABLE {_object_name(truncate.schema, truncate.table, dialect)}"
-
 
 
 def _render_check_clause(
@@ -1219,7 +1230,8 @@ def _render_check_clause(
         _render_check_expression(check.expression, dialect, type_policy, allow_check_shim=allow_check_shim)
         if check.expression is not None
         else (" OR " if check.connector is not None and check.connector.value == "OR" else " AND ").join(
-            _render_check_comparison(c, dialect, type_policy, allow_check_shim=allow_check_shim) for c in check.comparisons
+            _render_check_comparison(c, dialect, type_policy, allow_check_shim=allow_check_shim)
+            for c in check.comparisons
         )
     )
     return f"CHECK ({comparison_sql})"
@@ -1321,7 +1333,9 @@ def emit_alter_table(
                     )
             if dialect is Dialect.MYSQL and action.foreign_key is not None:
                 _require_mysql_catalog_text_keys(
-                    catalog, action.foreign_key.ref_table, action.foreign_key.ref_columns,
+                    catalog,
+                    action.foreign_key.ref_table,
+                    action.foreign_key.ref_columns,
                     allow_mysql_text_prefix=allow_mysql_text_prefix,
                 )
             column_sql = _render_column(action.column, dialect, type_policy)
@@ -1377,7 +1391,10 @@ def emit_alter_table(
                     )
                 cols = [
                     f"{quote_identifier(col, dialect)}(255)"
-                    if dialect is Dialect.MYSQL and allow_mysql_text_prefix and catalog and catalog.type_of(alter.table, col) is CanonicalType.TEXT
+                    if dialect is Dialect.MYSQL
+                    and allow_mysql_text_prefix
+                    and catalog
+                    and catalog.type_of(alter.table, col) is CanonicalType.TEXT
                     else quote_identifier(col, dialect)
                     for col in action.primary_key
                 ]
@@ -1389,7 +1406,10 @@ def emit_alter_table(
                     )
                 cols = [
                     f"{quote_identifier(col, dialect)}(255)"
-                    if dialect is Dialect.MYSQL and allow_mysql_text_prefix and catalog and catalog.type_of(alter.table, col) is CanonicalType.TEXT
+                    if dialect is Dialect.MYSQL
+                    and allow_mysql_text_prefix
+                    and catalog
+                    and catalog.type_of(alter.table, col) is CanonicalType.TEXT
                     else quote_identifier(col, dialect)
                     for col in action.unique
                 ]
@@ -1397,10 +1417,16 @@ def emit_alter_table(
             elif action.foreign_key is not None:
                 if dialect is Dialect.MYSQL:
                     _require_mysql_catalog_text_keys(
-                        catalog, alter.table, action.foreign_key.columns, allow_mysql_text_prefix=allow_mysql_text_prefix
+                        catalog,
+                        alter.table,
+                        action.foreign_key.columns,
+                        allow_mysql_text_prefix=allow_mysql_text_prefix,
                     )
                     _require_mysql_catalog_text_keys(
-                        catalog, action.foreign_key.ref_table, action.foreign_key.ref_columns, allow_mysql_text_prefix=allow_mysql_text_prefix
+                        catalog,
+                        action.foreign_key.ref_table,
+                        action.foreign_key.ref_columns,
+                        allow_mysql_text_prefix=allow_mysql_text_prefix,
                     )
                 clause = _render_foreign_key_clause(action.foreign_key, dialect)
             else:
@@ -1430,7 +1456,8 @@ def emit_alter_table(
                 if col_type is None:
                     raise DialectError(
                         "CERTIFIED_ALTER_CATALOG_REQUIRED_FOR_COLUMN_TYPE",
-                        f"{dialect.value} requires column type to be restated for NOT NULL; provide a catalog with column '{action.column}'",
+                        f"{dialect.value} requires column type to be restated for NOT NULL; "
+                        f"provide a catalog with column '{action.column}'",
                     )
                 type_str = render_type(CanonicalTypeRef(canonical_type=col_type), dialect, type_policy)
                 if dialect is Dialect.MYSQL:
@@ -1450,7 +1477,8 @@ def emit_alter_table(
                 if col_type is None:
                     raise DialectError(
                         "CERTIFIED_ALTER_CATALOG_REQUIRED_FOR_COLUMN_TYPE",
-                        f"{dialect.value} requires column type to be restated for NULL; provide a catalog with column '{action.column}'",
+                        f"{dialect.value} requires column type to be restated for NULL; "
+                        f"provide a catalog with column '{action.column}'",
                     )
                 type_str = render_type(CanonicalTypeRef(canonical_type=col_type), dialect, type_policy)
                 if dialect is Dialect.MYSQL:
