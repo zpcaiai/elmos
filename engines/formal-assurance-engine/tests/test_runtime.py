@@ -78,6 +78,21 @@ class RuntimeTests(unittest.TestCase):
             any("PARTIAL" in record["capabilityState"] for record in records)
         )
 
+    def test_runtime_closes_only_the_store_it_owns(self) -> None:
+        owned = FormalAssuranceRuntime()
+        owned_store = owned.store
+        owned.close()
+        owned.close()
+        self.assertTrue(owned_store.closed)
+
+        injected = StateStore()
+        try:
+            runtime = FormalAssuranceRuntime(store=injected)
+            runtime.close()
+            self.assertFalse(injected.closed)
+        finally:
+            injected.close()
+
     def test_dispatch_is_idempotent_and_request_bound(self) -> None:
         payload = {
             "formalSpec": {

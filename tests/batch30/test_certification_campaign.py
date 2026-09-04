@@ -137,6 +137,20 @@ class CertificationCampaignTests(unittest.TestCase):
             cls.pack / "compatibility" / "manifest.json",
             {"schema_version": 1, "pack_key": "spring-boot-2-7-18-to-3-5-3"},
         )
+        cls._write_json(
+            cls.pack / "coexistence" / "manifest.json",
+            {
+                "schema_version": 1,
+                "pack_key": "spring-boot-2-7-18-to-3-5-3",
+                "enabled": False,
+                "status": "NOT_RUN",
+                "reason": "Coexistence is disabled until an application-specific compatibility contract is approved.",
+                "components": [],
+                "exit_criteria": [
+                    "Retire the source runtime only after target parity, rollback, and customer acceptance pass."
+                ],
+            },
+        )
         artifact = cls.pack / "certification" / "artifacts" / "target.jar"
         artifact.parent.mkdir(parents=True, exist_ok=True)
         artifact.write_bytes(b"real-target-artifact-fixture\n")

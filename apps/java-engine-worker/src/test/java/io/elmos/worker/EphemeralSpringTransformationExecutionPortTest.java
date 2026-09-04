@@ -98,6 +98,7 @@ class EphemeralSpringTransformationExecutionPortTest {
                             workspace,
                             URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
                             secretFile,
+                            false,
                             json,
                             Clock.systemUTC()
                     );
@@ -186,6 +187,7 @@ class EphemeralSpringTransformationExecutionPortTest {
                             workspace,
                             URI.create("http://127.0.0.1:" + server.getAddress().getPort()),
                             secretFile,
+                            false,
                             json,
                             Clock.systemUTC()
                     );

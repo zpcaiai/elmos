@@ -53,7 +53,8 @@ elmos:
       transformer-broker-base-url: ${ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL:http://workspace-service:8082}
       transformer-broker-secret-file: ${ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE:/run/secrets/elmos_transformer_hmac}
       local-engineering-enabled: ${ELMOS_SPRING_LOCAL_ENGINEERING_ENABLED:false}
-      experimental-routes-enabled: ${ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED:true}
+      experimental-routes-enabled: ${ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED:false}
+      coding-agent-enabled: ${ELMOS_SPRING_CODING_AGENT_ENABLED:false}
       runtime-runner-enabled: ${ELMOS_SPRING_RUNTIME_RUNNER_ENABLED:false}
       runtime-runner-base-url: ${ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL:http://workspace-service:8082}
       runtime-runner-secret-file: ${ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE:/run/secrets/elmos-runtime-hmac}

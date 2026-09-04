@@ -1,6 +1,6 @@
 UV ?= uv
 BATCH30_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
-.PHONY: b30-skills-test b30-pack-validate b30-pack-gate
+.PHONY: b30-skills-test b30-pack-validate b30-pack-gate spring-launch-validate spring-launch-gate
 b30-skills-test:
 	$(BATCH30_PYTHON) scripts/batch30/validate_skill_bundle.py
 	$(BATCH30_PYTHON) -m unittest discover -s tests/batch30 -p 'test_*.py'
@@ -10,3 +10,8 @@ b30-pack-validate:
 b30-pack-gate:
 	@test -n "$(PACK)" || (echo "PACK=<framework-pack-key> required" && exit 2)
 	$(BATCH30_PYTHON) scripts/batch30/run_framework_gate.py framework-packs/$(PACK)
+spring-launch-validate:
+	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py
+spring-launch-gate:
+	@test -n "$(SPRING_EXTERNAL_EVIDENCE)" || (echo "SPRING_EXTERNAL_EVIDENCE=<receipt.json> required" && exit 2)
+	$(BATCH30_PYTHON) scripts/batch30/validate_spring_launch_readiness.py --check-environment --require-production-evidence --external-evidence "$(SPRING_EXTERNAL_EVIDENCE)"

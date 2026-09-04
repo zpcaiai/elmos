@@ -20,6 +20,7 @@ interface SpringUpgradeExecutionPort {
     boolean configured();
     String configurationReason();
     default boolean runtimeConfigured() { return false; }
+    default boolean experimentalRoutesEnabled() { return false; }
     default String runtimeConfigurationReason() {
         return "An isolated per-run application Runner is not configured.";
     }

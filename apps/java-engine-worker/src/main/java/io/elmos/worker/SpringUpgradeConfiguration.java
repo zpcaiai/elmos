@@ -107,6 +107,7 @@ class SpringUpgradeConfiguration {
                     Path.of(workspaceRoot),
                     URI.create(transformerBrokerBaseUrl),
                     Path.of(transformerBrokerSecretFile),
+                    experimentalRoutesEnabled,
                     json,
                     clock
             );

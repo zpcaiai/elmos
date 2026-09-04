@@ -344,11 +344,14 @@ final class SpringUpgradeRunService {
                         Map.entry("targetJava", route.targetJava()),
                         Map.entry("recipeId", route.recipeId()),
                         Map.entry("evidenceStatus", route.routeEvidence().name()),
+                        Map.entry("launchStatus", new SpringRouteCatalog.Selection(
+                                route, route.routeEvidence()).launchStatus().name()),
                         Map.entry("verifiedSourceSpringBoot", route.verifiedSourceBoot()),
                         Map.entry("verifiedSourceJava", route.verifiedSourceJava()),
                         Map.entry("notes", route.notes())
                 )).toList()),
                 Map.entry("experimentalRoutesRequireOptIn", true),
+                Map.entry("operatorExperimentalRoutesEnabled", transformer.experimentalRoutesEnabled()),
                 Map.entry("transformerConfigured", transformer.configured()),
                 Map.entry("transformerReason", transformer.configurationReason()),
                 Map.entry("runtimeRunnerConfigured", transformer.runtimeConfigured()),

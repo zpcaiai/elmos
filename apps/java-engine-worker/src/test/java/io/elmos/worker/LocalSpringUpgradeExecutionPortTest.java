@@ -128,12 +128,14 @@ class LocalSpringUpgradeExecutionPortTest {
                         "observed|source|src/main/java/example/Controller.java:2|Spring MVC controller")),
                 "spring-mvc", "5.3.39");
 
-        assertEquals("spring-framework-5.3-mvc-maven-to-boot-3.5.3-java-21",
-                LocalSpringUpgradeExecutionPort.selectRoute(
-                        activeMvc, "3.5.3", "21", false).route().routeId());
+        SpringUpgradeModels.BlockedException experimentalBlocked = assertThrows(
+                SpringUpgradeModels.BlockedException.class,
+                () -> LocalSpringUpgradeExecutionPort.selectRoute(
+                        activeMvc, "3.5.3", "21", false));
+        assertEquals("SPRING_ROUTE_EVIDENCE_NOT_RUN", experimentalBlocked.code());
         assertEquals(SpringRouteCatalog.EvidenceStatus.PASSED_LOCAL,
                 LocalSpringUpgradeExecutionPort.selectRoute(
-                        activeMvc, "3.5.3", "21", false).evidence());
+                        activeMvc, "3.5.3", "21", true).evidence());
 
         SpringUpgradeModels.Fingerprint dependencyOnly = new SpringUpgradeModels.Fingerprint(
                 "UNKNOWN", "11", "maven", List.of(), List.of(), List.of(),

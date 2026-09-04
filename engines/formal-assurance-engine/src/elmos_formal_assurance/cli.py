@@ -18,8 +18,13 @@ from .runtime import FormalAssuranceRuntime, RuntimeConfig
 from .store import StateStore
 
 
-def _read_permit_key(path: Path) -> bytes:
-    """Read a deployment secret without following links or accepting broad modes."""
+def _read_private_key(
+    path: Path,
+    *,
+    purpose: str,
+    exact_size: int | None = None,
+) -> bytes:
+    """Read one deployment secret without following links or accepting races."""
     flags = os.O_RDONLY
     if hasattr(os, "O_CLOEXEC"):
         flags |= os.O_CLOEXEC
@@ -28,21 +33,25 @@ def _read_permit_key(path: Path) -> bytes:
     try:
         descriptor = os.open(path.expanduser(), flags)
     except OSError as exc:
-        raise ExecutionContractError("execution permit key path is unsafe") from exc
+        raise ExecutionContractError(f"{purpose} key path is unsafe") from exc
     try:
-        metadata = os.fstat(descriptor)
-        if not stat.S_ISREG(metadata.st_mode):
-            raise ExecutionContractError("execution permit key must be a regular file")
-        if metadata.st_mode & (stat.S_IRWXG | stat.S_IRWXO):
+        before = os.fstat(descriptor)
+        if not stat.S_ISREG(before.st_mode):
+            raise ExecutionContractError(f"{purpose} key must be a regular file")
+        if before.st_mode & (stat.S_IRWXG | stat.S_IRWXO):
             raise ExecutionContractError(
-                "execution permit key must not be accessible by group or others"
+                f"{purpose} key must not be accessible by group or others"
             )
-        if metadata.st_size < 32 or metadata.st_size > 4096:
+        if exact_size is not None and before.st_size != exact_size:
             raise ExecutionContractError(
-                "execution permit key must contain between 32 and 4096 bytes"
+                f"{purpose} key must contain exactly {exact_size} bytes"
+            )
+        if exact_size is None and (before.st_size < 32 or before.st_size > 4096):
+            raise ExecutionContractError(
+                f"{purpose} key must contain between 32 and 4096 bytes"
             )
         chunks: list[bytes] = []
-        remaining = metadata.st_size
+        remaining = before.st_size
         while remaining:
             chunk = os.read(descriptor, min(remaining, 4096))
             if not chunk:
@@ -50,8 +59,19 @@ def _read_permit_key(path: Path) -> bytes:
             chunks.append(chunk)
             remaining -= len(chunk)
         key = b"".join(chunks)
-        if len(key) != metadata.st_size:
-            raise ExecutionContractError("execution permit key changed while reading")
+        after = os.fstat(descriptor)
+        stable_fields = (
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+        )
+        if len(key) != before.st_size or any(
+            getattr(before, field) != getattr(after, field) for field in stable_fields
+        ):
+            raise ExecutionContractError(f"{purpose} key changed while reading")
         return key
     finally:
         os.close(descriptor)
@@ -66,12 +86,16 @@ def _runtime_config(
         parser.error(
             "--toolchain-registry and --toolchain-registry-sha256 must be supplied together"
         )
-    if bool(args.artifact_root) != bool(args.artifact_encryption_key_file):
+    artifact_configuration = (
+        args.artifact_root is not None,
+        args.artifact_encryption_key_file is not None,
+        bool(args.artifact_encryption_key_id),
+    )
+    if any(artifact_configuration) and not all(artifact_configuration):
         parser.error(
-            "--artifact-root and --artifact-encryption-key-file must be supplied together"
+            "--artifact-root, --artifact-encryption-key-file, and "
+            "--artifact-encryption-key-id must be supplied together"
         )
-    if args.artifact_root is not None and not args.artifact_encryption_key_id:
-        parser.error("--artifact-encryption-key-id is required with --artifact-root")
     try:
         toolchains = (
             load_toolchain_registry(registry_path, registry_digest)
@@ -79,13 +103,21 @@ def _runtime_config(
             else ()
         )
         signer = (
-            ExecutionPermitSigner(_read_permit_key(args.permit_key_file))
+            ExecutionPermitSigner(
+                _read_private_key(
+                    args.permit_key_file,
+                    purpose="execution permit",
+                )
+            )
             if args.permit_key_file is not None
             else None
         )
         bundle_signer = (
             HmacEvidenceBundleSigner(
-                _read_permit_key(args.bundle_signing_key_file),
+                _read_private_key(
+                    args.bundle_signing_key_file,
+                    purpose="evidence bundle signing",
+                ),
                 key_id=args.bundle_signing_key_id,
             )
             if args.bundle_signing_key_file is not None
@@ -93,7 +125,11 @@ def _runtime_config(
         )
         artifact_cipher = (
             AesGcmEnvelopeCipher(
-                _read_permit_key(args.artifact_encryption_key_file),
+                _read_private_key(
+                    args.artifact_encryption_key_file,
+                    purpose="artifact encryption",
+                    exact_size=32,
+                ),
                 key_id=args.artifact_encryption_key_id,
             )
             if args.artifact_encryption_key_file is not None
@@ -135,27 +171,32 @@ def main(argv: list[str] | None = None) -> int:
     execute.add_argument("--subject", required=True)
     execute.add_argument("--idempotency-key", required=True)
     args = parser.parse_args(argv)
-    runtime = FormalAssuranceRuntime(
-        store=StateStore(args.state), config=_runtime_config(args, parser)
-    )
-    if args.command == "skills":
-        print(
-            json.dumps({"skills": runtime.list_skills()}, ensure_ascii=False, indent=2)
+    config = _runtime_config(args, parser)
+    store = StateStore(args.state)
+    try:
+        runtime = FormalAssuranceRuntime(store=store, config=config)
+        if args.command == "skills":
+            print(
+                json.dumps(
+                    {"skills": runtime.list_skills()}, ensure_ascii=False, indent=2
+                )
+            )
+            return 0
+        if not args.tenant:
+            parser.error("--tenant is required for execute")
+        request = json.loads(args.request.read_text(encoding="utf-8"))
+        identity = TrustedIdentity(args.tenant, args.actor, args.project)
+        result = runtime.dispatch(
+            args.skill_id,
+            request,
+            identity,
+            subject_id=args.subject,
+            idempotency_key=args.idempotency_key,
         )
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
-    if not args.tenant:
-        parser.error("--tenant is required for execute")
-    request = json.loads(args.request.read_text(encoding="utf-8"))
-    identity = TrustedIdentity(args.tenant, args.actor, args.project)
-    result = runtime.dispatch(
-        args.skill_id,
-        request,
-        identity,
-        subject_id=args.subject,
-        idempotency_key=args.idempotency_key,
-    )
-    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
-    return 0
+    finally:
+        store.close()
 
 
 if __name__ == "__main__":

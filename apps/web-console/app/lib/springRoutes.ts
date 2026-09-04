@@ -133,6 +133,7 @@ export const springRouteCatalogFallback: SpringRouteDescriptor[] = [
     targetJava: "21",
     recipeId: "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
     evidenceStatus: "PASSED_LOCAL",
+    launchStatus: "DESIGN_PARTNER",
     verifiedSourceSpringBoot: "2.7.18",
     verifiedSourceJava: "17",
   },

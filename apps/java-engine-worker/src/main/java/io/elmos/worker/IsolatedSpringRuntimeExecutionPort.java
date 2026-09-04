@@ -137,6 +137,7 @@ final class IsolatedSpringRuntimeExecutionPort implements SpringUpgradeExecution
     }
 
     @Override public boolean configured() { return transformer.configured(); }
+    @Override public boolean experimentalRoutesEnabled() { return transformer.experimentalRoutesEnabled(); }
     @Override public String configurationReason() { return transformer.configurationReason(); }
     @Override public boolean runtimeConfigured() { return true; }
     @Override public String runtimeConfigurationReason() {

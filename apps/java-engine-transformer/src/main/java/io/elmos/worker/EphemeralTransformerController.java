@@ -66,7 +66,8 @@ public final class EphemeralTransformerController {
             @Value("${elmos.transformer.maven-dependency-seed:/opt/elmos/maven-seed}") String mavenDependencySeed,
             @Value("${elmos.transformer.allowed-git-hosts:github.com}") String allowedGitHosts,
             @Value("${elmos.transformer.one-time-secret:}") String oneTimeSecret,
-            @Value("${elmos.transformer.auth-window-seconds:90}") long authWindowSeconds
+            @Value("${elmos.transformer.auth-window-seconds:90}") long authWindowSeconds,
+            @Value("${elmos.transformer.experimental-routes-enabled:false}") boolean experimentalRoutesEnabled
     ) {
         this.json = Objects.requireNonNull(json);
         this.clock = Objects.requireNonNull(clock);
@@ -93,7 +94,7 @@ public final class EphemeralTransformerController {
                 false,
                 true,
                 Path.of(mavenDependencySeed),
-                false,
+                experimentalRoutesEnabled,
                 json
         );
     }
