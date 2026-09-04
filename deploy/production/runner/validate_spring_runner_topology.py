@@ -19,7 +19,7 @@ import stat
 import subprocess
 import sys
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -95,6 +95,9 @@ BROKER_BODY_LIMITS = {
     "/internal/v1/spring-verifications": "64k",
     "/internal/v1/spring-runtimes": "64k",
 }
+EXPECTED_INGRESS_CONFIG_SHA256 = (
+    "8547df2235fb8bc0a516f1aefbda9a2c23f06f8afcef8d4c5e3d108295c930f7"
+)
 EXPECTED_RUNNER_SERVICES = {
     "spring-runner-ingress",
     "spring-runner-broker",
@@ -810,6 +813,12 @@ def validate_application_compose(
 
 
 def validate_ingress(errors: list[str], config: str) -> None:
+    require(
+        errors,
+        hashlib.sha256(config.encode("utf-8")).hexdigest()
+        == EXPECTED_INGRESS_CONFIG_SHA256,
+        "Spring ingress configuration must remain byte-for-byte equal to the reviewed allowlist",
+    )
     require(errors, "listen 8443 ssl;" in config, "Spring ingress must terminate TLS")
     require(errors, "ssl_protocols TLSv1.2 TLSv1.3;" in config, "Spring ingress TLS floor drift")
     require(errors, "ssl_session_tickets off;" in config, "Spring ingress must disable TLS session tickets")
@@ -998,7 +1007,7 @@ def private_https_endpoint(
 
 
 def paths_overlap(left: Path, right: Path) -> bool:
-    """Compare lexical paths and, when present, their resolved identities."""
+    """Compare lexical, canonical, and existing filesystem object identities."""
 
     lexical_overlap = (
         left == right
@@ -1010,12 +1019,22 @@ def paths_overlap(left: Path, right: Path) -> bool:
     try:
         resolved_left = left.resolve(strict=True)
         resolved_right = right.resolve(strict=True)
+        if (
+            resolved_left == resolved_right
+            or resolved_left.is_relative_to(resolved_right)
+            or resolved_right.is_relative_to(resolved_left)
+        ):
+            return True
+    except OSError:
+        pass
+    try:
+        left_details = left.stat()
+        right_details = right.stat()
     except OSError:
         return False
-    return (
-        resolved_left == resolved_right
-        or resolved_left.is_relative_to(resolved_right)
-        or resolved_right.is_relative_to(resolved_left)
+    return (left_details.st_dev, left_details.st_ino) == (
+        right_details.st_dev,
+        right_details.st_ino,
     )
 
 
@@ -1035,6 +1054,87 @@ def validate_sensitive_path_isolation(
             )
 
 
+def validate_operational_root_isolation(
+    errors: list[str], operational_roots: Mapping[str, Path]
+) -> None:
+    """Keep every RO/RW Runner data role on an independent host tree/inode."""
+
+    ordered = sorted(operational_roots.items())
+    for index, (left_name, left_path) in enumerate(ordered):
+        for right_name, right_path in ordered[index + 1 :]:
+            require(
+                errors,
+                not paths_overlap(left_path, right_path),
+                f"{left_name} must not equal, contain, be contained by, or alias {right_name}",
+            )
+
+
+def stable_directory_identity(details: os.stat_result) -> tuple[int, ...]:
+    """Identity/security fields unaffected by normal child-file activity."""
+
+    return (
+        details.st_dev,
+        details.st_ino,
+        details.st_mode,
+        details.st_uid,
+        details.st_gid,
+    )
+
+
+def boundary_whitespace(code_point: int) -> bool:
+    """Language-neutral secret-boundary contract shared with Java and Node."""
+
+    return (
+        0x0009 <= code_point <= 0x000D
+        or code_point == 0x0020
+        or code_point == 0x0085
+        or code_point == 0x00A0
+        or code_point == 0x1680
+        or 0x2000 <= code_point <= 0x200A
+        or code_point in {0x2028, 0x2029, 0x202F, 0x205F, 0x3000, 0xFEFF}
+    )
+
+
+def safe_ancestor_metadata(
+    path: Path,
+    *,
+    allowed_uids: set[int],
+    label: str,
+) -> tuple[list[tuple[Path, tuple[int, ...]]], str | None]:
+    """Capture a no-symlink ancestor chain that untrusted owners cannot replace."""
+
+    metadata: list[tuple[Path, tuple[int, ...]]] = []
+    try:
+        for parent in path.parents:
+            details = parent.lstat()
+            if not stat.S_ISDIR(details.st_mode) or stat.S_ISLNK(details.st_mode):
+                return [], f"{label} must not traverse symbolic-link parent or non-directory ancestors"
+            writable_without_sticky = bool(stat.S_IMODE(details.st_mode) & 0o022) and not bool(
+                details.st_mode & stat.S_ISVTX
+            )
+            if writable_without_sticky:
+                return [], f"{label} must not traverse group/other-writable non-sticky ancestors"
+            if details.st_uid not in allowed_uids:
+                return [], f"{label} must not traverse foreign-owned ancestors"
+            metadata.append((parent, stable_directory_identity(details)))
+    except OSError:
+        return [], f"{label} has a missing or unreadable ancestor"
+    return metadata, None
+
+
+def ancestors_remain_stable(
+    metadata: Sequence[tuple[Path, tuple[int, ...]]],
+) -> bool:
+    try:
+        return all(
+            not stat.S_ISLNK((current := parent.lstat()).st_mode)
+            and stable_directory_identity(current) == expected
+            for parent, expected in metadata
+        )
+    except OSError:
+        return False
+
+
 def owner_only_file(
     errors: list[str],
     path: Path,
@@ -1046,20 +1146,31 @@ def owner_only_file(
     maximum_size: int = 4096,
     canonical_hmac_secret: bool = False,
 ) -> tuple[int, int, str] | None:
-    if not path.is_absolute():
-        errors.append(f"{label} must be absolute")
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        errors.append(f"{label} must be a normalized absolute non-root path")
         return None
-    ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids={0, os.getuid(), expected_uid},
+        label=label,
+    )
+    if ancestor_error is not None:
+        errors.append(ancestor_error)
+        return None
     try:
-        for parent in path.parents:
-            parent_details = parent.lstat()
-            if stat.S_ISLNK(parent_details.st_mode):
-                errors.append(f"{label} must not traverse symbolic-link parent directories")
-                return None
-            ancestor_metadata.append((parent, stable_file_metadata(parent_details)))
         details = path.lstat()
+        parent_details = path.parent.lstat()
     except OSError:
         errors.append(f"{label} is missing")
+        return None
+    if (
+        stat.S_IMODE(parent_details.st_mode) != 0o700
+        or parent_details.st_uid not in {0, os.getuid(), expected_uid}
+        or parent_details.st_gid not in {0, os.getgid(), expected_gid}
+    ):
+        errors.append(
+            f"{label} immediate parent must be a trusted 0700 directory"
+        )
         return None
     valid = True
     for condition, message in (
@@ -1097,11 +1208,7 @@ def owner_only_file(
         contents = b"".join(chunks)
         after = os.fstat(descriptor)
         after_path = path.lstat()
-        ancestors_unchanged = all(
-            not stat.S_ISLNK((current := parent.lstat()).st_mode)
-            and stable_file_metadata(current) == before
-            for parent, before in ancestor_metadata
-        )
+        ancestors_unchanged = ancestors_remain_stable(ancestor_metadata)
         if (
             stable_file_metadata(after) != stable_file_metadata(opened)
             or stable_file_metadata(after_path) != stable_file_metadata(opened)
@@ -1116,7 +1223,11 @@ def owner_only_file(
             except UnicodeError:
                 errors.append(f"{label} must contain canonical UTF-8 HMAC bytes")
                 return None
-            if not decoded or decoded[0].isspace() or decoded[-1].isspace():
+            if (
+                not decoded
+                or boundary_whitespace(ord(decoded[0]))
+                or boundary_whitespace(ord(decoded[-1]))
+            ):
                 errors.append(
                     f"{label} must not have leading or trailing HMAC whitespace"
                 )
@@ -1135,16 +1246,18 @@ def protected_directory(
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         errors.append(f"{label} must be a normalized absolute non-root path")
         return
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids={0, os.getuid(), expected_uid},
+        label=label,
+    )
+    if ancestor_error is not None:
+        errors.append(ancestor_error)
+        return
     try:
-        for parent in path.parents:
-            parent_details = parent.lstat()
-            if not stat.S_ISDIR(parent_details.st_mode) or stat.S_ISLNK(parent_details.st_mode):
-                errors.append(
-                    f"{label} must not traverse symbolic-link or non-directory parents"
-                )
-                return
         details = path.lstat()
         resolved = path.resolve(strict=True)
+        after = path.lstat()
     except OSError:
         errors.append(f"{label} is missing")
         return
@@ -1153,26 +1266,53 @@ def protected_directory(
     require(errors, stat.S_IMODE(details.st_mode) == 0o700, f"{label} mode must equal 0700")
     require(errors, details.st_uid == expected_uid, f"{label} owner UID must equal {expected_uid}")
     require(errors, details.st_gid == expected_gid, f"{label} owner GID must equal {expected_gid}")
+    require(
+        errors,
+        stable_directory_identity(details) == stable_directory_identity(after)
+        and ancestors_remain_stable(ancestor_metadata),
+        f"{label} or an ancestor changed while it was being validated",
+    )
 
 
-def ordinary_directory(errors: list[str], path: Path, *, label: str) -> None:
+def ordinary_directory(
+    errors: list[str],
+    path: Path,
+    *,
+    label: str,
+    allowed_uids: set[int] | None = None,
+    allowed_gids: set[int] | None = None,
+) -> None:
     if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
         errors.append(f"{label} must be a normalized absolute non-root path")
         return
+    trusted_uids = {0, os.getuid()} if allowed_uids is None else set(allowed_uids)
+    trusted_gids = {0, os.getgid()} if allowed_gids is None else set(allowed_gids)
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids=trusted_uids,
+        label=label,
+    )
+    if ancestor_error is not None:
+        errors.append(ancestor_error)
+        return
     try:
-        for parent in path.parents:
-            parent_details = parent.lstat()
-            if not stat.S_ISDIR(parent_details.st_mode) or stat.S_ISLNK(parent_details.st_mode):
-                errors.append(
-                    f"{label} must not traverse symbolic-link or non-directory parents"
-                )
-                return
         details = path.lstat()
+        resolved = path.resolve(strict=True)
+        after = path.lstat()
     except OSError:
         errors.append(f"{label} is missing")
         return
+    require(errors, not resolved.is_relative_to(ROOT.resolve()), f"{label} must be outside the repository")
     require(errors, stat.S_ISDIR(details.st_mode) and not stat.S_ISLNK(details.st_mode), f"{label} must be a non-symlink directory")
-    require(errors, details.st_mode & stat.S_IWOTH == 0, f"{label} must not be world-writable")
+    require(errors, stat.S_IMODE(details.st_mode) & 0o022 == 0, f"{label} must not be group/other-writable")
+    require(errors, details.st_uid in trusted_uids, f"{label} owner UID is outside the trusted set")
+    require(errors, details.st_gid in trusted_gids, f"{label} owner GID is outside the trusted set")
+    require(
+        errors,
+        stable_directory_identity(details) == stable_directory_identity(after)
+        and ancestors_remain_stable(ancestor_metadata),
+        f"{label} or an ancestor changed while it was being validated",
+    )
 
 
 def command_json(command: Sequence[str]) -> Any:
@@ -1211,23 +1351,21 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
     """Read an owner-only file without following links or accepting path races."""
 
     errors: list[str] = []
-    if not path.is_absolute():
-        return None, None, None, ["Runner environment file path must be absolute"]
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        return None, None, None, [
+            "Runner environment file path must be normalized, absolute, and non-root"
+        ]
 
-    ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
+    ancestor_metadata, ancestor_error = safe_ancestor_metadata(
+        path,
+        allowed_uids={0, os.getuid()},
+        label="Runner environment file",
+    )
+    if ancestor_error is not None:
+        return None, None, None, [ancestor_error]
     try:
-        for parent in path.parents:
-            parent_details = parent.lstat()
-            if stat.S_ISLNK(parent_details.st_mode):
-                return None, None, None, [
-                    "Runner environment file must not traverse symbolic-link parent directories"
-                ]
-            if not stat.S_ISDIR(parent_details.st_mode):
-                return None, None, None, [
-                    "Runner environment parent path must contain directories only"
-                ]
-            ancestor_metadata.append((parent, stable_file_metadata(parent_details)))
         details = path.lstat()
+        initial_parent_details = path.parent.lstat()
     except OSError:
         return None, None, None, ["Runner environment file is missing or unreadable"]
 
@@ -1243,6 +1381,14 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
         return None, None, None, ["Runner environment file is missing or unreadable"]
     if resolved.is_relative_to(ROOT.resolve()):
         return None, None, None, ["Runner environment file must be outside the repository"]
+    if (
+        stat.S_IMODE(initial_parent_details.st_mode) != 0o700
+        or initial_parent_details.st_uid != os.getuid()
+        or initial_parent_details.st_gid != os.getgid()
+    ):
+        return None, None, None, [
+            "Runner environment parent must be mode 0700 and owned by the current UID/GID"
+        ]
 
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
@@ -1286,12 +1432,7 @@ def secure_environment_file_bytes(path: Path) -> tuple[bytes | None, os.stat_res
         raw = b"".join(chunks)
         after_read_details = os.fstat(descriptor)
         after_read_path_details = path.lstat()
-        ancestors_unchanged = True
-        for parent, before in ancestor_metadata:
-            after_parent = parent.lstat()
-            if stat.S_ISLNK(after_parent.st_mode) or stable_file_metadata(after_parent) != before:
-                ancestors_unchanged = False
-                break
+        ancestors_unchanged = ancestors_remain_stable(ancestor_metadata)
         if (
             stable_file_metadata(after_read_details) != stable_file_metadata(opened_details)
             or stable_file_metadata(after_read_path_details) != stable_file_metadata(opened_details)
@@ -1412,6 +1553,12 @@ def validate_host(
         errors.append(str(error))
         return errors
 
+    try:
+        runner_compose = read_yaml(paths.runner_compose)
+        validate_resolved_network_isolation(errors, runner_compose, environment)
+    except (OSError, TypeError, ValueError, yaml.YAMLError) as error:
+        errors.append(f"Runner network isolation contract could not be loaded: {error}")
+
     protected_directory(errors, secret_root, label="broker secret root", expected_uid=rootless_uid, expected_gid=rootless_gid)
     protected_directory(errors, tls_root, label="ingress TLS secret root", expected_uid=rootless_uid, expected_gid=rootless_gid)
     protected_directory(
@@ -1453,6 +1600,7 @@ def validate_host(
         except (TypeError, ValueError) as error:
             errors.append(str(error))
     validate_sensitive_path_isolation(errors, sensitive_paths, operational_roots)
+    validate_operational_root_isolation(errors, operational_roots)
 
     secret_records: list[tuple[int, int, str]] = []
     for name in BROKER_SECRET_ENVIRONMENTS:
@@ -1708,7 +1856,43 @@ def expected_service_networks(
         logical_names = list(declared)
     else:
         raise ValueError("Runner service networks must be a string list or object")
-    return [compose_network_name(compose, name, environment) for name in logical_names]
+    resolved = [compose_network_name(compose, name, environment) for name in logical_names]
+    if len(set(resolved)) != len(resolved):
+        raise ValueError(
+            "Runner logical networks must resolve to distinct actual network names"
+        )
+    return resolved
+
+
+def validate_resolved_network_isolation(
+    errors: list[str],
+    compose: Mapping[str, Any],
+    environment: Mapping[str, str],
+) -> None:
+    """Prevent an external control network from collapsing into another trust zone."""
+
+    networks = compose.get("networks", {})
+    if not isinstance(networks, dict):
+        errors.append("Runner Compose networks must be an object")
+        return
+    resolved: dict[str, str] = {}
+    try:
+        for logical_name in networks:
+            resolved[str(logical_name)] = compose_network_name(
+                compose, str(logical_name), environment
+            )
+    except (TypeError, ValueError) as error:
+        errors.append(str(error))
+        return
+    duplicates = sorted(
+        name for name, count in Counter(resolved.values()).items() if count > 1
+    )
+    require(
+        errors,
+        not duplicates,
+        "Runner logical networks must resolve to distinct actual names: "
+        + ", ".join(duplicates),
+    )
 
 
 def expected_service_mounts(

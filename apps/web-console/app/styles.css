@@ -107,7 +107,14 @@ html[data-theme="dark"] {
 a.secondary-link:hover, button.secondary-link:hover { background: rgba(255,255,255,.05); color: white; }
 .secondary-link.muted { cursor: default; color: #a7b9bc; opacity: 1; }
 .profile-area { position: relative; }
-.profile-row { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 16px 7px 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.profile-row { width: 100%; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 10px; padding: 16px 7px 0; border: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; text-decoration: none; }
+a.profile-row { text-decoration: none; border-radius: 8px; transition: background .15s ease; }
+a.profile-row:hover { background: rgba(255,255,255,.05); }
+a.profile-row.active { background: rgba(255,255,255,.08); }
+.profile-guest-bar { display: flex; align-items: center; justify-content: flex-end; padding: 4px 7px 0; }
+.profile-guest-admin { color: #f1bd7d; font-size: 10px; font-weight: 600; text-decoration: none; }
+.profile-guest-admin:hover { text-decoration: underline; }
+.top-login-link.active { border-color: var(--cyan-dark); background: rgba(36,94,93,.1); }
 .avatar, .top-avatar { display: grid; place-items: center; border-radius: 50%; background: #d1e8e5; color: #245e5d; font-weight: 750; }
 .avatar { width: 34px; height: 34px; font-size: 12px; }
 .top-avatar { width: 29px; height: 29px; padding: 0; border: 0; font-size: 10px; cursor: pointer; }

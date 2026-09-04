@@ -354,6 +354,22 @@ class SpringRunnerProductionTopologyTests(TestCase):
         self.assertIs(True, runner["networks"]["spring-runner-edge"]["internal"])
         self.assertIs(True, runner["networks"]["spring-runner-broker"]["internal"])
 
+    def test_control_network_cannot_collapse_into_another_runner_network(self) -> None:
+        compose = TOPOLOGY.read_yaml(TOPOLOGY.ContractPaths().runner_compose)
+        environment = self.valid_environment_values(Path("/secure/runner.env"))
+        environment["ELMOS_SPRING_RUNNER_CONTROL_NETWORK"] = (
+            "elmos-spring-runner-broker"
+        )
+        errors: list[str] = []
+        TOPOLOGY.validate_resolved_network_isolation(errors, compose, environment)
+        self.assertTrue(any("distinct actual names" in item for item in errors), errors)
+        with self.assertRaisesRegex(ValueError, "distinct actual network names"):
+            TOPOLOGY.expected_service_networks(
+                compose,
+                compose["services"]["spring-runner-broker"],
+                environment,
+            )
+
     def test_ingress_exposes_only_exact_hmac_post_routes(self) -> None:
         config = TOPOLOGY.ContractPaths().ingress_config.read_text(encoding="utf-8")
         errors: list[str] = []
@@ -361,6 +377,15 @@ class SpringRunnerProductionTopologyTests(TestCase):
         self.assertEqual([], errors)
         self.assertEqual(3, config.count("location = /internal/v1/spring-"))
         self.assertNotIn("listen 8082", config)
+
+        malicious = config.replace(
+            "    location / {",
+            "    location = /tls-key { alias /run/secrets/tls/tls.key; }\n\n    location / {",
+            1,
+        )
+        errors = []
+        TOPOLOGY.validate_ingress(errors, malicious)
+        self.assertTrue(any("byte-for-byte" in item for item in errors), errors)
 
     def test_ingress_body_limits_match_controller_allocation_bounds(self) -> None:
         config = TOPOLOGY.ContractPaths().ingress_config.read_text(encoding="utf-8")
@@ -722,6 +747,44 @@ class SpringRunnerProductionTopologyTests(TestCase):
                 {"MUTABLE_ROOT": alias},
             )
         self.assertTrue(any("must not equal, contain" in item for item in errors), errors)
+
+    def test_operational_roots_are_pairwise_path_and_inode_isolated(self) -> None:
+        cases = (
+            (Path("/srv/workspace"), Path("/srv/workspace")),
+            (Path("/srv/workspace"), Path("/srv/workspace/replay")),
+            (Path("/srv/evidence/archive"), Path("/srv/evidence")),
+        )
+        for left, right in cases:
+            with self.subTest(left=left, right=right):
+                errors: list[str] = []
+                TOPOLOGY.validate_operational_root_isolation(
+                    errors,
+                    {"LEFT_ROOT": left, "RIGHT_ROOT": right},
+                )
+                self.assertTrue(any("must not equal, contain" in item for item in errors))
+
+        errors = []
+        TOPOLOGY.validate_operational_root_isolation(
+            errors,
+            {
+                "WORKSPACE_ROOT": Path("/srv/workspace"),
+                "REPLAY_ROOT": Path("/srv/replay"),
+            },
+        )
+        self.assertEqual([], errors)
+
+        with tempfile.TemporaryDirectory(prefix="spring-runner-root-alias-") as directory:
+            base = Path(directory).resolve()
+            first = base / "first"
+            first.write_bytes(b"identity")
+            second = base / "second"
+            os.link(first, second)
+            errors = []
+            TOPOLOGY.validate_operational_root_isolation(
+                errors,
+                {"FIRST_ROOT": first, "SECOND_ROOT": second},
+            )
+        self.assertTrue(any("or alias" in item for item in errors), errors)
 
     def test_compose_ps_rejects_duplicate_missing_extra_and_reused_ids(self) -> None:
         environment = {

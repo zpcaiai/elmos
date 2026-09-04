@@ -1,9 +1,11 @@
 import importlib.util
+import io
 import os
 import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from pathlib import Path
 from unittest import mock
 
@@ -129,6 +131,16 @@ def write_compose_environment_file(
 
 
 class SpringLaunchReadinessTests(unittest.TestCase):
+    @staticmethod
+    def load_validator(name: str):
+        specification = importlib.util.spec_from_file_location(name, SCRIPT)
+        if specification is None or specification.loader is None:
+            raise RuntimeError(f"Cannot load spec for {name}")
+        validator = importlib.util.module_from_spec(specification)
+        sys.modules[specification.name] = validator
+        specification.loader.exec_module(validator)
+        return validator
+
     def test_repository_contract_is_ready_only_for_external_gate(self):
         result = subprocess.run([sys.executable, str(SCRIPT)], text=True, capture_output=True)
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
@@ -268,13 +280,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 )
 
     def test_production_https_origin_rejects_reserved_names_and_addresses(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_https", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_https")
 
         for endpoint in (
             "https://runner.example.test",
@@ -996,11 +1002,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             self.assertIn("must be owned by the current UID/GID", result.stderr)
 
     def test_environment_file_rejects_identity_or_size_change_after_read(self):
-        specification = importlib.util.spec_from_file_location("spring_launch_validator", SCRIPT)
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator")
         real_fstat = os.fstat
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -1028,13 +1030,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                     self.assertIn("Spring environment file identity or size changed while it was being read", errors)
 
     def test_environment_file_rejects_ancestor_identity_change_during_read(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_ancestor_race", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_ancestor_race")
         real_lstat = Path.lstat
 
         with tempfile.TemporaryDirectory() as temporary:
@@ -1144,13 +1140,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 self.assertIn("must not have leading or trailing whitespace", result.stderr)
 
     def test_runtime_paths_bind_owner_group_and_secret_parent_contract(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_runtime_owner", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_runtime_owner")
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -1183,13 +1173,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         self.assertIn("parent directory", parent_failure or "")
 
     def test_runtime_paths_reject_writable_non_sticky_ancestors(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_runtime_ancestors", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_runtime_ancestors")
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -1218,13 +1202,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         )
 
     def test_security_sensitive_paths_reject_foreign_owned_ancestors(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_foreign_ancestors", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_foreign_ancestors")
         real_lstat = Path.lstat
         foreign_uid = max(os.getuid(), 0) + 20_000
 
@@ -1373,13 +1351,7 @@ class SpringLaunchReadinessTests(unittest.TestCase):
                 self.assertIn(expected, result.stderr)
 
     def test_cross_file_secret_rotation_cannot_escape_the_group_snapshot(self):
-        specification = importlib.util.spec_from_file_location(
-            "spring_launch_validator_secret_group", SCRIPT
-        )
-        self.assertIsNotNone(specification)
-        self.assertIsNotNone(specification.loader)
-        validator = importlib.util.module_from_spec(specification)
-        specification.loader.exec_module(validator)
+        validator = self.load_validator("spring_launch_validator_secret_group")
 
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -1539,26 +1511,145 @@ class SpringLaunchReadinessTests(unittest.TestCase):
             ("spring-web-runtime-attestation", web_values),
         ):
             for attacked in values:
-                with self.subTest(target=target, attacked=attacked), tempfile.TemporaryDirectory() as temporary:
-                    marker = Path(temporary) / "shell-injection-marker"
-                    supplied = dict(values)
-                    supplied[attacked] = f'"; touch {marker}; #'
-                    result = subprocess.run(
-                        [
-                            "make",
-                            "--no-print-directory",
-                            "-f",
-                            str(MAKEFILE),
-                            target,
-                            "BATCH30_PYTHON=true",
-                            *(f"{name}={value}" for name, value in supplied.items()),
-                        ],
-                        cwd=ROOT,
-                        text=True,
-                        capture_output=True,
-                    )
-                    self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-                    self.assertFalse(marker.exists(), f"{attacked} executed shell input")
+                for attack_kind in ("shell", "make"):
+                    with (
+                        self.subTest(
+                            target=target,
+                            attacked=attacked,
+                            attack_kind=attack_kind,
+                        ),
+                        tempfile.TemporaryDirectory() as temporary,
+                    ):
+                        marker = Path(temporary) / "injection-marker"
+                        supplied = dict(values)
+                        supplied[attacked] = (
+                            f'"; touch {marker}; #'
+                            if attack_kind == "shell"
+                            else f"$(shell touch {marker})"
+                        )
+                        result = subprocess.run(
+                            [
+                                "make",
+                                "--no-print-directory",
+                                "-f",
+                                str(MAKEFILE),
+                                target,
+                                "BATCH30_PYTHON=true",
+                                *(f"{name}={value}" for name, value in supplied.items()),
+                            ],
+                            cwd=ROOT,
+                            text=True,
+                            capture_output=True,
+                        )
+                        self.assertEqual(
+                            0, result.returncode, result.stdout + result.stderr
+                        )
+                        self.assertFalse(
+                            marker.exists(),
+                            f"{attacked} executed {attack_kind} input",
+                        )
+
+    def test_external_verification_rechecks_environment_and_mount_snapshots(self):
+        specification = importlib.util.spec_from_file_location(
+            "spring_launch_validator_post_external_snapshot", SCRIPT
+        )
+        self.assertIsNotNone(specification)
+        self.assertIsNotNone(specification.loader)
+        validator = importlib.util.module_from_spec(specification)
+        sys.modules[specification.name] = validator
+        specification.loader.exec_module(validator)
+
+        for rotated in ("environment", "secret"):
+            with self.subTest(rotated=rotated), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary).resolve()
+                values = complete_environment(root)
+                for name in (
+                    "ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL",
+                    "ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL",
+                    "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL",
+                ):
+                    values[name] = "https://runner.spring.acme"
+                spring_file = root / "spring.env"
+                compose_file = root / "elmos.env"
+                write_environment_file(spring_file, values)
+                write_compose_environment_file(compose_file, values)
+                engine_secret = Path(
+                    values["ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH"]
+                )
+
+                def rotate_during_external_verification(*_args, **_kwargs):
+                    if rotated == "environment":
+                        replacement = root / "replacement-spring.env"
+                        write_environment_file(replacement, values)
+                        os.replace(replacement, spring_file)
+                    else:
+                        replacement = root / "replacement-engine-hmac"
+                        replacement.write_bytes(b"Z" * 32)
+                        replacement.chmod(0o600)
+                        os.replace(replacement, engine_secret)
+                    return {
+                        "evidence_status": "VERIFIED_EXTERNAL_RECEIPT",
+                        "external_evidence_intake": "VALIDATED_NOT_CERTIFIED",
+                        "certification": "NOT_CERTIFIED",
+                        "certification_promoted": False,
+                    }
+
+                arguments = [
+                    str(SCRIPT),
+                    "--environment-file",
+                    str(spring_file),
+                    "--compose-environment-file",
+                    str(compose_file),
+                    "--external-evidence",
+                    str(root / "receipt.json"),
+                    "--trust-store",
+                    str(root / "trust-store.json"),
+                    "--evidence-root",
+                    str(root),
+                    "--expected-revision",
+                    "a" * 40,
+                    "--expected-trust-store-digest",
+                    "sha256:" + "b" * 64,
+                    "--expected-environment-id",
+                    "production-1",
+                    "--expected-deployment-id",
+                    "deployment-1",
+                    "--expected-provider",
+                    "provider-1",
+                    "--expected-region",
+                    "region-1",
+                    "--expected-environment-class",
+                    "PRODUCTION",
+                    "--expected-worker-application-artifact-digest",
+                    "sha256:" + "c" * 64,
+                ]
+                stdout = io.StringIO()
+                stderr = io.StringIO()
+                with (
+                    mock.patch.object(sys, "argv", arguments),
+                    mock.patch.dict(os.environ, sanitized_environment(), clear=True),
+                    mock.patch.object(
+                        validator, "APPLICATION_RUNTIME_UID", os.getuid()
+                    ),
+                    mock.patch.object(
+                        validator, "APPLICATION_RUNTIME_GID", os.getgid()
+                    ),
+                    mock.patch.object(
+                        validator,
+                        "validate_external",
+                        side_effect=rotate_during_external_verification,
+                    ),
+                    redirect_stdout(stdout),
+                    redirect_stderr(stderr),
+                ):
+                    result = validator.main()
+
+                self.assertEqual(2, result, stdout.getvalue() + stderr.getvalue())
+                self.assertIn(
+                    "launch environment or mount binding changed during external evidence verification",
+                    stderr.getvalue(),
+                )
+                self.assertNotIn("EXTERNAL_GATE_VERIFIED", stdout.getvalue())
 
 
 if __name__ == "__main__":
