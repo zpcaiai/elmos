@@ -36,8 +36,10 @@ from scripts.batch30.spring_launch_evidence import (
     assemble_spring_launch_receipt,
     content_reference,
     expected_spring_worker_environment,
+    expected_web_console_environment,
     receipt_digest,
     spring_worker_configuration_digest,
+    web_console_configuration_digest,
     verify_spring_launch_receipt,
     verify_spring_launch_receipt_file,
 )
@@ -139,7 +141,7 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
             encoding="utf-8"
         )
         self.assertIn(
-            'ENTRYPOINT ["java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]',
+            'ENTRYPOINT ["/opt/java/openjdk/bin/java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]',
             dockerfile,
         )
         self.assertRegex(dockerfile, r"(?m)^CMD \[\]$")
@@ -379,19 +381,38 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "ELMOS_SPRING_UPGRADE_VERIFIER_ID": "independent-verifier-one",
             }
         )
+        worker_mounts = {
+            "/workspace/private-runner": ("/srv/elmos/spring-shared/runs", True),
+            "/run/secrets/elmos-verifier-hmac": ("/srv/elmos/spring-secrets/application/verifier.hmac", False),
+            "/run/secrets/elmos-transformer-hmac": ("/srv/elmos/spring-secrets/application/transformer.hmac", False),
+            "/run/secrets/elmos-runtime-hmac": ("/srv/elmos/spring-secrets/application/runtime.hmac", False),
+            "/run/secrets/elmos-spring-engine-hmac": ("/srv/elmos/spring-secrets/application/engine.hmac", False),
+            "/var/lib/elmos/spring-engine-auth-replay": ("/srv/elmos/spring-replay/application/engine", True),
+        }
         inspect_value = [
             {
-                "Name": "/elmos-java-engine-worker-1",
+                "Id": "a" * 64,
+                "Name": "/elmos-staging-java-engine-worker-1",
                 "Image": "sha256:" + "8" * 64,
+                "Path": "/opt/java/openjdk/bin/java",
+                "Args": [
+                    "-XX:MaxRAMPercentage=70",
+                    "-jar",
+                    "/app/app.jar",
+                ],
+                "State": {"Running": True, "Restarting": False, "Dead": False},
                 "Config": {
                     "Image": "elmos-java-engine-worker:staging-one",
                     "Entrypoint": [
-                        "java",
+                        "/opt/java/openjdk/bin/java",
                         "-XX:MaxRAMPercentage=70",
                         "-jar",
                         "/app/app.jar",
                     ],
                     "Cmd": [],
+                    "User": "10001:10001",
+                    "WorkingDir": "/app",
+                    "ExposedPorts": {"8081/tcp": {}},
                     "Labels": {
                         "com.docker.compose.project": "elmos-staging",
                         "com.docker.compose.service": "java-engine-worker",
@@ -401,6 +422,52 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                         for name, value in sorted(worker_environment.items())
                     ],
                 },
+                "HostConfig": {
+                    "ReadonlyRootfs": True,
+                    "Privileged": False,
+                    "PidMode": "",
+                    "IpcMode": "private",
+                    "UTSMode": "",
+                    "UsernsMode": "",
+                    "CgroupnsMode": "private",
+                    "AutoRemove": False,
+                    "PublishAllPorts": False,
+                    "Init": True,
+                    "PidsLimit": 1024,
+                    "CapAdd": None,
+                    "CapDrop": ["ALL"],
+                    "SecurityOpt": ["no-new-privileges:true"],
+                    "PortBindings": {},
+                    "Devices": [],
+                    "DeviceRequests": None,
+                    "VolumesFrom": None,
+                    "Links": None,
+                    "RestartPolicy": {"Name": "unless-stopped"},
+                    "Tmpfs": {
+                        "/tmp": "rw,noexec,nosuid,size=512m",
+                        "/home/elmos/.m2": "rw,noexec,nosuid,size=512m",
+                    },
+                    "NetworkMode": "elmos-staging_backend",
+                    "Binds": [
+                        f"{source}:{destination}:{'rw' if writable else 'ro'}"
+                        for destination, (source, writable) in worker_mounts.items()
+                    ],
+                },
+                "NetworkSettings": {
+                    "Networks": {"elmos-staging_backend": {}},
+                    "Ports": {"8081/tcp": None},
+                },
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": source,
+                        "Destination": destination,
+                        "RW": writable,
+                        "Mode": "rw" if writable else "ro",
+                        "Propagation": "rprivate",
+                    }
+                    for destination, (source, writable) in worker_mounts.items()
+                ],
             }
         ]
         container_inspect = self.evidence_root / "java-engine-worker.inspect.json"
@@ -411,6 +478,139 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "verification": {
                 "mode": "LOCAL_BYTES",
                 "local_uri": container_inspect_ref["uri"],
+            },
+        }
+        web_environment = expected_web_console_environment()
+        web_mounts = {
+            "/run/secrets/elmos/resend-api-key": ("/srv/elmos/secrets/resend-api-key", False),
+            "/run/secrets/elmos-spring-engine-hmac": ("/srv/elmos/spring-secrets/application/engine.hmac", False),
+        }
+        web_inspect_value = [
+            {
+                "Id": "b" * 64,
+                "Name": "/elmos-staging-web-console-1",
+                "Image": "sha256:" + "9" * 64,
+                "Path": "/usr/local/bin/docker-entrypoint.sh",
+                "Args": [
+                    "/usr/local/bin/node",
+                    "/workspace/apps/web-console/node_modules/next/dist/bin/next",
+                    "start",
+                    "--hostname",
+                    "0.0.0.0",
+                    "--port",
+                    "3000",
+                ],
+                "State": {"Running": True, "Restarting": False, "Dead": False},
+                "Config": {
+                    "Image": "elmos-web-console:staging-one",
+                    "Entrypoint": ["/usr/local/bin/docker-entrypoint.sh"],
+                    "Cmd": [
+                        "/usr/local/bin/node",
+                        "/workspace/apps/web-console/node_modules/next/dist/bin/next",
+                        "start",
+                        "--hostname",
+                        "0.0.0.0",
+                        "--port",
+                        "3000",
+                    ],
+                    "User": "10001:10001",
+                    "WorkingDir": "/workspace/apps/web-console",
+                    "ExposedPorts": {"3000/tcp": {}},
+                    "Labels": {
+                        "com.docker.compose.project": "elmos-staging",
+                        "com.docker.compose.service": "web-console",
+                    },
+                    "Env": [
+                        f"{name}={value}"
+                        for name, value in sorted(web_environment.items())
+                    ],
+                },
+                "HostConfig": {
+                    "ReadonlyRootfs": True,
+                    "Privileged": False,
+                    "PidMode": "",
+                    "IpcMode": "private",
+                    "UTSMode": "",
+                    "UsernsMode": "",
+                    "CgroupnsMode": "private",
+                    "AutoRemove": False,
+                    "PublishAllPorts": False,
+                    "Init": True,
+                    "PidsLimit": 0,
+                    "CapAdd": None,
+                    "CapDrop": ["ALL"],
+                    "SecurityOpt": ["no-new-privileges:true"],
+                    "PortBindings": {},
+                    "Devices": [],
+                    "DeviceRequests": None,
+                    "VolumesFrom": None,
+                    "Links": None,
+                    "RestartPolicy": {"Name": "unless-stopped"},
+                    "Tmpfs": {"/tmp": "rw,noexec,nosuid,size=64m"},
+                    "NetworkMode": "elmos-staging_edge",
+                    "Binds": [
+                        f"{source}:{destination}:{'rw' if writable else 'ro'}"
+                        for destination, (source, writable) in web_mounts.items()
+                    ],
+                },
+                "NetworkSettings": {
+                    "Networks": {
+                        "elmos-staging_edge": {},
+                        "elmos-staging_backend": {},
+                    },
+                    "Ports": {"3000/tcp": None},
+                },
+                "Mounts": [
+                    {
+                        "Type": "bind",
+                        "Source": source,
+                        "Destination": destination,
+                        "RW": writable,
+                        "Mode": "rw" if writable else "ro",
+                        "Propagation": "rprivate",
+                    }
+                    for destination, (source, writable) in web_mounts.items()
+                ],
+            }
+        ]
+        web_inspect = self.evidence_root / "web-console.inspect.json"
+        self.write_json(web_inspect, web_inspect_value)
+        web_inspect_ref = self.ref(web_inspect)
+        web_inspect_evidence = {
+            **web_inspect_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": web_inspect_ref["uri"],
+            },
+        }
+        image_attestation = self.evidence_root / "worker-image-artifact-attestation.json"
+        self.write_json(
+            image_attestation,
+            {
+                "schema_version": 1,
+                "namespace": NAMESPACE,
+                "method": "OCI_IMAGE_CONTENT_EXTRACTION",
+                "builder_identity": "staging-image-extractor",
+                "build_invocation_id": "build-one",
+                "deployed_revision": self.REVISION,
+                "image_digest": "sha256:" + "8" * 64,
+                "image_reference": "elmos-java-engine-worker:staging-one",
+                "artifact_path": "/app/app.jar",
+                "artifact_digest": "sha256:" + "c" * 64,
+                "extracted_at": "2026-09-04T08:45:00Z",
+                "outcome": "VERIFIED",
+                "synthetic": False,
+                "unknowns": [],
+                "not_run": [],
+            },
+            canonical=True,
+        )
+        image_attestation_ref = self.ref(image_attestation)
+        image_attestation_evidence = {
+            **image_attestation_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": image_attestation_ref["uri"],
             },
         }
         environment_value = {
@@ -429,13 +629,20 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "configuration_digest": "sha256:" + "1" * 64,
             "compose_environment_file_digest": "sha256:" + "7" * 64,
             "container_inspect": container_inspect_evidence,
+            "web_console_container_inspect": web_inspect_evidence,
             "effective_spring_configuration_digest": spring_worker_configuration_digest(
                 worker_environment
             ),
+            "effective_web_console_configuration_digest": web_console_configuration_digest(
+                web_environment
+            ),
+            "worker_image_artifact_attestation": image_attestation_evidence,
+            "worker_application_artifact_digest": "sha256:" + "c" * 64,
             "network_policy_digest": "sha256:" + "2" * 64,
             "rootless_policy_digest": "sha256:" + "3" * 64,
             "runtime_image_digests": {
                 "worker": "sha256:" + "8" * 64,
+                "web": "sha256:" + "9" * 64,
                 "proxy": "sha256:" + "4" * 64,
                 "transformer": "sha256:" + "5" * 64,
                 "runner": "sha256:" + "6" * 64,
@@ -743,6 +950,41 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         )
         return json.loads(inspect_path.read_text(encoding="utf-8"))
 
+    def rewrite_environment_local_json(
+        self,
+        receipt: dict[str, object],
+        field: str,
+        value: object,
+    ) -> None:
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        evidence_path = Path(
+            environment[field]["verification"]["local_uri"].removeprefix("file://")
+        )
+        self.write_json(evidence_path, value, canonical=True)
+        reference = self.ref(evidence_path)
+        environment[field] = {
+            **reference,
+            "verification": {"mode": "LOCAL_BYTES", "local_uri": reference["uri"]},
+        }
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+
+    @staticmethod
+    def environment_local_json_document(
+        receipt: dict[str, object], field: str
+    ) -> object:
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        evidence_path = Path(
+            environment[field]["verification"]["local_uri"].removeprefix("file://")
+        )
+        return json.loads(evidence_path.read_text(encoding="utf-8"))
+
     def verify(
         self, receipt: dict[str, object], **options: object
     ) -> dict[str, object]:
@@ -995,6 +1237,56 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 self.rewrite_container_inspect(receipt, value=document)
                 with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
                     self.verify(receipt)
+
+    def test_web_console_inspect_binds_auth_route_and_shared_secret(self) -> None:
+        receipt = self.make_receipt()
+        document = self.environment_local_json_document(
+            receipt, "web_console_container_inspect"
+        )
+        document[0]["Config"]["Env"] = [
+            "JAVA_ENGINE_BASE_URL=https://attacker.invalid"
+            if value.startswith("JAVA_ENGINE_BASE_URL=")
+            else value
+            for value in document[0]["Config"]["Env"]
+        ]
+        self.rewrite_environment_local_json(
+            receipt, "web_console_container_inspect", document
+        )
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "controlled value"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.environment_local_json_document(
+            receipt, "web_console_container_inspect"
+        )
+        for mount in document[0]["Mounts"]:
+            if mount["Destination"] == "/run/secrets/elmos-spring-engine-hmac":
+                mount["Source"] = "/srv/elmos/spring-secrets/other/engine.hmac"
+        document[0]["HostConfig"]["Binds"] = [
+            f"{mount['Source']}:{mount['Destination']}:{'rw' if mount['RW'] else 'ro'}"
+            for mount in document[0]["Mounts"]
+        ]
+        self.rewrite_environment_local_json(
+            receipt, "web_console_container_inspect", document
+        )
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "shared authenticated deployment"
+        ):
+            self.verify(receipt)
+
+    def test_worker_image_attestation_binds_the_running_jar(self) -> None:
+        receipt = self.make_receipt()
+        attestation = self.environment_local_json_document(
+            receipt, "worker_image_artifact_attestation"
+        )
+        attestation["artifact_digest"] = "sha256:" + "d" * 64
+        self.rewrite_environment_local_json(
+            receipt, "worker_image_artifact_attestation", attestation
+        )
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError, "does not match the deployed worker image and artifact"
+        ):
+            self.verify(receipt)
 
     def test_container_inspect_rejects_effective_security_overrides(self) -> None:
         for assignment, message in (

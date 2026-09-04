@@ -175,7 +175,12 @@ SPRING_WORKER_EXECUTION_ENVIRONMENT = {
     "JAVA_HOME": "/opt/java/openjdk",
     "MAVEN_HOME": "/usr/share/maven",
     "MAVEN_CONFIG": "/home/elmos/.m2",
+    "MAVEN_VERSION": "3.9.11",
     "HOME": "/home/elmos",
+    "LANG": "C.UTF-8",
+    "LANGUAGE": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "JAVA_VERSION": "21",
 }
 SPRING_WORKER_DYNAMIC_ENV_KEYS = (
     "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL",
@@ -242,6 +247,9 @@ WEB_CONSOLE_CONFIGURATION_ENVIRONMENT = {
     "ELMOS_SPRING_PROXY_MULTI_TENANT": "true",
     "ELMOS_SPRING_ENGINE_AUTH_ENABLED": "true",
     "ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE": "/run/secrets/elmos-spring-engine-hmac",
+    "ELMOS_TRUSTED_INTERNAL_HTTP": "true",
+    "JAVA_ENGINE_BASE_URL": "http://java-engine-worker:8081",
+    "ELMOS_CONTROL_PLANE_BASE_URL": "http://control-plane:8080",
 }
 DOCKER_ENVIRONMENT_ASSIGNMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.DOTALL)
 DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
@@ -389,6 +397,11 @@ class ContainerRuntimeObservation:
     configured_image: str
     engine_secret_source: str
     backend_network: str
+    mount_sources: dict[str, str]
+    container_id: str
+    container_name: str
+    compose_project: str
+    sanitized_runtime_shape: dict[str, Any]
 
 
 @dataclass(frozen=True)
@@ -1492,6 +1505,44 @@ def expected_spring_worker_configuration_digest(
     )
 
 
+def expected_web_console_environment() -> dict[str, str]:
+    """Return the exact non-secret environment of the production Web BFF.
+
+    The environment is intentionally closed: accepting extra variables here
+    would let a deployment redirect trusted internal traffic or weaken the
+    Spring engine authentication boundary without changing its receipt.
+    """
+
+    return dict(WEB_CONSOLE_CONFIGURATION_ENVIRONMENT)
+
+
+def web_console_configuration_digest(environment: Mapping[str, str]) -> str:
+    """Digest the exact Web BFF environment bound by container evidence."""
+
+    expected = expected_web_console_environment()
+    if set(environment) != set(expected):
+        raise SpringLaunchEvidenceError(
+            "effective Web console environment does not match the controlled key set"
+        )
+    values: dict[str, str] = {}
+    for name in sorted(expected):
+        value = environment[name]
+        if not isinstance(value, str) or value != expected[name]:
+            raise SpringLaunchEvidenceError(
+                f"effective Web console environment {name} does not match the controlled value"
+            )
+        values[name] = value
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-effective-web-console-environment-v1",
+            "service": "web-console",
+            "values": values,
+        }
+    )
+
+
 def spring_worker_configuration_digest(environment: Mapping[str, str]) -> str:
     """Digest normalized, non-secret configuration for ``java-engine-worker``.
 
@@ -1552,28 +1603,166 @@ def _snapshot_local_json_evidence_reference(
     )
 
 
-def _spring_worker_environment_from_inspect(
-    content: bytes,
+def _container_environment_assignments(value: Any, label: str) -> dict[str, str]:
+    if not isinstance(value, list):
+        raise SpringLaunchEvidenceError(f"{label} must be an array")
+    values: dict[str, str] = {}
+    normalized_names: dict[str, str] = {}
+    for index, raw in enumerate(value):
+        if not isinstance(raw, str):
+            raise SpringLaunchEvidenceError(f"{label}[{index}] must be a string assignment")
+        match = DOCKER_ENVIRONMENT_ASSIGNMENT.fullmatch(raw)
+        if match is None:
+            raise SpringLaunchEvidenceError(
+                f"{label}[{index}] must be an exact NAME=VALUE assignment"
+            )
+        name, item = match.groups()
+        if name in values:
+            raise SpringLaunchEvidenceError(f"{label} contains duplicate key {name}")
+        normalized = _normalized_environment_name(name)
+        prior = normalized_names.setdefault(normalized, name)
+        if prior != name:
+            raise SpringLaunchEvidenceError(
+                f"{label} contains relaxed-binding aliases {prior} and {name}"
+            )
+        values[name] = item
+    return values
+
+
+def _mount_source_identity_digest(source: str) -> str:
+    return "sha256:" + hashlib.sha256(source.encode("utf-8")).hexdigest()
+
+
+def _validated_mount_sources(
+    value: Any,
     *,
     label: str,
-    expected_image_digest: str,
+    expected_destinations: Mapping[str, bool],
 ) -> dict[str, str]:
-    document = _load_strict_json_bytes(content, label)
-    if not isinstance(document, list) or len(document) != 1:
+    if not isinstance(value, list):
+        raise SpringLaunchEvidenceError(f"{label} must be an array")
+    sources: dict[str, str] = {}
+    for index, item in enumerate(value):
+        mount = _object(item, f"{label}[{index}]")
+        destination = mount.get("Destination")
+        if not isinstance(destination, str) or destination not in expected_destinations:
+            raise SpringLaunchEvidenceError(
+                f"{label} contains an undeclared mount destination {destination!r}"
+            )
+        if destination in sources:
+            raise SpringLaunchEvidenceError(
+                f"{label} contains duplicate mount destination {destination}"
+            )
+        expected_rw = expected_destinations[destination]
+        expected_mode = "rw" if expected_rw else "ro"
+        if (
+            mount.get("Type") != "bind"
+            or mount.get("RW") is not expected_rw
+            or mount.get("Mode") != expected_mode
+            or mount.get("Propagation") != "rprivate"
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} mount {destination} must be an exact {expected_mode} rprivate bind"
+            )
+        source = mount.get("Source")
+        if (
+            not isinstance(source, str)
+            or not source
+            or source != source.strip()
+            or "\x00" in source
+            or not Path(source).is_absolute()
+            or Path(source) == Path("/")
+            or Path(source) != Path(os.path.normpath(source))
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label} mount {destination} must use a normalized absolute non-root host source"
+            )
+        sources[destination] = source
+    if set(sources) != set(expected_destinations):
+        missing = sorted(set(expected_destinations) - set(sources))
         raise SpringLaunchEvidenceError(
-            f"{label} must contain exactly one java-engine-worker container"
+            f"{label} is missing required mount destinations: {', '.join(missing)}"
         )
-    container = _object(document[0], f"{label}[0]")
-    config = _object(container.get("Config"), f"{label}[0].Config")
-    labels = _object(config.get("Labels"), f"{label}[0].Config.Labels")
-    if labels.get("com.docker.compose.service") != "java-engine-worker":
+    if len(set(sources.values())) != len(sources):
+        raise SpringLaunchEvidenceError(f"{label} host mount sources must be distinct")
+    return sources
+
+
+def _validate_tmpfs(
+    value: Any,
+    *,
+    label: str,
+    expected_sizes: Mapping[str, frozenset[str]],
+) -> None:
+    tmpfs = _object(value, label)
+    if set(tmpfs) != set(expected_sizes):
         raise SpringLaunchEvidenceError(
-            f"{label} must identify the unique java-engine-worker Compose service"
+            f"{label} mount points do not match the controlled Compose contract"
         )
-    image_digest = _digest(container.get("Image"), f"{label}[0].Image")
+    for destination, rendered in tmpfs.items():
+        if not isinstance(rendered, str):
+            raise SpringLaunchEvidenceError(f"{label}.{destination} options must be a string")
+        options = rendered.split(",")
+        size_options = {item for item in options if item.startswith("size=")}
+        if (
+            set(options) - size_options != {"rw", "noexec", "nosuid"}
+            or len(size_options) != 1
+            or next(iter(size_options)).removeprefix("size=") not in expected_sizes[destination]
+        ):
+            raise SpringLaunchEvidenceError(
+                f"{label}.{destination} must be rw,noexec,nosuid with the exact bounded size"
+            )
+
+
+def _validate_container_runtime_security(
+    container: dict[str, Any],
+    config: dict[str, Any],
+    *,
+    label: str,
+    service: str,
+    expected_image_digest: str,
+    expected_entrypoint: tuple[str, ...],
+    expected_command: tuple[str, ...] | None,
+    expected_working_directory: str,
+    expected_mounts: Mapping[str, bool],
+    expected_network_suffixes: frozenset[str],
+    expected_tmpfs_sizes: Mapping[str, frozenset[str]],
+    expected_pids_limit: int,
+    expected_exposed_port: str,
+) -> ContainerRuntimeObservation:
+    labels = _object(config.get("Labels"), f"{label}.Config.Labels")
+    if labels.get("com.docker.compose.service") != service:
+        raise SpringLaunchEvidenceError(
+            f"{label} must identify the unique {service} Compose service"
+        )
+    project = _identity(
+        labels.get("com.docker.compose.project"), f"{label} Compose project identity"
+    )
+    container_id = container.get("Id")
+    if not isinstance(container_id, str) or re.fullmatch(r"[0-9a-f]{64}", container_id) is None:
+        raise SpringLaunchEvidenceError(f"{label}.Id must be an exact Docker container ID")
+    container_name = container.get("Name")
+    if (
+        not isinstance(container_name, str)
+        or not container_name.startswith("/")
+        or service not in container_name
+        or project not in container_name
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label}.Name does not bind the Compose project and service"
+        )
+    state = _object(container.get("State"), f"{label}.State")
+    if (
+        state.get("Running") is not True
+        or state.get("Restarting") is not False
+        or state.get("Dead") is not False
+    ):
+        raise SpringLaunchEvidenceError(f"{label}.State must be stably running")
+    image_digest = _digest(container.get("Image"), f"{label}.Image")
     if image_digest != expected_image_digest:
+        image_label = "worker" if service == "java-engine-worker" else service
         raise SpringLaunchEvidenceError(
-            f"{label} immutable worker image digest does not match the signed environment manifest"
+            f"{label} immutable {image_label} image digest does not match the signed environment manifest"
         )
     configured_image = config.get("Image")
     if (
@@ -1585,48 +1774,216 @@ def _spring_worker_environment_from_inspect(
         or configured_image.casefold().endswith(":latest")
     ):
         raise SpringLaunchEvidenceError(
-            f"{label}[0].Config.Image must be a bounded non-latest image reference"
+            f"{label}.Config.Image must be a bounded non-latest image reference"
         )
     entrypoint = config.get("Entrypoint")
-    if (
-        not isinstance(entrypoint, list)
-        or tuple(entrypoint) != SPRING_WORKER_CONTAINER_ENTRYPOINT
-        or any(not isinstance(item, str) for item in entrypoint)
-    ):
+    if not isinstance(entrypoint, list) or tuple(entrypoint) != expected_entrypoint:
         raise SpringLaunchEvidenceError(
-            f"{label}[0].Config.Entrypoint must exactly match the controlled worker image entrypoint"
+            f"{label}.Config.Entrypoint must exactly match the controlled {service} image entrypoint"
         )
     command = config.get("Cmd")
-    if command is not None and command != []:
+    if expected_command is None:
+        if command is not None and command != []:
+            raise SpringLaunchEvidenceError(
+                f"{label}.Config.Cmd must be null or an empty array"
+            )
+    elif not isinstance(command, list) or tuple(command) != expected_command:
         raise SpringLaunchEvidenceError(
-            f"{label}[0].Config.Cmd must be null or an empty array so command-line configuration cannot override the worker contract"
+            f"{label}.Config.Cmd must exactly match the controlled {service} command"
         )
-    entries = config.get("Env")
-    if not isinstance(entries, list):
-        raise SpringLaunchEvidenceError(f"{label} Config.Env must be an array")
-    values: dict[str, str] = {}
-    normalized_names: dict[str, str] = {}
-    for index, raw in enumerate(entries):
-        if not isinstance(raw, str):
+    expected_process_args = expected_entrypoint[1:] + (
+        () if expected_command is None else expected_command
+    )
+    if (
+        container.get("Path") != expected_entrypoint[0]
+        or container.get("Args") != list(expected_process_args)
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label} running Path/Args do not match the controlled {service} process"
+        )
+    if config.get("User") != "10001:10001":
+        raise SpringLaunchEvidenceError(f"{label}.Config.User must equal 10001:10001")
+    if config.get("WorkingDir") != expected_working_directory:
+        raise SpringLaunchEvidenceError(
+            f"{label}.Config.WorkingDir must equal {expected_working_directory}"
+        )
+    exposed_ports = _object(config.get("ExposedPorts"), f"{label}.Config.ExposedPorts")
+    if set(exposed_ports) != {expected_exposed_port}:
+        raise SpringLaunchEvidenceError(
+            f"{label}.Config.ExposedPorts must contain only {expected_exposed_port}"
+        )
+
+    host = _object(container.get("HostConfig"), f"{label}.HostConfig")
+    exact = {
+        "ReadonlyRootfs": True,
+        "Privileged": False,
+        "PidMode": "",
+        "IpcMode": "private",
+        "UTSMode": "",
+        "UsernsMode": "",
+        "CgroupnsMode": "private",
+        "AutoRemove": False,
+        "PublishAllPorts": False,
+        "Init": True,
+        "PidsLimit": expected_pids_limit,
+    }
+    for name, expected in exact.items():
+        actual = host.get(name)
+        if type(actual) is not type(expected) or actual != expected:
             raise SpringLaunchEvidenceError(
-                f"{label} Config.Env[{index}] must be a string assignment"
+                f"{label}.HostConfig.{name} must equal {expected!r}"
             )
-        match = DOCKER_ENVIRONMENT_ASSIGNMENT.fullmatch(raw)
-        if match is None:
-            raise SpringLaunchEvidenceError(
-                f"{label} Config.Env[{index}] must be an exact NAME=VALUE assignment"
-            )
-        name, value = match.groups()
-        if name in values:
-            raise SpringLaunchEvidenceError(
-                f"{label} Config.Env contains duplicate key {name}"
-            )
+    if host.get("CapAdd") not in (None, []):
+        raise SpringLaunchEvidenceError(f"{label}.HostConfig.CapAdd must be empty")
+    if host.get("CapDrop") != ["ALL"]:
+        raise SpringLaunchEvidenceError(f"{label}.HostConfig.CapDrop must equal ALL")
+    if host.get("SecurityOpt") != ["no-new-privileges:true"]:
+        raise SpringLaunchEvidenceError(
+            f"{label}.HostConfig.SecurityOpt must enable only no-new-privileges"
+        )
+    if host.get("PortBindings") not in (None, {}):
+        raise SpringLaunchEvidenceError(f"{label}.HostConfig.PortBindings must be empty")
+    for name in (
+        "Devices",
+        "DeviceRequests",
+        "VolumesFrom",
+        "Links",
+        "ExtraHosts",
+        "Dns",
+        "DnsOptions",
+        "DnsSearch",
+        "GroupAdd",
+    ):
+        if host.get(name) not in (None, []):
+            raise SpringLaunchEvidenceError(f"{label}.HostConfig.{name} must be empty")
+    restart = _object(host.get("RestartPolicy"), f"{label}.HostConfig.RestartPolicy")
+    if restart.get("Name") != "unless-stopped":
+        raise SpringLaunchEvidenceError(
+            f"{label}.HostConfig.RestartPolicy.Name must equal unless-stopped"
+        )
+    _validate_tmpfs(
+        host.get("Tmpfs"),
+        label=f"{label}.HostConfig.Tmpfs",
+        expected_sizes=expected_tmpfs_sizes,
+    )
+    network_settings = _object(container.get("NetworkSettings"), f"{label}.NetworkSettings")
+    networks = _object(network_settings.get("Networks"), f"{label}.NetworkSettings.Networks")
+    expected_networks = {f"{project}{suffix}" for suffix in expected_network_suffixes}
+    if set(networks) != expected_networks:
+        raise SpringLaunchEvidenceError(
+            f"{label} networks must exactly match the controlled Compose topology"
+        )
+    if host.get("NetworkMode") not in expected_networks:
+        raise SpringLaunchEvidenceError(
+            f"{label}.HostConfig.NetworkMode must select one controlled service network"
+        )
+    ports = _object(network_settings.get("Ports"), f"{label}.NetworkSettings.Ports")
+    if ports != {expected_exposed_port: None}:
+        raise SpringLaunchEvidenceError(
+            f"{label}.NetworkSettings.Ports must expose only {expected_exposed_port} without host publication"
+        )
+    sources = _validated_mount_sources(
+        container.get("Mounts"),
+        label=f"{label}.Mounts",
+        expected_destinations=expected_mounts,
+    )
+    expected_binds = {
+        f"{source}:{destination}:{'rw' if expected_mounts[destination] else 'ro'}"
+        for destination, source in sources.items()
+    }
+    binds = host.get("Binds")
+    if not isinstance(binds, list) or set(binds) != expected_binds or len(binds) != len(expected_binds):
+        raise SpringLaunchEvidenceError(
+            f"{label}.HostConfig.Binds must exactly match the inspected rprivate mounts"
+        )
+    environment = _container_environment_assignments(
+        config.get("Env"), f"{label}.Config.Env"
+    )
+    sanitized_runtime_shape = {
+        "container_id": container_id,
+        "container_name": container_name,
+        "compose_project": project,
+        "service": service,
+        "image_digest": image_digest,
+        "image_reference": configured_image,
+        "path": expected_entrypoint[0],
+        "args": list(expected_process_args),
+        "entrypoint": list(expected_entrypoint),
+        "command": [] if expected_command is None else list(expected_command),
+        "working_directory": expected_working_directory,
+        "user": "10001:10001",
+        "readonly_rootfs": True,
+        "privileged": False,
+        "cap_drop": ["ALL"],
+        "security_opt": ["no-new-privileges:true"],
+        "network_names": sorted(networks),
+        "network_mode": host["NetworkMode"],
+        "mounts": [
+            {
+                "destination": destination,
+                "read_write": expected_mounts[destination],
+                "mode": "rw" if expected_mounts[destination] else "ro",
+                "propagation": "rprivate",
+                "source_identity_digest": _mount_source_identity_digest(source),
+            }
+            for destination, source in sorted(sources.items())
+        ],
+    }
+    return ContainerRuntimeObservation(
+        environment=environment,
+        image_digest=image_digest,
+        configured_image=configured_image,
+        engine_secret_source=sources["/run/secrets/elmos-spring-engine-hmac"],
+        backend_network=f"{project}_backend",
+        mount_sources=sources,
+        container_id=container_id,
+        container_name=container_name,
+        compose_project=project,
+        sanitized_runtime_shape=sanitized_runtime_shape,
+    )
+
+
+def _spring_worker_environment_from_inspect(
+    content: bytes,
+    *,
+    label: str,
+    expected_image_digest: str,
+) -> ContainerRuntimeObservation:
+    document = _load_strict_json_bytes(content, label)
+    if not isinstance(document, list) or len(document) != 1:
+        raise SpringLaunchEvidenceError(
+            f"{label} must contain exactly one java-engine-worker container"
+        )
+    container = _object(document[0], f"{label}[0]")
+    config = _object(container.get("Config"), f"{label}[0].Config")
+    runtime = _validate_container_runtime_security(
+        container,
+        config,
+        label=f"{label}[0]",
+        service="java-engine-worker",
+        expected_image_digest=expected_image_digest,
+        expected_entrypoint=SPRING_WORKER_CONTAINER_ENTRYPOINT,
+        expected_command=None,
+        expected_working_directory="/app",
+        expected_mounts={
+            "/workspace/private-runner": True,
+            "/run/secrets/elmos-verifier-hmac": False,
+            "/run/secrets/elmos-transformer-hmac": False,
+            "/run/secrets/elmos-runtime-hmac": False,
+            "/run/secrets/elmos-spring-engine-hmac": False,
+            "/var/lib/elmos/spring-engine-auth-replay": True,
+        },
+        expected_network_suffixes=frozenset({"_backend"}),
+        expected_tmpfs_sizes={
+            "/tmp": frozenset({"512m", "536870912"}),
+            "/home/elmos/.m2": frozenset({"512m", "536870912"}),
+        },
+        expected_pids_limit=1024,
+        expected_exposed_port="8081/tcp",
+    )
+    values = runtime.environment
+    for name, value in values.items():
         normalized = _normalized_environment_name(name)
-        prior = normalized_names.setdefault(normalized, name)
-        if prior != name:
-            raise SpringLaunchEvidenceError(
-                f"{label} Config.Env contains relaxed-binding aliases {prior} and {name}"
-            )
         canonical_name = _SPRING_WORKER_ENV_CANONICAL_BY_NORMALIZED.get(normalized)
         if canonical_name is not None and name != canonical_name:
             raise SpringLaunchEvidenceError(
@@ -1657,7 +2014,46 @@ def _spring_worker_environment_from_inspect(
                 raise SpringLaunchEvidenceError(
                     f"{label} contains unsupported Spring worker override {name}"
                 )
-    return values
+        if name not in SPRING_WORKER_EFFECTIVE_ENV_KEYS:
+            raise SpringLaunchEvidenceError(
+                f"{label} contains undeclared worker environment {name}"
+            )
+    return runtime
+
+
+def _web_console_environment_from_inspect(
+    content: bytes,
+    *,
+    label: str,
+    expected_image_digest: str,
+) -> ContainerRuntimeObservation:
+    document = _load_strict_json_bytes(content, label)
+    if not isinstance(document, list) or len(document) != 1:
+        raise SpringLaunchEvidenceError(
+            f"{label} must contain exactly one web-console container"
+        )
+    container = _object(document[0], f"{label}[0]")
+    config = _object(container.get("Config"), f"{label}[0].Config")
+    runtime = _validate_container_runtime_security(
+        container,
+        config,
+        label=f"{label}[0]",
+        service="web-console",
+        expected_image_digest=expected_image_digest,
+        expected_entrypoint=WEB_CONSOLE_CONTAINER_ENTRYPOINT,
+        expected_command=WEB_CONSOLE_CONTAINER_COMMAND,
+        expected_working_directory="/workspace/apps/web-console",
+        expected_mounts={
+            "/run/secrets/elmos/resend-api-key": False,
+            "/run/secrets/elmos-spring-engine-hmac": False,
+        },
+        expected_network_suffixes=frozenset({"_edge", "_backend"}),
+        expected_tmpfs_sizes={"/tmp": frozenset({"64m", "67108864"})},
+        expected_pids_limit=0,
+        expected_exposed_port="3000/tcp",
+    )
+    web_console_configuration_digest(runtime.environment)
+    return runtime
 
 
 def _validate_environment_manifest(
@@ -1689,7 +2085,11 @@ def _validate_environment_manifest(
         "configuration_digest",
         "compose_environment_file_digest",
         "container_inspect",
+        "web_console_container_inspect",
         "effective_spring_configuration_digest",
+        "effective_web_console_configuration_digest",
+        "worker_image_artifact_attestation",
+        "worker_application_artifact_digest",
         "network_policy_digest",
         "rootless_policy_digest",
         "runtime_image_digests",
@@ -1721,6 +2121,8 @@ def _validate_environment_manifest(
         "configuration_digest",
         "compose_environment_file_digest",
         "effective_spring_configuration_digest",
+        "effective_web_console_configuration_digest",
+        "worker_application_artifact_digest",
         "network_policy_digest",
         "rootless_policy_digest",
     ):
@@ -1734,7 +2136,7 @@ def _validate_environment_manifest(
         or len(set(images.values())) != len(images)
     ):
         raise SpringLaunchEvidenceError(
-            "environment manifest.runtime_image_digests must contain distinct digest-pinned worker, proxy, transformer, and runner images"
+            "environment manifest.runtime_image_digests must contain distinct digest-pinned worker, web, proxy, transformer, and runner images"
         )
     captured_at = _utc_instant(
         document.get("captured_at"), "environment manifest.captured_at"
@@ -1769,11 +2171,119 @@ def _validate_environment_manifest(
         label="environment manifest.container_inspect.local_bytes",
         expected_image_digest=images["worker"],
     )
-    effective_digest = spring_worker_configuration_digest(worker_environment)
+    effective_digest = spring_worker_configuration_digest(worker_environment.environment)
     if document.get("effective_spring_configuration_digest") != effective_digest:
         raise SpringLaunchEvidenceError(
             "environment manifest effective Spring configuration digest does not match container inspect bytes"
         )
+    web_console_inspect = _snapshot_local_json_evidence_reference(
+        document.get("web_console_container_inspect"),
+        roots=roots,
+        label="environment manifest.web_console_container_inspect",
+    )
+    image_attestation = _snapshot_local_json_evidence_reference(
+        document.get("worker_image_artifact_attestation"),
+        roots=roots,
+        label="environment manifest.worker_image_artifact_attestation",
+    )
+    protected_digests = {
+        observation.digest,
+        binding["launch_profile"]["digest"],
+        binding["artifact"]["digest"],
+        container_inspect.digest,
+    }
+    if web_console_inspect.digest in protected_digests:
+        raise SpringLaunchEvidenceError(
+            "Web console inspect bytes must be distinct from the other primary evidence"
+        )
+    protected_digests.add(web_console_inspect.digest)
+    if image_attestation.digest in protected_digests:
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation must be distinct from the other primary evidence"
+        )
+    web_runtime = _web_console_environment_from_inspect(
+        web_console_inspect.content,
+        label="environment manifest.web_console_container_inspect.local_bytes",
+        expected_image_digest=images["web"],
+    )
+    web_digest = web_console_configuration_digest(web_runtime.environment)
+    if document.get("effective_web_console_configuration_digest") != web_digest:
+        raise SpringLaunchEvidenceError(
+            "environment manifest effective Web console configuration digest does not match container inspect bytes"
+        )
+    if (
+        worker_environment.engine_secret_source != web_runtime.engine_secret_source
+        or worker_environment.backend_network != web_runtime.backend_network
+        or worker_environment.compose_project != web_runtime.compose_project
+        or worker_environment.container_id == web_runtime.container_id
+        or worker_environment.container_name == web_runtime.container_name
+    ):
+        raise SpringLaunchEvidenceError(
+            "worker and Web console container evidence does not bind one shared authenticated deployment"
+        )
+
+    attestation = _canonical_json_document(
+        image_attestation.content,
+        "worker image artifact attestation",
+    )
+    _exact_fields(
+        attestation,
+        {
+            "schema_version",
+            "namespace",
+            "method",
+            "builder_identity",
+            "build_invocation_id",
+            "deployed_revision",
+            "image_digest",
+            "image_reference",
+            "artifact_path",
+            "artifact_digest",
+            "extracted_at",
+            "outcome",
+            "synthetic",
+            "unknowns",
+            "not_run",
+        },
+        "worker image artifact attestation",
+    )
+    if (
+        type(attestation.get("schema_version")) is not int
+        or attestation.get("schema_version") != 1
+        or attestation.get("namespace") != NAMESPACE
+        or attestation.get("method") != "OCI_IMAGE_CONTENT_EXTRACTION"
+        or attestation.get("deployed_revision") != binding["deployed_revision"]
+        or attestation.get("image_digest") != worker_environment.image_digest
+        or attestation.get("image_reference") != worker_environment.configured_image
+        or attestation.get("artifact_path") != "/app/app.jar"
+        or attestation.get("artifact_digest")
+        != document.get("worker_application_artifact_digest")
+        or attestation.get("outcome") != "VERIFIED"
+        or attestation.get("synthetic") is not False
+        or attestation.get("unknowns") != []
+        or attestation.get("not_run") != []
+    ):
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation does not match the deployed worker image and artifact"
+        )
+    _identity(attestation.get("builder_identity"), "worker image artifact attestation.builder_identity")
+    _identity(attestation.get("build_invocation_id"), "worker image artifact attestation.build_invocation_id")
+    extracted_at = _utc_instant(
+        attestation.get("extracted_at"),
+        "worker image artifact attestation.extracted_at",
+    )
+    if extracted_at > captured_at or observed_at - extracted_at > max_age:
+        raise SpringLaunchEvidenceError(
+            "worker image artifact attestation is not fresh for the captured deployment"
+        )
+    document["web_console_container_inspect"] = {
+        **document["web_console_container_inspect"],
+        "digest": web_console_inspect.digest,
+    }
+    document["worker_image_artifact_attestation"] = {
+        **document["worker_image_artifact_attestation"],
+        "digest": image_attestation.digest,
+    }
     expected = {
         "deployed_revision": binding["deployed_revision"],
         "launch_profile_digest": binding["launch_profile"]["digest"],
@@ -2353,6 +2863,12 @@ def verify_spring_launch_receipt(
         )
     primary_digests = {item.digest for item in primary.values()}
     primary_digests.add(environment_manifest["container_inspect"]["digest"])
+    primary_digests.add(
+        environment_manifest["web_console_container_inspect"]["digest"]
+    )
+    primary_digests.add(
+        environment_manifest["worker_image_artifact_attestation"]["digest"]
+    )
     if primary_digests.intersection(evidence_digests):
         raise SpringLaunchEvidenceError(
             "gate evidence must be distinct from profile, artifact, and environment bytes"
@@ -2692,8 +3208,20 @@ def verify_spring_launch_receipt(
         "container_inspect_digest": environment_manifest["container_inspect"][
             "digest"
         ],
+        "web_console_container_inspect_digest": environment_manifest[
+            "web_console_container_inspect"
+        ]["digest"],
         "effective_spring_configuration_digest": environment_manifest[
             "effective_spring_configuration_digest"
+        ],
+        "effective_web_console_configuration_digest": environment_manifest[
+            "effective_web_console_configuration_digest"
+        ],
+        "worker_image_artifact_attestation_digest": environment_manifest[
+            "worker_image_artifact_attestation"
+        ]["digest"],
+        "worker_application_artifact_digest": environment_manifest[
+            "worker_application_artifact_digest"
         ],
         "network_policy_digest": environment_manifest["network_policy_digest"],
         "rootless_policy_digest": environment_manifest["rootless_policy_digest"],
