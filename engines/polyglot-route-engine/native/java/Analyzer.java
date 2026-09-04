@@ -379,7 +379,7 @@ public final class Analyzer {
             if (method.getReturnType() == null) {
                 return null;
             }
-            if (emittedTarget && (name.startsWith("elmos") || name.equals("equals"))) {
+            if (emittedTarget && (name.equals("elmosNonZero") || name.equals("elmosCheckedDiv") || name.equals("elmosCheckedMod") || name.equals("equals"))) {
                 return null;
             }
             if (method.getBody() != null && method.getModifiers().getFlags().contains(Modifier.STATIC)) {

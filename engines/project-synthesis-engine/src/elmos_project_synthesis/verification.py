@@ -521,72 +521,100 @@ def _check_exact_toolchain(
     requirements: list[dict[str, Any]],
 ) -> tuple[bool, list[dict[str, Any]]]:
     results: list[dict[str, Any]] = []
+    grouped: dict[str, list[dict[str, Any]]] = {}
     for requirement in requirements:
-        tool_name = str(requirement["tool"])
-        tool, observations = _matching_tool(requirement)
-        if tool is None and not observations:
+        grouped.setdefault(str(requirement["tool"]), []).append(requirement)
+    for tool_name, tool_requirements in grouped.items():
+        tool, observations = _matching_tool_requirements(tool_requirements)
+        if tool is None and not any(observations):
             results.append(_missing(language, tool_name))
             return False, results
-        arguments = [str(item) for item in requirement["arguments"]]
-        expected = str(requirement["expected"])
         matched = tool is not None
-        results.append(
-            _result(
-                language=language,
-                kind="toolchain",
-                command=[tool or tool_name, *arguments],
-                status="PASSED" if matched else "NOT_RUN",
-                exit_code=0 if matched else 1,
-                output=f"EXPECTED:{expected}\n" + "\n".join(observations),
+        for requirement, requirement_observations in zip(
+            tool_requirements,
+            observations,
+            strict=True,
+        ):
+            arguments = [str(item) for item in requirement["arguments"]]
+            expected = str(requirement["expected"])
+            results.append(
+                _result(
+                    language=language,
+                    kind="toolchain",
+                    command=[tool or tool_name, *arguments],
+                    status="PASSED" if matched else "NOT_RUN",
+                    exit_code=0 if matched else 1,
+                    output=f"EXPECTED:{expected}\n" + "\n".join(requirement_observations),
+                )
             )
-        )
         if not matched:
             return False, results
     return True, results
 
 
-def _matching_tool(requirement: dict[str, Any]) -> tuple[str | None, list[str]]:
-    tool_name = str(requirement["tool"])
-    fallback = str(requirement["fallback"]) if requirement.get("fallback") else None
+def _matching_tool_requirements(
+    requirements: list[dict[str, Any]],
+) -> tuple[str | None, list[list[str]]]:
+    if not requirements:
+        return None, []
+    tool_name = str(requirements[0]["tool"])
+    if any(str(requirement["tool"]) != tool_name for requirement in requirements):
+        raise ValueError("TOOLCHAIN_REQUIREMENT_TOOL_MISMATCH")
     candidates = [
         candidate
-        for candidate in dict.fromkeys((shutil.which(tool_name), fallback))
+        for candidate in dict.fromkeys((
+            shutil.which(tool_name),
+            *(
+                str(requirement["fallback"])
+                for requirement in requirements
+                if requirement.get("fallback")
+            ),
+        ))
         if candidate and Path(candidate).is_file()
     ]
-    arguments = [str(item) for item in requirement["arguments"]]
-    observations: list[str] = []
+    observations: list[list[str]] = [[] for _ in requirements]
     for candidate in candidates:
-        completed = subprocess.run(  # noqa: S603
-            [candidate, *arguments],
-            text=True,
-            capture_output=True,
-            check=False,
-        )
-        observed = (completed.stdout + completed.stderr).strip()
-        observations.append(f"OBSERVED:{candidate}:{observed}")
-        if (
-            completed.returncode == 0
-            and re.search(
-                str(requirement["pattern"]),
-                observed,
-                flags=re.MULTILINE,
+        candidate_matches = True
+        for index, requirement in enumerate(requirements):
+            arguments = [str(item) for item in requirement["arguments"]]
+            completed = subprocess.run(  # noqa: S603
+                [candidate, *arguments],
+                text=True,
+                capture_output=True,
+                check=False,
             )
-            is not None
-        ):
+            observed = (completed.stdout + completed.stderr).strip()
+            observations[index].append(f"OBSERVED:{candidate}:{observed}")
+            if (
+                completed.returncode != 0
+                or re.search(
+                    str(requirement["pattern"]),
+                    observed,
+                    flags=re.MULTILINE,
+                )
+                is None
+            ):
+                candidate_matches = False
+        if candidate_matches:
             return candidate, observations
     return None, observations
 
 
+def _matching_tool(requirement: dict[str, Any]) -> tuple[str | None, list[str]]:
+    tool, observations = _matching_tool_requirements([requirement])
+    return tool, observations[0] if observations else []
+
+
 def _runtime_tool(language: str, tool_name: str, fallback: str | None = None) -> str | None:
-    requirements = EXACT_TOOLCHAIN_REQUIREMENTS.get(language, [])
-    selected: str | None = None
-    for requirement in requirements:
-        matched, _ = _matching_tool(requirement)
-        if matched is None:
-            return None
-        if str(requirement["tool"]) == tool_name:
-            selected = matched
-    return selected or _resolve_tool(tool_name, fallback)
+    requirements = [
+        requirement
+        for requirement in EXACT_TOOLCHAIN_REQUIREMENTS.get(language, [])
+        if str(requirement["tool"]) == tool_name
+    ]
+    if requirements:
+        selected, _ = _matching_tool_requirements(requirements)
+        return selected
+    return _resolve_tool(tool_name, fallback)
 
 
 def _planned_runtime_tool(
@@ -1257,7 +1285,7 @@ def runtime_commands(
                         **_toolchain_environment("kotlin"),
                     },
                     "port": port,
-                    "startup_timeout_seconds": 120,
+                    "startup_timeout_seconds": 180,
                     **execution,
                 }
             )

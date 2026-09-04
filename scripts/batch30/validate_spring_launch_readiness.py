@@ -436,7 +436,9 @@ def validate_external(
     try:
         if str(ROOT) not in sys.path:
             sys.path.insert(0, str(ROOT))
-        from scripts.batch30.spring_launch_evidence import verify_spring_launch_receipt_file
+        from scripts.batch30.spring_launch_evidence import (
+            verify_spring_launch_receipt_file,
+        )
 
         result = verify_spring_launch_receipt_file(
             path,
@@ -553,7 +555,9 @@ def main() -> int:
         try:
             if str(ROOT) not in sys.path:
                 sys.path.insert(0, str(ROOT))
-            from scripts.batch30.spring_launch_evidence import spring_environment_configuration_digest
+            from scripts.batch30.spring_launch_evidence import (
+                spring_environment_configuration_digest,
+            )
 
             configuration_digest = spring_environment_configuration_digest(effective)
         except (OSError, ValueError) as error:

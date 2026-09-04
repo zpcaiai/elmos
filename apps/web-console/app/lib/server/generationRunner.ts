@@ -3114,8 +3114,9 @@ async function confirmRuntimeHealth(
   port: number,
   expectedService: string,
   leaseDurationMs: number,
+  startupTimeoutSeconds: number,
 ): Promise<void> {
-  const deadline = Date.now() + 30_000;
+  const deadline = Date.now() + startupTimeoutSeconds * 1_000;
   while (Date.now() < deadline && child.exitCode === null && activeRuntimes.get(key) === child) {
     try {
       const response = await fetch(`http://127.0.0.1:${port}/health`, {
@@ -3298,6 +3299,12 @@ async function startRuntimeLocked(
   ) throw new GenerationRunnerError(409, "RUNTIME_ALREADY_RUNNING");
   const plan = job.runtime.plans.find((candidate) => candidate.language === language);
   if (!plan) throw new GenerationRunnerError(409, "RUNTIME_PLAN_NOT_AVAILABLE");
+  const startupTimeoutSeconds = plan.startup_timeout_seconds ?? 30;
+  if (
+    !Number.isSafeInteger(startupTimeoutSeconds)
+    || startupTimeoutSeconds < 5
+    || startupTimeoutSeconds > 180
+  ) throw new GenerationRunnerError(409, "RUNTIME_STARTUP_TIMEOUT_INVALID");
   const workspace = await realpath(confined(jobRoot(runner, context, jobId), "workspace"));
   const blueprint = JSON.parse(
     await readFile(confined(workspace, "requirements", "project-blueprint.json"), "utf-8"),
@@ -3652,6 +3659,7 @@ async function startRuntimeLocked(
     plan.port,
     expectedService,
     leaseDurationMs,
+    startupTimeoutSeconds,
   );
   await persist(runner, context, job);
   return job;
