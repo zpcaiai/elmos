@@ -29,18 +29,140 @@ import styles from "./ChinaDbSqlPreflightStudio.module.css";
 
 type FormFields = Omit<ChinaDbSqlPreflightRequest, "schemaVersion" | "capabilitySnapshotDigest" | "parameters">;
 
+export const targetPresets: Record<string, {
+  targetVersion: string;
+  targetEdition: string;
+  compatibilityMode: string;
+  targetDriver: string;
+  targetCharset: string;
+  targetCollation: string;
+  targetTimeZone: string;
+}> = {
+  dm8: {
+    targetVersion: "8.1.3.140",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle-compatible-explicit",
+    targetDriver: "dmjdbc-8.1.3.140",
+    targetCharset: "UTF-8",
+    targetCollation: "BINARY",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  kingbasees: {
+    targetVersion: "V8R6",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle-compatible",
+    targetDriver: "kingbase8-8.6.0",
+    targetCharset: "UTF-8",
+    targetCollation: "zh_CN.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  opengauss: {
+    targetVersion: "6.0.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "A",
+    targetDriver: "opengauss-jdbc-6.0.0",
+    targetCharset: "UTF-8",
+    targetCollation: "en_US.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  tidb: {
+    targetVersion: "8.1.0",
+    targetEdition: "community",
+    compatibilityMode: "mysql-8.0",
+    targetDriver: "mysql-connector-j-8.4.0",
+    targetCharset: "utf8mb4",
+    targetCollation: "utf8mb4_bin",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "gbase-8s": {
+    targetVersion: "8.8",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle-compatible",
+    targetDriver: "gbasedbt-jdbc-8.8",
+    targetCharset: "UTF-8",
+    targetCollation: "zh_CN.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "gbase-8c": {
+    targetVersion: "3.3.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "postgresql-compatible",
+    targetDriver: "gbase8c-jdbc-3.3.0",
+    targetCharset: "UTF-8",
+    targetCollation: "zh_CN.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "gbase-8a": {
+    targetVersion: "9.5.3",
+    targetEdition: "enterprise",
+    compatibilityMode: "analytical-gbase",
+    targetDriver: "gbase8a-jdbc-9.5.3",
+    targetCharset: "UTF-8",
+    targetCollation: "utf8_bin",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "highgo-hgdb": {
+    targetVersion: "V6.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle-compatible",
+    targetDriver: "hgdb-jdbc-6.0",
+    targetCharset: "UTF-8",
+    targetCollation: "zh_CN.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "oceanbase-oracle": {
+    targetVersion: "4.2.1",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle",
+    targetDriver: "oceanbase-client-2.4.6",
+    targetCharset: "UTF-8",
+    targetCollation: "BINARY",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "oceanbase-mysql": {
+    targetVersion: "4.2.1",
+    targetEdition: "community",
+    compatibilityMode: "mysql",
+    targetDriver: "oceanbase-client-2.4.6",
+    targetCharset: "utf8mb4",
+    targetCollation: "utf8mb4_general_ci",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "gaussdb-oracle": {
+    targetVersion: "503.1.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "ora",
+    targetDriver: "gaussdb-jdbc-503.1.0",
+    targetCharset: "UTF-8",
+    targetCollation: "zh_CN.UTF-8",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  "gaussdb-m": {
+    targetVersion: "503.1.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "m",
+    targetDriver: "gaussdb-jdbc-503.1.0",
+    targetCharset: "utf8mb4",
+    targetCollation: "utf8mb4_general_ci",
+    targetTimeZone: "Asia/Shanghai",
+  },
+  goldendb: {
+    targetVersion: "v7.1.0",
+    targetEdition: "enterprise",
+    compatibilityMode: "oracle-mysql-hybrid",
+    targetDriver: "goldendb-jdbc-7.1.0",
+    targetCharset: "UTF-8",
+    targetCollation: "BINARY",
+    targetTimeZone: "Asia/Shanghai",
+  },
+};
+
 const initialFields: FormFields = {
   queryId: "web-sql-preflight",
   sourceProfile: "oracle-26ai-ee",
   targetId: "dm8",
-  targetVersion: "",
-  targetEdition: "",
-  compatibilityMode: "",
-  targetDriver: "",
-  targetCharset: "",
-  targetCollation: "",
-  targetTimeZone: "",
-  sql: "",
+  ...targetPresets.dm8,
+  sql: "SELECT 1 FROM t\n",
 };
 
 const fieldErrors: Record<string, string> = {
@@ -157,7 +279,15 @@ export function ChinaDbSqlPreflightStudio() {
   );
 
   function updateField<Key extends keyof FormFields>(key: Key, value: FormFields[Key]) {
-    setFields((current) => ({ ...current, [key]: value }));
+    if (key === "targetId" && typeof value === "string" && targetPresets[value]) {
+      setFields((current) => ({
+        ...current,
+        targetId: value as FormFields["targetId"],
+        ...targetPresets[value],
+      }));
+    } else {
+      setFields((current) => ({ ...current, [key]: value }));
+    }
     setResult(null);
   }
 

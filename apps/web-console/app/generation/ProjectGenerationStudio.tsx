@@ -300,9 +300,11 @@ export function ProjectGenerationStudio() {
     setReviewer(account.principal.actorId);
   }, [account.principal, accountRunner]);
 
+  const availableTargets = capability?.targets ?? generationTargets;
+
   const selectedProfiles = useMemo(
-    () => generationTargets.filter((profile) => targets.includes(profile.id)),
-    [targets],
+    () => availableTargets.filter((profile) => targets.includes(profile.id)),
+    [availableTargets, targets],
   );
 
   const preview = draft ?? {
@@ -319,8 +321,8 @@ export function ProjectGenerationStudio() {
       sourceBundleSha256: sourceBundle.bundleSha256,
     } : {}),
   };
-  const previewProfiles = generationTargets.filter((profile) => preview.targets.includes(profile.id));
-  const productionProfileLabels = generationTargets
+  const previewProfiles = availableTargets.filter((profile) => preview.targets.includes(profile.id));
+  const productionProfileLabels = availableTargets
     .filter((profile) => profile.productionProfiles.length > 0)
     .map((profile) => `${profile.language} ${profile.runtime}`)
     .join("、");
@@ -561,7 +563,7 @@ export function ProjectGenerationStudio() {
   function productionCapable(id: GenerationTargetId): boolean {
     // productionProfiles mirrors the engine's SUPPORTED_PROFILE_TARGETS: only
     // targets with PostgreSQL-backed integration evidence declare profiles.
-    return (generationTargets.find((profile) => profile.id === id)?.productionProfiles.length ?? 0) > 0;
+    return (availableTargets.find((profile) => profile.id === id)?.productionProfiles.length ?? 0) > 0;
   }
 
   function toggleTarget(id: GenerationTargetId) {
@@ -1218,7 +1220,7 @@ export function ProjectGenerationStudio() {
             <legend><span><span className="overline">EXACT TARGETS</span><strong>选择目标技术栈</strong></span><span className="step-label">02 / 02</span></legend>
             <p id="target-hint">每个目标都有独立模板、工具链、构建和启动探针；缺失工具只会令该目标保持 NOT_RUN。</p>
             <div className="target-grid">
-              {generationTargets.map((profile) => {
+              {availableTargets.map((profile) => {
                 const checked = targets.includes(profile.id);
                 return (
                   <label className={`target-card target-${profile.accent} ${checked ? "selected" : ""}`} key={profile.id}>

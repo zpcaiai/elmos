@@ -74,7 +74,9 @@ test.describe("多语言项目生成 UI", () => {
   });
 
   test("移动视口没有横向溢出且关键操作可触达", async ({ page }, testInfo) => {
-    test.skip(!testInfo.project.name.startsWith("mobile-"), "移动布局只在声明的移动项目执行");
+    if (!testInfo.project.name.startsWith("mobile-")) {
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
     await page.goto("/generation");
     const dimensions = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -312,6 +314,14 @@ test.describe("多语言项目生成 UI", () => {
 
   test("多实体生产需求会在批准前显示单实体目标边界", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "能力边界代表旅程只执行一次");
+    await page.route("**/api/capabilities/generation", async (route) => {
+      const response = await route.fetch();
+      const json = await response.json();
+      json.targets = json.targets.map((target: any) =>
+        target.id === "go" ? { ...target, productionEntityScope: "single-entity" } : target,
+      );
+      await route.fulfill({ json });
+    });
     await page.route("**/api/generation/analyze", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -354,7 +364,7 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     await page.getByRole("button", { name: "分析并整理需求" }).click();
 
-    await expect(page.getByText(/Go\s*的 PostgreSQL Profile 只接受单实体/)).toBeVisible();
+    await expect(page.getByText(/目标边界阻断：Go\s*的\s*PostgreSQL Profile 当前仍只接受单实体/)).toBeVisible();
     await expect(page.getByRole("checkbox", { name: /我已审阅结构化需求/ })).toBeDisabled();
   });
 

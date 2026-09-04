@@ -372,7 +372,7 @@ function executePython(
       reject(error);
     };
     const child = spawn(
-      executable,
+      /* turbopackIgnore: true */ executable,
       [
         "-m",
         "elmos_multimodal_intake.cli",

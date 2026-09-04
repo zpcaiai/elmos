@@ -79,7 +79,7 @@ function configuredApiKey(environment: NotificationEnvironment): string {
   let descriptor: number | undefined;
   try {
     descriptor = openSync(
-      configuredFile,
+      /* turbopackIgnore: true */ configuredFile,
       fileConstants.O_RDONLY | fileConstants.O_NOFOLLOW,
     );
     const info = fstatSync(descriptor);

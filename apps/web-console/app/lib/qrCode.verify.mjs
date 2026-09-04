@@ -17,7 +17,7 @@
  *   node --experimental-strip-types qrCode.verify.mjs
  */
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, writeFileSync, rmSync } from "node:fs";
+import { mkdtempSync, writeFileSync, rmSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { encodeQrMatrix, renderQrSvg } from "./qrCode.ts";
@@ -41,7 +41,8 @@ import json, sys, numpy as np, cv2, qrcode
 from qrcode.constants import ERROR_CORRECT_M
 from qrcode.util import QRData, MODE_8BIT_BYTE
 
-job = json.load(sys.stdin)
+with open(sys.argv[1], "r", encoding="utf-8") as f:
+    job = json.load(f)
 
 reference = []
 for text in job["texts"]:
@@ -62,7 +63,8 @@ for item in job["mine"]:
     text, _, _ = detector.detectAndDecode(image)
     decoded.append(text)
 
-json.dump({"reference": reference, "decoded": decoded}, sys.stdout)
+with open(sys.argv[2], "w", encoding="utf-8") as f:
+    json.dump({"reference": reference, "decoded": decoded}, f)
 `;
 
 const mine = CASES.map((text) => ({
@@ -71,15 +73,17 @@ const mine = CASES.map((text) => ({
 }));
 
 const scriptPath = join(work, "reference.py");
+const inputPath = join(work, "input.json");
+const outputPath = join(work, "output.json");
 writeFileSync(scriptPath, REFERENCE_SCRIPT);
+writeFileSync(inputPath, JSON.stringify({ texts: CASES, mine }));
 
 let result;
 try {
-  const stdout = execFileSync("python3", [scriptPath], {
-    input: JSON.stringify({ texts: CASES, mine }),
-    maxBuffer: 64 * 1024 * 1024,
+  execFileSync("python3", [scriptPath, inputPath, outputPath], {
+    stdio: ["ignore", "inherit", "inherit"],
   });
-  result = JSON.parse(stdout.toString());
+  result = JSON.parse(readFileSync(outputPath, "utf8"));
 } catch (error) {
   console.log("NOT_RUN: 参考实现不可用（需要 python3 + qrcode + opencv-python-headless）");
   console.log("         这不等于通过。");

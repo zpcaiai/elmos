@@ -327,7 +327,7 @@ function readStableRegularFile(
     ) {
       fail(options.changedCode, `${options.label} 在打开前被替换。`);
     }
-    const raw = readFileSync(descriptor);
+    const raw = readFileSync(/* turbopackIgnore: true */ descriptor);
     const afterDescriptor = fstatSync(descriptor, { bigint: true });
     const afterPath = lstatSync(candidate, { bigint: true });
     if (

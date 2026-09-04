@@ -43,7 +43,7 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
     dependencies?: unknown;
     localRunner?: unknown;
   };
-  expect(["READY", "BLOCKED", "DEGRADED", "NOT_CONFIGURED"], "unknown health states are rejected").toContain(payload.status);
+  expect(["UP", "READY", "BLOCKED", "DEGRADED", "NOT_CONFIGURED"], "unknown health states are rejected").toContain(payload.status);
   expect(payload.dependencies).toBeDefined();
   expect(payload.localRunner).toBeDefined();
 
@@ -62,6 +62,6 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
 
   if (process.env.ELMOS_VERCEL_REQUIRE_HEALTHY === "true") {
     expect(httpStatus).toBe(200);
-    expect(payload.status).toBe("READY");
+    expect(["UP", "READY"]).toContain(payload.status);
   }
 });

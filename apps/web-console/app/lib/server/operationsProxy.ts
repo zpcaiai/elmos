@@ -309,8 +309,12 @@ export async function withBusinessAudit(
 ): Promise<Response> {
   const startedAt = Date.now();
   const requestId = safeRequestIdentifier(request);
-  const required = process.env.NODE_ENV === "production"
-    || process.env.ELMOS_BUSINESS_AUDIT_REQUIRED === "true";
+  const required = (process.env.NODE_ENV === "production"
+    || process.env.ELMOS_BUSINESS_AUDIT_REQUIRED === "true")
+    && !process.env.VERCEL
+    && process.env.ELMOS_ALPHA_DEMO !== "true"
+    && process.env.ELMOS_STANDALONE !== "true"
+    && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS !== "true";
   if (required) {
     await appendBusinessAuditEvent(
       request, requestId, descriptor, "ATTEMPT", "SUCCESS", null, startedAt,

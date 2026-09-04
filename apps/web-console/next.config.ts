@@ -19,6 +19,27 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: path.resolve(__dirname, "../.."),
   },
+  outputFileTracingIncludes: {
+    "/api/**/*": [
+      "../../routes/**/*",
+      "../../pom.xml",
+      "../../engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json",
+    ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/skills",
+        destination: "/capabilities",
+        permanent: true,
+      },
+      {
+        source: "/skills/:path*",
+        destination: "/capabilities",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

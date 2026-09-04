@@ -1,0 +1,861 @@
+{
+  "schemaVersion": "1.0",
+  "package": "chinadb-commercial-migration-skills",
+  "version": "1.0.0",
+  "targets": [
+    {
+      "id": "dm8",
+      "label": "DM8",
+      "adapterId": "chinadb.dm8.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "native or explicitly selected compatibility mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "kingbasees",
+      "label": "KingbaseES",
+      "adapterId": "chinadb.kingbasees.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "native or explicitly selected compatibility mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "opengauss",
+      "label": "openGauss",
+      "adapterId": "chinadb.opengauss.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact database compatibility mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "tidb",
+      "label": "TiDB",
+      "adapterId": "chinadb.tidb.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact SQL mode and deployment topology",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "gbase-8s",
+      "label": "GBase 8s",
+      "adapterId": "chinadb.gbase-8s.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact compatibility mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "gbase-8c",
+      "label": "GBase 8c",
+      "adapterId": "chinadb.gbase-8c.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact compatibility mode and deployment topology",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "gbase-8a",
+      "label": "GBase 8a",
+      "adapterId": "chinadb.gbase-8a.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact analytical compatibility and deployment mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "highgo-hgdb",
+      "label": "HighGo / HGDB",
+      "adapterId": "chinadb.highgo-hgdb.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "native or explicitly selected compatibility mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oceanbase-oracle",
+      "label": "OceanBase Oracle-compatible mode",
+      "adapterId": "chinadb.oceanbase-oracle.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "Oracle-compatible tenant mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oceanbase-mysql",
+      "label": "OceanBase MySQL-compatible mode",
+      "adapterId": "chinadb.oceanbase-mysql.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "MySQL-compatible tenant mode and SQL mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "gaussdb-oracle",
+      "label": "GaussDB Oracle-compatible mode",
+      "adapterId": "chinadb.gaussdb-oracle.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "Oracle-compatible deployment mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "gaussdb-m",
+      "label": "GaussDB M-compatible mode",
+      "adapterId": "chinadb.gaussdb-m.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "M-compatible deployment mode and SQL mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "goldendb",
+      "label": "GoldenDB",
+      "adapterId": "chinadb.goldendb.target-adapter.v1",
+      "versionRequirement": "exact deployed product version; floating versions are prohibited",
+      "compatibilityModeRequirement": "exact product, compatibility, and deployment mode",
+      "implementationStatus": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "plannedRoutes": [
+    {
+      "id": "oracle--to--dm8",
+      "sourceFamily": "Oracle",
+      "targetId": "dm8",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--dm8",
+      "sourceFamily": "SQL Server",
+      "targetId": "dm8",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--dm8",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "dm8",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--dm8",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "dm8",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--dm8",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "dm8",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--dm8",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "dm8",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--kingbasees",
+      "sourceFamily": "Oracle",
+      "targetId": "kingbasees",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--kingbasees",
+      "sourceFamily": "SQL Server",
+      "targetId": "kingbasees",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--kingbasees",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "kingbasees",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--kingbasees",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "kingbasees",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--kingbasees",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "kingbasees",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--kingbasees",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "kingbasees",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--opengauss",
+      "sourceFamily": "Oracle",
+      "targetId": "opengauss",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--opengauss",
+      "sourceFamily": "SQL Server",
+      "targetId": "opengauss",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--opengauss",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "opengauss",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--opengauss",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "opengauss",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--opengauss",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "opengauss",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--opengauss",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "opengauss",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--tidb",
+      "sourceFamily": "Oracle",
+      "targetId": "tidb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--tidb",
+      "sourceFamily": "SQL Server",
+      "targetId": "tidb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--tidb",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "tidb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--tidb",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "tidb",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--tidb",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "tidb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--tidb",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "tidb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--gbase-8s",
+      "sourceFamily": "Oracle",
+      "targetId": "gbase-8s",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--gbase-8s",
+      "sourceFamily": "SQL Server",
+      "targetId": "gbase-8s",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--gbase-8s",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "gbase-8s",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--gbase-8s",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "gbase-8s",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--gbase-8s",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "gbase-8s",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--gbase-8s",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "gbase-8s",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--gbase-8c",
+      "sourceFamily": "Oracle",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--gbase-8c",
+      "sourceFamily": "SQL Server",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--gbase-8c",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--gbase-8c",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--gbase-8c",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--gbase-8c",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "gbase-8c",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--gbase-8a",
+      "sourceFamily": "Oracle",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--gbase-8a",
+      "sourceFamily": "SQL Server",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--gbase-8a",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--gbase-8a",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--gbase-8a",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--gbase-8a",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "gbase-8a",
+      "priority": "ANALYTICAL",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--highgo-hgdb",
+      "sourceFamily": "Oracle",
+      "targetId": "highgo-hgdb",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--highgo-hgdb",
+      "sourceFamily": "SQL Server",
+      "targetId": "highgo-hgdb",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--highgo-hgdb",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "highgo-hgdb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--highgo-hgdb",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "highgo-hgdb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--highgo-hgdb",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "highgo-hgdb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--highgo-hgdb",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "highgo-hgdb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--oceanbase-oracle",
+      "sourceFamily": "Oracle",
+      "targetId": "oceanbase-oracle",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--oceanbase-oracle",
+      "sourceFamily": "SQL Server",
+      "targetId": "oceanbase-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--oceanbase-oracle",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "oceanbase-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--oceanbase-oracle",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "oceanbase-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--oceanbase-oracle",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "oceanbase-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--oceanbase-oracle",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "oceanbase-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--oceanbase-mysql",
+      "sourceFamily": "Oracle",
+      "targetId": "oceanbase-mysql",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--oceanbase-mysql",
+      "sourceFamily": "SQL Server",
+      "targetId": "oceanbase-mysql",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--oceanbase-mysql",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "oceanbase-mysql",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--oceanbase-mysql",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "oceanbase-mysql",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--oceanbase-mysql",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "oceanbase-mysql",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--oceanbase-mysql",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "oceanbase-mysql",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--gaussdb-oracle",
+      "sourceFamily": "Oracle",
+      "targetId": "gaussdb-oracle",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--gaussdb-oracle",
+      "sourceFamily": "SQL Server",
+      "targetId": "gaussdb-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--gaussdb-oracle",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "gaussdb-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--gaussdb-oracle",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "gaussdb-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--gaussdb-oracle",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "gaussdb-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--gaussdb-oracle",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "gaussdb-oracle",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--gaussdb-m",
+      "sourceFamily": "Oracle",
+      "targetId": "gaussdb-m",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--gaussdb-m",
+      "sourceFamily": "SQL Server",
+      "targetId": "gaussdb-m",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--gaussdb-m",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "gaussdb-m",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--gaussdb-m",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "gaussdb-m",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--gaussdb-m",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "gaussdb-m",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--gaussdb-m",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "gaussdb-m",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "oracle--to--goldendb",
+      "sourceFamily": "Oracle",
+      "targetId": "goldendb",
+      "priority": "T1",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sql-server--to--goldendb",
+      "sourceFamily": "SQL Server",
+      "targetId": "goldendb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "postgresql--to--goldendb",
+      "sourceFamily": "PostgreSQL",
+      "targetId": "goldendb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "mysql-mariadb--to--goldendb",
+      "sourceFamily": "MySQL/MariaDB",
+      "targetId": "goldendb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "db2-luw--to--goldendb",
+      "sourceFamily": "DB2 LUW",
+      "targetId": "goldendb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    },
+    {
+      "id": "sybase-ase--to--goldendb",
+      "sourceFamily": "Sybase ASE",
+      "targetId": "goldendb",
+      "priority": "T2",
+      "state": "LOCAL_ADAPTER",
+      "externalExecution": "NOT_RUN",
+      "certification": "NOT_CERTIFIED"
+    }
+  ],
+  "excludedTargets": [
+    {
+      "id": "polardb",
+      "label": "PolarDB",
+      "reason": "Explicitly excluded from this commercial extension scope."
+    },
+    {
+      "id": "polardb-x",
+      "label": "PolarDB-X",
+      "reason": "Explicitly excluded from this commercial extension scope."
+    },
+    {
+      "id": "tdsql",
+      "label": "TDSQL",
+      "reason": "Explicitly excluded from this commercial extension scope."
+    }
+  ],
+  "implementationStatus": "LOCAL_ADAPTER",
+  "externalExecution": "NOT_RUN",
+  "certification": "NOT_CERTIFIED"
+}

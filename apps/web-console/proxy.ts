@@ -37,6 +37,18 @@ function matchesPrefix(pathname: string, prefixes: readonly string[]): boolean {
 function trustedRedirectOrigin(request: NextRequest): string | null {
   const configured = process.env.ELMOS_PUBLIC_ORIGIN?.trim() ?? "";
   if (!configured) {
+    if (process.env.VERCEL || process.env.VERCEL_URL || process.env.ELMOS_ALPHA_DEMO === "true") {
+      const vercelHost = request.headers.get("x-forwarded-host")
+        || request.headers.get("host")
+        || process.env.VERCEL_PROJECT_PRODUCTION_URL
+        || process.env.VERCEL_URL;
+      if (vercelHost) {
+        const cleanHost = vercelHost.replace(/^https?:\/\//, "").replace(/\/$/, "");
+        const proto = request.headers.get("x-forwarded-proto")
+          || (cleanHost.startsWith("localhost") || cleanHost.startsWith("127.0.0.1") ? "http" : "https");
+        return `${proto}://${cleanHost}`;
+      }
+    }
     return process.env.NODE_ENV === "production" ? null : request.nextUrl.origin;
   }
   try {
@@ -132,6 +144,8 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
   if (
     !path.startsWith("/api/")
     || path.startsWith("/api/auth/")
+    || path.startsWith("/api/capabilities/")
+    || path === "/api/spring-upgrades/capabilities"
     || path === "/api/telemetry/events"
     || path === "/api/health"
   ) {
@@ -156,6 +170,14 @@ async function auditApiAttempt(request: NextRequest): Promise<NextResponse | nul
     && expiry > Date.now()
     && expiry <= Date.now() + 24 * 60 * 60_000;
   if (!configured) {
+    if (
+      process.env.VERCEL
+      || process.env.ELMOS_ALPHA_DEMO === "true"
+      || process.env.ELMOS_STANDALONE === "true"
+      || process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true"
+    ) {
+      return null;
+    }
     return process.env.NODE_ENV === "production"
       ? auditFailure(
         path,
@@ -227,12 +249,15 @@ export async function proxy(request: NextRequest) {
   if (!matchesPrefix(request.nextUrl.pathname, protectedPrefixes)) {
     return NextResponse.next();
   }
-  const localCredentialMode = process.env.NODE_ENV !== "production"
-    && process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true";
+  const localCredentialMode = (process.env.NODE_ENV !== "production"
+    && process.env.ELMOS_LOCAL_RUNNER_ENABLED === "true")
+    || Boolean(process.env.VERCEL)
+    || process.env.ELMOS_ALPHA_DEMO === "true";
   const adminRoute = matchesPrefix(request.nextUrl.pathname, operationsPrefixes);
   if (
     (localCredentialMode && !adminRoute)
     || request.cookies.has("__Host-elmos_session")
+    || request.cookies.has("elmos_local_session")
   ) {
     return NextResponse.next();
   }

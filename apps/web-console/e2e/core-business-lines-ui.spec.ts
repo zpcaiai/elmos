@@ -33,6 +33,16 @@ for (const businessLine of [
     heading: "全库跨语言转换",
     readyText: "选择源语言与目标语言",
   },
+  {
+    path: "/generation",
+    heading: "多语言项目生成",
+    readyText: "描述并审阅项目意图",
+  },
+  {
+    path: "/migration/sql",
+    heading: "ChinaDB SQL 预检",
+    readyText: "源 SQL 与目标精确元组",
+  },
 ] as const) {
   test(`${businessLine.heading} 在桌面与移动视口可操作且通过自动可访问性检查`, async ({
     page,

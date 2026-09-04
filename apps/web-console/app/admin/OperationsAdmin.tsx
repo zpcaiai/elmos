@@ -31,6 +31,7 @@ const lines = [
   ["REPOSITORY_WORKSPACE", "代码仓库工作区"],
   ["MIGRATION_GOVERNANCE", "迁移能力与验证"],
   ["DATABASE_DATA", "数据库与数据平台"],
+  ["DATABASE_DATA_SQL", "国产数据库 SQL 转换"],
   ["CLIENT_MODERNIZATION", "客户端现代化"],
   ["CLOUD_INFRASTRUCTURE", "云与基础设施"],
   ["SECURITY_COMPLIANCE", "安全与合规"],
