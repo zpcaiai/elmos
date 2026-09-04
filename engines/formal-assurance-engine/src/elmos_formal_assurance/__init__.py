@@ -70,6 +70,12 @@ from .sbom_attestation_signer import (
     SlsaProvenanceStatement,
     sign_artifact_sbom,
 )
+from .native_attestation_bridge import (
+    NativeAttestationBridge,
+    NativeAttestationError,
+    NativeHmacLocalAttestationSigner,
+    NativeLibraryIdentity,
+)
 
 __version__ = "1.0.0"
 
@@ -136,6 +142,10 @@ __all__ = [
     "AttestationSignature",
     "AttestationSigner",
     "HmacLocalAttestationSigner",
+    "NativeAttestationBridge",
+    "NativeAttestationError",
+    "NativeHmacLocalAttestationSigner",
+    "NativeLibraryIdentity",
     "SbomAttestationSigner",
     "SbomComponent",
     "SlsaProvenanceStatement",

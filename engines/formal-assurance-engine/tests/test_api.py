@@ -57,6 +57,18 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(status, "200 OK")
         self.assertEqual(len(payload["skills"]), 60)
 
+    def test_api_closes_only_the_runtime_it_owns(self) -> None:
+        owned = FormalAssuranceApi()
+        owned_store = owned.runtime.store
+        owned.close()
+        owned.close()
+        self.assertTrue(owned_store.closed)
+
+        injected_runtime = FormalAssuranceRuntime(store=self.store)
+        injected = FormalAssuranceApi(injected_runtime)
+        injected.close()
+        self.assertFalse(self.store.closed)
+
     def test_execute_requires_transport_identity(self) -> None:
         status, payload = self.call(
             "/v1/skills/elmos-requirement-to-formal-spec/execute",

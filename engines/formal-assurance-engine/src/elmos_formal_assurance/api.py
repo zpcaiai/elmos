@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import atexit
 import json
 from io import BytesIO
 from typing import Any, Callable
@@ -40,7 +41,13 @@ class FormalAssuranceApi:
     """Small WSGI adapter; trusted identity must come from the transport."""
 
     def __init__(self, runtime: FormalAssuranceRuntime | None = None) -> None:
-        self.runtime = runtime or FormalAssuranceRuntime()
+        self._owns_runtime = runtime is None
+        self.runtime = runtime if runtime is not None else FormalAssuranceRuntime()
+
+    def close(self) -> None:
+        """Release a runtime created by this WSGI adapter."""
+        if self._owns_runtime:
+            self.runtime.close()
 
     def __call__(
         self, environ: dict[str, Any], start_response: Callable[..., Any]
@@ -619,6 +626,7 @@ class FormalAssuranceApi:
 
 
 application = FormalAssuranceApi()
+atexit.register(application.close)
 
 
 def make_environ(

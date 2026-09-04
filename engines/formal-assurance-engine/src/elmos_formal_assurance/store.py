@@ -57,6 +57,7 @@ class StateStore:
 
     def __init__(self, path: str | Path = ":memory:") -> None:
         self._lock = threading.RLock()
+        self._closed = False
         if str(path) != ":memory:":
             state_path = Path(path).expanduser()
             if state_path.is_symlink():
@@ -286,7 +287,24 @@ class StateStore:
 
     def close(self) -> None:
         with self._lock:
+            if self._closed:
+                return
             self._connection.close()
+            self._closed = True
+
+    @property
+    def closed(self) -> bool:
+        """Return whether this local persistence handle has been closed."""
+        with self._lock:
+            return self._closed
+
+    def __enter__(self) -> StateStore:
+        if self.closed:
+            raise StoreError("state store is closed")
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
 
     def _ensure_legacy_columns(self) -> None:
         """Upgrade a database created by the initial local engine safely."""
