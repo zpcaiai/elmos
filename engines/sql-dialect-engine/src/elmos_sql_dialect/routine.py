@@ -1015,7 +1015,7 @@ def _require_emittable(routine: Routine, target_dialect: Dialect, allow_routine_
             "PostgreSQL STRICT null short-circuiting is routine metadata; this profile does not "
             "synthesize a CASE wrapper with unverified type/null semantics",
         )
-    if routine.security_definer or routine.search_path:
+    if (routine.security_definer or routine.search_path) and not allow_routine_shim:
         raise DialectError(
             "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
             "SECURITY DEFINER and SET search_path bind execution identity and name resolution; "
@@ -1093,6 +1093,11 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
     qualified = qualified_name(routine.schema, routine.name, target_dialect)
     replace = " OR REPLACE" if routine.or_replace and target_dialect in (Dialect.POSTGRES, Dialect.ORACLE) else ""
     tsql_variables = target_dialect is Dialect.TSQL
+    sec_pg = " SECURITY DEFINER" if routine.security_definer else ""
+    sec_my = " SQL SECURITY DEFINER" if routine.security_definer and allow_routine_shim else ""
+    sec_ora = " AUTHID DEFINER" if routine.security_definer and allow_routine_shim else ""
+    sec_tsql = " WITH EXECUTE AS OWNER" if routine.security_definer and allow_routine_shim else ""
+
     if isinstance(routine.body, RoutineSelectBody):
         value = _render_routine_value(routine.body.expression, target_dialect, tsql_parameters=tsql_variables)
         if routine.strict and allow_routine_shim and target_dialect is not Dialect.POSTGRES and routine.parameters:
@@ -1106,15 +1111,15 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
             strict_clause = " STRICT" if routine.strict else ""
             return (
                 f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} "
-                f"LANGUAGE SQL{det}{strict_clause} AS $$ SELECT {value} $$"
+                f"LANGUAGE SQL{det}{strict_clause}{sec_pg} AS $$ SELECT {value} $$"
             )
         if target_dialect is Dialect.MYSQL:
             det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-            return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det} RETURN {value}"
+            return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det}{sec_my} RETURN {value}"
         if target_dialect is Dialect.ORACLE:
             det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-            return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det} IS BEGIN RETURN {value}; END;"
-        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} AS BEGIN RETURN {value} END"
+            return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} IS BEGIN RETURN {value}; END;"
+        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{sec_tsql} AS BEGIN RETURN {value} END"
 
     body = routine.body
     declarations = []
@@ -1163,19 +1168,19 @@ def emit_create_function(routine: Routine, target_dialect: Dialect, allow_routin
         det = f" {routine.stability.value}" if routine.stability is not None else ""
         strict_clause = " STRICT" if routine.strict else ""
         return (
-            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} LANGUAGE plpgsql{det}{strict_clause} AS $$ "
+            f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS {return_type} LANGUAGE plpgsql{det}{strict_clause}{sec_pg} AS $$ "
             f"DECLARE {declaration_sql} BEGIN {' '.join(assignments)} RETURN {returned}; END $$"
         )
     if target_dialect is Dialect.MYSQL:
         det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det} BEGIN " \
+        return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{det}{sec_my} BEGIN " \
             + " ".join(f"DECLARE {item};" for item in declarations) \
             + " " + " ".join(assignments) + f" RETURN {returned}; END"
     if target_dialect is Dialect.ORACLE:
         det = " DETERMINISTIC" if routine.stability is RoutineStability.IMMUTABLE else ""
-        return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det} IS " \
+        return f"CREATE{replace} FUNCTION {qualified}({params}) RETURN {return_type}{det}{sec_ora} IS " \
             + " ".join(item + ";" for item in declarations) \
             + " BEGIN " + " ".join(assignments) + f" RETURN {returned}; END;"
-    return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type} AS BEGIN " \
+    return f"CREATE FUNCTION {qualified}({params}) RETURNS {return_type}{sec_tsql} AS BEGIN " \
         + " ".join(f"DECLARE {item};" for item in declarations) \
         + " " + " ".join(assignments) + f" RETURN {returned} END"

@@ -806,3 +806,289 @@ pub unsafe extern "C" fn elmos_merkle_root(digests_csv_ptr: *const c_char) -> *m
     }
 }
 
+// -------------------------------------------------------------
+// P5.1: Mainframe Core (EBCDIC & COMP-3 Packed Decimal)
+// -------------------------------------------------------------
+#[no_mangle]
+pub unsafe extern "C" fn elmos_ebcdic_to_ascii(
+    src_ptr: *const u8,
+    len: usize,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if src_ptr.is_null() || len == 0 {
+            return CString::new("").unwrap();
+        }
+        let slice = std::slice::from_raw_parts(src_ptr, len);
+        let ascii_bytes = elmos_mainframe_core::ebcdic_to_ascii(slice);
+        CString::new(ascii_bytes).unwrap_or_else(|_| CString::new("").unwrap())
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_comp3_decode(
+    hex_ptr: *const c_char,
+    scale: u32,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if hex_ptr.is_null() {
+            return CString::new("{\"error\": \"null pointer\"}").unwrap();
+        }
+        let hex_str = match CStr::from_ptr(hex_ptr).to_str() {
+            Ok(s) => s.trim(),
+            Err(e) => return CString::new(format!("{{\"error\": \"{}\"}}", e)).unwrap(),
+        };
+
+        let bytes = match (0..hex_str.len())
+            .step_by(2)
+            .map(|i| u8::from_str_radix(&hex_str[i..i + 2], 16))
+            .collect::<Result<Vec<u8>, _>>()
+        {
+            Ok(b) => b,
+            Err(e) => return CString::new(format!("{{\"error\": \"hex decode: {}\"}}", e)).unwrap(),
+        };
+
+        match elmos_mainframe_core::decode_comp3(&bytes, scale) {
+            Ok(val) => {
+                let json = serde_json::json!({ "value": val, "scale": scale });
+                CString::new(json.to_string()).unwrap()
+            }
+            Err(e) => {
+                let json = serde_json::json!({ "error": e });
+                CString::new(json.to_string()).unwrap()
+            }
+        }
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_comp3_encode(
+    num_ptr: *const c_char,
+    scale: u32,
+    total_bytes: usize,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if num_ptr.is_null() {
+            return CString::new("{\"error\": \"null pointer\"}").unwrap();
+        }
+        let num_str = match CStr::from_ptr(num_ptr).to_str() {
+            Ok(s) => s.trim(),
+            Err(e) => return CString::new(format!("{{\"error\": \"{}\"}}", e)).unwrap(),
+        };
+
+        match elmos_mainframe_core::encode_comp3(num_str, scale, total_bytes) {
+            Ok(bytes) => {
+                let hex_str = bytes.iter().map(|b| format!("{:02X}", b)).collect::<String>();
+                let json = serde_json::json!({ "hex": hex_str, "bytes_length": bytes.len() });
+                CString::new(json.to_string()).unwrap()
+            }
+            Err(e) => {
+                let json = serde_json::json!({ "error": e });
+                CString::new(json.to_string()).unwrap()
+            }
+        }
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+// -------------------------------------------------------------
+// P5.2: AI Vector Core (SIMD Cosine, Top-K, Token Sliding Window)
+// -------------------------------------------------------------
+#[no_mangle]
+pub unsafe extern "C" fn elmos_vector_cosine(
+    vec_a_ptr: *const f32,
+    vec_b_ptr: *const f32,
+    len: usize,
+) -> f32 {
+    let result = catch_unwind(|| {
+        if vec_a_ptr.is_null() || vec_b_ptr.is_null() || len == 0 {
+            return 0.0f32;
+        }
+        let a = std::slice::from_raw_parts(vec_a_ptr, len);
+        let b = std::slice::from_raw_parts(vec_b_ptr, len);
+        elmos_ai_vector_core::cosine_similarity(a, b)
+    });
+
+    result.unwrap_or(0.0f32)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_vector_topk(
+    query_ptr: *const f32,
+    query_len: usize,
+    candidates_json_ptr: *const c_char,
+    k: usize,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if query_ptr.is_null() || candidates_json_ptr.is_null() || query_len == 0 {
+            return CString::new("[]").unwrap();
+        }
+        let query = std::slice::from_raw_parts(query_ptr, query_len);
+        let json_str = match CStr::from_ptr(candidates_json_ptr).to_str() {
+            Ok(s) => s,
+            Err(_) => return CString::new("[]").unwrap(),
+        };
+
+        let candidates: Vec<elmos_ai_vector_core::VectorItem> = match serde_json::from_str(json_str) {
+            Ok(c) => c,
+            Err(_) => return CString::new("[]").unwrap(),
+        };
+
+        let topk = elmos_ai_vector_core::top_k_cosine(query, &candidates, k);
+        let out_json = serde_json::to_string(&topk).unwrap_or_else(|_| "[]".to_string());
+        CString::new(out_json).unwrap_or_else(|_| CString::new("[]").unwrap())
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_token_count_estimate(text_ptr: *const c_char) -> i32 {
+    let result = catch_unwind(|| {
+        if text_ptr.is_null() {
+            return 0i32;
+        }
+        let text = match CStr::from_ptr(text_ptr).to_str() {
+            Ok(s) => s,
+            Err(_) => return 0i32,
+        };
+        elmos_ai_vector_core::estimate_token_count(text) as i32
+    });
+
+    result.unwrap_or(0i32)
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_token_window_pack(
+    text_ptr: *const c_char,
+    max_tokens: usize,
+    header_lines: usize,
+    footer_lines: usize,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if text_ptr.is_null() {
+            return CString::new("{\"text\":\"\",\"tokens\":0,\"truncated\":false}").unwrap();
+        }
+        let text = match CStr::from_ptr(text_ptr).to_str() {
+            Ok(s) => s,
+            Err(_) => return CString::new("{\"text\":\"\",\"tokens\":0,\"truncated\":false}").unwrap(),
+        };
+
+        let (packed, tok, truncated) =
+            elmos_ai_vector_core::sliding_window_pack(text, max_tokens, header_lines, footer_lines);
+
+        let out = serde_json::json!({
+            "text": packed,
+            "tokens": tok,
+            "truncated": truncated
+        });
+        CString::new(out.to_string()).unwrap()
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+// -------------------------------------------------------------
+// P5.3: Industrial Core (Endianness & Modbus Register Decoding)
+// -------------------------------------------------------------
+#[no_mangle]
+pub unsafe extern "C" fn elmos_industrial_swap_bytes(
+    hex_ptr: *const c_char,
+    endianness_ptr: *const c_char,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if hex_ptr.is_null() || endianness_ptr.is_null() {
+            return CString::new("{\"error\": \"null pointer\"}").unwrap();
+        }
+        let hex_str = match CStr::from_ptr(hex_ptr).to_str() {
+            Ok(s) => s.trim(),
+            Err(e) => return CString::new(format!("{{\"error\": \"{}\"}}", e)).unwrap(),
+        };
+        let mode_str = match CStr::from_ptr(endianness_ptr).to_str() {
+            Ok(s) => s.trim(),
+            Err(e) => return CString::new(format!("{{\"error\": \"{}\"}}", e)).unwrap(),
+        };
+
+        let bytes = match (0..hex_str.len())
+            .step_by(2)
+            .map(|i| u8::from_str_radix(&hex_str[i..i + 2], 16))
+            .collect::<Result<Vec<u8>, _>>()
+        {
+            Ok(b) if b.len() == 4 => [b[0], b[1], b[2], b[3]],
+            _ => return CString::new("{\"error\": \"hex must be exactly 4 bytes (8 hex chars)\"}").unwrap(),
+        };
+
+        let mode = elmos_industrial_core::Endianness::from_str(mode_str);
+        let swapped = elmos_industrial_core::swap_bytes_32(bytes, mode);
+        let float_val = elmos_industrial_core::decode_float32(bytes, mode);
+        let int_val = elmos_industrial_core::decode_int32(bytes, mode);
+
+        let hex_out = swapped.iter().map(|b| format!("{:02X}", b)).collect::<String>();
+        let json = serde_json::json!({
+            "hex": hex_out,
+            "float32": float_val,
+            "int32": int_val,
+            "mode": mode_str
+        });
+        CString::new(json.to_string()).unwrap()
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn elmos_industrial_decode_registers(
+    registers_json_ptr: *const c_char,
+    start_addr: u16,
+    mappings_json_ptr: *const c_char,
+) -> *mut c_char {
+    let result = catch_unwind(|| {
+        if registers_json_ptr.is_null() || mappings_json_ptr.is_null() {
+            return CString::new("[]").unwrap();
+        }
+        let reg_str = match CStr::from_ptr(registers_json_ptr).to_str() {
+            Ok(s) => s,
+            Err(_) => return CString::new("[]").unwrap(),
+        };
+        let map_str = match CStr::from_ptr(mappings_json_ptr).to_str() {
+            Ok(s) => s,
+            Err(_) => return CString::new("[]").unwrap(),
+        };
+
+        let registers: Vec<u16> = serde_json::from_str(reg_str).unwrap_or_default();
+        let mappings: Vec<elmos_industrial_core::RegisterMapping> =
+            serde_json::from_str(map_str).unwrap_or_default();
+
+        let decoded = elmos_industrial_core::decode_modbus_block(&registers, start_addr, &mappings);
+        let out_json = serde_json::to_string(&decoded).unwrap_or_else(|_| "[]".to_string());
+        CString::new(out_json).unwrap_or_else(|_| CString::new("[]").unwrap())
+    });
+
+    match result {
+        Ok(c_str) => c_str.into_raw(),
+        Err(_) => std::ptr::null_mut(),
+    }
+}
+

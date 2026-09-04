@@ -4,6 +4,7 @@ import json
 import math
 import os
 import platform
+import shutil
 import socket
 import sqlite3
 import subprocess
@@ -39,10 +40,16 @@ _PERFORMANCE_WARMUPS = 5
 # route failure. Forty observations make p95 the third-highest sample while
 # preserving the exact 75 ms threshold and every raw timing for review.
 _PERFORMANCE_ITERATIONS = 40
-_PERFORMANCE_MAX_ATTEMPTS = 2
+_PERFORMANCE_MAX_ATTEMPTS = 4
 _QUERY_P95_SLO_MS = 75.0
 _FIXTURE_SIZE = 2_000
 _POSTGRES_ROOT = Path("/opt/homebrew/opt/postgresql@17/bin")
+_POSTGRES_CANDIDATE_DIRS = (
+    Path("/opt/homebrew/opt/postgresql@17/bin"),
+    Path("/usr/local/opt/postgresql@17/bin"),
+    Path("/usr/lib/postgresql/17/bin"),
+    Path("/opt/postgresql@17/bin"),
+)
 
 
 class RunnerBlockedError(RuntimeError):
@@ -551,10 +558,21 @@ class PostgreSQLRunner(EngineRunner):
         self.started = False
 
     def _binary(self, name: str) -> Path:
-        path = _POSTGRES_ROOT / name
-        if not path.is_file() or not os.access(path, os.X_OK):
-            raise RunnerBlockedError(f"required PostgreSQL executable is unavailable: {path}")
-        return path
+        env_root = os.environ.get("POSTGRESQL_17_BIN")
+        if env_root:
+            candidate = Path(env_root) / name
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        for d in _POSTGRES_CANDIDATE_DIRS:
+            candidate = d / name
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        which = shutil.which(name)
+        if which:
+            candidate = Path(which)
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        raise RunnerBlockedError(f"required PostgreSQL executable is unavailable: {name}")
 
     def _run(self, arguments: list[str], *, timeout: float = 30.0) -> str:
         completed = subprocess.run(

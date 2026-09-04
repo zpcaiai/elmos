@@ -69,6 +69,7 @@ class CanonicalType(str, Enum):
     JSON = "JSON"
     ARRAY = "ARRAY"
     BINARY = "BINARY"
+    UUID = "UUID"
 
 
 @dataclass(frozen=True)
@@ -92,6 +93,7 @@ class DefaultKind(str, Enum):
     CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP"
     NULL = "NULL"
     ARRAY = "ARRAY"
+    UUID = "UUID"
 
 
 @dataclass(frozen=True)
@@ -1655,6 +1657,8 @@ class TableFunction:
     #: so a future emitter cannot accidentally treat an arbitrary procedural
     #: body as this route.
     language: RoutineLanguage = RoutineLanguage.SQL
+    security_definer: bool = False
+    search_path: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -1775,13 +1779,33 @@ class RowPolicySettingPredicate:
 
 
 @dataclass(frozen=True)
+class RowPolicyFunctionPredicate:
+    """One tenant-column comparison against a tenant context function call.
+
+    Matches shapes like ``<column> = public.current_tenant_id()`` or
+    ``<column> = current_tenant_id()``.
+    """
+
+    column: str
+    function_name: str
+    function_schema: str | None = None
+
+    def __post_init__(self) -> None:
+        if not self.function_name or "\x00" in self.function_name:
+            raise DialectError(
+                "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+                "RLS function name must be non-empty and NUL-free",
+            )
+
+
+@dataclass(frozen=True)
 class RowPolicy:
     """Closed PostgreSQL tenant-policy IR; non-PostgreSQL routes stay blocked."""
 
     name: str
     table: str
-    using_predicate: RowPolicySettingPredicate
-    check_predicate: RowPolicySettingPredicate
+    using_predicate: RowPolicySettingPredicate | RowPolicyFunctionPredicate
+    check_predicate: RowPolicySettingPredicate | RowPolicyFunctionPredicate | None = None
     schema: str | None = None
     mode: RowPolicyMode = RowPolicyMode.PERMISSIVE
     command: RowPolicyCommand = RowPolicyCommand.ALL

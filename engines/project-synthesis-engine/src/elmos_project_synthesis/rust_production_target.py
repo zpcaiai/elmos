@@ -781,6 +781,16 @@ def _upsert_query(bind_values: list[str], *, sql_const: str = "UPSERT_SQL") -> s
     broken = f"            .query({sql_const}, &[{parameters}])"
     if len(broken) <= _RUSTFMT_MAX_WIDTH:
         return f"        let rows = transaction\n{broken}\n            .await?;"
+    param_line = f"                &[{parameters}],"
+    if len(param_line) <= _RUSTFMT_MAX_WIDTH:
+        return (
+            "        let rows = transaction\n"
+            "            .query(\n"
+            f"                {sql_const},\n"
+            f"{param_line}\n"
+            "            )\n"
+            "            .await?;"
+        )
     entries = "\n".join(f"                    {value}," for value in values)
     return (
         "        let rows = transaction\n"
@@ -918,6 +928,31 @@ fn f64_to_decimal(value: f64) -> Result<Decimal, StoreError> {{
             )
         )
         upsert_query = _upsert_query(bind_values, sql_const=f"{prefix}_UPSERT_SQL")
+        list_sig = f"    pub async fn list(&self, tenant: &str) -> Result<Vec<{entity_type}>, StoreError> {{"
+        if len(list_sig) > 100:
+            list_sig = (
+                "    pub async fn list(\n"
+                "        &self,\n"
+                "        tenant: &str,\n"
+                f"    ) -> Result<Vec<{entity_type}>, StoreError> {{"
+            )
+        list_records = (
+            f"        let records = rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;"
+        )
+        if len(list_records) > 92:
+            list_records = (
+                "        let records =\n"
+                f"            rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;"
+            )
+        find_sig = f"    pub async fn find(&self, tenant: &str, id: Uuid) -> Result<Option<{entity_type}>, StoreError> {{"
+        if len(find_sig) > 100:
+            find_sig = (
+                "    pub async fn find(\n"
+                "        &self,\n"
+                "        tenant: &str,\n"
+                "        id: Uuid,\n"
+                f"    ) -> Result<Option<{entity_type}>, StoreError> {{"
+            )
         blocks.append(
             f"""
 {sql_consts}
@@ -958,17 +993,17 @@ impl {entity_type}Store {{
         Ok(client)
     }}
 
-    pub async fn list(&self, tenant: &str) -> Result<Vec<{entity_type}>, StoreError> {{
+{list_sig}
         let mut client = self.connect().await?;
         let transaction = client.transaction().await?;
         bind_tenant(&transaction, tenant).await?;
         let rows = transaction.query({prefix}_LIST_SQL, &[]).await?;
-        let records = rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;
+{list_records}
         transaction.commit().await?;
         Ok(records)
     }}
 
-    pub async fn find(&self, tenant: &str, id: Uuid) -> Result<Option<{entity_type}>, StoreError> {{
+{find_sig}
         let mut client = self.connect().await?;
         let transaction = client.transaction().await?;
         bind_tenant(&transaction, tenant).await?;
@@ -1016,7 +1051,7 @@ async fn bind_tenant(
 }
 """
     )
-    return "\n".join(blocks)
+    return "\n\n".join(block.strip() for block in blocks) + "\n"
 
 
 def _entity_type(request: SynthesisRequest) -> str:
@@ -1052,6 +1087,16 @@ def _application_source(request: SynthesisRequest) -> str:
             for field in entity.fields
             if field.required and field.type == "string"
         ) or "    // no blank-string constraints declared"
+        save_line = (
+            f"    let record = state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+        )
+        if len(save_line) > 100:
+            save_stmt = (
+                "    let record =\n"
+                f"        state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+            )
+        else:
+            save_stmt = save_line
         handlers.append(
             f"""
 async fn list_{entity.plural}(
@@ -1085,7 +1130,7 @@ async fn put_{entity.singular}(
     let tenant = tenant_of(&state, &headers)?;
     let id = record_id(&raw_id)?;
 {checks}
-    let record = state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;
+{save_stmt}
     Ok(Json(record))
 }}
 
@@ -1104,13 +1149,26 @@ async fn delete_{entity.singular}(
         routes.append(
             f".route({prefix.upper()}_COLLECTION_PATH, get(list_{entity.plural}))"
         )
-        routes.append(
-            f".route({prefix.upper()}_ITEM_PATH, get(get_{entity.singular}).put(put_{entity.singular}).delete(delete_{entity.singular}))"
+        item_route = (
+            f".route({prefix.upper()}_ITEM_PATH, "
+            f"get(get_{entity.singular}).put(put_{entity.singular}).delete(delete_{entity.singular}))"
         )
+        if 8 + len(item_route) > 100:
+            routes.append(
+                f".route(\n"
+                f"            {prefix.upper()}_ITEM_PATH,\n"
+                f"            get(get_{entity.singular})\n"
+                f"                .put(put_{entity.singular})\n"
+                f"                .delete(delete_{entity.singular}),\n"
+                f"        )"
+            )
+        else:
+            routes.append(item_route)
         build_fields.append(f"{prefix}_store: {entity_type}Store::new(url.clone()),")
     route_chain = "\n        ".join(routes)
-    return f"""
-use axum::extract::{{Path, State}};
+    handlers_str = "\n\n".join(h.strip() for h in handlers)
+    build_fields_str = "\n".join(f"        {field}" for field in build_fields)
+    return f"""use axum::extract::{{Path, State}};
 use axum::http::{{HeaderMap, StatusCode}};
 use axum::response::{{IntoResponse, Response}};
 use axum::routing::get;
@@ -1148,14 +1206,15 @@ fn tenant_of(state: &AppState, headers: &HeaderMap) -> Result<String, ApiError> 
 const BAD_RECORD_ID: &str = "RECORD_ID_MUST_BE_UUID";
 
 fn record_id(raw: &str) -> Result<Uuid, ApiError> {{
-    Uuid::parse_str(raw).map_err(|_| ApiError(StatusCode::UNPROCESSABLE_ENTITY, BAD_RECORD_ID))
+    Uuid::parse_str(raw).map_err(|_| ApiError(StatusCode::BAD_REQUEST, BAD_RECORD_ID))
 }}
 
 fn reject_blank(value: &str) -> Result<(), ApiError> {{
     if value.trim().is_empty() {{
-        return Err(ApiError(StatusCode::UNPROCESSABLE_ENTITY, "PAYLOAD_INVALID"));
+        Err(ApiError(StatusCode::BAD_REQUEST, "string_value_blank"))
+    }} else {{
+        Ok(())
     }}
-    Ok(())
 }}
 
 fn internal(error: impl std::fmt::Display) -> ApiError {{
@@ -1167,7 +1226,7 @@ async fn health() -> impl IntoResponse {{
     Json(json!({{ "status": "UP", "service": SERVICE_NAME }}))
 }}
 
-{"".join(handlers)}
+{handlers_str}
 
 pub fn router(state: Arc<AppState>) -> Router {{
     Router::new()
@@ -1182,7 +1241,7 @@ pub fn build_state() -> Result<AppState, Box<dyn std::error::Error>> {{
         return Err("DATABASE_URL_SCHEME_UNSUPPORTED".into());
     }}
     Ok(AppState {{
-        {chr(10).join("        " + field for field in build_fields)}
+{build_fields_str}
     }})
 }}
 """

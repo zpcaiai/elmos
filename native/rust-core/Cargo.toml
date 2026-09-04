@@ -18,6 +18,9 @@ members = [
     "crates/contract-diff",
     "crates/blast-radius",
     "crates/attestation-core",
+    "crates/mainframe-core",
+    "crates/ai-vector-core",
+    "crates/industrial-core",
 ]
 
 [workspace.dependencies]
@@ -57,5 +60,8 @@ elmos-foundry-graph = { path = "crates/foundry-graph" }
 elmos-contract-diff = { path = "crates/contract-diff" }
 elmos-blast-radius = { path = "crates/blast-radius" }
 elmos-attestation-core = { path = "crates/attestation-core" }
+elmos-mainframe-core = { path = "crates/mainframe-core" }
+elmos-ai-vector-core = { path = "crates/ai-vector-core" }
+elmos-industrial-core = { path = "crates/industrial-core" }
 serde = { workspace = true }
 serde_json = { workspace = true }

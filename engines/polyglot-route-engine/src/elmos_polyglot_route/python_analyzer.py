@@ -6,12 +6,24 @@ from pathlib import Path
 from typing import Any
 
 from . import types
-from .models import Expression, Function, RouteError, SemanticIR, Statement
+from .models import Expression, Function, Parameter, RecordDefinition, RouteError, SemanticIR, Statement
 
 
-def _type(annotation: ast.expr | None) -> str:
+def _type(annotation: ast.expr | None, record_names: set[str] | None = None) -> str:
     if isinstance(annotation, ast.Name):
-        return {"int": "integer", "float": "number", "bool": "boolean", "str": "string"}.get(annotation.id, "")
+        canonical = {"int": "integer", "float": "number", "bool": "boolean", "str": "string"}.get(annotation.id)
+        if canonical:
+            return canonical
+        if record_names and annotation.id in record_names:
+            return annotation.id
+        return ""
+    if isinstance(annotation, ast.Constant) and isinstance(annotation.value, str):
+        canonical = {"int": "integer", "float": "number", "bool": "boolean", "str": "string"}.get(annotation.value)
+        if canonical:
+            return canonical
+        if record_names and annotation.value in record_names:
+            return annotation.value
+        return ""
     return ""
 
 
@@ -77,7 +89,13 @@ def _signed_literal(node: ast.expr) -> ast.Constant | None:
     return ast.Constant(value=-value if isinstance(node.op, ast.USub) else +value)
 
 
-def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, Any]:
+def _expression(
+    node: ast.expr,
+    *,
+    record_names: set[str] | None = None,
+    record_defs: dict[str, RecordDefinition] | None = None,
+    emitted_target: bool = False,
+) -> dict[str, Any]:
     folded = _signed_literal(node)
     if folded is not None:
         node = folded
@@ -97,8 +115,8 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, emitted_target=emitted_target),
-                "right": _expression(node.right, emitted_target=emitted_target),
+                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+                "right": _expression(node.right, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
             }
     if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
         operator = {
@@ -113,8 +131,8 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, emitted_target=emitted_target),
-                "right": _expression(node.comparators[0], emitted_target=emitted_target),
+                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
+                "right": _expression(node.comparators[0], record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
             }
     if isinstance(node, ast.BoolOp) and len(node.values) >= 2:
         # Python's parser FLATTENS `a and b and c` into one three-value node,
@@ -130,13 +148,13 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
         # NOT named `folded`: that name already holds the signed-literal fold
         # at the top of this function, and reusing it makes mypy read the two
         # as one variable of two incompatible types.
-        chain = _expression(node.values[0], emitted_target=emitted_target)
+        chain = _expression(node.values[0], record_names=record_names, record_defs=record_defs, emitted_target=emitted_target)
         for value in node.values[1:]:
             chain = {
                 "kind": "binary",
                 "operator": operator,
                 "left": chain,
-                "right": _expression(value, emitted_target=emitted_target),
+                "right": _expression(value, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
             }
         return chain
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
@@ -150,7 +168,7 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
         return {
             "kind": "binary",
             "operator": "==",
-            "left": _expression(node.operand, emitted_target=emitted_target),
+            "left": _expression(node.operand, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
             "right": {"kind": "literal", "value": False},
         }
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
@@ -164,30 +182,101 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
         # honestly needs a unary node in the IR, in canonical.py, in the z3
         # denotation and in all 13 emitters.
         raise RouteError("PYTHON_UNARY_SIGN_ON_EXPRESSION_OUTSIDE_CERTIFIED_SUBSET")
-    if emitted_target and isinstance(node, ast.Call):
-        lifted = _emitted_call(node)
-        if lifted is not None:
-            return lifted
+    if isinstance(node, ast.Attribute):
+        return {
+            "kind": "member_access",
+            "target": _expression(
+                node.value,
+                record_names=record_names,
+                record_defs=record_defs,
+                emitted_target=emitted_target,
+            ),
+            "member": node.attr,
+        }
+    if isinstance(node, ast.Call):
+        if emitted_target:
+            lifted = _emitted_call(node)
+            if lifted is not None:
+                return lifted
+        if isinstance(node.func, ast.Name) and record_defs and node.func.id in record_defs:
+            rec = record_defs[node.func.id]
+            args_dict: dict[str, ast.expr] = {}
+            if len(node.args) > len(rec.fields):
+                raise RouteError(f"PYTHON_RECORD_TOO_MANY_ARGS:{rec.name}")
+            for i, arg_expr in enumerate(node.args):
+                args_dict[rec.fields[i].name] = arg_expr
+            for kw in node.keywords:
+                if kw.arg is None:
+                    raise RouteError("PYTHON_RECORD_STAR_ARGS_UNSUPPORTED")
+                if kw.arg in args_dict:
+                    raise RouteError(f"PYTHON_RECORD_DUPLICATE_ARG:{rec.name}.{kw.arg}")
+                field_names = {f.name for f in rec.fields}
+                if kw.arg not in field_names:
+                    raise RouteError(f"PYTHON_RECORD_UNKNOWN_FIELD:{rec.name}.{kw.arg}")
+                args_dict[kw.arg] = kw.value
+            for f in rec.fields:
+                if f.name not in args_dict:
+                    raise RouteError(f"PYTHON_RECORD_MISSING_ARG:{rec.name}.{f.name}")
+            args_dict_evaluated = {
+                f.name: _expression(
+                    args_dict[f.name],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
+                for f in rec.fields
+            }
+            return {
+                "kind": "record_construct",
+                "record_name": rec.name,
+                "arguments": args_dict_evaluated,
+            }
     raise RouteError(f"PYTHON_UNSUPPORTED_EXPRESSION:{type(node).__name__}")
 
 
-def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[dict[str, Any]]:
+def _statements(
+    nodes: list[ast.stmt],
+    *,
+    record_names: set[str] | None = None,
+    record_defs: dict[str, RecordDefinition] | None = None,
+    emitted_target: bool = False,
+) -> list[dict[str, Any]]:
     result: list[dict[str, Any]] = []
     for node in nodes:
         if isinstance(node, ast.Return) and node.value is not None:
             result.append(
                 {
                     "kind": "return",
-                    "expression": _expression(node.value, emitted_target=emitted_target),
+                    "expression": _expression(
+                        node.value,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
                 }
             )
         elif isinstance(node, ast.If):
             result.append(
                 {
                     "kind": "if",
-                    "condition": _expression(node.test, emitted_target=emitted_target),
-                    "then": _statements(node.body, emitted_target=emitted_target),
-                    "else": _statements(node.orelse, emitted_target=emitted_target),
+                    "condition": _expression(
+                        node.test,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
+                    "then": _statements(
+                        node.body,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
+                    "else": _statements(
+                        node.orelse,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
                 }
             )
         elif isinstance(node, ast.AnnAssign):
@@ -207,7 +296,7 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                 # `(x): int = 1`, `obj.x: int = 1`, `a[0]: int = 1` -- none of
                 # these bind a plain local name.
                 raise RouteError("PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
-            declared = _type(node.annotation)
+            declared = _type(node.annotation, record_names)
             if not declared:
                 raise RouteError(f"PYTHON_UNSUPPORTED_LOCAL_TYPE:{ast.unparse(node.annotation)}")
             result.append(
@@ -215,7 +304,12 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                     "kind": "let",
                     "name": node.target.id,
                     "type": declared,
-                    "expression": _expression(node.value, emitted_target=emitted_target),
+                    "expression": _expression(
+                        node.value,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
                 }
             )
         elif isinstance(node, ast.While):
@@ -224,8 +318,18 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
             result.append(
                 {
                     "kind": "while",
-                    "condition": _expression(node.test, emitted_target=emitted_target),
-                    "body": _statements(node.body, emitted_target=emitted_target),
+                    "condition": _expression(
+                        node.test,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
+                    "body": _statements(
+                        node.body,
+                        record_names=record_names,
+                        record_defs=record_defs,
+                        emitted_target=emitted_target,
+                    ),
                 }
             )
         elif isinstance(node, ast.For):
@@ -244,16 +348,46 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
             args = node.iter.args
             if len(args) == 1:
                 start: dict[str, Any] = {"kind": "literal", "value": 0}
-                end = _expression(args[0], emitted_target=emitted_target)
+                end = _expression(
+                    args[0],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
                 step = None
             elif len(args) == 2:
-                start = _expression(args[0], emitted_target=emitted_target)
-                end = _expression(args[1], emitted_target=emitted_target)
+                start = _expression(
+                    args[0],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
+                end = _expression(
+                    args[1],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
                 step = None
             elif len(args) == 3:
-                start = _expression(args[0], emitted_target=emitted_target)
-                end = _expression(args[1], emitted_target=emitted_target)
-                step = _expression(args[2], emitted_target=emitted_target)
+                start = _expression(
+                    args[0],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
+                end = _expression(
+                    args[1],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
+                step = _expression(
+                    args[2],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                )
             else:
                 raise RouteError(f"PYTHON_RANGE_ARITY_INVALID:{len(args)}")
             for_dict: dict[str, Any] = {
@@ -262,7 +396,12 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                 "type": "integer",
                 "start": start,
                 "end": end,
-                "body": _statements(node.body, emitted_target=emitted_target),
+                "body": _statements(
+                    node.body,
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    emitted_target=emitted_target,
+                ),
             }
             if step is not None:
                 for_dict["step"] = step
@@ -282,7 +421,11 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
     return result
 
 
-def _reject_python_only_arithmetic(expression: Expression, environment: dict[str, str]) -> None:
+def _reject_python_only_arithmetic(
+    expression: Expression,
+    environment: dict[str, str],
+    records_env: dict[str, RecordDefinition] | None = None,
+) -> None:
     """Refuse the two Python operators whose meaning does not survive lifting.
 
     The canonical IR defines `/` and `%` on two integers as the *truncating*
@@ -304,15 +447,19 @@ def _reject_python_only_arithmetic(expression: Expression, environment: dict[str
     if expression.operator == "%":
         raise RouteError("PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET")
     if expression.operator == "/":
-        left = types.infer(expression.left, environment)
-        right = types.infer(expression.right, environment)
+        left = types.infer(expression.left, environment, records_env)
+        right = types.infer(expression.right, environment, records_env)
         if left == "integer" and right == "integer":
             raise RouteError("PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET")
-    _reject_python_only_arithmetic(expression.left, environment)
-    _reject_python_only_arithmetic(expression.right, environment)
+    _reject_python_only_arithmetic(expression.left, environment, records_env)
+    _reject_python_only_arithmetic(expression.right, environment, records_env)
 
 
-def _check_statements(statements: tuple[Statement, ...], environment: dict[str, str]) -> None:
+def _check_statements(
+    statements: tuple[Statement, ...],
+    environment: dict[str, str],
+    records_env: dict[str, RecordDefinition] | None = None,
+) -> None:
     """Walk for the Python-only arithmetic rejection, carrying the same scope
     rule `types._check_statements` uses.
 
@@ -325,39 +472,42 @@ def _check_statements(statements: tuple[Statement, ...], environment: dict[str, 
     """
     for statement in statements:
         if statement.expression is not None:
-            _reject_python_only_arithmetic(statement.expression, environment)
+            _reject_python_only_arithmetic(statement.expression, environment, records_env)
         if statement.condition is not None:
-            _reject_python_only_arithmetic(statement.condition, environment)
+            _reject_python_only_arithmetic(statement.condition, environment, records_env)
         if statement.kind == "let" and statement.name is not None and statement.declared_type is not None:
             # After its own initializer, never before.
             environment[statement.name] = statement.declared_type
             continue
         if statement.kind == "while":
-            _check_statements(statement.body, dict(environment))
+            _check_statements(statement.body, dict(environment), records_env)
             continue
         if statement.kind == "for":
             if statement.start is not None:
-                _reject_python_only_arithmetic(statement.start, environment)
+                _reject_python_only_arithmetic(statement.start, environment, records_env)
             if statement.end is not None:
-                _reject_python_only_arithmetic(statement.end, environment)
+                _reject_python_only_arithmetic(statement.end, environment, records_env)
             if statement.step is not None:
-                _reject_python_only_arithmetic(statement.step, environment)
+                _reject_python_only_arithmetic(statement.step, environment, records_env)
             loop_env = dict(environment)
             if statement.name is not None:
                 loop_env[statement.name] = "integer"
-            _check_statements(statement.body, loop_env)
+            _check_statements(statement.body, loop_env, records_env)
             continue
-        _check_statements(statement.then_body, dict(environment))
-        _check_statements(statement.else_body, dict(environment))
+        _check_statements(statement.then_body, dict(environment), records_env)
+        _check_statements(statement.else_body, dict(environment), records_env)
 
 
-def _check_function(function: Function) -> None:
+def _check_function(
+    function: Function,
+    records_env: dict[str, RecordDefinition] | None = None,
+) -> None:
     # The canonical checker mutates and returns its environment, so its result
     # contains every top-level `let`.  The Python-only arithmetic walk must
     # instead start with parameters and bind locals in source order; otherwise
     # a later declaration is incorrectly visible to an earlier statement.
-    types.check_function(function)
-    _check_statements(function.body, types.environment_of(function))
+    types.check_function(function, records_env)
+    _check_statements(function.body, types.environment_of(function, records_env), records_env)
 
 
 def _emitted_body(nodes: list[ast.stmt], parameters: list[dict[str, str]]) -> list[ast.stmt]:
@@ -434,9 +584,57 @@ def _split_leading_docstring(nodes: list[ast.stmt]) -> tuple[list[ast.stmt], str
     return remaining, first.value.value
 
 
+def _is_dataclass(node: ast.ClassDef) -> bool:
+    for dec in node.decorator_list:
+        if isinstance(dec, ast.Name) and dec.id == "dataclass":
+            return True
+        if isinstance(dec, ast.Call) and isinstance(dec.func, ast.Name) and dec.func.id == "dataclass":
+            return True
+    return False
+
+
+def _parse_record(node: ast.ClassDef, known_record_names: set[str]) -> RecordDefinition:
+    if node.bases:
+        raise RouteError(f"PYTHON_RECORD_INHERITANCE_UNSUPPORTED:{node.name}")
+    fields: list[Parameter] = []
+    field_names: set[str] = set()
+    for item in node.body:
+        if isinstance(item, ast.AnnAssign):
+            if not isinstance(item.target, ast.Name):
+                raise RouteError(f"PYTHON_RECORD_FIELD_TARGET_INVALID:{node.name}")
+            f_name = item.target.id
+            if f_name in field_names:
+                raise RouteError(f"PYTHON_RECORD_DUPLICATE_FIELD:{node.name}.{f_name}")
+            field_names.add(f_name)
+            f_type = _type(item.annotation, known_record_names)
+            if not f_type:
+                raise RouteError(f"PYTHON_RECORD_FIELD_TYPE_INVALID:{node.name}.{f_name}")
+            fields.append(Parameter(name=f_name, type=f_type))
+        elif isinstance(item, ast.Expr) and isinstance(item.value, ast.Constant) and isinstance(item.value.value, str):
+            continue
+        elif isinstance(item, ast.Pass):
+            continue
+        else:
+            raise RouteError(f"PYTHON_RECORD_UNSUPPORTED_MEMBER:{node.name}.{type(item).__name__}")
+    if not fields:
+        raise RouteError(f"PYTHON_RECORD_EMPTY:{node.name}")
+    return RecordDefinition(name=node.name, fields=tuple(fields))
+
+
 def analyze_python(path: Path, function_name: str, *, emitted_target: bool = False) -> SemanticIR:
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=path.name, feature_version=(3, 12))
+    records_list: list[RecordDefinition] = []
+    record_defs: dict[str, RecordDefinition] = {}
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and _is_dataclass(node):
+            if node.name in record_defs:
+                raise RouteError(f"PYTHON_DUPLICATE_RECORD_NAME:{node.name}")
+            rec = _parse_record(node, set(record_defs.keys()))
+            record_defs[rec.name] = rec
+            records_list.append(rec)
+    record_names = set(record_defs.keys())
+
     candidate = next(
         (
             node
@@ -451,11 +649,11 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
         raise RouteError("ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET")
     parameters = []
     for argument in candidate.args.args:
-        parameter_type = _type(argument.annotation)
+        parameter_type = _type(argument.annotation, record_names)
         if not parameter_type:
             raise RouteError(f"PYTHON_PARAMETER_TYPE_REQUIRED:{argument.arg}")
         parameters.append({"name": argument.arg, "type": parameter_type})
-    return_type = _type(candidate.returns)
+    return_type = _type(candidate.returns, record_names)
     if not return_type:
         raise RouteError("PYTHON_RETURN_TYPE_REQUIRED")
     documentation: str | None = None
@@ -471,24 +669,26 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
         "name": candidate.name,
         "parameters": parameters,
         "return_type": return_type,
-        "body": _statements(body, emitted_target=emitted_target),
+        "body": _statements(body, record_names=record_names, record_defs=record_defs, emitted_target=emitted_target),
     }
     if documentation is not None:
         function_mapping["documentation"] = documentation
-    semantic = SemanticIR.from_mapping(
-        {
-            "schema_version": "1.0.0",
-            "source_language": "python",
-            "source_file": path.name,
-            "analyzer": "CPython ast",
-            "analyzer_version": platform.python_version(),
-            "functions": [function_mapping],
-            "diagnostics": [],
-        }
-    )
+    raw_semantic: dict[str, Any] = {
+        "schema_version": "1.0.0",
+        "source_language": "python",
+        "source_file": path.name,
+        "analyzer": "CPython ast",
+        "analyzer_version": platform.python_version(),
+        "functions": [function_mapping],
+        "diagnostics": [],
+    }
+    if records_list:
+        raw_semantic["records"] = [rec.to_mapping() for rec in records_list]
+    semantic = SemanticIR.from_mapping(raw_semantic)
+    records_env = {r.name: r for r in semantic.records} if semantic.records else None
     for function in semantic.functions:
         if emitted_target:
-            types.check_function(function)
+            types.check_function(function, records_env)
         else:
-            _check_function(function)
+            _check_function(function, records_env)
     return semantic

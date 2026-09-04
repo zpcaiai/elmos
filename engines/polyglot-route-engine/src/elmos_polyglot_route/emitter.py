@@ -8,7 +8,7 @@ from dataclasses import dataclass, field
 
 from . import types
 from .identifier_hygiene import IdentifierPlan, plan_identifiers, target_ir_view
-from .models import Expression, Function, Language, RouteError, SemanticIR, Statement
+from .models import Expression, Function, Language, RecordDefinition, RouteError, SemanticIR, Statement
 
 
 @dataclass(frozen=True)
@@ -268,6 +268,14 @@ _JAVASCRIPT_HELPERS: dict[str, str] = {
         "function _elmosRequireNonZero(value) {\n"
         "  if (value === 0) {\n"
         f'    throw new RangeError("{_DIVIDE_BY_ZERO_MESSAGE}");\n'
+        "  }\n"
+        "  return value;\n"
+        "}"
+    ),
+    "exact_record": (
+        "function _elmosRequireRecord(value) {\n"
+        '  if (typeof value !== "object" || value === null) {\n'
+        '    throw new TypeError("ELMOS_RECORD_REQUIRED");\n'
         "  }\n"
         "  return value;\n"
         "}"
@@ -788,6 +796,7 @@ _HELPER_ORDER: tuple[str, ...] = (
     "checked_mod",
     "truncating_div",
     "truncating_mod",
+    "exact_record",
 )
 
 
@@ -821,6 +830,7 @@ class _Context:
     helpers: set[str] = field(default_factory=set)
     imports: set[str] = field(default_factory=set)
     normalization_rules: set[str] = field(default_factory=set)
+    records: dict[str, RecordDefinition] = field(default_factory=dict)
 
 
 def _emitted_file(context: _Context, relative_path: str, content: str) -> EmittedFile:
@@ -841,11 +851,12 @@ def _emitted_file(context: _Context, relative_path: str, content: str) -> Emitte
     )
 
 
-def _type(language: Language, value: str) -> str:
-    try:
+def _type(language: Language, value: str, records: dict[str, RecordDefinition] | None = None) -> str:
+    if value in _TYPE_SPELLING.get(language, {}):
         return _TYPE_SPELLING[language][value]
-    except KeyError as error:
-        raise RouteError(f"UNSUPPORTED_TYPE_MAPPING:{language}:{value}") from error
+    if records is not None and value in records:
+        return value
+    raise RouteError(f"UNSUPPORTED_TYPE_MAPPING:{language}:{value}")
 
 
 def _variable(language: Language, name: str) -> str:
@@ -858,6 +869,85 @@ def _variable(language: Language, name: str) -> str:
     identifier plan rather than a rename applied to every identifier.
     """
     return f"${name}" if language == "php" else name
+
+
+def _record_definition(context: _Context, record: RecordDefinition) -> str:
+    lang = context.language
+    if lang == "java":
+        fields_str = ", ".join(f"{_type(lang, f.type, context.records)} {f.name}" for f in record.fields)
+        return f"    public record {record.name}({fields_str}) {{}}"
+    if lang == "csharp":
+        fields_str = ", ".join(f"{_type(lang, f.type, context.records)} {f.name}" for f in record.fields)
+        return f"    public record {record.name}({fields_str});"
+    if lang == "python":
+        lines = ["@dataclass(frozen=True)", f"class {record.name}:"]
+        for f in record.fields:
+            lines.append(f"    {f.name}: {_type(lang, f.type, context.records)}")
+        return "\n".join(lines)
+    if lang in {"typescript", "react"}:
+        lines = [f"export interface {record.name} {{"]
+        for f in record.fields:
+            lines.append(f"    readonly {f.name}: {_type(lang, f.type, context.records)};")
+        lines.append("}")
+        return "\n".join(lines)
+    if lang == "javascript":
+        lines = ["/**", f" * @typedef {{Object}} {record.name}"]
+        for f in record.fields:
+            lines.append(f" * @property {{{_type(lang, f.type, context.records)}}} {f.name}")
+        lines.append(" */")
+        return "\n".join(lines)
+    if lang == "go":
+        lines = [f"type {record.name} struct {{"]
+        for f in record.fields:
+            lines.append(f"    {f.name} {_type(lang, f.type, context.records)}")
+        lines.append("}")
+        return "\n".join(lines)
+    if lang == "rust":
+        lines = ["#[derive(Clone, Debug, PartialEq)]", f"pub struct {record.name} {{"]
+        for f in record.fields:
+            lines.append(f"    pub {f.name}: {_type(lang, f.type, context.records)},")
+        lines.append("}")
+        return "\n".join(lines)
+    if lang == "cpp":
+        lines = [f"struct {record.name} {{"]
+        for f in record.fields:
+            lines.append(f"    {_type(lang, f.type, context.records)} {f.name};")
+        lines.append("};")
+        return "\n".join(lines)
+    if lang == "objc":
+        lines = ["typedef struct {"]
+        for f in record.fields:
+            lines.append(f"    {_type(lang, f.type, context.records)} {f.name};")
+        lines.append(f"}} {record.name};")
+        return "\n".join(lines)
+    if lang == "swift":
+        lines = [f"struct {record.name}: Equatable {{"]
+        for f in record.fields:
+            lines.append(f"    let {f.name}: {_type(lang, f.type, context.records)}")
+        lines.append("}")
+        return "\n".join(lines)
+    if lang == "kotlin":
+        lines = [f"data class {record.name}("]
+        for f in record.fields:
+            lines.append(f"    val {f.name}: {_type(lang, f.type, context.records)},")
+        lines.append(")")
+        return "\n".join(lines)
+    if lang == "flutter":
+        lines = [f"class {record.name} {{"]
+        for f in record.fields:
+            lines.append(f"    final {_type(lang, f.type, context.records)} {f.name};")
+        args_str = ", ".join(f"required this.{f.name}" for f in record.fields)
+        lines.append(f"    const {record.name}({{{args_str}}});")
+        lines.append("}")
+        return "\n".join(lines)
+    if lang == "php":
+        lines = [f"final readonly class {record.name} {{", "    public function __construct("]
+        for f in record.fields:
+            lines.append(f"        public {_type(lang, f.type, context.records)} ${f.name},")
+        lines.append("    ) {}")
+        lines.append("}")
+        return "\n".join(lines)
+    raise RouteError(f"UNSUPPORTED_RECORD_TARGET:{lang}")
 
 
 def _integer_literal(language: Language, value: int) -> str:
@@ -1098,8 +1188,8 @@ def _binary(
     assert expression.left is not None and expression.right is not None
     language = context.language
     operator = expression.operator or ""
-    left_type = types.infer(expression.left, environment)
-    right_type = types.infer(expression.right, environment)
+    left_type = types.infer(expression.left, environment, context.records)
+    right_type = types.infer(expression.right, environment, context.records)
     left = _expression(context, expression.left, environment)
     right = _expression(context, expression.right, environment)
     if language == "rust":
@@ -1292,6 +1382,64 @@ def _expression(
         return _literal(context.language, expression.value)
     if expression.kind == "binary" and expression.left is not None and expression.right is not None:
         return _binary(context, expression, environment, top_level=top_level)
+    if expression.kind == "member_access":
+        if expression.target is None or expression.member is None:
+            raise RouteError("INVALID_MEMBER_ACCESS_EXPRESSION")
+        target_str = _expression(context, expression.target, environment)
+        if expression.target.kind == "binary":
+            target_str = f"({target_str})"
+        member = expression.member
+        if context.language == "java":
+            return f"{target_str}.{member}()"
+        if context.language == "php":
+            return f"{target_str}->{member}"
+        return f"{target_str}.{member}"
+    if expression.kind == "record_construct":
+        if expression.record_name is None:
+            raise RouteError("INVALID_RECORD_CONSTRUCT_EXPRESSION")
+        if expression.record_name not in context.records:
+            raise RouteError(f"UNKNOWN_RECORD_TYPE:{expression.record_name}")
+        rec = context.records[expression.record_name]
+        arg_map = dict(expression.arguments)
+        ordered_args = [
+            (f.name, _expression(context, arg_map[f.name], environment))
+            for f in rec.fields
+        ]
+        lang = context.language
+        if lang in {"java", "csharp"}:
+            args_str = ", ".join(v for _, v in ordered_args)
+            return f"new {rec.name}({args_str})"
+        if lang == "python":
+            args_str = ", ".join(f"{k}={v}" for k, v in ordered_args)
+            return f"{rec.name}({args_str})"
+        if lang in {"typescript", "react", "javascript"}:
+            args_str = ", ".join(f"{k}: {v}" for k, v in ordered_args)
+            return f"({{ {args_str} }})"
+        if lang == "go":
+            args_str = ", ".join(f"{k}: {v}" for k, v in ordered_args)
+            return f"{rec.name}{{{args_str}}}"
+        if lang == "rust":
+            args_str = ", ".join(f"{k}: {v}" for k, v in ordered_args)
+            return f"{rec.name} {{ {args_str} }}"
+        if lang == "cpp":
+            args_str = ", ".join(v for _, v in ordered_args)
+            return f"{rec.name}{{{args_str}}}"
+        if lang == "objc":
+            args_str = ", ".join(f".{k} = {v}" for k, v in ordered_args)
+            return f"({rec.name}){{{args_str}}}"
+        if lang == "swift":
+            args_str = ", ".join(f"{k}: {v}" for k, v in ordered_args)
+            return f"{rec.name}({args_str})"
+        if lang == "kotlin":
+            args_str = ", ".join(v for _, v in ordered_args)
+            return f"{rec.name}({args_str})"
+        if lang == "flutter":
+            args_str = ", ".join(f"{k}: {v}" for k, v in ordered_args)
+            return f"{rec.name}({args_str})"
+        if lang == "php":
+            args_str = ", ".join(v for _, v in ordered_args)
+            return f"new {rec.name}({args_str})"
+        raise RouteError(f"UNSUPPORTED_RECORD_CONSTRUCT_TARGET:{lang}")
     raise RouteError(f"UNSUPPORTED_EMISSION_EXPRESSION:{expression.kind}")
 
 
@@ -1346,7 +1494,7 @@ def _statements(
             lines.append(
                 prefix
                 + spelling.format(
-                    type=_type(language, statement.declared_type),
+                    type=_type(language, statement.declared_type, context.records),
                     name=_variable(language, statement.name),
                     value=value,
                 )
@@ -1364,7 +1512,7 @@ def _statements(
             if (
                 language in {"rust", "swift", "kotlin", "flutter", "python"}
                 and return_type == "number"
-                and types.infer(statement.expression, environment) == "integer"
+                and types.infer(statement.expression, environment, context.records) == "integer"
             ):
                 if language == "rust":
                     context.normalization_rules.add("rust.return.integer-to-number")
@@ -1502,7 +1650,7 @@ def _statements(
                 lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
                 lines.append(f"{prefix}}}")
             else:
-                type_spelling = _type(language, "integer")
+                type_spelling = _type(language, "integer", context.records)
                 lines.append(f"{prefix}for ({type_spelling} {var_name} = {start}; {var_name} < {end}; {inc}) {{")
                 lines.extend(_statements(context, statement.body, loop_env, indent + 1, return_type))
                 lines.append(f"{prefix}}}")
@@ -1519,46 +1667,46 @@ def _statements(
     return lines
 
 
-def _signature(language: Language, function: Function) -> str:
+def _signature(language: Language, function: Function, records: dict[str, RecordDefinition] | None = None) -> str:
     """The target's declaration line for one certified pure function."""
-    return_type = _type(language, function.return_type)
+    return_type = _type(language, function.return_type, records)
     if language == "python":
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"{item.name}: {_type(language, item.type, records)}" for item in function.parameters)
         return f"def {function.name}({parameters}) -> {return_type}:"
     if language in {"typescript", "react"}:
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"{item.name}: {_type(language, item.type, records)}" for item in function.parameters)
         return f"export function {function.name}({parameters}): {return_type} {{"
     if language == "javascript":
         documentation = ["/**"]
-        documentation.extend(f" * @param {{{item.type}}} {item.name}" for item in function.parameters)
-        documentation.extend((f" * @returns {{{function.return_type}}}", " */"))
+        documentation.extend(f" * @param {{{_type(language, item.type, records)}}} {item.name}" for item in function.parameters)
+        documentation.extend((f" * @returns {{{return_type}}}", " */"))
         parameters = ", ".join(item.name for item in function.parameters)
         return "\n".join([*documentation, f"export function {function.name}({parameters}) {{"])
     if language == "go":
-        parameters = ", ".join(f"{item.name} {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"{item.name} {_type(language, item.type, records)}" for item in function.parameters)
         return f"func {function.name}({parameters}) {return_type} {{"
     if language == "rust":
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"{item.name}: {_type(language, item.type, records)}" for item in function.parameters)
         return f"fn {function.name}({parameters}) -> {return_type} {{"
     if language == "php":
         parameters = ", ".join(
-            f"{_type(language, item.type)} {_variable(language, item.name)}" for item in function.parameters
+            f"{_type(language, item.type, records)} {_variable(language, item.name)}" for item in function.parameters
         )
         return f"function {function.name}({parameters}): {return_type} {{"
     if language == "kotlin":
-        parameters = ", ".join(f"{item.name}: {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"{item.name}: {_type(language, item.type, records)}" for item in function.parameters)
         return f"fun {function.name}({parameters}): {return_type} {{"
     if language == "flutter":
-        parameters = ", ".join(f"{_type(language, item.type)} {item.name}" for item in function.parameters)
+        parameters = ", ".join(f"{_type(language, item.type, records)} {item.name}" for item in function.parameters)
         return f"{return_type} {function.name}({parameters}) {{"
     if language == "swift":
         # `_` on every parameter keeps call sites positional, which is what
         # every other target and the behaviour harness emit.
-        parameters = ", ".join(f"_ {item.name}: {_type(language, item.type)}" for item in function.parameters)
+        parameters = ", ".join(f"_ {item.name}: {_type(language, item.type, records)}" for item in function.parameters)
         return f"func {function.name}({parameters}) -> {return_type} {{"
     parameters = ", ".join(
         # `NSString *name`, not `NSString * name`.
-        f"{_type(language, item.type)}{'' if _type(language, item.type).endswith('*') else ' '}{item.name}"
+        f"{_type(language, item.type, records)}{'' if _type(language, item.type, records).endswith('*') else ' '}{item.name}"
         for item in function.parameters
     )
     if language in _WRAPPED_IN_TYPE:
@@ -1568,8 +1716,8 @@ def _signature(language: Language, function: Function) -> str:
 
 def _function(context: _Context, function: Function) -> str:
     language = context.language
-    environment = types.check_function(function)
-    lines = [_signature(language, function)]
+    environment = types.check_function(function, context.records)
+    lines = [_signature(language, function, context.records)]
     if language in {"typescript", "react"}:
         for parameter in function.parameters:
             if parameter.type == "integer":
@@ -1585,14 +1733,19 @@ def _function(context: _Context, function: Function) -> str:
             "string": ("_elmosRequireString", "exact_string"),
         }
         for parameter in function.parameters:
-            guard, helper = parameter_guards[parameter.type]
-            _require_helper(context, helper)
-            context.normalization_rules.add(f"javascript.parameter.{parameter.type}.exact")
-            if parameter.type == "integer":
-                context.normalization_rules.add("javascript.parameter.integer.negative-zero-normalized")
-                lines.append(f"    {parameter.name} = {guard}({parameter.name});")
-            else:
-                lines.append(f"    {guard}({parameter.name});")
+            if parameter.type in parameter_guards:
+                guard, helper = parameter_guards[parameter.type]
+                _require_helper(context, helper)
+                context.normalization_rules.add(f"javascript.parameter.{parameter.type}.exact")
+                if parameter.type == "integer":
+                    context.normalization_rules.add("javascript.parameter.integer.negative-zero-normalized")
+                    lines.append(f"    {parameter.name} = {guard}({parameter.name});")
+                else:
+                    lines.append(f"    {guard}({parameter.name});")
+            elif context.records and parameter.type in context.records:
+                _require_helper(context, "exact_record")
+                context.normalization_rules.add("javascript.parameter.record.exact")
+                lines.append(f"    _elmosRequireRecord({parameter.name});")
     if language == "python":
         # Python and TypeScript are the two targets whose parameter type can
         # physically hold a value outside the canonical `integer` range --
@@ -1626,49 +1779,58 @@ def emit(
     if plan.target_language != target:
         raise RouteError("IDENTIFIER_PLAN_TARGET_LANGUAGE_MISMATCH")
     emitter_ir = target_ir_view(ir, plan)
-    context = _Context(language=target)
+    context = _Context(
+        language=target,
+        records={r.name: r for r in emitter_ir.records},
+    )
+    records_defs = [_record_definition(context, record) for record in emitter_ir.records]
+    records_str = "\n\n".join(records_defs)
+    records_part = [records_str] if records_str else []
     functions = "\n\n".join(_function(context, function) for function in emitter_ir.functions)
     helpers = _helper_sources(context)
     if target == "java":
         # Java and C# put helpers inside the type, after the functions, so the
         # emitted file stays a single compilation unit with no extra class.
-        body = "\n\n".join([functions, *helpers])
+        body = "\n\n".join([*records_part, functions, *helpers])
         return _emitted_file(context, "Migrated.java", f"public final class Migrated {{\n{body}\n}}\n")
     if target == "csharp":
-        body = "\n\n".join([functions, *helpers])
+        body = "\n\n".join([*records_part, functions, *helpers])
         return _emitted_file(context, "Migrated.cs", f"public static class Migrated\n{{\n{body}\n}}\n")
     if target == "python":
         preamble = "from __future__ import annotations\n"
+        if emitter_ir.records:
+            preamble += "\nfrom dataclasses import dataclass\n"
         for module in sorted(context.imports):
             preamble += f"\nimport {module}\n"
         for helper in helpers:
             preamble += "\n\n" + helper
-        return _emitted_file(context, "migrated.py", f"{preamble}\n\n{functions}\n")
+        body = "\n\n".join([*records_part, functions])
+        return _emitted_file(context, "migrated.py", f"{preamble}\n\n{body}\n")
     if target == "javascript":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*helpers, *records_part, functions])
         return _emitted_file(context, "migrated.mjs", body + "\n")
     if target == "go":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.go", "package main\n\n" + body + "\n")
     if target == "rust":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.rs", body + "\n")
     if target == "kotlin":
         # Kotlin allows top-level functions, so there is no wrapper type -- and
         # therefore no qualifier on the helper call sites, unlike Java's
         # `Migrated.elmosCheckedDiv`. The file name still carries the shared
         # `Migrated` stem so the harness locates it the same way everywhere.
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "Migrated.kt", body + "\n")
     if target == "flutter":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.dart", body + "\n")
     if target == "cpp":
         # <cstdint> for std::int64_t and <string> for std::string: both are
         # required by the canonical type spellings, so both are always
         # included rather than guessed at per function. <stdexcept> carries
         # the overflow_error the R1/R2 guards raise.
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(
             context,
             "migrated.cpp",
@@ -1676,14 +1838,14 @@ def emit(
         )
     if target == "objc":
         # Foundation carries NSString, the BOOL/YES/NO spellings and NSException.
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(
             context,
             "migrated.m",
             "#import <Foundation/Foundation.h>\n\n" + body + "\n",
         )
     if target == "swift":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.swift", body + "\n")
     if target == "php":
         # `declare(strict_types=1)` must be the first statement in the file. It
@@ -1691,12 +1853,12 @@ def emit(
         # return types enforced rather than coercive: without it PHP would
         # happily accept the string "3" for an `int` parameter and silently
         # answer something no other target could have produced.
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.php", "<?php\n\ndeclare(strict_types=1);\n\n" + body + "\n")
     if target == "typescript":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.ts", f"{body}\n")
     if target == "react":
-        body = "\n\n".join([*helpers, functions])
+        body = "\n\n".join([*records_part, *helpers, functions])
         return _emitted_file(context, "migrated.tsx", f"{body}\n")
     raise RouteError(f"UNSUPPORTED_EMISSION_TARGET:{target}")

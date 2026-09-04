@@ -30,6 +30,8 @@ class SupportedDialect(str, Enum):
     MYSQL = "mysql"
     SQLSERVER = "sqlserver"
     TSQL = "tsql"
+    SQLITE = "sqlite"
+    DUCKDB = "duckdb"
     DM8 = "dm8"
     TIDB = "tidb"
     OCEANBASE_ORACLE = "oceanbase-oracle"
@@ -47,6 +49,8 @@ _CORE_DIALECTS = {
     "mysql": "mysql",
     "sqlserver": "tsql",
     "tsql": "tsql",
+    "sqlite": "sqlite",
+    "duckdb": "duckdb",
 }
 _KNOWN_DIALECTS = frozenset(item.value for item in SupportedDialect)
 

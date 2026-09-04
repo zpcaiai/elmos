@@ -26,7 +26,7 @@ from pathlib import PurePosixPath
 from typing import Any, Literal, cast
 
 from . import types
-from .models import Expression, Function, Language, RouteError, SemanticIR, Statement
+from .models import Expression, Function, Language, RecordDefinition, RouteError, SemanticIR, Statement
 
 SCHEMA_VERSION = "2.0.0"
 PLAN_KIND = "elmos.typed-identifier-plan"
@@ -1242,6 +1242,19 @@ def _rename_expression(expression: Expression, names: dict[str, str], role: str)
             left=_rename_expression(expression.left, names, role),
             right=_rename_expression(expression.right, names, role),
         )
+    if expression.kind == "member_access" and expression.target is not None:
+        return replace(
+            expression,
+            target=_rename_expression(expression.target, names, role),
+        )
+    if expression.kind == "record_construct":
+        return replace(
+            expression,
+            arguments=tuple(
+                (arg_name, _rename_expression(arg_expr, names, role))
+                for arg_name, arg_expr in expression.arguments
+            ),
+        )
     raise RouteError(f"IDENTIFIER_{role}_EXPRESSION_UNSUPPORTED:{expression.kind}")
 
 
@@ -1354,6 +1367,7 @@ def _target_function_view_validated(
     function: Function,
     function_ordinal: int,
     plan: IdentifierPlan,
+    records_env: dict[str, RecordDefinition] | None = None,
 ) -> Function:
     function_binding = _function_binding(plan, function_ordinal, function)
     parameter_bindings = _parameter_bindings(plan, function_binding, function)
@@ -1377,7 +1391,7 @@ def _target_function_view_validated(
         ),
         body=_rename_statements(function.body, name_map, "SOURCE"),
     )
-    types.check_function(target)
+    types.check_function(target, records_env)
     return target
 
 
@@ -1392,17 +1406,19 @@ def target_function_view(
     ordinals = [index for index, item in enumerate(source_ir.functions) if item == function]
     if len(ordinals) != 1:
         raise RouteError("IDENTIFIER_SOURCE_FUNCTION_NOT_UNIQUE")
-    return _target_function_view_validated(function, ordinals[0], plan)
+    records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
+    return _target_function_view_validated(function, ordinals[0], plan, records_env)
 
 
 def target_ir_view(source_ir: SemanticIR, plan: IdentifierPlan) -> SemanticIR:
     """Return one emitter-facing IR while preserving source provenance."""
 
     validate_identifier_plan(source_ir, plan)
+    records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
     return replace(
         source_ir,
         functions=tuple(
-            _target_function_view_validated(function, ordinal, plan)
+            _target_function_view_validated(function, ordinal, plan, records_env)
             for ordinal, function in enumerate(source_ir.functions)
         ),
     )
@@ -1420,8 +1436,9 @@ def alpha_normalize_target(
         raise RouteError("IDENTIFIER_TARGET_LANGUAGE_MISMATCH")
     if raw_target_ir.diagnostics:
         raise RouteError("IDENTIFIER_TARGET_DIAGNOSTICS_PRESENT")
+    records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
     expected_views = tuple(
-        _target_function_view_validated(function, ordinal, plan) for ordinal, function in enumerate(source_ir.functions)
+        _target_function_view_validated(function, ordinal, plan, records_env) for ordinal, function in enumerate(source_ir.functions)
     )
     raw_index: dict[str, Function] = {}
     for function in raw_target_ir.functions:
@@ -1459,6 +1476,7 @@ def alpha_normalize_target(
             parameters=tuple(normalized_parameters),
             body=_rename_statements(raw_function.body, reverse_names, "TARGET"),
         )
-        types.check_function(normalized)
+        records_env = {r.name: r for r in source_ir.records} if source_ir.records else None
+        types.check_function(normalized, records_env)
         normalized_functions.append(normalized)
     return replace(raw_target_ir, functions=tuple(normalized_functions))

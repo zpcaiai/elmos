@@ -2,6 +2,7 @@ import com.sun.source.tree.AssignmentTree;
 import com.sun.source.tree.BinaryTree;
 import com.sun.source.tree.BlockTree;
 import com.sun.source.tree.BreakTree;
+import com.sun.source.tree.ClassTree;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.CompoundAssignmentTree;
 import com.sun.source.tree.ContinueTree;
@@ -17,6 +18,7 @@ import com.sun.source.tree.LiteralTree;
 import com.sun.source.tree.MemberSelectTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.tree.MethodTree;
+import com.sun.source.tree.NewClassTree;
 import com.sun.source.tree.ParenthesizedTree;
 import com.sun.source.tree.ReturnTree;
 import com.sun.source.tree.StatementTree;
@@ -100,6 +102,21 @@ public final class Analyzer {
                     null, files, diagnostics, List.of("--release", "21", "-proc:none", "-Xlint:none"), null, units);
             var trees = task.parse();
             task.analyze();
+            Map<String, RecordDef> records = parseRecords(trees);
+            List<Map<String, Object>> recordJsonList = new ArrayList<>();
+            for (RecordDef rec : records.values()) {
+                List<Map<String, Object>> fieldsList = new ArrayList<>();
+                for (RecordField f : rec.fields()) {
+                    Map<String, Object> fieldMap = new LinkedHashMap<>();
+                    fieldMap.put("name", f.name());
+                    fieldMap.put("type", f.type());
+                    fieldsList.add(fieldMap);
+                }
+                Map<String, Object> recMap = new LinkedHashMap<>();
+                recMap.put("name", rec.name());
+                recMap.put("fields", fieldsList);
+                recordJsonList.add(recMap);
+            }
             SourcePositions positions = Trees.instance(task).getSourcePositions();
             for (var unit : trees) {
                 SpanContext spans = new SpanContext(
@@ -116,7 +133,7 @@ public final class Analyzer {
                         List<Map<String, Object>> collected =
                                 (List<Map<String, Object>>) batchResults.computeIfAbsent(name, key -> new ArrayList<>());
                         try {
-                            new FunctionScanner(name, collected, emittedTarget, spans).scan(unit, null);
+                            new FunctionScanner(name, collected, emittedTarget, records, spans).scan(unit, null);
                         } catch (CertifiedSubsetDomainException error) {
                             // Exactly the message single-function mode would have
                             // printed to stderr before exiting 2.
@@ -125,7 +142,7 @@ public final class Analyzer {
                         }
                     }
                 } else {
-                    new FunctionScanner(functionName, functions, emittedTarget, spans).scan(unit, null);
+                    new FunctionScanner(functionName, functions, emittedTarget, records, spans).scan(unit, null);
                 }
             }
         }
@@ -168,7 +185,7 @@ public final class Analyzer {
                             : errors;
                     entry.put("status", "ok");
                     entry.put("error", null);
-                    entry.put("value", singleFunctionOutput(source, collected, scoped));
+                    entry.put("value", singleFunctionOutput(source, collected, recordJsonList, scoped));
                 }
                 results.add(entry);
             }
@@ -184,7 +201,7 @@ public final class Analyzer {
             return;
         }
         if (functions.isEmpty()) errors = append(errors, "FUNCTION_NOT_FOUND:" + functionName);
-        System.out.println(Json.write(singleFunctionOutput(source, functions, errors)));
+        System.out.println(Json.write(singleFunctionOutput(source, functions, recordJsonList, errors)));
     }
 
     private static final String BATCH_PREFIX = "--functions=";
@@ -200,15 +217,66 @@ public final class Analyzer {
         return List.copyOf(names);
     }
 
+    private record RecordField(String name, String type) {}
+    private record RecordDef(String name, List<RecordField> fields) {}
+
+    private static final class RecordScanner extends TreePathScanner<Void, Void> {
+        final List<ClassTree> recordTrees = new ArrayList<>();
+
+        @Override
+        public Void visitClass(ClassTree node, Void unused) {
+            if (node.getKind() == Tree.Kind.RECORD) {
+                recordTrees.add(node);
+            }
+            return super.visitClass(node, unused);
+        }
+    }
+
+    private static Map<String, RecordDef> parseRecords(Iterable<? extends CompilationUnitTree> units) {
+        RecordScanner scanner = new RecordScanner();
+        for (CompilationUnitTree unit : units) {
+            scanner.scan(unit, null);
+        }
+        Map<String, RecordDef> records = new LinkedHashMap<>();
+        for (ClassTree ct : scanner.recordTrees) {
+            String name = ct.getSimpleName().toString();
+            if (records.containsKey(name)) {
+                throw new IllegalArgumentException("JAVA_DUPLICATE_RECORD:" + name);
+            }
+            if (!ct.getTypeParameters().isEmpty()) {
+                throw new IllegalArgumentException("JAVA_GENERIC_RECORD_OUTSIDE_CERTIFIED_SUBSET:" + name);
+            }
+            records.put(name, new RecordDef(name, List.of()));
+        }
+        for (ClassTree ct : scanner.recordTrees) {
+            String name = ct.getSimpleName().toString();
+            List<RecordField> fields = new ArrayList<>();
+            java.util.Set<String> seenFieldNames = new java.util.HashSet<>();
+            for (Tree member : ct.getMembers()) {
+                if (member instanceof VariableTree vt && !vt.getModifiers().getFlags().contains(Modifier.STATIC)) {
+                    String fieldName = vt.getName().toString();
+                    if (!seenFieldNames.add(fieldName)) {
+                        throw new IllegalArgumentException("JAVA_DUPLICATE_RECORD_FIELD:" + name + "." + fieldName);
+                    }
+                    String fieldType = type(vt.getType().toString(), records);
+                    fields.add(new RecordField(fieldName, fieldType));
+                }
+            }
+            records.put(name, new RecordDef(name, List.copyOf(fields)));
+        }
+        return records;
+    }
+
     /** The exact payload single-function mode prints, so a batch entry is indistinguishable from it. */
     private static Map<String, Object> singleFunctionOutput(
-            Path source, List<Map<String, Object>> functions, List<String> errors) {
+            Path source, List<Map<String, Object>> functions, List<Map<String, Object>> records, List<String> errors) {
         Map<String, Object> output = new LinkedHashMap<>();
         output.put("schema_version", "1.0.0");
         output.put("source_language", "java");
         output.put("source_file", source.getFileName().toString());
         output.put("analyzer", "JDK JavacTask Tree API");
         output.put("analyzer_version", System.getProperty("java.version"));
+        output.put("records", records);
         output.put("functions", functions);
         output.put("diagnostics", errors);
         return output;
@@ -268,16 +336,19 @@ public final class Analyzer {
         private final String expectedName;
         private final List<Map<String, Object>> functions;
         private final boolean emittedTarget;
+        private final Map<String, RecordDef> records;
         private final SpanContext spans;
 
         private FunctionScanner(
                 String expectedName,
                 List<Map<String, Object>> functions,
                 boolean emittedTarget,
+                Map<String, RecordDef> records,
                 SpanContext spans) {
             this.expectedName = expectedName;
             this.functions = functions;
             this.emittedTarget = emittedTarget;
+            this.records = records;
             this.spans = spans;
         }
 
@@ -290,7 +361,7 @@ public final class Analyzer {
             List<Map<String, Object>> parameters = new ArrayList<>();
             Map<String, String> environment = new LinkedHashMap<>();
             for (VariableTree parameter : method.getParameters()) {
-                String parameterType = type(parameter.getType().toString());
+                String parameterType = type(parameter.getType().toString(), records);
                 parameters.add(withSpan(
                         parameter,
                         spans,
@@ -302,8 +373,8 @@ public final class Analyzer {
             Map<String, Object> function = new LinkedHashMap<>();
             function.put("name", method.getName().toString());
             function.put("parameters", parameters);
-            function.put("return_type", type(method.getReturnType().toString()));
-            function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, spans));
+            function.put("return_type", type(method.getReturnType().toString(), records));
+            function.put("body", statements(method.getBody().getStatements(), emittedTarget, environment, records, spans));
             functions.add(withSpan(method, spans, function));
             return null;
         }
@@ -547,7 +618,18 @@ public final class Analyzer {
      * overflow behaviour before equivalence is checked.
      */
     private static String type(String sourceType) {
+        return type(sourceType, Map.of());
+    }
+
+    private static String type(String sourceType, Map<String, RecordDef> records) {
         String normalized = sourceType.replace("java.lang.", "").replace("java.math.", "").trim();
+        if (records.containsKey(normalized)) {
+            return normalized;
+        }
+        int lastDot = normalized.lastIndexOf('.');
+        if (lastDot >= 0 && records.containsKey(normalized.substring(lastDot + 1))) {
+            return normalized.substring(lastDot + 1);
+        }
         return switch (normalized) {
             case "long" -> "integer";
             case "double" -> "number";

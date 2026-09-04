@@ -375,6 +375,13 @@ def render_type(
             Dialect.TSQL: "DATETIME2",
             Dialect.ORACLE: "TIMESTAMP",
         }[dialect]
+    if t == CanonicalType.UUID:
+        return {
+            Dialect.POSTGRES: "UUID",
+            Dialect.MYSQL: "CHAR(36)",
+            Dialect.ORACLE: "VARCHAR2(36 CHAR)",
+            Dialect.TSQL: "UNIQUEIDENTIFIER",
+        }[dialect]
     raise DialectError("CERTIFIED_DDL_UNREACHABLE_TYPE", f"no renderer registered for {t}")  # pragma: no cover
 
 
@@ -406,6 +413,13 @@ def render_default(
         # profile renders. SYSDATETIME() returns datetime2(7) and matches
         # CURRENT_TIMESTAMP on the other three dialects.
         return "SYSDATETIME()" if dialect == Dialect.TSQL else "CURRENT_TIMESTAMP"
+    if default.kind == DefaultKind.UUID:
+        return {
+            Dialect.POSTGRES: "gen_random_uuid()",
+            Dialect.MYSQL: "(UUID())",
+            Dialect.ORACLE: "SYS_GUID()",
+            Dialect.TSQL: "NEWID()",
+        }[dialect]
     if default.kind == DefaultKind.ARRAY:
         if dialect is not Dialect.POSTGRES:
             if type_policy is not None and type_policy.array == "json":

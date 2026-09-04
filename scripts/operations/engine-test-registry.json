@@ -504,6 +504,16 @@
           "goals": ["verify"],
           "pythonpath": [],
           "environment": {}
+        },
+        {
+          "name": "iam-transpiler-pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/security-compliance-engine",
+          "tests": ["engines/security-compliance-engine/tests"],
+          "uv_args": ["--with", "pytest"],
+          "pythonpath": ["engines/security-compliance-engine/src"],
+          "environment": {}
         }
       ]
     },

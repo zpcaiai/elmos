@@ -141,6 +141,7 @@ _TYPE_MAP: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
     DataType.Type.DATETIME2: CanonicalType.TIMESTAMP,
     # SQL Server's BIT is its boolean type.
     DataType.Type.BIT: CanonicalType.BOOLEAN,
+    DataType.Type.UUID: CanonicalType.UUID,
 }
 
 _SERIAL_TYPES: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
@@ -737,6 +738,11 @@ def _parse_type(
         if isinstance(width, exp.Literal) and not width.is_string and int(width.this) == 1:
             return CanonicalTypeRef(canonical_type=CanonicalType.BOOLEAN)
 
+    if sqlglot_type == DataType.Type.USERDEFINED:
+        type_name = str(node.this).upper() if node.this is not None else ""
+        if type_name == "UUID":
+            return CanonicalTypeRef(canonical_type=CanonicalType.UUID)
+
     canonical = _TYPE_MAP.get(sqlglot_type)
     _require(
         canonical is not None,
@@ -744,6 +750,9 @@ def _parse_type(
         f"column type {sqlglot_type} is outside certified-ddl-v1's type allowlist",
     )
     assert canonical is not None  # narrows for mypy; _require already enforced this at runtime
+
+    if canonical == CanonicalType.UUID:
+        return CanonicalTypeRef(canonical_type=canonical)
 
     def _param_int(index: int) -> int | None:
         if index >= len(params):
@@ -835,6 +844,21 @@ def _parse_default(
             "CURRENT_TIMESTAMP default is only supported on TIMESTAMP columns",
         )
         return ColumnDefault(kind=DefaultKind.CURRENT_TIMESTAMP)
+    is_uuid_default = (
+        isinstance(node, exp.Uuid)
+        or (isinstance(node, exp.Paren) and isinstance(node.this, exp.Uuid))
+        or (
+            isinstance(node, exp.Anonymous)
+            and str(node.this).upper() in ("SYS_GUID", "UUID_GENERATE_V4", "GEN_RANDOM_UUID", "NEWID", "UUID")
+        )
+    )
+    if is_uuid_default:
+        _require(
+            type_ref.canonical_type in (CanonicalType.UUID, CanonicalType.VARCHAR, CanonicalType.CHAR, CanonicalType.TEXT),
+            "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+            "UUID generator default is only supported on UUID or string columns",
+        )
+        return ColumnDefault(kind=DefaultKind.UUID)
     if type_ref.canonical_type is CanonicalType.ARRAY:
         _require(
             source_dialect is Dialect.POSTGRES,

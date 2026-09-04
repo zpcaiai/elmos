@@ -31,14 +31,86 @@ const sourceFile = ts.createSourceFile(
   ts.ScriptKind.TS,
 );
 
-function typeName(node) {
+function typeName(node, records = new Map()) {
   if (!node) throw new Error("TYPESCRIPT_EXPLICIT_TYPE_REQUIRED");
-  const value = node.getText(sourceFile);
+  const value = node.getText(sourceFile).trim();
   if (value === "number") return "number";
   if (value === "integer") return "integer";
   if (value === "boolean") return "boolean";
   if (value === "string") return "string";
+  if (records.has(value)) return value;
   throw new Error(`TYPESCRIPT_UNSUPPORTED_TYPE:${value}`);
+}
+
+function parseRecords(sourceFile) {
+  const records = new Map();
+  const rawList = [];
+
+  for (const statement of sourceFile.statements) {
+    if (ts.isInterfaceDeclaration(statement)) {
+      const name = statement.name.text;
+      if (records.has(name)) {
+        throw new Error(`TYPESCRIPT_DUPLICATE_RECORD:${name}`);
+      }
+      records.set(name, { name, fields: [] });
+      rawList.push({ name, members: statement.members });
+    } else if (ts.isTypeAliasDeclaration(statement)) {
+      if (ts.isTypeLiteralNode(statement.type)) {
+        const name = statement.name.text;
+        if (records.has(name)) {
+          throw new Error(`TYPESCRIPT_DUPLICATE_RECORD:${name}`);
+        }
+        records.set(name, { name, fields: [] });
+        rawList.push({ name, members: statement.type.members });
+      }
+    }
+  }
+
+  const recordDefs = [];
+  for (const item of rawList) {
+    const fields = [];
+    const seenNames = new Set();
+    for (const member of item.members) {
+      if (!ts.isPropertySignature(member) || !member.name) {
+        throw new Error(`TYPESCRIPT_UNSUPPORTED_RECORD_MEMBER:${item.name}`);
+      }
+      const fieldName = member.name.getText(sourceFile).trim();
+      if (seenNames.has(fieldName)) {
+        throw new Error(`TYPESCRIPT_DUPLICATE_RECORD_FIELD:${item.name}.${fieldName}`);
+      }
+      seenNames.add(fieldName);
+      const fieldType = typeName(member.type, records);
+      fields.push({ name: fieldName, type: fieldType });
+    }
+    const def = { name: item.name, fields };
+    records.set(item.name, def);
+    recordDefs.push(def);
+  }
+
+  return { recordDefs, records };
+}
+
+function findRecordForKeys(keys, records, expectedType = null) {
+  if (expectedType && records.has(expectedType)) {
+    const rec = records.get(expectedType);
+    const recFieldNames = new Set(rec.fields.map((f) => f.name));
+    if (keys.length === recFieldNames.size && keys.every((k) => recFieldNames.has(k))) {
+      return rec.name;
+    }
+  }
+  const matches = [];
+  for (const [name, rec] of records.entries()) {
+    const recFieldNames = new Set(rec.fields.map((f) => f.name));
+    if (keys.length === recFieldNames.size && keys.every((k) => recFieldNames.has(k))) {
+      matches.push(name);
+    }
+  }
+  if (matches.length === 1) return matches[0];
+  if (matches.length > 1) {
+    if (expectedType && matches.includes(expectedType)) return expectedType;
+    throw new Error(`TYPESCRIPT_AMBIGUOUS_RECORD_TYPE:${matches.join(",")}`);
+  }
+  throw new Error(`TYPESCRIPT_UNKNOWN_RECORD_SHAPE:${keys.join(",")}`);
 }
 
 function calleeName(node) {
@@ -228,8 +300,41 @@ function negativeNumericLiteralDetails(node) {
   return { value: -literal.value, type: literal.type };
 }
 
-function sourceExpression(node) {
-  if (ts.isParenthesizedExpression(node)) return sourceExpression(node.expression);
+function sourceExpression(node, records = new Map(), expectedType = null) {
+  if (ts.isParenthesizedExpression(node)) return sourceExpression(node.expression, records, expectedType);
+  if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
+    const targetType = typeName(node.type, records);
+    return sourceExpression(node.expression, records, targetType);
+  }
+  if (ts.isPropertyAccessExpression(node)) {
+    return {
+      kind: "member_access",
+      target: sourceExpression(node.expression, records),
+      member: node.name.text,
+    };
+  }
+  if (ts.isObjectLiteralExpression(node)) {
+    const keys = [];
+    for (const prop of node.properties) {
+      if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) {
+        throw new Error("TYPESCRIPT_UNSUPPORTED_OBJECT_PROPERTY");
+      }
+      keys.push(prop.name.text);
+    }
+    const recName = findRecordForKeys(keys, records, expectedType);
+    const rec = records.get(recName);
+    const argsMap = {};
+    for (const prop of node.properties) {
+      const k = prop.name.text;
+      const field = rec.fields.find((f) => f.name === k);
+      argsMap[k] = sourceExpression(prop.initializer, records, field?.type);
+    }
+    return {
+      kind: "record_construct",
+      record_name: recName,
+      arguments: argsMap,
+    };
+  }
   if (ts.isIdentifier(node)) return { kind: "name", value: node.text };
   if (ts.isNumericLiteral(node)) {
     return { kind: "literal", value: numericLiteralDetails(node).value };
@@ -243,16 +348,52 @@ function sourceExpression(node) {
     return {
       kind: "binary",
       operator: sourceOperator(node.operatorToken.kind),
-      left: sourceExpression(node.left),
-      right: sourceExpression(node.right),
+      left: sourceExpression(node.left, records),
+      right: sourceExpression(node.right, records),
     };
   }
   throw new Error(`TYPESCRIPT_UNSUPPORTED_EXPRESSION:${ts.SyntaxKind[node.kind]}`);
 }
 
-function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false } = {}) {
+function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false, expectedType = null, records = new Map() } = {}) {
   if (ts.isParenthesizedExpression(node)) {
-    return emittedExpression(node.expression, { allowNonZero, allowMathTrunc });
+    return emittedExpression(node.expression, { allowNonZero, allowMathTrunc, expectedType, records });
+  }
+  if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
+    const targetType = typeName(node.type, records);
+    return emittedExpression(node.expression, { allowNonZero, allowMathTrunc, expectedType: targetType, records });
+  }
+  if (ts.isPropertyAccessExpression(node)) {
+    return {
+      kind: "member_access",
+      target: emittedExpression(node.expression, { records }),
+      member: node.name.text,
+    };
+  }
+  if (ts.isObjectLiteralExpression(node)) {
+    const keys = [];
+    for (const prop of node.properties) {
+      if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) {
+        throw new Error("TYPESCRIPT_UNSUPPORTED_OBJECT_PROPERTY");
+      }
+      keys.push(prop.name.text);
+    }
+    const recName = findRecordForKeys(keys, records, expectedType);
+    const rec = records.get(recName);
+    const argsMap = {};
+    for (const prop of node.properties) {
+      const k = prop.name.text;
+      const field = rec.fields.find((f) => f.name === k);
+      argsMap[k] = emittedExpression(prop.initializer, {
+        expectedType: field?.type,
+        records,
+      });
+    }
+    return {
+      kind: "record_construct",
+      record_name: recName,
+      arguments: argsMap,
+    };
   }
   if (ts.isIdentifier(node)) return { kind: "name", value: node.text };
   if (ts.isNumericLiteral(node)) {
@@ -272,8 +413,8 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false 
     return {
       kind: "binary",
       operator: liftedOperator,
-      left: emittedExpression(node.left),
-      right: emittedExpression(node.right, { allowNonZero: guarded }),
+      left: emittedExpression(node.left, { records }),
+      right: emittedExpression(node.right, { allowNonZero: guarded, records }),
     };
   }
   if (ts.isCallExpression(node)) {
@@ -284,21 +425,21 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false 
       }
       const argument = node.arguments[0];
       if (exactCall(argument, "Math.trunc", 1)) {
-        return emittedExpression(argument, { allowMathTrunc: true });
+        return emittedExpression(argument, { allowMathTrunc: true, records });
       }
-      return emittedExpression(argument);
+      return emittedExpression(argument, { records });
     }
     if (name === "_elmosRequireFiniteNumber") {
       if (!exactCall(node, name, 1)) {
         throw new Error("TYPESCRIPT_EMITTED_FINITE_NUMBER_SHAPE_INVALID");
       }
-      return emittedExpression(node.arguments[0]);
+      return emittedExpression(node.arguments[0], { records });
     }
     if (name === "_elmosRequireNonZero") {
       if (!allowNonZero || !exactCall(node, name, 1)) {
         throw new Error("TYPESCRIPT_EMITTED_NON_ZERO_GUARD_INVALID");
       }
-      return emittedExpression(node.arguments[0]);
+      return emittedExpression(node.arguments[0], { records });
     }
     if (name === "Math.trunc") {
       if (!allowMathTrunc || !exactCall(node, name, 1)) {
@@ -308,16 +449,41 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false 
       if (!ts.isBinaryExpression(argument) || argument.operatorToken.kind !== ts.SyntaxKind.SlashToken) {
         throw new Error("TYPESCRIPT_EMITTED_TRUNCATION_SHAPE_INVALID");
       }
-      return emittedExpression(argument);
+      return emittedExpression(argument, { records });
     }
     throw new Error(`TYPESCRIPT_EMITTED_HELPER_UNRECOGNIZED:${name || "<complex>"}`);
   }
   throw new Error(`TYPESCRIPT_UNSUPPORTED_EXPRESSION:${ts.SyntaxKind[node.kind]}`);
 }
 
-function emittedExpressionType(node, environment) {
+function emittedExpressionType(node, environment, records = new Map(), expectedType = null) {
   if (ts.isParenthesizedExpression(node)) {
-    return emittedExpressionType(node.expression, environment);
+    return emittedExpressionType(node.expression, environment, records, expectedType);
+  }
+  if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
+    return typeName(node.type, records);
+  }
+  if (ts.isPropertyAccessExpression(node)) {
+    const targetType = emittedExpressionType(node.expression, environment, records);
+    if (!records.has(targetType)) {
+      throw new Error(`TYPESCRIPT_MEMBER_ACCESS_ON_NON_RECORD:${targetType}`);
+    }
+    const rec = records.get(targetType);
+    const field = rec.fields.find((f) => f.name === node.name.text);
+    if (!field) {
+      throw new Error(`TYPESCRIPT_UNKNOWN_RECORD_MEMBER:${targetType}.${node.name.text}`);
+    }
+    return field.type;
+  }
+  if (ts.isObjectLiteralExpression(node)) {
+    const keys = [];
+    for (const prop of node.properties) {
+      if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) {
+        throw new Error("TYPESCRIPT_UNSUPPORTED_OBJECT_PROPERTY");
+      }
+      keys.push(prop.name.text);
+    }
+    return findRecordForKeys(keys, records, expectedType);
   }
   if (ts.isIdentifier(node)) {
     const value = environment.get(node.text);
@@ -341,14 +507,14 @@ function emittedExpressionType(node, environment) {
       throw new Error(`TYPESCRIPT_EMITTED_GUARD_SHAPE_INVALID:${name || "unknown"}`);
     }
     if (name === "_elmosRequireSafeInteger") {
-      const argumentType = emittedExpressionType(node.arguments[0], environment);
+      const argumentType = emittedExpressionType(node.arguments[0], environment, records);
       if (argumentType !== "integer") {
         throw new Error(`TYPESCRIPT_EMITTED_GUARD_TYPE_MISMATCH:${name}:${argumentType}`);
       }
       return "integer";
     }
     if (name === "_elmosRequireFiniteNumber") {
-      const argumentType = emittedExpressionType(node.arguments[0], environment);
+      const argumentType = emittedExpressionType(node.arguments[0], environment, records);
       if (!NUMERIC_TYPES.has(argumentType)) {
         throw new Error(`TYPESCRIPT_EMITTED_GUARD_TYPE_MISMATCH:${name}:${argumentType}`);
       }
@@ -356,7 +522,7 @@ function emittedExpressionType(node, environment) {
     }
     if (name === "Math.trunc") return "integer";
     if (name === "_elmosRequireNonZero") {
-      const argumentType = emittedExpressionType(node.arguments[0], environment);
+      const argumentType = emittedExpressionType(node.arguments[0], environment, records);
       if (!NUMERIC_TYPES.has(argumentType)) {
         throw new Error(`TYPESCRIPT_EMITTED_GUARD_TYPE_MISMATCH:${name}:${argumentType}`);
       }
@@ -366,8 +532,8 @@ function emittedExpressionType(node, environment) {
   }
   if (ts.isBinaryExpression(node)) {
     const liftedOperator = emittedOperator(node.operatorToken.kind);
-    const left = emittedExpressionType(node.left, environment);
-    const right = emittedExpressionType(node.right, environment);
+    const left = emittedExpressionType(node.left, environment, records);
+    const right = emittedExpressionType(node.right, environment, records);
     if (ARITHMETIC_OPERATORS.has(liftedOperator)) {
       if (liftedOperator === "+" && left === "string" && right === "string") return "string";
       if (!NUMERIC_TYPES.has(left) || !NUMERIC_TYPES.has(right)) {
@@ -402,9 +568,44 @@ function validateEmittedArithmeticExpression(
   environment,
   requiredGuard = null,
   allowNonZero = false,
+  records = new Map(),
 ) {
   if (ts.isParenthesizedExpression(node)) {
-    validateEmittedArithmeticExpression(node.expression, environment, requiredGuard, allowNonZero);
+    validateEmittedArithmeticExpression(node.expression, environment, requiredGuard, allowNonZero, records);
+    return;
+  }
+  if (ts.isAsExpression(node) || ts.isTypeAssertionExpression(node)) {
+    validateEmittedArithmeticExpression(node.expression, environment, requiredGuard, allowNonZero, records);
+    return;
+  }
+  if (ts.isPropertyAccessExpression(node)) {
+    const targetType = emittedExpressionType(node.expression, environment, records);
+    if (!records.has(targetType)) {
+      throw new Error(`TYPESCRIPT_MEMBER_ACCESS_ON_NON_RECORD:${targetType}`);
+    }
+    const rec = records.get(targetType);
+    const field = rec.fields.find((f) => f.name === node.name.text);
+    if (!field) {
+      throw new Error(`TYPESCRIPT_UNKNOWN_RECORD_MEMBER:${targetType}.${node.name.text}`);
+    }
+    validateEmittedArithmeticExpression(node.expression, environment, null, false, records);
+    return;
+  }
+  if (ts.isObjectLiteralExpression(node)) {
+    const keys = [];
+    for (const prop of node.properties) {
+      if (!ts.isPropertyAssignment(prop) || !ts.isIdentifier(prop.name)) {
+        throw new Error("TYPESCRIPT_UNSUPPORTED_OBJECT_PROPERTY");
+      }
+      keys.push(prop.name.text);
+    }
+    const recName = findRecordForKeys(keys, records);
+    const rec = records.get(recName);
+    for (const prop of node.properties) {
+      const k = prop.name.text;
+      const field = rec.fields.find((f) => f.name === k);
+      validateEmittedArithmeticExpression(prop.initializer, environment, null, false, records);
+    }
     return;
   }
   if (ts.isIdentifier(node) || ts.isNumericLiteral(node) || ts.isStringLiteral(node)) {
@@ -420,19 +621,19 @@ function validateEmittedArithmeticExpression(
     }
     if (name === "_elmosRequireSafeInteger" || name === "_elmosRequireFiniteNumber") {
       const guardType = name === "_elmosRequireSafeInteger" ? "integer" : "number";
-      const argumentType = emittedExpressionType(node.arguments[0], environment);
+      const argumentType = emittedExpressionType(node.arguments[0], environment, records);
       if (
         (guardType === "integer" && argumentType !== "integer")
         || (guardType === "number" && !NUMERIC_TYPES.has(argumentType))
       ) {
         throw new Error(`TYPESCRIPT_EMITTED_GUARD_TYPE_MISMATCH:${name}:${argumentType}`);
       }
-      validateEmittedArithmeticExpression(node.arguments[0], environment, guardType);
+      validateEmittedArithmeticExpression(node.arguments[0], environment, guardType, false, records);
       return;
     }
     if (name === "_elmosRequireNonZero") {
       if (!allowNonZero) throw new Error("TYPESCRIPT_EMITTED_NON_ZERO_GUARD_INVALID");
-      validateEmittedArithmeticExpression(node.arguments[0], environment);
+      validateEmittedArithmeticExpression(node.arguments[0], environment, null, false, records);
       return;
     }
     if (name === "Math.trunc") {
@@ -444,14 +645,14 @@ function validateEmittedArithmeticExpression(
       ) {
         throw new Error("TYPESCRIPT_EMITTED_TRUNCATION_SHAPE_INVALID");
       }
-      validateEmittedArithmeticExpression(argument, environment, "integer");
+      validateEmittedArithmeticExpression(argument, environment, "integer", false, records);
       return;
     }
     throw new Error(`TYPESCRIPT_EMITTED_CALL_UNSUPPORTED:${name || "unknown"}`);
   }
   if (ts.isBinaryExpression(node)) {
     const liftedOperator = emittedOperator(node.operatorToken.kind);
-    const resultType = emittedExpressionType(node, environment);
+    const resultType = emittedExpressionType(node, environment, records);
     if (
       ARITHMETIC_OPERATORS.has(liftedOperator)
       && NUMERIC_TYPES.has(resultType)
@@ -463,22 +664,22 @@ function validateEmittedArithmeticExpression(
     if (requiresNonZero && !exactCall(node.right, "_elmosRequireNonZero", 1)) {
       throw new Error(`TYPESCRIPT_EMITTED_NON_ZERO_GUARD_MISSING:${liftedOperator}`);
     }
-    validateEmittedArithmeticExpression(node.left, environment);
-    validateEmittedArithmeticExpression(node.right, environment, null, requiresNonZero);
+    validateEmittedArithmeticExpression(node.left, environment, null, false, records);
+    validateEmittedArithmeticExpression(node.right, environment, null, requiresNonZero, records);
     return;
   }
   throw new Error(`TYPESCRIPT_EMITTED_EXPRESSION_UNSUPPORTED:${ts.SyntaxKind[node.kind]}`);
 }
 
-function validateEmittedArithmeticStatements(nodes, environment, numericReturnContract, liftedReturn) {
+function validateEmittedArithmeticStatements(nodes, environment, numericReturnContract, liftedReturn, records = new Map()) {
   for (const node of nodes) {
     if (ts.isReturnStatement(node) && node.expression) {
       const expression = numericReturnContract === null
         ? node.expression
         : node.expression.arguments[0];
-      validateEmittedArithmeticExpression(expression, environment);
+      validateEmittedArithmeticExpression(expression, environment, null, false, records);
       if (liftedReturn !== undefined) {
-        const actualType = emittedExpressionType(node.expression, environment);
+        const actualType = emittedExpressionType(node.expression, environment, records, liftedReturn);
         if (actualType !== liftedReturn) {
           throw new Error(`TYPESCRIPT_EMITTED_RETURN_TYPE_MISMATCH:${liftedReturn}:${actualType}`);
         }
@@ -486,12 +687,13 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
       continue;
     }
     if (ts.isIfStatement(node)) {
-      validateEmittedArithmeticExpression(node.expression, environment);
+      validateEmittedArithmeticExpression(node.expression, environment, null, false, records);
       validateEmittedArithmeticStatements(
         statementNodes(node.thenStatement),
         new Map(environment),
         numericReturnContract,
         liftedReturn,
+        records,
       );
       if (node.elseStatement) {
         validateEmittedArithmeticStatements(
@@ -499,6 +701,7 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
           new Map(environment),
           numericReturnContract,
           liftedReturn,
+          records,
         );
       }
       continue;
@@ -507,12 +710,13 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
       continue;
     }
     if (ts.isWhileStatement(node)) {
-      validateEmittedArithmeticExpression(node.expression, environment);
+      validateEmittedArithmeticExpression(node.expression, environment, null, false, records);
       validateEmittedArithmeticStatements(
         statementNodes(node.statement),
         new Map(environment),
         numericReturnContract,
         liftedReturn,
+        records,
       );
       continue;
     }
@@ -522,22 +726,23 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
         const decl = node.initializer.declarations[0];
         if (decl && ts.isIdentifier(decl.name)) {
           if (decl.initializer) {
-            validateEmittedArithmeticExpression(decl.initializer, environment);
+            validateEmittedArithmeticExpression(decl.initializer, environment, null, false, records);
           }
           loopEnv.set(decl.name.text, "integer");
         }
       }
       if (node.condition) {
-        validateEmittedArithmeticExpression(node.condition, loopEnv);
+        validateEmittedArithmeticExpression(node.condition, loopEnv, null, false, records);
       }
       if (node.incrementor && ts.isBinaryExpression(node.incrementor)) {
-        validateEmittedArithmeticExpression(node.incrementor.right, loopEnv);
+        validateEmittedArithmeticExpression(node.incrementor.right, loopEnv, null, false, records);
       }
       validateEmittedArithmeticStatements(
         statementNodes(node.statement),
         loopEnv,
         numericReturnContract,
         liftedReturn,
+        records,
       );
       continue;
     }
@@ -559,9 +764,9 @@ function validateEmittedArithmeticStatements(nodes, environment, numericReturnCo
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      let canonicalType = typeName(decl.type);
-      validateEmittedArithmeticExpression(decl.initializer, environment);
-      if (canonicalType === "number" && emittedExpressionType(decl.initializer, environment) === "integer") {
+      let canonicalType = typeName(decl.type, records);
+      validateEmittedArithmeticExpression(decl.initializer, environment, null, false, records);
+      if (canonicalType === "number" && emittedExpressionType(decl.initializer, environment, records) === "integer") {
         canonicalType = "integer";
       }
       environment.set(decl.name.text, canonicalType);
@@ -581,7 +786,7 @@ function statementNodes(node) {
   return ts.isBlock(node) ? [...node.statements] : [node];
 }
 
-function parseForStatement(node, parseExpr, parseStmts) {
+function parseForStatement(node, parseExpr, parseStmts, records = new Map()) {
   if (!node.initializer || !ts.isVariableDeclarationList(node.initializer)) {
     throw new Error("TYPESCRIPT_FOR_INITIALIZER_OUTSIDE_CERTIFIED_SUBSET");
   }
@@ -600,7 +805,7 @@ function parseForStatement(node, parseExpr, parseStmts) {
   if (!decl.type) {
     throw new Error("TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET");
   }
-  const declaredType = typeName(decl.type);
+  const declaredType = typeName(decl.type, records);
   if (declaredType !== "number" && declaredType !== "integer") {
     throw new Error(`TYPESCRIPT_FOR_VARIABLE_TYPE_INVALID:${declaredType}`);
   }
@@ -658,28 +863,33 @@ function parseForStatement(node, parseExpr, parseStmts) {
   return res;
 }
 
-function sourceStatements(nodes) {
+function sourceStatements(nodes, records = new Map()) {
   return nodes.map((node) => {
     if (ts.isReturnStatement(node) && node.expression) {
-      return { kind: "return", expression: sourceExpression(node.expression) };
+      return { kind: "return", expression: sourceExpression(node.expression, records) };
     }
     if (ts.isIfStatement(node)) {
       return {
         kind: "if",
-        condition: sourceExpression(node.expression),
-        then: sourceStatements(statementNodes(node.thenStatement)),
-        else: node.elseStatement ? sourceStatements(statementNodes(node.elseStatement)) : [],
+        condition: sourceExpression(node.expression, records),
+        then: sourceStatements(statementNodes(node.thenStatement), records),
+        else: node.elseStatement ? sourceStatements(statementNodes(node.elseStatement), records) : [],
       };
     }
     if (ts.isWhileStatement(node)) {
       return {
         kind: "while",
-        condition: sourceExpression(node.expression),
-        body: sourceStatements(statementNodes(node.statement)),
+        condition: sourceExpression(node.expression, records),
+        body: sourceStatements(statementNodes(node.statement), records),
       };
     }
     if (ts.isForStatement(node)) {
-      return parseForStatement(node, sourceExpression, sourceStatements);
+      return parseForStatement(
+        node,
+        (expr) => sourceExpression(expr, records),
+        (stmts) => sourceStatements(stmts, records),
+        records,
+      );
     }
     if (ts.isBreakStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
@@ -719,7 +929,7 @@ function sourceStatements(nodes) {
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      let canonicalType = typeName(decl.type);
+      let canonicalType = typeName(decl.type, records);
       if (canonicalType === "number" && ts.isNumericLiteral(decl.initializer)) {
         const text = decl.initializer.text;
         if (!/[.eE]/.test(text)) {
@@ -730,35 +940,40 @@ function sourceStatements(nodes) {
         kind: "let",
         name: decl.name.text,
         type: canonicalType,
-        expression: sourceExpression(decl.initializer),
+        expression: sourceExpression(decl.initializer, records, canonicalType),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
   });
 }
 
-function emittedStatements(nodes) {
+function emittedStatements(nodes, records = new Map(), expectedReturn = null) {
   return nodes.map((node) => {
     if (ts.isReturnStatement(node) && node.expression) {
-      return { kind: "return", expression: emittedExpression(node.expression) };
+      return { kind: "return", expression: emittedExpression(node.expression, { records, expectedType: expectedReturn }) };
     }
     if (ts.isIfStatement(node)) {
       return {
         kind: "if",
-        condition: emittedExpression(node.expression),
-        then: emittedStatements(statementNodes(node.thenStatement)),
-        else: node.elseStatement ? emittedStatements(statementNodes(node.elseStatement)) : [],
+        condition: emittedExpression(node.expression, { records }),
+        then: emittedStatements(statementNodes(node.thenStatement), records, expectedReturn),
+        else: node.elseStatement ? emittedStatements(statementNodes(node.elseStatement), records, expectedReturn) : [],
       };
     }
     if (ts.isWhileStatement(node)) {
       return {
         kind: "while",
-        condition: emittedExpression(node.expression),
-        body: emittedStatements(statementNodes(node.statement)),
+        condition: emittedExpression(node.expression, { records }),
+        body: emittedStatements(statementNodes(node.statement), records, expectedReturn),
       };
     }
     if (ts.isForStatement(node)) {
-      return parseForStatement(node, emittedExpression, emittedStatements);
+      return parseForStatement(
+        node,
+        (expr) => emittedExpression(expr, { records }),
+        (stmts) => emittedStatements(stmts, records, expectedReturn),
+        records,
+      );
     }
     if (ts.isBreakStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
@@ -798,7 +1013,7 @@ function emittedStatements(nodes) {
       if (!decl.initializer) {
         throw new Error("TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE");
       }
-      let canonicalType = typeName(decl.type);
+      let canonicalType = typeName(decl.type, records);
       if (canonicalType === "number" && ts.isNumericLiteral(decl.initializer)) {
         const text = decl.initializer.text;
         if (!/[.eE]/.test(text)) {
@@ -809,7 +1024,7 @@ function emittedStatements(nodes) {
         kind: "let",
         name: decl.name.text,
         type: canonicalType,
-        expression: emittedExpression(decl.initializer),
+        expression: emittedExpression(decl.initializer, { records, expectedType: canonicalType }),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
@@ -901,6 +1116,7 @@ function diagnostics() {
 function analyzeNamedFunction(functionName) {
   const analysisDiagnostics = diagnostics();
   if (emittedTarget) validateEmittedHelperDeclarations();
+  const { recordDefs, records } = parseRecords(sourceFile);
   const functions = sourceFile.statements
     .filter(ts.isFunctionDeclaration)
     .filter((item) => item.name?.text === functionName)
@@ -910,7 +1126,7 @@ function analyzeNamedFunction(functionName) {
         if (!ts.isIdentifier(parameter.name)) {
           throw new Error("TYPESCRIPT_DESTRUCTURED_PARAMETER_UNSUPPORTED");
         }
-        return { name: parameter.name.text, declaredType: typeName(parameter.type) };
+        return { name: parameter.name.text, declaredType: typeName(parameter.type, records) };
       });
       if (!emittedTarget) {
         return {
@@ -919,8 +1135,8 @@ function analyzeNamedFunction(functionName) {
             name: parameter.name,
             type: parameter.declaredType,
           })),
-          return_type: typeName(item.type),
-          body: sourceStatements([...item.body.statements]),
+          return_type: typeName(item.type, records),
+          body: sourceStatements([...item.body.statements], records),
         };
       }
       const split = splitParameterGuards([...item.body.statements], parameters);
@@ -931,7 +1147,7 @@ function analyzeNamedFunction(functionName) {
           : parameter.declaredType,
       }));
       const environment = new Map(liftedParameters.map((parameter) => [parameter.name, parameter.type]));
-      const declaredReturn = typeName(item.type);
+      const declaredReturn = typeName(item.type, records);
       const returns = returnExpressions(split.body);
       if (returns.length === 0) throw new Error("TYPESCRIPT_RETURN_EXPRESSION_REQUIRED");
       const returnContracts = returns.map(numericReturnContract);
@@ -946,12 +1162,12 @@ function analyzeNamedFunction(functionName) {
         throw new Error("TYPESCRIPT_EMITTED_RETURN_GUARD_TYPE_MISMATCH");
       }
       const liftedReturn = numericContract ?? declaredReturn;
-      validateEmittedArithmeticStatements(split.body, environment, numericContract, liftedReturn);
+      validateEmittedArithmeticStatements(split.body, environment, numericContract, liftedReturn, records);
       return {
         name: item.name.text,
         parameters: liftedParameters,
         return_type: liftedReturn,
-        body: emittedStatements(split.body),
+        body: emittedStatements(split.body, records, liftedReturn),
       };
     });
   if (functions.length === 0) analysisDiagnostics.push(`FUNCTION_NOT_FOUND:${functionName}`);
@@ -963,6 +1179,7 @@ function analyzeNamedFunction(functionName) {
       ? "TypeScript Compiler API emitted-target"
       : "TypeScript Compiler API",
     analyzer_version: ts.version,
+    records: recordDefs,
     functions,
     diagnostics: analysisDiagnostics,
   };
@@ -1079,6 +1296,16 @@ function inventoryModule() {
         ? statement.moduleSpecifier.text
         : `<${ts.SyntaxKind[statement.kind]}@${statement.pos}>`;
       add(statement, moduleName, moduleName, ts.SyntaxKind[statement.kind], false, {});
+      continue;
+    }
+    if (ts.isInterfaceDeclaration(statement)) {
+      const name = statement.name.text;
+      add(statement, name, name, "InterfaceDeclaration", false, {});
+      continue;
+    }
+    if (ts.isTypeAliasDeclaration(statement)) {
+      const name = statement.name.text;
+      add(statement, name, name, "TypeAliasDeclaration", false, {});
       continue;
     }
     if (ts.isEmptyStatement(statement)) continue;

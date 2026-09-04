@@ -3,6 +3,14 @@
 version = 4
 
 [[package]]
+name = "elmos-ai-vector-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "elmos-archive-guard"
 version = "0.1.0"
 dependencies = [
@@ -85,7 +93,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "elmos-industrial-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "elmos-j2p-core"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "elmos-mainframe-core"
 version = "0.1.0"
 dependencies = [
  "serde",
@@ -104,6 +128,7 @@ dependencies = [
 name = "elmos-native-core"
 version = "0.1.0"
 dependencies = [
+ "elmos-ai-vector-core",
  "elmos-archive-guard",
  "elmos-attestation-core",
  "elmos-blast-radius",
@@ -114,7 +139,9 @@ dependencies = [
  "elmos-data-reconciler",
  "elmos-dep-solver",
  "elmos-foundry-graph",
+ "elmos-industrial-core",
  "elmos-j2p-core",
+ "elmos-mainframe-core",
  "elmos-mutation-core",
  "elmos-repo-scanner",
  "elmos-shadow-diff",

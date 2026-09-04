@@ -49,6 +49,7 @@ from .models import (
     RowPolicy,
     SavepointStatement,
     RowPolicyCommand,
+    RowPolicyFunctionPredicate,
     RowPolicyMode,
     RowPolicySettingPredicate,
     TableFunction,
@@ -822,6 +823,8 @@ def parse_table_function(
     schema, name = _routine_name(udf.this, namespace_map)
     parameters = _routine_parameters(udf, source_dialect)
     language = RoutineLanguage.OTHER
+    security_definer = False
+    search_path: tuple[str, ...] = ()
     properties = statement.args.get("properties")
     if isinstance(properties, exp.Properties):
         for prop in properties.expressions:
@@ -837,17 +840,11 @@ def parse_table_function(
                     "does not synthesize a wrapper with unverified type/null semantics",
                 )
             if isinstance(prop, exp.SqlSecurityProperty):
-                raise DialectError(
-                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
-                    "SECURITY DEFINER/INVOKER changes table-function execution identity and needs an exact "
-                    "target mapping",
-                )
+                security_definer = str(prop.args.get("this", "")).upper() == "DEFINER"
+                continue
             if isinstance(prop, exp.SetConfigProperty):
-                raise DialectError(
-                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
-                    "SET configuration changes table-function name resolution or execution context and "
-                    "needs an exact target mapping",
-                )
+                search_path = ("<source-defined>",)
+                continue
             if isinstance(prop, exp.StabilityProperty):
                 raise DialectError(
                     "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
@@ -963,6 +960,8 @@ def parse_table_function(
         schema=schema,
         or_replace=bool(statement.args.get("replace")),
         language=language,
+        security_definer=security_definer,
+        search_path=search_path,
     )
 
 
@@ -1207,29 +1206,52 @@ def _row_policy_group(tokens: list[object], start: int, what: str) -> tuple[list
     raise DialectError("CERTIFIED_RLS_UNSUPPORTED_STATEMENT", f"{what} has no closing parenthesis")
 
 
-def _parse_row_policy_predicate(tokens: list[object], what: str) -> RowPolicySettingPredicate:
+def _parse_row_policy_predicate(
+    tokens: list[object], what: str, namespace_map: Mapping[str, str] | None = None
+) -> RowPolicySettingPredicate | RowPolicyFunctionPredicate:
     values = [str(getattr(token, "text", "")) for token in tokens]
     upper = [value.upper() for value in values]
-    _require(
-        len(tokens) == 8
-        and upper[1:4] == ["=", "CURRENT_SETTING", "("]
-        and upper[5] == ","
-        and upper[6] in {"TRUE", "FALSE"}
-        and upper[7] == ")",
+    if len(tokens) == 8 and upper[1:4] == ["=", "CURRENT_SETTING", "("]:
+        _require(
+            upper[5] == ","
+            and upper[6] in {"TRUE", "FALSE"}
+            and upper[7] == ")",
+            "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+            f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
+        )
+        column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
+        setting_type = getattr(getattr(tokens[4], "token_type", None), "name", "")
+        _require(
+            setting_type == "STRING",
+            "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+            f"{what} current_setting key must be a string literal",
+        )
+        return RowPolicySettingPredicate(
+            column=column,
+            setting_name=values[4],
+            missing_ok=upper[6] == "TRUE",
+        )
+    if len(tokens) >= 4 and upper[1] == "=":
+        column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
+        if len(tokens) == 7 and upper[3] == "." and upper[5:7] == ["(", ")"]:
+            raw_schema = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function schema"), f"{what} function schema")
+            mapped_schema = namespace_map.get(raw_schema, raw_schema) if namespace_map else raw_schema
+            function_name = _plain_identifier(_row_policy_identifier(tokens[4], f"{what} function name"), f"{what} function name")
+            return RowPolicyFunctionPredicate(
+                column=column,
+                function_name=function_name,
+                function_schema=mapped_schema,
+            )
+        if len(tokens) == 5 and upper[3:5] == ["(", ")"]:
+            function_name = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function name"), f"{what} function name")
+            return RowPolicyFunctionPredicate(
+                column=column,
+                function_name=function_name,
+                function_schema=None,
+            )
+    raise DialectError(
         "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
-        f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
-    )
-    column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
-    setting_type = getattr(getattr(tokens[4], "token_type", None), "name", "")
-    _require(
-        setting_type == "STRING",
-        "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
-        f"{what} current_setting key must be a string literal",
-    )
-    return RowPolicySettingPredicate(
-        column=column,
-        setting_name=values[4],
-        missing_ok=upper[6] == "TRUE",
+        f"{what} must compare one column with current_setting(<key>, <missing_ok>) or [schema.]function()",
     )
 
 
@@ -1242,8 +1264,8 @@ def parse_row_policy(
 
     Only the default ``PERMISSIVE FOR ALL TO PUBLIC`` policy with explicit
     USING and WITH CHECK predicates is admitted. Both predicates must be a
-    typed tenant-column/current_setting comparison. Other command, role,
-    composition, function, cast, or boolean semantics remain blocked.
+    typed tenant-column/current_setting comparison or function call. Other command,
+    role, composition, cast, or boolean semantics remain blocked.
     """
 
     _require(
@@ -1303,8 +1325,8 @@ def parse_row_policy(
         mode=RowPolicyMode.PERMISSIVE,
         command=RowPolicyCommand.ALL,
         roles=("PUBLIC",),
-        using_predicate=_parse_row_policy_predicate(using_tokens, "RLS USING predicate"),
-        check_predicate=_parse_row_policy_predicate(check_tokens, "RLS WITH CHECK predicate"),
+        using_predicate=_parse_row_policy_predicate(using_tokens, "RLS USING predicate", namespace_map),
+        check_predicate=_parse_row_policy_predicate(check_tokens, "RLS WITH CHECK predicate", namespace_map),
     )
 
 
@@ -1318,12 +1340,12 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
                 f"{target_dialect.value} has no exact PostgreSQL policy evaluation and owner-bypass mapping; "
                 "the route will not downgrade RLS to ordinary privileges",
             )
+        col = quote_identifier(policy.using_predicate.column, target_dialect)
         if target_dialect is Dialect.TSQL:
             schema = policy.schema or "dbo"
             sec_schema = quote_identifier(schema, target_dialect)
             pol_name = quote_identifier(policy.name, target_dialect)
             tbl_name = _object_name(policy.schema, policy.table, target_dialect)
-            col = quote_identifier(policy.using_predicate.column, target_dialect)
             return f"CREATE SECURITY POLICY {sec_schema}.{pol_name} ADD FILTER PREDICATE {sec_schema}.fn_rls({col}) ON {tbl_name} WITH (STATE = ON)"
         elif target_dialect is Dialect.ORACLE:
             schema_str = f"'{policy.schema}'" if policy.schema else "USER"
@@ -1331,24 +1353,35 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
         elif target_dialect is Dialect.MYSQL:
             return f"CALL sys.add_row_policy('{policy.schema or ''}', '{policy.table}', '{policy.name}')"
 
-    def predicate(value: RowPolicySettingPredicate) -> str:
-        setting = value.setting_name.replace("'", "''")
-        missing_ok = "TRUE" if value.missing_ok else "FALSE"
-        return (
-            f"{quote_identifier(value.column, target_dialect)} = "
-            f"current_setting('{setting}', {missing_ok})"
-        )
+    def predicate(value: RowPolicySettingPredicate | RowPolicyFunctionPredicate | None) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, RowPolicySettingPredicate):
+            setting = value.setting_name.replace("'", "''")
+            missing_ok = "TRUE" if value.missing_ok else "FALSE"
+            return (
+                f"{quote_identifier(value.column, target_dialect)} = "
+                f"current_setting('{setting}', {missing_ok})"
+            )
+        if isinstance(value, RowPolicyFunctionPredicate):
+            fn = quote_identifier(value.function_name, target_dialect)
+            if value.function_schema:
+                schema_prefix = f"{quote_identifier(value.function_schema, target_dialect)}."
+            else:
+                schema_prefix = ""
+            return f"{quote_identifier(value.column, target_dialect)} = {schema_prefix}{fn}()"
+        raise TypeError(f"unhandled predicate type: {type(value).__name__}")
 
     roles = ", ".join(
         "PUBLIC" if str(role).upper() == "PUBLIC" else quote_identifier(role, target_dialect)
         for role in policy.roles
     )
+    with_check = f" WITH CHECK ({predicate(policy.check_predicate)})" if policy.check_predicate is not None else ""
     return (
         f"CREATE POLICY {quote_identifier(policy.name, target_dialect)} "
         f"ON {_object_name(policy.schema, policy.table, target_dialect)} "
         f"AS {policy.mode.value} FOR {policy.command.value} TO {roles} "
-        f"USING ({predicate(policy.using_predicate)}) "
-        f"WITH CHECK ({predicate(policy.check_predicate)})"
+        f"USING ({predicate(policy.using_predicate)}){with_check}"
     )
 
 
@@ -1801,11 +1834,19 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
     return f"CREATE{replace} PROCEDURE {qualified}({params}) LANGUAGE plpgsql AS $$ BEGIN {body} END $$"
 
 
-def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str:
+def emit_table_function(
+    function: TableFunction, target_dialect: Dialect, allow_routine_shim: bool = False
+) -> str:
     if target_dialect not in (Dialect.POSTGRES, Dialect.TSQL):
         raise DialectError(
             "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
             f"{target_dialect.value} has no exact inline table-valued function route",
+        )
+    if (function.security_definer or function.search_path) and not allow_routine_shim:
+        raise DialectError(
+            "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
+            "SECURITY DEFINER and SET search_path bind execution identity and name resolution; "
+            "no target security mapping was authorized for this route",
         )
     if function.or_replace and target_dialect is Dialect.TSQL:
         raise DialectError(
@@ -1866,8 +1907,10 @@ def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str
             f"CREATE FUNCTION {qualified}({params}) RETURNS TABLE AS RETURN "  # noqa: S608
             f"(SELECT {selected} FROM {source}{where})"  # noqa: S608
         )
+    replace = " OR REPLACE" if function.or_replace and target_dialect is Dialect.POSTGRES else ""
+    sec_clause = " SECURITY DEFINER" if function.security_definer else ""
     return (
-        f"CREATE FUNCTION {qualified}({params}) RETURNS TABLE ({columns}) LANGUAGE SQL "  # noqa: S608
+        f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS TABLE ({columns}) LANGUAGE SQL{sec_clause} "  # noqa: S608
         f"AS $$ SELECT {selected} FROM {source}{where} $$"  # noqa: S608
     )
 
