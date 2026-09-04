@@ -18,6 +18,7 @@ if __name__ == "__main__":
         raise SystemExit(fresh_runtime_exit)
 
 from route_sets import (
+    CORE_ROUTE_KEYS,
     EVIDENCED_ROUTE_KEYS,
     MODULE_EQUIVALENCE_ROUTE_KEYS,
     NODEJS_EXACT_ROUTE_KEYS,
@@ -413,7 +414,10 @@ def main() -> int:
     strict_requested = strict_evidence_requested(certification)
     if strict_requested:
         formal_equivalence, strict_failures = validate_formal_equivalence(
-            route, manifest, certification
+            route,
+            manifest,
+            certification,
+            validate_live_engine_sources=route_key not in CORE_ROUTE_KEYS,
         )
         failures.extend(strict_failures)
         if specialized:

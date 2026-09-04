@@ -1589,13 +1589,24 @@ class ToolkitTests(unittest.TestCase):
             (repository / "scripts" / "batch29").mkdir(parents=True, exist_ok=True)
             (repository / "schemas" / "batch29").mkdir(parents=True, exist_ok=True)
 
-            accepted = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            validator = load_route_validator()
+            manifest = json.loads((route / "route.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
             )
-            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+            _, accepted_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
+            )
+            self.assertFalse(
+                any(
+                    "engine source manifest live file" in failure
+                    for failure in accepted_failures
+                ),
+                accepted_failures,
+            )
 
             live_engine = (
                 repository
@@ -1606,15 +1617,20 @@ class ToolkitTests(unittest.TestCase):
                 / "engine.py"
             )
             live_engine.write_text("# drifted engine fixture\n")
-            rejected = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            _, rejected_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
             )
 
-            self.assertEqual(rejected.returncode, 1)
-            self.assertIn("engine source manifest live file drifted", rejected.stderr)
+            self.assertTrue(
+                any(
+                    "engine source manifest live file drifted" in failure
+                    for failure in rejected_failures
+                ),
+                rejected_failures,
+            )
 
     def test_proof_runtime_rejects_pythonpath_shadow_package_in_fresh_process(self):
         with tempfile.TemporaryDirectory() as td:

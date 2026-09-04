@@ -6186,6 +6186,8 @@ def validate_formal_equivalence(
     route: Path,
     manifest: dict[str, Any],
     certification: dict[str, Any],
+    *,
+    validate_live_engine_sources: bool = True,
 ) -> tuple[dict[str, Any] | None, list[str]]:
     """Validate strict evidence format v2 without upgrading its proof claim.
 
@@ -6427,8 +6429,13 @@ def validate_formal_equivalence(
                                 )
                                 is True
                             )
+                            # The original 30-route campaign is immutable
+                            # historical evidence. Its captured engine bundle
+                            # remains authoritative; newer live engine bytes
+                            # must not rewrite old evidence.
                             validate_live_sources = (
-                                (live_repository_root / "engines").is_dir()
+                                validate_live_engine_sources
+                                and (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()
@@ -12320,6 +12327,7 @@ def main() -> int:
     try:
         manifest = load(route / "route.json")
         from route_sets import (  # imported only at the CLI boundary for packed replay
+            CORE_ROUTE_KEYS,
             EVIDENCED_ROUTE_KEYS,
             MODULE_EQUIVALENCE_ROUTE_KEYS,
             NODEJS_EXACT_ROUTE_KEYS,
@@ -12596,7 +12604,12 @@ def main() -> int:
                 certification,
                 errors,
             )
-        _, strict_errors = validate_formal_equivalence(route, manifest, certification)
+        _, strict_errors = validate_formal_equivalence(
+            route,
+            manifest,
+            certification,
+            validate_live_engine_sources=route_key not in CORE_ROUTE_KEYS,
+        )
         errors.extend(strict_errors)
         _, module_errors = validate_module_equivalence(route, manifest, certification)
         errors.extend(module_errors)
