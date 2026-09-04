@@ -1184,62 +1184,14 @@ def _selected_swift_host_profile() -> Any | None:
         return None
 
 
-_SWIFT_HOST_PROFILE = _selected_swift_host_profile()
-if _SWIFT_HOST_PROFILE is None:
-    _SWIFT_PROFILE_ID = "github-macos26-20260831.0337.3"
-    _SWIFT_SWIFTC_SHA256 = "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
-    _SWIFT_COMPONENT_OVERRIDES: dict[str, tuple[str, int]] = {}
-    _SWIFT_TREE_OVERRIDES: dict[str, tuple[str, int, int]] = {}
-    _SWIFT_APPLE_GIT_SHA256 = "10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
-    _SWIFT_APPLE_GIT_BYTES = 3_704_880
-    _SWIFT_SANDBOX_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
-    _SWIFT_SANDBOX_CDHASH = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
-    _SWIFT_SANDBOX_BYTES = 102_368
-    _SWIFT_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
-    _SWIFT_CODESIGN_BYTES = 458_576
-else:
-    _SWIFT_PROFILE_ID = _SWIFT_HOST_PROFILE.profile_id
-    _SWIFT_SWIFTC_SHA256 = _SWIFT_HOST_PROFILE.swiftc_sha256
-    _SWIFT_COMPONENT_OVERRIDES = {
-        role: (sha256_value, byte_count)
-        for role, sha256_value, byte_count in _SWIFT_HOST_PROFILE.component_overrides
-    }
-    _SWIFT_TREE_OVERRIDES = {
-        role: (sha256_value, file_count, byte_count)
-        for role, sha256_value, file_count, byte_count in _SWIFT_HOST_PROFILE.tree_overrides
-    }
-    _SWIFT_APPLE_GIT_SHA256 = _SWIFT_HOST_PROFILE.apple_git_sha256
-    _SWIFT_APPLE_GIT_BYTES = _SWIFT_HOST_PROFILE.apple_git_bytes
-    _SWIFT_SANDBOX_SHA256 = _SWIFT_HOST_PROFILE.sandbox_exec_sha256
-    _SWIFT_SANDBOX_CDHASH = _SWIFT_HOST_PROFILE.sandbox_exec_cdhash_full
-    _SWIFT_SANDBOX_BYTES = _SWIFT_HOST_PROFILE.sandbox_exec_bytes
-    _SWIFT_CODESIGN_SHA256 = _SWIFT_HOST_PROFILE.codesign_sha256
-    _SWIFT_CODESIGN_BYTES = _SWIFT_HOST_PROFILE.codesign_bytes
-
 _SWIFT_BASE_COMPONENT_SPECS = SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
 _SWIFT_BASE_TREE_SPECS = SWIFT_BUILD_CLOSURE_TREE_SPECS
-if not set(_SWIFT_COMPONENT_OVERRIDES) <= {
-    str(spec[0]) for spec in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
-}:
-    raise RuntimeError("invalid Swift component host profile")
-if not set(_SWIFT_TREE_OVERRIDES) <= {
-    str(spec[0]) for spec in SWIFT_BUILD_CLOSURE_TREE_SPECS
-}:
-    raise RuntimeError("invalid Swift tree host profile")
-SWIFT_BUILD_CLOSURE_COMPONENT_SPECS = tuple(
-    (*spec[:4], *_SWIFT_COMPONENT_OVERRIDES[str(spec[0])], *spec[6:])
-    if str(spec[0]) in _SWIFT_COMPONENT_OVERRIDES
-    else spec
-    for spec in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
-)
-SWIFT_BUILD_CLOSURE_TREE_SPECS = tuple(
-    (*spec[:3], *_SWIFT_TREE_OVERRIDES[str(spec[0])])
-    if str(spec[0]) in _SWIFT_TREE_OVERRIDES
-    else spec
-    for spec in SWIFT_BUILD_CLOSURE_TREE_SPECS
-)
-SWIFT_GIT_SHA256 = "sha256:" + _SWIFT_APPLE_GIT_SHA256
-SWIFT_GIT_BYTES = _SWIFT_APPLE_GIT_BYTES
+_SWIFT_SWIFTC_SHA256 = "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+_SWIFT_SANDBOX_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+_SWIFT_SANDBOX_CDHASH = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
+_SWIFT_SANDBOX_BYTES = 102_368
+_SWIFT_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
+_SWIFT_CODESIGN_BYTES = 458_576
 
 
 def _expected_swift_build_closure() -> dict[str, Any]:
@@ -2731,13 +2683,15 @@ def _verify_swift_network_sandbox_signature(
     *,
     environment: dict[str, str],
     cwd: Path,
+    sandbox: dict[str, Any] = SWIFT_NETWORK_SANDBOX,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
 ) -> None:
     verify = subprocess.run(
         [
-            SWIFT_NETWORK_VERIFIER["path"],
+            verifier["path"],
             "--verify",
             "--strict",
-            SWIFT_NETWORK_SANDBOX["path"],
+            sandbox["path"],
         ],
         cwd=cwd,
         check=False,
@@ -2748,10 +2702,10 @@ def _verify_swift_network_sandbox_signature(
     )
     details = subprocess.run(
         [
-            SWIFT_NETWORK_VERIFIER["path"],
+            verifier["path"],
             "-d",
             "--verbose=4",
-            SWIFT_NETWORK_SANDBOX["path"],
+            sandbox["path"],
         ],
         cwd=cwd,
         check=False,
@@ -2768,18 +2722,18 @@ def _verify_swift_network_sandbox_signature(
             "Identifier=com.apple.sandbox-exec",
             "Authority=Apple Root CA",
             "TeamIdentifier=not set",
-            f"CandidateCDHashFull sha256={SWIFT_NETWORK_SANDBOX['cdhash_full']}",
+            f"CandidateCDHashFull sha256={sandbox['cdhash_full']}",
         }.issubset(lines)
     ):
         raise ValueError("sandbox-exec code-signature identity differs")
 
 
-def _observe_swift_git_identity() -> dict[str, str]:
+def _observe_swift_git_identity(expected: dict[str, Any]) -> dict[str, str]:
     path = Path(SWIFT_GIT_PATH)
     chain_before = _swift_closure_directory_chain(path.parent)
     content_before, _metadata_before, identity_before = _stable_read_exact_file(
         path,
-        maximum_bytes=SWIFT_GIT_BYTES,
+        maximum_bytes=int(expected["bytes"]),
         allowed_uids=frozenset({0}),
     )
     version = subprocess.run(
@@ -2793,7 +2747,7 @@ def _observe_swift_git_identity() -> dict[str, str]:
     )
     content_after, _metadata_after, identity_after = _stable_read_exact_file(
         path,
-        maximum_bytes=SWIFT_GIT_BYTES,
+        maximum_bytes=int(expected["bytes"]),
         allowed_uids=frozenset({0}),
     )
     chain_after = _swift_closure_directory_chain(path.parent)
@@ -2804,13 +2758,13 @@ def _observe_swift_git_identity() -> dict[str, str]:
         or chain_before != chain_after
         or identity_before != identity_after
         or content_before != content_after
-        or len(content_after) != SWIFT_GIT_BYTES
-        or sha256_bytes(content_after) != SWIFT_GIT_SHA256
+        or len(content_after) != expected["bytes"]
+        or sha256_bytes(content_after) != expected["sha256"]
     ):
         raise ValueError("direct Xcode Git identity differs")
     return {
         "path": SWIFT_GIT_PATH,
-        "sha256": SWIFT_GIT_SHA256,
+        "sha256": str(expected["sha256"]),
         "version": SWIFT_GIT_VERSION,
     }
 
@@ -2887,9 +2841,10 @@ def _verify_swift_network_probe_signature(
     *,
     environment: dict[str, str],
     cwd: Path,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
 ) -> None:
     verify = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", str(binary)],
+        [verifier["path"], "--verify", "--strict", str(binary)],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -2900,7 +2855,7 @@ def _verify_swift_network_probe_signature(
     if verify.returncode != 0:
         raise ValueError("probe code signature did not verify")
     details = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", str(binary)],
+        [verifier["path"], "-d", "--verbose=4", str(binary)],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -2918,7 +2873,10 @@ def _verify_swift_network_probe_signature(
         raise ValueError("probe code-signature identity differs")
 
 
-def _probe_validation_environment(root: Path) -> dict[str, str]:
+def _probe_validation_environment(
+    root: Path,
+    compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> dict[str, str]:
     home = root / "home"
     temporary = root / "tmp"
     home.mkdir(mode=0o700)
@@ -2929,7 +2887,7 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
         "LC_ALL": "C",
         "PATH": os.pathsep.join(
             (
-                str(Path(SWIFT_NETWORK_PROBE_COMPILER["path"]).parent),
+                str(Path(compiler["path"]).parent),
                 "/usr/bin",
                 "/bin",
                 "/usr/sbin",
@@ -2954,17 +2912,19 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
     }
 
 
-def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
-    compiler = Path(SWIFT_NETWORK_PROBE_COMPILER["path"])
+def _observe_swift_network_probe_toolchain(
+    expected_compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> tuple[object, ...]:
+    compiler = Path(expected_compiler["path"])
     chain_before = _swift_closure_directory_chain(compiler.parent)
     content, metadata, identity = _stable_read_exact_file(
         compiler,
-        maximum_bytes=int(SWIFT_NETWORK_PROBE_COMPILER["bytes"]),
+        maximum_bytes=int(expected_compiler["bytes"]),
         allowed_uids=frozenset({0}),
     )
     chain_after = _swift_closure_directory_chain(compiler.parent)
     observed_compiler = {
-        **SWIFT_NETWORK_PROBE_COMPILER,
+        **expected_compiler,
         "sha256": sha256_bytes(content),
         "bytes": len(content),
         "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
@@ -2978,11 +2938,11 @@ def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
     sdk_resolved = sdk.resolve(strict=True)
     if (
         chain_before != chain_after
-        or observed_compiler != SWIFT_NETWORK_PROBE_COMPILER
+        or observed_compiler != expected_compiler
         or stat.S_ISLNK(compiler.lstat().st_mode)
         or compiler.resolve(strict=True)
-        != Path(SWIFT_NETWORK_PROBE_COMPILER["resolved_path"])
-        or SWIFT_NETWORK_PROBE_COMPILER["link_target"] is not None
+        != Path(expected_compiler["resolved_path"])
+        or expected_compiler["link_target"] is not None
         or not stat.S_ISLNK(sdk_metadata.st_mode)
         or sdk_metadata.st_uid != 0
         or sdk_metadata.st_gid != 0
@@ -3004,23 +2964,33 @@ def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
     )
 
 
-def _independently_rebuild_swift_network_probe() -> None:
+def _independently_rebuild_swift_network_probe(
+    *,
+    sandbox: dict[str, Any] = SWIFT_NETWORK_SANDBOX,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
+    compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> None:
     with tempfile.TemporaryDirectory(
         prefix="elmos-swift-network-probe-validator-"
     ) as temporary:
         root = Path(temporary).resolve(strict=True)
         root.chmod(0o700)
-        environment = _probe_validation_environment(root)
-        sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-        verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
-        toolchain_before = _observe_swift_network_probe_toolchain()
-        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        environment = _probe_validation_environment(root, compiler)
+        sandbox_before = _observe_swift_network_system_tool(sandbox)
+        verifier_before = _observe_swift_network_system_tool(verifier)
+        toolchain_before = _observe_swift_network_probe_toolchain(compiler)
+        _verify_swift_network_sandbox_signature(
+            environment=environment,
+            cwd=root,
+            sandbox=sandbox,
+            verifier=verifier,
+        )
         output = root / SWIFT_NETWORK_PROBE_BINARY_NAME
         command = [
-            SWIFT_NETWORK_SANDBOX["path"],
+            sandbox["path"],
             "-p",
             SWIFT_NETWORK_POLICY_TEXT,
-            SWIFT_NETWORK_PROBE_COMPILER["path"],
+            compiler["path"],
             "-x",
             "c",
             "-std=c17",
@@ -3070,10 +3040,11 @@ def _independently_rebuild_swift_network_probe() -> None:
             output,
             environment=environment,
             cwd=root,
+            verifier=verifier,
         )
         execution = subprocess.run(
             [
-                SWIFT_NETWORK_SANDBOX["path"],
+                sandbox["path"],
                 "-p",
                 SWIFT_NETWORK_POLICY_TEXT,
                 str(output),
@@ -3091,10 +3062,15 @@ def _independently_rebuild_swift_network_probe() -> None:
             or execution.stderr != ""
         ):
             raise ValueError("independently rebuilt probe did not observe exact EPERM")
-        sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-        verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
-        toolchain_after = _observe_swift_network_probe_toolchain()
-        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        sandbox_after = _observe_swift_network_system_tool(sandbox)
+        verifier_after = _observe_swift_network_system_tool(verifier)
+        toolchain_after = _observe_swift_network_probe_toolchain(compiler)
+        _verify_swift_network_sandbox_signature(
+            environment=environment,
+            cwd=root,
+            sandbox=sandbox,
+            verifier=verifier,
+        )
         if (
             sandbox_before != sandbox_after
             or verifier_before != verifier_after
@@ -3872,7 +3848,12 @@ def _validate_swift_analyzer_receipt_document(
     )
     if live_binary is not None:
         try:
-            if _observe_swift_git_identity() != git:
+            if _observe_swift_git_identity(
+                {
+                    **expected_git,
+                    "bytes": registered_contract["profile"].apple_git_bytes,
+                }
+            ) != git:
                 raise ValueError("direct Xcode Git receipt differs")
         except (OSError, ValueError) as exc:
             failures.append(f"{label}.dependency.mirror.git provenance invalid: {exc}")
@@ -4076,6 +4057,8 @@ def _validate_swift_analyzer_receipt_document(
             _verify_swift_network_sandbox_signature(
                 environment=validation_environment,
                 cwd=Path.cwd(),
+                sandbox=expected_sandbox,
+                verifier=expected_verifier,
             )
             if (
                 sandbox_observed != {key: expected_sandbox[key] for key in sandbox_observed}
@@ -4132,10 +4115,11 @@ def _validate_swift_analyzer_receipt_document(
                 probe_binary_path,
                 environment=validation_environment,
                 cwd=analyzer_root,
+                verifier=expected_verifier,
             )
             execution = subprocess.run(
                 [
-                    SWIFT_NETWORK_SANDBOX["path"],
+                    expected_sandbox["path"],
                     "-p",
                     SWIFT_NETWORK_POLICY_TEXT,
                     str(probe_binary_path),
@@ -4167,7 +4151,11 @@ def _validate_swift_analyzer_receipt_document(
                 raise ValueError(
                     "fresh sealed probe changed or did not observe exact EPERM"
                 )
-            _independently_rebuild_swift_network_probe()
+            _independently_rebuild_swift_network_probe(
+                sandbox=expected_sandbox,
+                verifier=expected_verifier,
+                compiler=expected_probe_compiler,
+            )
         except (OSError, subprocess.SubprocessError, ValueError) as exc:
             failures.append(
                 f"{label}.network_isolation live probe provenance invalid: {exc}"
