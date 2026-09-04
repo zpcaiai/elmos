@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schemaVersion", "kind", "inputs", "definitionOf100Percent", "current", "perTarget", "manualBacklogByReason", "workstreams"],
+  "properties": {
+    "schemaVersion": {"const": "1.0"},
+    "kind": {"const": "elmos.batch31.sql-route-closure-plan"},
+    "inputs": {"type": "object"},
+    "definitionOf100Percent": {"type": "object"},
+    "current": {
+      "type": "object",
+      "required": ["admittedCandidateUnits", "commonFourTargetEmittableUnits", "commonFourTargetImplementationRate", "commonFourTargetOpenUnits", "targetRouteCells", "emittableRouteCells", "blockedRouteCells", "runtimeVerifiedRouteCells", "manualMigrationItems", "manualMigrationOpen", "externalExecution", "independentVerification", "certification"],
+      "properties": {
+        "admittedCandidateUnits": {"type": "integer", "minimum": 0},
+        "commonFourTargetEmittableUnits": {"type": "integer", "minimum": 0},
+        "commonFourTargetImplementationRate": {"type": "number", "minimum": 0, "maximum": 1},
+        "commonFourTargetOpenUnits": {"type": "integer", "minimum": 0},
+        "targetRouteCells": {"type": "integer", "minimum": 0},
+        "emittableRouteCells": {"type": "integer", "minimum": 0},
+        "blockedRouteCells": {"type": "integer", "minimum": 0},
+        "runtimeVerifiedRouteCells": {"const": 0},
+        "manualMigrationItems": {"type": "integer", "minimum": 0},
+        "manualMigrationOpen": {"type": "integer", "minimum": 0},
+        "externalExecution": {"const": "NOT_RUN"},
+        "independentVerification": {"const": "NOT_RUN"},
+        "certification": {"const": "NOT_CERTIFIED"}
+      },
+      "additionalProperties": false
+    },
+    "perTarget": {"type": "object"},
+    "manualBacklogByReason": {"type": "object"},
+    "workstreams": {"type": "array"}
+  },
+  "additionalProperties": false
+}

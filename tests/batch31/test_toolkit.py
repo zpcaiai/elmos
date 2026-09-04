@@ -57,6 +57,22 @@ class ToolkitTests(unittest.TestCase):
         )
         jsonschema.validate(backlog, backlog_schema)
         self.assertEqual(backlog["summary"]["total"], len(backlog["items"]))
+        closure = json.loads(
+            (ROOT / "docs/batch31/evidence/sql-route-closure-plan.json").read_text()
+        )
+        closure_schema = json.loads(
+            (ROOT / "schemas/batch31/sql-route-closure-plan.schema.json").read_text()
+        )
+        jsonschema.validate(closure, closure_schema)
+        self.assertEqual(
+            closure["current"]["targetRouteCells"],
+            closure["current"]["admittedCandidateUnits"] * 4,
+        )
+        self.assertEqual(
+            closure["current"]["targetRouteCells"],
+            closure["current"]["emittableRouteCells"]
+            + closure["current"]["blockedRouteCells"],
+        )
 
     def test_scaffold_and_validate(self):
         with tempfile.TemporaryDirectory() as td:

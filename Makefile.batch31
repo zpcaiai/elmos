@@ -1,9 +1,10 @@
 UV ?= uv
 BATCH31_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
-.PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate b31-all-packs-check b31-release-gate b31-manual-review-backlog
+.PHONY: b31-skills-test b31-pack-validate b31-pack-gate b31-ir-validate b31-all-packs-check b31-release-gate b31-manual-review-backlog b31-sql-route-closure-check
 b31-skills-test:
 	$(BATCH31_PYTHON) scripts/batch31/validate_skill_bundle.py
 	$(BATCH31_PYTHON) scripts/batch31/validate_sql_line_launch_scope.py docs/batch31/sql-line-launch-scope.json
+	$(MAKE) b31-sql-route-closure-check
 	$(BATCH31_PYTHON) -m unittest discover -s tests/batch31 -p 'test_*.py'
 	$(UV) run --quiet --with ruff ruff check scripts/batch31 tests/batch31
 	$(UV) run --quiet --with ruff ruff format --check scripts/batch31 tests/batch31
@@ -30,3 +31,8 @@ b31-manual-review-backlog:
 	@test -n "$(SCAN_REPORT)" || (echo "SCAN_REPORT=<feasibility-report.json> required" && exit 2)
 	@test -n "$(OUTPUT)" || (echo "OUTPUT=<manual-review-backlog.json> required" && exit 2)
 	$(BATCH31_PYTHON) scripts/batch31/build_manual_review_backlog.py "$(SCAN_REPORT)" --output "$(OUTPUT)"
+b31-sql-route-closure-check:
+	$(BATCH31_PYTHON) scripts/batch31/build_sql_route_closure.py \
+		--reachability docs/batch31/evidence/sql-target-reachability.json \
+		--backlog docs/batch31/evidence/sql-manual-review-backlog.json \
+		--output docs/batch31/evidence/sql-route-closure-plan.json --check

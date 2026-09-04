@@ -42,6 +42,7 @@ _PERFORMANCE_WARMUPS = 5
 _PERFORMANCE_ITERATIONS = 40
 _PERFORMANCE_MAX_ATTEMPTS = 2
 _QUERY_P95_SLO_MS = 75.0
+_PERFORMANCE_MAX_NORMALIZED_LOAD = 1.0
 _FIXTURE_SIZE = 2_000
 _POSTGRES_ROOT = Path("/opt/homebrew/opt/postgresql@17/bin")
 _POSTGRES_CANDIDATE_DIRS = (
@@ -1007,12 +1008,63 @@ def _measure_performance_attempt(
     }
 
 
+def _performance_environment_evidence() -> dict[str, Any]:
+    opt_in = os.environ.get("ELMOS_PERFORMANCE_QUALIFICATION") == "1"
+    cpu_count = max(1, os.cpu_count() or 1)
+    load_averages = list(os.getloadavg()) if hasattr(os, "getloadavg") else []
+    raw_threshold = os.environ.get(
+        "ELMOS_PERFORMANCE_MAX_NORMALIZED_LOAD",
+        str(_PERFORMANCE_MAX_NORMALIZED_LOAD),
+    )
+    try:
+        threshold = float(raw_threshold)
+    except ValueError:
+        threshold = -1.0
+    threshold_valid = 0.1 <= threshold <= 4.0 and math.isfinite(threshold)
+    normalized_one_minute = round(load_averages[0] / cpu_count, 6) if load_averages else None
+    reasons: list[str] = []
+    if not opt_in:
+        reasons.append("EXPLICIT_PERFORMANCE_QUALIFICATION_NOT_ENABLED")
+    if not threshold_valid:
+        reasons.append("INVALID_NORMALIZED_LOAD_THRESHOLD")
+    if normalized_one_minute is None:
+        reasons.append("HOST_LOAD_UNAVAILABLE")
+    elif threshold_valid and normalized_one_minute > threshold:
+        reasons.append("HOST_LOAD_EXCEEDS_QUALIFICATION_THRESHOLD")
+    qualified = not reasons
+    return {
+        "state": "QUALIFIED" if qualified else "INVALID",
+        "explicitOptIn": opt_in,
+        "logicalCpuCount": cpu_count,
+        "loadAverages": [round(value, 6) for value in load_averages],
+        "normalizedOneMinuteLoad": normalized_one_minute,
+        "maximumNormalizedOneMinuteLoad": threshold if threshold_valid else None,
+        "reasons": reasons,
+        "measurementIsolation": "DEDICATED_OR_QUIESCENT_HOST_REQUIRED",
+    }
+
+
 def _performance_evidence(
     source: EngineRunner,
     target: EngineRunner,
     source_connection: Any,
     target_connection: Any,
+    *,
+    environment: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
+    qualification = environment or _performance_environment_evidence()
+    if qualification["state"] != "QUALIFIED":
+        return {
+            "state": "NOT_RUN_ENVIRONMENT_INVALID",
+            "correctnessGateRequiredFirst": True,
+            "environmentQualification": qualification,
+            "sloP95Milliseconds": _QUERY_P95_SLO_MS,
+            "maximumMeasurementAttempts": _PERFORMANCE_MAX_ATTEMPTS,
+            "queries": [],
+            "claimBoundary": (
+                "No timing claim was produced because the measurement host was not qualified."
+            ),
+        }
     source.analyze(source_connection)
     target.analyze(target_connection)
     results: list[dict[str, Any]] = []
@@ -1064,7 +1116,9 @@ def _performance_evidence(
     return {
         "state": "PASSED" if all_passed else "FAILED",
         "correctnessGateRequiredFirst": True,
-        "hostSharedWithDeveloperWorkloads": True,
+        "environmentQualification": qualification,
+        "sloP95Milliseconds": _QUERY_P95_SLO_MS,
+        "maximumMeasurementAttempts": _PERFORMANCE_MAX_ATTEMPTS,
         "claimBoundary": (
             "Local disposable-runner engineering evidence; not a production "
             "capacity or cross-host benchmark."
@@ -1073,7 +1127,7 @@ def _performance_evidence(
     }
 
 
-def _environment_evidence() -> dict[str, Any]:
+def _environment_evidence(performance_environment: dict[str, Any]) -> dict[str, Any]:
     return {
         "operatingSystem": platform.system().lower(),
         "operatingSystemRelease": platform.release(),
@@ -1087,6 +1141,7 @@ def _environment_evidence() -> dict[str, Any]:
         "sqlglotVersion": version("sqlglot"),
         "networkPolicy": "LOOPBACK_ONLY",
         "dataPolicy": "DISPOSABLE_SYNTHETIC_ONLY",
+        "performanceQualification": performance_environment,
     }
 
 
@@ -1132,6 +1187,7 @@ def verify_route(source_profile: str, target_profile: str, output: Path) -> dict
         target.create_fixture(rows)
         source_connection = source.connect()
         target_connection = target.connect()
+        performance_environment = _performance_environment_evidence()
         try:
             query_reports, source_plans, target_plans, query_passed = _query_evidence(
                 source,
@@ -1144,6 +1200,7 @@ def verify_route(source_profile: str, target_profile: str, output: Path) -> dict
                 target,
                 source_connection,
                 target_connection,
+                environment=performance_environment,
             )
         finally:
             source_connection.close()
@@ -1169,7 +1226,7 @@ def verify_route(source_profile: str, target_profile: str, output: Path) -> dict
         )
         performance_passed = performance["state"] == "PASSED"
         passed = query_passed and error_passed and transaction_passed and performance_passed
-        environment = _environment_evidence()
+        environment = _environment_evidence(performance_environment)
         environment["sourceRunner"] = source.engine_evidence()
         environment["targetRunner"] = target.engine_evidence()
 
@@ -1215,7 +1272,13 @@ def verify_route(source_profile: str, target_profile: str, output: Path) -> dict
             "rowValueTypeOrderAndDuplicateEquivalence": ("PASSED" if query_passed else "FAILED"),
             "errorEquivalence": "PASSED" if error_passed else "FAILED",
             "transactionAndLockingEquivalence": ("PASSED" if transaction_passed else "FAILED"),
-            "localPerformanceSlo": "PASSED" if performance_passed else "FAILED",
+            "localPerformanceSlo": (
+                "PASSED"
+                if performance_passed
+                else "NOT_RUN"
+                if performance["state"] == "NOT_RUN_ENVIRONMENT_INVALID"
+                else "FAILED"
+            ),
         },
         "sourceExecution": "PASSED",
         "targetExecution": "PASSED",

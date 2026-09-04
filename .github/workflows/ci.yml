@@ -595,6 +595,9 @@ jobs:
           "uv 0.11.16 (Homebrew 2026-05-21 aarch64-apple-darwin)"
       - name: Verify typed SQL transpiler exact-runtime qualification
         working-directory: engines/database-data-engine/sql-transpiler
+        env:
+          ELMOS_PERFORMANCE_QUALIFICATION: "1"
+          ELMOS_PERFORMANCE_MAX_NORMALIZED_LOAD: "1.0"
         run: |
           uv sync --locked
           uv run --locked pytest

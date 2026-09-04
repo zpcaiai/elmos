@@ -112,6 +112,25 @@ REQUIRED_EXECUTION_ARTIFACT_DIGESTS = (
     "gateResultDigest",
 )
 
+REQUIRED_EXECUTION_INPUT_DIGESTS = (
+    "sourceSnapshotDigest",
+    "sourceCatalogDigest",
+    "sourceDataDigest",
+    "sourceWorkloadDigest",
+    "canonicalIrDigest",
+    "transformationDigest",
+    "compatibilityRuntimeDigest",
+    "runnerDigest",
+    "toolchainDigest",
+    "developmentCorpusDigest",
+    "negativeCorpusDigest",
+    "holdoutCorpusDigest",
+    "representativeWorkloadDigest",
+    "dataFixtureDigest",
+    "targetSqlDigest",
+    "acceptanceProfileDigest",
+)
+
 REQUIRED_EXECUTION_EVIDENCE_DIGESTS = (
     "versionProbeDigest",
     "capabilityProbeDigest",
@@ -135,9 +154,7 @@ _ROLE_AUTHORIZER = "environment-authorizer"
 _ROLE_EXECUTOR = "external-target-executor"
 _ROLE_VERIFIER = "independent-verifier"
 _ROLE_CERTIFIER = "certification-authority"
-_TRUST_ROLES = frozenset(
-    {_ROLE_AUTHORIZER, _ROLE_EXECUTOR, _ROLE_VERIFIER, _ROLE_CERTIFIER}
-)
+_TRUST_ROLES = frozenset({_ROLE_AUTHORIZER, _ROLE_EXECUTOR, _ROLE_VERIFIER, _ROLE_CERTIFIER})
 
 
 def _canonical_bytes(value: Any) -> bytes:
@@ -210,9 +227,7 @@ def _digest_set(
 ) -> dict[str, str]:
     raw = _object(value, name)
     _exact_fields(raw, set(fields), name)
-    result = {
-        field: _required_digest(raw[field], f"{name}.{field}") for field in fields
-    }
+    result = {field: _required_digest(raw[field], f"{name}.{field}") for field in fields}
     if len(set(result.values())) != len(result):
         raise ValueError(f"{name} must use one role-specific digest per field")
     return result
@@ -348,9 +363,7 @@ def production_qualification_draft(
     actor_id: str,
     implementer_organization_id: str,
 ) -> dict[str, Any]:
-    scope = _scope(
-        {"tenantId": tenant_id, "projectId": project_id, "actorId": actor_id}
-    )
+    scope = _scope({"tenantId": tenant_id, "projectId": project_id, "actorId": actor_id})
     implementer_org = _required_string(
         implementer_organization_id,
         "implementer.organizationId",
@@ -435,9 +448,7 @@ def parse_production_trust_store_json(payload: bytes) -> dict[str, Any]:
         not_after = _timestamp(key["notAfter"], f"trust store keys[{index}].notAfter")
         if not_before >= not_after:
             raise ValueError(f"trust store keys[{index}] validity window is invalid")
-        public_key = _decode_public_key(
-            key["publicKey"], f"trust store keys[{index}].publicKey"
-        )
+        public_key = _decode_public_key(key["publicKey"], f"trust store keys[{index}].publicKey")
         if not isinstance(key["revoked"], bool):
             raise ValueError(f"trust store keys[{index}].revoked must be a Boolean")
         keys.append(
@@ -527,12 +538,8 @@ def _validate_exact_tuple(value: object, name: str, *, target_id: str) -> dict[s
         "productId": product_id,
         "productVersion": _exact_token(raw["productVersion"], f"{name}.productVersion"),
         "edition": _exact_token(raw["edition"], f"{name}.edition"),
-        "compatibilityMode": _exact_token(
-            raw["compatibilityMode"], f"{name}.compatibilityMode"
-        ),
-        "deploymentTopology": _exact_token(
-            raw["deploymentTopology"], f"{name}.deploymentTopology"
-        ),
+        "compatibilityMode": _exact_token(raw["compatibilityMode"], f"{name}.compatibilityMode"),
+        "deploymentTopology": _exact_token(raw["deploymentTopology"], f"{name}.deploymentTopology"),
         "provider": _exact_token(raw["provider"], f"{name}.provider"),
         "serviceTier": _exact_token(raw["serviceTier"], f"{name}.serviceTier"),
         "region": _exact_token(raw["region"], f"{name}.region"),
@@ -649,9 +656,7 @@ def _validate_vendor_tools(
                 "artifactDigest": _required_digest(
                     tool["artifactDigest"], f"{name}[{index}].artifactDigest"
                 ),
-                "licenseRef": _exact_token(
-                    tool["licenseRef"], f"{name}[{index}].licenseRef"
-                ),
+                "licenseRef": _exact_token(tool["licenseRef"], f"{name}[{index}].licenseRef"),
                 "adapterId": adapter_id,
                 "operations": operations,
             }
@@ -814,8 +819,10 @@ def _target_input(
     verifier = parsed.get("independentVerifier")
     if blockers:
         return None, blockers
-    if not isinstance(exact_tuple, dict) or not isinstance(environment, dict) or not isinstance(
-        verifier, dict
+    if (
+        not isinstance(exact_tuple, dict)
+        or not isinstance(environment, dict)
+        or not isinstance(verifier, dict)
     ):
         raise RuntimeError("qualification target input normalization failed")
     tool_digests = [_digest(tool) for tool in tools]
@@ -1069,9 +1076,7 @@ def _independent_verification(
     }
     for field, expected_value in expected.items():
         if payload[field] != expected_value:
-            raise ValueError(
-                f"independent verification receipt payload {field} binding mismatch"
-            )
+            raise ValueError(f"independent verification receipt payload {field} binding mismatch")
     verified_at = _timestamp(
         payload["verifiedAt"], "independent verification receipt payload.verifiedAt"
     )
@@ -1118,20 +1123,15 @@ def _certification(
         "expiresAt",
     }
     _exact_fields(payload, fields, "certification receipt payload")
-    if (
-        identity["actorId"]
-        in {
-            verifier_identity["actorId"],
-            executor_identity["actorId"],
-            implementer["actorId"],
-        }
-        or identity["organizationId"]
-        in {
-            verifier_identity["organizationId"],
-            executor_identity["organizationId"],
-            implementer["organizationId"],
-        }
-    ):
+    if identity["actorId"] in {
+        verifier_identity["actorId"],
+        executor_identity["actorId"],
+        implementer["actorId"],
+    } or identity["organizationId"] in {
+        verifier_identity["organizationId"],
+        executor_identity["organizationId"],
+        implementer["organizationId"],
+    }:
         raise ValueError("certification authority is not sufficiently separated")
     expected = {
         "scopeDigest": target_input["scopeDigest"],
@@ -1147,8 +1147,7 @@ def _certification(
     certified_at = _timestamp(payload["certifiedAt"], "certification receipt payload.certifiedAt")
     expires_at = _timestamp(payload["expiresAt"], "certification receipt payload.expiresAt")
     if (
-        certified_at
-        < _timestamp(verification["verifiedAt"], "independent verification.verifiedAt")
+        certified_at < _timestamp(verification["verifiedAt"], "independent verification.verifiedAt")
         or certified_at > now
         or expires_at <= now
     ):
@@ -1290,9 +1289,7 @@ def _target_result(
         result["evidenceEnvelopeDigests"].append(verification_digest)
     except ValueError as error:
         result["state"] = "BLOCKED_EVIDENCE"
-        result["blockers"].append(
-            _blocker("INDEPENDENT_VERIFICATION_RECEIPT_INVALID", str(error))
-        )
+        result["blockers"].append(_blocker("INDEPENDENT_VERIFICATION_RECEIPT_INVALID", str(error)))
         return result
     certification_value = receipts["certification"]
     if certification_value is None:
@@ -1441,9 +1438,7 @@ def evaluate_production_qualification(
     )
     authorized = sum(result["authorization"] == "VERIFIED" for result in target_results)
     executed = sum(result["externalExecution"] == "PASSED" for result in target_results)
-    verified = sum(
-        result["independentVerification"] == "PASSED" for result in target_results
-    )
+    verified = sum(result["independentVerification"] == "PASSED" for result in target_results)
     certified = sum(result["certification"] == "CERTIFIED" for result in target_results)
     global_certification = (
         "CERTIFIED"
@@ -1480,6 +1475,94 @@ def evaluate_production_qualification(
     }
     result["resultDigest"] = _digest(result)
     return result
+
+
+def prepare_vendor_execution_request(
+    request: Mapping[str, Any],
+    *,
+    trust_store: Mapping[str, Any],
+    target_id: str,
+    input_artifact_digests: Mapping[str, Any],
+    now: datetime | None = None,
+) -> dict[str, Any]:
+    """Create an exact, secret-free handoff for an authorized external Runner."""
+    evaluated_at = now or datetime.now(UTC)
+    if evaluated_at.tzinfo is None:
+        raise ValueError("vendor execution request evaluation time must be timezone-aware")
+    evaluated_at = evaluated_at.astimezone(UTC)
+    result = evaluate_production_qualification(request, trust_store=trust_store, now=evaluated_at)
+    matches = [item for item in result["targets"] if item["targetId"] == target_id]
+    if len(matches) != 1:
+        raise ValueError("targetId must identify exactly one catalog target")
+    target_result = matches[0]
+    if target_result["state"] != "READY_FOR_EXTERNAL_EXECUTION":
+        raise ValueError(
+            f"target {target_id} is not READY_FOR_EXTERNAL_EXECUTION: {target_result['state']}"
+        )
+
+    target_ids = [item["targetId"] for item in request["targets"]]
+    target_index = target_ids.index(target_id)
+    request_target = request["targets"][target_index]
+    catalog_target = next(item for item in _catalog_targets() if item["targetId"] == target_id)
+    scope = _scope(request["scope"])
+    implementer = _object(request["implementer"], "implementer")
+    normalized, blockers = _target_input(
+        request_target,
+        index=target_index,
+        catalog_target=catalog_target,
+        implementer=implementer,
+        scope_digest=result["scopeDigest"],
+        capability_snapshot_digest=result["capabilitySnapshotDigest"],
+        now=evaluated_at,
+    )
+    if normalized is None or blockers:
+        raise ValueError("authorized target input could not be normalized")
+    artifacts = _digest_set(
+        input_artifact_digests,
+        "inputArtifactDigests",
+        REQUIRED_EXECUTION_INPUT_DIGESTS,
+    )
+    authorization = _receipt_object(request_target, target_index)["authorization"]
+    authorization_digest = _digest(authorization)
+    idempotency_key = _digest(
+        {
+            "qualificationInputDigest": normalized["qualificationInputDigest"],
+            "authorizationEnvelopeDigest": authorization_digest,
+            "inputArtifactDigests": artifacts,
+        }
+    )
+    broker_request: dict[str, Any] = {
+        "schemaVersion": SCHEMA_VERSION,
+        "protocolVersion": PROTOCOL_VERSION,
+        "kind": "CHINADB_VENDOR_EXECUTION_REQUEST",
+        "idempotencyKey": idempotency_key,
+        "scope": scope,
+        "scopeDigest": result["scopeDigest"],
+        "targetId": target_id,
+        "adapterId": normalized["adapterId"],
+        "qualificationInputDigest": normalized["qualificationInputDigest"],
+        "exactTuple": normalized["exactTuple"],
+        "exactTupleDigest": normalized["exactTupleDigest"],
+        "disposableEnvironment": normalized["disposableEnvironment"],
+        "environmentDigest": normalized["environmentDigest"],
+        "vendorTools": normalized["vendorTools"],
+        "vendorToolDigests": normalized["vendorToolDigests"],
+        "allowedOperations": list(REQUIRED_EXTERNAL_OPERATIONS),
+        "inputArtifactDigests": artifacts,
+        "authorizationEnvelope": authorization,
+        "authorizationEnvelopeDigest": authorization_digest,
+        "safety": {
+            "productionData": False,
+            "writeScope": "DISPOSABLE_ONLY",
+            "secretTransport": "OPAQUE_REFERENCE_ONLY",
+            "cleanupRequired": True,
+            "unknownOutcomePolicy": "RECONCILE_BEFORE_RETRY",
+        },
+        "externalExecution": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+    }
+    broker_request["requestDigest"] = _digest(broker_request)
+    return broker_request
 
 
 def qualification_result_is_currently_fail_closed(value: Mapping[str, Any]) -> bool:

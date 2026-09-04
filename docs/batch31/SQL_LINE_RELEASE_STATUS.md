@@ -24,6 +24,10 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
   PostgreSQL 1,302, SQL Server 525, Oracle 435, and MySQL 411.
 - The checked-in summary records the raw report digests and replay commands in
   `evidence/sql-corpus-scan-summary.json`.
+- `evidence/sql-target-reachability.json` records all 1,302 admitted units and
+  their four target outcomes. The derived closure plan accounts for all 5,208
+  route cells: 2,673 are syntax-emittable and 2,535 remain blocked across 33
+  target/blocker workstreams. Runtime-verified cells remain zero.
 - Batch 31 pack validation executes formal JSON Schemas. Certification status
   is derived from evidence, role separation, lifecycle state, and content
   digests. A self-reported `certified` value cannot promote a pack.
@@ -61,6 +65,10 @@ exact-tuple, evidence-digest, real-engine, rollback, and gate controls.
   `NOT_RUN` / `NOT_CERTIFIED`. They require external systems, accountable
   organizations, credentials, and approvals and cannot be manufactured by a
   repository change.
+- Performance qualification retains the exact 75 ms p95 SLO and at most two
+  bounded attempts. A host must explicitly opt in and pass normalized-load
+  preflight; otherwise the timing state is `NOT_RUN_ENVIRONMENT_INVALID` and
+  the release gate remains closed.
 
 ## Release commands
 

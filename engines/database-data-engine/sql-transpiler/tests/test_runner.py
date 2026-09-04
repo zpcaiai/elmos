@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from hashlib import sha256
 from pathlib import Path
 
@@ -56,6 +57,11 @@ def test_shared_host_performance_confirmation_preserves_initial_failure(
         "_measure_performance_attempt",
         lambda *_args: next(attempts),
     )
+    monkeypatch.setattr(
+        runner_module,
+        "_performance_environment_evidence",
+        lambda: {"state": "QUALIFIED"},
+    )
 
     evidence = runner_module._performance_evidence(FakeRunner(), target, object(), object())
     first = evidence["queries"][0]
@@ -86,6 +92,11 @@ def test_shared_host_performance_stops_after_one_confirmation(
         return attempt
 
     monkeypatch.setattr(runner_module, "_measure_performance_attempt", failed_attempt)
+    monkeypatch.setattr(
+        runner_module,
+        "_performance_environment_evidence",
+        lambda: {"state": "QUALIFIED"},
+    )
 
     evidence = runner_module._performance_evidence(FakeRunner(), target, object(), object())
     first = evidence["queries"][0]
@@ -94,6 +105,26 @@ def test_shared_host_performance_stops_after_one_confirmation(
     assert first["measurementAttempts"] == 2
     assert len(measured) == 12
     assert [attempt["state"] for attempt in first["attempts"]] == ["FAILED", "FAILED"]
+
+
+def test_performance_environment_requires_opt_in_and_quiescent_load(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(runner_module.os, "cpu_count", lambda: 8)
+    monkeypatch.setattr(runner_module.os, "getloadavg", lambda: (16.0, 12.0, 8.0))
+    monkeypatch.delenv("ELMOS_PERFORMANCE_QUALIFICATION", raising=False)
+    blocked = runner_module._performance_environment_evidence()
+    assert blocked["state"] == "INVALID"
+    assert blocked["reasons"] == [
+        "EXPLICIT_PERFORMANCE_QUALIFICATION_NOT_ENABLED",
+        "HOST_LOAD_EXCEEDS_QUALIFICATION_THRESHOLD",
+    ]
+
+    monkeypatch.setenv("ELMOS_PERFORMANCE_QUALIFICATION", "1")
+    monkeypatch.setattr(runner_module.os, "getloadavg", lambda: (4.0, 4.0, 4.0))
+    qualified = runner_module._performance_environment_evidence()
+    assert qualified["state"] == "QUALIFIED"
+    assert qualified["normalizedOneMinuteLoad"] == 0.5
 
 
 def test_runner_capabilities_are_exact_and_fail_closed() -> None:
@@ -115,9 +146,26 @@ def test_runner_capabilities_are_exact_and_fail_closed() -> None:
     assert capabilities["certification"] == "NOT_CERTIFIED"
 
 
+def test_unqualified_host_skips_measurement_and_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    monkeypatch.delenv("ELMOS_PERFORMANCE_QUALIFICATION", raising=False)
+    output = tmp_path / "unqualified"
+    result = verify_route("sqlite-3.53.3", "duckdb-1.5.4", output)
+
+    performance = json.loads((output / "performance.json").read_text())
+    assert performance["state"] == "NOT_RUN_ENVIRONMENT_INVALID"
+    assert performance["queries"] == []
+    assert result["checks"]["localPerformanceSlo"] == "NOT_RUN"
+    assert result["localDecision"] == "FAILED"
+
+
 def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(
     tmp_path: Path,
 ) -> None:
+    if os.environ.get("ELMOS_PERFORMANCE_QUALIFICATION") != "1":
+        pytest.skip("requires an explicitly qualified performance host")
     output = tmp_path / "sqlite-to-duckdb"
     result = verify_route("sqlite-3.53.3", "duckdb-1.5.4", output)
 

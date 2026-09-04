@@ -14,6 +14,7 @@ from .production_qualification import (
     evaluate_production_qualification,
     parse_production_qualification_json,
     parse_production_trust_store_json,
+    prepare_vendor_execution_request,
     production_qualification_draft,
     production_qualification_requirements,
     production_trust_store_digest,
@@ -89,9 +90,7 @@ def _parser() -> argparse.ArgumentParser:
     commercial_skill_run_parser.add_argument("request", type=Path)
     commercial_skill_run_parser.add_argument("--output", type=Path)
 
-    production_requirements_parser = subparsers.add_parser(
-        "commercial-production-requirements"
-    )
+    production_requirements_parser = subparsers.add_parser("commercial-production-requirements")
     production_requirements_parser.add_argument("--output", type=Path)
 
     production_template_parser = subparsers.add_parser("commercial-production-template")
@@ -106,6 +105,14 @@ def _parser() -> argparse.ArgumentParser:
     production_plan_parser.add_argument("--trust-store", type=Path)
     production_plan_parser.add_argument("--trust-store-digest")
     production_plan_parser.add_argument("--output", type=Path)
+
+    execution_request_parser = subparsers.add_parser("commercial-production-execution-request")
+    execution_request_parser.add_argument("request", type=Path)
+    execution_request_parser.add_argument("--trust-store", type=Path, required=True)
+    execution_request_parser.add_argument("--trust-store-digest", required=True)
+    execution_request_parser.add_argument("--target-id", required=True)
+    execution_request_parser.add_argument("--input-artifact-digests", type=Path, required=True)
+    execution_request_parser.add_argument("--output", type=Path)
 
     runner_capability_parser = subparsers.add_parser("runner-capabilities")
     runner_capability_parser.add_argument("--output", type=Path)
@@ -196,18 +203,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "commercial-production-plan":
             if (args.trust_store is None) != (args.trust_store_digest is None):
-                raise ValueError(
-                    "--trust-store and --trust-store-digest must be supplied together"
-                )
+                raise ValueError("--trust-store and --trust-store-digest must be supplied together")
             trust_store = None
             if args.trust_store is not None:
                 trust_store = parse_production_trust_store_json(args.trust_store.read_bytes())
                 observed_digest = production_trust_store_digest(trust_store)
                 if observed_digest != args.trust_store_digest:
                     raise ValueError("operator trust store digest does not match the file")
-            qualification_request = parse_production_qualification_json(
-                args.request.read_bytes()
-            )
+            qualification_request = parse_production_qualification_json(args.request.read_bytes())
             result = evaluate_production_qualification(
                 qualification_request,
                 trust_store=trust_store,
@@ -217,11 +220,25 @@ def main(argv: list[str] | None = None) -> int:
                 _json(result) + "\n",
                 label="commercial production qualification plan",
             )
-            return (
-                0
-                if result["summary"]["productionDefinitionOfDoneCount"] == 13
-                else 3
+            return 0 if result["summary"]["productionDefinitionOfDoneCount"] == 13 else 3
+        if args.command == "commercial-production-execution-request":
+            trust_store = parse_production_trust_store_json(args.trust_store.read_bytes())
+            if production_trust_store_digest(trust_store) != args.trust_store_digest:
+                raise ValueError("operator trust store digest does not match the file")
+            qualification_request = parse_production_qualification_json(args.request.read_bytes())
+            artifact_digests = json.loads(args.input_artifact_digests.read_text(encoding="utf-8"))
+            execution_request = prepare_vendor_execution_request(
+                qualification_request,
+                trust_store=trust_store,
+                target_id=args.target_id,
+                input_artifact_digests=artifact_digests,
             )
+            _create_only_output(
+                args.output,
+                _json(execution_request) + "\n",
+                label="commercial production execution request",
+            )
+            return 0
         if args.command == "runner-capabilities":
             value = runner_capabilities()
             rendered = _json(value) + "\n"

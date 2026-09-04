@@ -50,6 +50,7 @@ MAX_CONCURRENT_ASSESSMENTS = 1
 MAX_CONCURRENT_SKILL_RUNS = 4
 MAX_CONCURRENT_PRODUCTION_PLANS = 2
 ASSESSMENT_TIMEOUT_SECONDS = 15.0
+ASSESSMENT_MAX_NORMALIZED_LOAD = 1.5
 
 _HTTP_REQUEST_LIMITS = CommercialRequestLimits(
     max_envelope_bytes=MAX_HTTP_ENVELOPE_BYTES,
@@ -171,9 +172,7 @@ def _assert_fail_closed_assessment(value: dict[str, Any]) -> None:
     if not isinstance(statements, list) or not isinstance(blockers, list) or not blockers:
         raise AssertionError("commercial assessment statements are absent")
     error_blockers = [
-        item
-        for item in blockers
-        if isinstance(item, dict) and item.get("severity") == "ERROR"
+        item for item in blockers if isinstance(item, dict) and item.get("severity") == "ERROR"
     ]
     if state == "BLOCKED":
         if target_sql is not None:
@@ -332,7 +331,30 @@ def _raise_child_failure(prefix: bytes) -> NoReturn:
     )
 
 
+def _assessment_host_admitted() -> bool:
+    raw_threshold = os.environ.get(
+        "ELMOS_CHINADB_MAX_NORMALIZED_LOAD",
+        str(ASSESSMENT_MAX_NORMALIZED_LOAD),
+    )
+    try:
+        threshold = float(raw_threshold)
+    except ValueError:
+        return False
+    if not 0.1 <= threshold <= 4.0 or not hasattr(os, "getloadavg"):
+        return False
+    cpu_count = max(1, os.cpu_count() or 1)
+    normalized_load = os.getloadavg()[0] / cpu_count
+    return normalized_load <= threshold
+
+
 def _run_assessment_isolated(request: CommercialAssessRequest) -> bytes:
+    if not _assessment_host_admitted():
+        raise SidecarFailure(
+            503,
+            "CHINADB_PREFLIGHT_HOST_OVERLOADED",
+            "ChinaDB SQL preflight host load exceeds the bounded admission threshold.",
+            retryable=True,
+        )
     context = multiprocessing.get_context("spawn")
     parent_connection, child_connection = context.Pipe(duplex=False)
     process = context.Process(
@@ -581,8 +603,7 @@ def _readiness() -> dict[str, str | int]:
         or skills.get("certification") != "NOT_CERTIFIED"
         or production.get("targetCount") != 13
         or production.get("productionBoundaries", {}).get("externalExecution") != "NOT_RUN"
-        or production.get("productionBoundaries", {}).get("certification")
-        != "NOT_CERTIFIED"
+        or production.get("productionBoundaries", {}).get("certification") != "NOT_CERTIFIED"
     ):
         raise RuntimeError("ChinaDB commercial capability registry is not fail closed")
     return {
@@ -754,9 +775,7 @@ async def production_plan_endpoint(request: Request) -> Response:
         finally:
             await _production_plan_gate.release()
         _assert_production_qualification_result(result)
-        return _json_response(
-            _bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES)
-        )
+        return _json_response(_bounded_json_bytes(result, maximum=MAX_HTTP_RESPONSE_BYTES))
     except _ResponseLimitExceeded:
         return _error_response(
             SidecarFailure(

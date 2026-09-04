@@ -17,11 +17,13 @@ from elmos_sql_transpiler.cli import main
 from elmos_sql_transpiler.production_qualification import (
     REQUIRED_EXECUTION_ARTIFACT_DIGESTS,
     REQUIRED_EXECUTION_EVIDENCE_DIGESTS,
+    REQUIRED_EXECUTION_INPUT_DIGESTS,
     REQUIRED_EXTERNAL_OPERATIONS,
     TRUST_DOMAIN,
     evaluate_production_qualification,
     parse_production_qualification_json,
     parse_production_trust_store_json,
+    prepare_vendor_execution_request,
     production_qualification_draft,
     production_qualification_requirements,
     production_trust_store_digest,
@@ -238,12 +240,8 @@ def _sign_all_receipts(
             "qualificationInputDigest": qualification_digest,
             "executionRecordId": execution_payload["recordId"],
             "executionEnvelopeDigest": _digest(execution),
-            "rawEvidenceDigest": execution_payload["evidenceDigests"][
-                "rawEvidenceDigest"
-            ],
-            "holdoutCorpusDigest": execution_payload["artifactDigests"][
-                "holdoutCorpusDigest"
-            ],
+            "rawEvidenceDigest": execution_payload["evidenceDigests"]["rawEvidenceDigest"],
+            "holdoutCorpusDigest": execution_payload["artifactDigests"]["holdoutCorpusDigest"],
             "representativeWorkloadDigest": execution_payload["artifactDigests"][
                 "representativeWorkloadDigest"
             ],
@@ -282,18 +280,44 @@ def _sign_all_receipts(
         }
 
 
+def _authorize_target(
+    request: dict[str, Any],
+    trust_store: dict[str, Any],
+    keys: dict[str, Ed25519PrivateKey],
+    target_index: int = 0,
+) -> None:
+    baseline = evaluate_production_qualification(request, trust_store=trust_store, now=NOW)
+    target = request["targets"][target_index]
+    plan = baseline["targets"][target_index]
+    payload = {
+        "schemaVersion": "1.0",
+        "kind": "CHINADB_TARGET_EXECUTION_AUTHORIZATION",
+        "recordId": f"authorization-{target['targetId']}",
+        "scopeDigest": baseline["scopeDigest"],
+        "targetId": target["targetId"],
+        "qualificationInputDigest": plan["qualificationInputDigest"],
+        "environmentId": target["disposableEnvironment"]["environmentId"],
+        "implementerActorId": request["implementer"]["actorId"],
+        "implementerOrganizationId": request["implementer"]["organizationId"],
+        "allowedOperations": list(REQUIRED_EXTERNAL_OPERATIONS),
+        "issuedAt": "2026-08-27T00:00:00Z",
+        "expiresAt": "2026-09-30T00:00:00Z",
+    }
+    target["receipts"]["authorization"] = signed_envelope(
+        key_id="auth-key", private_key=keys["auth-key"], payload=payload
+    )
+
+
 def test_requirements_and_draft_keep_every_production_boundary_closed() -> None:
     requirements = production_qualification_requirements()
     assert requirements["targetCount"] == 13
     assert len({item["targetId"] for item in requirements["targets"]}) == 13
     assert all(
-        item["requiredArtifactDigests"]
-        == list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS)
+        item["requiredArtifactDigests"] == list(REQUIRED_EXECUTION_ARTIFACT_DIGESTS)
         for item in requirements["targets"]
     )
     assert all(
-        item["requiredEvidenceDigests"]
-        == list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS)
+        item["requiredEvidenceDigests"] == list(REQUIRED_EXECUTION_EVIDENCE_DIGESTS)
         for item in requirements["targets"]
     )
     assert requirements["productionBoundaries"] == {
@@ -326,6 +350,57 @@ def test_requirements_and_draft_keep_every_production_boundary_closed() -> None:
     assert qualification_result_is_currently_fail_closed(checked_in_result)
 
 
+def test_vendor_execution_request_requires_verified_authorization() -> None:
+    request, trust_store, _ = _complete_inputs()
+    artifacts = {
+        field: _role_digest("dm8", f"input:{field}") for field in REQUIRED_EXECUTION_INPUT_DIGESTS
+    }
+    with pytest.raises(ValueError, match="not READY_FOR_EXTERNAL_EXECUTION"):
+        prepare_vendor_execution_request(
+            request,
+            trust_store=trust_store,
+            target_id="dm8",
+            input_artifact_digests=artifacts,
+            now=NOW,
+        )
+
+
+def test_vendor_execution_request_is_exact_idempotent_and_secret_free() -> None:
+    request, trust_store, keys = _complete_inputs()
+    _authorize_target(request, trust_store, keys)
+    artifacts = {
+        field: _role_digest("dm8", f"input:{field}") for field in REQUIRED_EXECUTION_INPUT_DIGESTS
+    }
+    first = prepare_vendor_execution_request(
+        request,
+        trust_store=trust_store,
+        target_id="dm8",
+        input_artifact_digests=artifacts,
+        now=NOW,
+    )
+    replay = prepare_vendor_execution_request(
+        request,
+        trust_store=trust_store,
+        target_id="dm8",
+        input_artifact_digests=artifacts,
+        now=NOW,
+    )
+
+    assert first == replay
+    assert first["kind"] == "CHINADB_VENDOR_EXECUTION_REQUEST"
+    assert first["allowedOperations"] == list(REQUIRED_EXTERNAL_OPERATIONS)
+    assert first["inputArtifactDigests"] == artifacts
+    assert first["safety"] == {
+        "productionData": False,
+        "writeScope": "DISPOSABLE_ONLY",
+        "secretTransport": "OPAQUE_REFERENCE_ONLY",
+        "cleanupRequired": True,
+        "unknownOutcomePolicy": "RECONCILE_BEFORE_RETRY",
+    }
+    assert first["externalExecution"] == "NOT_RUN"
+    assert "password" not in json.dumps(first).casefold()
+
+
 def test_complete_inputs_without_trust_do_not_manufacture_authority() -> None:
     request, _, _ = _complete_inputs()
     request["trustStoreDigest"] = None
@@ -344,9 +419,7 @@ def test_trusted_inputs_without_receipts_stop_before_external_execution() -> Non
     assert replay["resultDigest"] == result["resultDigest"]
     assert result["summary"]["inputCompleteTargetCount"] == 13
     assert result["summary"]["authorizationVerifiedTargetCount"] == 0
-    assert {target["state"] for target in result["targets"]} == {
-        "READY_FOR_AUTHORIZATION"
-    }
+    assert {target["state"] for target in result["targets"]} == {"READY_FOR_AUTHORIZATION"}
     assert qualification_result_is_currently_fail_closed(result)
 
 
@@ -368,9 +441,7 @@ def test_all_13_targets_require_a_valid_four_envelope_chain() -> None:
     assert result["targetSql"] is None
     assert result["productionDefinitionOfDoneCount"] == 13
     assert result["effects"] == {"externalCallsExecuted": []}
-    assert {target["state"] for target in result["targets"]} == {
-        "PRODUCTION_DEFINITION_OF_DONE"
-    }
+    assert {target["state"] for target in result["targets"]} == {"PRODUCTION_DEFINITION_OF_DONE"}
 
 
 def test_capability_snapshot_drift_invalidates_the_signed_chain(
@@ -455,9 +526,7 @@ def test_execution_rejects_aliased_evidence_roles(alias_scope: str) -> None:
     execution = request["targets"][0]["receipts"]["execution"]
     payload = deepcopy(execution["payload"])
     if alias_scope == "within-evidence":
-        payload["evidenceDigests"]["rollbackDigest"] = payload["evidenceDigests"][
-            "cleanupDigest"
-        ]
+        payload["evidenceDigests"]["rollbackDigest"] = payload["evidenceDigests"]["cleanupDigest"]
     else:
         payload["evidenceDigests"]["rawEvidenceDigest"] = payload["artifactDigests"][
             "gateResultDigest"
@@ -492,9 +561,7 @@ def test_certification_authority_must_be_separate_from_prior_roles(
 ) -> None:
     request, trust_store, keys = _complete_inputs()
     _sign_all_receipts(request, trust_store, keys)
-    certifier = next(
-        key for key in trust_store["keys"] if key["keyId"] == "certifier-key"
-    )
+    certifier = next(key for key in trust_store["keys"] if key["keyId"] == "certifier-key")
     certifier[identity_field] = colliding_value
     request["trustStoreDigest"] = production_trust_store_digest(trust_store)
 
@@ -606,6 +673,4 @@ def test_cli_materializes_create_only_requirements_template_and_blocked_plan(
     trusted_plan = json.loads(trusted_plan_path.read_text(encoding="utf-8"))
     assert trusted_plan["summary"]["inputCompleteTargetCount"] == 13
     assert trusted_plan["summary"]["productionDefinitionOfDoneCount"] == 0
-    assert {target["state"] for target in trusted_plan["targets"]} == {
-        "READY_FOR_AUTHORIZATION"
-    }
+    assert {target["state"] for target in trusted_plan["targets"]} == {"READY_FOR_AUTHORIZATION"}

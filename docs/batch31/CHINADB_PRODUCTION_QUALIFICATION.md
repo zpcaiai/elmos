@@ -120,6 +120,27 @@ uv run elmos-sql-transpiler commercial-production-plan \
   --output /tmp/chinadb-production-evaluated.json
 ```
 
+After one target reaches `READY_FOR_EXTERNAL_EXECUTION`, generate its
+secret-free Vendor Runner handoff. The artifact file must contain the exact 16
+input digest roles returned by the requirements command:
+
+```bash
+uv run elmos-sql-transpiler commercial-production-execution-request \
+  /tmp/chinadb-production-request.json \
+  --trust-store /approved/chinadb-trust-store.json \
+  --trust-store-digest sha256:... \
+  --target-id dm8 \
+  --input-artifact-digests /approved/dm8-input-artifact-digests.json \
+  --output /tmp/dm8-vendor-execution-request.json
+```
+
+The handoff binds the authorization envelope, exact tuple, disposable
+environment, vendor tools, input artifacts, operations, safety policy, and a
+deterministic idempotency key. It contains opaque endpoint/credential
+references only. Creating it performs no external call and leaves
+`externalExecution = NOT_RUN`; the signed execution receipt remains the sole
+way to advance that state.
+
 The internal read-only planning endpoints are:
 
 - `GET /internal/v1/chinadb-production/requirements`
@@ -140,6 +161,7 @@ traffic, writes production data, or issues a certificate.
 - `schemas/batch31/chinadb-production-qualification-request.schema.json`
 - `schemas/batch31/chinadb-production-trust-store.schema.json`
 - `schemas/batch31/chinadb-production-qualification-result.schema.json`
+- `schemas/batch31/chinadb-vendor-execution-request.schema.json`
 - `engines/database-data-engine/sql-transpiler/examples/chinadb-production-qualification-draft.json`
 
 Private keys are never request fields or repository artifacts. Signed
