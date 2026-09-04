@@ -97,7 +97,10 @@ final class SpringEngineRequestAuthenticationFilter extends OncePerRequestFilter
         } catch (Rejected error) {
             // Encoded, matrix-parameter, prefix-mismatched, or otherwise ambiguous
             // paths must not turn an authentication failure into a filter bypass.
-            return !couldTargetProtectedPath(request);
+            // Filter every rejected representation and let doFilterInternal fail
+            // closed; trying to infer whether a proxy or servlet container might
+            // normalize it into a protected route is inherently incomplete.
+            return false;
         }
     }
 
@@ -200,20 +203,6 @@ final class SpringEngineRequestAuthenticationFilter extends OncePerRequestFilter
 
     private static boolean protectedPath(String path) {
         return ROOT.equals(path) || path.startsWith(ROOT + "/");
-    }
-
-    private static boolean couldTargetProtectedPath(HttpServletRequest request) {
-        for (String value : new String[]{
-                request.getRequestURI(),
-                request.getServletPath(),
-                request.getPathInfo()
-        }) {
-            if (value != null && (value.contains(ROOT) || value.indexOf('%') >= 0
-                    || value.indexOf(';') >= 0 || value.indexOf('\\') >= 0)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private static byte[] boundedBody(HttpServletRequest request) {

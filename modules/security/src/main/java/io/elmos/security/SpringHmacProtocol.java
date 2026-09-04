@@ -229,7 +229,22 @@ public final class SpringHmacProtocol {
     }
 
     private static boolean boundaryWhitespace(int codePoint) {
-        return Character.isWhitespace(codePoint) || Character.isSpaceChar(codePoint);
+        // Use one language-neutral contract across Java, Python and Node.  The
+        // platform whitespace helpers disagree on NEL (U+0085) and BOM
+        // (U+FEFF), which could otherwise let preflight accept a credential
+        // that one runtime rejects.
+        return (codePoint >= 0x0009 && codePoint <= 0x000D)
+                || codePoint == 0x0020
+                || codePoint == 0x0085
+                || codePoint == 0x00A0
+                || codePoint == 0x1680
+                || (codePoint >= 0x2000 && codePoint <= 0x200A)
+                || codePoint == 0x2028
+                || codePoint == 0x2029
+                || codePoint == 0x202F
+                || codePoint == 0x205F
+                || codePoint == 0x3000
+                || codePoint == 0xFEFF;
     }
 
     @SuppressWarnings("unchecked")

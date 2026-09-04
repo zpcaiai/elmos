@@ -4,7 +4,7 @@ import {
   fstatSync,
   lstatSync,
   openSync,
-  readFileSync,
+  readSync,
 } from "node:fs";
 import { createHash, createHmac, randomUUID } from "node:crypto";
 import path from "node:path";
@@ -31,6 +31,44 @@ type SignInput = {
 
 function sha256(value: Buffer | string) {
   return createHash("sha256").update(value).digest("hex");
+}
+
+function isBoundaryWhitespace(codePoint: number) {
+  return (codePoint >= 0x0009 && codePoint <= 0x000d)
+    || codePoint === 0x0020
+    || codePoint === 0x0085
+    || codePoint === 0x00a0
+    || codePoint === 0x1680
+    || (codePoint >= 0x2000 && codePoint <= 0x200a)
+    || codePoint === 0x2028
+    || codePoint === 0x2029
+    || codePoint === 0x202f
+    || codePoint === 0x205f
+    || codePoint === 0x3000
+    || codePoint === 0xfeff;
+}
+
+function readBoundedSecret(descriptor: number, expectedSize: number) {
+  // Read at most one byte beyond the metadata-bound size.  readFileSync(fd)
+  // follows a growing file to EOF and could otherwise turn a same-UID race
+  // into an unbounded allocation before the post-read inode checks run.
+  const bounded = Buffer.alloc(expectedSize + 1);
+  let offset = 0;
+  while (offset < bounded.byteLength) {
+    const count = readSync(
+      descriptor,
+      bounded,
+      offset,
+      bounded.byteLength - offset,
+      null,
+    );
+    if (count === 0) break;
+    offset += count;
+  }
+  if (offset !== expectedSize) {
+    throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED");
+  }
+  return bounded.subarray(0, expectedSize);
 }
 
 export function signSpringEngineRequest(input: SignInput) {
@@ -120,8 +158,11 @@ function configuredSecret(): Buffer {
     ) {
       throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED");
     }
-    const secret = readFileSync(/*turbopackIgnore: true*/ descriptor);
+    const secret = readBoundedSecret(descriptor, details.size);
     const decodedSecret = secret.toString("utf8");
+    const decodedCodePoints = Array.from(decodedSecret);
+    const firstCodePoint = decodedCodePoints[0]?.codePointAt(0);
+    const lastCodePoint = decodedCodePoints[decodedCodePoints.length - 1]?.codePointAt(0);
     const completed = fstatSync(descriptor);
     const pathAfter = lstatSync(configured);
     if (
@@ -143,7 +184,10 @@ function configuredSecret(): Buffer {
       || pathAfter.nlink !== details.nlink
       || pathAfter.size !== details.size
       || !Buffer.from(decodedSecret, "utf8").equals(secret)
-      || /^\s|\s$/u.test(decodedSecret)
+      || firstCodePoint === undefined
+      || lastCodePoint === undefined
+      || isBoundaryWhitespace(firstCodePoint)
+      || isBoundaryWhitespace(lastCodePoint)
     ) {
       throw new Error("SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED");
     }

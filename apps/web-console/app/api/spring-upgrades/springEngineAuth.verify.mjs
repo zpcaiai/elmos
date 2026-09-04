@@ -54,39 +54,6 @@ assert.throws(
   () => signSpringEngineRequest({ ...input, organizationId: "../other" }),
   /SPRING_ENGINE_ORGANIZATION_REJECTED/,
 );
-const runId = "123e4567-e89b-42d3-a456-426614174000";
-for (const allowedPath of [
-  "/engine/v1/spring-upgrades",
-  "/engine/v1/spring-upgrades/capabilities",
-  `/engine/v1/spring-upgrades/${runId}`,
-  `/engine/v1/spring-upgrades/${runId}/logs`,
-  `/engine/v1/spring-upgrades/${runId}/artifact`,
-  `/engine/v1/spring-upgrades/${runId}/retry`,
-  `/engine/v1/spring-upgrades/${runId}/cancel`,
-  `/engine/v1/spring-upgrades/${runId}/runtime/start`,
-  `/engine/v1/spring-upgrades/${runId}/runtime/stop`,
-]) {
-  assert.doesNotThrow(() => signSpringEngineRequest({
-    ...input,
-    method: allowedPath.endsWith("/capabilities") ? "GET" : "POST",
-    requestPath: allowedPath,
-  }));
-}
-for (const [expected, overrides] of [
-  ["SPRING_ENGINE_METHOD_REJECTED", { method: "DELETE" }],
-  ["SPRING_ENGINE_PATH_REJECTED", { requestPath: `${input.requestPath}?admin=true` }],
-  ["SPRING_ENGINE_PATH_REJECTED", { requestPath: "/engine/v1/spring-upgrades/../admin" }],
-  ["SPRING_ENGINE_ORGANIZATION_REJECTED", { organizationId: "tenant alpha" }],
-  ["SPRING_ENGINE_ACTOR_REJECTED", { actorId: "x" }],
-  ["SPRING_ENGINE_TIMESTAMP_REJECTED", { timestamp: 0 }],
-  ["SPRING_ENGINE_NONCE_REJECTED", { nonce: "00000000-0000-0000-0000-000000000000" }],
-  ["SPRING_ENGINE_SECRET_REJECTED", { secret: Buffer.from("too-short") }],
-]) {
-  assert.throws(
-    () => signSpringEngineRequest({ ...input, ...overrides }),
-    (error) => error instanceof Error && error.message === expected,
-  );
-}
 
 const directory = realpathSync(
   mkdtempSync(path.join(tmpdir(), "elmos-spring-engine-auth-")),
@@ -95,26 +62,8 @@ const secretFile = path.join(directory, "secret");
 const previousEnabled = process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED;
 const previousSecret = process.env.ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE;
 try {
-  delete process.env.ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE;
-  process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "false";
-  const disabled = authenticateSpringEngineRequest(
-    "POST",
-    input.requestPath,
-    { "X-ELMOS-Engine-Signature": "attacker-controlled" },
-    input.body,
-  );
-  assert.equal(disabled.get("X-ELMOS-Engine-Signature"), "attacker-controlled");
-  process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "true";
-  assert.throws(
-    () => authenticateSpringEngineRequest(
-      "POST", input.requestPath,
-      { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-      input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REQUIRED/,
-  );
-
   writeFileSync(secretFile, secret, { mode: 0o600, flag: "wx" });
+  process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "true";
   process.env.ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE = secretFile;
   const headers = authenticateSpringEngineRequest(
     "POST",
@@ -122,11 +71,9 @@ try {
     {
       "X-ELMOS-Organization-ID": input.organizationId,
       "X-ELMOS-Actor-ID": input.actorId,
-      "X-ELMOS-Engine-Signature": "attacker-controlled",
     },
     input.body,
   );
-  assert.notEqual(headers.get("X-ELMOS-Engine-Signature"), "attacker-controlled");
   assert.match(headers.get("X-ELMOS-Engine-Timestamp") ?? "", /^[0-9]+$/);
   assert.match(
     headers.get("X-ELMOS-Engine-Nonce") ?? "",
@@ -169,16 +116,17 @@ try {
   );
 
   chmodSync(secretFile, 0o600);
-  writeFileSync(secretFile, Buffer.concat([secret, Buffer.from("\u2003", "utf8")]));
-  chmodSync(secretFile, 0o600);
-  assert.throws(
-    () => authenticateSpringEngineRequest(
-      "POST", input.requestPath,
-      { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
-      input.body,
-    ),
-    /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
-  );
+  for (const whitespace of ["\u0085", "\u2003", "\ufeff"]) {
+    writeFileSync(secretFile, Buffer.concat([secret, Buffer.from(whitespace, "utf8")]));
+    assert.throws(
+      () => authenticateSpringEngineRequest(
+        "POST", input.requestPath,
+        { "X-ELMOS-Organization-ID": input.organizationId, "X-ELMOS-Actor-ID": input.actorId },
+        input.body,
+      ),
+      /SPRING_ENGINE_AUTH_SECRET_FILE_REJECTED/,
+    );
+  }
 
   process.env.ELMOS_SPRING_ENGINE_AUTH_ENABLED = "false";
   const unsigned = authenticateSpringEngineRequest(

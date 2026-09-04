@@ -22,6 +22,12 @@ ENV ELMOS_SOURCE_JAVA_HOME=/opt/java/openjdk-17 \
     ELMOS_TARGET_JAVA_HOME=/opt/java/openjdk \
     ELMOS_SPRING_UPGRADE_JAVA_HOMES=8=/opt/java/openjdk-8,11=/opt/java/openjdk-11 \
     ELMOS_MAVEN_EXECUTABLE=/usr/share/maven/bin/mvn
+ENV PATH=/opt/java/openjdk/bin:/usr/share/maven/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+    JAVA_HOME=/opt/java/openjdk \
+    MAVEN_HOME=/usr/share/maven \
+    MAVEN_CONFIG=/home/elmos/.m2 \
+    HOME=/home/elmos
 USER 10001:10001
 EXPOSE 8081
-ENTRYPOINT ["java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]
+ENTRYPOINT ["/opt/java/openjdk/bin/java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]
+CMD []

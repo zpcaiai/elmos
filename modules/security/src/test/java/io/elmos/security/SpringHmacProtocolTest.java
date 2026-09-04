@@ -67,16 +67,19 @@ class SpringHmacProtocolTest {
     @Test
     void rejectsAsciiAndUnicodeBoundaryWhitespaceInsteadOfTrimmingIt() throws Exception {
         Path ascii = temporary.resolve("ascii-secret");
-        Path unicode = temporary.resolve("unicode-secret");
         Files.writeString(ascii, " " + "a".repeat(40), StandardCharsets.UTF_8);
-        Files.writeString(unicode, "b".repeat(40) + "\u2003", StandardCharsets.UTF_8);
         ownerOnly(ascii);
-        ownerOnly(unicode);
 
         assertThrows(IllegalStateException.class,
                 () -> SpringHmacProtocol.readSecret(ascii, "verifier"));
-        assertThrows(IllegalStateException.class,
-                () -> SpringHmacProtocol.readSecret(unicode, "transformer"));
+        for (String suffix : new String[]{"\u0085", "\u2003", "\uFEFF"}) {
+            Path unicode = temporary.resolve(
+                    "unicode-secret-" + Integer.toHexString(suffix.codePointAt(0)));
+            Files.writeString(unicode, "b".repeat(40) + suffix, StandardCharsets.UTF_8);
+            ownerOnly(unicode);
+            assertThrows(IllegalStateException.class,
+                    () -> SpringHmacProtocol.readSecret(unicode, "transformer"));
+        }
     }
 
     @Test
