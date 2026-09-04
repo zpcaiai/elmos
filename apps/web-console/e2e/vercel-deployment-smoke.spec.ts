@@ -65,3 +65,20 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
     expect(["UP", "READY"]).toContain(payload.status);
   }
 });
+
+test("deployed console authenticates test/test credential and yields session", async ({ page }) => {
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  await page.getByLabel("邮箱").fill("test@example.test");
+  await page.getByLabel("密码").fill("test");
+  await page.getByRole("button", { name: "使用邮箱登录" }).click();
+  await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
+
+  const session = await page.evaluate(async () => {
+    const response = await fetch("/api/auth/session", { credentials: "same-origin" });
+    return response.json();
+  }) as { authenticated?: boolean; principal?: { actorId?: string } };
+
+  expect(session.authenticated).toBe(true);
+  expect(session.principal?.actorId).toBe("local:test");
+});
+
