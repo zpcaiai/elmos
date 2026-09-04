@@ -453,6 +453,22 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
     except sqlglot.errors.SqlglotError as parse_error:
         if source_dialect is not Dialect.POSTGRES:
             raise
+        if re.search(r"\bLANGUAGE\s+SQL\s+SECURITY\s+(?:DEFINER|INVOKER)\b", sql, re.IGNORECASE):
+            rewritten = re.sub(
+                r"\bLANGUAGE\s+SQL\s+SECURITY\s+(DEFINER|INVOKER)\b",
+                r"LANGUAGE SQL SQL SECURITY \1",
+                sql,
+                flags=re.IGNORECASE,
+            )
+            try:
+                statements = cast(
+                    list[exp.Expression],
+                    [s for s in sqlglot.parse(rewritten, read=source_dialect.value) if s is not None],
+                )
+                if statements:
+                    return statements
+            except sqlglot.errors.SqlglotError:
+                pass
         normalized = _coalesce_adjacent_string_literals(sql)
         if normalized != sql:
             try:

@@ -18,7 +18,15 @@ from elmos_sql_dialect.advanced import (
     parse_row_policy,
 )
 from elmos_sql_dialect.engine import translate_ddl
-from elmos_sql_dialect.models import CommentObjectKind, Dialect, DialectError, RowPolicyCommand, RowPolicyMode, TypeMigrationPolicy
+from elmos_sql_dialect.models import (
+    CommentObjectKind,
+    Dialect,
+    DialectError,
+    RowPolicyCommand,
+    RowPolicyFunctionPredicate,
+    RowPolicyMode,
+    TypeMigrationPolicy,
+)
 from elmos_sql_dialect.parser import parse_create_table
 from elmos_sql_dialect.routine import parse_routine_identity
 from elmos_sql_dialect.scan import SourceSchemaCatalog
@@ -443,6 +451,46 @@ def test_tenant_rls_policy_is_typed_before_the_target_gate() -> None:
         "CREATE POLICY tenant_isolation ON tenant.users AS PERMISSIVE FOR ALL TO PUBLIC "
         "USING (organization_id = current_setting('app.organization_id', TRUE)) "
         "WITH CHECK (organization_id = current_setting('app.organization_id', TRUE))"
+    )
+
+
+def test_tenant_rls_function_predicate_and_shims() -> None:
+    sql = (
+        "CREATE POLICY tenant_isolation ON identity.tenants "
+        "USING (id = public.current_tenant_id()) "
+        "WITH CHECK (id = public.current_tenant_id())"
+    )
+    policy = parse_row_policy(sql, Dialect.POSTGRES, {"identity": "identity", "public": "dbo"})
+    assert policy.name == "tenant_isolation"
+    assert policy.schema == "identity"
+    assert policy.table == "tenants"
+    assert isinstance(policy.using_predicate, RowPolicyFunctionPredicate)
+    assert policy.using_predicate.column == "id"
+    assert policy.using_predicate.function_schema == "dbo"
+    assert policy.using_predicate.function_name == "current_tenant_id"
+    assert policy.check_predicate == policy.using_predicate
+
+    # PostgreSQL emission
+    assert emit_row_policy(policy, Dialect.POSTGRES) == (
+        "CREATE POLICY tenant_isolation ON identity.tenants AS PERMISSIVE FOR ALL TO PUBLIC "
+        "USING (id = dbo.current_tenant_id()) "
+        "WITH CHECK (id = dbo.current_tenant_id())"
+    )
+
+    # Cross-dialect without shim fails closed
+    with pytest.raises(DialectError):
+        emit_row_policy(policy, Dialect.TSQL, allow_rls_shim=False)
+
+    # Cross-dialect with shim succeeds
+    assert emit_row_policy(policy, Dialect.TSQL, allow_rls_shim=True) == (
+        "CREATE SECURITY POLICY identity.tenant_isolation ADD FILTER PREDICATE identity.fn_rls(id) "
+        "ON identity.tenants WITH (STATE = ON)"
+    )
+    assert emit_row_policy(policy, Dialect.ORACLE, allow_rls_shim=True) == (
+        "CALL DBMS_RLS.ADD_POLICY('identity', 'tenants', 'tenant_isolation', 'identity', 'fn_rls')"
+    )
+    assert emit_row_policy(policy, Dialect.MYSQL, allow_rls_shim=True) == (
+        "CALL sys.add_row_policy('identity', 'tenants', 'tenant_isolation')"
     )
 
 

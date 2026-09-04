@@ -72,7 +72,13 @@ def _ts_object_literal(request: SynthesisRequest, entity: EntitySpec, parent_var
     return "{ " + ", ".join(parts) + " }"
 
 
-def _ts_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
+def _ts_entity_scenario(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    declared_vars: set[str] | None = None,
+) -> str:
+    if declared_vars is None:
+        declared_vars = set()
     by_name = {item.singular: item for item in request.entities}
     parent_vars: dict[str, str] = {}
     lines: list[str] = []
@@ -81,17 +87,27 @@ def _ts_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
         parent_vars[parent] = variable
         parent_entity = by_name[parent]
         body = _ts_object_literal(request, parent_entity, parent_vars)
+        if variable in declared_vars:
+            decl = f"{variable} = randomUUID();"
+        else:
+            decl = f"let {variable} = randomUUID();"
+            declared_vars.add(variable)
         lines.extend(
             [
-                f"const {variable} = randomUUID();",
+                decl,
                 f'assert.equal((await send("PUT", `/{parent_entity.plural}/${{{variable}}}`, tenantA, JSON.stringify({body}))).status, 200);',
             ]
         )
     record_var = f"{entity.singular}Id"
     body = _ts_object_literal(request, entity, parent_vars)
+    if record_var in declared_vars:
+        decl = f"{record_var} = randomUUID();"
+    else:
+        decl = f"let {record_var} = randomUUID();"
+        declared_vars.add(record_var)
     lines.extend(
         [
-            f"const {record_var} = randomUUID();",
+            decl,
             f'const created{pascal(entity.singular)} = await send("PUT", `/{entity.plural}/${{{record_var}}}`, tenantA, JSON.stringify({body}));',
             f"assert.equal(created{pascal(entity.singular)}.status, 200, await created{pascal(entity.singular)}.text());",
             f'const read{pascal(entity.singular)} = await send("GET", `/{entity.plural}/${{{record_var}}}`, tenantA);',
@@ -621,7 +637,10 @@ def render_typescript_production(request: SynthesisRequest, port: int) -> dict[s
 
 def _integration_test_ts(request: SynthesisRequest) -> str:
     entity = request.entities[0]
-    entity_scenarios = "\n          ".join(_ts_entity_scenario(request, item) for item in request.entities)
+    declared_vars: set[str] = set()
+    entity_scenarios = "\n          ".join(
+        _ts_entity_scenario(request, item, declared_vars) for item in request.entities
+    )
     if request.auth_mode == "jwt":
         signer = f"""
         function signToken(tenant: string | null, issuer: string, audience: string, valid: boolean): string {{

@@ -886,6 +886,14 @@ def parse_table_function(
             )
         )
     body = statement.args.get("expression")
+    if body is None and isinstance(properties, exp.Properties):
+        for prop in properties.expressions:
+            if isinstance(prop, exp.SetConfigProperty):
+                for alias in prop.find_all(exp.Alias):
+                    alias_id = alias.args.get("alias")
+                    if isinstance(alias_id, exp.Identifier):
+                        body = exp.Heredoc(this=alias_id.this)
+                        break
     _require(
         isinstance(body, exp.Heredoc),
         "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",

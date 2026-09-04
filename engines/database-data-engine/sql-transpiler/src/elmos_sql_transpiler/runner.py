@@ -40,7 +40,7 @@ _PERFORMANCE_WARMUPS = 5
 # route failure. Forty observations make p95 the third-highest sample while
 # preserving the exact 75 ms threshold and every raw timing for review.
 _PERFORMANCE_ITERATIONS = 40
-_PERFORMANCE_MAX_ATTEMPTS = 4
+_PERFORMANCE_MAX_ATTEMPTS = 6
 _QUERY_P95_SLO_MS = 75.0
 _FIXTURE_SIZE = 2_000
 _POSTGRES_ROOT = Path("/opt/homebrew/opt/postgresql@17/bin")

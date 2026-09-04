@@ -773,4 +773,119 @@ def test_typescript_type_alias_record_lifting(tmp_path: Path) -> None:
     assert fn.body[0].expression.member == "x"
 
 
+def test_java_analyzer_record_lifting(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+    from elmos_polyglot_route.emitter import emit
+
+    java_file = tmp_path / "Geometry.java"
+    java_file.write_text(
+        "public final class Geometry {\n"
+        "    public record Point(long x, long y) {}\n\n"
+        "    public static Point translate(Point p, long dx, long dy) {\n"
+        "        final long new_x = p.x() + dx;\n"
+        "        final long new_y = p.y() + dy;\n"
+        "        return new Point(new_x, new_y);\n"
+        "    }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+
+    ir = analyze(java_file, "java", "translate")
+    assert len(ir.records) == 1
+    rec = ir.records[0]
+    assert rec.name == "Point"
+    assert len(rec.fields) == 2
+    assert rec.fields[0].name == "x" and rec.fields[0].type == "integer"
+    assert rec.fields[1].name == "y" and rec.fields[1].type == "integer"
+
+    assert len(ir.functions) == 1
+    fn = ir.functions[0]
+    assert fn.name == "translate"
+    assert fn.return_type == "Point"
+    assert len(fn.parameters) == 3
+    assert fn.parameters[0].name == "p" and fn.parameters[0].type == "Point"
+    assert fn.parameters[1].name == "dx" and fn.parameters[1].type == "integer"
+    assert fn.parameters[2].name == "dy" and fn.parameters[2].type == "integer"
+
+    assert len(fn.body) == 3
+    stmt0 = fn.body[0]
+    assert stmt0.kind == "let" and stmt0.name == "new_x" and stmt0.declared_type == "integer"
+    assert stmt0.expression.kind == "binary"
+    assert stmt0.expression.left.kind == "member_access"
+    assert stmt0.expression.left.target.value == "p" and stmt0.expression.left.member == "x"
+
+    stmt2 = fn.body[2]
+    assert stmt2.kind == "return"
+    assert stmt2.expression.kind == "record_construct"
+    assert stmt2.expression.record_name == "Point"
+    assert len(stmt2.expression.arguments) == 2
+    assert stmt2.expression.arguments[0][0] == "x" and stmt2.expression.arguments[0][1].value == "new_x"
+    assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
+
+    for target in ["python", "java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "kotlin", "flutter", "php", "react"]:
+        emitted = emit(ir, target)
+        assert "Point" in emitted.content
+
+
+def test_java_analyzer_record_field_access(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    java_file = tmp_path / "PointTest.java"
+    java_file.write_text(
+        "public final class PointTest {\n"
+        "    public record Point(long x, long y) {}\n\n"
+        "    public static long get_x(Point p) {\n"
+        "        return p.x;\n"
+        "    }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+
+    ir = analyze(java_file, "java", "get_x")
+    assert ir.functions[0].body[0].expression.kind == "member_access"
+    assert ir.functions[0].body[0].expression.member == "x"
+
+
+def test_java_analyzer_record_rejections(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+    from elmos_polyglot_route.models import RouteError
+
+    # Generic record rejected
+    f1 = tmp_path / "GenericRec.java"
+    f1.write_text(
+        "public final class GenericRec {\n"
+        "    public record Pair<T>(T a, T b) {}\n"
+        "    public static long f() { return 1L; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError, match="JAVA_GENERIC_RECORD_OUTSIDE_CERTIFIED_SUBSET"):
+        analyze(f1, "java", "f")
+
+    # Record construct arity mismatch
+    f2 = tmp_path / "ArityMismatch.java"
+    f2.write_text(
+        "public final class ArityMismatch {\n"
+        "    public record Point(long x, long y) {}\n"
+        "    public static Point f() { return new Point(1L); }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError):
+        analyze(f2, "java", "f")
+
+    # Unknown record member
+    f3 = tmp_path / "UnknownMember.java"
+    f3.write_text(
+        "public final class UnknownMember {\n"
+        "    public record Point(long x, long y) {}\n"
+        "    public static long f(Point p) { return p.z(); }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(RouteError):
+        analyze(f3, "java", "f")
+
+
+
 

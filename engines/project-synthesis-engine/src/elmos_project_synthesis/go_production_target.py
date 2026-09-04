@@ -270,7 +270,13 @@ def _go_validator_funcs(request: SynthesisRequest) -> str:
     return "\n".join(blocks)
 
 
-def _go_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
+def _go_entity_scenario(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    declared_vars: set[str] | None = None,
+) -> str:
+    if declared_vars is None:
+        declared_vars = set()
     by_name = {item.singular: item for item in request.entities}
     parent_vars: dict[str, str] = {}
     lines: list[str] = []
@@ -279,18 +285,22 @@ def _go_entity_scenario(request: SynthesisRequest, entity: EntitySpec) -> str:
         parent_vars[parent] = variable
         parent_entity = by_name[parent]
         body = _go_json_body(request, parent_entity, parent_vars)
+        assign_op = "=" if variable in declared_vars else ":="
+        declared_vars.add(variable)
         lines.extend(
             [
-                f"{variable} := uuidString(test)",
+                f"{variable} {assign_op} uuidString(test)",
                 f"response, body = send(test, server, \"PUT\", \"/{parent_entity.plural}/\"+{variable}, tenantA, {body})",
                 f"expectStatus(test, \"fixture {parent}\", response, 200, body)",
             ]
         )
     record_var = f"{entity.singular}ID"
     body = _go_json_body(request, entity, parent_vars)
+    assign_op = "=" if record_var in declared_vars else ":="
+    declared_vars.add(record_var)
     lines.extend(
         [
-            f"{record_var} := uuidString(test)",
+            f"{record_var} {assign_op} uuidString(test)",
             f"response, body = send(test, server, \"PUT\", \"/{entity.plural}/\"+{record_var}, tenantA, {body})",
             f'expectStatus(test, "upsert-and-read {entity.singular} (PUT)", response, 200, body)',
             f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantA, \"\")",
@@ -737,7 +747,10 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
 
 def _integration_test_go(request: SynthesisRequest) -> str:
     entity = request.entities[0]
-    entity_scenarios = "\n            ".join(_go_entity_scenario(request, item) for item in request.entities)
+    declared_vars: set[str] = set()
+    entity_scenarios = "\n            ".join(
+        _go_entity_scenario(request, item, declared_vars) for item in request.entities
+    )
     if request.auth_mode == "jwt":
         signer = f"""
         func signToken(test *testing.T, tenant, issuer, audience string, valid bool) string {{

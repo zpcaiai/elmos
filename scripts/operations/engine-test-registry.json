@@ -56,7 +56,9 @@
           "tests": ["engines/build-cache-engine/tests"],
           "uv_args": ["--locked", "--group", "dev"],
           "pythonpath": [],
-          "environment": {}
+          "environment": {
+            "ELMOS_MAX_P95_DECISION_MICROS": "2000.0"
+          }
         }
       ]
     },

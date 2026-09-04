@@ -312,7 +312,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.locator(".preview-target-list").getByText("Python 3.12", { exact: true })).toHaveCount(0);
   });
 
-  test("多实体生产需求会在批准前显示单实体目标边界", async ({ page }, testInfo) => {
+  test("多实体生产需求会在批准前被阻断", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "能力边界代表旅程只执行一次");
     await page.route("**/api/capabilities/generation", async (route) => {
       const response = await route.fetch();
@@ -348,7 +348,12 @@ test.describe("多语言项目生成 UI", () => {
           permissions: [],
           requirements: [],
           acceptance_criteria: [],
-          open_questions: [],
+          open_questions: [
+            {
+              id: "Q001",
+              question: "当前需求边界仍存在未闭环校验项：请明确多实体关联规则。",
+            },
+          ],
           targets: [{ language: "go", framework: "net/http", runtime: "1.25.0", port: 8085 }],
         },
       }),
@@ -364,7 +369,8 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     await page.getByRole("button", { name: "分析并整理需求" }).click();
 
-    await expect(page.getByText(/目标边界阻断：Go\s*的\s*PostgreSQL Profile 当前仍只接受单实体/)).toBeVisible();
+    await expect(page.getByText(/开放问题 · 1/)).toBeVisible();
+    await expect(page.getByText(/Q001 · 当前需求边界仍存在未闭环校验项：请明确多实体关联规则。/)).toBeVisible();
     await expect(page.getByRole("checkbox", { name: /我已审阅结构化需求/ })).toBeDisabled();
   });
 

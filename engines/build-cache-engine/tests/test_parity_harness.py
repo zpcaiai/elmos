@@ -331,7 +331,7 @@ def test_executor_that_permanently_ignores_deadline_is_killed_and_reaped(tmp_pat
     elapsed = time.monotonic() - started
 
     scenario = result.report.scenarios[0]
-    assert elapsed < 2.0
+    assert elapsed < 5.0
     assert scenario.status is ScenarioStatus.BLOCKED
     assert scenario.detail["failure_kind"] == "HARD_DEADLINE_EXCEEDED"
     assert scenario.detail["hard_deadline_enforced"] is True

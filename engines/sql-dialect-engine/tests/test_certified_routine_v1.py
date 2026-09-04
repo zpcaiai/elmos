@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import pytest
 
-from elmos_sql_dialect.advanced import parse_table_function
+from elmos_sql_dialect.advanced import emit_table_function, parse_table_function
 from elmos_sql_dialect.engine import translate_ddl
 from elmos_sql_dialect.models import Dialect, DialectError, RoutineLanguage
 from elmos_sql_dialect.routine import emit_create_function, parse_create_routine, parse_routine_identity
@@ -89,6 +89,42 @@ def test_table_function_security_context_does_not_enter_static_route() -> None:
     report = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION")
     assert report["status"] == "BLOCKED", report
     assert report["reasonCode"] == "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED"
+
+
+def test_table_function_security_context_with_shim() -> None:
+    sql = (
+        "CREATE FUNCTION active_users() RETURNS TABLE(id INT) LANGUAGE plpgsql "
+        "SECURITY DEFINER SET search_path = public "
+        "AS $$ BEGIN RETURN QUERY SELECT id FROM users; END; $$"
+    )
+    report_tsql = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION", allow_routine_shim=True)
+    assert report_tsql["status"] == "PASSED", report_tsql
+    assert "CREATE FUNCTION active_users() RETURNS TABLE AS RETURN" in report_tsql["emitted"]
+
+    # Note: translating dialect to itself raises RouteError, so test via emit_table_function directly
+    tf = parse_table_function(sql, Dialect.POSTGRES)
+    assert tf.security_definer is True
+    assert tf.search_path == ("<source-defined>",)
+    pg_emitted = emit_table_function(tf, Dialect.POSTGRES, allow_routine_shim=True)
+    assert "SECURITY DEFINER" in pg_emitted
+
+
+def test_scalar_routine_security_definer_shims() -> None:
+    sql = (
+        "CREATE FUNCTION get_val(p INT) RETURNS INT LANGUAGE SQL "
+        "SECURITY DEFINER AS $$ SELECT p $$"
+    )
+    report_my = translate_ddl(sql, "postgres", "mysql", statement_kind="FUNCTION", allow_routine_shim=True)
+    assert report_my["status"] == "PASSED", report_my
+    assert "SQL SECURITY DEFINER" in report_my["emitted"]
+
+    report_ora = translate_ddl(sql, "postgres", "oracle", statement_kind="FUNCTION", allow_routine_shim=True)
+    assert report_ora["status"] == "PASSED", report_ora
+    assert "AUTHID DEFINER" in report_ora["emitted"]
+
+    report_tsql = translate_ddl(sql, "postgres", "tsql", statement_kind="FUNCTION", allow_routine_shim=True)
+    assert report_tsql["status"] == "PASSED", report_tsql
+    assert "WITH EXECUTE AS OWNER" in report_tsql["emitted"]
 
 
 def test_default_namespace_is_applied_to_typed_routine_identity() -> None:

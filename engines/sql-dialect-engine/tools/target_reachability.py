@@ -250,11 +250,13 @@ def emit_to(
                 allow_index_expression_shim=allow_index_expression_shim,
                 allow_mysql_text_prefix=allow_mysql_text_prefix,
             )
-        if kind == "VIEW":
-            return emit_view(parse_create_view(statement, source, namespace_map), target)
         if kind == "FUNCTION":
             try:
-                return emit_table_function(parse_table_function(statement, source, namespace_map), target)
+                return emit_table_function(
+                    parse_table_function(statement, source, namespace_map),
+                    target,
+                    allow_routine_shim=allow_routine_shim,
+                )
             except DialectError as exc:
                 if exc.code != "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
                     raise
@@ -363,6 +365,24 @@ def main() -> int:
         help="Policy for ARRAY mapping to target dialects",
     )
     ap.add_argument(
+        "--policy-unbounded-decimal",
+        choices=["fail-closed", "decimal38_10", "decimal28_8"],
+        default="fail-closed",
+        help="Policy for unbounded DECIMAL / NUMERIC mapping to target dialects",
+    )
+    ap.add_argument(
+        "--policy-unbounded-varchar",
+        choices=["postgres-only", "text"],
+        default="postgres-only",
+        help="Policy for unbounded VARCHAR mapping to target dialects",
+    )
+    ap.add_argument(
+        "--policy-unsigned-bigint",
+        choices=["ask", "decimal20", "checked_bigint"],
+        default="ask",
+        help="Policy for UNSIGNED BIGINT mapping to target dialects",
+    )
+    ap.add_argument(
         "--allow-index-shim",
         action="store_true",
         default=False,
@@ -463,6 +483,9 @@ def main() -> int:
     type_policy = TypeMigrationPolicy(
         json_binary=args.policy_json_binary,
         array=args.policy_array,
+        unbounded_decimal=args.policy_unbounded_decimal,
+        unbounded_varchar=args.policy_unbounded_varchar,
+        unsigned_bigint=args.policy_unsigned_bigint,
     )
 
     admitted = 0
@@ -483,7 +506,13 @@ def main() -> int:
         _name, path, dialect_name = raw.split("=", 2)
         source = Dialect(dialect_name)
         source_dialects.add(source)
-        scan_report = scan_repository(path, source, namespace_profile=active_namespace_profile)
+        scan_report = scan_repository(
+            path,
+            source,
+            namespace_profile=active_namespace_profile,
+            type_policy=type_policy,
+            allow_alter_column=args.allow_alter_column,
+        )
         disposition_units += scan_report.totals["dispositionUnits"]
         disposition_covered += scan_report.totals["dispositionCovered"]
         disposition_unknown += scan_report.totals["dispositionUnknown"]
@@ -514,6 +543,8 @@ def main() -> int:
                         raw_sql=statement.sql() if isinstance(statement, exp.Command) else None,
                         namespace_map=namespace_map,
                         catalog=source_catalog,
+                        type_policy=type_policy,
+                        allow_alter_column=args.allow_alter_column,
                     )
                 if status != "IN_SUBSET":
                     continue

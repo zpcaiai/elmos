@@ -3,5 +3,50 @@
 - Pack status: `experimental`
 - Structural gate status: `passed`
 - Certification decision: `NOT_CERTIFIED`
+- Certification readiness: `BLOCKED`
+- Evaluated pack digest: `sha256:7d46939ec0adf8b7503dc43a259f5cb459a1409a9d5495f2732571e42cbedcda`
 
-The pack is structurally valid but is not certified.
+## Certification blockers
+- pack and certification status must both request certified
+- unknown required verification technique: evidence-integrity
+- unknown required verification technique: semantic-chunk-mapping
+- unknown required verification technique: smt
+- unknown required verification technique: target-relift
+- representative_workload_pass_rate below 1.0
+- source_map_coverage below 0.95
+- evidence_trace_coverage below 0.95
+- counterexample_replay_pass_rate below 1.0
+- metamorphic_pass_rate below 1.0
+- mutation_score below 0.8
+- property_pass_rate below 1.0
+- critical_unknown_obligations must be explicitly zero
+- surviving_critical_mutants must be explicitly zero
+- unapproved_oracle_changes must be explicitly zero
+- unapproved_tolerance_changes must be explicitly zero
+- unreplayed_counterexamples must be explicitly zero
+- unresolved_oracle_conflicts must be explicitly zero
+- unsupported_p0_claims must be explicitly zero
+- negative corpus source_digest does not match pack scope
+- negative corpus dataset_digest does not match a content-bound corpus data ref
+- holdout corpus source_digest does not match pack scope
+- holdout corpus dataset_digest does not match a content-bound corpus data ref
+- holdout corpus is not independently verified
+- holdout corpus independent verifier missing
+- holdout corpus executor missing
+- representative-workloads corpus source_digest does not match pack scope
+- representative-workloads corpus dataset_digest does not match a content-bound corpus data ref
+- representative workload corpus is not production-derived
+- representative workload authorization record is missing, invalid, or not content-bound locally
+- assurance claim claim.route-equivalence is not fully supported
+- assurance claim claim.fail-closed-governance is not fully supported
+- assurance case approvals empty
+- validation profile approvals empty
+- oracle registry approvals empty
+- certification approval timestamp missing
+- P0 claim claim.route-equivalence has no independent external oracle evidence
+- P0 claim claim.fail-closed-governance has no independent external oracle evidence
+- scope controlled_public_dns_rebinding_campaign must be passed (found None)
+- scope independent_holdout must be passed (found None)
+- scope representative_production_workload must be passed (found None)
+- content-addressed evidence manifest is required
+- repository binding records are required for readiness
