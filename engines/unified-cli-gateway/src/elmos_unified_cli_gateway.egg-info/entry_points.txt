@@ -1,0 +1,2 @@
+[console_scripts]
+elmos = elmos_cli.dispatcher:main

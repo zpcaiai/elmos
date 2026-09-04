@@ -10,6 +10,8 @@ import io.elmos.productionruntime.ProductionRuntimeException;
 import io.elmos.productionruntime.ProductionRuntimeModels.AttemptStatus;
 import io.elmos.productionruntime.ProductionRuntimeModels.Checkpoint;
 import io.elmos.productionruntime.ProductionRuntimeModels.DispatchEnvelope;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
+import io.elmos.productionruntime.ProductionWorkloadPackCatalog;
 import jakarta.annotation.PreDestroy;
 
 import java.io.IOException;
@@ -26,12 +28,20 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Bounded worker inbox and exact downstream workload execution protocol. */
 final class ProductionWorkerAttemptService {
@@ -79,8 +89,19 @@ final class ProductionWorkerAttemptService {
     private final HttpClient http;
     private final ProductionWorkerDurableJournal journal;
     private final ExecutorService executors;
-    private final ScheduledExecutorService heartbeats;
+    private final ScheduledExecutorService heartbeatScheduler;
+    private final ScheduledExecutorService reconciliationScheduler;
+    private final ExecutorService heartbeatExecutor;
+    private final ExecutorService providerReconciliationExecutor;
+    private final ExecutorService checkpointReconciliationExecutor;
+    private final ExecutorService completionReconciliationExecutor;
+    private final Semaphore heartbeatPermits;
+    private final Set<UUID> heartbeatInFlight = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> providerReconciliationInFlight = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> checkpointReconciliationInFlight = ConcurrentHashMap.newKeySet();
+    private final Set<UUID> completionReconciliationInFlight = ConcurrentHashMap.newKeySet();
     private final Map<UUID, AttemptState> attempts = new ConcurrentHashMap<>();
+    private final AtomicBoolean closed = new AtomicBoolean();
     private volatile boolean journalHealthy = true;
 
     ProductionWorkerAttemptService(
@@ -93,6 +114,24 @@ final class ProductionWorkerAttemptService {
             int maxRetained,
             Path stateDirectory,
             boolean meshHttp
+    ) {
+        this(json, routes, credential, workerId, controlPlane, concurrency,
+                maxRetained, stateDirectory, meshHttp,
+                Duration.ofSeconds(10), Duration.ofSeconds(10));
+    }
+
+    ProductionWorkerAttemptService(
+            ObjectMapper json,
+            ProductionWorkerRouteCatalog routes,
+            OwnerOnlyProviderCredentialFile credential,
+            UUID workerId,
+            URI controlPlane,
+            int concurrency,
+            int maxRetained,
+            Path stateDirectory,
+            boolean meshHttp,
+            Duration heartbeatInterval,
+            Duration reconciliationInterval
     ) {
         this.json = Objects.requireNonNull(json, "json");
         this.canonicalJson = json.copy()
@@ -108,6 +147,8 @@ final class ProductionWorkerAttemptService {
         if (maxRetained < concurrency || maxRetained > 1_000_000) {
             throw new IllegalArgumentException("worker retained-attempt limit is invalid");
         }
+        requireMaintenanceInterval(heartbeatInterval, "heartbeatInterval");
+        requireMaintenanceInterval(reconciliationInterval, "reconciliationInterval");
         this.maxRetained = maxRetained;
         this.meshHttp = meshHttp;
         this.journal = new ProductionWorkerDurableJournal(stateDirectory);
@@ -115,15 +156,44 @@ final class ProductionWorkerAttemptService {
                 .connectTimeout(Duration.ofSeconds(3))
                 .followRedirects(HttpClient.Redirect.NEVER)
                 .build();
-        this.executors = Executors.newFixedThreadPool(concurrency);
-        this.heartbeats = Executors.newSingleThreadScheduledExecutor();
+        this.executors = boundedExecutor(
+                "elmos-worker-execution-", concurrency, maxRetained);
+        this.heartbeatScheduler = Executors.newSingleThreadScheduledExecutor(
+                namedPlatformFactory("elmos-worker-heartbeat-scheduler-"));
+        this.reconciliationScheduler = Executors.newSingleThreadScheduledExecutor(
+                namedPlatformFactory("elmos-worker-reconciliation-scheduler-"));
+        this.heartbeatExecutor = Executors.newThreadPerTaskExecutor(
+                Thread.ofVirtual().name("elmos-worker-heartbeat-", 0).factory());
+        this.heartbeatPermits = new Semaphore(concurrency);
+        int reconciliationThreads = Math.max(1, Math.min(concurrency, 8));
+        int reconciliationQueueCapacity = Math.max(
+                1, Math.min(maxRetained, Math.max(16, concurrency * 2)));
+        this.providerReconciliationExecutor = boundedExecutor(
+                "elmos-worker-provider-reconciliation-",
+                reconciliationThreads, reconciliationQueueCapacity);
+        this.checkpointReconciliationExecutor = boundedExecutor(
+                "elmos-worker-checkpoint-reconciliation-",
+                reconciliationThreads, reconciliationQueueCapacity);
+        this.completionReconciliationExecutor = boundedExecutor(
+                "elmos-worker-completion-reconciliation-",
+                reconciliationThreads, reconciliationQueueCapacity);
         restoreJournal();
-        this.heartbeats.scheduleWithFixedDelay(
-                this::maintenanceSafely, 1, 10, TimeUnit.SECONDS);
+        this.heartbeatScheduler.scheduleWithFixedDelay(
+                this::scheduleHeartbeatsSafely,
+                initialDelayMillis(heartbeatInterval), heartbeatInterval.toMillis(),
+                TimeUnit.MILLISECONDS);
+        this.reconciliationScheduler.scheduleWithFixedDelay(
+                this::scheduleReconciliationsSafely,
+                initialDelayMillis(reconciliationInterval), reconciliationInterval.toMillis(),
+                TimeUnit.MILLISECONDS);
     }
 
     synchronized Acceptance accept(DispatchEnvelope envelope) {
         Objects.requireNonNull(envelope, "envelope");
+        if (closed.get()) {
+            throw new ProductionRuntimeException(
+                    "WORKER_SHUTTING_DOWN", "worker is not accepting new work while shutting down");
+        }
         if (!journalHealthy) {
             throw new ProductionRuntimeException(
                     "WORKER_DURABLE_JOURNAL_FAILURE",
@@ -133,6 +203,7 @@ final class ProductionWorkerAttemptService {
             throw new ProductionRuntimeException(
                     "WORKER_ID_MISMATCH", "dispatch targets a different worker identity");
         }
+        ProductionWorkerRouteCatalog.Route route = requireRoute(envelope);
         String digest = digest(envelope);
         AttemptState existing = attempts.get(envelope.attemptId());
         if (existing != null) {
@@ -150,10 +221,10 @@ final class ProductionWorkerAttemptService {
                     "WORKER_INBOX_CAPACITY_EXHAUSTED",
                     "worker cannot accept another attempt without losing reconciliation state");
         }
-        AttemptState created = new AttemptState(envelope, digest);
+        AttemptState created = new AttemptState(envelope, digest, route);
         persist(created);
         attempts.put(envelope.attemptId(), created);
-        executors.submit(() -> execute(created));
+        submitExecution(created);
         return new Acceptance(LocalStatus.ACKED, false);
     }
 
@@ -216,22 +287,33 @@ final class ProductionWorkerAttemptService {
         }
     }
 
+    private void submitExecution(AttemptState state) {
+        try {
+            executors.execute(() -> executeSafely(state));
+        } catch (RejectedExecutionException ex) {
+            failUnhandledExecution(state, "WORKER_EXECUTION_CAPACITY_UNAVAILABLE");
+            throw new ProductionRuntimeException(
+                    "WORKER_EXECUTION_CAPACITY_UNAVAILABLE",
+                    "worker execution queue rejected the accepted attempt", ex);
+        }
+    }
+
+    private void executeSafely(AttemptState state) {
+        try {
+            execute(state);
+        } catch (RuntimeException ex) {
+            String code = ex instanceof ProductionRuntimeException runtime
+                    ? runtime.code() : "WORKER_EXECUTION_UNHANDLED";
+            failUnhandledExecution(state, code);
+        }
+    }
+
     private void execute(AttemptState state) {
         state.transition(LocalStatus.RUNNING, null);
-        Map<String, Object> payload = state.envelope.payload();
-        String jobType = required(payload, "jobType", 80);
-        String workType = required(payload, "workType", 120);
-        ProductionWorkerRouteCatalog.Route route;
-        try {
-            route = routes.require(jobType, workType);
-        } catch (ProductionRuntimeException ex) {
-            callback(state, AttemptStatus.FAILED, ex.code(), null);
-            return;
-        }
         try {
             byte[] body = json.writeValueAsBytes(state.envelope);
             HttpRequest request = authorized(
-                    route.endpoint(), route.timeout(), state.envelope)
+                    state.route.endpoint(), state.route.timeout(), state.envelope)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofByteArray(body))
                     .build();
@@ -255,7 +337,23 @@ final class ProductionWorkerAttemptService {
             Thread.currentThread().interrupt();
             state.transition(LocalStatus.PROVIDER_OUTCOME_UNKNOWN, "ENGINE_INTERRUPTED");
         } catch (RuntimeException ex) {
-            callback(state, AttemptStatus.FAILED, "ENGINE_RESPONSE_INVALID", null);
+            String code = ex instanceof ProductionRuntimeException runtime
+                    ? runtime.code() : "ENGINE_RESPONSE_INVALID";
+            callback(state, AttemptStatus.FAILED, bounded(code, 120), null);
+        }
+    }
+
+    private void failUnhandledExecution(AttemptState state, String code) {
+        if (state.status == LocalStatus.SUCCEEDED || state.status == LocalStatus.FAILED
+                || state.completionStatus != null) {
+            return;
+        }
+        try {
+            callback(state, AttemptStatus.FAILED, bounded(code, 120), null);
+        } catch (RuntimeException ignored) {
+            // rememberCompletion persists COMPLETION_OUTCOME_UNKNOWN before any
+            // delivery attempt. If even that write failed, persist() has marked
+            // the worker unhealthy so registration and new accepts fail closed.
         }
     }
 
@@ -265,8 +363,19 @@ final class ProductionWorkerAttemptService {
             String errorCode,
             JsonNode usage
     ) {
-        state.rememberCompletion(status, errorCode, usage);
-        deliverCompletion(state);
+        callback(state, status, errorCode, usage, null);
+    }
+
+    private void callback(
+            AttemptState state,
+            AttemptStatus status,
+            String errorCode,
+            JsonNode usage,
+            OutputVerificationReceipt outputVerification
+    ) {
+        state.rememberCompletion(
+                status, errorCode, usage, outputVerification);
+        submitCompletionReconciliation(state);
     }
 
     private void processEngineResult(AttemptState state, JsonNode result) {
@@ -292,13 +401,17 @@ final class ProductionWorkerAttemptService {
                         state.transition(
                                 LocalStatus.CHECKPOINT_OUTCOME_UNKNOWN,
                                 "CHECKPOINT_DELIVERY_UNKNOWN");
+                        submitCheckpointReconciliation(state);
                         return;
                     }
                 }
             }
             state.pendingEngineResult = null;
             JsonNode usage = result.get("usage");
-            callback(state, AttemptStatus.SUCCEEDED, null, usage);
+            OutputVerificationReceipt outputVerification = outputVerification(
+                    state, result.get("outputVerification"));
+            callback(state, AttemptStatus.SUCCEEDED, null, usage,
+                    outputVerification);
             return;
         }
         if ("FAILED".equals(status)) {
@@ -313,6 +426,30 @@ final class ProductionWorkerAttemptService {
             return;
         }
         state.transition(LocalStatus.PROVIDER_OUTCOME_UNKNOWN, "ENGINE_RESPONSE_STATUS_UNKNOWN");
+    }
+
+    private OutputVerificationReceipt outputVerification(
+            AttemptState state,
+            JsonNode value
+    ) {
+        if (value == null || !value.isObject()) {
+            throw new ProductionRuntimeException(
+                    "ENGINE_OUTPUT_VERIFICATION_REQUIRED",
+                    "successful engine response requires outputVerification");
+        }
+        try {
+            OutputVerificationReceipt receipt = json.treeToValue(
+                    value, OutputVerificationReceipt.class);
+            ProductionWorkloadPackCatalog.verifyOutput(
+                    state.route.jobType(), state.route.workType(), receipt);
+            return receipt;
+        } catch (ProductionRuntimeException ex) {
+            throw ex;
+        } catch (IOException | IllegalArgumentException ex) {
+            throw new ProductionRuntimeException(
+                    "ENGINE_OUTPUT_VERIFICATION_INVALID",
+                    "engine outputVerification is invalid", ex);
+        }
     }
 
     private CheckpointInput checkpointInput(JsonNode value) {
@@ -394,6 +531,7 @@ final class ProductionWorkerAttemptService {
         completion.put("errorMessage", null);
         Map<String, Object> request = new LinkedHashMap<>();
         request.put("completion", completion);
+        request.put("outputVerification", state.completionOutputVerification);
         request.put("usage", usage);
         request.put("failureReason", errorCode);
         try {
@@ -427,16 +565,57 @@ final class ProductionWorkerAttemptService {
         }
     }
 
-    private void maintenance() {
-        heartbeatRunning();
-        attempts.values().stream()
-                .filter(state -> state.status == LocalStatus.PROVIDER_OUTCOME_UNKNOWN)
-                .forEach(this::reconcileEngine);
-        attempts.values().stream()
-                .filter(state -> state.status == LocalStatus.CHECKPOINT_OUTCOME_UNKNOWN)
-                .forEach(state -> {
+    private void scheduleHeartbeatsSafely() {
+        try {
+            if (!closed.get()) heartbeatRunning();
+        } catch (RuntimeException ignored) {
+            // A scheduler exception must never suppress future lease heartbeats.
+        }
+    }
+
+    private void scheduleReconciliationsSafely() {
+        try {
+            if (closed.get()) return;
+            attempts.values().forEach(state -> {
+                switch (state.status) {
+                    case PROVIDER_OUTCOME_UNKNOWN -> submitProviderReconciliation(state);
+                    case CHECKPOINT_OUTCOME_UNKNOWN -> submitCheckpointReconciliation(state);
+                    case COMPLETION_OUTCOME_UNKNOWN -> submitCompletionReconciliation(state);
+                    default -> {
+                        // ACKED/RUNNING are owned by execution; terminal states
+                        // are retained only for exact replay.
+                    }
+                }
+            });
+        } catch (RuntimeException ignored) {
+            // Individual submissions are bounded and retry on the next pass.
+            // Durable-journal failures already mark this worker unhealthy.
+        }
+    }
+
+    private void submitProviderReconciliation(AttemptState state) {
+        submitOnce(
+                state, providerReconciliationInFlight,
+                providerReconciliationExecutor,
+                () -> {
+                    if (state.status == LocalStatus.PROVIDER_OUTCOME_UNKNOWN) {
+                        reconcileEngine(state);
+                    }
+                });
+    }
+
+    private void submitCheckpointReconciliation(AttemptState state) {
+        submitOnce(
+                state, checkpointReconciliationInFlight,
+                checkpointReconciliationExecutor,
+                () -> {
+                    if (state.status != LocalStatus.CHECKPOINT_OUTCOME_UNKNOWN) return;
                     JsonNode pending = state.pendingEngineResult;
-                    if (pending == null) return;
+                    if (pending == null) {
+                        callback(state, AttemptStatus.FAILED,
+                                "CHECKPOINT_RECONCILIATION_STATE_MISSING", null);
+                        return;
+                    }
                     try {
                         processEngineResult(state, pending);
                     } catch (RuntimeException ex) {
@@ -444,29 +623,47 @@ final class ProductionWorkerAttemptService {
                                 "CHECKPOINT_RECONCILIATION_FAILED", null);
                     }
                 });
-        attempts.values().stream()
-                .filter(state -> state.status == LocalStatus.COMPLETION_OUTCOME_UNKNOWN)
-                .forEach(this::deliverCompletion);
     }
 
-    private void maintenanceSafely() {
+    private void submitCompletionReconciliation(AttemptState state) {
+        submitOnce(
+                state, completionReconciliationInFlight,
+                completionReconciliationExecutor,
+                () -> {
+                    if (state.status == LocalStatus.COMPLETION_OUTCOME_UNKNOWN) {
+                        deliverCompletion(state);
+                    }
+                });
+    }
+
+    private void submitOnce(
+            AttemptState state,
+            Set<UUID> inFlight,
+            ExecutorService executor,
+            Runnable operation
+    ) {
+        UUID attemptId = state.envelope.attemptId();
+        if (closed.get() || !inFlight.add(attemptId)) return;
         try {
-            maintenance();
-        } catch (RuntimeException ignored) {
-            // ScheduledExecutorService suppresses every future run when an
-            // exception escapes. Durable-journal failures already mark the
-            // worker unhealthy in persist/eviction; all other failures remain
-            // retryable on the next bounded reconciliation pass.
+            executor.execute(() -> {
+                try {
+                    operation.run();
+                } catch (RuntimeException ignored) {
+                    // The durable state remains retryable or persist() has
+                    // already made the worker fail closed.
+                } finally {
+                    inFlight.remove(attemptId);
+                }
+            });
+        } catch (RejectedExecutionException ignored) {
+            inFlight.remove(attemptId);
         }
     }
 
     private void reconcileEngine(AttemptState state) {
         try {
-            String jobType = required(state.envelope.payload(), "jobType", 80);
-            String workType = required(state.envelope.payload(), "workType", 120);
-            ProductionWorkerRouteCatalog.Route route = routes.require(jobType, workType);
             HttpRequest request = authorized(
-                    route.reconciliationEndpoint(), route.timeout(), state.envelope)
+                    state.route.reconciliationEndpoint(), state.route.timeout(), state.envelope)
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofByteArray(
                             json.writeValueAsBytes(state.envelope)))
@@ -480,7 +677,7 @@ final class ProductionWorkerAttemptService {
                 // authoritative "execution was never accepted". Reusing the
                 // exact original idempotency key is therefore safe.
                 state.transition(LocalStatus.ACKED, "ENGINE_RECONCILED_NOT_ACCEPTED");
-                executors.submit(() -> execute(state));
+                submitExecution(state);
                 return;
             }
             if (response.status() < 200 || response.status() >= 300) {
@@ -488,7 +685,12 @@ final class ProductionWorkerAttemptService {
                 callback(state, AttemptStatus.FAILED, error, null);
                 return;
             }
-            processEngineResult(state, json.readTree(response.body()));
+            JsonNode reconciled = json.readTree(response.body());
+            state.pendingEngineResult = reconciled == null ? null : reconciled.deepCopy();
+            state.transition(
+                    LocalStatus.CHECKPOINT_OUTCOME_UNKNOWN,
+                    "ENGINE_RECONCILED_RESULT_PENDING");
+            submitCheckpointReconciliation(state);
         } catch (java.net.http.HttpTimeoutException ex) {
             // Outcome remains unknown; never resend the original execution.
         } catch (IOException ex) {
@@ -508,7 +710,34 @@ final class ProductionWorkerAttemptService {
                          CHECKPOINT_OUTCOME_UNKNOWN, COMPLETION_OUTCOME_UNKNOWN -> true;
                     default -> false;
                 })
-                .forEach(this::heartbeat);
+                .forEach(this::submitHeartbeat);
+    }
+
+    private void submitHeartbeat(AttemptState state) {
+        UUID attemptId = state.envelope.attemptId();
+        if (closed.get() || !heartbeatInFlight.add(attemptId)) return;
+        if (!heartbeatPermits.tryAcquire()) {
+            heartbeatInFlight.remove(attemptId);
+            return;
+        }
+        try {
+            heartbeatExecutor.execute(() -> {
+                try {
+                    if (switch (state.status) {
+                        case RUNNING, PROVIDER_OUTCOME_UNKNOWN,
+                             CHECKPOINT_OUTCOME_UNKNOWN,
+                             COMPLETION_OUTCOME_UNKNOWN -> true;
+                        default -> false;
+                    }) heartbeat(state);
+                } finally {
+                    heartbeatPermits.release();
+                    heartbeatInFlight.remove(attemptId);
+                }
+            });
+        } catch (RejectedExecutionException ignored) {
+            heartbeatPermits.release();
+            heartbeatInFlight.remove(attemptId);
+        }
     }
 
     private void heartbeat(AttemptState state) {
@@ -560,6 +789,43 @@ final class ProductionWorkerAttemptService {
         }
     }
 
+    private ProductionWorkerRouteCatalog.Route requireRoute(DispatchEnvelope envelope) {
+        Map<String, Object> payload = envelope.payload();
+        String jobType = required(payload, "jobType", 80);
+        String workType = required(payload, "workType", 120);
+        return routes.require(jobType, workType);
+    }
+
+    private static void requireMaintenanceInterval(Duration interval, String field) {
+        if (interval == null || interval.compareTo(Duration.ofMillis(10)) < 0
+                || interval.compareTo(Duration.ofMinutes(1)) > 0) {
+            throw new IllegalArgumentException(field + " must be within [10ms, 1m]");
+        }
+    }
+
+    private static long initialDelayMillis(Duration interval) {
+        return Math.min(1_000L, interval.toMillis());
+    }
+
+    private static ExecutorService boundedExecutor(
+            String threadPrefix,
+            int threads,
+            int queueCapacity
+    ) {
+        return new ThreadPoolExecutor(
+                threads, threads, 0L, TimeUnit.MILLISECONDS,
+                new ArrayBlockingQueue<>(queueCapacity),
+                namedPlatformFactory(threadPrefix),
+                new ThreadPoolExecutor.AbortPolicy());
+    }
+
+    private static ThreadFactory namedPlatformFactory(String prefix) {
+        AtomicInteger sequence = new AtomicInteger();
+        return task -> Thread.ofPlatform()
+                .name(prefix + sequence.incrementAndGet())
+                .unstarted(task);
+    }
+
     private void evictTerminal() {
         attempts.entrySet().stream()
                 .filter(entry -> switch (entry.getValue().status) {
@@ -593,7 +859,7 @@ final class ProductionWorkerAttemptService {
         }
         for (AttemptState state : attempts.values()) {
             switch (state.status) {
-                case ACKED -> executors.submit(() -> execute(state));
+                case ACKED -> submitExecution(state);
                 case RUNNING -> state.transition(
                         LocalStatus.PROVIDER_OUTCOME_UNKNOWN,
                         "WORKER_RESTART_REQUIRES_ENGINE_RECONCILIATION");
@@ -636,7 +902,15 @@ final class ProductionWorkerAttemptService {
                         "WORKER_DURABLE_JOURNAL_FAILURE",
                         "worker journal envelope digest mismatch");
             }
-            AttemptState state = new AttemptState(envelope, storedDigest);
+            ProductionWorkerRouteCatalog.Route route;
+            try {
+                route = requireRoute(envelope);
+            } catch (ProductionRuntimeException ex) {
+                throw new ProductionRuntimeException(
+                        "WORKER_DURABLE_JOURNAL_FAILURE",
+                        "worker journal references an unavailable exact route", ex);
+            }
+            AttemptState state = new AttemptState(envelope, storedDigest, route);
             state.status = LocalStatus.valueOf(root.path("status").asText(""));
             state.updatedAt = Instant.parse(root.path("updatedAt").asText(""));
             state.errorCode = nullableText(root.get("errorCode"), 200);
@@ -646,6 +920,17 @@ final class ProductionWorkerAttemptService {
             state.completionErrorCode = nullableText(
                     root.get("completionErrorCode"), 200);
             state.completionUsage = nullableNode(root.get("completionUsage"));
+            JsonNode outputVerification = root.get("completionOutputVerification");
+            state.completionOutputVerification = outputVerification == null
+                    || outputVerification.isNull()
+                    ? null
+                    : json.treeToValue(
+                            outputVerification, OutputVerificationReceipt.class);
+            if (state.completionOutputVerification != null) {
+                ProductionWorkloadPackCatalog.verifyOutput(
+                        route.jobType(), route.workType(),
+                        state.completionOutputVerification);
+            }
             state.pendingEngineResult = nullableNode(root.get("pendingEngineResult"));
             JsonNode checkpoints = root.path("checkpoints");
             if (!checkpoints.isArray()) {
@@ -675,6 +960,13 @@ final class ProductionWorkerAttemptService {
                         "WORKER_DURABLE_JOURNAL_FAILURE",
                         "completion recovery state has no completion payload");
             }
+            if (state.status == LocalStatus.COMPLETION_OUTCOME_UNKNOWN
+                    && state.completionStatus == AttemptStatus.SUCCEEDED
+                    && state.completionOutputVerification == null) {
+                throw new ProductionRuntimeException(
+                        "WORKER_DURABLE_JOURNAL_FAILURE",
+                        "successful completion recovery has no output verification");
+            }
             return state;
         } catch (IOException | IllegalArgumentException ex) {
             if (ex instanceof ProductionRuntimeException runtime) throw runtime;
@@ -698,6 +990,8 @@ final class ProductionWorkerAttemptService {
                     ? null : state.completionStatus.name());
             snapshot.put("completionErrorCode", state.completionErrorCode);
             snapshot.put("completionUsage", state.completionUsage);
+            snapshot.put("completionOutputVerification",
+                    state.completionOutputVerification);
             snapshot.put("pendingEngineResult", state.pendingEngineResult);
             snapshot.put("checkpoints", List.copyOf(state.checkpoints.values()));
             journal.write(
@@ -742,8 +1036,25 @@ final class ProductionWorkerAttemptService {
 
     @PreDestroy
     void close() {
-        heartbeats.shutdownNow();
+        if (!closed.compareAndSet(false, true)) return;
+        heartbeatScheduler.shutdownNow();
+        reconciliationScheduler.shutdownNow();
+        heartbeatExecutor.shutdownNow();
+        providerReconciliationExecutor.shutdownNow();
+        checkpointReconciliationExecutor.shutdownNow();
+        completionReconciliationExecutor.shutdownNow();
         executors.shutdownNow();
+    }
+
+    boolean executorsShutdown() {
+        return closed.get()
+                && heartbeatScheduler.isShutdown()
+                && reconciliationScheduler.isShutdown()
+                && heartbeatExecutor.isShutdown()
+                && providerReconciliationExecutor.isShutdown()
+                && checkpointReconciliationExecutor.isShutdown()
+                && completionReconciliationExecutor.isShutdown()
+                && executors.isShutdown();
     }
 
     boolean journalHealthy() {
@@ -800,19 +1111,26 @@ final class ProductionWorkerAttemptService {
     private final class AttemptState {
         private final DispatchEnvelope envelope;
         private final String envelopeDigest;
+        private final ProductionWorkerRouteCatalog.Route route;
         private volatile LocalStatus status = LocalStatus.ACKED;
         private volatile Instant updatedAt = Instant.now();
         private volatile String errorCode;
         private volatile AttemptStatus completionStatus;
         private volatile String completionErrorCode;
         private volatile JsonNode completionUsage;
+        private volatile OutputVerificationReceipt completionOutputVerification;
         private volatile JsonNode pendingEngineResult;
         private final java.util.NavigableMap<Long, CheckpointInput> checkpoints =
                 new java.util.TreeMap<>();
 
-        private AttemptState(DispatchEnvelope envelope, String envelopeDigest) {
+        private AttemptState(
+                DispatchEnvelope envelope,
+                String envelopeDigest,
+                ProductionWorkerRouteCatalog.Route route
+        ) {
             this.envelope = envelope;
             this.envelopeDigest = envelopeDigest;
+            this.route = route;
         }
 
         private synchronized void transition(LocalStatus next, String error) {
@@ -825,11 +1143,23 @@ final class ProductionWorkerAttemptService {
         private synchronized void rememberCompletion(
                 AttemptStatus status,
                 String error,
-                JsonNode usage
+                JsonNode usage,
+                OutputVerificationReceipt outputVerification
         ) {
+            if (status == AttemptStatus.SUCCEEDED && outputVerification == null) {
+                throw new ProductionRuntimeException(
+                        "ENGINE_OUTPUT_VERIFICATION_REQUIRED",
+                        "successful completion requires output verification");
+            }
+            if (status != AttemptStatus.SUCCEEDED && outputVerification != null) {
+                throw new ProductionRuntimeException(
+                        "ENGINE_OUTPUT_VERIFICATION_ON_FAILURE",
+                        "failed completion cannot attach passing output verification");
+            }
             this.completionStatus = status;
             this.completionErrorCode = error;
             this.completionUsage = usage == null ? null : usage.deepCopy();
+            this.completionOutputVerification = outputVerification;
             this.status = LocalStatus.COMPLETION_OUTCOME_UNKNOWN;
             this.errorCode = error;
             this.updatedAt = Instant.now();

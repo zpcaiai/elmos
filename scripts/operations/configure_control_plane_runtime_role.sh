@@ -215,6 +215,40 @@ BEGIN
 END;
 $$;
 
+-- JdbcPlatformAdminStore uses only these nine SECURITY DEFINER entry points.
+-- Grant every exact signature to the actual LOGIN runtime identity (which has
+-- NOINHERIT and zero memberships), and fail closed on a partially migrated
+-- database instead of silently omitting one operation.
+DO $$
+DECLARE
+  function_signature text;
+  required_functions text[] := ARRAY[
+    'public.elmos_platform_resolve_admin_account(varchar,varchar)',
+    'public.elmos_platform_wallet_overview(varchar,varchar,integer)',
+    'public.elmos_platform_wallet_ledger(varchar,varchar,integer,integer)',
+    'public.elmos_platform_topup_orders(varchar,varchar,integer)',
+    'public.elmos_platform_job_overview(varchar,varchar,varchar,integer)',
+    'public.elmos_platform_wallet_adjust(varchar,varchar,varchar,numeric,varchar,varchar)',
+    'public.elmos_platform_grant_admin(varchar,varchar,varchar,varchar)',
+    'public.elmos_platform_revoke_admin(varchar,varchar,varchar)',
+    'public.elmos_platform_authorize(varchar,varchar,varchar,varchar,varchar)'
+  ];
+BEGIN
+  FOREACH function_signature IN ARRAY required_functions
+  LOOP
+    IF to_regprocedure(function_signature) IS NULL THEN
+      RAISE EXCEPTION 'required platform-administration function is missing: %',
+        function_signature;
+    END IF;
+    EXECUTE format(
+      'GRANT EXECUTE ON FUNCTION %s TO %I',
+      function_signature,
+      current_setting('elmos.runtime_role')
+    );
+  END LOOP;
+END;
+$$;
+
 -- V72 keeps snapshot materialization leases and the global reconciliation queue private.
 -- The runtime role receives only the six fenced SECURITY DEFINER entry points, and a
 -- partially migrated database fails closed instead of silently omitting a grant.

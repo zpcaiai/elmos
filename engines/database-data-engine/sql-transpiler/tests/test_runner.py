@@ -106,6 +106,7 @@ def test_sqlite_to_duckdb_executes_equivalence_and_writes_digest_bound_evidence(
         item["checks"]["rowValues"] == "PASSED"
         and item["checks"]["logicalTypes"] == "PASSED"
         and item["checks"]["ordering"] == "PASSED"
+        and "planStructuralComparison" in item
         for item in query_evidence["queries"]
     )
 

@@ -26,6 +26,15 @@ EXPECTED_SQL_TABLES = {
     "adapter_conformance", "eval_runs", "elo_ratings",
     "external_operations", "external_receipts", "outbox_events", "outbox_receipts", "inbox_events", "secret_leases",
     "certification_evidence", "certification_runs", "customer_acceptance",
+    # V007, the capability core's stream tables. They carry the autonomy_kernel_
+    # prefix on purpose: the control plane already owns autonomy_events,
+    # autonomy_artifacts and autonomy_leases, and a schema holding both
+    # autonomy_event and autonomy_events is a wrong-table bug waiting for a
+    # tired reader. Listed here so the consolidated schema is checked for them
+    # too - 001_autonomy_kernel.sql is the union of the migrations, and a
+    # database bootstrapped from it must be usable by the whole package.
+    "kernel_event", "kernel_kv", "kernel_artifact", "kernel_lease",
+    "kernel_lease_watermark",
 }
 
 RELEASED_MIGRATION_DIGESTS = {
@@ -33,6 +42,16 @@ RELEASED_MIGRATION_DIGESTS = {
     "V002__autonomy_artifact_repository.sql": "dc432a63a20630f986f8b6e1b7520c6373fd00a8821d9d69a379fd6f52df15ce",
     "V003__autonomy_tool_policy_verification.sql": "f92730ada3ad6e0130dced968bf97579f1912e1209b555a30d51dfbdd0926703",
     "V004__autonomy_cache_cost_registry_eval.sql": "55b950131d8cf1ec788b8172a7d23e71ee7bc37168b5dbd5eb318f2dae8f914b",
+    # V005 and V006 shipped unpinned. A released migration that nothing pins can
+    # drift silently, which is the exact failure the four above exist to catch,
+    # so they are pinned now rather than left as a gap that happens to be quiet.
+    "V005__autonomy_external_operations_delivery.sql": "c8e128c5b7ffe123d8a7a233401650c1e088c906d8cbc080f5227e7f2517b2c7",
+    "V006__autonomy_certification_customer_acceptance.sql": "1374255b304aff84a3731a6a3f924b45bf1f26eb68a8a00c74daf131521ad445",
+    "V007__autonomy_kernel_core_streams.sql": "3aff56c3fbba729bfe29ff4edd75cc4dacc7da4a63568dbc1fa83871964ac77a",
+    # V008 adds COMMENT ON TABLE to the 23 tables nothing writes. It creates
+    # nothing and changes no data, but it is the only place the schema itself
+    # says so, so it is pinned like any other released migration.
+    "V008__autonomy_unimplemented_table_notice.sql": "8238355fbb685af495d7c6926b351e789ce21b4fcd7706881e3d201613b2d21b",
 }
 
 
@@ -71,7 +90,9 @@ def validate(archive: Path) -> dict[str, object]:
     asset_requirements = {
         "contracts/openapi/*.yaml": 4,
         "policies/rego/*.rego": 4,
-        "sql/migrations/V*.sql": 6,
+        # 8: the capability core brought V007, and V008 documents the 23 tables
+        # this package declares but never writes.
+        "sql/migrations/V*.sql": 8,
         "deployment/kubernetes/*.yaml": 3,
     }
     for pattern, expected_count in asset_requirements.items():

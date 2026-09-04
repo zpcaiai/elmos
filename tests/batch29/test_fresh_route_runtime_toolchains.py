@@ -2,10 +2,9 @@ from __future__ import annotations
 
 import hashlib
 import importlib.util
-import os
+import shlex
 import shutil
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +12,12 @@ import pytest
 
 REPOSITORY = Path(__file__).resolve().parents[2]
 RUNTIME_PATH = REPOSITORY / "scripts" / "batch29" / "fresh_route_runtime.py"
+CI_INSTALLER_PATH = (
+    REPOSITORY / "scripts" / "toolchains" / "install_polyglot_route_ci_toolchains.sh"
+)
+FRESH_RUNTIME_SELECTOR_FIXTURE = (
+    REPOSITORY / "tests" / "batch29" / "fresh_runtime_selector_fixture.py"
+)
 
 
 def _runtime() -> Any:
@@ -142,6 +147,45 @@ def test_pinned_uv_is_path_independent_in_a_scrubbed_environment(
     assert runtime._pinned_uv() == executable
 
 
+def test_pinned_uv_accepts_only_the_explicit_ci_bottle_receipt(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = _runtime()
+    executable = _fake_uv(tmp_path)
+    _patch_uv_identity(runtime, monkeypatch, executable)
+    content = executable.read_bytes()
+    monkeypatch.setattr(runtime, "PINNED_UV_SHA256", "sha256:" + "0" * 64)
+    monkeypatch.setattr(runtime, "PINNED_UV_BYTES", len(content) + 1)
+    monkeypatch.setattr(
+        runtime,
+        "PINNED_UV_CI_BOTTLE_SHA256",
+        "sha256:" + hashlib.sha256(content).hexdigest(),
+    )
+    monkeypatch.setattr(runtime, "PINNED_UV_CI_BOTTLE_BYTES", len(content))
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setattr(
+        runtime.subprocess,
+        "run",
+        lambda command, **kwargs: subprocess.CompletedProcess(
+            command, 0, stdout="uv fixture 0.11.16\n", stderr=""
+        ),
+    )
+
+    for profile in ("full", "java-python"):
+        monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", profile)
+        assert runtime._pinned_uv() == executable
+
+    for profile in (None, "typed-sql", "frontend-formal", "ten-language"):
+        if profile is None:
+            monkeypatch.delenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE")
+        else:
+            monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", profile)
+        with pytest.raises(RuntimeError, match="bytes/metadata/digest mismatch"):
+            runtime._pinned_uv()
+
+
 def test_pinned_uv_rejects_retargeting(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -191,6 +235,279 @@ def test_python_archive_and_typescript_cache_are_exact_and_read_only() -> None:
         "file_count": runtime.TYPESCRIPT_FILE_COUNT,
         "bytes": runtime.TYPESCRIPT_CLOSURE_BYTES,
     }
+
+
+def test_ci_installer_seals_the_captured_python_runtime_before_use() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    executable_files = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type f -perm -0100 '
+        "-exec chmod 0555 {} +"
+    )
+    data_files = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type f ! -perm -0100 '
+        "-exec chmod 0444 {} +"
+    )
+    directories = (
+        'find "${PYTHON_RUNTIME_TARGET}" -type d -exec chmod 0555 {} +'
+    )
+    persisted_profile = (
+        "printf 'ELMOS_POLYGLOT_ROUTE_CI_PROFILE=%s\\n' \"${CI_PROFILE}\""
+    )
+    python_probe = '"${PYTHON_RUNTIME_TARGET}/bin/python3.12" --version'
+
+    assert executable_files in installer
+    assert data_files in installer
+    assert directories in installer
+    assert persisted_profile in installer
+    assert installer.index(executable_files) < installer.index(python_probe)
+    assert installer.index(data_files) < installer.index(python_probe)
+    assert installer.index(directories) < installer.index(python_probe)
+
+
+def test_java_python_ci_profile_materializes_the_required_typescript_closure() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    profile_guard = (
+        'if [[ "${CI_PROFILE}" == "full" || '
+        '"${CI_PROFILE}" == "java-python" ]]; then'
+    )
+    capture_guard = 'if [[ ! -d "${TYPESCRIPT_CAPTURE}" || -L "${TYPESCRIPT_CAPTURE}" ]]'
+    manifest_validation = (
+        "fresh_route_runtime._typescript_runtime_manifest(target)"
+    )
+    full_only_toolchains = (
+        'if [[ "${CI_PROFILE}" == "full" ]]; then\n'
+        '  HOME="${PINNED_HOME}"'
+    )
+
+    assert profile_guard in installer
+    assert installer.index(profile_guard) < installer.index(capture_guard)
+    assert installer.index(capture_guard) < installer.index(manifest_validation)
+    assert installer.index(manifest_validation) < installer.index(full_only_toolchains)
+
+
+def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    temurin_guard = (
+        'if [[ "${CI_PROFILE}" == "full" || '
+        '"${CI_PROFILE}" == "java-python" ]]; then\n'
+        '  : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"'
+    )
+    homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
+    signature_verification = "/usr/bin/codesign --verify --deep --strict "
+    environment_binding = "printf 'ELMOS_JAVA21_DISTRIBUTION=temurin\\n'"
+    installer_binding = (
+        'ELMOS_JAVA21_DISTRIBUTION="temurin" \\\n'
+        '  ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}" \\\n'
+        '    bash "${REPOSITORY_ROOT}/scripts/toolchains/'
+        'install_polyglot_route_toolchains.sh"'
+    )
+
+    assert temurin_guard in installer
+    assert installer.index(temurin_guard) < installer.index(homebrew_install)
+    assert signature_verification in installer
+    assert environment_binding in installer
+    assert installer_binding in installer
+
+
+def test_ci_node_profiles_pin_the_exact_ada_url_abi_and_node_receipt() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert installer.count("install_pinned_ada_url") == 2
+    assert "install_pinned_node26_sequoia_closure" in installer
+    assert "install_pinned_node26_closure tahoe" in installer
+    assert '"ada-url" "3.4.4"' in installer
+    assert '"Formula/a/ada-url.rb"' in installer
+    assert "db3cda12f2efe5c488b074bdab022a3a22db56700e8687473c8f6807963b02aa" in installer
+    assert 'readonly ADA_URL_LIBRARY="${ADA_URL_ROOT}/lib/libada.3.4.4.dylib"' in installer
+    assert 'readonly ADA_URL_ABI_LINK="${ADA_URL_ROOT}/lib/libada.3.dylib"' in installer
+    assert 'readonly ADA_URL_OPT_LINK="${HOMEBREW_PREFIX}/opt/ada-url"' in installer
+    assert '[[ ! -L "${abi_link}" ]]' in installer
+    assert '"${link_target}" != "libada.3.4.4.dylib"' in installer
+    assert "brew chmod codesign curl find git install mv python3 realpath shasum" in installer
+    assert 'REALPATH_PATH="$(command -v realpath)"' in installer
+    assert "readonly REALPATH_PATH" in installer
+    assert '/bin/realpath|/usr/bin/realpath)' in installer
+    assert 'resolved_target="$("${REALPATH_PATH}" "${abi_link}")"' in installer
+    assert '"${root}"/*) ;;' in installer
+    assert '[[ "${resolved_target}" == "${versioned_library}" ]]' in installer
+    assert 'verify_pinned_formula_opt_link "${ADA_URL_ROOT}" "${ADA_URL_OPT_LINK}"' in installer
+    assert '[[ "${resolved_target}" == "${root}" ]]' in installer
+    assert 'verify_pinned_ada_url_library_identity "${ADA_URL_LIBRARY}"' in installer
+    assert "616512:77917065434cb8263f1bd0768b0e54cda7793269be8a4d11d4bf72a67211881c" in installer
+    assert "homebrew-node26-libada-77917065434c-616512" in installer
+    assert "613248:e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4" in installer
+    assert "homebrew-node26-libada-e4b04b323411-613248" in installer
+    assert "e4b04b323411a5ca0f06086ad54378f21d02831fb571f09ea61db8f20dfdedc4" in installer
+    assert "598704:b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8" in installer
+    assert "homebrew-node26-libada-b39ba5c76cfa-598704" in installer
+    assert "observed %s:%s" in installer
+    assert "73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb" in installer
+    assert "ada-url brotli" not in installer
+
+
+def test_ci_ada_url_abi_link_rejects_drift_and_cellar_escape(tmp_path: Path) -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    start = installer.index("verify_pinned_ada_url_abi_link() {")
+    end = installer.index("\n}\n", start) + len("\n}\n")
+    function = installer[start:end]
+    root = tmp_path / "Cellar" / "ada-url" / "3.4.4"
+    library = root / "lib" / "libada.3.4.4.dylib"
+    abi_link = root / "lib" / "libada.3.dylib"
+    library.parent.mkdir(parents=True)
+    library.write_bytes(b"verified library fixture")
+    abi_link.symlink_to(library.name)
+
+    def verify() -> subprocess.CompletedProcess[str]:
+        command = " ".join(
+            (
+                "verify_pinned_ada_url_abi_link",
+                shlex.quote(str(root)),
+                shlex.quote(str(library)),
+                shlex.quote(str(abi_link)),
+            )
+        )
+        return subprocess.run(
+            [
+                "bash",
+                "-c",
+                "readonly REALPATH_PATH="
+                + shlex.quote(str(Path(shutil.which("realpath") or "")))
+                + "\n"
+                + function
+                + "\n"
+                + command,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    assert verify().returncode == 0
+
+    abi_link.unlink()
+    drift = library.parent / "libada.3.4.5.dylib"
+    drift.write_bytes(b"different ABI")
+    abi_link.symlink_to(drift.name)
+    assert verify().returncode != 0
+
+    abi_link.unlink()
+    library.unlink()
+    escaped = tmp_path / "outside" / library.name
+    escaped.parent.mkdir()
+    escaped.write_bytes(b"escaped library")
+    library.symlink_to(escaped)
+    abi_link.symlink_to(library.name)
+    assert verify().returncode != 0
+
+
+def test_ci_ada_url_opt_link_requires_the_exact_cellar_root(tmp_path: Path) -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    start = installer.index("verify_pinned_formula_opt_link() {")
+    end = installer.index("\n}\n", start) + len("\n}\n")
+    function = installer[start:end]
+    root = tmp_path / "Cellar" / "ada-url" / "3.4.4"
+    root.mkdir(parents=True)
+    opt = tmp_path / "opt" / "ada-url"
+    opt.parent.mkdir()
+    opt.symlink_to(root)
+
+    def verify() -> subprocess.CompletedProcess[str]:
+        command = " ".join(
+            (
+                "verify_pinned_formula_opt_link",
+                shlex.quote(str(root)),
+                shlex.quote(str(opt)),
+            )
+        )
+        return subprocess.run(
+            [
+                "bash",
+                "-c",
+                "readonly REALPATH_PATH="
+                + shlex.quote(str(Path(shutil.which("realpath") or "")))
+                + "\n"
+                + function
+                + "\n"
+                + command,
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+
+    assert verify().returncode == 0
+    opt.unlink()
+    escaped = tmp_path / "outside"
+    escaped.mkdir()
+    opt.symlink_to(escaped)
+    assert verify().returncode != 0
+
+
+def test_ci_java_profiles_never_mutate_or_inject_a_homebrew_signature() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    homebrew_install = 'install_pinned_formula \\\n    "openjdk@21" "21.0.11"'
+    input_identity = (
+        '"$(file_sha256 "${HOMEBREW_JAVA_HOME}/bin/java")" '
+        '!= "${HOMEBREW_JAVA_SHA256}"'
+    )
+    preseal_identity = (
+        'readonly HOMEBREW_JAVA_PRESEAL_IDENTITY="$(file_sha256 '
+        '"${HOMEBREW_JAVA_EXECUTABLE}"):$(stat -f \'%Lp:%l:%z\' '
+        '"${HOMEBREW_JAVA_EXECUTABLE}")"'
+    )
+    preseal_cases = (
+        '"${HOMEBREW_JAVA_BOTTLE_EXECUTABLE_SHA256}:644:1:130384"|\\\n'
+        '    "${HOMEBREW_JAVA_RUBY_MACHO_EXECUTABLE_SHA256}:644:1:112176"|\\\n'
+        '    "${HOMEBREW_JAVA_EXECUTABLE_SHA256}:644:1:130192")'
+    )
+    signature_entry_enumeration = (
+        'HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY="$(find \\\n'
+        '      "${HOMEBREW_JAVA_BUNDLE}/Contents/_CodeSignature" \\\n'
+        "      -mindepth 1 -maxdepth 1 ! -name 'CodeResources' -print -quit)\""
+    )
+    signature_entry_freeze = "readonly HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY"
+    signature_entry_guard = (
+        '[[ -n "${HOMEBREW_JAVA_UNEXPECTED_SIGNATURE_ENTRY}" ]]'
+    )
+    resource_preimage_guard = (
+        '"$(stat -f \'%Lp:%l:%z\' "${HOMEBREW_JAVA_CODE_RESOURCES}")" '
+        '!= "644:1:81759"'
+    )
+    exact_resign = (
+        "/usr/bin/codesign --force --deep --sign - --pagesize 4096 "
+        '"${HOMEBREW_JAVA_BUNDLE}"'
+    )
+    strict_verification = (
+        "/usr/bin/codesign --verify --deep --strict "
+        '"${HOMEBREW_JAVA_BUNDLE}"'
+    )
+    sealed_identity = (
+        '"$(file_sha256 "${HOMEBREW_JAVA_CODE_RESOURCES}")" '
+        '!= "${HOMEBREW_JAVA_CODE_RESOURCES_SHA256}"'
+    )
+
+    assert '"${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python"' in installer
+    assert 'ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}"' in installer
+    assert 'ELMOS_JAVA21_DISTRIBUTION=temurin' in installer
+    assert homebrew_install in installer
+    assert all(
+        marker not in installer
+        for marker in (
+            input_identity,
+            preseal_identity,
+            preseal_cases,
+            signature_entry_enumeration,
+            signature_entry_freeze,
+            signature_entry_guard,
+            resource_preimage_guard,
+            exact_resign,
+            strict_verification,
+            sealed_identity,
+        )
+    )
+    assert 'HOMEBREW_JAVA_CODE_RESOURCES' not in installer
+    assert 'HOMEBREW_JAVA_BUNDLE' not in installer
+    assert "/usr/bin/codesign --force --deep --sign -" not in installer
 
 
 def test_python_archive_rejects_same_size_content_drift() -> None:
@@ -407,10 +724,25 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert isinstance(environment, dict)
         assert "ELMOS_BATCH29_PYTHON_ARCHIVE" not in environment
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
+        assert environment["ELMOS_JAVA21_HOME"] == "/fixed/java/Contents/Home"
+        assert environment["ELMOS_JAVA21_DISTRIBUTION"] == "temurin"
+        assert "JAVA_HOME" not in environment
+        assert "_JAVA_OPTIONS" not in environment
+        assert command[command.index("run") + 1] == "--no-dev"
+        assert "--no-default-groups" in command
+        assert command.index("--no-dev") < command.index("--locked")
+        assert command.index("--no-default-groups") < command.index("--locked")
+        assert "mypy" not in command
+        assert "pytest" not in command
+        assert "ruff" not in command
         return subprocess.CompletedProcess(command, 0)
 
     monkeypatch.setenv("PATH", "/hostile/bin")
     monkeypatch.setenv("ELMOS_BATCH29_PYTHON_ARCHIVE", "/private/tmp/ambient")
+    monkeypatch.setenv("ELMOS_JAVA21_HOME", "/fixed/java/Contents/Home")
+    monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv("JAVA_HOME", "/hostile/java")
+    monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
     monkeypatch.setattr(runtime, "_prepare_python_runtime", prepare_python)
     monkeypatch.setattr(runtime, "_prepare_typescript_runtime", prepare_typescript)
@@ -441,50 +773,9 @@ def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_p
     runtime = _runtime()
 
     assert (
-        runtime.run_in_fresh_locked_runtime(Path(__file__), ["--selector-smoke"]) == 0
-    )
-
-
-def main() -> int:
-    if sys.argv[1:] != ["--selector-smoke"]:
-        raise SystemExit("focused fresh-child fixture received unexpected arguments")
-    from elmos_polyglot_route import toolchains
-    from elmos_polyglot_route.models import DEPRECATED_LANGUAGES, ROUTED_LANGUAGES
-    from elmos_polyglot_route.toolchains import ExactToolchain
-
-    selectors = {
-        "java": "_java",
-        "python": "_python",
-        "csharp": "_csharp",
-        "typescript": "_typescript",
-        "go": "_go",
-        "rust": "_rust",
-        "cpp": "_cpp",
-        "objc": "_objc",
-        "swift": "_swift",
-        "php": "_php",
-        "kotlin": "_kotlin",
-        "react": "_react",
-        "flutter": "_flutter",
-    }
-    assert tuple(selectors) == tuple(ROUTED_LANGUAGES)
-    assert tuple(DEPRECATED_LANGUAGES) == ("javascript",)
-    assert callable(toolchains._javascript)
-    for language, selector in selectors.items():
-        setattr(
-            toolchains,
-            selector,
-            lambda language=language: ExactToolchain(
-                language, "fixture", "/fixed/tool"
-            ),
+        runtime.run_in_fresh_locked_runtime(
+            FRESH_RUNTIME_SELECTOR_FIXTURE,
+            ["--selector-smoke"],
         )
-    selected = [toolchains.exact_toolchain(language) for language in selectors]  # type: ignore[arg-type]
-    assert [item.language for item in selected] == list(selectors)
-    path = os.environ["PATH"].split(os.pathsep)
-    assert "/opt/homebrew/Cellar/uv/0.11.16/bin" in path
-    assert path[0].endswith("/.venv/bin")
-    assert "/Users/stephen/.local/bin" not in path
-    assert "/opt/homebrew/bin" not in path
-    assert os.environ["UV_OFFLINE"] == "1"
-    assert os.environ["UV_PYTHON_DOWNLOADS"] == "never"
-    return 0
+        == 0
+    )

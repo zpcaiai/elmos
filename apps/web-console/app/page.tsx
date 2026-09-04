@@ -15,29 +15,29 @@ const workspaces = [
   {
     eyebrow: "BATCH 29 · DIRECTED ROUTES",
     title: "全库跨语言转换",
-    description: "在 Java、C#、Python、TypeScript 的 12 条方向路线中选择精确路径，查看语义风险、阻断项和交接命令。",
+    description: "在 13 种语言组成的显式活动矩阵中选择精确方向，查看语义风险、阻断项和受控执行状态；路线证据保持 NOT_RUN。",
     href: "/translation",
     icon: "code" as const,
     accent: "cyan",
-    meta: "4 种语言 · 12 个本地实验 Profile",
+    meta: "13 种语言 · 156 条路线 · 证据 NOT_RUN",
   },
   {
     eyebrow: "PROJECT SYNTHESIS · B46–B80",
     title: "多语言项目生成",
-    description: "用同一份受审项目意图规划多目标工程、资产图和构建图，区分内置生成器与专用 Runtime Skill 路由。",
+    description: "从审阅后的需求生成 8 种语言的可验证工程；全部 PostgreSQL 生产 Profile 支持多实体。",
     href: "/generation",
     icon: "spark" as const,
     accent: "violet",
-    meta: "草稿 → 批准 → 生成 → 验证",
+    meta: "8 种语言 · 多实体生产 Profile",
   },
   {
     eyebrow: "BATCH 31 · CHINADB SQL",
     title: "国产数据库 SQL 转换",
-    description: "在 13 个国产数据库目标和 78 条规划路线中做 typed SQL 预评估；缺少精确版本、能力快照或目标适配器时明确阻断。",
+    description: "在 13 个国产数据库目标上做 typed SQL 预评估，并在显式兼容模式下生成本地目标 SQL；实库执行与认证保持 NOT_RUN。",
     href: "/migration",
     icon: "database" as const,
     accent: "amber",
-    meta: "47 Skills · SPEC_ONLY · 外部证据 NOT_RUN",
+    meta: "13 个本地查询适配器 · 外部证据 NOT_RUN",
   },
   {
     eyebrow: "GOVERNANCE · M29–M37",
@@ -51,9 +51,10 @@ const workspaces = [
 ];
 
 const attention = [
-  ["12 条路线独立验证", "本地三类语料已通过，客户仓库与独立验证仍未运行", "NOT_RUN"],
+  ["转换路线独立验证", "13 语言活动矩阵已接入；客户仓库与独立验证仍未运行", "NOT_RUN"],
   ["Spring 外部 Runner 证据", "实验 Pack 已闭环，真实客户仓库、holdout 与独立执行未运行", "NOT_RUN"],
   ["多语言生成外部工具链", "浏览器只准备受控交接，不执行生成", "NOT_RUN"],
+  ["ChinaDB 实库执行", "13 个本地查询适配器可发射 SQL；实库执行与认证仍未运行", "NOT_RUN"],
 ];
 
 export default function Home() {
@@ -87,9 +88,9 @@ export default function Home() {
 
       <section className="overview-metrics" aria-label="平台结构摘要">
         <article><span className="metric-icon tone-cyan"><Icon name="workflow" size={18} /></span><div><small>Spring 实验 Pack</small><strong>1</strong><em>外部证据 NOT_RUN</em></div></article>
-        <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言方向</small><strong>12</strong><em>本地 Profile 已通过</em></div></article>
+        <article><span className="metric-icon tone-violet"><Icon name="route" size={18} /></span><div><small>跨语言路线</small><strong>156</strong><em>证据 NOT_RUN</em></div></article>
         <article><span className="metric-icon tone-amber"><Icon name="spark" size={18} /></span><div><small>项目生成目标</small><strong>8</strong><em>逐目标验证</em></div></article>
-        <article><span className="metric-icon tone-violet"><Icon name="database" size={18} /></span><div><small>国产数据库目标</small><strong>13</strong><em>78 条路线 SPEC_ONLY</em></div></article>
+        <article><span className="metric-icon tone-violet"><Icon name="database" size={18} /></span><div><small>国产数据库目标</small><strong>13</strong><em>本地适配器 · 执行 NOT_RUN</em></div></article>
         <article><span className="metric-icon tone-green"><Icon name="shield" size={18} /></span><div><small>外部认证</small><strong>0</strong><em>Fail closed</em></div></article>
       </section>
 
@@ -121,7 +122,7 @@ export default function Home() {
         <article className="surface-card attention-card">
           <div className="card-heading">
             <div><span className="overline">ATTENTION</span><h2>需要补齐的外部证据</h2></div>
-            <span className="count-badge">3</span>
+            <span className="count-badge">{attention.length}</span>
           </div>
           <div className="attention-list">
             {attention.map(([title, description, status]) => (
@@ -145,17 +146,17 @@ export default function Home() {
 
       <section className="overview-grid qualification-overview">
         <article className="surface-card namespace-card">
-          <div className="card-heading"><div><span className="overline">NAMESPACE COVERAGE</span><h2>双命名空间，边界不混用</h2></div><Link className="text-link" href="/skills">查看全部 <Icon name="arrow" size={14} /></Link></div>
+          <div className="card-heading"><div><span className="overline">功能覆盖范围</span><h2>迁移与交付两类功能，边界不混用</h2></div><Link className="text-link" href="/capabilities">查看全部功能 <Icon name="arrow" size={14} /></Link></div>
           <div className="namespace-summary">
-            <div className="namespace-item"><div><span className="namespace-dot migration-dot" /><strong>Migration Packs</strong><small>M1–M45 · 820 Skills</small></div><b>45%</b></div>
+            <div className="namespace-item"><div><span className="namespace-dot migration-dot" /><strong>迁移能力</strong><small>语言 / 框架 / 数据库 / 云 · 820 项功能</small></div><b>45%</b></div>
             <div className="namespace-track"><span className="namespace-fill migration-fill" style={{width:"45%"}} /></div>
-            <div className="namespace-item"><div><span className="namespace-dot product-dot" /><strong>Product commercialization</strong><small>B34–B55 · 1,004 Skills</small></div><b>55%</b></div>
+            <div className="namespace-item"><div><span className="namespace-dot product-dot" /><strong>商业与交付控制</strong><small>租户 / 结算 / 证据 / 行业包 · 1,004 项功能</small></div><b>55%</b></div>
             <div className="namespace-track"><span className="namespace-fill product-fill" style={{width:"55%"}} /></div>
           </div>
         </article>
         <article className="surface-card qualification-card">
-          <span className="overline">QUALIFICATION LADDER</span><h2>工程通过，不等于外部认证</h2>
-          <div className="qualification-steps"><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>Skill 结构</strong><small>1,824 / 1,824</small></span></div><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>用例目录</strong><small>408 / 408</small></span></div><div><i>3</i><span><strong>独立执行</strong><small>0 / 408 · NOT_RUN</small></span></div><div><i><Icon name="lock" size={12} /></i><span><strong>严格认证</strong><small>BLOCKED</small></span></div></div>
+          <span className="overline">验证阶梯</span><h2>工程通过，不等于外部认证</h2>
+          <div className="qualification-steps"><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>功能结构</strong><small>1,824 / 1,824</small></span></div><div className="complete"><i><Icon name="check" size={13} /></i><span><strong>用例目录</strong><small>408 / 408</small></span></div><div><i>3</i><span><strong>独立执行</strong><small>0 / 408 · NOT_RUN</small></span></div><div><i><Icon name="lock" size={12} /></i><span><strong>严格认证</strong><small>BLOCKED</small></span></div></div>
         </article>
       </section>
     </div>

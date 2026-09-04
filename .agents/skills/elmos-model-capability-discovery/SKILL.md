@@ -94,8 +94,8 @@ description: "当 Elmos 接入、切换或升级模型，需要确定上下文�
 - Source contract SHA-256: `f7d86fd77b929b3988bbb579a4bb49cc19de8cd25ec34d8d6d6eb57733f0d003`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_model_capability_discovery`
 - Runtime phase: `context`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: none
 - Acceptance identities: `S39-01`, `S39-02`, `S39-03`, `S39-04`, `S39-05`, `S39-06`
 - Generated contract: `compiled-contract.json`

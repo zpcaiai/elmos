@@ -57,6 +57,11 @@ _STRUCTURED: Final[tuple[type, ...]] = (
     ast.AsyncFor,
     ast.While,
     ast.Try,
+    # ``except*`` carries the same shape as ``except`` and is walked the same
+    # way.  It was omitted at first, which meant a function using it was drawn
+    # with its handlers silently missing rather than with a visible gap.
+    ast.TryStar,
+    ast.Match,
     ast.With,
     ast.AsyncWith,
     ast.Return,
@@ -77,6 +82,19 @@ def _summarize(statement: ast.stmt) -> str:
         return type(statement).__name__
     first = text.strip().splitlines()[0] if text.strip() else type(statement).__name__
     return first[:_LABEL_MAX]
+
+
+def _case_label(case: ast.match_case) -> str:
+    """Return a short label for one ``match`` case, guard included.
+
+    The guard is part of the branch condition; dropping it would draw two
+    visibly identical decisions for ``case X if a`` and ``case X if b``.
+    """
+
+    pattern = _expression_label(case.pattern, "pattern")
+    if case.guard is None:
+        return pattern
+    return f"{pattern} if {_expression_label(case.guard, 'guard')}"
 
 
 def _expression_label(node: ast.AST | None, fallback: str) -> str:
@@ -179,8 +197,10 @@ class _Builder:
             return self._for(statement)
         if isinstance(statement, ast.While):
             return self._while(statement)
-        if isinstance(statement, ast.Try):
+        if isinstance(statement, (ast.Try, ast.TryStar)):
             return self._try(statement)
+        if isinstance(statement, ast.Match):
+            return self._match(statement)
         if isinstance(statement, (ast.With, ast.AsyncWith)):
             return self._with(statement)
         if isinstance(statement, ast.Return):
@@ -281,8 +301,47 @@ class _Builder:
             statement.orelse,
         )
 
-    def _try(self, statement: ast.Try) -> tuple[str, list[str]]:
-        try_node = self.node(NODE_PROCESS, "try")
+    def _match(self, statement: ast.Match) -> tuple[str, list[str]]:
+        """Draw a ``match`` as one decision per case.
+
+        A ``match`` with five cases is five branches a reader can take.  Before
+        this method existed ``ast.Match`` was not in ``_STRUCTURED``, so the
+        whole statement collapsed into a single ``process`` box: the branches
+        were not drawn *and* nothing said they were missing.  That is the exact
+        failure mode this walk exists to prevent, so it is handled here rather
+        than reported as a limitation.
+
+        The shape is a chain, not a fan, because that is what ``match`` does:
+        each case is tried only when every earlier case failed to match.
+        """
+
+        subject = _expression_label(statement.subject, "subject")
+        merge = self.node(NODE_MERGE, "match merge")
+        entry: str | None = None
+        previous: str | None = None
+        for case in statement.cases:
+            label = f"match {subject} case {_case_label(case)}"[:_LABEL_MAX]
+            decision = self.node(NODE_DECISION, label)
+            if entry is None:
+                entry = decision
+            if previous is not None:
+                self.edge(previous, decision, EDGE_BRANCH, "false")
+            case_entry, case_exits = self.block(case.body)
+            if case_entry is None:
+                self.edge(decision, merge, EDGE_BRANCH, "true")
+            else:
+                self.edge(decision, case_entry, EDGE_BRANCH, "true")
+                self.connect(case_exits, merge)
+            previous = decision
+        if previous is None or entry is None:
+            # ``match`` with no cases does not parse; keep the graph connected
+            # rather than leaving an orphan merge if one ever arrives.
+            return merge, [merge]
+        self.edge(previous, merge, EDGE_BRANCH, "false")
+        return entry, [merge]
+
+    def _try(self, statement: ast.Try | ast.TryStar) -> tuple[str, list[str]]:
+        try_node = self.node(NODE_PROCESS, "try*" if isinstance(statement, ast.TryStar) else "try")
         merge = self.node(NODE_MERGE, "try merge")
         settled: list[str] = []
 
@@ -360,6 +419,24 @@ def function_control_flow(
             "diagnostics": [f"function not found: {function_name}"],
         }
 
+    diagnostics: list[str] = []
+    definitions = [
+        node
+        for node in ast.walk(tree)
+        if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and node.name == function_name
+    ]
+    if len(definitions) > 1:
+        # One module routinely defines the same method name on several classes
+        # -- ``__init__`` thirteen times in one real file, measured.  Picking
+        # one silently would hand a reader a diagram of a different function
+        # than the one they asked for and give them no way to notice.
+        lines = ", ".join(str(node.lineno) for node in sorted(definitions, key=lambda n: n.lineno))
+        diagnostics.append(
+            f"{len(definitions)} definitions named {function_name} at lines {lines}; "
+            f"drew the one at line {target.lineno}"
+        )
+
     builder = _Builder()
     start = builder.node(NODE_START, f"start {function_name}")
     end = builder.node(NODE_END, f"end {function_name}")
@@ -376,7 +453,7 @@ def function_control_flow(
         "function": function_name,
         "nodes": builder.nodes,
         "edges": builder.edges,
-        "diagnostics": [],
+        "diagnostics": diagnostics,
     }
 
 

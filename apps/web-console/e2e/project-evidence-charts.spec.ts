@@ -235,7 +235,9 @@ test("生成结果以可访问结构图、精确分母和 NOT_RUN NxN 矩阵呈�
   await expect(page.locator(".project-evidence-charts img")).toHaveCount(0);
   expect(await page.evaluate(() => (window as typeof window & { __evidencePwned?: number }).__evidencePwned)).toBeUndefined();
 
-  const directBehavior = page.getByRole("progressbar", { name: "直接行为等价", exact: true });
+  // 无障碍名是 `${label}，${valueText}`，而 NxN 面板的 meter label 是「直接行为等价有向目标对」，
+  // 所以这里按前缀匹配；exact 匹配「直接行为等价」永远命中不了任何元素。
+  const directBehavior = page.getByRole("progressbar", { name: "直接行为等价有向目标对" });
   await expect(directBehavior).toHaveAttribute("aria-valuenow", "0");
   await expect(directBehavior).toHaveAttribute("aria-valuemax", "2");
   await expect(directBehavior).toHaveAttribute("aria-valuetext", /未运行 2/);

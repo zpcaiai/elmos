@@ -87,7 +87,7 @@ export function routeBusinessLine(route: string): TelemetryBusinessLine {
   if (route.startsWith("/migration")) return "migration";
   if (route.startsWith("/commercialization")) return "commercialization";
   if (route.startsWith("/pricing")) return "pricing";
-  if (route.startsWith("/skills")) return "skills";
+  if (route.startsWith("/capabilities") || route.startsWith("/skills")) return "skills";
   if (route.startsWith("/admin")) return "admin";
   return "overview";
 }

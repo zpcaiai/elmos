@@ -8489,11 +8489,11 @@
   "exact_runtime_binding_count": 50,
   "external_evidence_status": "NOT_RUN",
   "implementation_matrix_path": "docs/project-intelligence-skills/implementation-matrix.json",
-  "implementation_matrix_sha256": "sha256:94f122ffb6280036fe8c63a7c592e5c4d30eac9097888e13be714c81338b754c",
+  "implementation_matrix_sha256": "sha256:93a4d327e0fa0cd1faf76984298f8f265a331d3e89aa19c762c995524465897b",
   "implementation_state": "BOUNDED_LOCAL_WITH_PARTIAL_AND_PLANNING_CAPABILITIES",
   "installed_tree_digest_schema": "sha256-v2:name-path-mode-bytes",
   "integration_readme_path": "docs/project-intelligence-skills/README.md",
-  "integration_readme_sha256": "sha256:a153b99836c66162055ee68936ffcfd152ec8191737c0948d3736bdac27f875e",
+  "integration_readme_sha256": "sha256:502aa1d6b196c83700ef6d226a66c1916e8ba82f7224c19b98be9bce442a25e4",
   "known_source_contract_findings": [
     "only the full source profile is dependency-closed",
     "docs/26-installation-profiles.md contains stale conversion, enterprise, and full counts and omits debug",
@@ -8523,7 +8523,7 @@
   "local_qualification_effect_guard": "PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH",
   "local_qualification_effect_guard_limitations": "Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.",
   "local_qualification_independent_verifier": null,
-  "local_qualification_receipt_digest": "sha256:c6766c810daec85ecff749de7be92829cc8c28d5473e8402c8e5592f5f70ca55",
+  "local_qualification_receipt_digest": "sha256:8d8369e449a3458e55d7b9ac0c44fafc62b9e03b5d1d7d72253c4b83ad1473bd",
   "local_qualification_receipt_path": "engines/project-intelligence-engine/qualification/local-qualification.json",
   "local_qualification_runtime_environment": {
     "byteorder": "little",
@@ -9202,7 +9202,7 @@
     "PLAN": 5
   },
   "runtime_engine_path": "engines/project-intelligence-engine",
-  "runtime_engine_tree_sha256": "sha256:547a314ae6d26a2449978b0ab17d1154cb463ccc20088776a83bc92c9587bd5e",
+  "runtime_engine_tree_sha256": "sha256:bd3a398e3ba1ce3bda74d30ed516a3c5c5f8261480e97fa253f4a231762ecd6f",
   "runtime_root": "agent-skills/runtime",
   "runtime_tree_sha256": "sha256:d6ad92b6a7350a6cc652b62cbc2b727d6edda474f1a4d9a497fc05dedac08bf2",
   "schema_version": "1.0",
@@ -10553,7 +10553,7 @@
         "stable element IDs"
       ],
       "package_identity_status": "PINNED_VALIDATED",
-      "qualification_result_digest": "sha256:1eb0f3264f0982251fed00e75d166e5557f9669832af860658d3da98db158391",
+      "qualification_result_digest": "sha256:93056ffbc7a8964803e6eb49a1e84fd83a449e142c08c64fe6f18cb93f97d816",
       "runtime_interface_path": "agent-skills/runtime/elmos-diagram-spec-engine/agents/openai.yaml",
       "runtime_interface_sha256": "sha256:9614357f2499efdcfcbd6150a22b8ba03d15db27d6fdb6e4b382d10d71f03208",
       "runtime_skill_path": "agent-skills/runtime/elmos-diagram-spec-engine/SKILL.md",

@@ -8,14 +8,14 @@
       "Reviewer cannot waive mandatory tests."
     ],
     "inputs": [
-      "task",
-      "diff",
-      "evidence",
-      "risk"
+      "`task`",
+      "`diff`",
+      "`evidence`",
+      "`risk`"
     ],
     "outputs": [
-      "review findings",
-      "approve/rework"
+      "`review findings`",
+      "`approve/rework`"
     ],
     "triggers": [
       "local validation passes",

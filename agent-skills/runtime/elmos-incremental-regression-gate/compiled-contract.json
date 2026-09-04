@@ -8,12 +8,12 @@
       "Do not rely solely on changed-file tests for high-centrality modules."
     ],
     "inputs": [
-      "impact map",
-      "changed paths",
-      "test catalog"
+      "`impact map`",
+      "`changed paths`",
+      "`test catalog`"
     ],
     "outputs": [
-      "wave regression evidence"
+      "`wave regression evidence`"
     ],
     "triggers": [
       "wave integrated"

@@ -74,7 +74,7 @@ class ExecutionJobControllerAuthorizationTest {
 
     @Test
     void adminReaderCanEnumerateEveryBusinessLine() {
-        authenticate(List.of("VIEWER"), List.of("admin:read"));
+        authenticatePlatformAdministrator();
         when(jobs.list(TENANT, null, 50, 0)).thenReturn(List.of());
 
         assertEquals(List.of(), controller.list(null, 50, 0));
@@ -99,7 +99,7 @@ class ExecutionJobControllerAuthorizationTest {
 
     @Test
     void tenantListRejectsUnboundedOffsetsBeforeQueryingTheStore() {
-        authenticate(List.of("VIEWER"), List.of("admin:read"));
+        authenticatePlatformAdministrator();
 
         var negative = assertThrows(
                 ExecutionJobPort.ExecutionStateException.class,
@@ -118,7 +118,7 @@ class ExecutionJobControllerAuthorizationTest {
 
     @Test
     void tenantListAcceptsTheMaximumBoundedOffset() {
-        authenticate(List.of("VIEWER"), List.of("admin:read"));
+        authenticatePlatformAdministrator();
         when(jobs.list(TENANT, null, 50, 10_000)).thenReturn(List.of());
 
         assertEquals(List.of(), controller.list(null, 50, 10_000));
@@ -127,8 +127,20 @@ class ExecutionJobControllerAuthorizationTest {
     }
 
     @Test
+    void storageIdentityCollisionIsAnOpaqueConflict() {
+        var response = controller.executionError(
+                new ExecutionJobPort.ExecutionStateException(
+                        "ELMOS_EXECUTION_STORAGE_CONFLICT"));
+
+        assertEquals(409, response.getStatusCode().value());
+        assertEquals(Map.of(
+                "status", "ERROR",
+                "code", "ELMOS_EXECUTION_STORAGE_CONFLICT"), response.getBody());
+    }
+
+    @Test
     void tenantListRejectsInvalidLimitsBeforeQueryingTheStore() {
-        authenticate(List.of("VIEWER"), List.of("admin:read"));
+        authenticatePlatformAdministrator();
 
         var zero = assertThrows(
                 ExecutionJobPort.ExecutionStateException.class,
@@ -168,16 +180,33 @@ class ExecutionJobControllerAuthorizationTest {
     }
 
     private static void authenticate(List<String> roles, List<String> permissions) {
+        authenticate(roles, permissions, false);
+    }
+
+    private static void authenticatePlatformAdministrator() {
+        authenticate(List.of("VIEWER"), List.of("admin:read"), true);
+    }
+
+    private static void authenticate(
+            List<String> roles,
+            List<String> permissions,
+            boolean platformAdministrator
+    ) {
         Instant now = Instant.now();
-        Jwt token = Jwt.withTokenValue("verified-job-authorization-token")
+        var tokenBuilder = Jwt.withTokenValue("verified-job-authorization-token")
                 .header("alg", "RS256")
                 .subject(ACTOR)
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(300))
                 .claim("organization_id", TENANT)
                 .claim("roles", roles)
-                .claim("permissions", permissions)
-                .build();
+                .claim("permissions", permissions);
+        if (platformAdministrator) {
+            tokenBuilder
+                    .claim("email", ControlPlanePrincipal.PLATFORM_ADMINISTRATOR_EMAIL)
+                    .claim("email_verified", true);
+        }
+        Jwt token = tokenBuilder.build();
         SecurityContextHolder.getContext().setAuthentication(
                 new JwtAuthenticationToken(
                         token,

@@ -3,25 +3,25 @@
   "classification": "LOCAL_EXECUTED_SELF_ATTESTED",
   "commands": [
     {
-      "command": "/Users/stephen/.cache/uv/builds-v0/.tmp91kcfg/bin/python -m unittest discover -s engines/formal-assurance-engine/tests -p test_*.py -v",
-      "duration_seconds": 3.933,
+      "command": "/private/tmp/elmos-pr52-refresh.kIlvMm/engines/formal-assurance-engine/.venv/bin/python3 -m unittest discover -s engines/formal-assurance-engine/tests -p test_*.py -v",
+      "duration_seconds": 58.267,
       "exit_code": 0,
       "failed": 0,
       "name": "formal-assurance-engine",
-      "passed": 567,
-      "raw_evidence_digest": "sha256:780b8dac81bf9c8df39933cabbf704a1fa7de76102fc27724fb3621aefe8c19b",
+      "passed": 575,
+      "raw_evidence_digest": "sha256:b710c9d6a4eb9b81c985b2d3d9ed25b438e62a516ba368ea09ecb641ad325796",
       "raw_evidence_ref": "qualification/raw/engine-tests.txt",
       "skipped": 0,
-      "tests": 567
+      "tests": 575
     },
     {
-      "command": "/Users/stephen/.cache/uv/builds-v0/.tmp91kcfg/bin/python -m unittest discover -s tests/formal-assurance-kernel -p test_*.py -v",
-      "duration_seconds": 11.211,
+      "command": "/private/tmp/elmos-pr52-refresh.kIlvMm/engines/formal-assurance-engine/.venv/bin/python3 -m unittest discover -s tests/formal-assurance-kernel -p test_*.py -v",
+      "duration_seconds": 92.333,
       "exit_code": 0,
       "failed": 0,
       "name": "formal-assurance-package-integration",
       "passed": 4,
-      "raw_evidence_digest": "sha256:4bac34d6ae0e76f72bb48a660b756c526d5d210cfd8dfc837bddaff251ee2113",
+      "raw_evidence_digest": "sha256:db997f094b14fe2bacf0013f64cebb89bd495f5f295a8747db9ba95f46bcb557",
       "raw_evidence_ref": "qualification/raw/integration-tests.txt",
       "skipped": 0,
       "tests": 4
@@ -40,8 +40,8 @@
     "strongSandboxDowngradeNegative": "PASSED",
     "tenantIsolationNegative": "PASSED"
   },
-  "environment_digest": "sha256:63bd60de12cd38de1105da7de97cd53735d9a99db969ed2b710e56ac6d21d5e2",
-  "executed_at": "2026-08-31T07:04:40Z",
+  "environment_digest": "sha256:12bd1b7c5bf1b9934deb43fcfa56cefcb3db7f138d743fc545eea5a57c11c630",
+  "executed_at": "2026-09-04T09:11:26Z",
   "externalEvidenceStatus": "NOT_RUN",
   "failed": 0,
   "independentVerificationStatus": "NOT_RUN",
@@ -52,7 +52,7 @@
     "No production, customer, deployment, or certification claim is made."
   ],
   "pack_key": "formal-assurance-kernel-local",
-  "passed": 571,
+  "passed": 579,
   "repository_bindings": [
     {
       "byte_size": 4696,
@@ -793,16 +793,16 @@
       "sha256": "sha256:d960d950e97d6601daabb848ce725db38bf7c1642d1d043954f6ccaecc815424"
     },
     {
-      "byte_size": 6065,
+      "byte_size": 6783,
       "path": "engines/formal-assurance-engine/README.md",
       "role": "implementation",
-      "sha256": "sha256:be23b3efda28ca2d99f430ffe2c0e318c45144da655a52a10f56ba0dc4aaf381"
+      "sha256": "sha256:fa3d90f0ef76679172549f12ff27bd25212f03face5f475aaddffbb7deb8edec"
     },
     {
-      "byte_size": 578,
+      "byte_size": 696,
       "path": "engines/formal-assurance-engine/pyproject.toml",
       "role": "implementation",
-      "sha256": "sha256:fe758d01b85a83982013322aa7668f1b908fbb49b494a2394c09397601dd1c4e"
+      "sha256": "sha256:d45bdc4ca89c4a3554ab6c659334a6372ce6922967be6fa9d03e5d72756ef4d8"
     },
     {
       "byte_size": 7666,
@@ -811,16 +811,16 @@
       "sha256": "sha256:38f7e13c3c6162d6535e91c606842e27b2cb4a03f3b2d1406168af567fece637"
     },
     {
-      "byte_size": 3895,
+      "byte_size": 4190,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/__init__.py",
       "role": "implementation",
-      "sha256": "sha256:ae262e5ee7cd45392166e6d611494e8a7bf79e0bd10ac34cd250c19ce4b99193"
+      "sha256": "sha256:cda4c445e918a78c2fff8c8f985727ef56cc9e261000db325fc08e4961652b19"
     },
     {
-      "byte_size": 28090,
+      "byte_size": 28365,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/api.py",
       "role": "implementation",
-      "sha256": "sha256:02f11a85b86a53b174041a9b1040b8d91d8d59256c305994fa482f4deee22176"
+      "sha256": "sha256:35d7270977408b3fc8d5326d483cc6afc4247b2805dddab608f52912ec5e37cb"
     },
     {
       "byte_size": 22118,
@@ -841,10 +841,10 @@
       "sha256": "sha256:4aca6b9bb586f7bf64307fcf889f0cb5cca92617ca07cbc4a2b7be1875969255"
     },
     {
-      "byte_size": 6192,
+      "byte_size": 7333,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/cli.py",
       "role": "implementation",
-      "sha256": "sha256:a3ada60d26b4a4ff31183e708879077cde5006fe22afa2fcbb01499c5d34a6aa"
+      "sha256": "sha256:f2aa8bab122af52070e2d012a2a8d7adba5b5a8e56a49ce37329e214d29503d8"
     },
     {
       "byte_size": 10065,
@@ -853,10 +853,10 @@
       "sha256": "sha256:ca5fb3ad239a5b54cd6093879a141d6a8cb14277a0cc48478a8ad93f47e1e5b2"
     },
     {
-      "byte_size": 16126,
+      "byte_size": 16654,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/database.py",
       "role": "implementation",
-      "sha256": "sha256:46b423d6d099ea15bea00ca767a06fd23b33d3a3ccdc893239d0875c7887df13"
+      "sha256": "sha256:19a9327561ebacb2c4fdba5fade2d6352df184e8b2920ddd91391f1053d4d447"
     },
     {
       "byte_size": 6724,
@@ -919,6 +919,12 @@
       "sha256": "sha256:4ef2fb3f420316970539af99e167b8ca348972c9796cfe4d91c1742f6dff5f1b"
     },
     {
+      "byte_size": 12279,
+      "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/native_attestation_bridge.py",
+      "role": "implementation",
+      "sha256": "sha256:02caaf3827787b11ffa55f1cb219a9f9275751352e2e9160256f592d6845b757"
+    },
+    {
       "byte_size": 7672,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/observability.py",
       "role": "implementation",
@@ -949,10 +955,10 @@
       "sha256": "sha256:3b184ae2a21fac75d5177af8df02f6548fa046f27e6e45e387a65fa39b7e4fb2"
     },
     {
-      "byte_size": 36239,
+      "byte_size": 36810,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/runtime.py",
       "role": "implementation",
-      "sha256": "sha256:cc0bf2d72a331729d9d1004709b53120be2f1075448c8344cf6bdab3e97b0743"
+      "sha256": "sha256:409b04d8935f7c714d0732213c61d83edc38f3b2feebf23372d2b6c81d4ed932"
     },
     {
       "byte_size": 14223,
@@ -961,10 +967,10 @@
       "sha256": "sha256:cb31e82f02162555077c194afb27c4e0d9d165cef156d06ae44f4e58184efd14"
     },
     {
-      "byte_size": 101106,
+      "byte_size": 101601,
       "path": "engines/formal-assurance-engine/src/elmos_formal_assurance/store.py",
       "role": "implementation",
-      "sha256": "sha256:bb0d310d1042f515b3eaee0dbab8e538687e52d1c414c7a2f04dcf9ed081d6e9"
+      "sha256": "sha256:e0cfa3bd45cd7eea6811d6af3273012f38d743b5b69ad327dc8998d8210e201f"
     },
     {
       "byte_size": 12796,
@@ -979,10 +985,10 @@
       "sha256": "sha256:e78b3be011f4b5ed6651de228dd5d24e41d926166d0153d16de956f7aa114034"
     },
     {
-      "byte_size": 19249,
+      "byte_size": 19675,
       "path": "engines/formal-assurance-engine/tests/test_api.py",
       "role": "implementation",
-      "sha256": "sha256:422d43c15379d09d80eb850896f636f5afc7a917240a67ab12ecc8a320fb9e32"
+      "sha256": "sha256:7c202effc78a55fe2a7a8e7c8df2f21be75e633485e5e57d9ebc189e54e6b70e"
     },
     {
       "byte_size": 35256,
@@ -991,10 +997,10 @@
       "sha256": "sha256:d9f23518206e1ad9323450767b36a2092f3b465b5f535b8c48b97161ed5c6280"
     },
     {
-      "byte_size": 4274,
+      "byte_size": 7007,
       "path": "engines/formal-assurance-engine/tests/test_cli.py",
       "role": "implementation",
-      "sha256": "sha256:37914e7ef9b0949334cebbb2b6c3a943256234a844df498fa2055ae1cd071163"
+      "sha256": "sha256:512084e6dda921cd4c70624f0d1d7f7785eb4fd1c247f71f47d214d55a8aef7d"
     },
     {
       "byte_size": 8594,
@@ -1015,6 +1021,12 @@
       "sha256": "sha256:90666452862fd60a2e5fceac9fe477b21f0f267ce0429831df6a727743916eaf"
     },
     {
+      "byte_size": 7170,
+      "path": "engines/formal-assurance-engine/tests/test_native_attestation.py",
+      "role": "implementation",
+      "sha256": "sha256:feec345399a26bd1763bb364f8a434a06b759a19f515877f235a044836ee3616"
+    },
+    {
       "byte_size": 4099,
       "path": "engines/formal-assurance-engine/tests/test_native_source_boundaries.py",
       "role": "implementation",
@@ -1033,10 +1045,10 @@
       "sha256": "sha256:f592a91be311606b3cd36c1eb0d72e7ae74f38e0ab82c90c35bf5bb148838f90"
     },
     {
-      "byte_size": 9812,
+      "byte_size": 10269,
       "path": "engines/formal-assurance-engine/tests/test_runtime.py",
       "role": "implementation",
-      "sha256": "sha256:aa415bba4f2eca77c1b4d9155beb0e3de3f32a74894939fd38fe7d8c12a58af7"
+      "sha256": "sha256:1d913d5d1122df73abe805366bf2e0b25040454b1e307a7af7aee6f66473464c"
     },
     {
       "byte_size": 11172,
@@ -1045,10 +1057,16 @@
       "sha256": "sha256:352e04fd4344a9b9ea05fa7f648f4ce699a95618978a86b7fbd7ec7e9dcd5480"
     },
     {
-      "byte_size": 27383,
+      "byte_size": 169589,
+      "path": "engines/formal-assurance-engine/uv.lock",
+      "role": "implementation",
+      "sha256": "sha256:0b3c69fe187e9f26129fa17b90e497683965aa53ac4360980fbe8dbe5e71f113"
+    },
+    {
+      "byte_size": 27632,
       "path": "scripts/formal_assurance/generate_local_qualification.py",
       "role": "implementation",
-      "sha256": "sha256:d2b61d445e52408b0aeb456efb7209024206d085588122d2a197df974d515328"
+      "sha256": "sha256:7be402a83879e8150b737803d6b5b6f87da4947eabb14fbc2818c40d50694abf"
     },
     {
       "byte_size": 824793,
@@ -1069,22 +1087,22 @@
       "sha256": "sha256:97b9a34d04921627b5f08fc15d34b94beb66992b8137789da8efa036459c37ca"
     },
     {
-      "byte_size": 9080,
+      "byte_size": 8192,
       "path": "verification-packs/formal-assurance-kernel-local/qualification/environment.json",
       "role": "environment",
-      "sha256": "sha256:63bd60de12cd38de1105da7de97cd53735d9a99db969ed2b710e56ac6d21d5e2"
+      "sha256": "sha256:12bd1b7c5bf1b9934deb43fcfa56cefcb3db7f138d743fc545eea5a57c11c630"
     },
     {
-      "byte_size": 35050,
+      "byte_size": 35682,
       "path": "verification-packs/formal-assurance-kernel-local/qualification/implementation-manifest.json",
       "role": "test",
-      "sha256": "sha256:f6ad772f6804218f74873327efbfffab673627f9e1df05b818a7fdc69443905b"
+      "sha256": "sha256:613829b5c2d197c74251ebdf1794e9da66981c65f84f3c8ce439e6b245c67073"
     }
   ],
   "schema_version": 1,
   "skipped": 0,
   "source_digest": "sha256:7d397f9379e15023208d3fb49b3928af07b7b6134e6a91fe70ebaf7048f9e73e",
   "status": "passed",
-  "test_digest": "sha256:f6ad772f6804218f74873327efbfffab673627f9e1df05b818a7fdc69443905b",
-  "tests": 571
+  "test_digest": "sha256:613829b5c2d197c74251ebdf1794e9da66981c65f84f3c8ce439e6b245c67073",
+  "tests": 579
 }

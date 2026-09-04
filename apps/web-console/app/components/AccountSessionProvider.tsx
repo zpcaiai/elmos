@@ -13,6 +13,8 @@ export type AccountSessionPrincipal = {
   actorId: string;
   displayName: string;
   email?: string;
+  emailVerified?: boolean;
+  isPlatformAdmin: boolean;
   organizationId: string;
   roles: string[];
   permissions: string[];

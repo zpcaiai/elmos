@@ -30,7 +30,7 @@ from .advanced import (
     parse_table_function,
     parse_trigger,
 )
-from .models import Dialect, DialectError, InsertStatement, RouteError
+from .models import Dialect, DialectError, InsertStatement, RouteError, TypeMigrationPolicy
 from .profiles import NamespaceProfile, resolve_namespace_profile
 from .static_do import emit_static_do, parse_static_do
 from .validator import validate
@@ -55,6 +55,9 @@ def translate_ddl(
     catalog: emitter.ColumnCatalogLike | None = None,
     comment_catalog: emitter.CommentColumnCatalogLike | None = None,
     routine_catalog: RoutineIdentityCatalogLike | None = None,
+    allow_routine_shim: bool = False,
+    allow_rls_shim: bool = False,
+    type_policy: TypeMigrationPolicy | None = None,
 ) -> dict[str, Any]:
     """Translate one statement from `source_dialect` to `target_dialect`.
 
@@ -96,26 +99,28 @@ def translate_ddl(
     if source == target:
         raise RouteError("SOURCE_AND_TARGET_MUST_DIFFER: translating a dialect to itself is not a supported route")
     if statement_kind not in (
-        "TABLE", "INDEX", "INSERT", "UPDATE", "ALTER", "DROP", "SCHEMA", "RLS", "FUNCTION", "PROCEDURE", "TRIGGER",
+        "TABLE", "INDEX", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "ALTER", "DROP", "SCHEMA", "RLS", "FUNCTION", "PROCEDURE", "TRIGGER",
         "VIEW", "COMMENT", "GRANT", "REVOKE", "POLICY", "DO",
     ):
         raise RouteError(
-            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, ALTER, DROP, "
-            "UPDATE, SCHEMA, RLS, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
+            f"UNSUPPORTED_STATEMENT_KIND: {statement_kind!r} must be TABLE, INDEX, INSERT, UPDATE, DELETE, TRUNCATE, ALTER, DROP, "
+            "SCHEMA, RLS, FUNCTION, PROCEDURE, TRIGGER, VIEW, COMMENT, GRANT, REVOKE, POLICY or DO"
         )
     profile = {
         "INSERT": "certified-insert-v1 + certified-dml-v1",
         "UPDATE": "certified-dml-v1",
+        "DELETE": "certified-dml-v1",
+        "TRUNCATE": "certified-ddl-v1",
         "ALTER": "certified-alter-v1",
-            "DROP": "certified-drop-v1",
-            "SCHEMA": "certified-schema-v1",
-            "RLS": "certified-rls-control-v1",
-            "VIEW": "certified-view-v1",
-            "COMMENT": "certified-comment-v1",
-            "GRANT": "certified-privilege-v1",
-            "REVOKE": "certified-privilege-v1",
-            "POLICY": "certified-rls-v1",
-            "DO": "certified-static-do-v1",
+        "DROP": "certified-drop-v1",
+        "SCHEMA": "certified-schema-v1",
+        "RLS": "certified-rls-control-v1",
+        "VIEW": "certified-view-v1",
+        "COMMENT": "certified-comment-v1",
+        "GRANT": "certified-privilege-v1",
+        "REVOKE": "certified-privilege-v1",
+        "POLICY": "certified-rls-v1",
+        "DO": "certified-static-do-v1",
         "FUNCTION": "certified-routine-v1",
         "PROCEDURE": "certified-routine-v1",
         "TRIGGER": "certified-routine-v1",
@@ -128,7 +133,11 @@ def translate_ddl(
         active_namespace_profile = resolve_namespace_profile(namespace_map, namespace_profile)
         active_namespace_map = active_namespace_profile
         if statement_kind == "TABLE":
-            emitted = emitter.emit_create_table(parser.parse_create_table(sql, source, active_namespace_map), target)
+            emitted = emitter.emit_create_table(
+                parser.parse_create_table(sql, source, active_namespace_map, type_policy=type_policy),
+                target,
+                type_policy=type_policy,
+            )
         elif statement_kind == "INSERT":
             insert = parser.parse_insert_statement(sql, source, active_namespace_map)
             if isinstance(insert, InsertStatement):
@@ -144,9 +153,21 @@ def translate_ddl(
             emitted = emitter.emit_update(
                 parser.parse_update(sql, source, active_namespace_map, update_catalog), target
             )
+        elif statement_kind == "DELETE":
+            emitted = emitter.emit_delete(
+                parser.parse_delete(sql, source, active_namespace_map), target
+            )
+        elif statement_kind == "TRUNCATE":
+            emitted = emitter.emit_truncate_table(
+                parser.parse_truncate_table(sql, source, active_namespace_map), target
+            )
         elif statement_kind == "ALTER":
             emitted = emitter.emit_alter_table(
-                parser.parse_alter_table(sql, source, active_namespace_map), target, catalog
+                parser.parse_alter_table(
+                    sql, source, active_namespace_map, allow_alter_column=(catalog is not None)
+                ),
+                target,
+                catalog,
             )
         elif statement_kind == "DROP":
             emitted = emitter.emit_drop_table(parser.parse_drop_table(sql, source, active_namespace_map), target)
@@ -154,7 +175,9 @@ def translate_ddl(
             emitted = emitter.emit_create_schema(parser.parse_create_schema(sql, source, active_namespace_map), target)
         elif statement_kind == "RLS":
             emitted = emitter.emit_row_security(
-                parser.parse_row_security(sql, source, active_namespace_map), target
+                parser.parse_row_security(sql, source, active_namespace_map),
+                target,
+                allow_rls_shim=allow_rls_shim,
             )
         elif statement_kind == "FUNCTION":
             from .routine import emit_create_function, parse_create_routine
@@ -163,7 +186,11 @@ def translate_ddl(
                 table_function = parse_table_function(sql, source, active_namespace_map)
             except DialectError as exc:
                 if exc.code == "CERTIFIED_ROUTINE_NOT_TABLE_FUNCTION":
-                    emitted = emit_create_function(parse_create_routine(sql, source, active_namespace_map), target)
+                    emitted = emit_create_function(
+                        parse_create_routine(sql, source, active_namespace_map),
+                        target,
+                        allow_routine_shim=allow_routine_shim,
+                    )
                 else:
                     # A RETURNS TABLE declaration is still a routine even
                     # when its body is outside the table-function subset.
@@ -173,7 +200,7 @@ def translate_ddl(
                     # the generic scalar table-return refusal.
                     raise exc
             else:
-                emitted = emit_table_function(table_function, target)
+                emitted = emit_table_function(table_function, target, allow_routine_shim=allow_routine_shim)
         elif statement_kind == "PROCEDURE":
             emitted = emit_procedure(parse_procedure(sql, source, active_namespace_map), target)
         elif statement_kind == "TRIGGER":
@@ -193,6 +220,7 @@ def translate_ddl(
             emitted = emit_row_policy(
                 parse_row_policy(sql, source, active_namespace_map),
                 target,
+                allow_rls_shim=allow_rls_shim,
             )
         elif statement_kind == "DO":
             emitted = emit_static_do(parse_static_do(sql, source, active_namespace_map), target, catalog)

@@ -1,21 +1,29 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const consoleRoutes = [
+import { installAdministratorSession } from "./helpers/admin-session";
+
+/** Surfaces a signed-in customer reaches from /login. */
+const userRoutes = [
   "/",
   "/spring",
   "/translation",
   "/generation",
   "/migration",
   "/pricing",
-  "/commercialization",
-  "/skills",
+  "/capabilities",
 ] as const;
 
-for (const route of consoleRoutes) {
+/** Surfaces that only a platform administrator reaches from /admin/login. */
+const operationsRoutes = ["/commercialization"] as const;
+
+for (const route of [...userRoutes, ...operationsRoutes]) {
   test(`${route} 在桌面与移动端保持清晰、无横向溢出并通过自动可访问性检查`, async ({
     page,
   }) => {
+    if ((operationsRoutes as readonly string[]).includes(route)) {
+      await installAdministratorSession(page);
+    }
     await page.goto(route);
     await expect(page.locator("h1")).toHaveCount(1);
     await expect(page.locator("h1")).toBeVisible();
@@ -42,7 +50,7 @@ test("全局搜索支持键盘焦点约束、语义化结果和显式关闭", as
   await trigger.click();
 
   const dialog = page.getByRole("dialog", { name: "全局搜索" });
-  const search = dialog.getByRole("combobox", { name: "搜索页面、能力或批次" });
+  const search = dialog.getByRole("combobox", { name: "搜索页面或功能" });
   const results = dialog.getByRole("option");
   await expect(dialog).toBeVisible();
   await expect(search).toBeFocused();

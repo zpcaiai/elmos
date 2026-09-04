@@ -410,3 +410,19 @@ def test_graph_digest_detects_tampering_and_writer_refuses_overwrite(tmp_path: P
     assert verify_project_graph(graph) is False
     with pytest.raises(ProjectGraphError, match="DIGEST_INVALID"):
         write_project_graph(graph, tmp_path / "tampered.json")
+
+
+def test_native_scan_project_graph(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native_graph_bridge import native_scan_project_graph
+
+    repository = tmp_path / "repository"
+    (repository / "src").mkdir(parents=True)
+    (repository / "src" / "a.py").write_text("import b\n", encoding="utf-8")
+    (repository / "src" / "b.py").write_text("print('b')\n", encoding="utf-8")
+
+    result = native_scan_project_graph(str(repository))
+    assert result is not None
+    assert result["total_files"] == 2
+    assert result["has_cycles"] is False
+    assert len(result["topological_order"]) == 2
+

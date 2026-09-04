@@ -27,6 +27,7 @@ dev = [
   "mypy==1.17.0",
   "pytest==9.0.3",
   "ruff==0.12.5",
+  "types-psycopg2==2.9.21.20260724",
 ]
 
 [build-system]

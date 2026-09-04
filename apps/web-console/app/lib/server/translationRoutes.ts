@@ -123,17 +123,17 @@ const V3_RESEARCH_EVIDENCE_NOTES = [
   "Local, repository, independent, external, customer, and production evidence remain NOT_RUN.",
 ] as const;
 const V3_RESEARCH_SUPPORT_CAPABILITIES = [
-  ["type-system", "experimental", "deterministic-lowering", "Initial scaffold; evidence required"],
-  ["generics", "detected-only", "obligation", "Not yet implemented"],
-  ["nullability", "detected-only", "obligation", "Not yet implemented"],
-  ["numeric", "detected-only", "obligation", "Not yet implemented"],
-  ["time", "detected-only", "obligation", "Not yet implemented"],
-  ["exceptions", "detected-only", "obligation", "Not yet implemented"],
-  ["async", "detected-only", "obligation", "Not yet implemented"],
-  ["concurrency", "blocked", "human-review", "Requires route-specific certification"],
-  ["reflection", "blocked", "human-review", "Requires route-specific certification"],
-  ["serialization", "detected-only", "contract-mapping", "Not yet implemented"],
-  ["interop", "blocked", "retain-runtime-or-sidecar", "Requires explicit boundary plan"],
+  ["type-system", "experimental", "deterministic-lowering", "Analyzer and emitter components are locally available, but no route semantic or target profile is admitted; route execution remains NOT_RUN."],
+  ["generics", "detected-only", "obligation", "Generic syntax may be detected, but direction-specific lowering and route execution evidence remain NOT_RUN."],
+  ["nullability", "detected-only", "obligation", "Nullability may be detected, but no direction-specific nullability contract or route execution evidence has been admitted."],
+  ["numeric", "detected-only", "obligation", "Numeric syntax may be detected, but no direction-specific numeric semantics or route execution evidence has been admitted."],
+  ["time", "detected-only", "obligation", "Time-related syntax may be detected, but no direction-specific time contract or route execution evidence has been admitted."],
+  ["exceptions", "detected-only", "obligation", "Exception syntax may be detected, but no direction-specific exception contract or route execution evidence has been admitted."],
+  ["async", "detected-only", "obligation", "Async syntax may be detected, but async behavior has no admitted route profile and route execution remains NOT_RUN."],
+  ["concurrency", "blocked", "human-review", "Concurrency requires a direction-specific semantic contract, runtime campaign, and independent evidence; none has run."],
+  ["reflection", "blocked", "human-review", "Reflection requires a direction-specific semantic contract, runtime campaign, and independent evidence; none has run."],
+  ["serialization", "detected-only", "contract-mapping", "Serialization boundaries may be detected, but no exact wire contract or route execution evidence has been admitted."],
+  ["interop", "blocked", "retain-runtime-or-sidecar", "Interop requires an explicit boundary plan and independently verified runtime evidence; neither has been admitted."],
 ] as const;
 const V3_RESEARCH_SUPPORT_KEYS = ["schema_version", "route_key", "capabilities"] as const;
 const V3_RESEARCH_CAPABILITY_KEYS = [
@@ -327,7 +327,7 @@ function readStableRegularFile(
     ) {
       fail(options.changedCode, `${options.label} 在打开前被替换。`);
     }
-    const raw = readFileSync(descriptor);
+    const raw = readFileSync(/* turbopackIgnore: true */ descriptor);
     const afterDescriptor = fstatSync(descriptor, { bigint: true });
     const afterPath = lstatSync(candidate, { bigint: true });
     if (

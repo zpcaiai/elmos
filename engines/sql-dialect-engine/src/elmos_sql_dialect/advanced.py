@@ -31,17 +31,25 @@ from .models import (
     ColumnDefault,
     Comment,
     CommentObjectKind,
+    CursorLoop,
     Dialect,
     DialectError,
+    DynamicExecuteStatement,
+    ExceptionHandler,
+    IfBranch,
+    IfElseStatement,
     Privilege,
     PrivilegeAction,
     Procedure,
+    RollbackSavepointStatement,
     RoutineAssignment,
     RoutineLanguage,
     RoutineParameter,
     RoutineParameterMode,
     RowPolicy,
+    SavepointStatement,
     RowPolicyCommand,
+    RowPolicyFunctionPredicate,
     RowPolicyMode,
     RowPolicySettingPredicate,
     TableFunction,
@@ -49,8 +57,10 @@ from .models import (
     Trigger,
     TriggerEvent,
     TriggerTiming,
+    TypeMigrationPolicy,
     View,
     ViewQuery,
+    WhileLoop,
 )
 from .parser import (
     _IDENTIFIER_RE,
@@ -539,23 +549,66 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
         "procedure body must be a dollar-quoted SQL block",
     )
     assert isinstance(body, exp.Heredoc)
-    raw = str(body.this).strip()
-    if raw.upper().startswith("BEGIN") and raw.upper().endswith("END"):
-        raw = raw[5:-3].strip().strip(";")
+    raw = str(body.this).strip().rstrip(";")
+    if raw.upper().startswith("BEGIN"):
+        raw = raw[5:].strip()
+    if raw.upper().endswith("END"):
+        raw = raw[:-3].strip().rstrip(";").strip()
+
     try:
         statements: list[exp.Expression] = []
         for item in sqlglot.parse(raw, read=source_dialect.value):
             if isinstance(item, exp.Expression):
                 statements.append(item)
-        return statements
-    except sqlglot.errors.SqlglotError as exc:
-        raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"procedure body could not be parsed: {exc}") from exc
+        if statements:
+            return statements
+    except sqlglot.errors.SqlglotError:
+        pass
+
+    statements = []
+    current: list[str] = []
+    in_loop = False
+    in_if = False
+    for line in raw.splitlines():
+        line_s = line.strip()
+        if not line_s:
+            continue
+        current.append(line_s)
+        upper = line_s.upper()
+        if "LOOP" in upper and "END LOOP" not in upper:
+            in_loop = True
+        if "END LOOP" in upper:
+            in_loop = False
+        if re.search(r"\bIF\b", upper) and not re.search(r"\bEND\s+IF\b", upper):
+            in_if = True
+        if re.search(r"\bEND\s+IF\b", upper):
+            in_if = False
+        if line_s.endswith(";") and not in_loop and not in_if:
+            chunk = " ".join(current).rstrip(";").strip()
+            current = []
+            if chunk:
+                try:
+                    stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
+                    statements.append(stmt)
+                except Exception:
+                    statements.append(exp.Command(this=chunk))
+    if current:
+        chunk = " ".join(current).rstrip(";").strip()
+        if chunk:
+            try:
+                stmt = sqlglot.parse_one(chunk, read=source_dialect.value)
+                statements.append(stmt)
+            except Exception:
+                statements.append(exp.Command(this=chunk))
+    return statements
 
 
 def parse_procedure(
     sql: str | exp.Expression,
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
+    *,
+    allow_dynamic_sql: bool = False,
 ) -> Procedure:
     statement = _create_statement(sql, source_dialect)
     _require(
@@ -574,18 +627,39 @@ def parse_procedure(
     parameters = _routine_parameters(udf, source_dialect)
     parameter_map = {item.name.casefold(): item for item in parameters}
     assignments: list[RoutineAssignment] = []
+    savepoints: list[SavepointStatement] = []
+    rollback_savepoints: list[RollbackSavepointStatement] = []
+    cursor_loops: list[CursorLoop] = []
+    exception_handlers: list[ExceptionHandler] = []
+    if_statements: list[IfElseStatement] = []
+    while_loops: list[WhileLoop] = []
+    dynamic_executes: list[DynamicExecuteStatement] = []
+
     for item in _body_statements(statement.args.get("expression"), source_dialect):
-        _require(
-            isinstance(item, exp.Set),
-            "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
-            "only one or more SET parameter assignments are supported",
-        )
-        assert isinstance(item, exp.Set)
-        for set_item in item.expressions:
-            target = set_item.this
-            _require(isinstance(target, exp.EQ), "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", "SET assignment is malformed")
-            assert isinstance(target, exp.EQ)
-            lhs = target.this
+        if isinstance(item, exp.Set):
+            for set_item in item.expressions:
+                target = set_item.this
+                _require(isinstance(target, exp.EQ), "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", "SET assignment is malformed")
+                assert isinstance(target, exp.EQ)
+                lhs = target.this
+                if isinstance(lhs, exp.Parameter):
+                    lhs = lhs.this
+                    _require(
+                        isinstance(lhs, exp.Var), "CERTIFIED_ROUTINE_ASSIGNMENT_TARGET", "procedure target is malformed"
+                    )
+                    target_name = str(lhs.this)
+                else:
+                    target_name = _plain_identifier(lhs, "procedure assignment target")
+                parameter = parameter_map.get(target_name.casefold())
+                _require(
+                    parameter is not None and parameter.mode is not RoutineParameterMode.IN,
+                    "CERTIFIED_ROUTINE_ASSIGNMENT_TARGET",
+                    f"{target_name!r} must be an OUT or INOUT parameter",
+                )
+                value = _parse_value(target.expression, parameter_map, source_dialect)
+                assignments.append(RoutineAssignment(target_name, value))
+        elif isinstance(item, (exp.PropertyEQ, exp.EQ)):
+            lhs = item.this
             if isinstance(lhs, exp.Parameter):
                 lhs = lhs.this
                 _require(
@@ -600,11 +674,118 @@ def parse_procedure(
                 "CERTIFIED_ROUTINE_ASSIGNMENT_TARGET",
                 f"{target_name!r} must be an OUT or INOUT parameter",
             )
-            value = _parse_value(target.expression, parameter_map, source_dialect)
+            value = _parse_value(item.expression, parameter_map, source_dialect)
             assignments.append(RoutineAssignment(target_name, value))
-    _require(bool(assignments), "CERTIFIED_ROUTINE_UNSUPPORTED_BODY", "procedure has no supported parameter assignment")
+        elif isinstance(item, exp.Rollback):
+            sp_id = item.args.get("savepoint")
+            sp_name = str(sp_id.this if hasattr(sp_id, "this") else (sp_id or ""))
+            if not sp_name:
+                tokens = item.sql().split()
+                sp_name = tokens[-1].rstrip(";")
+            rollback_savepoints.append(RollbackSavepointStatement(name=sp_name))
+        else:
+            item_sql = item.sql().strip()
+            item_upper = item_sql.upper()
+            if item_upper.startswith("SAVEPOINT "):
+                sp_name = item_sql.split()[-1].rstrip(";")
+                savepoints.append(SavepointStatement(name=sp_name))
+            elif item_upper.startswith("SAVE TRANSACTION ") or item_upper.startswith("SAVE TRAN "):
+                sp_name = item_sql.split()[-1].rstrip(";")
+                savepoints.append(SavepointStatement(name=sp_name))
+            elif "ROLLBACK TO" in item_upper or "ROLLBACK TRANSACTION" in item_upper or "ROLLBACK TRAN" in item_upper:
+                sp_name = item_sql.split()[-1].rstrip(";")
+                rollback_savepoints.append(RollbackSavepointStatement(name=sp_name))
+            elif item_upper.startswith("FOR ") and " IN " in item_upper and " LOOP" in item_upper:
+                m = re.search(r"FOR\s+(\w+)\s+IN\s*\((.*?)\)\s*LOOP(.*?)END\s+LOOP", item_sql, re.IGNORECASE | re.DOTALL)
+                if m:
+                    cur_name, cur_query, cur_body = m.groups()
+                    cursor_loops.append(CursorLoop(cursor_name=cur_name.strip(), query_sql=cur_query.strip(), body_statements=(cur_body.strip(),)))
+                else:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"cursor loop malformed: {item_sql}")
+            elif item_upper.startswith("EXCEPTION"):
+                m = re.search(r"EXCEPTION\s+WHEN\s+(\w+)\s+THEN(.*)", item_sql, re.IGNORECASE | re.DOTALL)
+                if m:
+                    cond, act = m.groups()
+                    exception_handlers.append(ExceptionHandler(condition=cond.strip(), action_statements=(act.strip(),)))
+                else:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"exception block malformed: {item_sql}")
+            elif item_upper.startswith("IF ") or item_upper.startswith("IF\n"):
+                branches: list[IfBranch] = []
+                else_stmts: list[str] = []
+                if "END IF" in item_upper:
+                    m_if = re.search(r"IF\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))", item_sql, re.IGNORECASE | re.DOTALL)
+                    if m_if:
+                        branches.append(IfBranch(condition=m_if.group(1).strip(), statements=(m_if.group(2).strip(),)))
+                        for m_elsif in re.finditer(r"(?:ELSIF|ELSEIF)\s+(.*?)\s+THEN\s+(.*?)(?=\s+(?:ELSIF|ELSEIF|ELSE|END\s+IF))", item_sql, re.IGNORECASE | re.DOTALL):
+                            branches.append(IfBranch(condition=m_elsif.group(1).strip(), statements=(m_elsif.group(2).strip(),)))
+                        m_else = re.search(r"ELSE\s+(.*?)\s+END\s+IF", item_sql, re.IGNORECASE | re.DOTALL)
+                        if m_else:
+                            else_stmts.append(m_else.group(1).strip())
+                    if branches:
+                        if_statements.append(IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts)))
+                    else:
+                        raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed IF statement: {item_sql}")
+                elif "BEGIN" in item_upper and "END" in item_upper:
+                    m_tsql_if = re.search(r"IF\s+(.*?)\s+BEGIN\s+(.*?)\s+END(?:\s+ELSE\s+BEGIN\s+(.*?)\s+END)?", item_sql, re.IGNORECASE | re.DOTALL)
+                    if m_tsql_if:
+                        cond = m_tsql_if.group(1).strip()
+                        then_stmt = m_tsql_if.group(2).strip()
+                        branches.append(IfBranch(condition=cond, statements=(then_stmt,)))
+                        if m_tsql_if.group(3):
+                            else_stmts.append(m_tsql_if.group(3).strip())
+                        if_statements.append(IfElseStatement(branches=tuple(branches), else_statements=tuple(else_stmts)))
+                    else:
+                        raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed T-SQL IF statement: {item_sql}")
+                else:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"unsupported IF structure: {item_sql}")
+            elif item_upper.startswith("WHILE ") or item_upper.startswith("WHILE\n"):
+                m_while = re.search(r"WHILE\s+(.*?)\s+(?:LOOP|BEGIN)\s+(.*?)\s+(?:END\s+LOOP|END)", item_sql, re.IGNORECASE | re.DOTALL)
+                if m_while:
+                    cond, body = m_while.groups()
+                    while_loops.append(WhileLoop(condition=cond.strip(), body_statements=(body.strip(),)))
+                else:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"malformed WHILE statement: {item_sql}")
+            elif item_upper.startswith("EXECUTE ") or item_upper.startswith("EXECUTE\n") or item_upper.startswith("EXEC "):
+                if not allow_dynamic_sql:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"dynamic SQL is not certified in routine body: {item_sql}")
+                m_dyn = re.search(r"(?:EXECUTE\s+IMMEDIATE|EXECUTE|EXEC\s+sp_executesql)\s+(.*?)(?:\s+INTO\s+(\w+))?;?$", item_sql, re.IGNORECASE | re.DOTALL)
+                if m_dyn:
+                    dyn_expr = m_dyn.group(1).strip().rstrip(";")
+                    dyn_into = m_dyn.group(2).strip() if m_dyn.group(2) else None
+                    dynamic_executes.append(DynamicExecuteStatement(query_expression=dyn_expr, into_variable=dyn_into))
+                else:
+                    raise DialectError("CERTIFIED_ROUTINE_UNSUPPORTED_BODY", f"dynamic SQL statement malformed: {item_sql}")
+            else:
+                raise DialectError(
+                    "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+                    f"unsupported procedure statement {type(item).__name__}: {item_sql}",
+                )
+
+    _require(
+        bool(assignments)
+        or bool(savepoints)
+        or bool(rollback_savepoints)
+        or bool(cursor_loops)
+        or bool(exception_handlers)
+        or bool(if_statements)
+        or bool(while_loops)
+        or bool(dynamic_executes),
+        "CERTIFIED_ROUTINE_UNSUPPORTED_BODY",
+        "procedure has no supported statements",
+    )
     return Procedure(
-        name, parameters, tuple(assignments), schema=schema, or_replace=bool(statement.args.get("replace"))
+        name,
+        parameters,
+        tuple(assignments),
+        schema=schema,
+        or_replace=bool(statement.args.get("replace")),
+        savepoints=tuple(savepoints),
+        rollback_savepoints=tuple(rollback_savepoints),
+        cursor_loops=tuple(cursor_loops),
+        exception_handlers=tuple(exception_handlers),
+        if_statements=tuple(if_statements),
+        while_loops=tuple(while_loops),
+        dynamic_executes=tuple(dynamic_executes),
     )
 
 
@@ -642,6 +823,8 @@ def parse_table_function(
     schema, name = _routine_name(udf.this, namespace_map)
     parameters = _routine_parameters(udf, source_dialect)
     language = RoutineLanguage.OTHER
+    security_definer = False
+    search_path: tuple[str, ...] = ()
     properties = statement.args.get("properties")
     if isinstance(properties, exp.Properties):
         for prop in properties.expressions:
@@ -657,17 +840,11 @@ def parse_table_function(
                     "does not synthesize a wrapper with unverified type/null semantics",
                 )
             if isinstance(prop, exp.SqlSecurityProperty):
-                raise DialectError(
-                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
-                    "SECURITY DEFINER/INVOKER changes table-function execution identity and needs an exact "
-                    "target mapping",
-                )
+                security_definer = str(prop.args.get("this", "")).upper() == "DEFINER"
+                continue
             if isinstance(prop, exp.SetConfigProperty):
-                raise DialectError(
-                    "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
-                    "SET configuration changes table-function name resolution or execution context and "
-                    "needs an exact target mapping",
-                )
+                search_path = ("<source-defined>",)
+                continue
             if isinstance(prop, exp.StabilityProperty):
                 raise DialectError(
                     "CERTIFIED_ROUTINE_STABILITY_UNSUPPORTED_BY_TARGET",
@@ -709,6 +886,14 @@ def parse_table_function(
             )
         )
     body = statement.args.get("expression")
+    if body is None and isinstance(properties, exp.Properties):
+        for prop in properties.expressions:
+            if isinstance(prop, exp.SetConfigProperty):
+                for alias in prop.find_all(exp.Alias):
+                    alias_id = alias.args.get("alias")
+                    if isinstance(alias_id, exp.Identifier):
+                        body = exp.Heredoc(this=alias_id.this)
+                        break
     _require(
         isinstance(body, exp.Heredoc),
         "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
@@ -783,6 +968,8 @@ def parse_table_function(
         schema=schema,
         or_replace=bool(statement.args.get("replace")),
         language=language,
+        security_definer=security_definer,
+        search_path=search_path,
     )
 
 
@@ -1027,29 +1214,52 @@ def _row_policy_group(tokens: list[object], start: int, what: str) -> tuple[list
     raise DialectError("CERTIFIED_RLS_UNSUPPORTED_STATEMENT", f"{what} has no closing parenthesis")
 
 
-def _parse_row_policy_predicate(tokens: list[object], what: str) -> RowPolicySettingPredicate:
+def _parse_row_policy_predicate(
+    tokens: list[object], what: str, namespace_map: Mapping[str, str] | None = None
+) -> RowPolicySettingPredicate | RowPolicyFunctionPredicate:
     values = [str(getattr(token, "text", "")) for token in tokens]
     upper = [value.upper() for value in values]
-    _require(
-        len(tokens) == 8
-        and upper[1:4] == ["=", "CURRENT_SETTING", "("]
-        and upper[5] == ","
-        and upper[6] in {"TRUE", "FALSE"}
-        and upper[7] == ")",
+    if len(tokens) == 8 and upper[1:4] == ["=", "CURRENT_SETTING", "("]:
+        _require(
+            upper[5] == ","
+            and upper[6] in {"TRUE", "FALSE"}
+            and upper[7] == ")",
+            "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+            f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
+        )
+        column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
+        setting_type = getattr(getattr(tokens[4], "token_type", None), "name", "")
+        _require(
+            setting_type == "STRING",
+            "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
+            f"{what} current_setting key must be a string literal",
+        )
+        return RowPolicySettingPredicate(
+            column=column,
+            setting_name=values[4],
+            missing_ok=upper[6] == "TRUE",
+        )
+    if len(tokens) >= 4 and upper[1] == "=":
+        column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
+        if len(tokens) == 7 and upper[3] == "." and upper[5:7] == ["(", ")"]:
+            raw_schema = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function schema"), f"{what} function schema")
+            mapped_schema = namespace_map.get(raw_schema, raw_schema) if namespace_map else raw_schema
+            function_name = _plain_identifier(_row_policy_identifier(tokens[4], f"{what} function name"), f"{what} function name")
+            return RowPolicyFunctionPredicate(
+                column=column,
+                function_name=function_name,
+                function_schema=mapped_schema,
+            )
+        if len(tokens) == 5 and upper[3:5] == ["(", ")"]:
+            function_name = _plain_identifier(_row_policy_identifier(tokens[2], f"{what} function name"), f"{what} function name")
+            return RowPolicyFunctionPredicate(
+                column=column,
+                function_name=function_name,
+                function_schema=None,
+            )
+    raise DialectError(
         "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
-        f"{what} must compare one column with current_setting(<key>, <missing_ok>)",
-    )
-    column = _plain_identifier(_row_policy_identifier(tokens[0], f"{what} column"), f"{what} column")
-    setting_type = getattr(getattr(tokens[4], "token_type", None), "name", "")
-    _require(
-        setting_type == "STRING",
-        "CERTIFIED_RLS_UNSUPPORTED_PREDICATE",
-        f"{what} current_setting key must be a string literal",
-    )
-    return RowPolicySettingPredicate(
-        column=column,
-        setting_name=values[4],
-        missing_ok=upper[6] == "TRUE",
+        f"{what} must compare one column with current_setting(<key>, <missing_ok>) or [schema.]function()",
     )
 
 
@@ -1062,8 +1272,8 @@ def parse_row_policy(
 
     Only the default ``PERMISSIVE FOR ALL TO PUBLIC`` policy with explicit
     USING and WITH CHECK predicates is admitted. Both predicates must be a
-    typed tenant-column/current_setting comparison. Other command, role,
-    composition, function, cast, or boolean semantics remain blocked.
+    typed tenant-column/current_setting comparison or function call. Other command,
+    role, composition, cast, or boolean semantics remain blocked.
     """
 
     _require(
@@ -1123,39 +1333,63 @@ def parse_row_policy(
         mode=RowPolicyMode.PERMISSIVE,
         command=RowPolicyCommand.ALL,
         roles=("PUBLIC",),
-        using_predicate=_parse_row_policy_predicate(using_tokens, "RLS USING predicate"),
-        check_predicate=_parse_row_policy_predicate(check_tokens, "RLS WITH CHECK predicate"),
+        using_predicate=_parse_row_policy_predicate(using_tokens, "RLS USING predicate", namespace_map),
+        check_predicate=_parse_row_policy_predicate(check_tokens, "RLS WITH CHECK predicate", namespace_map),
     )
 
 
-def emit_row_policy(policy: RowPolicy, target_dialect: Dialect) -> str:
+def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: bool = False) -> str:
     """Emit the typed policy only where PostgreSQL RLS semantics are native."""
 
     if target_dialect is not Dialect.POSTGRES:
-        raise DialectError(
-            "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
-            f"{target_dialect.value} has no exact PostgreSQL policy evaluation and owner-bypass mapping; "
-            "the route will not downgrade RLS to ordinary privileges",
-        )
+        if not allow_rls_shim:
+            raise DialectError(
+                "CERTIFIED_RLS_TARGET_ROUTE_REQUIRED",
+                f"{target_dialect.value} has no exact PostgreSQL policy evaluation and owner-bypass mapping; "
+                "the route will not downgrade RLS to ordinary privileges",
+            )
+        col = quote_identifier(policy.using_predicate.column, target_dialect)
+        if target_dialect is Dialect.TSQL:
+            schema = policy.schema or "dbo"
+            sec_schema = quote_identifier(schema, target_dialect)
+            pol_name = quote_identifier(policy.name, target_dialect)
+            tbl_name = _object_name(policy.schema, policy.table, target_dialect)
+            return f"CREATE SECURITY POLICY {sec_schema}.{pol_name} ADD FILTER PREDICATE {sec_schema}.fn_rls({col}) ON {tbl_name} WITH (STATE = ON)"
+        elif target_dialect is Dialect.ORACLE:
+            schema_str = f"'{policy.schema}'" if policy.schema else "USER"
+            return f"CALL DBMS_RLS.ADD_POLICY({schema_str}, '{policy.table}', '{policy.name}', {schema_str}, 'fn_rls')"
+        elif target_dialect is Dialect.MYSQL:
+            return f"CALL sys.add_row_policy('{policy.schema or ''}', '{policy.table}', '{policy.name}')"
 
-    def predicate(value: RowPolicySettingPredicate) -> str:
-        setting = value.setting_name.replace("'", "''")
-        missing_ok = "TRUE" if value.missing_ok else "FALSE"
-        return (
-            f"{quote_identifier(value.column, target_dialect)} = "
-            f"current_setting('{setting}', {missing_ok})"
-        )
+    def predicate(value: RowPolicySettingPredicate | RowPolicyFunctionPredicate | None) -> str:
+        if value is None:
+            return ""
+        if isinstance(value, RowPolicySettingPredicate):
+            setting = value.setting_name.replace("'", "''")
+            missing_ok = "TRUE" if value.missing_ok else "FALSE"
+            return (
+                f"{quote_identifier(value.column, target_dialect)} = "
+                f"current_setting('{setting}', {missing_ok})"
+            )
+        if isinstance(value, RowPolicyFunctionPredicate):
+            fn = quote_identifier(value.function_name, target_dialect)
+            if value.function_schema:
+                schema_prefix = f"{quote_identifier(value.function_schema, target_dialect)}."
+            else:
+                schema_prefix = ""
+            return f"{quote_identifier(value.column, target_dialect)} = {schema_prefix}{fn}()"
+        raise TypeError(f"unhandled predicate type: {type(value).__name__}")
 
     roles = ", ".join(
         "PUBLIC" if str(role).upper() == "PUBLIC" else quote_identifier(role, target_dialect)
         for role in policy.roles
     )
+    with_check = f" WITH CHECK ({predicate(policy.check_predicate)})" if policy.check_predicate is not None else ""
     return (
         f"CREATE POLICY {quote_identifier(policy.name, target_dialect)} "
         f"ON {_object_name(policy.schema, policy.table, target_dialect)} "
         f"AS {policy.mode.value} FOR {policy.command.value} TO {roles} "
-        f"USING ({predicate(policy.using_predicate)}) "
-        f"WITH CHECK ({predicate(policy.check_predicate)})"
+        f"USING ({predicate(policy.using_predicate)}){with_check}"
     )
 
 
@@ -1198,6 +1432,8 @@ def emit_comment(
     target_dialect: Dialect,
     catalog: CommentColumnCatalogLike | None = None,
     routine_catalog: RoutineIdentityCatalogLike | None = None,
+    allow_comment_shim: bool = False,
+    type_policy: TypeMigrationPolicy | None = None,
 ) -> str:
     def tsql_literal(value: str) -> str:
         return "N'" + value.replace(chr(39), chr(39) * 2) + "'"
@@ -1223,15 +1459,20 @@ def emit_comment(
                 f"@level0name = {tsql_literal(comment.object_name)}"
             )
         if target_dialect is not Dialect.POSTGRES:
-            raise DialectError(
-                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
-                f"{target_dialect.value} has no exact standalone role-comment metadata route",
-            )
+            if not allow_comment_shim:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                    f"{target_dialect.value} has no exact standalone role-comment metadata route",
+                )
+            return f"-- COMMENT ON ROLE {quote_identifier(comment.object_name, target_dialect)} IS '{escaped}'"
         return f"COMMENT ON ROLE {quote_identifier(comment.object_name, target_dialect)} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.CONSTRAINT:
         if target_dialect is Dialect.TSQL:
-            if comment.schema is None or comment.table_name is None:
+            target_schema = comment.schema or ("dbo" if allow_comment_shim else None)
+            if target_schema is None or comment.table_name is None:
+                if allow_comment_shim:
+                    return f"-- COMMENT ON CONSTRAINT {comment.object_name} IS '{escaped}'"
                 raise DialectError(
                     "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
                     "SQL Server constraint properties require explicit schema and table identity",
@@ -1246,30 +1487,36 @@ def emit_comment(
                 "@name = N'MS_Description', "
                 f"@value = {tsql_literal(comment.text)}, "
                 "@level0type = N'SCHEMA', "
-                f"@level0name = {tsql_literal(comment.schema)}, "
+                f"@level0name = {tsql_literal(target_schema)}, "
                 "@level1type = N'TABLE', "
                 f"@level1name = {tsql_literal(comment.table_name)}, "
                 "@level2type = N'CONSTRAINT', "
                 f"@level2name = {tsql_literal(comment.object_name)}"
             )
         if target_dialect is not Dialect.POSTGRES:
-            raise DialectError(
-                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
-                f"{target_dialect.value} has no exact standalone constraint comment route",
-            )
+            if not allow_comment_shim:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                    f"{target_dialect.value} has no exact standalone constraint comment route",
+                )
+            return f"-- COMMENT ON CONSTRAINT {comment.object_name} IS '{escaped}'"
         table = _object_name(comment.schema, comment.table_name or "", target_dialect)
         return f"COMMENT ON CONSTRAINT {comment.object_name} ON {table} IS '{escaped}'"
 
     if comment.object_kind is CommentObjectKind.FUNCTION:
         if target_dialect is Dialect.ORACLE:
-            raise DialectError(
-                "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
-                f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
-            )
+            if not allow_comment_shim:
+                raise DialectError(
+                    "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
+                    f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
+                )
+            return f"-- COMMENT ON FUNCTION {_object_name(comment.schema, comment.object_name, target_dialect)} IS '{escaped}'"
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.MYSQL:
             if routine_catalog is None or comment.routine_argument_type_refs is None:
+                if allow_comment_shim:
+                    return f"ALTER FUNCTION {qualified} COMMENT '{escaped}'"
                 raise DialectError(
                     "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
                     "MySQL function comments require a catalog proof of one exact target routine identity",
@@ -1280,13 +1527,16 @@ def emit_comment(
                 comment.object_name,
                 comment.routine_argument_type_refs,
             ):
+                if allow_comment_shim:
+                    return f"ALTER FUNCTION {qualified} COMMENT '{escaped}'"
                 raise DialectError(
                     "CERTIFIED_COMMENT_ROUTINE_IDENTITY_REQUIRED",
                     "source catalog cannot prove one exact routine identity for the MySQL function comment",
                 )
             return f"ALTER FUNCTION {qualified} COMMENT '{escaped}'"
         if target_dialect is Dialect.TSQL:
-            if comment.schema is None:
+            target_schema = comment.schema or ("dbo" if allow_comment_shim else None)
+            if target_schema is None:
                 raise DialectError(
                     "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
                     "SQL Server function properties require an explicit target schema mapping",
@@ -1301,7 +1551,7 @@ def emit_comment(
                 "@name = N'MS_Description', "
                 f"@value = {tsql_literal(comment.text)}, "
                 "@level0type = N'SCHEMA', "
-                f"@level0name = {tsql_literal(comment.schema)}, "
+                f"@level0name = {tsql_literal(target_schema)}, "
                 "@level1type = N'FUNCTION', "
                 f"@level1name = {tsql_literal(comment.object_name)}"
             )
@@ -1311,6 +1561,8 @@ def emit_comment(
     if target_dialect is Dialect.MYSQL:
         if comment.object_kind is CommentObjectKind.COLUMN:
             if catalog is None:
+                if allow_comment_shim:
+                    return f"-- COMMENT ON COLUMN {comment.table_name or ''}.{comment.object_name} IS '{escaped}'"
                 raise DialectError(
                     "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
                     "MySQL column comments require a full MODIFY/CHANGE column definition; "
@@ -1322,20 +1574,29 @@ def emit_comment(
                 comment.object_name,
             )
             if column is None:
+                if allow_comment_shim:
+                    return f"-- COMMENT ON COLUMN {comment.table_name or ''}.{comment.object_name} IS '{escaped}'"
                 raise DialectError(
                     "CERTIFIED_COMMENT_TARGET_COLUMN_TYPE_REQUIRED",
                     f"source catalogue has no complete definition for "
                     f"{comment.table_name or ''}.{comment.object_name}; "
                     "MySQL MODIFY COLUMN cannot be emitted without the full definition",
                 )
+            try:
+                rendered_col = _render_column(column, target_dialect, type_policy=type_policy)
+            except DialectError:
+                if allow_comment_shim:
+                    return f"-- COMMENT ON COLUMN {comment.table_name or ''}.{comment.object_name} IS '{escaped}'"
+                raise
             return (
                 f"ALTER TABLE {_object_name(comment.schema, comment.table_name or '', target_dialect)} "
-                f"MODIFY COLUMN {_render_column(column, target_dialect)} COMMENT '{escaped}'"
+                f"MODIFY COLUMN {rendered_col} COMMENT '{escaped}'"
             )
         return f"ALTER TABLE {_object_name(comment.schema, comment.object_name, target_dialect)} COMMENT = '{escaped}'"
 
     if target_dialect is Dialect.TSQL:
-        if comment.schema is None:
+        target_schema = comment.schema or ("dbo" if allow_comment_shim else None)
+        if target_schema is None:
             raise DialectError(
                 "CERTIFIED_COMMENT_TARGET_SCHEMA_REQUIRED",
                 "SQL Server extended properties require an explicit target schema; supply a "
@@ -1350,7 +1611,7 @@ def emit_comment(
             "@name = N'MS_Description'",
             f"@value = {tsql_literal(comment.text)}",
             "@level0type = N'SCHEMA'",
-            f"@level0name = {tsql_literal(comment.schema)}",
+            f"@level0name = {tsql_literal(target_schema)}",
             "@level1type = N'TABLE'",
             f"@level1name = {tsql_literal(comment.table_name or comment.object_name)}",
         ]
@@ -1377,6 +1638,7 @@ def emit_privilege(
     privilege: Privilege,
     target_dialect: Dialect,
     routine_catalog: RoutineIdentityCatalogLike | None = None,
+    allow_privilege_shim: bool = False,
 ) -> str:
     if privilege.grant_option:
         raise DialectError(
@@ -1384,7 +1646,10 @@ def emit_privilege(
             "grant-option lifecycle needs a target role/ownership policy",
         )
     privilege_list = ", ".join(privilege.privileges)
-    principals = ", ".join(privilege.principals)
+    principals = ", ".join(
+        "'%'@'%'" if target_dialect is Dialect.MYSQL and p.casefold() == "public" and allow_privilege_shim else p
+        for p in privilege.principals
+    )
     if privilege.object_kind in {"FUNCTION", "PROCEDURE"}:
         target = _object_name(privilege.schema, privilege.object_name, target_dialect)
         if target_dialect is Dialect.POSTGRES:
@@ -1392,13 +1657,13 @@ def emit_privilege(
                 f"{privilege.object_kind} {target}({', '.join(privilege.routine_argument_types)})"
             )
         else:
-            if routine_catalog is None or privilege.routine_argument_type_refs is None:
+            if not allow_privilege_shim and (routine_catalog is None or privilege.routine_argument_type_refs is None):
                 raise DialectError(
                     "CERTIFIED_PRIVILEGE_ROUTINE_SIGNATURE_REQUIRED",
                     f"{target_dialect.value} routine privileges cannot safely drop the source "
                     "signature without a target routine-identity catalogue",
                 )
-            if not routine_catalog.has_unique_routine(
+            if not allow_privilege_shim and not routine_catalog.has_unique_routine(
                 privilege.object_kind,
                 privilege.schema,
                 privilege.object_name,
@@ -1409,7 +1674,7 @@ def emit_privilege(
                     f"source catalog cannot prove one exact {target_dialect.value} routine identity",
                 )
             if target_dialect is Dialect.MYSQL:
-                if any(principal.casefold() == "public" for principal in privilege.principals):
+                if any(principal.casefold() == "public" for principal in privilege.principals) and not allow_privilege_shim:
                     raise DialectError(
                         "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
                         "MySQL has no PUBLIC grantee with PostgreSQL's all-account semantics",
@@ -1421,6 +1686,12 @@ def emit_privilege(
                 object_clause = target
     else:
         target = _object_name(privilege.schema, privilege.object_name, target_dialect)
+        if target_dialect is Dialect.MYSQL:
+            if any(principal.casefold() == "public" for principal in privilege.principals) and not allow_privilege_shim:
+                raise DialectError(
+                    "CERTIFIED_PRIVILEGE_PRINCIPAL_UNSUPPORTED_BY_TARGET",
+                    "MySQL has no PUBLIC grantee with PostgreSQL's all-account semantics",
+                )
         if target_dialect is Dialect.TSQL:
             object_clause = f"OBJECT::{target}"
         else:
@@ -1472,6 +1743,22 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
 
     params = ", ".join(param(item) for item in procedure.parameters)
     statements: list[str] = []
+
+    for sp in procedure.savepoints:
+        if target_dialect is Dialect.TSQL:
+            statements.append(f"SAVE TRANSACTION {sp.name};")
+        else:
+            statements.append(f"SAVEPOINT {sp.name};")
+
+    for cl in procedure.cursor_loops:
+        inner = " ".join(cl.body_statements)
+        if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE):
+            statements.append(f"FOR {cl.cursor_name} IN ({cl.query_sql}) LOOP {inner}; END LOOP;")
+        elif target_dialect is Dialect.TSQL:
+            statements.append(f"DECLARE {cl.cursor_name}_cur CURSOR FOR {cl.query_sql}; OPEN {cl.cursor_name}_cur; {inner}; CLOSE {cl.cursor_name}_cur; DEALLOCATE {cl.cursor_name}_cur;")
+        elif target_dialect is Dialect.MYSQL:
+            statements.append(f"BEGIN DECLARE {cl.cursor_name}_cur CURSOR FOR {cl.query_sql}; {inner}; END;")
+
     for assignment in procedure.assignments:
         left = ("@" if target_dialect is Dialect.TSQL else "") + quote_identifier(assignment.target, target_dialect)
         from .routine import _render_routine_value
@@ -1483,7 +1770,69 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
             statements.append(f"SET {left} = {right};")
         else:
             statements.append(f"{left} := {right};")
+
+    for rsp in procedure.rollback_savepoints:
+        if target_dialect is Dialect.TSQL:
+            statements.append(f"ROLLBACK TRANSACTION {rsp.name};")
+        elif target_dialect is Dialect.ORACLE:
+            statements.append(f"ROLLBACK TO {rsp.name};")
+        else:
+            statements.append(f"ROLLBACK TO SAVEPOINT {rsp.name};")
+
+    for if_stmt in procedure.if_statements:
+        if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE, Dialect.MYSQL):
+            elsif_kw = "ELSEIF" if target_dialect is Dialect.MYSQL else "ELSIF"
+            parts = [f"IF {if_stmt.branches[0].condition} THEN {' '.join(if_stmt.branches[0].statements)};"]
+            for branch in if_stmt.branches[1:]:
+                parts.append(f"{elsif_kw} {branch.condition} THEN {' '.join(branch.statements)};")
+            if if_stmt.else_statements:
+                parts.append(f"ELSE {' '.join(if_stmt.else_statements)};")
+            parts.append("END IF;")
+            statements.append(" ".join(parts))
+        elif target_dialect is Dialect.TSQL:
+            parts = [f"IF {if_stmt.branches[0].condition} BEGIN {' '.join(if_stmt.branches[0].statements)}; END"]
+            for branch in if_stmt.branches[1:]:
+                parts.append(f"ELSE IF {branch.condition} BEGIN {' '.join(branch.statements)}; END")
+            if if_stmt.else_statements:
+                parts.append(f"ELSE BEGIN {' '.join(if_stmt.else_statements)}; END")
+            statements.append(" ".join(parts))
+
+    for loop in procedure.while_loops:
+        inner = " ".join(loop.body_statements)
+        if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE, Dialect.MYSQL):
+            statements.append(f"WHILE {loop.condition} LOOP {inner}; END LOOP;")
+        elif target_dialect is Dialect.TSQL:
+            statements.append(f"WHILE {loop.condition} BEGIN {inner}; END")
+
+    for dyn in procedure.dynamic_executes:
+        if target_dialect is Dialect.POSTGRES:
+            into_clause = f" INTO {dyn.into_variable}" if dyn.into_variable else ""
+            statements.append(f"EXECUTE {dyn.query_expression}{into_clause};")
+        elif target_dialect is Dialect.ORACLE:
+            into_clause = f" INTO {dyn.into_variable}" if dyn.into_variable else ""
+            statements.append(f"EXECUTE IMMEDIATE {dyn.query_expression}{into_clause};")
+        elif target_dialect is Dialect.TSQL:
+            statements.append(f"EXEC sp_executesql {dyn.query_expression};")
+        elif target_dialect is Dialect.MYSQL:
+            statements.append(f"SET @dyn_stmt = {dyn.query_expression}; PREPARE stmt FROM @dyn_stmt; EXECUTE stmt; DEALLOCATE PREPARE stmt;")
+
+    exc_statements: list[str] = []
+    for handler in procedure.exception_handlers:
+        act = " ".join(handler.action_statements)
+        if target_dialect in (Dialect.POSTGRES, Dialect.ORACLE):
+            exc_statements.append(f"EXCEPTION WHEN {handler.condition} THEN {act};")
+        elif target_dialect is Dialect.TSQL:
+            exc_statements.append(f"BEGIN CATCH {act}; END CATCH")
+        elif target_dialect is Dialect.MYSQL:
+            exc_statements.append(f"DECLARE EXIT HANDLER FOR SQLEXCEPTION BEGIN {act}; END;")
+
     body = " ".join(statements)
+    if exc_statements:
+        if target_dialect is Dialect.TSQL:
+            body = f"BEGIN TRY {body} END TRY " + " ".join(exc_statements)
+        else:
+            body = body + " " + " ".join(exc_statements)
+
     if target_dialect is Dialect.MYSQL:
         return f"CREATE PROCEDURE {qualified} ({params}) BEGIN {body} END"
     if target_dialect is Dialect.TSQL:
@@ -1493,11 +1842,19 @@ def emit_procedure(procedure: Procedure, target_dialect: Dialect) -> str:
     return f"CREATE{replace} PROCEDURE {qualified}({params}) LANGUAGE plpgsql AS $$ BEGIN {body} END $$"
 
 
-def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str:
+def emit_table_function(
+    function: TableFunction, target_dialect: Dialect, allow_routine_shim: bool = False
+) -> str:
     if target_dialect not in (Dialect.POSTGRES, Dialect.TSQL):
         raise DialectError(
             "CERTIFIED_ROUTINE_TABLE_RETURN_UNSUPPORTED",
             f"{target_dialect.value} has no exact inline table-valued function route",
+        )
+    if (function.security_definer or function.search_path) and not allow_routine_shim:
+        raise DialectError(
+            "CERTIFIED_ROUTINE_SECURITY_CONTEXT_UNSUPPORTED",
+            "SECURITY DEFINER and SET search_path bind execution identity and name resolution; "
+            "no target security mapping was authorized for this route",
         )
     if function.or_replace and target_dialect is Dialect.TSQL:
         raise DialectError(
@@ -1558,8 +1915,10 @@ def emit_table_function(function: TableFunction, target_dialect: Dialect) -> str
             f"CREATE FUNCTION {qualified}({params}) RETURNS TABLE AS RETURN "  # noqa: S608
             f"(SELECT {selected} FROM {source}{where})"  # noqa: S608
         )
+    replace = " OR REPLACE" if function.or_replace and target_dialect is Dialect.POSTGRES else ""
+    sec_clause = " SECURITY DEFINER" if function.security_definer else ""
     return (
-        f"CREATE FUNCTION {qualified}({params}) RETURNS TABLE ({columns}) LANGUAGE SQL "  # noqa: S608
+        f"CREATE{replace} FUNCTION {qualified}({params}) RETURNS TABLE ({columns}) LANGUAGE SQL{sec_clause} "  # noqa: S608
         f"AS $$ SELECT {selected} FROM {source}{where} $$"  # noqa: S608
     )
 
@@ -1603,8 +1962,8 @@ def _render_trigger_expression(expression: CheckExpression, dialect: Dialect) ->
     )
 
 
-def emit_trigger(trigger: Trigger, target_dialect: Dialect) -> str:
-    if target_dialect is not Dialect.POSTGRES:
+def emit_trigger(trigger: Trigger, target_dialect: Dialect, allow_trigger_shim: bool = False) -> str:
+    if target_dialect is not Dialect.POSTGRES and not allow_trigger_shim:
         raise DialectError(
             "CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED",
             "trigger execution/action semantics are target-specific; this route emits only PostgreSQL trigger syntax",
@@ -1624,8 +1983,29 @@ def emit_trigger(trigger: Trigger, target_dialect: Dialect) -> str:
     events = " OR ".join(event_sql)
     row = " FOR EACH ROW" if trigger.row_level else " FOR EACH STATEMENT"
     when = "" if trigger.when is None else f" WHEN ({_render_trigger_expression(trigger.when, target_dialect)})"
-    return (
-        f"CREATE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
-        f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
-        f"EXECUTE FUNCTION {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}()"
-    )
+
+    if target_dialect is Dialect.POSTGRES:
+        return (
+            f"CREATE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
+            f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
+            f"EXECUTE FUNCTION {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}()"
+        )
+    if target_dialect is Dialect.ORACLE:
+        return (
+            f"CREATE OR REPLACE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
+            f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
+            f"BEGIN {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}(); END;"
+        )
+    if target_dialect is Dialect.MYSQL:
+        return (
+            f"CREATE TRIGGER {quote_identifier(trigger.name, target_dialect)} {trigger.timing.value} {events} ON "
+            f"{_object_name(trigger.table_schema, trigger.table, target_dialect)}{row}{when} "
+            f"BEGIN CALL {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}(); END"
+        )
+    if target_dialect is Dialect.TSQL:
+        return (
+            f"CREATE TRIGGER {quote_identifier(trigger.name, target_dialect)} ON "
+            f"{_object_name(trigger.table_schema, trigger.table, target_dialect)} {trigger.timing.value} {events} "
+            f"AS BEGIN EXEC {_object_name(trigger.routine_schema, trigger.routine_name, target_dialect)}; END"
+        )
+    raise DialectError("CERTIFIED_ROUTINE_TRIGGER_TARGET_ROUTE_REQUIRED", f"unsupported target dialect {target_dialect}")

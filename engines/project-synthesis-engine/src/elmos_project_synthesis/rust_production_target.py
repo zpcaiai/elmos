@@ -762,7 +762,7 @@ def _string_const(name: str, literal: str) -> str:
     return single
 
 
-def _upsert_query(bind_values: list[str]) -> str:
+def _upsert_query(bind_values: list[str], *, sql_const: str = "UPSERT_SQL") -> str:
     """Lay out the upsert `.query(..)` call the way rustfmt would.
 
     This is the one call whose width genuinely tracks the schema: it binds one
@@ -774,18 +774,28 @@ def _upsert_query(bind_values: list[str]) -> str:
     values = ["&tenant", "&id", *bind_values]
     parameters = ", ".join(values)
     collapsed = (
-        f"        let rows = transaction.query(UPSERT_SQL, &[{parameters}]).await?;"
+        f"        let rows = transaction.query({sql_const}, &[{parameters}]).await?;"
     )
     if len(collapsed) <= _RUSTFMT_MAX_WIDTH:
         return collapsed
-    broken = f"            .query(UPSERT_SQL, &[{parameters}])"
+    broken = f"            .query({sql_const}, &[{parameters}])"
     if len(broken) <= _RUSTFMT_MAX_WIDTH:
         return f"        let rows = transaction\n{broken}\n            .await?;"
+    param_line = f"                &[{parameters}],"
+    if len(param_line) <= _RUSTFMT_MAX_WIDTH:
+        return (
+            "        let rows = transaction\n"
+            "            .query(\n"
+            f"                {sql_const},\n"
+            f"{param_line}\n"
+            "            )\n"
+            "            .await?;"
+        )
     entries = "\n".join(f"                    {value}," for value in values)
     return (
         "        let rows = transaction\n"
         "            .query(\n"
-        "                UPSERT_SQL,\n"
+        f"                {sql_const},\n"
         "                &[\n"
         f"{entries}\n"
         "                ],\n"
@@ -851,43 +861,197 @@ def _security_source(request: SynthesisRequest) -> str:
 
 
 def _store_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    entity_type = _entity_type(request)
-    sql = all_entity_sql(request, placeholder="${}")[0]
-    upsert_fields = "\n".join(
-        f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields
+    from .models import pascal
+
+    statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
+    shared = f"""
+use rust_decimal::Decimal;
+use rust_decimal::prelude::{{FromPrimitive, ToPrimitive}};
+use serde::{{Deserialize, Serialize}};
+use tokio_postgres::{{Client, NoTls, Row}};
+use uuid::Uuid;
+
+{_string_const("BIND_TENANT_SQL", json.dumps(f"SELECT set_config('{TENANT_SETTING}', $1, true)"))}
+
+#[derive(Debug)]
+pub enum StoreError {{
+    Database(tokio_postgres::Error),
+    Conversion(&'static str),
+}}
+
+impl std::fmt::Display for StoreError {{
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {{
+        match self {{
+            Self::Database(error) => write!(formatter, "{{error}}"),
+            Self::Conversion(reason) => write!(formatter, "{{reason}}"),
+        }}
+    }}
+}}
+
+impl std::error::Error for StoreError {{}}
+
+impl From<tokio_postgres::Error> for StoreError {{
+    fn from(error: tokio_postgres::Error) -> Self {{
+        Self::Database(error)
+    }}
+}}
+
+fn decimal_to_f64(value: Decimal) -> Result<f64, StoreError> {{
+    value.to_f64().ok_or(StoreError::Conversion("NUMERIC_EXCEEDS_F64_RANGE"))
+}}
+
+fn f64_to_decimal(value: f64) -> Result<Decimal, StoreError> {{
+    Decimal::from_f64(value).ok_or(StoreError::Conversion("F64_NOT_REPRESENTABLE_AS_NUMERIC"))
+}}
+"""
+    blocks: list[str] = [shared]
+    for entity in request.entities:
+        entity_type = pascal(entity.singular)
+        prefix = entity.singular.upper().replace("-", "_")
+        sql = statements[entity.singular]
+        upsert_fields = "\n".join(
+            f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields
+        )
+        record_fields = upsert_fields
+        row_assignments = ["id: row.get(0)"] + [
+            f"{field.name}: {_row_read(field, index + 1)}"
+            for index, field in enumerate(entity.fields)
+        ]
+        bind_values = [_bind_expression(field) for field in entity.fields]
+        sql_consts = "\n".join(
+            _string_const(name, json.dumps(statement))
+            for name, statement in (
+                (f"{prefix}_LIST_SQL", sql.list_sql),
+                (f"{prefix}_GET_SQL", sql.get_sql),
+                (f"{prefix}_UPSERT_SQL", sql.upsert_sql),
+                (f"{prefix}_DELETE_SQL", sql.delete_sql),
+            )
+        )
+        upsert_query = _upsert_query(bind_values, sql_const=f"{prefix}_UPSERT_SQL")
+        list_sig = f"    pub async fn list(&self, tenant: &str) -> Result<Vec<{entity_type}>, StoreError> {{"
+        if len(list_sig) > 100:
+            list_sig = (
+                "    pub async fn list(\n"
+                "        &self,\n"
+                "        tenant: &str,\n"
+                f"    ) -> Result<Vec<{entity_type}>, StoreError> {{"
+            )
+        list_records = (
+            f"        let records = rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;"
+        )
+        if len(list_records) > 92:
+            list_records = (
+                "        let records =\n"
+                f"            rows.iter().map({entity_type}::from_row).collect::<Result<Vec<_>, _>>()?;"
+            )
+        find_sig = f"    pub async fn find(&self, tenant: &str, id: Uuid) -> Result<Option<{entity_type}>, StoreError> {{"
+        if len(find_sig) > 100:
+            find_sig = (
+                "    pub async fn find(\n"
+                "        &self,\n"
+                "        tenant: &str,\n"
+                "        id: Uuid,\n"
+                f"    ) -> Result<Option<{entity_type}>, StoreError> {{"
+            )
+        blocks.append(
+            f"""
+{sql_consts}
+
+#[derive(Debug, Deserialize)]
+pub struct {entity_type}Upsert {{
+{upsert_fields}
+}}
+
+#[derive(Debug, Serialize)]
+pub struct {entity_type} {{
+    pub id: Uuid,
+{record_fields}
+}}
+
+impl {entity_type} {{
+    fn from_row(row: &Row) -> Result<Self, StoreError> {{
+{_from_row_body(row_assignments)}
+    }}
+}}
+
+pub struct {entity_type}Store {{
+    database_url: String,
+}}
+
+impl {entity_type}Store {{
+    pub fn new(database_url: String) -> Self {{
+        Self {{ database_url }}
+    }}
+
+    async fn connect(&self) -> Result<Client, StoreError> {{
+        let (client, connection) = tokio_postgres::connect(&self.database_url, NoTls).await?;
+        tokio::spawn(async move {{
+            if let Err(error) = connection.await {{
+                eprintln!("connection closed: {{error}}");
+            }}
+        }});
+        Ok(client)
+    }}
+
+{list_sig}
+        let mut client = self.connect().await?;
+        let transaction = client.transaction().await?;
+        bind_tenant(&transaction, tenant).await?;
+        let rows = transaction.query({prefix}_LIST_SQL, &[]).await?;
+{list_records}
+        transaction.commit().await?;
+        Ok(records)
+    }}
+
+{find_sig}
+        let mut client = self.connect().await?;
+        let transaction = client.transaction().await?;
+        bind_tenant(&transaction, tenant).await?;
+        let rows = transaction.query({prefix}_GET_SQL, &[&id]).await?;
+        let record = rows.first().map({entity_type}::from_row).transpose()?;
+        transaction.commit().await?;
+        Ok(record)
+    }}
+
+    pub async fn save(
+        &self,
+        tenant: &str,
+        id: Uuid,
+        payload: {entity_type}Upsert,
+    ) -> Result<{entity_type}, StoreError> {{
+        let mut client = self.connect().await?;
+        let transaction = client.transaction().await?;
+        bind_tenant(&transaction, tenant).await?;
+{upsert_query}
+        let row = rows.first().ok_or(StoreError::Conversion("UPSERT_RETURNED_NO_ROW"))?;
+        let record = {entity_type}::from_row(row)?;
+        transaction.commit().await?;
+        Ok(record)
+    }}
+
+    pub async fn delete(&self, tenant: &str, id: Uuid) -> Result<bool, StoreError> {{
+        let mut client = self.connect().await?;
+        let transaction = client.transaction().await?;
+        bind_tenant(&transaction, tenant).await?;
+        let affected = transaction.execute({prefix}_DELETE_SQL, &[&id]).await?;
+        transaction.commit().await?;
+        Ok(affected > 0)
+    }}
+}}
+"""
+        )
+    blocks.append(
+        """
+async fn bind_tenant(
+    transaction: &tokio_postgres::Transaction<'_>,
+    tenant: &str,
+) -> Result<(), StoreError> {
+    transaction.query(BIND_TENANT_SQL, &[&tenant]).await?;
+    Ok(())
+}
+"""
     )
-    record_fields = "\n".join(
-        f"    pub {field.name}: {_rust_type(field)}," for field in entity.fields
-    )
-    row_assignments = ["id: row.get(0)"] + [
-        f"{field.name}: {_row_read(field, index + 1)}"
-        for index, field in enumerate(entity.fields)
-    ]
-    bind_values = [_bind_expression(field) for field in entity.fields]
-    return _substitute(
-        _STORE_SOURCE,
-        {
-            "__ENTITY__": entity_type,
-            "__UPSERT_FIELDS__": upsert_fields,
-            "__RECORD_FIELDS__": record_fields,
-            "__FROM_ROW_BODY__": _from_row_body(row_assignments),
-            "__UPSERT_QUERY__": _upsert_query(bind_values),
-            "__SQL_CONSTS__": "\n".join(
-                _string_const(name, json.dumps(statement))
-                for name, statement in (
-                    ("LIST_SQL", sql.list_sql),
-                    ("GET_SQL", sql.get_sql),
-                    ("UPSERT_SQL", sql.upsert_sql),
-                    ("DELETE_SQL", sql.delete_sql),
-                    (
-                        "BIND_TENANT_SQL",
-                        f"SELECT set_config('{TENANT_SETTING}', $1, true)",
-                    ),
-                )
-            ),
-        },
-    )
+    return "\n\n".join(block.strip() for block in blocks) + "\n"
 
 
 def _entity_type(request: SynthesisRequest) -> str:
@@ -897,27 +1061,190 @@ def _entity_type(request: SynthesisRequest) -> str:
 
 
 def _application_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    checks = [
-        f"    reject_blank(&payload.{field.name})?;"
-        for field in entity.fields
-        if field.required and field.type == "string"
-    ]
-    required_checks = "\n".join(checks) or "    // no blank-string constraints declared"
-    return _substitute(
-        _APPLICATION_SOURCE,
-        {
-            "__PATH_CONSTS__": "\n".join(
-                (
-                    _string_const("SERVICE_NAME", json.dumps(request.project_name)),
-                    _string_const("COLLECTION_PATH", json.dumps(f"/{entity.plural}")),
-                    _string_const("ITEM_PATH", json.dumps(f"/{entity.plural}/{{id}}")),
-                )
-            ),
-            "__REQUIRED_CHECKS__": required_checks,
-            "__ENV_DATABASE_URL_FILE__": ENV_DATABASE_URL_FILE,
-        },
+    from .models import pascal
+
+    imports = ", ".join(
+        f"{pascal(entity.singular)}Store, {pascal(entity.singular)}Upsert"
+        for entity in request.entities
     )
+    state_fields = "\n    ".join(
+        f"pub {entity.singular}_store: {pascal(entity.singular)}Store,"
+        for entity in request.entities
+    )
+    path_consts = [_string_const("SERVICE_NAME", json.dumps(request.project_name))]
+    handlers: list[str] = []
+    routes = ['.route("/health", get(health))']
+    build_fields = ["authenticator: TenantAuthenticator::from_environment()?,"]
+    for entity in request.entities:
+        entity_type = pascal(entity.singular)
+        prefix = entity.singular
+        collection = f"/{entity.plural}"
+        item = f"/{entity.plural}/{{id}}"
+        path_consts.append(_string_const(f"{prefix.upper()}_COLLECTION_PATH", json.dumps(collection)))
+        path_consts.append(_string_const(f"{prefix.upper()}_ITEM_PATH", json.dumps(item)))
+        checks = "\n    ".join(
+            f"    reject_blank(&payload.{field.name})?;"
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ) or "    // no blank-string constraints declared"
+        save_line = (
+            f"    let record = state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+        )
+        if len(save_line) > 100:
+            save_stmt = (
+                "    let record =\n"
+                f"        state.{prefix}_store.save(&tenant, id, payload).await.map_err(internal)?;"
+            )
+        else:
+            save_stmt = save_line
+        handlers.append(
+            f"""
+async fn list_{entity.plural}(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+) -> Result<impl IntoResponse, ApiError> {{
+    let tenant = tenant_of(&state, &headers)?;
+    let records = state.{prefix}_store.list(&tenant).await.map_err(internal)?;
+    Ok(Json(records))
+}}
+
+async fn get_{entity.singular}(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    Path(raw_id): Path<String>,
+) -> Result<impl IntoResponse, ApiError> {{
+    let tenant = tenant_of(&state, &headers)?;
+    let id = record_id(&raw_id)?;
+    match state.{prefix}_store.find(&tenant, id).await.map_err(internal)? {{
+        Some(record) => Ok(Json(record)),
+        None => Err(ApiError(StatusCode::NOT_FOUND, "not_found")),
+    }}
+}}
+
+async fn put_{entity.singular}(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    Path(raw_id): Path<String>,
+    Json(payload): Json<{entity_type}Upsert>,
+) -> Result<impl IntoResponse, ApiError> {{
+    let tenant = tenant_of(&state, &headers)?;
+    let id = record_id(&raw_id)?;
+{checks}
+{save_stmt}
+    Ok(Json(record))
+}}
+
+async fn delete_{entity.singular}(
+    State(state): State<Arc<AppState>>,
+    headers: HeaderMap,
+    Path(raw_id): Path<String>,
+) -> Result<impl IntoResponse, ApiError> {{
+    let tenant = tenant_of(&state, &headers)?;
+    let id = record_id(&raw_id)?;
+    state.{prefix}_store.delete(&tenant, id).await.map_err(internal)?;
+    Ok(StatusCode::NO_CONTENT)
+}}
+"""
+        )
+        routes.append(
+            f".route({prefix.upper()}_COLLECTION_PATH, get(list_{entity.plural}))"
+        )
+        item_route = (
+            f".route({prefix.upper()}_ITEM_PATH, "
+            f"get(get_{entity.singular}).put(put_{entity.singular}).delete(delete_{entity.singular}))"
+        )
+        if 8 + len(item_route) > 100:
+            routes.append(
+                f".route(\n"
+                f"            {prefix.upper()}_ITEM_PATH,\n"
+                f"            get(get_{entity.singular})\n"
+                f"                .put(put_{entity.singular})\n"
+                f"                .delete(delete_{entity.singular}),\n"
+                f"        )"
+            )
+        else:
+            routes.append(item_route)
+        build_fields.append(f"{prefix}_store: {entity_type}Store::new(url.clone()),")
+    route_chain = "\n        ".join(routes)
+    handlers_str = "\n\n".join(h.strip() for h in handlers)
+    build_fields_str = "\n".join(f"        {field}" for field in build_fields)
+    return f"""use axum::extract::{{Path, State}};
+use axum::http::{{HeaderMap, StatusCode}};
+use axum::response::{{IntoResponse, Response}};
+use axum::routing::get;
+use axum::{{Json, Router}};
+use serde_json::json;
+use std::sync::Arc;
+use uuid::Uuid;
+
+use crate::security::{{TenantAuthenticator, required_environment}};
+use crate::store::{{{imports}}};
+
+{chr(10).join(path_consts)}
+
+pub struct AppState {{
+    pub authenticator: TenantAuthenticator,
+    {state_fields}
+}}
+
+struct ApiError(StatusCode, &'static str);
+
+impl IntoResponse for ApiError {{
+    fn into_response(self) -> Response {{
+        (self.0, Json(json!({{ "error": self.1 }}))).into_response()
+    }}
+}}
+
+fn tenant_of(state: &AppState, headers: &HeaderMap) -> Result<String, ApiError> {{
+    let authorization = headers.get("authorization").and_then(|value| value.to_str().ok());
+    state
+        .authenticator
+        .tenant_from(authorization)
+        .ok_or(ApiError(StatusCode::UNAUTHORIZED, "unauthorized"))
+}}
+
+const BAD_RECORD_ID: &str = "RECORD_ID_MUST_BE_UUID";
+
+fn record_id(raw: &str) -> Result<Uuid, ApiError> {{
+    Uuid::parse_str(raw).map_err(|_| ApiError(StatusCode::BAD_REQUEST, BAD_RECORD_ID))
+}}
+
+fn reject_blank(value: &str) -> Result<(), ApiError> {{
+    if value.trim().is_empty() {{
+        Err(ApiError(StatusCode::BAD_REQUEST, "string_value_blank"))
+    }} else {{
+        Ok(())
+    }}
+}}
+
+fn internal(error: impl std::fmt::Display) -> ApiError {{
+    eprintln!("request failed: {{error}}");
+    ApiError(StatusCode::INTERNAL_SERVER_ERROR, "internal_error")
+}}
+
+async fn health() -> impl IntoResponse {{
+    Json(json!({{ "status": "UP", "service": SERVICE_NAME }}))
+}}
+
+{handlers_str}
+
+pub fn router(state: Arc<AppState>) -> Router {{
+    Router::new()
+        {route_chain}
+        .with_state(state)
+}}
+
+pub fn build_state() -> Result<AppState, Box<dyn std::error::Error>> {{
+    let path = required_environment("{ENV_DATABASE_URL_FILE}")?;
+    let url = std::fs::read_to_string(path)?.trim().to_owned();
+    if !url.starts_with("postgresql://") {{
+        return Err("DATABASE_URL_SCHEME_UNSUPPORTED".into());
+    }}
+    Ok(AppState {{
+{build_fields_str}
+    }})
+}}
+"""
 
 
 def _test_source(request: SynthesisRequest, port: int) -> str:
@@ -957,11 +1284,6 @@ def _test_source(request: SynthesisRequest, port: int) -> str:
 
 
 def render_rust_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        raise ValueError(
-            "RUST_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
     crate = _crate_name(request.project_name)
     return {
         ".gitignore": gitignore(),

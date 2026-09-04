@@ -74,6 +74,13 @@ TARGET_PROFILES: dict[str, dict[str, str | int]] = {
 }
 SUPPORTED_LANGUAGES = tuple(TARGET_PROFILES)
 SUPPORTED_FIELD_TYPES = ("string", "integer", "number", "boolean", "datetime")
+STARTER_GENERATION_PROFILE = "starter-v1"
+RELATIONAL_GENERATION_PROFILE = "relational-v2"
+SUPPORTED_GENERATION_PROFILES = (
+    STARTER_GENERATION_PROFILE,
+    RELATIONAL_GENERATION_PROFILE,
+)
+STARTER_MULTI_ENTITY_TARGETS = frozenset(SUPPORTED_LANGUAGES)
 # The current emitters implement one exact, reviewable starter profile. Keep
 # planned profiles out of the accepted request contract until every selected
 # target can generate and independently verify the corresponding behavior.
@@ -545,6 +552,7 @@ class SynthesisRequest:
     project_kind: str
     persistence: str
     auth_mode: str
+    generation_profile: str
     entities: tuple[EntitySpec, ...]
     relations: tuple[RelationSpec, ...]
     targets: tuple[TargetSpec, ...]
@@ -553,11 +561,22 @@ class SynthesisRequest:
 
     @classmethod
     def from_mapping(cls, mapping: dict[str, Any], *, require_approval: bool = True) -> SynthesisRequest:
-        if mapping.get("schema_version") != "1.1.0":
+        schema_version = mapping.get("schema_version")
+        if schema_version not in {"1.1.0", "1.2.0"}:
             raise RequestValidationError("UNSUPPORTED_REQUEST_SCHEMA")
         project = mapping.get("project")
         if not isinstance(project, dict):
             raise RequestValidationError("PROJECT_REQUIRED")
+        if schema_version == "1.1.0":
+            if "generation_profile" in project:
+                raise RequestValidationError("GENERATION_PROFILE_REQUIRES_REQUEST_SCHEMA_1_2")
+            generation_profile = STARTER_GENERATION_PROFILE
+        else:
+            generation_profile = str(project.get("generation_profile", ""))
+            if generation_profile != RELATIONAL_GENERATION_PROFILE:
+                raise RequestValidationError(
+                    f"GENERATION_PROFILE_INVALID:{generation_profile}"
+                )
         project_name = str(project.get("name", ""))
         if not SLUG_PATTERN.fullmatch(project_name):
             raise RequestValidationError("PROJECT_NAME_MUST_BE_KEBAB_CASE")
@@ -592,15 +611,19 @@ class SynthesisRequest:
             raise RequestValidationError("RELATIONS_MUST_BE_ARRAY")
         relations = tuple(RelationSpec.from_mapping(item, entity_fields=entity_fields) for item in relations_raw)
         if persistence == "postgresql" and require_approval:
-            # many-to-many is the one kind still outside the production profile:
-            # it needs a join table owned by no entity, plus association
-            # endpoints. The other three are one foreign key each.
             for relation in relations:
                 canonical = relation.canonical()
-                if (
-                    relation.kind not in {"many-to-one", "one-to-one", "one-to-many"}
-                    or canonical.source_field is None
-                    or canonical.target_field != "id"
+                if relation.kind == "many-to-many":
+                    if (
+                        generation_profile != RELATIONAL_GENERATION_PROFILE
+                        or relation.source_field is not None
+                        or relation.target_field is not None
+                    ):
+                        raise RequestValidationError(
+                            "PRODUCTION_RELATION_PROFILE_UNSUPPORTED"
+                        )
+                elif (
+                    canonical.source_field is None or canonical.target_field != "id"
                 ):
                     raise RequestValidationError("PRODUCTION_RELATION_PROFILE_UNSUPPORTED")
             adjacency: dict[str, set[str]] = {name: set() for name in entity_names}
@@ -609,7 +632,8 @@ class SynthesisRequest:
                 # in the canonical orientation -- otherwise a cycle written
                 # partly as one-to-many would slip through.
                 canonical = relation.canonical()
-                adjacency[canonical.source].add(canonical.target)
+                if canonical.kind != "many-to-many":
+                    adjacency[canonical.source].add(canonical.target)
             visiting: set[str] = set()
             visited: set[str] = set()
 
@@ -644,6 +668,19 @@ class SynthesisRequest:
                 "PROFILE_TARGET_COMBINATION_UNSUPPORTED:"
                 f"{persistence}:{auth_mode}:{','.join(unsupported_profile_targets)}"
             )
+        if (
+            generation_profile == STARTER_GENERATION_PROFILE
+            and persistence == "postgresql"
+            and len(entities) > 1
+        ):
+            unsupported_multi_entity_targets = sorted(
+                set(languages) - STARTER_MULTI_ENTITY_TARGETS
+            )
+            if unsupported_multi_entity_targets:
+                raise RequestValidationError(
+                    "RELATIONAL_V2_REQUIRED_FOR_MULTI_ENTITY:"
+                    + ",".join(unsupported_multi_entity_targets)
+                )
 
         requirements = mapping.get("requirements")
         _validate_requirements(requirements)
@@ -675,6 +712,7 @@ class SynthesisRequest:
             project_kind=project_kind,
             persistence=persistence,
             auth_mode=auth_mode,
+            generation_profile=generation_profile,
             entities=entities,
             relations=relations,
             targets=targets,

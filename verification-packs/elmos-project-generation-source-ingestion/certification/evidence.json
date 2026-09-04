@@ -37,6 +37,7 @@
   },
   "evidence_refs": [
     "certification/local-test-result.json",
+    "certification/local-test-environment.json",
     "corpus/negative/cases.json",
     "corpus/holdout/cases.json",
     "corpus/representative-workloads/cases.json",

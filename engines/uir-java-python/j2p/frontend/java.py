@@ -83,15 +83,15 @@ from ..uir import (
     While,
 )
 
+from . import native_j2p_bridge
+
 try:  # pragma: no cover - import guard
     import tree_sitter_java
     from tree_sitter import Language, Node, Parser
-except ImportError as exc:  # pragma: no cover - import guard
-    raise ImportError(
-        "the Java front end requires tree_sitter and tree_sitter_java; install "
-        "them with `pip install -r requirements.txt`.  It deliberately does not "
-        "fall back to a regex parser."
-    ) from exc
+    _TREE_SITTER_AVAILABLE = True
+except ImportError:  # pragma: no cover - import guard
+    _TREE_SITTER_AVAILABLE = False
+    Language = Node = Parser = None
 
 
 class UnsupportedConstruct(Exception):
@@ -301,9 +301,12 @@ class JavaFrontend:
         #: This file's package and imports, needed to resolve a written name the
         #: way Java would.  Filled in during parsing.
         self.package: str | None = None
-        self.imports: tuple[str, ...] = ()
-        self._language = Language(tree_sitter_java.language())
-        self._parser = Parser(self._language)
+        if _TREE_SITTER_AVAILABLE:
+            self._language = Language(tree_sitter_java.language())
+            self._parser = Parser(self._language)
+        else:
+            self._language = None
+            self._parser = None
         #: Return types of methods declared in this compilation unit, so calls
         #: to them are typed instead of degrading to UnknownType.
         self._method_types: dict[str, uir.Type] = {}
@@ -341,6 +344,11 @@ class JavaFrontend:
         return cls(p.read_bytes(), p.name)
 
     def parse(self) -> Module:
+        if self._parser is None:
+            raise ImportError(
+                "tree-sitter-java is required for full AST tree lowering; "
+                "use native_j2p_bridge.native_parse_java_summary() for fast Rust AST extraction."
+            )
         tree = self._parser.parse(self.source)
         root = tree.root_node
         if root.has_error:

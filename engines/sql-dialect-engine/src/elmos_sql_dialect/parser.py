@@ -31,9 +31,15 @@ from .models import (
     AddColumn,
     AddConstraint,
     AlterAction,
+    AlterColumnType,
     AlterTable,
     CanonicalType,
     CanonicalTypeRef,
+    DeleteStatement,
+    DropNotNull,
+    SetNotNull,
+    TruncateTable,
+    TypeMigrationPolicy,
     CheckBooleanExpression,
     CheckComparison,
     CheckConnector,
@@ -135,6 +141,7 @@ _TYPE_MAP: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
     DataType.Type.DATETIME2: CanonicalType.TIMESTAMP,
     # SQL Server's BIT is its boolean type.
     DataType.Type.BIT: CanonicalType.BOOLEAN,
+    DataType.Type.UUID: CanonicalType.UUID,
 }
 
 _SERIAL_TYPES: dict[DataType.Type, CanonicalType] = {  # type: ignore[valid-type]
@@ -446,6 +453,22 @@ def _parse_source_statements(sql: str, source_dialect: Dialect) -> list[exp.Expr
     except sqlglot.errors.SqlglotError as parse_error:
         if source_dialect is not Dialect.POSTGRES:
             raise
+        if re.search(r"\bLANGUAGE\s+SQL\s+SECURITY\s+(?:DEFINER|INVOKER)\b", sql, re.IGNORECASE):
+            rewritten = re.sub(
+                r"\bLANGUAGE\s+SQL\s+SECURITY\s+(DEFINER|INVOKER)\b",
+                r"LANGUAGE SQL SQL SECURITY \1",
+                sql,
+                flags=re.IGNORECASE,
+            )
+            try:
+                statements = cast(
+                    list[exp.Expression],
+                    [s for s in sqlglot.parse(rewritten, read=source_dialect.value) if s is not None],
+                )
+                if statements:
+                    return statements
+            except sqlglot.errors.SqlglotError:
+                pass
         normalized = _coalesce_adjacent_string_literals(sql)
         if normalized != sql:
             try:
@@ -631,7 +654,11 @@ def _statement(sql: str | exp.Expression, source_dialect: Dialect) -> exp.Expres
     return _require_single_statement(sql, source_dialect)
 
 
-def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTypeRef:
+def _parse_type(
+    data_type: exp.DataType,
+    source_dialect: Dialect,
+    type_policy: TypeMigrationPolicy | None = None,
+) -> CanonicalTypeRef:
     sqlglot_type = data_type.this
     params = list(data_type.expressions or [])
 
@@ -646,7 +673,7 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
             "ARRAY must declare exactly one typed element type",
         )
         assert isinstance(params[0], exp.DataType)
-        element_type = _parse_type(params[0], source_dialect)
+        element_type = _parse_type(params[0], source_dialect, type_policy)
         _require(
             element_type.canonical_type is not CanonicalType.ARRAY,
             "CERTIFIED_DDL_UNSUPPORTED_TYPE",
@@ -699,6 +726,10 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
             return CanonicalTypeRef(canonical_type=CanonicalType.TEXT)
 
     if sqlglot_type == DataType.Type.UBIGINT:
+        if type_policy is not None and type_policy.unsigned_bigint == "decimal20":
+            return CanonicalTypeRef(canonical_type=CanonicalType.DECIMAL, precision=20, scale=0)
+        if type_policy is not None and type_policy.unsigned_bigint == "checked_bigint":
+            return CanonicalTypeRef(canonical_type=CanonicalType.INT64)
         # 0..18446744073709551615 does not fit INT64, and PostgreSQL, Oracle
         # and SQL Server have no unsigned integer type at all. DECIMAL(20, 0)
         # is the exact substitute, but it is a different type class (no
@@ -723,6 +754,11 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
         if isinstance(width, exp.Literal) and not width.is_string and int(width.this) == 1:
             return CanonicalTypeRef(canonical_type=CanonicalType.BOOLEAN)
 
+    if sqlglot_type == DataType.Type.USERDEFINED:
+        type_name = str(node.this).upper() if node.this is not None else ""
+        if type_name == "UUID":
+            return CanonicalTypeRef(canonical_type=CanonicalType.UUID)
+
     canonical = _TYPE_MAP.get(sqlglot_type)
     _require(
         canonical is not None,
@@ -730,6 +766,9 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
         f"column type {sqlglot_type} is outside certified-ddl-v1's type allowlist",
     )
     assert canonical is not None  # narrows for mypy; _require already enforced this at runtime
+
+    if canonical == CanonicalType.UUID:
+        return CanonicalTypeRef(canonical_type=canonical)
 
     def _param_int(index: int) -> int | None:
         if index >= len(params):
@@ -744,22 +783,29 @@ def _parse_type(data_type: exp.DataType, source_dialect: Dialect) -> CanonicalTy
 
     if canonical == CanonicalType.DECIMAL:
         precision = _param_int(0)
-        # An unparameterised DECIMAL/NUMBER is *arbitrary* precision and scale
-        # in PostgreSQL and Oracle. There is no such type in MySQL or SQL
-        # Server, and substituting a default (the pre-fix behaviour used
-        # DECIMAL(18, 0)) silently rounds every fractional value in the table
-        # to an integer. certified-ddl-v1 fails closed instead.
-        _require(
-            precision is not None,
-            "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
-            f"{sqlglot_type} without an explicit precision is arbitrary-precision in "
-            f"{source_dialect.value}; no fixed-precision target type preserves it, so "
-            "certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
-        )
+        if precision is None:
+            if type_policy is not None and type_policy.unbounded_decimal == "decimal38_10":
+                return CanonicalTypeRef(canonical_type=canonical, precision=38, scale=10)
+            if type_policy is not None and type_policy.unbounded_decimal == "decimal28_8":
+                return CanonicalTypeRef(canonical_type=canonical, precision=28, scale=8)
+            # An unparameterised DECIMAL/NUMBER is *arbitrary* precision and scale
+            # in PostgreSQL and Oracle. There is no such type in MySQL or SQL
+            # Server, and substituting a default (the pre-fix behaviour used
+            # DECIMAL(18, 0)) silently rounds every fractional value in the table
+            # to an integer. certified-ddl-v1 fails closed instead.
+            _require(
+                precision is not None,
+                "CERTIFIED_DDL_UNBOUNDED_DECIMAL",
+                f"{sqlglot_type} without an explicit precision is arbitrary-precision in "
+                f"{source_dialect.value}; no fixed-precision target type preserves it, so "
+                "certified-ddl-v1 requires DECIMAL(p) or DECIMAL(p, s)",
+            )
         return CanonicalTypeRef(canonical_type=canonical, precision=precision, scale=_param_int(1))
     if canonical in (CanonicalType.CHAR, CanonicalType.VARCHAR):
         length = _param_int(0)
         if canonical == CanonicalType.VARCHAR and length is None:
+            if type_policy is not None and type_policy.unbounded_varchar == "text":
+                return CanonicalTypeRef(canonical_type=CanonicalType.TEXT)
             # PostgreSQL's bare `VARCHAR` is explicitly unlimited (equivalent
             # to TEXT). SQL Server's bare `VARCHAR` means VARCHAR(1); MySQL
             # and Oracle reject the bare form outright. Only the PostgreSQL
@@ -814,6 +860,21 @@ def _parse_default(
             "CURRENT_TIMESTAMP default is only supported on TIMESTAMP columns",
         )
         return ColumnDefault(kind=DefaultKind.CURRENT_TIMESTAMP)
+    is_uuid_default = (
+        isinstance(node, exp.Uuid)
+        or (isinstance(node, exp.Paren) and isinstance(node.this, exp.Uuid))
+        or (
+            isinstance(node, exp.Anonymous)
+            and str(node.this).upper() in ("SYS_GUID", "UUID_GENERATE_V4", "GEN_RANDOM_UUID", "NEWID", "UUID")
+        )
+    )
+    if is_uuid_default:
+        _require(
+            type_ref.canonical_type in (CanonicalType.UUID, CanonicalType.VARCHAR, CanonicalType.CHAR, CanonicalType.TEXT),
+            "CERTIFIED_DDL_DEFAULT_TYPE_MISMATCH",
+            "UUID generator default is only supported on UUID or string columns",
+        )
+        return ColumnDefault(kind=DefaultKind.UUID)
     if type_ref.canonical_type is CanonicalType.ARRAY:
         _require(
             source_dialect is Dialect.POSTGRES,
@@ -1610,6 +1671,7 @@ def parse_create_table(
     sql: str | exp.Expression,
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
+    type_policy: TypeMigrationPolicy | None = None,
 ) -> Table:
     statement = _statement(sql, source_dialect)
     _require(
@@ -1651,7 +1713,7 @@ def parse_create_table(
                 f"column {column_name!r} is missing a type",
             )
             assert item.kind is not None  # narrows for mypy; _require already enforced this at runtime
-            type_ref = _parse_type(item.kind, source_dialect)
+            type_ref = _parse_type(item.kind, source_dialect, type_policy)
             (nullable, default, auto_increment, pk_shorthand, unique_shorthand, inline_fk, inline_checks) = (
                 _column_constraints(item, type_ref, column_name, source_dialect, namespace_map)
             )
@@ -2227,7 +2289,33 @@ def parse_insert(
         "certified-insert-v1 only accepts one INSERT statement",
     )
     assert isinstance(statement, exp.Insert)
-    for flag in (
+    on_conflict_do_nothing = False
+    conflict_node = statement.args.get("conflict")
+    if conflict_node is not None:
+        if isinstance(conflict_node, exp.OnConflict):
+            action_sql = conflict_node.sql().upper()
+            if (
+                "DO NOTHING" in action_sql
+                and not conflict_node.args.get("expressions")
+                and not conflict_node.args.get("conflict_keys")
+                and not conflict_node.args.get("constraint")
+                and not conflict_node.args.get("where")
+            ):
+                on_conflict_do_nothing = True
+            else:
+                _require(
+                    False,
+                    "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER",
+                    "targeted ON CONFLICT (col) or DO UPDATE is outside certified-insert-v1",
+                )
+        else:
+            _require(False, "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER", "conflict modifier is outside certified-insert-v1")
+    elif statement.args.get("ignore"):
+        on_conflict_do_nothing = True
+    elif str(statement.args.get("alternative", "")).upper() == "IGNORE":
+        on_conflict_do_nothing = True
+
+    disallowed_flags = [
         "hint",
         "is_function",
         "stored",
@@ -2237,13 +2325,13 @@ def parse_insert(
         "partition",
         "settings",
         "default",
-        "conflict",
         "returning",
         "overwrite",
-        "alternative",
-        "ignore",
         "source",
-    ):
+    ]
+    if not on_conflict_do_nothing:
+        disallowed_flags.extend(["conflict", "alternative", "ignore"])
+    for flag in disallowed_flags:
         _require(
             not statement.args.get(flag),
             "CERTIFIED_INSERT_UNSUPPORTED_MODIFIER",
@@ -2282,7 +2370,13 @@ def parse_insert(
         )
         assert isinstance(row, exp.Tuple)
         rows.append(tuple(_parse_insert_literal(item) for item in row.expressions))
-    return InsertStatement(table=table, columns=columns, rows=tuple(rows), schema=table_schema)
+    return InsertStatement(
+        table=table,
+        columns=columns,
+        rows=tuple(rows),
+        schema=table_schema,
+        on_conflict_do_nothing=on_conflict_do_nothing,
+    )
 
 
 _DML_PREDICATE_OPERATORS = frozenset(
@@ -3061,6 +3155,7 @@ def parse_alter_table(
     sql: str | exp.Expression,
     source_dialect: Dialect,
     namespace_map: Mapping[str, str] | None = None,
+    allow_alter_column: bool = False,
 ) -> AlterTable:
     """Parse one ALTER TABLE into the canonical certified-alter-v1 model."""
     statement = _statement(sql, source_dialect)
@@ -3138,6 +3233,32 @@ def parse_alter_table(
                     "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
                     f"ALTER TABLE DROP {drop_kind or '?'} is outside certified-alter-v1",
                 )
+        elif isinstance(action, exp.AlterColumn):
+            if not allow_alter_column:
+                raise DialectError(
+                    "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+                    f"ALTER TABLE action {type(action).__name__} is outside certified-alter-v1 "
+                    "(column type/nullability/default changes need the column's full type, "
+                    "which a single ALTER statement does not carry)",
+                )
+            col_target = action.this
+            if isinstance(col_target, exp.Column):
+                col_target = col_target.this
+            col_name = _plain_identifier(col_target, "altered column")
+            if action.args.get("allow_null") is False:
+                actions.append(SetNotNull(column=col_name))
+            elif action.args.get("allow_null") is True or action.args.get("drop") is True:
+                actions.append(DropNotNull(column=col_name))
+            elif action.args.get("dtype") is not None:
+                dtype = action.args.get("dtype")
+                assert isinstance(dtype, exp.DataType)
+                type_ref = _parse_type(dtype, source_dialect)
+                actions.append(AlterColumnType(column=col_name, type_ref=type_ref))
+            else:
+                raise DialectError(
+                    "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
+                    "ALTER TABLE ALTER COLUMN clause is outside certified-alter-v1",
+                )
         else:
             raise DialectError(
                 "CERTIFIED_ALTER_UNSUPPORTED_ACTION",
@@ -3146,3 +3267,62 @@ def parse_alter_table(
                 "which a single ALTER statement does not carry)",
             )
     return AlterTable(table=table, actions=tuple(actions), schema=table_schema)
+
+
+def parse_truncate_table(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> TruncateTable:
+    statement = _statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.TruncateTable),
+        "CERTIFIED_TRUNCATE_UNSUPPORTED_STATEMENT",
+        "expected TRUNCATE TABLE statement",
+    )
+    assert isinstance(statement, exp.TruncateTable)
+    table_node = statement.this or (statement.expressions[0] if statement.expressions else None)
+    _require(
+        isinstance(table_node, exp.Table),
+        "CERTIFIED_TRUNCATE_UNSUPPORTED_STATEMENT",
+        "TRUNCATE TABLE target is malformed",
+    )
+    schema, table = _mapped_table_name(table_node, "TRUNCATE target table", namespace_map)
+    return TruncateTable(table=table, schema=schema)
+
+
+def parse_delete(
+    sql: str | exp.Expression,
+    source_dialect: Dialect,
+    namespace_map: Mapping[str, str] | None = None,
+) -> DeleteStatement:
+    statement = _statement(sql, source_dialect)
+    _require(
+        isinstance(statement, exp.Delete),
+        "CERTIFIED_DELETE_UNSUPPORTED_STATEMENT",
+        "certified-dml-v1 only accepts one DELETE statement",
+    )
+    assert isinstance(statement, exp.Delete)
+    _require(
+        not any(statement.args.get(flag) for flag in ("order", "limit", "with", "using")),
+        "CERTIFIED_DELETE_UNSUPPORTED_MODIFIER",
+        "DELETE ORDER BY, LIMIT, USING and CTE modifiers are outside certified-dml-v1",
+    )
+    table_node = statement.this
+    _require(
+        isinstance(table_node, exp.Table),
+        "CERTIFIED_DELETE_UNSUPPORTED_STATEMENT",
+        "DELETE target is malformed",
+    )
+    schema, table = _mapped_table_name(table_node, "DELETE target table", namespace_map)
+    where = statement.args.get("where")
+    predicate = None
+    if where is not None:
+        _require(
+            isinstance(where, exp.Where),
+            "CERTIFIED_DELETE_UNSUPPORTED_PREDICATE",
+            "DELETE WHERE clause is malformed",
+        )
+        predicate = _parse_dml_predicate(where.this, source_dialect)
+    return DeleteStatement(table=table, predicate=predicate, schema=schema)
+

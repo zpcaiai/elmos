@@ -185,21 +185,121 @@ def _security_source(request: SynthesisRequest) -> str:
 
 
 def _store_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    sql = all_entity_sql(request, placeholder="?")[0]
-    upsert_sql = sql.upsert_sql
-    properties = ",\n    ".join(
-        f"val {camel(field.name)}: {_kotlin_type(field)}" for field in entity.fields
-    )
-    read_values = ",\n                    ".join(
-        ["rows.getString(1)"]
-        + [_reader(field, index + 2) for index, field in enumerate(entity.fields)]
-    )
-    bind_upsert = "\n                statement.".join(
-        f"setObject({index + 3}, payload.{camel(field.name)})"
-        for index, field in enumerate(entity.fields)
-    )
+    statements = {item.entity: item for item in all_entity_sql(request, placeholder="?")}
+    classes: list[str] = []
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        sql = statements[entity.singular]
+        upsert_sql = sql.upsert_sql
+        properties = ",\n    ".join(
+            f"val {camel(field.name)}: {_kotlin_type(field)}" for field in entity.fields
+        )
+        read_values = ",\n                    ".join(
+            ["rows.getString(1)"]
+            + [_reader(field, index + 2) for index, field in enumerate(entity.fields)]
+        )
+        bind_upsert = "\n                statement.".join(
+            f"setObject({index + 3}, payload.{camel(field.name)})"
+            for index, field in enumerate(entity.fields)
+        )
+        classes.append(
+            f"""
+            @Serializable
+            data class {entity_class}Upsert(
+                {properties}
+            )
+
+            @Serializable
+            data class {entity_class}(
+                val id: String,
+                {properties}
+            )
+
+            /**
+             * Every statement runs inside one tenant-scoped transaction.
+             *
+             * {TENANT_SETTING} is applied with set_config(..., true) so it is
+             * transaction local and cannot leak to the next borrower of a pooled
+             * connection. Row level security is FORCED on every table, so that
+             * binding -- not the SQL text -- confines a request to its tenant.
+             */
+            class {entity_class}Store(private val jdbcUrl: String, private val user: String, private val password: String) {{
+
+                private fun <T> inTenant(tenantId: String, work: (Connection) -> T): T {{
+                    require(tenantId.isNotBlank()) {{ "TENANT_ID_REQUIRED" }}
+                    DriverManager.getConnection(jdbcUrl, user, password).use {{ connection ->
+                        connection.autoCommit = false
+                        try {{
+                            connection.prepareStatement("SELECT set_config('{TENANT_SETTING}', ?, true)").use {{ bind ->
+                                bind.setString(1, tenantId)
+                                bind.execute()
+                            }}
+                            val result = work(connection)
+                            connection.commit()
+                            return result
+                        }} catch (error: Exception) {{
+                            connection.rollback()
+                            throw error
+                        }}
+                    }}
+                }}
+
+                fun list(tenantId: String): List<{entity_class}> = inTenant(tenantId) {{ connection ->
+                    val results = mutableListOf<{entity_class}>()
+                    connection.prepareStatement({json.dumps(sql.list_sql)}).use {{ statement ->
+                        statement.executeQuery().use {{ rows ->
+                            while (rows.next()) {{
+                                results.add(
+                                    {entity_class}(
+                                        {read_values}
+                                    ),
+                                )
+                            }}
+                        }}
+                    }}
+                    results
+                }}
+
+                fun find(tenantId: String, recordId: UUID): {entity_class}? = inTenant(tenantId) {{ connection ->
+                    connection.prepareStatement({json.dumps(sql.get_sql)}).use {{ statement ->
+                        statement.setObject(1, recordId)
+                        statement.executeQuery().use {{ rows ->
+                            if (!rows.next()) {{
+                                null
+                            }} else {{
+                                {entity_class}(
+                                    {read_values}
+                                )
+                            }}
+                        }}
+                    }}
+                }}
+
+                fun save(tenantId: String, recordId: UUID, payload: {entity_class}Upsert): {entity_class} =
+                    inTenant(tenantId) {{ connection ->
+                        connection.prepareStatement({json.dumps(upsert_sql)}).use {{ statement ->
+                            statement.setString(1, tenantId)
+                            statement.setObject(2, recordId)
+                            statement.{bind_upsert}
+                            statement.executeQuery().use {{ rows ->
+                                check(rows.next()) {{ "UPSERT_RETURNED_NO_ROW" }}
+                                {entity_class}(
+                                    {read_values}
+                                )
+                            }}
+                        }}
+                    }}
+
+                fun delete(tenantId: String, recordId: UUID): Boolean = inTenant(tenantId) {{ connection ->
+                    connection.prepareStatement({json.dumps(sql.delete_sql)}).use {{ statement ->
+                        statement.setObject(1, recordId)
+                        statement.executeUpdate() > 0
+                    }}
+                }}
+            }}
+            """
+        )
+    joined = "\n".join(classes)
     return clean(
         f"""
         package {request.namespace}
@@ -209,111 +309,57 @@ def _store_source(request: SynthesisRequest) -> str:
         import java.sql.DriverManager
         import java.util.UUID
 
-        @Serializable
-        data class {entity_class}Upsert(
-            {properties}
-        )
-
-        @Serializable
-        data class {entity_class}(
-            val id: String,
-            {properties}
-        )
-
-        /**
-         * Every statement runs inside one tenant-scoped transaction.
-         *
-         * {TENANT_SETTING} is applied with set_config(..., true) so it is
-         * transaction local and cannot leak to the next borrower of a pooled
-         * connection. Row level security is FORCED on every table, so that
-         * binding -- not the SQL text -- confines a request to its tenant.
-         */
-        class {entity_class}Store(private val jdbcUrl: String, private val user: String, private val password: String) {{
-
-            private fun <T> inTenant(tenantId: String, work: (Connection) -> T): T {{
-                require(tenantId.isNotBlank()) {{ "TENANT_ID_REQUIRED" }}
-                DriverManager.getConnection(jdbcUrl, user, password).use {{ connection ->
-                    connection.autoCommit = false
-                    try {{
-                        connection.prepareStatement("SELECT set_config('{TENANT_SETTING}', ?, true)").use {{ bind ->
-                            bind.setString(1, tenantId)
-                            bind.execute()
-                        }}
-                        val result = work(connection)
-                        connection.commit()
-                        return result
-                    }} catch (error: Exception) {{
-                        connection.rollback()
-                        throw error
-                    }}
-                }}
-            }}
-
-            fun list(tenantId: String): List<{entity_class}> = inTenant(tenantId) {{ connection ->
-                val results = mutableListOf<{entity_class}>()
-                connection.prepareStatement({json.dumps(sql.list_sql)}).use {{ statement ->
-                    statement.executeQuery().use {{ rows ->
-                        while (rows.next()) {{
-                            results.add(
-                                {entity_class}(
-                                    {read_values}
-                                ),
-                            )
-                        }}
-                    }}
-                }}
-                results
-            }}
-
-            fun find(tenantId: String, recordId: UUID): {entity_class}? = inTenant(tenantId) {{ connection ->
-                connection.prepareStatement({json.dumps(sql.get_sql)}).use {{ statement ->
-                    statement.setObject(1, recordId)
-                    statement.executeQuery().use {{ rows ->
-                        if (!rows.next()) {{
-                            null
-                        }} else {{
-                            {entity_class}(
-                                {read_values}
-                            )
-                        }}
-                    }}
-                }}
-            }}
-
-            fun save(tenantId: String, recordId: UUID, payload: {entity_class}Upsert): {entity_class} =
-                inTenant(tenantId) {{ connection ->
-                    connection.prepareStatement({json.dumps(upsert_sql)}).use {{ statement ->
-                        statement.setString(1, tenantId)
-                        statement.setObject(2, recordId)
-                        statement.{bind_upsert}
-                        statement.executeQuery().use {{ rows ->
-                            check(rows.next()) {{ "UPSERT_RETURNED_NO_ROW" }}
-                            {entity_class}(
-                                {read_values}
-                            )
-                        }}
-                    }}
-                }}
-
-            fun delete(tenantId: String, recordId: UUID): Boolean = inTenant(tenantId) {{ connection ->
-                connection.prepareStatement({json.dumps(sql.delete_sql)}).use {{ statement ->
-                    statement.setObject(1, recordId)
-                    statement.executeUpdate() > 0
-                }}
-            }}
-        }}
+        {joined}
         """
     )
 
 
 def _application_source(request: SynthesisRequest, port: int) -> str:
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    required_checks = "\n            ".join(
-        f'if (payload.{camel(field.name)}.isBlank()) return@put call.respond(HttpStatusCode.UnprocessableEntity, mapOf("error" to "PAYLOAD_INVALID"))'
-        for field in entity.fields
-        if field.required and field.type == "string"
-    ) or "// no blank-string constraints declared"
+    store_vals = "\n            ".join(
+        f"val {camel(entity.singular)}Store = {pascal(entity.singular)}Store(jdbc, user, password)"
+        for entity in request.entities
+    )
+    route_blocks: list[str] = []
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        store_name = f"{camel(entity.singular)}Store"
+        required_checks = "\n                    ".join(
+            f'if (payload.{camel(field.name)}.isBlank()) return@put call.respond(HttpStatusCode.UnprocessableEntity, mapOf("error" to "PAYLOAD_INVALID"))'
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ) or "// no blank-string constraints declared"
+        route_blocks.append(
+            f"""
+                get("/{entity.plural}") {{
+                    val tenant = requireTenant(authenticator) ?: return@get
+                    call.respond({store_name}.list(tenant))
+                }}
+                get("/{entity.plural}/{{id}}") {{
+                    val tenant = requireTenant(authenticator) ?: return@get
+                    val recordId = requireRecordId() ?: return@get
+                    val record = {store_name}.find(tenant, recordId)
+                    if (record == null) {{
+                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "not_found"))
+                    }} else {{
+                        call.respond(record)
+                    }}
+                }}
+                put("/{entity.plural}/{{id}}") {{
+                    val tenant = requireTenant(authenticator) ?: return@put
+                    val recordId = requireRecordId() ?: return@put
+                    val payload = call.receive<{entity_class}Upsert>()
+                    {required_checks}
+                    call.respond({store_name}.save(tenant, recordId, payload))
+                }}
+                delete("/{entity.plural}/{{id}}") {{
+                    val tenant = requireTenant(authenticator) ?: return@delete
+                    val recordId = requireRecordId() ?: return@delete
+                    {store_name}.delete(tenant, recordId)
+                    call.respond(HttpStatusCode.NoContent)
+                }}
+            """
+        )
+    routes = "\n".join(route_blocks)
     return clean(
         f"""
         package {request.namespace}
@@ -338,16 +384,14 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
         private val UUID_PATTERN =
             Regex("^[0-9a-fA-F]{{8}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{4}}-[0-9a-fA-F]{{12}}$")
 
-        fun buildStore(): {entity_class}Store {{
-            // The connection string arrives by file reference, never inline, so
-            // it never appears in process arguments or configuration dumps.
+        fun jdbcParts(): Triple<String, String, String> {{
             val url = java.io.File(requiredEnvironment("{ENV_DATABASE_URL_FILE}")).readText().trim()
             check(url.startsWith("postgresql://")) {{ "DATABASE_URL_SCHEME_UNSUPPORTED" }}
             val parsed = URI(url)
             val credentials = (parsed.userInfo ?: "").split(":", limit = 2)
             val port = if (parsed.port < 0) 5432 else parsed.port
             val database = parsed.path.removePrefix("/")
-            return {entity_class}Store(
+            return Triple(
                 "jdbc:postgresql://${{parsed.host}}:$port/$database",
                 credentials.getOrElse(0) {{ "" }},
                 credentials.getOrElse(1) {{ "" }},
@@ -356,45 +400,18 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
 
         fun Application.module(
             authenticator: TenantAuthenticator = TenantAuthenticator(),
-            store: {entity_class}Store = buildStore(),
         ) {{
+            val (jdbc, user, password) = jdbcParts()
+            {store_vals}
             install(ContentNegotiation) {{ json() }}
             routing {{
                 get("/health") {{
                     call.respond(mapOf("status" to "UP", "service" to "{request.project_name}"))
                 }}
-                get("/{entity.plural}") {{
-                    val tenant = requireTenant(authenticator) ?: return@get
-                    call.respond(store.list(tenant))
-                }}
-                get("/{entity.plural}/{{id}}") {{
-                    val tenant = requireTenant(authenticator) ?: return@get
-                    val recordId = requireRecordId() ?: return@get
-                    val record = store.find(tenant, recordId)
-                    if (record == null) {{
-                        call.respond(HttpStatusCode.NotFound, mapOf("error" to "not_found"))
-                    }} else {{
-                        call.respond(record)
-                    }}
-                }}
-                put("/{entity.plural}/{{id}}") {{
-                    val tenant = requireTenant(authenticator) ?: return@put
-                    val recordId = requireRecordId() ?: return@put
-                    val payload = call.receive<{entity_class}Upsert>()
-                    {required_checks}
-                    call.respond(store.save(tenant, recordId, payload))
-                }}
-                delete("/{entity.plural}/{{id}}") {{
-                    val tenant = requireTenant(authenticator) ?: return@delete
-                    val recordId = requireRecordId() ?: return@delete
-                    store.delete(tenant, recordId)
-                    call.respond(HttpStatusCode.NoContent)
-                }}
+                {routes}
             }}
         }}
 
-        // Ktor 3 replaced PipelineContext with RoutingContext as the receiver
-        // for route handlers; `call` is only resolvable on the latter.
         private suspend fun RoutingContext.requireTenant(
             authenticator: TenantAuthenticator,
         ): String? {{
@@ -421,7 +438,6 @@ def _application_source(request: SynthesisRequest, port: int) -> str:
         }}
         """
     )
-
 
 def _integration_test_source(request: SynthesisRequest, port: int) -> str:
     entity = request.entities[0]
@@ -562,11 +578,6 @@ def _integration_test_source(request: SynthesisRequest, port: int) -> str:
 
 
 def render_kotlin_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        raise ValueError(
-            "KOTLIN_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
     package_path = request.namespace.replace(".", "/")
     return {
         ".gitignore": gitignore(),

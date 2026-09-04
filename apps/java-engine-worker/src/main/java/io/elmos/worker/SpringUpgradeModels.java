@@ -52,13 +52,33 @@ final class SpringUpgradeModels {
             boolean startAfterVerification,
             String idempotencyKey,
             String targetSpringBoot,
-            String targetJava
+            String targetJava,
+            boolean allowExperimentalRoutes
     ) {
         StartRequest {
             targetSpringBoot = targetSpringBoot == null || targetSpringBoot.isBlank()
                     ? TARGET_BOOT : targetSpringBoot.trim();
             targetJava = targetJava == null || targetJava.isBlank()
                     ? TARGET_JAVA : SpringRouteCatalog.normalizeJava(targetJava);
+        }
+
+        /** Keep durable runs and older API clients on the 11-argument canonical constructor. */
+        StartRequest(
+                String organizationId,
+                SourceMode sourceMode,
+                String repositoryUrl,
+                String requestedRef,
+                String expectedCommitSha,
+                String snapshotId,
+                String materializedRelativePath,
+                boolean startAfterVerification,
+                String idempotencyKey,
+                String targetSpringBoot,
+                String targetJava
+        ) {
+            this(organizationId, sourceMode, repositoryUrl, requestedRef, expectedCommitSha,
+                    snapshotId, materializedRelativePath, startAfterVerification, idempotencyKey,
+                    targetSpringBoot, targetJava, false);
         }
 
         /** Keep durable runs and older API clients on the original 3.5.3 / Java 21 default. */
@@ -75,7 +95,7 @@ final class SpringUpgradeModels {
         ) {
             this(organizationId, sourceMode, repositoryUrl, requestedRef, expectedCommitSha,
                     snapshotId, materializedRelativePath, startAfterVerification, idempotencyKey,
-                    TARGET_BOOT, TARGET_JAVA);
+                    TARGET_BOOT, TARGET_JAVA, false);
         }
     }
 

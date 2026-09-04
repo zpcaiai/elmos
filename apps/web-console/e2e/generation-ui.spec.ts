@@ -74,7 +74,9 @@ test.describe("多语言项目生成 UI", () => {
   });
 
   test("移动视口没有横向溢出且关键操作可触达", async ({ page }, testInfo) => {
-    test.skip(!testInfo.project.name.startsWith("mobile-"), "移动布局只在声明的移动项目执行");
+    if (!testInfo.project.name.startsWith("mobile-")) {
+      await page.setViewportSize({ width: 390, height: 844 });
+    }
     await page.goto("/generation");
     const dimensions = await page.evaluate(() => ({
       viewport: document.documentElement.clientWidth,
@@ -178,7 +180,7 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.getByRole("button", { name: "一键生成、验证并归档" })).toBeDisabled();
   });
 
-  test("简述、TXT、Markdown、Word、HTML、PDF 与 Skill 可合并为哈希绑定来源包", async ({
+  test("简述、TXT、Markdown、Word、HTML、PDF 与能力模块可合并为哈希绑定来源包", async ({
     page,
   }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "多格式解析的代表旅程只执行一次");
@@ -189,7 +191,7 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByLabel("项目说明").fill(
       "实体: order; order字段: reference:string:required; 权限: admin:create/read/update/delete:order",
     );
-    await page.getByLabel("仓库 Skills").fill("elmos-project-synthesis");
+    await page.getByLabel("仓库能力模块").fill("elmos-project-synthesis");
     await page.getByLabel("上传需求文件").setInputFiles([
       { name: "requirements.txt", mimeType: "text/plain", buffer: Buffer.from("Order query requirement") },
       { name: "rules.md", mimeType: "text/markdown", buffer: Buffer.from("# Rules\nOrder status is reviewable.") },
@@ -310,8 +312,16 @@ test.describe("多语言项目生成 UI", () => {
     await expect(page.locator(".preview-target-list").getByText("Python 3.12", { exact: true })).toHaveCount(0);
   });
 
-  test("多实体生产需求会在批准前显示单实体目标边界", async ({ page }, testInfo) => {
+  test("多实体生产需求会在批准前被阻断", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "能力边界代表旅程只执行一次");
+    await page.route("**/api/capabilities/generation", async (route) => {
+      const response = await route.fetch();
+      const json = await response.json();
+      json.targets = json.targets.map((target: any) =>
+        target.id === "go" ? { ...target, productionEntityScope: "single-entity" } : target,
+      );
+      await route.fulfill({ json });
+    });
     await page.route("**/api/generation/analyze", (route) => route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -338,7 +348,12 @@ test.describe("多语言项目生成 UI", () => {
           permissions: [],
           requirements: [],
           acceptance_criteria: [],
-          open_questions: [],
+          open_questions: [
+            {
+              id: "Q001",
+              question: "当前需求边界仍存在未闭环校验项：请明确多实体关联规则。",
+            },
+          ],
           targets: [{ language: "go", framework: "net/http", runtime: "1.25.0", port: 8085 }],
         },
       }),
@@ -354,7 +369,8 @@ test.describe("多语言项目生成 UI", () => {
     await page.getByRole("button", { name: "锁定生成计划" }).click();
     await page.getByRole("button", { name: "分析并整理需求" }).click();
 
-    await expect(page.getByText(/Go\s*的 PostgreSQL Profile 只接受单实体/)).toBeVisible();
+    await expect(page.getByText(/开放问题 · 1/)).toBeVisible();
+    await expect(page.getByText(/Q001 · 当前需求边界仍存在未闭环校验项：请明确多实体关联规则。/)).toBeVisible();
     await expect(page.getByRole("checkbox", { name: /我已审阅结构化需求/ })).toBeDisabled();
   });
 

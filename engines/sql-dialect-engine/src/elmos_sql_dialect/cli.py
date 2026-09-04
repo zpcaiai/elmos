@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .chinadb import chinadb_capabilities
 from .engine import translate_ddl
-from .models import Dialect, DialectError, RouteError
+from .models import Dialect, DialectError, RouteError, TypeMigrationPolicy
 from .profiles import NamespaceProfile
 from .scan import render_markdown, report_to_json, scan_repository
 from .toolchains import verify_toolchain
@@ -102,7 +102,7 @@ def _run_translate(args: argparse.Namespace) -> int:
 def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
     p = subparsers.add_parser(
         "scan",
-        help="scan SQL units: automatic candidates plus 100% explicit disposition coverage",
+        help="scan SQL units: automatic candidates plus 100%% explicit disposition coverage",
     )
     p.add_argument("--repository", required=True, type=Path)
     p.add_argument("--source-dialect", required=True, choices=[d.value for d in Dialect])
@@ -121,6 +121,16 @@ def _scan_parser(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]
         "--require-disposition-complete",
         action="store_true",
         help="succeed when every discovered unit has a non-unknown disposition",
+    )
+    p.add_argument(
+        "--type-policy",
+        default=None,
+        help="JSON object or path to JSON file specifying TypeMigrationPolicy",
+    )
+    p.add_argument(
+        "--allow-alter-column",
+        action="store_true",
+        help="allow ALTER COLUMN TYPE statements during scan",
     )
 
 
@@ -149,6 +159,23 @@ def _run_scan(args: argparse.Namespace) -> int:
         if not isinstance(raw_profile, dict):
             raise RouteError("INVALID_NAMESPACE_PROFILE: expected a JSON object")
         namespace_profile = NamespaceProfile.from_payload(raw_profile)
+
+    type_policy = None
+    if getattr(args, "type_policy", None) is not None:
+        try:
+            policy_raw = args.type_policy
+            if Path(policy_raw).exists():
+                policy_dict = json.loads(Path(policy_raw).read_text(encoding="utf-8"))
+            else:
+                policy_dict = json.loads(policy_raw)
+        except Exception as exc:
+            raise RouteError(f"INVALID_TYPE_POLICY: {exc}") from exc
+        if not isinstance(policy_dict, dict):
+            raise RouteError("INVALID_TYPE_POLICY: expected a JSON object")
+        type_policy = TypeMigrationPolicy(**policy_dict)
+
+    allow_alter_column = bool(getattr(args, "allow_alter_column", False))
+
     report = scan_repository(
         args.repository,
         Dialect(args.source_dialect),
@@ -156,6 +183,8 @@ def _run_scan(args: argparse.Namespace) -> int:
         include_all_findings=args.all_findings,
         namespace_map=namespace_map,
         namespace_profile=namespace_profile,
+        type_policy=type_policy,
+        allow_alter_column=allow_alter_column,
     )
     if args.output is not None:
         args.output.mkdir(parents=True, exist_ok=True)

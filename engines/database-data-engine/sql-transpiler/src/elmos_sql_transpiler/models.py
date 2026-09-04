@@ -6,7 +6,7 @@ from typing import Any, Literal
 EvidenceState = Literal["PASSED", "FAILED", "NOT_RUN"]
 CertificationState = Literal["NOT_CERTIFIED"]
 TranspilationState = Literal["SYNTAX_READY", "BLOCKED"]
-CommercialAssessmentState = Literal["BLOCKED"]
+CommercialAssessmentState = Literal["BLOCKED", "LOCAL_EMITTED"]
 
 
 @dataclass(frozen=True)
@@ -86,6 +86,8 @@ class TranspileRequest:
     target_profile: str
     sql: str
     parameters: tuple[ParameterContract, ...] = ()
+    integer_division_mode: str | None = None
+    quote_identifiers_mode: str | None = None
 
 
 @dataclass(frozen=True)
@@ -246,8 +248,11 @@ class CommercialAssessmentResult:
     capability_snapshot_digest: str
     statements: tuple[CommercialStatement, ...]
     blockers: tuple[CommercialBlocker, ...]
-    target_sql: None = None
+    target_sql: str | None = None
     source_parse: EvidenceState = "NOT_RUN"
+    target_adapter: EvidenceState = "NOT_RUN"
+    target_emit: EvidenceState = "NOT_RUN"
+    target_reparse: EvidenceState = "NOT_RUN"
     certification: CertificationState = "NOT_CERTIFIED"
 
     def to_dict(self) -> dict[str, Any]:
@@ -265,9 +270,9 @@ class CommercialAssessmentResult:
             "targetSql": self.target_sql,
             "verification": {
                 "sourceParse": self.source_parse,
-                "targetAdapter": "NOT_RUN",
-                "targetEmit": "NOT_RUN",
-                "targetReparse": "NOT_RUN",
+                "targetAdapter": self.target_adapter,
+                "targetEmit": self.target_emit,
+                "targetReparse": self.target_reparse,
                 "sourceExecution": "NOT_RUN",
                 "targetExecution": "NOT_RUN",
                 "resultEquivalence": "NOT_RUN",

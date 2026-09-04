@@ -90,6 +90,30 @@ REQUIRED_RUNTIME_CHANNELS = {
 }
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
 SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 300
+LOCKED_NODE_IDENTITIES = (
+    {
+        "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
+        "sha256": "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb",
+        "bytes": 68672,
+        "version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "distribution": "homebrew-core-node-26.0.0",
+        "source_url": "https://ghcr.io/v2/homebrew/core/node/blobs/sha256:d1fe8663479f817e4b39067b5731d9561c61303ee7ae6fc373906ee89cc13345",
+        "distribution_sha256": "sha256:d1fe8663479f817e4b39067b5731d9561c61303ee7ae6fc373906ee89cc13345",
+    },
+    {
+        "realpath": "/Users/runner/hostedtoolcache/node/26.0.0/arm64/bin/node",
+        "sha256": "sha256:7d7b6664e04723d372ad5a6565616b77f401f76f3e3aaa12ba09b7ff7ca636e9",
+        "bytes": 143020080,
+        "version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "distribution": "nodejs-node-v26.0.0-darwin-arm64",
+        "source_url": "https://nodejs.org/dist/v26.0.0/node-v26.0.0-darwin-arm64.tar.xz",
+        "distribution_sha256": "sha256:880cf6f35eb9dea84b2373adba13b6023b50cc0decbad47b57824d146373265a",
+    },
+)
 RUNTIME_ACTUAL_KEYS = {
     "route-navigation-deeplink-404": {
         "requestedPath", "selectedRouteId", "selectedPath", "resolution", "deepLink", "requiresAuth"
@@ -1317,6 +1341,7 @@ def validate_solver_artifact(
     solver_binary_id: str,
     artifacts: dict[str, dict[str, Any]],
     artifact_files: dict[str, Path],
+    execute_solver_replay: bool,
     errors: list[str],
     vacuity: bool = False,
 ) -> dict[str, Any]:
@@ -1374,8 +1399,8 @@ def validate_solver_artifact(
     ):
         errors.append(f"{label} solver identity/result/linkage drift")
     replay_key = (v1.LOCKED_Z3_BINARY_SHA256, smt_digest)
-    replay = SOLVER_REPLAY_CACHE.get(replay_key)
-    if replay is None:
+    replay = SOLVER_REPLAY_CACHE.get(replay_key) if execute_solver_replay else None
+    if execute_solver_replay and replay is None:
         try:
             completed = subprocess.run(
                 [str(binary_path), "-in"],
@@ -1388,7 +1413,7 @@ def validate_solver_artifact(
             SOLVER_REPLAY_CACHE[replay_key] = replay
         except Exception as exc:
             errors.append(f"{label} locked solver replay failed: {exc}")
-    if replay is not None and replay != (
+    if execute_solver_replay and replay is not None and replay != (
         result.get("exit_code"),
         expected_stdout.encode("utf-8"),
         b"",
@@ -1402,6 +1427,50 @@ def load_json(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError(f"{path} must contain a JSON object")
     return value
+
+
+def locked_node_executable(*, label: str, errors: list[str]) -> Path | None:
+    """Resolve Node only when its executable matches an allowlisted distribution."""
+
+    node_command = shutil.which("node")
+    if node_command is None:
+        errors.append(f"{label} cannot be verified because node is unavailable")
+        return None
+    try:
+        node_realpath = Path(node_command).resolve(strict=True)
+    except (FileNotFoundError, OSError, RuntimeError) as exc:
+        errors.append(f"{label} Node identity is invalid: {exc}")
+        return None
+    if not node_realpath.is_file() or node_realpath.is_symlink():
+        errors.append(f"{label} Node identity is invalid")
+        return None
+    try:
+        completed = subprocess.run(
+            [str(node_realpath), "--version"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+            check=False,
+        )
+        node_bytes = node_realpath.read_bytes()
+    except Exception as exc:
+        errors.append(f"{label} Node identity is invalid: {exc}")
+        return None
+    live_node = {
+        "realpath": str(node_realpath),
+        "sha256": v1.digest_bytes(node_bytes),
+        "bytes": len(node_bytes),
+        "version": completed.stdout.strip(),
+        "platform": sys.platform,
+        "arch": os.uname().machine,
+    }
+    if completed.returncode != 0 or not any(
+        all(live_node[key] == identity[key] for key in live_node)
+        for identity in LOCKED_NODE_IDENTITIES
+    ):
+        errors.append(f"{label} Node identity is outside the exact pinned matrix")
+        return None
+    return node_realpath
 
 
 def exact_routes() -> set[str]:
@@ -2147,7 +2216,7 @@ def validate_engine_artifacts(
     return engine, engine_routes, path_to_id
 
 
-ENGINE_VERIFIER_RUNTIME_PATHS = frozenset(
+ENGINE_VERIFIER_RUNTIME_BASE_PATHS = frozenset(
     {
         "formal-campaign/engine-verifier/package.json",
         "formal-campaign/engine-verifier/src/frontend-interaction-formal-cli.js",
@@ -2163,6 +2232,21 @@ ENGINE_VERIFIER_RUNTIME_PATHS = frozenset(
         "formal-campaign/engine-verifier/node_modules/typescript/package.json",
         "formal-campaign/engine-verifier/node_modules/typescript/lib/typescript.js",
     }
+)
+ENGINE_VERIFIER_NODE_TYPES_PREFIX = (
+    "formal-campaign/engine-verifier/node_modules/@types/node/"
+)
+LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT = 67
+LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256 = (
+    "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
+)
+ENGINE_VERIFIER_UNDICI_TYPES_PREFIX = (
+    "formal-campaign/engine-verifier/node_modules/undici-types/"
+)
+LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_VERSION = "7.10.0"
+LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_FILE_COUNT = 44
+LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_SHA256 = (
+    "sha256:bf784f82f590837f3952fe8438ebac5c1fd3c9c63e165e41fb16dd62e3a4678c"
 )
 ENGINE_VERIFIER_REPOSITORY_MAP = {
     "formal-campaign/engine-verifier/package.json": (
@@ -2186,6 +2270,190 @@ ENGINE_VERIFIER_REPOSITORY_MAP = {
         )
     },
 }
+
+
+def engine_verifier_node_types_tree(
+    *,
+    runtime_ids: list[str],
+    artifacts: dict[str, dict[str, Any]],
+    artifact_files: dict[str, Path],
+    errors: list[str],
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for identifier in runtime_ids:
+        reference = artifacts.get(identifier, {})
+        runtime_path = str(reference.get("path"))
+        if not runtime_path.startswith(ENGINE_VERIFIER_NODE_TYPES_PREFIX):
+            continue
+        relative = runtime_path.removeprefix(ENGINE_VERIFIER_NODE_TYPES_PREFIX)
+        if (
+            not relative
+            or PurePosixPath(relative).as_posix() != relative
+            or any(part in {"", ".", ".."} for part in PurePosixPath(relative).parts)
+        ):
+            errors.append(f"engine verifier Node types runtime path is unsafe: {runtime_path}")
+            continue
+        artifact_file = artifact_files.get(identifier)
+        if (
+            artifact_file is None
+            or artifact_file.is_symlink()
+            or not artifact_file.is_file()
+        ):
+            errors.append(f"engine verifier Node types runtime file is invalid: {runtime_path}")
+            continue
+        content = artifact_file.read_bytes()
+        rows.append(
+            {
+                "path": relative,
+                "sha256": v1.digest_bytes(content),
+                "byte_count": len(content),
+            }
+        )
+    rows.sort(key=lambda row: str(row["path"]))
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
+
+
+def engine_verifier_undici_types_tree(
+    *,
+    runtime_ids: list[str],
+    artifacts: dict[str, dict[str, Any]],
+    artifact_files: dict[str, Path],
+    errors: list[str],
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for identifier in runtime_ids:
+        reference = artifacts.get(identifier, {})
+        runtime_path = str(reference.get("path"))
+        if not runtime_path.startswith(ENGINE_VERIFIER_UNDICI_TYPES_PREFIX):
+            continue
+        relative = runtime_path.removeprefix(ENGINE_VERIFIER_UNDICI_TYPES_PREFIX)
+        if (
+            not relative
+            or PurePosixPath(relative).as_posix() != relative
+            or any(part in {"", ".", ".."} for part in PurePosixPath(relative).parts)
+        ):
+            errors.append(
+                f"engine verifier undici types runtime path is unsafe: {runtime_path}"
+            )
+            continue
+        artifact_file = artifact_files.get(identifier)
+        if (
+            artifact_file is None
+            or artifact_file.is_symlink()
+            or not artifact_file.is_file()
+        ):
+            errors.append(
+                f"engine verifier undici types runtime file is invalid: {runtime_path}"
+            )
+            continue
+        content = artifact_file.read_bytes()
+        rows.append(
+            {
+                "path": relative,
+                "sha256": v1.digest_bytes(content),
+                "byte_count": len(content),
+            }
+        )
+    rows.sort(key=lambda row: str(row["path"]))
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
+
+
+def live_engine_verifier_node_types_tree(root: Path, errors: list[str]) -> dict[str, Any]:
+    public_root = root / "node_modules/@types/node"
+    expected_root = (
+        root / "node_modules/.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    )
+    expected_link = "../.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    try:
+        if not public_root.is_symlink() or os.readlink(public_root) != expected_link:
+            raise ValueError("public link drift")
+        resolved_public = public_root.resolve(strict=True)
+        resolved_expected = expected_root.resolve(strict=True)
+        if resolved_public != resolved_expected:
+            raise ValueError("public link target drift")
+        current = root
+        for part in expected_root.relative_to(root).parts:
+            current = current / part
+            if current.is_symlink():
+                raise ValueError("pnpm root contains symlink")
+        rows: list[dict[str, Any]] = []
+        for path in sorted(resolved_expected.rglob("*"), key=lambda item: item.as_posix()):
+            relative = path.relative_to(resolved_expected).as_posix()
+            if path.is_symlink():
+                raise ValueError(f"nested symlink: {relative}")
+            if path.is_dir():
+                continue
+            if not path.is_file():
+                raise ValueError(f"non-regular entry: {relative}")
+            content = path.read_bytes()
+            rows.append(
+                {
+                    "path": relative,
+                    "sha256": v1.digest_bytes(content),
+                    "byte_count": len(content),
+                }
+            )
+    except (OSError, RuntimeError, ValueError) as exc:
+        errors.append(f"engine verifier live Node types tree invalid: {exc}")
+        rows = []
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
+
+
+def live_engine_verifier_undici_types_tree(
+    root: Path, errors: list[str]
+) -> dict[str, Any]:
+    expected_root = (
+        root / "node_modules/.pnpm/undici-types@7.10.0/node_modules/undici-types"
+    )
+    try:
+        resolved_expected = expected_root.resolve(strict=True)
+        resolved_expected.relative_to(root.resolve(strict=True))
+        current = root
+        for part in expected_root.relative_to(root).parts:
+            current = current / part
+            if current.is_symlink():
+                raise ValueError("pnpm root contains symlink")
+        if not resolved_expected.is_dir():
+            raise ValueError("package root is not a directory")
+        rows: list[dict[str, Any]] = []
+        for file_entry in sorted(
+            resolved_expected.rglob("*"), key=lambda item: item.as_posix()
+        ):
+            relative = file_entry.relative_to(resolved_expected).as_posix()
+            if file_entry.is_symlink():
+                raise ValueError(f"nested symlink: {relative}")
+            if file_entry.is_dir():
+                continue
+            if not file_entry.is_file():
+                raise ValueError(f"non-regular entry: {relative}")
+            content = file_entry.read_bytes()
+            rows.append(
+                {
+                    "path": relative,
+                    "sha256": v1.digest_bytes(content),
+                    "byte_count": len(content),
+                }
+            )
+    except (OSError, RuntimeError, ValueError) as exc:
+        errors.append(f"engine verifier live undici types tree invalid: {exc}")
+        rows = []
+    return {
+        "file_count": len(rows),
+        "digest": v1.canonical_digest(rows),
+        "files": rows,
+    }
 
 
 def validate_engine_verifier_emit(
@@ -2289,6 +2557,7 @@ def validate_engine_verifier(
     artifacts: dict[str, dict[str, Any]],
     artifact_files: dict[str, Path],
     used: set[str],
+    live_runtime_replay: bool,
     errors: list[str],
 ) -> None:
     declaration = campaign.get("engine_verifier")
@@ -2305,6 +2574,8 @@ def validate_engine_verifier(
     used.add(node_id)
     if declaration.get("entrypoint_artifact_id") not in runtime_ids:
         errors.append("engine verifier entrypoint is outside runtime closure")
+    if declaration.get("portability") != "PINNED_NODE_ENVIRONMENT_MATRIX":
+        errors.append("engine verifier portability is not the exact pinned Node matrix")
     if v1.bundle_fingerprint(runtime_ids + [node_id], artifacts) != declaration.get(
         "fingerprint"
     ):
@@ -2312,11 +2583,48 @@ def validate_engine_verifier(
     runtime_paths = {
         str(artifacts.get(identifier, {}).get("path")) for identifier in runtime_ids
     }
-    if runtime_paths != ENGINE_VERIFIER_RUNTIME_PATHS:
+    node_types_tree = engine_verifier_node_types_tree(
+        runtime_ids=runtime_ids,
+        artifacts=artifacts,
+        artifact_files=artifact_files,
+        errors=errors,
+    )
+    undici_types_tree = engine_verifier_undici_types_tree(
+        runtime_ids=runtime_ids,
+        artifacts=artifacts,
+        artifact_files=artifact_files,
+        errors=errors,
+    )
+    expected_runtime_paths = (
+        ENGINE_VERIFIER_RUNTIME_BASE_PATHS
+        | {
+            ENGINE_VERIFIER_NODE_TYPES_PREFIX + str(row["path"])
+            for row in node_types_tree["files"]
+        }
+        | {
+            ENGINE_VERIFIER_UNDICI_TYPES_PREFIX + str(row["path"])
+            for row in undici_types_tree["files"]
+        }
+    )
+    if (
+        node_types_tree["file_count"]
+        != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT
+        or node_types_tree["digest"]
+        != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256
+    ):
+        errors.append("engine verifier Node types tree identity drift")
+    if (
+        undici_types_tree["file_count"]
+        != LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_FILE_COUNT
+        or undici_types_tree["digest"]
+        != LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_TREE_SHA256
+    ):
+        errors.append("engine verifier undici types tree identity drift")
+    if runtime_paths != expected_runtime_paths:
         errors.append(
             "engine verifier runtime path closure is not exact: "
-            f"missing={sorted(ENGINE_VERIFIER_RUNTIME_PATHS - runtime_paths)} "
-            f"extra={sorted(runtime_paths - ENGINE_VERIFIER_RUNTIME_PATHS)}"
+            f"missing={sorted(expected_runtime_paths - runtime_paths)} "
+            f"extra={sorted(runtime_paths - expected_runtime_paths)}"
         )
     implementation = campaign.get("implementation", {})
     implementation_manifest_id = str(implementation.get("manifest_artifact_id"))
@@ -2361,7 +2669,7 @@ def validate_engine_verifier(
         ),
     ):
         runtime_ref = artifacts.get(str(runtime_by_path.get(runtime_path)), {})
-        if not captured_replay:
+        if not captured_replay and live_runtime_replay:
             live = Path(__file__).resolve().parents[2] / live_relative
             if (
                 not live.is_file()
@@ -2372,6 +2680,19 @@ def validate_engine_verifier(
                 errors.append(
                     f"engine verifier live TypeScript runtime drift: {runtime_path}"
                 )
+    if not captured_replay and live_runtime_replay:
+        live_node_types_tree = live_engine_verifier_node_types_tree(
+            Path(__file__).resolve().parents[2] / "engines/frontend-client-engine",
+            errors,
+        )
+        if live_node_types_tree != node_types_tree:
+            errors.append("engine verifier live Node types runtime drift")
+        live_undici_types_tree = live_engine_verifier_undici_types_tree(
+            Path(__file__).resolve().parents[2] / "engines/frontend-client-engine",
+            errors,
+        )
+        if live_undici_types_tree != undici_types_tree:
+            errors.append("engine verifier live undici types runtime drift")
     entry_id = str(declaration.get("entrypoint_artifact_id"))
     if artifacts.get(entry_id, {}).get("role") != "engine-verifier-entrypoint-v2":
         errors.append("engine verifier entrypoint role drift")
@@ -2394,6 +2715,14 @@ def validate_engine_verifier(
             "formal-campaign/engine-verifier/node_modules/typescript/package.json",
             ("typescript", "5.9.2"),
         ),
+        (
+            "formal-campaign/engine-verifier/node_modules/@types/node/package.json",
+            ("@types/node", "24.3.0"),
+        ),
+        (
+            "formal-campaign/engine-verifier/node_modules/undici-types/package.json",
+            ("undici-types", LOCKED_ENGINE_VERIFIER_UNDICI_TYPES_VERSION),
+        ),
     ):
         path = artifact_files.get(str(package_ids.get(relative)))
         if path is None:
@@ -2405,9 +2734,16 @@ def validate_engine_verifier(
                 f"engine verifier package manifest invalid: {relative}: {exc}"
             )
             continue
-        if relative.endswith("node_modules/typescript/package.json"):
+        if any(
+            relative.endswith(suffix)
+            for suffix in (
+                "node_modules/typescript/package.json",
+                "node_modules/@types/node/package.json",
+                "node_modules/undici-types/package.json",
+            )
+        ):
             if (package.get("name"), package.get("version")) != expected:
-                errors.append("engine verifier TypeScript runtime identity drift")
+                errors.append("engine verifier type runtime identity drift")
         elif package.get("name") != expected[0] or package.get("type") != expected[1]:
             errors.append("engine verifier package/module identity drift")
 
@@ -2421,43 +2757,34 @@ def validate_engine_verifier(
     except Exception as exc:
         errors.append(f"engine verifier Node identity is invalid: {exc}")
         return
-    node_command = shutil.which("node")
-    node_realpath = Path(node_command).resolve() if node_command else None
-    if (
-        set(node)
-        != {
-            "schema_version",
-            "kind",
-            "realpath",
-            "sha256",
-            "bytes",
-            "version",
-            "platform",
-            "arch",
-            "portability",
-        }
+    expected_identities = list(LOCKED_NODE_IDENTITIES)
+    node_metadata_invalid = (
+        set(node) != {"schema_version", "kind", "identities", "portability"}
         or node.get("schema_version") != 2
-        or node.get("kind") != "node-environment-identity-v2"
-        or node.get("portability") != "PINNED_NODE_ENVIRONMENT_ASSUMPTION"
-        or node_realpath is None
-        or node.get("realpath") != str(node_realpath)
-        or not node_realpath.is_file()
-        or node_realpath.is_symlink()
-        or node.get("sha256") != v1.digest_bytes(node_realpath.read_bytes())
-        or node.get("bytes") != len(node_realpath.read_bytes())
-        or node.get("version") != "v26.0.0"
-        or node.get("platform") != sys.platform
-        or node.get("arch") != os.uname().machine
-    ):
+        or node.get("kind") != "node-environment-identity-set-v2"
+        or node.get("portability") != "PINNED_NODE_ENVIRONMENT_MATRIX"
+        or node.get("identities") != expected_identities
+    )
+    node_realpath: Path | None = None
+    if live_runtime_replay:
+        node_realpath = locked_node_executable(
+            label="engine verifier live replay", errors=errors
+        )
+        live_node_invalid = node_realpath is None
+    else:
+        live_node_invalid = False
+    if node_metadata_invalid or live_node_invalid:
         errors.append("engine verifier live Node identity/freshness drift")
         return
-    validate_engine_verifier_emit(
-        node_realpath=node_realpath,
-        runtime_by_path=runtime_by_path,
-        implementation_by_repository_path=implementation_by_repository_path,
-        artifact_files=artifact_files,
-        errors=errors,
-    )
+    if live_runtime_replay:
+        assert node_realpath is not None
+        validate_engine_verifier_emit(
+            node_realpath=node_realpath,
+            runtime_by_path=runtime_by_path,
+            implementation_by_repository_path=implementation_by_repository_path,
+            artifact_files=artifact_files,
+            errors=errors,
+        )
     solver_ids = [
         identifier
         for identifier, reference in artifacts.items()
@@ -2494,6 +2821,12 @@ def validate_engine_verifier(
     if declaration.get("command") != expected_command:
         errors.append("engine verifier command is not canonical")
         return
+    if declaration.get("status") != "PASSED":
+        errors.append("frozen engine verifier captured status is not PASSED")
+        return
+    if not live_runtime_replay:
+        return
+    assert node_realpath is not None
     try:
         completed = subprocess.run(
             [str(node_realpath), *expected_command[1:]],
@@ -2514,7 +2847,6 @@ def validate_engine_verifier(
                 "valid": True,
                 "errors": [],
             }
-            or declaration.get("status") != "PASSED"
         ):
             errors.append(
                 "frozen engine verifier replay failed: "
@@ -4325,8 +4657,10 @@ def validate_toolchain_evidence_v2(
                 "node",
                 "source_tree",
                 "dist_tree",
+                "node_types_tree",
                 "files",
                 "typescript_version",
+                "node_types_version",
                 "closure_digest",
             },
             "toolchain v2 engine preverification implementation",
@@ -4339,10 +4673,44 @@ def validate_toolchain_evidence_v2(
             or preverify_implementation.get("kind")
             != "frontend-interaction-engine-implementation-identity"
             or preverify_implementation.get("typescript_version") != "5.9.2"
+            or preverify_implementation.get("node_types_version") != "24.3.0"
             or implementation_digest != v1.canonical_digest(implementation_core)
         ):
             errors.append(
                 "toolchain v2 engine preverification implementation fingerprint drift"
+            )
+        node_types_tree = exact_object(
+            preverify_implementation.get("node_types_tree"),
+            {"root", "file_count", "digest", "files"},
+            "toolchain v2 engine preverification Node types tree",
+            errors,
+        )
+        packed_node_types_tree = engine_verifier_node_types_tree(
+            runtime_ids=[
+                str(item)
+                for item in campaign.get("engine_verifier", {}).get(
+                    "runtime_artifact_ids", []
+                )
+            ],
+            artifacts=artifacts,
+            artifact_files=artifact_files,
+            errors=errors,
+        )
+        if (
+            node_types_tree.get("file_count")
+            != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_FILE_COUNT
+            or node_types_tree.get("digest")
+            != LOCKED_ENGINE_VERIFIER_NODE_TYPES_TREE_SHA256
+            or node_types_tree.get("files") != packed_node_types_tree.get("files")
+            or node_types_tree.get("file_count")
+            != packed_node_types_tree.get("file_count")
+            or node_types_tree.get("digest") != packed_node_types_tree.get("digest")
+            or not str(node_types_tree.get("root", "")).endswith(
+                "/node_modules/.pnpm/@types+node@24.3.0/node_modules/@types/node"
+            )
+        ):
+            errors.append(
+                "toolchain v2 engine preverification Node types tree capture drift"
             )
         preverify_files = exact_object(
             preverify_implementation.get("files"),
@@ -4355,6 +4723,7 @@ def validate_toolchain_evidence_v2(
                 "tsconfig",
                 "lock",
                 "typescript_package",
+                "node_types_package",
             },
             "toolchain v2 engine preverification files",
             errors,
@@ -4418,6 +4787,36 @@ def validate_toolchain_evidence_v2(
                     errors.append(
                         "toolchain v2 engine preverification TypeScript capture drift"
                     )
+        node_types_file_ids = [
+            identifier
+            for identifier, reference in artifacts.items()
+            if reference.get("path")
+            == "formal-campaign/engine-verifier/node_modules/@types/node/package.json"
+        ]
+        node_types_identity = exact_object(
+            preverify_files.get("node_types_package"),
+            {"path", "realpath", "sha256", "byte_count"},
+            "toolchain v2 engine preverification Node types package",
+            errors,
+        )
+        if len(node_types_file_ids) != 1:
+            errors.append(
+                "toolchain v2 engine preverification Node types capture is missing"
+            )
+        else:
+            node_types_file = artifact_files.get(node_types_file_ids[0])
+            if node_types_file is None:
+                errors.append(
+                    "toolchain v2 engine preverification Node types capture is missing"
+                )
+            else:
+                content = node_types_file.read_bytes()
+                if node_types_identity.get("sha256") != v1.digest_bytes(
+                    content
+                ) or node_types_identity.get("byte_count") != len(content):
+                    errors.append(
+                        "toolchain v2 engine preverification Node types capture drift"
+                    )
         node_identity = exact_object(
             preverify_implementation.get("node"),
             {"path", "realpath", "sha256", "byte_count", "version"},
@@ -4435,10 +4834,14 @@ def validate_toolchain_evidence_v2(
             except Exception as exc:
                 errors.append(f"toolchain v2 packed Node identity is invalid: {exc}")
             else:
-                if (
-                    node_identity.get("sha256") != packed_node.get("sha256")
-                    or node_identity.get("byte_count") != packed_node.get("bytes")
-                    or node_identity.get("version") != packed_node.get("version")
+                packed_identities = packed_node.get("identities", [])
+                if not any(
+                    node_identity.get("sha256") == identity.get("sha256")
+                    and node_identity.get("byte_count") == identity.get("bytes")
+                    and node_identity.get("version") == identity.get("version")
+                    and node_identity.get("realpath") == identity.get("realpath")
+                    for identity in packed_identities
+                    if isinstance(identity, dict)
                 ):
                     errors.append(
                         "toolchain v2 engine preverification Node capture drift"
@@ -5355,9 +5758,8 @@ def verify_external_ed25519(
     label: str,
     errors: list[str],
 ) -> bool:
-    openssl = shutil.which("openssl")
-    if openssl is None:
-        errors.append(f"{label} cannot be verified because openssl is unavailable")
+    node = locked_node_executable(label=label, errors=errors)
+    if node is None:
         return False
     if not isinstance(public_key_pem, str) or not isinstance(signature_base64, str):
         errors.append(f"{label} key/signature is malformed")
@@ -5366,6 +5768,9 @@ def verify_external_ed25519(
         signature = base64.b64decode(signature_base64, validate=True)
     except (binascii.Error, ValueError):
         errors.append(f"{label} signature is not canonical base64")
+        return False
+    if len(signature) != 64:
+        errors.append(f"{label} signature length is invalid")
         return False
     try:
         with tempfile.TemporaryDirectory(prefix="frontend-v2-external-verify-") as directory:
@@ -5378,16 +5783,22 @@ def verify_external_ed25519(
             signature_path.write_bytes(signature)
             completed = subprocess.run(
                 [
-                    openssl,
-                    "pkeyutl",
-                    "-verify",
-                    "-pubin",
-                    "-inkey",
+                    str(node),
+                    "-e",
+                    (
+                        "const fs=require('node:fs');"
+                        "const crypto=require('node:crypto');"
+                        "const [key,input,signature]=process.argv.slice(1);"
+                        "let valid=false;"
+                        "try { const publicKey=crypto.createPublicKey(fs.readFileSync(key));"
+                        "const sig=fs.readFileSync(signature);"
+                        "if(publicKey.asymmetricKeyType!=='ed25519'||sig.length!==64)process.exit(3);"
+                        "valid=crypto.verify(null,fs.readFileSync(input),publicKey,sig); }"
+                        "catch (error) { process.stderr.write(String(error));process.exit(2); }"
+                        "process.exit(valid?0:1);"
+                    ),
                     str(public_path),
-                    "-rawin",
-                    "-in",
                     str(payload_path),
-                    "-sigfile",
                     str(signature_path),
                 ],
                 capture_output=True,
@@ -6128,6 +6539,7 @@ def validate_route(
     toolchain_artifact_id: str | None,
     toolchain_producer_fingerprint: str | None,
     external_capture: dict[str, Any],
+    execute_solver_replay: bool,
     used: set[str],
     errors: list[str],
 ) -> dict[str, Any]:
@@ -6661,6 +7073,7 @@ def validate_route(
             solver_binary_id=formal_ids["solver_binary_artifact_id"],
             artifacts=artifacts,
             artifact_files=artifact_files,
+            execute_solver_replay=execute_solver_replay,
             errors=errors,
         )
         vacuity_solver = validate_solver_artifact(
@@ -6676,6 +7089,7 @@ def validate_route(
             solver_binary_id=formal_ids["solver_binary_artifact_id"],
             artifacts=artifacts,
             artifact_files=artifact_files,
+            execute_solver_replay=execute_solver_replay,
             errors=errors,
             vacuity=True,
         )
@@ -7419,6 +7833,7 @@ def validate_campaign(
     schema_path: Path | None = None,
     route_schema_path: Path | None = None,
     execute_replay: bool = True,
+    portable_evidence_only: bool = False,
     external_trust_root_path: Path | None = None,
 ) -> dict[str, Any]:
     errors: list[str] = []
@@ -7507,6 +7922,7 @@ def validate_campaign(
         artifacts=artifacts,
         artifact_files=artifact_files,
         used=used,
+        live_runtime_replay=not portable_evidence_only,
         errors=errors,
     )
     engine_id = str(campaign.get("engine_campaign_artifact_id"))
@@ -7733,7 +8149,7 @@ def validate_campaign(
         artifact_files=artifact_files,
         used=used,
         repo_root=repo_root,
-        require_live=not captured_replay,
+        require_live=not captured_replay and not portable_evidence_only,
         errors=errors,
     )
     validate_bundle(
@@ -7745,7 +8161,7 @@ def validate_campaign(
         artifact_files=artifact_files,
         used=used,
         repo_root=repo_root,
-        require_live=not captured_replay,
+        require_live=not captured_replay and not portable_evidence_only,
         errors=errors,
     )
 
@@ -7940,6 +8356,7 @@ def validate_campaign(
                     else None
                 ),
                 external_capture=external_capture,
+                execute_solver_replay=not portable_evidence_only,
                 used=used,
                 errors=errors,
             )
@@ -8166,7 +8583,10 @@ def validate_campaign(
         "native_ready": native_ready,
         "runtime_ready": runtime_ready,
         "independent_ready": independent_ready,
-        "certification_ready": certification_ready,
+        "certification_ready": certification_ready and not portable_evidence_only,
+        "live_engine_verifier_status": (
+            "NOT_RUN" if portable_evidence_only else "PASSED"
+        ),
         "scope_digest": scope_digest,
         "errors": errors,
     }
@@ -8192,6 +8612,7 @@ def readiness_failure(errors: list[str]) -> dict[str, Any]:
         "runtime_ready": False,
         "independent_ready": False,
         "certification_ready": False,
+        "live_engine_verifier_status": "UNKNOWN",
         "errors": errors,
     }
 
@@ -8208,14 +8629,26 @@ def main() -> int:
         help="operator-configured trust anchor kept outside the evidence pack",
     )
     parser.add_argument("--no-replay-execute", action="store_true")
+    parser.add_argument(
+        "--portable-evidence-only",
+        action="store_true",
+        help=(
+            "validate captured, digest-bound evidence without comparing live "
+            "repository bytes or executing receipt-bound solver or Node replay; "
+            "does not confer certification"
+        ),
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
+    if args.portable_evidence_only and not args.no_replay_execute:
+        parser.error("--portable-evidence-only requires --no-replay-execute")
     result = validate_campaign(
         Path(args.pack_dir),
         campaign_relative=args.campaign,
         schema_path=args.schema,
         route_schema_path=args.route_schema,
         execute_replay=not args.no_replay_execute,
+        portable_evidence_only=args.portable_evidence_only,
         external_trust_root_path=(
             args.external_trust_root
             if args.external_trust_root is not None

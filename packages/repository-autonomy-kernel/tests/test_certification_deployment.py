@@ -423,7 +423,18 @@ def test_postgres_migrations_are_exact_and_restore_is_disposable_only(tmp_path):
     migration_root = Path(__file__).parents[1] / "sql" / "migrations"
     sessions = PostgresSessionFactory(connect=NoConnection())
     inventory = PostgresMigrationRunner(sessions, str(migration_root)).inventory()
-    assert [row.version for row in inventory] == [1, 2, 3, 4, 5, 6]
+    # V007 is the merged kernel core's stream tables.  They are additive: the
+    # control plane's own tables (V001-V006) are untouched, because the kernel
+    # core's log is chain-verified and keyed by an arbitrary stream id, which
+    # autonomy_events cannot express without changing released schema.
+    #
+    # V008 adds COMMENT ON TABLE to the 23 tables the migrations create and
+    # nothing writes - autonomy_events and autonomy_runs among them.  The
+    # earlier note here called unifying the two logs "consolidation debt"; that
+    # framing was wrong.  There is no second live log to unify with: nothing in
+    # this package writes autonomy_events, or autonomy_runs, the root the other
+    # 22 foreign-key to.  See sql/README.md and tests/test_persistence_split.py.
+    assert [row.version for row in inventory] == [1, 2, 3, 4, 5, 6, 7, 8]
     recovery = PostgresDisasterRecovery(allowed_backup_root=str(tmp_path), runner=FakePgRunner(tmp_path))
     backup = recovery.backup(
         service_name="elmos-test", backup_path="daily.dump", authorization_receipt="sha256:" + "a" * 64

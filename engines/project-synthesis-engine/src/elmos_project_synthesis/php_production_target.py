@@ -26,7 +26,7 @@ from __future__ import annotations
 import json
 
 from .container_images import PHP_IMAGE
-from .models import FieldSpec, SynthesisRequest
+from .models import EntitySpec, FieldSpec, SynthesisRequest
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
     ENV_AUTH_ISSUER,
@@ -423,134 +423,6 @@ __HYDRATE_FIELDS__
 }
 """
 
-_INDEX_SOURCE = """
-<?php
-
-declare(strict_types=1);
-
-namespace __NAMESPACE__;
-
-use RuntimeException;
-use Throwable;
-
-require __DIR__ . '/../src/TenantAuthenticator.php';
-require __DIR__ . '/../src/__ENTITY__Store.php';
-
-const COLLECTION_PATH = __COLLECTION_PATH__;
-const UUID_PATTERN = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
-
-/** @param array<string, mixed> $body */
-function respond(int $status, array $body): void
-{
-    http_response_code($status);
-    header('Content-Type: application/json');
-    echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-}
-
-function fail(int $status, string $reason): void
-{
-    respond($status, ['error' => $reason]);
-}
-
-/**
- * The connection string arrives by file reference, never inline, so it never
- * appears in process arguments or configuration dumps.
- */
-function buildStore(): __ENTITY__Store
-{
-    $path = TenantAuthenticator::requiredEnvironment(__ENV_DATABASE_URL_FILE__);
-    $url = trim((string) file_get_contents($path));
-
-    return new __ENTITY__Store($url);
-}
-
-$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
-
-if ($path === '/health') {
-    respond(200, ['status' => 'UP', 'service' => __SERVICE_NAME__]);
-
-    return;
-}
-
-if ($path !== COLLECTION_PATH && !str_starts_with($path, COLLECTION_PATH . '/')) {
-    fail(404, 'not_found');
-
-    return;
-}
-
-try {
-    $authenticator = new TenantAuthenticator();
-    $tenant = $authenticator->tenantFrom($_SERVER['HTTP_AUTHORIZATION'] ?? null);
-    if ($tenant === null) {
-        fail(401, 'unauthorized');
-
-        return;
-    }
-    $store = buildStore();
-
-    if ($path === COLLECTION_PATH) {
-        if ($method !== 'GET') {
-            fail(405, 'method_not_allowed');
-
-            return;
-        }
-        respond(200, ['items' => $store->list($tenant)]);
-
-        return;
-    }
-
-    $identifier = substr($path, strlen(COLLECTION_PATH) + 1);
-    // ext-filter is not compiled into the exact toolchain, so the identifier
-    // is validated with pcre rather than filter_var.
-    if (preg_match(UUID_PATTERN, $identifier) !== 1) {
-        fail(422, 'RECORD_ID_MUST_BE_UUID');
-
-        return;
-    }
-
-    if ($method === 'GET') {
-        $record = $store->find($tenant, $identifier);
-        if ($record === null) {
-            fail(404, 'not_found');
-
-            return;
-        }
-        respond(200, $record);
-
-        return;
-    }
-
-    if ($method === 'PUT') {
-        $payload = json_decode((string) file_get_contents('php://input'), true);
-        if (!is_array($payload)) {
-            fail(422, 'PAYLOAD_INVALID');
-
-            return;
-        }
-__REQUIRED_CHECKS__
-        respond(200, $store->save($tenant, $identifier, $payload));
-
-        return;
-    }
-
-    if ($method === 'DELETE') {
-        $store->delete($tenant, $identifier);
-        http_response_code(204);
-
-        return;
-    }
-
-    fail(405, 'method_not_allowed');
-} catch (RuntimeException $error) {
-    error_log('request failed: ' . $error->getMessage());
-    fail(500, 'internal_error');
-} catch (Throwable $error) {
-    error_log('request failed: ' . $error->getMessage());
-    fail(500, 'internal_error');
-}
-"""
-
 _INTEGRATION_JWT_SIGNER = """
 function signingKey(bool $valid): string
 {
@@ -845,9 +717,10 @@ def _php_namespace(request: SynthesisRequest) -> str:
     return "\\".join(pascal(part) for part in request.namespace.split(".") if part)
 
 
-def _store_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    sql = all_entity_sql(request, placeholder="?")[0]
+def _store_source(request: SynthesisRequest, entity: EntitySpec) -> str:
+    from .models import pascal
+
+    sql = next(item for item in all_entity_sql(request, placeholder="?") if item.entity == entity.singular)
     hydrate = "\n".join(
         f"            {_php_literal(field.name)} => "
         f"{_cast_from_database(field, f'$row[{_php_literal(field.name)}]')},"
@@ -858,7 +731,7 @@ def _store_source(request: SynthesisRequest) -> str:
         _STORE_SOURCE,
         {
             "__NAMESPACE__": _php_namespace(request),
-            "__ENTITY__": _entity_type(request),
+            "__ENTITY__": pascal(entity.singular),
             "__LIST_SQL__": _php_literal(sql.list_sql),
             "__GET_SQL__": _php_literal(sql.get_sql),
             "__UPSERT_SQL__": _php_literal(sql.upsert_sql),
@@ -877,26 +750,146 @@ def _store_source(request: SynthesisRequest) -> str:
 
 
 def _index_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    checks = [
-        f"        if (!is_string($payload[{_php_literal(field.name)}] ?? null)\n"
-        f"            || trim((string) $payload[{_php_literal(field.name)}]) === '') {{\n"
-        f"            fail(422, 'PAYLOAD_INVALID');\n\n"
-        f"            return;\n"
-        f"        }}"
-        for field in entity.fields
-        if field.required and field.type == "string"
-    ]
-    required_checks = "\n".join(checks) or "        // no blank-string constraints declared"
+    from .models import pascal
+
+    requires = "\n".join(
+        f"require __DIR__ . '/../src/{pascal(entity.singular)}Store.php';"
+        for entity in request.entities
+    )
+    handlers: list[str] = []
+    for entity in request.entities:
+        entity_type = pascal(entity.singular)
+        checks = [
+            f"        if (!is_string($payload[{_php_literal(field.name)}] ?? null)\n"
+            f"            || trim((string) $payload[{_php_literal(field.name)}]) === '') {{\n"
+            f"            fail(422, 'PAYLOAD_INVALID');\n\n"
+            f"            return;\n"
+            f"        }}"
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ]
+        required_checks = "\n".join(checks) or "        // no blank-string constraints declared"
+        collection = f"/{entity.plural}"
+        handlers.append(
+            f"""
+if ($path === {_php_literal(collection)} || str_starts_with($path, {_php_literal(collection + '/')})) {{
+    $store = new {entity_type}Store($databaseUrl);
+    if ($path === {_php_literal(collection)}) {{
+        if ($method !== 'GET') {{
+            fail(405, 'method_not_allowed');
+
+            return;
+        }}
+        respond(200, ['items' => $store->list($tenant)]);
+
+        return;
+    }}
+    $identifier = substr($path, {len(collection) + 1});
+    if (preg_match(UUID_PATTERN, $identifier) !== 1) {{
+        fail(422, 'RECORD_ID_MUST_BE_UUID');
+
+        return;
+    }}
+    if ($method === 'GET') {{
+        $record = $store->find($tenant, $identifier);
+        if ($record === null) {{
+            fail(404, 'not_found');
+
+            return;
+        }}
+        respond(200, $record);
+
+        return;
+    }}
+    if ($method === 'PUT') {{
+        $payload = json_decode((string) file_get_contents('php://input'), true);
+        if (!is_array($payload)) {{
+            fail(422, 'PAYLOAD_INVALID');
+
+            return;
+        }}
+{required_checks}
+        respond(200, $store->save($tenant, $identifier, $payload));
+
+        return;
+    }}
+    if ($method === 'DELETE') {{
+        $store->delete($tenant, $identifier);
+        http_response_code(204);
+
+        return;
+    }}
+    fail(405, 'method_not_allowed');
+
+    return;
+}}
+"""
+        )
+    body = "\n".join(handlers)
     return _substitute(
-        _INDEX_SOURCE,
+        """
+<?php
+
+declare(strict_types=1);
+
+namespace __NAMESPACE__;
+
+use RuntimeException;
+use Throwable;
+
+require __DIR__ . '/../src/TenantAuthenticator.php';
+__REQUIRES__
+
+const UUID_PATTERN = '/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/';
+
+/** @param array<string, mixed> $body */
+function respond(int $status, array $body): void
+{
+    http_response_code($status);
+    header('Content-Type: application/json');
+    echo json_encode($body, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+}
+
+function fail(int $status, string $reason): void
+{
+    respond($status, ['error' => $reason]);
+}
+
+$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+if ($path === '/health') {
+    respond(200, ['status' => 'UP', 'service' => __SERVICE_NAME__]);
+
+    return;
+}
+
+try {
+    $authenticator = new TenantAuthenticator();
+    $tenant = $authenticator->tenantFrom($_SERVER['HTTP_AUTHORIZATION'] ?? null);
+    if ($tenant === null) {
+        fail(401, 'unauthorized');
+
+        return;
+    }
+    $reference = TenantAuthenticator::requiredEnvironment(__ENV_DATABASE_URL_FILE__);
+    $databaseUrl = trim((string) file_get_contents($reference));
+__HANDLERS__
+    fail(404, 'not_found');
+} catch (RuntimeException $error) {
+    error_log('request failed: ' . $error->getMessage());
+    fail(500, 'internal_error');
+} catch (Throwable $error) {
+    error_log('request failed: ' . $error->getMessage());
+    fail(500, 'internal_error');
+}
+""",
         {
             "__NAMESPACE__": _php_namespace(request),
-            "__ENTITY__": _entity_type(request),
-            "__COLLECTION_PATH__": _php_literal(f"/{entity.plural}"),
+            "__REQUIRES__": requires,
             "__SERVICE_NAME__": _php_literal(request.project_name),
             "__ENV_DATABASE_URL_FILE__": _php_literal(ENV_DATABASE_URL_FILE),
-            "__REQUIRED_CHECKS__": required_checks,
+            "__HANDLERS__": body,
         },
     )
 
@@ -931,13 +924,9 @@ def _integration_source(request: SynthesisRequest, port: int) -> str:
 
 
 def render_php_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        raise ValueError(
-            "PHP_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
-    entity_type = _entity_type(request)
-    return {
+    from .models import pascal
+
+    files = {
         ".gitignore": gitignore(),
         ".dockerignore": dockerignore(),
         ".env.example": env_example(request, port),
@@ -960,14 +949,13 @@ def render_php_production(request: SynthesisRequest, port: int) -> dict[str, str
                 "config": {"optimize-autoloader": True},
             }
         ),
-        f"src/{entity_type}Store.php": _store_source(request),
         "src/TenantAuthenticator.php": _security_source(request),
         "public/index.php": _index_source(request),
         "tests/run.php": _substitute(
             _OFFLINE_TEST_SOURCE,
             {
                 "__NAMESPACE__": _php_namespace(request),
-                "__ENTITY__": entity_type,
+                "__ENTITY__": pascal(request.entities[0].singular),
                 "__REQUIRED_EXTENSIONS__": "["
                 + ", ".join(_php_literal(name.lower()) for name in REQUIRED_EXTENSIONS)
                 + "]",
@@ -1036,3 +1024,6 @@ def render_php_production(request: SynthesisRequest, port: int) -> dict[str, str
             ),
         ),
     }
+    for entity in request.entities:
+        files[f"src/{pascal(entity.singular)}Store.php"] = _store_source(request, entity)
+    return files

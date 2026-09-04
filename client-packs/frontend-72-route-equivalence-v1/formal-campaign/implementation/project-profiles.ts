@@ -163,6 +163,8 @@ const profiles: Readonly<Record<UiFrameworkId, ExactUiTargetProfile>> = {
     testTool: "Hypium profile",
     runnerProfile: "HARMONYOS",
     requiredProjectFiles: [
+      "oh-package.json5",
+      "hvigor/hvigor-config.json5",
       "build-profile.json5",
       "AppScope/app.json5",
       "entry/src/main/module.json5",

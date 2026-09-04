@@ -3187,6 +3187,16 @@ if (formSubmissionAttemptObserved([fakeSubmitElement], scenarioId, true)) {{
             ),
         )
         self.assertEqual(
+            (
+                identity["node_types_tree"]["file_count"],
+                identity["node_types_tree"]["digest"],
+            ),
+            (
+                runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT,
+                runner.LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256,
+            ),
+        )
+        self.assertEqual(
             {
                 key: value["sha256"]
                 for key, value in identity["files"].items()
@@ -3245,6 +3255,38 @@ if (formSubmissionAttemptObserved([fakeSubmitElement], scenarioId, true)) {{
             self.assertRaisesRegex(runner.ValidationError, "TypeScript drift"),
         ):
             runner.locked_interaction_engine_implementation_identity()
+
+    def test_frozen_node_types_tree_rejects_dts_mutation_and_nested_symlink(
+        self,
+    ) -> None:
+        source = runner.locked_interaction_engine_node_types_root()
+        with tempfile.TemporaryDirectory(prefix="frontend-node-types-negative-") as raw:
+            root = Path(raw) / "node-types"
+            shutil.copytree(source, root)
+            target = root / "assert.d.ts"
+            original = target.read_bytes()
+            target.write_bytes(original + b"\n// mutation\n")
+            with (
+                patch.object(
+                    runner, "locked_interaction_engine_node_types_root", return_value=root
+                ),
+                self.assertRaisesRegex(
+                    runner.ValidationError, "Node types tree identity drift"
+                ),
+            ):
+                runner.locked_interaction_engine_implementation_identity()
+
+            target.unlink()
+            outside = Path(raw) / "outside.d.ts"
+            outside.write_bytes(original)
+            target.symlink_to(outside)
+            with (
+                patch.object(
+                    runner, "locked_interaction_engine_node_types_root", return_value=root
+                ),
+                self.assertRaisesRegex(runner.ValidationError, "contains symlink"),
+            ):
+                runner.locked_interaction_engine_implementation_identity()
 
 
 if __name__ == "__main__":

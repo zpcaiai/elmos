@@ -166,19 +166,42 @@ def route(step: Mapping[str, Any], profiles: Any, risk: Mapping[str, Any], budge
             reasons.append("high_risk_requires_pass")
         if str(item.get("privacy_mode", "")) not in set(provider_policy.get("allowed_privacy_modes", [item.get("privacy_mode", "")])):
             reasons.append("privacy_mode_not_allowed")
+        # Three unmeasured-is-zero defaults, and the middle one inverts the
+        # ranking.  A profile that declares no price is scored as free, and the
+        # score is quality/(cost + latency/100000), so the model with no price
+        # data outranks every priced model.  The defaults are kept because
+        # callers depend on this handler answering, but every one of them is
+        # now reported in `scoring_note` and counted in `unpriced_models`.
         quality = float(item.get("quality", 0))
         cost = float(item.get("cost_per_call", 0))
         latency = float(item.get("latency_ms", 1))
+        unmeasured = sorted(
+            field for field in ("quality", "cost_per_call", "latency_ms")
+            if item.get(field) is None or field not in item
+        )
         score = quality / max(cost + latency / 100000, 0.000001)
-        candidates.append({"model_id": require_string(item.get("model_id"), "model.model_id"), "eligible": not reasons, "reasons": sorted(set(reasons)), "score": score, "quality": quality, "cost": cost, "latency_ms": latency})
+        candidates.append({"model_id": require_string(item.get("model_id"), "model.model_id"), "eligible": not reasons, "reasons": sorted(set(reasons)), "score": score, "quality": quality, "cost": cost, "latency_ms": latency, "unmeasured_fields": unmeasured})
     eligible = sorted([item for item in candidates if item["eligible"]], key=lambda item: (-item["score"], item["model_id"]))
     chosen = eligible[0] if eligible else None
-    return {"routing_decision": {"status": "ROUTED" if chosen else "BLOCKED", "chosen_model": chosen["model_id"] if chosen else None, "candidates": candidates, "policy_hash": digest(provider_policy)}, "fallback_chain": [item["model_id"] for item in eligible[1:]], "escalation_plan": {"required": not bool(chosen), "reason": "no eligible model" if not chosen else "none"}, "estimated_cost": chosen["cost"] if chosen else None, "usage_record": {"status": "NOT_RUN", "provider_execution": False}}
+    unpriced = [item["model_id"] for item in candidates if "cost_per_call" in item["unmeasured_fields"]]
+    return {"routing_decision": {"status": "ROUTED" if chosen else "BLOCKED", "chosen_model": chosen["model_id"] if chosen else None, "candidates": candidates, "policy_hash": digest(provider_policy), "scoring_method": "float-quality-over-cost", "reproducible": False, "unpriced_models": unpriced, "scoring_note": ("candidates are ranked by quality/(cost + latency/100000) in binary floating point, so two hosts can order the same two models differently; a profile that declares no cost_per_call is scored as free and therefore outranks every priced model - see unpriced_models. policy_hash covers the provider policy only, not the model registry the decision was made against, so it does not bind this decision to these candidates"), "escalation_controls": {"min_tier": False, "de_escalation": False, "escalate_after_attempts": False, "deprecation_aware": False}}, "fallback_chain": [item["model_id"] for item in eligible[1:]], "escalation_plan": {"required": not bool(chosen), "reason": "no eligible model" if not chosen else "none"}, "estimated_cost": chosen["cost"] if chosen else None, "usage_record": {"status": "NOT_RUN", "provider_execution": False}}
 
 
 def cost_eta(events: Any, history: Any, repo_features: Mapping[str, Any], usage: Any, cache_metrics: Mapping[str, Any], pricing: Mapping[str, Any]) -> dict[str, Any]:
     rows = [require_mapping(item, "run_events[]") for item in events] if isinstance(events, list) else []
     durations = [float(item.get("wall_clock_ms", item.get("duration_ms", 0))) / 1000 for item in rows if float(item.get("wall_clock_ms", item.get("duration_ms", 0))) >= 0]
+    # Three separate paths in this function turn "not reported" into 0: an empty
+    # event list becomes a single 0.0 duration, an event with neither
+    # wall_clock_ms nor duration_ms is summed as 0, and a usage row missing its
+    # quantity or unit price is priced at 0.  A zero cost and an unknown cost are
+    # different facts and this repository has shipped the confusion three times,
+    # so the numbers below are left exactly as they were and the outputs now say
+    # which of them were measured.
+    unmeasured_events = [
+        item for item in rows
+        if item.get("wall_clock_ms") is None and item.get("duration_ms") is None
+    ]
+    wall_clock_measured = bool(rows) and not unmeasured_events
     if not durations:
         durations = [0.0]
     sorted_values = sorted(durations)
@@ -190,27 +213,96 @@ def cost_eta(events: Any, history: Any, repo_features: Mapping[str, Any], usage:
         by_phase[str(item.get("phase", item.get("event_type", "unknown")))] += float(item.get("wall_clock_ms", item.get("duration_ms", 0))) / 1000
     total_cost = Decimal(0)
     cost_rows = []
+    unmeasured_components: list[str] = []
     if isinstance(usage, list):
-        for item in usage:
+        for index, item in enumerate(usage):
             value = require_mapping(item, "model_tool_usage[]")
+            measured = "quantity" in value and "unit_price" in value
             quantity = Decimal(str(value.get("quantity", 0)))
             unit_price = Decimal(str(value.get("unit_price", 0)))
             amount = quantity * unit_price
             total_cost += amount
-            cost_rows.append({"category": value.get("category", "model"), "quantity": str(quantity), "unit_price": str(unit_price), "total": str(amount), "currency": value.get("currency", "USD")})
+            category = str(value.get("category", f"model_tool_usage[{index}]"))
+            if not measured:
+                unmeasured_components.append(category)
+            cost_rows.append({
+                "category": value.get("category", "model"),
+                "quantity": str(quantity),
+                "unit_price": str(unit_price),
+                "total": str(amount),
+                "currency": value.get("currency", "USD"),
+                "measured": measured,
+            })
     if pricing and any(value is None for value in pricing.values()):
         raise ContractError("PRICE_PROFILE_MISSING", "pricing profile contains null values")
-    return {"progress_snapshot": {"events": len(rows), "completed_events": sum(1 for item in rows if str(item.get("status", "")).upper() in {"PASS", "SUCCEEDED", "COMPLETED"}), "machine_wall_clock_seconds": sum(durations), "human_wait_seconds": sum(float(item.get("approval_wait_seconds", 0)) for item in rows)}, "eta_distribution": {"p50": quantile(.5), "p80": quantile(.8), "p95": quantile(.95), "worst_case": max(durations), "confidence": "engineering-estimate"}, "critical_path": {"phases": sorted(by_phase, key=lambda key: (-by_phase[key], key)), "durations_seconds": dict(sorted(by_phase.items()))}, "cost_breakdown": cost_rows, "billing_record": {"status": "CALCULATED" if cost_rows else "NOT_RUN", "total": str(total_cost), "currency": "USD", "pricing_profile": digest(pricing)}, "slo_metrics": {"cache_hit_rate": float(cache_metrics.get("hit_rate", 0)), "historical_sample_count": len(history) if isinstance(history, list) else 0, "repo_features": dict(repo_features)}}
+    cost_measured = bool(cost_rows) and not unmeasured_components
+    progress_snapshot = {
+        "events": len(rows),
+        "completed_events": sum(
+            1 for item in rows
+            if str(item.get("status", "")).upper() in {"PASS", "SUCCEEDED", "COMPLETED"}
+        ),
+        "machine_wall_clock_seconds": sum(durations),
+        "human_wait_seconds": sum(float(item.get("approval_wait_seconds", 0)) for item in rows),
+        "machine_wall_clock_measured": wall_clock_measured,
+        "unmeasured_event_count": len(unmeasured_events),
+        "method_note": (
+            "machine_wall_clock_seconds sums only reported durations; an event "
+            "that reported none contributed 0, and with no events at all the "
+            "total is 0 because nothing was measured, not because nothing ran"
+        ),
+    }
+    eta_distribution = {
+        "p50": quantile(.5), "p80": quantile(.8), "p95": quantile(.95),
+        "worst_case": max(durations),
+        "confidence": "engineering-estimate",
+        "measured": wall_clock_measured,
+        "method_note": (
+            "quantiles over the reported durations only; when measured is false "
+            "the distribution rests on a substituted 0.0 and states nothing about "
+            "how long this run will take"
+        ),
+    }
+    billing_record = {
+        "status": "CALCULATED" if cost_rows else "NOT_RUN",
+        "total": str(total_cost),
+        "currency": "USD",
+        "pricing_profile": digest(pricing),
+        "measured": cost_measured,
+        "unmeasured_components": unmeasured_components,
+        "method_note": (
+            "total sums only what was reported: a usage row without a quantity or "
+            "a unit price was counted as 0, so a total of 0 can mean nothing was "
+            "spent or that nothing was measured - read measured before total"
+        ),
+    }
+    slo_metrics = {
+        "cache_hit_rate": float(cache_metrics.get("hit_rate", 0)),
+        "cache_hit_rate_measured": cache_metrics.get("hit_rate") is not None,
+        "historical_sample_count": len(history) if isinstance(history, list) else 0,
+        "repo_features": dict(repo_features),
+    }
+    critical_path = {
+        "phases": sorted(by_phase, key=lambda key: (-by_phase[key], key)),
+        "durations_seconds": dict(sorted(by_phase.items())),
+        "measured": wall_clock_measured,
+    }
+    return {"progress_snapshot": progress_snapshot, "eta_distribution": eta_distribution, "critical_path": critical_path, "cost_breakdown": cost_rows, "billing_record": billing_record, "slo_metrics": slo_metrics}
 
 
 def continuity(ledger: Mapping[str, Any], run_state: Mapping[str, Any], agent_state: Mapping[str, Any], tool_results: Any, findings: Any, provider_event: Mapping[str, Any]) -> dict[str, Any]:
     snapshot = {"version": "2.0.0", "ledger": dict(ledger), "run_state": dict(run_state), "agent_state": dict(agent_state), "tool_results": list(tool_results) if isinstance(tool_results, list) else [], "open_findings": list(findings) if isinstance(findings, list) else [], "provider_event": dict(provider_event), "captured_at": utc_now()}
     previous = provider_event.get("previous_state") if isinstance(provider_event.get("previous_state"), Mapping) else {}
     changed = sorted(key for key in set(snapshot) | set(previous) if snapshot.get(key) != previous.get(key))
-    return {"model_state_snapshot": {**snapshot, "hash": digest(snapshot)}, "continuation_prompt": {"objective": ledger.get("objective"), "completed": ledger.get("completed", []), "next_step": ledger.get("next_step"), "constraints": ["do not replay unknown side effects", "revalidate authority before writes"]}, "resume_cursor": {"event_sequence": provider_event.get("sequence_no", 0), "checkpoint_hash": provider_event.get("checkpoint_hash")}, "state_diff": {"changed_fields": changed}, "continuity_report": {"status": "REQUIRES_AUTHORITY_REVALIDATION", "resume_equivalence": not bool(provider_event.get("diverged", False)), "duplicate_side_effect_risk": bool(provider_event.get("unknown_side_effect", False))}}
+    return {"model_state_snapshot": {**snapshot, "hash": digest(snapshot)}, "continuation_prompt": {"objective": ledger.get("objective"), "completed": ledger.get("completed", []), "next_step": ledger.get("next_step"), "constraints": ["do not replay unknown side effects", "revalidate authority before writes"]}, "resume_cursor": {"event_sequence": provider_event.get("sequence_no", 0), "checkpoint_hash": provider_event.get("checkpoint_hash")}, "state_diff": {"changed_fields": changed}, "continuity_report": {"status": "REQUIRES_AUTHORITY_REVALIDATION", "resume_equivalence": not bool(provider_event.get("diverged", False)), "resume_equivalence_checked": False, "note": "resume_equivalence echoes the caller's own provider_event.diverged flag; no decision was replayed against a restored checkpoint to verify it", "duplicate_side_effect_risk": bool(provider_event.get("unknown_side_effect", False))}}
 
 
 def time_travel(events: Any, checkpoints: Any, ledgers: Any, change_graph_value: Any, artifacts: Any) -> dict[str, Any]:
     rows = [require_mapping(item, "run_event_stream[]") for item in events] if isinstance(events, list) else []
     sequence = sorted(rows, key=lambda item: int(item.get("sequence_no", 0)))
-    return {"session_snapshot": {"event_count": len(sequence), "latest_sequence": sequence[-1].get("sequence_no", 0) if sequence else 0, "checkpoint_count": len(checkpoints) if isinstance(checkpoints, list) else 0, "artifact_count": len(artifacts) if isinstance(artifacts, list) else 0, "state_hash": digest(sequence)}, "forked_run": {"status": "PLANNED", "from_sequence": sequence[-1].get("sequence_no", 0) if sequence else 0, "new_run_id": str(__import__("uuid").uuid4())}, "replay_report": {"status": "REPLAYABLE" if sequence else "NOT_RUN", "ordered": all(sequence[index]["sequence_no"] <= sequence[index + 1]["sequence_no"] for index in range(len(sequence) - 1)), "change_graph_bound": bool(change_graph_value)}, "state_comparison": {"ledgers": len(ledgers) if isinstance(ledgers, list) else 0}, "rollback_plan": {"status": "PLANNED", "requires_external_scm": True}}
+    # This path plans a fork; it does not perform one. No stream is copied, no FORK
+    # event is recorded, and the run id is a fresh uuid4, so two identical calls
+    # disagree. Saying "PLANNED" is not enough on its own - a reader seeing a
+    # new_run_id reasonably assumes a run exists behind it. The kernel engine
+    # forks for real when the caller supplies a kernel-shaped event stream.
+    return {"session_snapshot": {"event_count": len(sequence), "latest_sequence": sequence[-1].get("sequence_no", 0) if sequence else 0, "checkpoint_count": len(checkpoints) if isinstance(checkpoints, list) else 0, "artifact_count": len(artifacts) if isinstance(artifacts, list) else 0, "state_hash": digest(sequence)}, "forked_run": {"status": "PLANNED", "forked": False, "deterministic_run_id": False, "note": "no stream was copied and no FORK event was recorded; new_run_id names a run that does not exist yet", "from_sequence": sequence[-1].get("sequence_no", 0) if sequence else 0, "new_run_id": str(__import__("uuid").uuid4())}, "replay_report": {"status": "REPLAYABLE" if sequence else "NOT_RUN", "ordered": all(sequence[index]["sequence_no"] <= sequence[index + 1]["sequence_no"] for index in range(len(sequence) - 1)), "change_graph_bound": bool(change_graph_value)}, "state_comparison": {"ledgers": len(ledgers) if isinstance(ledgers, list) else 0}, "rollback_plan": {"status": "PLANNED", "requires_external_scm": True}}

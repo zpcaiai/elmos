@@ -42,19 +42,19 @@ class RuntimeOperabilityTests(unittest.TestCase):
         safe = unsafe.replace('error.getMessage()', '"The request was rejected."')
         self.assertEqual([], validate_exception_handler_source("SafeController.java", safe))
 
-    def test_operations_admin_credential_is_expiring_and_identity_bound(self) -> None:
+    def test_operations_admin_requires_exact_verified_email_session(self) -> None:
         source = (
             ROOT / "apps/web-console/app/lib/server/operationsProxy.ts"
         ).read_text(encoding="utf-8")
         for token in (
-            "ELMOS_ADMIN_OBSERVABILITY_TOKEN_EXPIRES_AT",
-            "ELMOS_ADMIN_OBSERVABILITY_TENANT_ID",
-            "ELMOS_ADMIN_OBSERVABILITY_ACTOR_ID",
-            "MAX_ADMIN_TOKEN_LIFETIME_MS",
-            "ADMIN_OBSERVABILITY_TOKEN_EXPIRED_OR_INVALID",
-            "ADMIN_OBSERVABILITY_IDENTITY_MISMATCH",
+            "accountSessionFromRequest",
+            "isPlatformAdministrator",
+            "ADMIN_EMAIL_REQUIRED",
+            'authentication: "OIDC_SESSION"',
         ):
             self.assertIn(token, source)
+        self.assertNotIn("ELMOS_ADMIN_OBSERVABILITY_TOKEN", source)
+        self.assertNotIn("BREAK_GLASS_TOKEN", source)
 
         authorization = (
             ROOT

@@ -6,16 +6,26 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from .assembly import assemble_project, verify_assembled_project
 from .batch import run_batch
 from .discovery import discover_repository, write_report
-from .engine import migrate
+from .engine import migrate, migrate_module
 from .models import SUPPORTED_LANGUAGES, RouteError
 from .pipeline import run_repository_pipeline
+from .preflight import repository_preflight
 from .repository import plan_repository
 from .single_unit import check_only, emit_only
 
-SUBCOMMANDS = ("inventory", "discover", "batch", "assemble", "repository-pipeline", "emit", "check")
+SUBCOMMANDS = (
+    "inventory",
+    "repository-preflight",
+    "discover",
+    "batch",
+    "assemble",
+    "repository-pipeline",
+    "emit",
+    "check",
+    "module",
+)
 
 
 def _migration_parser() -> argparse.ArgumentParser:
@@ -50,6 +60,16 @@ def _discover_parser() -> argparse.ArgumentParser:
         default=None,
         help="Classify only the first N work units; the remainder stays undiscovered.",
     )
+    return parser
+
+
+def _repository_preflight_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route repository-preflight")
+    parser.add_argument("--repository", type=Path, required=True)
+    parser.add_argument("--repository-ref", required=True)
+    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--output", type=Path, required=True)
     return parser
 
 
@@ -110,6 +130,21 @@ def _check_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _module_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(prog="elmos-polyglot-route module")
+    parser.add_argument("--source", type=Path, required=True)
+    parser.add_argument("--source-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument("--target-language", choices=SUPPORTED_LANGUAGES, required=True)
+    parser.add_argument(
+        "--manifest",
+        type=Path,
+        required=True,
+        help="Exact typed-pure-module-v1 symbol, signature, and behavior-case manifest.",
+    )
+    parser.add_argument("--output", type=Path, required=True)
+    return parser
+
+
 def _load_json(path: Path) -> dict[str, Any]:
     value = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(value, dict):
@@ -157,6 +192,27 @@ def main(argv: list[str] | None = None) -> int:
             write_report(report, discover_args.output)
             return _emit(report)
 
+        if subcommand == "repository-preflight":
+            preflight_args = _repository_preflight_parser().parse_args(remainder)
+            if preflight_args.output.exists() or preflight_args.output.is_symlink():
+                raise RouteError("PREFLIGHT_OUTPUT_ALREADY_EXISTS_OR_UNSAFE")
+            report = repository_preflight(
+                preflight_args.repository,
+                preflight_args.repository_ref,
+                preflight_args.source_language,
+                preflight_args.target_language,
+            )
+            preflight_args.output.parent.mkdir(parents=True, exist_ok=True)
+            temporary = preflight_args.output.with_suffix(preflight_args.output.suffix + ".tmp")
+            if temporary.exists() or temporary.is_symlink():
+                raise RouteError("PREFLIGHT_OUTPUT_TEMPORARY_UNSAFE")
+            temporary.write_text(
+                json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
+                encoding="utf-8",
+            )
+            temporary.replace(preflight_args.output)
+            return _emit(report)
+
         if subcommand == "batch":
             batch_args = _batch_parser().parse_args(remainder)
             if batch_args.limit is not None and batch_args.limit < 1:
@@ -171,15 +227,11 @@ def main(argv: list[str] | None = None) -> int:
             return _emit(report)
 
         if subcommand == "assemble":
-            assemble_args = _assemble_parser().parse_args(remainder)
-            manifest = assemble_project(
-                _load_json(assemble_args.batch_report),
-                assemble_args.batch_output,
-                assemble_args.destination,
+            _assemble_parser().parse_args(remainder)
+            raise RouteError(
+                "STANDALONE_ASSEMBLY_DISABLED_UNTRUSTED_BATCH_REPORT:"
+                "use repository-pipeline so batch evidence is produced and consumed in one execution"
             )
-            if assemble_args.verify:
-                manifest = verify_assembled_project(manifest["target_language"], assemble_args.destination)
-            return _emit(manifest)
 
         if subcommand == "repository-pipeline":
             pipeline_args = _repository_pipeline_parser().parse_args(remainder)
@@ -208,6 +260,17 @@ def main(argv: list[str] | None = None) -> int:
             check_args = _check_parser().parse_args(remainder)
             content = check_args.file.read_text(encoding="utf-8")
             report = check_only(check_args.target_language, content, check_args.output)
+            return _emit(report)
+
+        if subcommand == "module":
+            module_args = _module_parser().parse_args(remainder)
+            report = migrate_module(
+                module_args.source,
+                module_args.source_language,
+                module_args.target_language,
+                module_args.manifest,
+                module_args.output,
+            )
             return _emit(report)
 
         args = _migration_parser().parse_args(remainder)

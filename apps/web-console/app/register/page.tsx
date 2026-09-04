@@ -16,7 +16,8 @@ const errorMessages: Record<string, string> = {
   LOCAL_REGISTRATION_PASSWORD_MISMATCH: "两次输入的密码不一致。",
   LOCAL_REGISTRATION_DISPLAY_NAME_INVALID: "显示名称需为 2 至 160 个字符。",
   LOCAL_REGISTRATION_EMAIL_INVALID: "邮箱地址无效。",
-  LOCAL_ACCOUNT_ALREADY_EXISTS: "该用户名已存在，请直接登录。",
+  LOCAL_REGISTRATION_ADMIN_EMAIL_RESERVED: "管理员邮箱不能通过普通用户注册创建。",
+  LOCAL_ACCOUNT_ALREADY_EXISTS: "该用户名或邮箱已存在，请直接登录。",
   LOCAL_REGISTRATION_UNAVAILABLE: "注册暂时不可用，请稍后重试。",
 };
 
@@ -36,9 +37,9 @@ export default async function RegisterPage({
   return (
     <section className="auth-page" aria-labelledby="register-title">
       <div className="auth-card">
-        <span className="eyebrow">LOCAL DEVELOPMENT IDENTITY</span>
+        <span className="eyebrow">USER REGISTRATION · EMAIL</span>
         <h1 id="register-title">注册 ELMOS 账户</h1>
-        <p>注册功能只为本地开发环境提供。账户密码使用 scrypt 哈希保存，生产环境仍由企业 OIDC 负责身份注册与登录。</p>
+        <p>注册功能只为本地开发环境提供。邮箱为登录标识，账户密码使用 scrypt 哈希保存；生产环境仍由企业 OIDC 负责身份注册与登录。</p>
         {error && <div className="auth-error" role="alert">{error}</div>}
         {registrationConfigured ? (
           <form className="auth-form" method="post" action="/api/auth/register">
@@ -54,8 +55,8 @@ export default async function RegisterPage({
               <input name="displayName" autoComplete="name" minLength={2} maxLength={160} required />
             </label>
             <label>
-              <span>邮箱（可选）</span>
-              <input name="email" type="email" autoComplete="email" maxLength={254} />
+              <span>邮箱</span>
+              <input name="email" type="email" autoComplete="email" inputMode="email" maxLength={254} required />
             </label>
             <label>
               <span>密码</span>
@@ -77,7 +78,7 @@ export default async function RegisterPage({
           <span>已有账户？</span>
           <a className="text-link" href={`/login?${new URLSearchParams({ returnTo })}`}>返回登录</a>
         </div>
-        <small>本地账户只授予 DEVELOPER 最小权限；生产部署不会接受本地账户凭据。</small>
+        <small>所有自助注册账户均为普通用户，只授予 DEVELOPER 最小权限；管理员邮箱不能通过此入口注册。</small>
       </div>
     </section>
   );

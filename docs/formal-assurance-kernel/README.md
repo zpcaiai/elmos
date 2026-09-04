@@ -72,6 +72,13 @@ an exact adapter ID, executable path and executable SHA-256; OCI adapters also
 bind an immutable image digest and in-container executable. Project/runtime
 code cannot fall back from OCI isolation to a local process.
 
+The optional native HMAC/Merkle bridge is a separate local acceleration path.
+It has no directory scan or implicit fallback: the host must supply one
+absolute library path and its exact SHA-256 together. Returned payload digests,
+HMAC values and Merkle roots are recomputed independently before acceptance.
+Missing configuration stays `NOT_RUN`; even a successful call remains local
+self-attested engineering evidence and is not an external signature.
+
 The WSGI API exposes scope-bound assumption and trusted-component registration,
 four-eyes waiver proposal/approval/revocation, explicit dependency-drift
 invalidation, evidence-bundle build/verification and latest-gate retrieval.

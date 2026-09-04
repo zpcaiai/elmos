@@ -8,12 +8,12 @@
       "Do not optimize solely for cheapness; retain quality and defect-escape metrics."
     ],
     "inputs": [
-      "execution records",
-      "validation outcomes",
-      "review defects"
+      "`execution records`",
+      "`validation outcomes`",
+      "`review defects`"
     ],
     "outputs": [
-      "updated model metrics"
+      "`updated model metrics`"
     ],
     "triggers": [
       "task/certification completion"

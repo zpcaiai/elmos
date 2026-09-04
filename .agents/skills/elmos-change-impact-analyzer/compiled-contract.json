@@ -9,13 +9,13 @@
       "Treat uncertain high-impact paths conservatively."
     ],
     "inputs": [
-      "requirement spec",
-      "architecture index"
+      "`requirement spec`",
+      "`architecture index`"
     ],
     "outputs": [
-      "impact map",
-      "risk triggers",
-      "candidate write/read paths"
+      "`impact map`",
+      "`risk triggers`",
+      "`candidate write/read paths`"
     ],
     "triggers": [
       "normalized requirement + architecture index"

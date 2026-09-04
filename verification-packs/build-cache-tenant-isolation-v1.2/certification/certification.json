@@ -9,7 +9,10 @@
     "target_artifact_digest": "sha256:327f4136846a20dda3ccfaba6cd235716ea8c807b5b689aeca3e55a09eeb6dbd",
     "workload_key": "build-cache-tenant-isolation-principal-resource-action-v1",
     "risk_tier": "P0",
-    "environment_digest": "sha256:aa65fad54e738274bd289ccc4d603387b1b2f2429a1970817dbac38365f60a2e"
+    "environment_digest": "sha256:aa65fad54e738274bd289ccc4d603387b1b2f2429a1970817dbac38365f60a2e",
+    "source_artifact_manifest": "artifacts/source-artifact.json",
+    "target_artifact_manifest": "artifacts/target-artifact.json",
+    "environment_manifest": "environment/local-validation-environment.json"
   },
   "metrics": {
     "local_engineering": "STRUCTURE_ONLY",

@@ -117,6 +117,24 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
 
             self.assertEqual(first["manifest_bytes"], checked["manifest_bytes"])
             self.assertEqual(first["manifest_bytes"], second["manifest_bytes"])
+            manifest_path = (
+                repository / integration.DOC_RELATIVE / integration.INSTALL_MANIFEST_NAME
+            )
+            predecessor = json.loads(manifest_path.read_text(encoding="utf-8"))
+            predecessor.pop("postgresql_claim_ready_task_ambiguity_defect")
+            predecessor_bytes = (
+                json.dumps(predecessor, indent=2, sort_keys=True) + "\n"
+            ).encode("utf-8")
+            manifest_path.write_bytes(predecessor_bytes)
+            manifest_path.chmod(integration.INSTALLED_FILE_MODE)
+            with mock.patch.object(
+                integration,
+                "ALLOWED_PREVIOUS_INSTALL_MANIFEST_SHA256",
+                frozenset({integration.digest(predecessor_bytes).removeprefix("sha256:")}),
+            ):
+                upgraded = integration.write_install(repository)
+            self.assertEqual(first["manifest_bytes"], upgraded["manifest_bytes"])
+            self.assertEqual(first["manifest_bytes"], manifest_path.read_bytes())
             source = repository / integration.SOURCE_RELATIVE
             snapshot = integration.read_archive(repository / integration.ARCHIVE_RELATIVE)
             validated = integration.validate_source_tree(source, snapshot)
@@ -196,6 +214,22 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             )
             self.assertFalse(partition_defect["canonical_source_mutated"])
             self.assertEqual("NOT_APPROVED", partition_defect["production_resolution"])
+            slot_defect = manifest["postgresql_account_slot_uniqueness_defect"]
+            self.assertEqual(
+                "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+                slot_defect["state"],
+            )
+            self.assertEqual("core.account_task_slot", slot_defect["affected_table"])
+            self.assertFalse(slot_defect["canonical_source_mutated"])
+            self.assertEqual("NOT_APPROVED", slot_defect["production_resolution"])
+            claim_defect = manifest["postgresql_claim_ready_task_ambiguity_defect"]
+            self.assertEqual(
+                "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+                claim_defect["state"],
+            )
+            self.assertEqual("exec.claim_ready_task", claim_defect["affected_function"])
+            self.assertFalse(claim_defect["canonical_source_mutated"])
+            self.assertEqual("NOT_APPROVED", claim_defect["production_resolution"])
             evidence = manifest["evidence"]
             self.assertEqual("STATIC_VALIDATED", evidence["maximum_local_status"])
             self.assertFalse(evidence["source_scripts_executed_by_importer"])
@@ -438,6 +472,14 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             self.assertEqual(
                 len(runtime_renderer.EXPECTED_MIGRATIONS), result["migration_count"]
             )
+            self.assertEqual(
+                [
+                    runtime_renderer.ACCOUNT_SLOT_MIGRATION,
+                    runtime_renderer.PATCHED_MIGRATION,
+                    runtime_renderer.RUNTIME_FUNCTION_MIGRATION,
+                ],
+                result["patched_migrations"],
+            )
             patched = (output_root / runtime_renderer.PATCHED_MIGRATION).read_bytes()
             self.assertEqual(
                 runtime_renderer.EXPECTED_PATCH_OUTPUT_SHA256,
@@ -447,6 +489,40 @@ class LargeRepositoryDatabaseDesignIntegrationTests(unittest.TestCase):
             self.assertNotIn(b") PARTITION BY HASH (run_id);", patched)
             self.assertNotIn(b") PARTITION BY HASH (session_id);", patched)
             self.assertIn(b"UNIQUE (tenant_id, event_id)", patched)
+            self.assertIn(
+                b"UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+                patched,
+            )
+            self.assertNotIn(
+                b"UNIQUE NULLS NOT DISTINCT (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+                patched,
+            )
+
+            account_slot = (
+                output_root / runtime_renderer.ACCOUNT_SLOT_MIGRATION
+            ).read_bytes()
+            self.assertEqual(
+                runtime_renderer.EXPECTED_ACCOUNT_SLOT_OUTPUT_SHA256,
+                runtime_renderer.sha256_bytes(account_slot),
+            )
+            self.assertIn(
+                b"UNIQUE (tenant_id, claimed_by_run_id)", account_slot
+            )
+            self.assertNotIn(
+                b"UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id)",
+                account_slot,
+            )
+
+            runtime_functions = (
+                output_root / runtime_renderer.RUNTIME_FUNCTION_MIGRATION
+            ).read_bytes()
+            self.assertEqual(
+                runtime_renderer.EXPECTED_RUNTIME_FUNCTION_OUTPUT_SHA256,
+                runtime_renderer.sha256_bytes(runtime_functions),
+            )
+            self.assertIn(b"FROM exec.run_attempt AS ra", runtime_functions)
+            self.assertIn(b"ORDER BY ra.attempt_no DESC", runtime_functions)
+            self.assertNotIn(b"ORDER BY attempt_no DESC LIMIT 1", runtime_functions)
 
             unchanged = runtime_renderer.EXPECTED_MIGRATIONS[0]
             self.assertEqual(

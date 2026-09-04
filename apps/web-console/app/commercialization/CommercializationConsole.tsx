@@ -15,7 +15,7 @@ const reviewQueue = [
 ];
 
 const commercialKernels = [
-  { id: "K1", name: "Skill Runtime", skills: 10, status: "READY", desc: "Sandbox execution, context budgeting, durable events" },
+  { id: "K1", name: "功能运行时", skills: 10, status: "READY", desc: "Sandbox execution, context budgeting, durable events" },
   { id: "K2", name: "Repository Intelligence", skills: 10, status: "READY", desc: "Semantic AST indexing, symbol resolution, call graph" },
   { id: "K3", name: "Transformation", skills: 10, status: "READY", desc: "Rule DSL, bidirectional lowering, AST rewrites" },
   { id: "K4", name: "Build & Execution", skills: 9, status: "READY", desc: "Hermetic container toolchains, compiler diagnostic mapping" },
@@ -27,7 +27,7 @@ const commercialKernels = [
 
 const foundryHighlights = [
   { pack: "00–04", name: "Foundation & Knowledge", skills: 98, desc: "Contracts, ingestion, semantic intelligence, memory" },
-  { pack: "05–08", name: "Foundry Core & RL Training", skills: 121, desc: "Skill runtime, dataset foundry, private model foundry, RL" },
+  { pack: "05–08", name: "能力底座与强化训练", skills: 121, desc: "功能运行时、数据集工坊、私有模型工坊与强化学习" },
   { pack: "09–12", name: "Assurance & Governance", skills: 128, desc: "E0–E5 certification, serving gateway, security, finops" },
   { pack: "13–16", name: "Platform & Self-Evolution", skills: 111, desc: "Multi-tenant control plane, operations, self-evolution" },
   { pack: "17–33", name: "Enterprise Route Specialization", skills: 676, desc: "Spring, Cross-language, Database, Mainframe, IoT" },
@@ -81,7 +81,7 @@ export function CommercializationConsole() {
         <div>
           <span className="overline">ENTERPRISE COMMERCIAL CONTROL PLANE · v3.0.0</span>
           <h1>商业化控制面与能力内核</h1>
-          <p>整合 8 大商业内核 (K1–K8)、Foundry v3.0.0 (41 Packs, 1,351 Skills) 与 18-Batch 多语言编译器控制链。</p>
+          <p>整合 8 大商业内核 (K1–K8)、工程翻新底座（41 个能力域、1,351 项功能）与 18 批次多语言编译器控制链。</p>
         </div>
         <div className="header-actions">
           <span className="environment-selector"><i />环境：本地工程契约</span>
@@ -92,8 +92,8 @@ export function CommercializationConsole() {
       </section>
 
       <section className="metric-grid metric-grid-four" aria-label="控制面摘要">
-        <article className="metric-card"><span>商业能力内核</span><strong>8 (K1–K8)</strong><small>85 个商业扩展 Skills</small></article>
-        <article className="metric-card"><span>Foundry 知识库</span><strong>1,351 Skills</strong><small>41 大能力 Pack (v3.0.0)</small></article>
+        <article className="metric-card"><span>商业能力内核</span><strong>8 (K1–K8)</strong><small>85 项商业扩展功能</small></article>
+        <article className="metric-card"><span>工程翻新底座</span><strong>1,351 项功能</strong><small>41 个能力域 (v3.0.0)</small></article>
         <article className="metric-card"><span>多语言语义编译</span><strong>784 Routes</strong><small>18 个 Batches (A–R)</small></article>
         <article className="metric-card"><span>决策上限</span><strong className="metric-word">Gate / Human</strong><small>不批准、不执行</small></article>
       </section>
@@ -133,15 +133,15 @@ export function CommercializationConsole() {
       {/* Foundry v3.0.0 Highlights */}
       <section className="surface-card" aria-labelledby="foundry-title">
         <div className="section-heading compact-heading">
-          <div><span className="overline">FOUNDRY v3.0.0 ECOSYSTEM</span><h2 id="foundry-title">Knowledge-Skill-Model Foundry (41 Packs)</h2></div>
-          <span className="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">1,351 Skills Total</span>
+          <div><span className="overline">工程翻新底座 v3.0.0</span><h2 id="foundry-title">知识 · 能力 · 模型底座（41 个能力域）</h2></div>
+          <span className="text-xs px-2 py-0.5 rounded bg-violet-500/10 text-violet-400 font-mono">合计 1,351 项功能</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-3">
           {foundryHighlights.map((f) => (
             <div key={f.pack} className="p-3 rounded-lg border border-border bg-card/40">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-mono text-muted-foreground">Pack {f.pack}</span>
-                <strong className="text-xs text-emerald-400">{f.skills} Skills</strong>
+                <strong className="text-xs text-emerald-400">{f.skills} 项功能</strong>
               </div>
               <strong className="text-sm font-medium block">{f.name}</strong>
               <p className="text-xs text-muted-foreground mt-1">{f.desc}</p>

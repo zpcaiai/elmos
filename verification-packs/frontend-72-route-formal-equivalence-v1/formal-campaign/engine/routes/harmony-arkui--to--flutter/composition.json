@@ -3,7 +3,7 @@
   "route_id": "harmony-arkui--to--flutter",
   "source_lifting": {
     "profile_id": "harmony-arkui",
-    "project_digest": "sha256:7702d8bae218047e121b2f4197d25346f1b4e617dd5cfdb0727f403254655610",
+    "project_digest": "sha256:632643db8f438a23ca1eab0cbec700d75af4c42470046366be6bfd5fd52feb69",
     "model_digest": "sha256:29e86347fc63d4d6bd93399d38a8a7fa037c221d2720dbe9af729b300fdb591d"
   },
   "target_lowering_relift": {

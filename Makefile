@@ -1,6 +1,10 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+# A leaked UV_PROJECT_ENVIRONMENT from a one-engine survey shell makes
+# `uv --directory … --locked` resolve a foreign venv and fail the lockfile
+# check. Every recipe must see a project-local environment.
+unexport UV_PROJECT_ENVIRONMENT
 RUFF ?= ruff
 DOTNET ?= dotnet
 # Homebrew installs the .NET SDK outside the default PATH on macOS. Prepending a
@@ -24,15 +28,30 @@ RUNTIME_STATUS_OUTPUT ?= .elmos/toolchains/runtime-status.json
 EXTERNAL_GATE_PLAN ?= docs/production-runtime/EXTERNAL-GATE-PLAN.json
 EXTERNAL_GATE_OUTPUT ?= .elmos/production-runtime/external-gate-report.json
 EXTERNAL_GATE_AUTHORIZATION ?= .elmos/production-runtime/external-gate-authorization.json
+ENGINE_TEST_OUTPUT_ROOT ?= $(HOME)/.cache/elmos-engine-tests
 
 .PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
+.PHONY: test-engine test-engines-check test-engines-list test-engines-all
 
 verify: business-line-contracts backend dotnet python frontend sql-transpiler sql-dialect component-dialect web
-business-line-contracts: model-catalog-check makefile-portability-check chinadb-commercial-migration-skills
+business-line-contracts: model-catalog-check makefile-portability-check test-engines-check chinadb-commercial-migration-skills
 	python3 scripts/operations/validate_spring_route_contract.py
 	python3 scripts/operations/validate_translation_route_matrix.py
+test-engines-check:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/operations/run_engine_tests.py --check
+test-engines-list:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/operations/run_engine_tests.py --list
+test-engine:
+	@test -n "$(ENGINE)" || { echo "ENGINE is required (example: make test-engine ENGINE=python-engine)" >&2; exit 2; }
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/operations/run_engine_tests.py "$(ENGINE)" \
+		--output-root "$(ENGINE_TEST_OUTPUT_ROOT)" --uv "$(UV)" --maven "$(MAVEN)" \
+		--dotnet "$(DOTNET)" --java-home "$(JAVA_21_HOME)"
+test-engines-all:
+	PYTHONDONTWRITEBYTECODE=1 python3 scripts/operations/run_engine_tests.py --all \
+		--output-root "$(ENGINE_TEST_OUTPUT_ROOT)" --uv "$(UV)" --maven "$(MAVEN)" \
+		--dotnet "$(DOTNET)" --java-home "$(JAVA_21_HOME)"
 makefile-portability-check:
 	python3 scripts/operations/validate_makefile_portability.py
 model-catalog-check:
@@ -208,7 +227,7 @@ polyglot-semantic-assurance-skills:
 
 .PHONY: unified-cli-gateway
 unified-cli-gateway:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 --with pytest python -m pytest tests/unified-cli-gateway/ -v
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/unified-cli-gateway/src:engines/polyglot-semantic-compiler-engine/src:engines/commercial-capability-expansion-engine/src:engines/semantic-assurance-engine/src:engines/knowledge-skill-model-foundry-engine/src:engines/build-cache-engine/src:engines/formal-assurance-engine/src:engines/autonomous-qa-engine/src:engines/sql-dialect-engine/src:engines/security-compliance-engine/src:engines/edge-iot-industrial-engine/src $(UV) run --project engines/database-data-engine/sql-transpiler --locked --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m pytest tests/unified-cli-gateway/ -v
 
 
 
@@ -216,18 +235,18 @@ unified-cli-gateway:
 
 .PHONY: formal-assurance-kernel
 formal-assurance-kernel:
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_formal_assurance_kernel.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with ruff==0.15.20 ruff check engines/formal-assurance-engine/src engines/formal-assurance-engine/tests
-	MYPY_CACHE_DIR=/tmp/elmos-formal-assurance-mypy PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with mypy==2.1.0 mypy --ignore-missing-imports engines/formal-assurance-engine/src/elmos_formal_assurance
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with cryptography==46.0.3 --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with cryptography==46.0.3 python scripts/formal_assurance/generate_local_qualification.py --check
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local
-	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with jsonschema==4.25.1 python scripts/batch35/run_verification_gate.py verification-packs/formal-assurance-kernel-local
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python tooling/integrate_formal_assurance_kernel.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet $(RUFF) check engines/formal-assurance-engine/src engines/formal-assurance-engine/tests
+	MYPY_CACHE_DIR=/tmp/elmos-formal-assurance-mypy PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet mypy --ignore-missing-imports engines/formal-assurance-engine/src/elmos_formal_assurance
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python -m unittest discover -s engines/formal-assurance-engine/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python -m unittest discover -s tests/formal-assurance-kernel -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python scripts/formal_assurance/generate_local_qualification.py --check
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python scripts/batch35/validate_verification_pack.py verification-packs/formal-assurance-kernel-local
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python scripts/batch35/run_verification_gate.py verification-packs/formal-assurance-kernel-local
 
 .PHONY: formal-assurance-kernel-qualify
 formal-assurance-kernel-qualify:
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python scripts/formal_assurance/generate_local_qualification.py
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/formal-assurance-engine/src $(UV) run --project engines/formal-assurance-engine --locked --group dev --quiet python scripts/formal_assurance/generate_local_qualification.py
 
 repository-autonomy-kernel:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_repository_autonomy_kernel.py
@@ -261,9 +280,7 @@ frontend-to-miniapp-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --refresh-owned; \
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_frontend_to_miniapp_skills.py --check; \
 	node client-packs/frontend-to-miniapp-vue3-wechat-v1/certification/replay-local-runtime.mjs --check; \
-	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1; \
-	cd engines/component-dialect-engine && npm run validate:web-console-wechat; \
-	cd ../.. && python3 scripts/batch32/run_client_gate.py client-packs/web-console-next16-react19-wechat-v1
+	python3 scripts/batch32/run_client_gate.py client-packs/frontend-to-miniapp-vue3-wechat-v1
 
 .PHONY: multimodal-intake-skills
 multimodal-intake-skills:
@@ -346,8 +363,10 @@ batch1-55-skills:
 	$(UV) run --quiet --with pyyaml python tooling/ensure_runtime_skill_interfaces.py --check --root agent-skills/runtime
 batch66-80-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-complete,manifest.json,\
-		python3 tooling/import_batch66_80_assets.py --check; \
-		cd elmos-codex-skills-batch66-80-complete && ./validate.sh)
+		package=elmos-codex-skills-batch66-80-complete; \
+		test -f "$$package/manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch66_80_assets.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch66-80-test-skills:
 	$(call guarded,elmos-codex-skills-batch66-80-slightly-strict-tests,manifest.json,\
@@ -355,8 +374,10 @@ batch66-80-test-skills:
 		cd elmos-codex-skills-batch66-80-slightly-strict-tests && ./validate.sh)
 language-packs-batch81-95:
 	$(call guarded,elmos-language-packs-batch81-95-complete,package-manifest.json,\
-		python3 tooling/import_batch81_95_language_packs.py --check; \
-		cd elmos-language-packs-batch81-95-complete && ./validate.sh)
+		package=elmos-language-packs-batch81-95-complete; \
+		test -f "$$package/package-manifest.json" || package="skills/$$package"; \
+		python3 tooling/import_batch81_95_language_packs.py --source "$$package" --check; \
+		cd "$$package" && ./validate.sh)
 	python3 tooling/validate_project_synthesis_integration.py $(PROJECT_SYNTHESIS_INTEGRATION_FLAGS)
 batch81-95-test-skills:
 	$(call guarded,elmos-batch81-95-slightly-strict-test-skills,manifest.json,\
@@ -390,9 +411,9 @@ product-closure-convergence-skills:
 		PYTHONDONTWRITEBYTECODE=1 python3 tooling/validate_product_closure_convergence_installed.py && \
 		PYTHONDONTWRITEBYTECODE=1 python3 -m unittest tests.test_product_closure_convergence_installed; \
 	fi
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
-	cd batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 python3 scripts/batch46-complete/validate_skill_bundle.py .
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/batch46-complete/validate_convergence_pack.py convergence-packs/reference-product
+	cd skills/batch46-product-convergence-complete-skills && PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python -m unittest discover -s tests/batch46-complete -p 'test_toolkit.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml python tooling/import_product_convergence_complete.py
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with 'jsonschema>=4.23' python scripts/product-convergence/validate_repository_convergence_bundle.py product-convergence
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml --with jsonschema python -m unittest discover -s tests/product-closure-convergence -p 'test_*.py'
@@ -528,9 +549,9 @@ sql-transpiler:
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked ruff check src tests
 	$(UV) --directory engines/database-data-engine/sql-transpiler run --locked mypy src
 sql-dialect:
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev pytest
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev ruff check src tests
-	$(UV) --directory engines/sql-dialect-engine run --locked --extra dev mypy --ignore-missing-imports src
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev pytest
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev ruff check src tests
+	$(UV) --directory engines/sql-dialect-engine run --locked --group dev mypy --ignore-missing-imports src
 
 # What the polyglot engine actually does right now, by running it rather than
 # by reading it. Every capability question here had been answered by reading
@@ -565,6 +586,8 @@ component-dialect:
 	cd engines/component-dialect-engine && CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" npm ci --no-audit --no-fund
 	cd engines/component-dialect-engine && PATH="$(NODE_RUNTIME_BIN):$$PATH" npm run build
 	cd engines/component-dialect-engine && PATH="$(NODE_RUNTIME_BIN):$$PATH" npx jest --runInBand
+	cd engines/component-dialect-engine && npm run validate:web-console-wechat
+	python3 scripts/batch32/run_client_gate.py client-packs/web-console-next16-react19-wechat-v1
 web:
 	CI=true PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console install --frozen-lockfile
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console check

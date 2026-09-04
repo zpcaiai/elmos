@@ -10,12 +10,12 @@
       "Never overwrite user changes."
     ],
     "inputs": [
-      "repository root"
+      "`repository root`"
     ],
     "outputs": [
-      "repo profile",
-      "build/test command catalog",
-      "module map"
+      "`repo profile`",
+      "`build/test command catalog`",
+      "`module map`"
     ],
     "triggers": [
       "start of repository run"

@@ -57,7 +57,30 @@ def _emitted_call(node: ast.Call) -> dict[str, Any] | None:
     return None
 
 
+def _signed_literal(node: ast.expr) -> ast.Constant | None:
+    """`-1` is not a literal in Python's grammar -- it is unary minus applied
+    to `1`. Fold the sign back in.
+
+    This is the ONLY unary form lifted here, and it is pure syntax: the result
+    is the literal the source obviously means. `bool` is excluded because it is
+    an `int` subclass in Python and `-True` is not a boolean.
+    """
+
+    if not isinstance(node, ast.UnaryOp) or not isinstance(node.op, ast.USub | ast.UAdd):
+        return None
+    operand = node.operand
+    if not isinstance(operand, ast.Constant):
+        return None
+    value = operand.value
+    if isinstance(value, bool) or not isinstance(value, int | float):
+        return None
+    return ast.Constant(value=-value if isinstance(node.op, ast.USub) else +value)
+
+
 def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, Any]:
+    folded = _signed_literal(node)
+    if folded is not None:
+        node = folded
     if isinstance(node, ast.Name):
         return {"kind": "name", "value": node.id}
     if isinstance(node, ast.Constant) and isinstance(node.value, str | int | float | bool):
@@ -93,13 +116,54 @@ def _expression(node: ast.expr, *, emitted_target: bool = False) -> dict[str, An
                 "left": _expression(node.left, emitted_target=emitted_target),
                 "right": _expression(node.comparators[0], emitted_target=emitted_target),
             }
-    if isinstance(node, ast.BoolOp) and len(node.values) == 2:
+    if isinstance(node, ast.BoolOp) and len(node.values) >= 2:
+        # Python's parser FLATTENS `a and b and c` into one three-value node,
+        # so accepting only `len(values) == 2` refused a spelling while
+        # accepting `(a and b) and c`, which is the same program. Left-folding
+        # reproduces Python's own left-to-right grouping, and produces IR
+        # byte-identical to the parenthesized form (see the test).
+        #
+        # Short-circuiting survives the fold: canonical `&&`/`||` short-circuit
+        # (canonical.py `_expression`), so `(a && b) && c` stops exactly where
+        # `a and b and c` stops.
+        operator = "&&" if isinstance(node.op, ast.And) else "||"
+        # NOT named `folded`: that name already holds the signed-literal fold
+        # at the top of this function, and reusing it makes mypy read the two
+        # as one variable of two incompatible types.
+        chain = _expression(node.values[0], emitted_target=emitted_target)
+        for value in node.values[1:]:
+            chain = {
+                "kind": "binary",
+                "operator": operator,
+                "left": chain,
+                "right": _expression(value, emitted_target=emitted_target),
+            }
+        return chain
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
+        # `not x` on a canonical boolean IS `x == False`. Nothing new enters
+        # the IR, the type checker, canonical.py or the z3 denotation.
+        #
+        # A non-boolean operand is Python truthiness -- `not ""`, `not 0`,
+        # `not []` -- which has no canonical meaning and no agreed spelling
+        # across the targets. It still fails closed, as
+        # `OPERAND_TYPE_MISMATCH:==:<type>:boolean` from `types.infer`.
         return {
             "kind": "binary",
-            "operator": "&&" if isinstance(node.op, ast.And) else "||",
-            "left": _expression(node.values[0], emitted_target=emitted_target),
-            "right": _expression(node.values[1], emitted_target=emitted_target),
+            "operator": "==",
+            "left": _expression(node.operand, emitted_target=emitted_target),
+            "right": {"kind": "literal", "value": False},
         }
+    if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
+        # A signed LITERAL was folded at the top of this function; reaching
+        # here means the operand is an expression.
+        #
+        # Refused with a reason rather than the generic code: lowering `-x` to
+        # `0 - x` is exact for `integer` but NOT for `number`, because
+        # IEEE-754 makes `-(0.0)` negative zero while `0.0 - 0.0` is positive
+        # zero, and the sign of a returned zero is observable. Supporting it
+        # honestly needs a unary node in the IR, in canonical.py, in the z3
+        # denotation and in all 13 emitters.
+        raise RouteError("PYTHON_UNARY_SIGN_ON_EXPRESSION_OUTSIDE_CERTIFIED_SUBSET")
     if emitted_target and isinstance(node, ast.Call):
         lifted = _emitted_call(node)
         if lifted is not None:
@@ -126,6 +190,93 @@ def _statements(nodes: list[ast.stmt], *, emitted_target: bool = False) -> list[
                     "else": _statements(node.orelse, emitted_target=emitted_target),
                 }
             )
+        elif isinstance(node, ast.AnnAssign):
+            # `x: int = expr` -- the IR's `let`.
+            #
+            # ONLY the annotated form. A bare `x = 1` carries no declared type,
+            # and inferring one here would mean the IR's type came from this
+            # analyzer's guess rather than from the source language's own type
+            # system -- which is exactly the thing `let` was designed not to do.
+            # Python's own checkers treat the two forms differently too, so
+            # refusing the unannotated one costs the author one annotation and
+            # buys the whole pipeline a type it can hold the source to.
+            if node.value is None:
+                # `x: int` alone declares without binding. `let` is a binding.
+                raise RouteError("PYTHON_ANNOTATED_DECLARATION_WITHOUT_VALUE")
+            if node.simple != 1 or not isinstance(node.target, ast.Name):
+                # `(x): int = 1`, `obj.x: int = 1`, `a[0]: int = 1` -- none of
+                # these bind a plain local name.
+                raise RouteError("PYTHON_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            declared = _type(node.annotation)
+            if not declared:
+                raise RouteError(f"PYTHON_UNSUPPORTED_LOCAL_TYPE:{ast.unparse(node.annotation)}")
+            result.append(
+                {
+                    "kind": "let",
+                    "name": node.target.id,
+                    "type": declared,
+                    "expression": _expression(node.value, emitted_target=emitted_target),
+                }
+            )
+        elif isinstance(node, ast.While):
+            if node.orelse:
+                raise RouteError("PYTHON_WHILE_ORELSE_OUTSIDE_CERTIFIED_SUBSET")
+            result.append(
+                {
+                    "kind": "while",
+                    "condition": _expression(node.test, emitted_target=emitted_target),
+                    "body": _statements(node.body, emitted_target=emitted_target),
+                }
+            )
+        elif isinstance(node, ast.For):
+            if node.orelse:
+                raise RouteError("PYTHON_FOR_ORELSE_OUTSIDE_CERTIFIED_SUBSET")
+            if not isinstance(node.target, ast.Name):
+                raise RouteError("PYTHON_FOR_TARGET_OUTSIDE_CERTIFIED_SUBSET")
+            if not (
+                isinstance(node.iter, ast.Call)
+                and isinstance(node.iter.func, ast.Name)
+                and node.iter.func.id == "range"
+            ):
+                raise RouteError("PYTHON_NON_RANGE_FOR_OUTSIDE_CERTIFIED_SUBSET")
+            if node.iter.keywords:
+                raise RouteError("PYTHON_RANGE_KEYWORDS_UNSUPPORTED")
+            args = node.iter.args
+            if len(args) == 1:
+                start: dict[str, Any] = {"kind": "literal", "value": 0}
+                end = _expression(args[0], emitted_target=emitted_target)
+                step = None
+            elif len(args) == 2:
+                start = _expression(args[0], emitted_target=emitted_target)
+                end = _expression(args[1], emitted_target=emitted_target)
+                step = None
+            elif len(args) == 3:
+                start = _expression(args[0], emitted_target=emitted_target)
+                end = _expression(args[1], emitted_target=emitted_target)
+                step = _expression(args[2], emitted_target=emitted_target)
+            else:
+                raise RouteError(f"PYTHON_RANGE_ARITY_INVALID:{len(args)}")
+            for_dict: dict[str, Any] = {
+                "kind": "for",
+                "name": node.target.id,
+                "type": "integer",
+                "start": start,
+                "end": end,
+                "body": _statements(node.body, emitted_target=emitted_target),
+            }
+            if step is not None:
+                for_dict["step"] = step
+            result.append(for_dict)
+        elif isinstance(node, ast.Break):
+            result.append({"kind": "break"})
+        elif isinstance(node, ast.Continue):
+            result.append({"kind": "continue"})
+        elif isinstance(node, ast.Assign):
+            # Named apart from the generic rejection so the message says what
+            # to do: annotate it. `PYTHON_UNSUPPORTED_STATEMENT:Assign` would
+            # have read as "assignment is not supported at all", which stopped
+            # being true here.
+            raise RouteError("PYTHON_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
         else:
             raise RouteError(f"PYTHON_UNSUPPORTED_STATEMENT:{type(node).__name__}")
     return result
@@ -162,18 +313,51 @@ def _reject_python_only_arithmetic(expression: Expression, environment: dict[str
 
 
 def _check_statements(statements: tuple[Statement, ...], environment: dict[str, str]) -> None:
+    """Walk for the Python-only arithmetic rejection, carrying the same scope
+    rule `types._check_statements` uses.
+
+    `_reject_python_only_arithmetic` calls `types.infer` to decide whether a
+    `/` has two integer operands, and `infer` fails closed on a name it has
+    never seen. So this walk has to bind `let` names as it meets them, and hand
+    branches a copy -- otherwise a perfectly legal `x: int = 1` followed by
+    `x / y` would be rejected as an undeclared name instead of being judged on
+    its operand types.
+    """
     for statement in statements:
         if statement.expression is not None:
             _reject_python_only_arithmetic(statement.expression, environment)
         if statement.condition is not None:
             _reject_python_only_arithmetic(statement.condition, environment)
-        _check_statements(statement.then_body, environment)
-        _check_statements(statement.else_body, environment)
+        if statement.kind == "let" and statement.name is not None and statement.declared_type is not None:
+            # After its own initializer, never before.
+            environment[statement.name] = statement.declared_type
+            continue
+        if statement.kind == "while":
+            _check_statements(statement.body, dict(environment))
+            continue
+        if statement.kind == "for":
+            if statement.start is not None:
+                _reject_python_only_arithmetic(statement.start, environment)
+            if statement.end is not None:
+                _reject_python_only_arithmetic(statement.end, environment)
+            if statement.step is not None:
+                _reject_python_only_arithmetic(statement.step, environment)
+            loop_env = dict(environment)
+            if statement.name is not None:
+                loop_env[statement.name] = "integer"
+            _check_statements(statement.body, loop_env)
+            continue
+        _check_statements(statement.then_body, dict(environment))
+        _check_statements(statement.else_body, dict(environment))
 
 
 def _check_function(function: Function) -> None:
-    environment = types.check_function(function)
-    _check_statements(function.body, environment)
+    # The canonical checker mutates and returns its environment, so its result
+    # contains every top-level `let`.  The Python-only arithmetic walk must
+    # instead start with parameters and bind locals in source order; otherwise
+    # a later declaration is incorrectly visible to an earlier statement.
+    types.check_function(function)
+    _check_statements(function.body, types.environment_of(function))
 
 
 def _emitted_body(nodes: list[ast.stmt], parameters: list[dict[str, str]]) -> list[ast.stmt]:
@@ -215,6 +399,41 @@ def _emitted_body(nodes: list[ast.stmt], parameters: list[dict[str, str]]) -> li
     return body
 
 
+def _split_leading_docstring(nodes: list[ast.stmt]) -> tuple[list[ast.stmt], str | None]:
+    """Separate a leading docstring from the statements that follow it.
+
+    A docstring is a bare string expression, so before this it hit the generic
+    `PYTHON_UNSUPPORTED_STATEMENT:Expr` rejection and took the whole function
+    with it. Measured on 20 real PyPI projects, 94 of the 109 functions whose
+    signature was already fully inside the profile died on exactly this -- the
+    single largest avoidable rejection in the frontend.
+
+    Only the FIRST statement qualifies. A bare string anywhere else is a no-op
+    expression, not documentation, and keeping it rejected is correct.
+
+    The text is not discarded: `analyze_python` carries it into the IR as
+    `Function.documentation` (provenance, not semantics), so the conversion
+    never silently loses something the source declared.
+    """
+
+    if not nodes:
+        return nodes, None
+    first = nodes[0]
+    if not (
+        isinstance(first, ast.Expr)
+        and isinstance(first.value, ast.Constant)
+        and isinstance(first.value.value, str)
+    ):
+        return nodes, None
+    remaining = nodes[1:]
+    if not remaining:
+        # A function whose entire body is its docstring has no behaviour to
+        # convert. Fail closed with its own code rather than falling through to
+        # a confusing empty-body error.
+        raise RouteError("PYTHON_FUNCTION_BODY_IS_ONLY_DOCUMENTATION")
+    return remaining, first.value.value
+
+
 def analyze_python(path: Path, function_name: str, *, emitted_target: bool = False) -> SemanticIR:
     source = path.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=path.name, feature_version=(3, 12))
@@ -239,7 +458,23 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
     return_type = _type(candidate.returns)
     if not return_type:
         raise RouteError("PYTHON_RETURN_TYPE_REQUIRED")
-    body = _emitted_body(candidate.body, parameters) if emitted_target else candidate.body
+    documentation: str | None = None
+    if emitted_target:
+        # Deliberately NOT applied to the emitted-target re-analysis. This
+        # engine's emitters never produce a docstring, so one appearing there
+        # means the target did not come from them -- and the re-analysis gate
+        # exists to catch exactly that. Accepting it would weaken the gate.
+        body = _emitted_body(candidate.body, parameters)
+    else:
+        body, documentation = _split_leading_docstring(candidate.body)
+    function_mapping: dict[str, Any] = {
+        "name": candidate.name,
+        "parameters": parameters,
+        "return_type": return_type,
+        "body": _statements(body, emitted_target=emitted_target),
+    }
+    if documentation is not None:
+        function_mapping["documentation"] = documentation
     semantic = SemanticIR.from_mapping(
         {
             "schema_version": "1.0.0",
@@ -247,14 +482,7 @@ def analyze_python(path: Path, function_name: str, *, emitted_target: bool = Fal
             "source_file": path.name,
             "analyzer": "CPython ast",
             "analyzer_version": platform.python_version(),
-            "functions": [
-                {
-                    "name": candidate.name,
-                    "parameters": parameters,
-                    "return_type": return_type,
-                    "body": _statements(body, emitted_target=emitted_target),
-                }
-            ],
+            "functions": [function_mapping],
             "diagnostics": [],
         }
     )

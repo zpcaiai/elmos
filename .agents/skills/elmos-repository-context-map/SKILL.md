@@ -95,8 +95,8 @@ description: "当 Elmos 需要在大型代码仓库中决定应加载哪些模�
 - Source contract SHA-256: `d0fbe357a7e75d2b4108613a2f84f4ab4c593ec66c67ea3375acfa95104fe0bd`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_repository_context_map`
 - Runtime phase: `indexing`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-source-anchor-and-provenance`, `$elmos-storage-index-and-retrieval`
 - Acceptance identities: `S38-01`, `S38-02`, `S38-03`, `S38-04`, `S38-05`, `S38-06`
 - Generated contract: `compiled-contract.json`

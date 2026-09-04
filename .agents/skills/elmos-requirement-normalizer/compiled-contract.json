@@ -10,13 +10,13 @@
       "Resolve repository-discoverable questions by inspection rather than asking."
     ],
     "inputs": [
-      "raw requirement",
-      "repo metadata"
+      "`raw requirement`",
+      "`repo metadata`"
     ],
     "outputs": [
-      "normalized requirement spec",
-      "acceptance scenarios",
-      "assumption log"
+      "`normalized requirement spec`",
+      "`acceptance scenarios`",
+      "`assumption log`"
     ],
     "triggers": [
       "new feature request",

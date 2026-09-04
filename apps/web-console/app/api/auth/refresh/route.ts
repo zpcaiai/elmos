@@ -5,8 +5,9 @@ import {
   accountSessionErrorResponse,
   assertSameOriginMutation,
   refreshAccountSession,
+  refreshSessionCookieMaxAge,
+  refreshSessionFromRequest,
   sessionCookieMaxAge,
-  unsafeCookieValue,
 } from "../../../lib/server/accountSession";
 
 export const runtime = "nodejs";
@@ -19,33 +20,32 @@ export async function POST(request: NextRequest) {
     return accountSessionErrorResponse(error);
   }
   try {
-    const refreshToken = unsafeCookieValue(request, accountCookieNames.refreshToken);
-    if (!refreshToken) {
-      return NextResponse.json(
-        { errorCode: "REFRESH_TOKEN_REQUIRED", message: "会话无法刷新，请重新登录。" },
-        { status: 401 },
-      );
-    }
-    const result = await refreshAccountSession(refreshToken);
+    const current = refreshSessionFromRequest(request);
+    const result = await refreshAccountSession(current.refreshToken, {
+      actorId: current.actorId,
+      loginMode: current.loginMode,
+      refreshExpiresAt: current.refreshExpiresAt,
+    });
     const response = NextResponse.json({
       authenticated: true,
       principal: result.principal,
       expiresAt: new Date(result.expiresAt).toISOString(),
     });
-    const maxAge = sessionCookieMaxAge(result.expiresAt);
+    const accessMaxAge = sessionCookieMaxAge(result.expiresAt);
+    const refreshMaxAge = refreshSessionCookieMaxAge(result.refreshExpiresAt);
     response.cookies.set(accountCookieNames.session, result.session, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       path: "/",
-      maxAge,
+      maxAge: refreshMaxAge,
     });
     response.cookies.set(accountCookieNames.accessToken, result.tokens.accessToken, {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
       path: "/",
-      maxAge,
+      maxAge: accessMaxAge,
     });
     if (result.tokens.refreshToken) {
       response.cookies.set(accountCookieNames.refreshToken, result.tokens.refreshToken, {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         secure: true,
         sameSite: "strict",
         path: "/",
-        maxAge: 8 * 60 * 60,
+        maxAge: refreshMaxAge,
       });
     }
     response.cookies.set(

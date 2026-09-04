@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1102",
+  "skill_name": "frt-1102-style-and-design-token-mapper",
+  "batch": "G11",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g11/frt-1102-style-and-design-token-mapper/",
+  "status": "shared_implementation",
+  "handler_kind": "mobile_client",
+  "capability_key": "frt.g11.style-and-design-token-mapper",
+  "execution_contract_sha256": "sha256:55e190d8058d3aafe444ecace1435d25e8dc2c265eb972012323280c39ab0a22",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "uiNodes"
+    ],
+    "optional": [
+      "designTokens",
+      "locales",
+      "rtlLocales",
+      "animations"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:eb96de3e317150214ec7082e518d7824c184738c4bf3793e46d2aa5453dd4d3b",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

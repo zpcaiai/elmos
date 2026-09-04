@@ -2922,6 +2922,11 @@ export function MultimodalIntakeWorkbench() {
         });
       return [...protectedCurrent, ...additions];
     });
+    } catch (error) {
+      // A scope change mid-addition discards the selection. Report it instead of
+      // dropping the files silently: the file input value is already cleared, so
+      // nothing retries on its own.
+      setFeedback(error instanceof Error ? error.message : "FILE_SELECTION_FAILED");
     } finally {
       if (fileAdditionOwner.current === fileOwner) fileAdditionLock.current = false;
     }
@@ -5442,11 +5447,18 @@ export function MultimodalIntakeWorkbench() {
               </button>
             </div>
             <small>麦克风只在点击后请求浏览器权限；录音在本机编码为 WAV，达到 10 分钟或 64 MiB 上限会停止，轨道也会在离开页面时关闭。权限：{microphone.permission}</small>
+            {/*
+              Both pickers carry the same readiness gate as the buttons that open
+              them. Until the account identity scope and recovery store are
+              established, the identity guard discards any addition, so accepting
+              files here would lose them with the input already cleared.
+            */}
             <input
               ref={fileInput}
               hidden
               type="file"
               multiple
+              disabled={busy || !recoveryStoreReady}
               onChange={(event) => {
                 void addFiles(event.target.files ?? []);
                 event.currentTarget.value = "";
@@ -5458,6 +5470,7 @@ export function MultimodalIntakeWorkbench() {
               type="file"
               multiple
               {...{ webkitdirectory: "" }}
+              disabled={busy || !recoveryStoreReady}
               onChange={(event) => {
                 void addFiles(event.target.files ?? []);
                 event.currentTarget.value = "";

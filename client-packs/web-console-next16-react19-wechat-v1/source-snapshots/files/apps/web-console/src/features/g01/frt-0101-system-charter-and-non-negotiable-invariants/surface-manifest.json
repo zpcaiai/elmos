@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0101",
+  "skill_name": "frt-0101-system-charter-and-non-negotiable-invariants",
+  "batch": "G01",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g01/frt-0101-system-charter-and-non-negotiable-invariants/",
+  "status": "shared_implementation",
+  "handler_kind": "governance",
+  "capability_key": "frt.g01.system-charter-and-non-negotiable-invariants",
+  "execution_contract_sha256": "sha256:26fab82f51a1b9b3982cb5a78cac3dafe03547ff557f56ab103265a9776c486c",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "invariants"
+    ],
+    "optional": [
+      "dependencies",
+      "allowedDependencies",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:471e9b276ce6f99f3a57e00fc084f7dc0de47ff61abfb7abba09c0f8eb5539ca",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

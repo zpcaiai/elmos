@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 from importlib.resources import files
-from typing import Any
+from typing import Any, cast
 
 from .adapters import target_adapter_capabilities
 from .models import DialectProfile, DirectedRoute
@@ -61,11 +61,25 @@ def exact_profiles() -> tuple[DialectProfile, ...]:
     return profiles
 
 
+def extension_by_id(profile_id: str) -> dict[str, Any] | None:
+    for ext in _catalog().get("extensions", []):
+        if isinstance(ext, dict) and ext.get("id") == profile_id:
+            return cast(dict[str, Any], ext)
+    return None
+
+
 def profile_by_id(profile_id: str) -> DialectProfile:
     matches = [profile for profile in exact_profiles() if profile.id == profile_id]
-    if len(matches) != 1:
-        raise ValueError("unknown exact SQL profile")
-    return matches[0]
+    if len(matches) == 1:
+        return matches[0]
+    ext = extension_by_id(profile_id)
+    if ext is not None:
+        raise ValueError(
+            f"SQL profile '{profile_id}' is an extension ({ext.get('state')}): "
+            f"{ext.get('reason')}. "
+            "Disguised alias transpilation is strictly prohibited by docs/batch31/QUALITY_GATES.md."
+        )
+    raise ValueError(f"unknown exact SQL profile: {profile_id}")
 
 
 def directed_route(source_profile: str, target_profile: str) -> DirectedRoute:

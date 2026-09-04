@@ -22,10 +22,10 @@ test("FRT 前端转换工厂在桌面与移动端可浏览、规划且无自动�
   await expect(page.getByRole("heading", { name: "React → Flutter" })).toBeVisible();
   await expect(page.getByText(/FRT-1605/).first()).toBeVisible();
   await expect(page.getByText("NOT_CERTIFIED", { exact: true }).first()).toBeVisible();
-  await page.getByRole("button", { name: "查看 Route Skill" }).click();
+  await page.getByRole("button", { name: "查看该路线的功能" }).click();
   await expect(page.getByRole("button", { name: /FRT-1605/ })).toBeVisible();
 
-  await page.locator('nav[aria-label="按 Batch 筛选 Skill"] button').first().click();
+  await page.locator('nav[aria-label="按阶段筛选功能"] button').first().click();
   await page.getByPlaceholder("搜索 ID、名称或能力…").fill("FRT-3001");
   await expect(page.getByRole("button", { name: /FRT-3001/ })).toBeVisible();
   await expect(page.getByText("Production Readiness Checklist Compiler", { exact: true })).toBeVisible();
@@ -112,7 +112,7 @@ test("FRT 操作台通过真实 Engine 完成类型化输入、执行、进度�
   await page.getByLabel("FRT 本地租户标识").fill("local-e2e");
   await page.getByLabel("FRT 本地执行者标识").fill("user:e2e");
   await page.getByLabel("FRT 本地 Runner 令牌").fill("elmos-e2e-local-token-32-characters");
-  await expect(page.getByLabel("FRT Skill 类型化输入 JSON")).toHaveValue(/tenant-scope/);
+  await expect(page.getByLabel("前端转换功能类型化输入 JSON")).toHaveValue(/tenant-scope/);
   await page.getByRole("button", { name: "EXECUTE", exact: true }).click();
 
   await expect(page.locator('strong[data-run-state="QUEUED"]')).toBeVisible();

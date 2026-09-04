@@ -90,6 +90,74 @@ class FormalAssuranceCliTests(unittest.TestCase):
         self.assertEqual(result, 0)
         self.assertEqual(len(json.loads(output.getvalue())["skills"]), 60)
 
+    def test_cli_rejects_incomplete_artifact_encryption_configuration(self) -> None:
+        key_path = self.root / "artifact-encryption.key"
+        key_path.write_bytes(os.urandom(32))
+        key_path.chmod(0o600)
+        cases = (
+            ["--artifact-root", str(self.root / "artifacts"), "skills"],
+            ["--artifact-encryption-key-file", str(key_path), "skills"],
+            ["--artifact-encryption-key-id", "artifact-kek-v1", "skills"],
+            [
+                "--artifact-root",
+                str(self.root / "artifacts"),
+                "--artifact-encryption-key-file",
+                str(key_path),
+                "skills",
+            ],
+        )
+        for arguments in cases:
+            with self.subTest(arguments=arguments):
+                error = StringIO()
+                with redirect_stderr(error), self.assertRaises(SystemExit) as raised:
+                    main(arguments)
+                self.assertEqual(raised.exception.code, 2)
+                self.assertIn("must be supplied together", error.getvalue())
+
+    def test_cli_rejects_unsafe_artifact_encryption_keys(self) -> None:
+        key_path = self.root / "artifact-encryption.key"
+        arguments = [
+            "--artifact-root",
+            str(self.root / "artifacts"),
+            "--artifact-encryption-key-file",
+            str(key_path),
+            "--artifact-encryption-key-id",
+            "artifact-kek-v1",
+            "skills",
+        ]
+
+        key_path.write_bytes(os.urandom(32))
+        key_path.chmod(0o640)
+        error = StringIO()
+        with redirect_stderr(error), self.assertRaises(SystemExit) as raised:
+            main(arguments)
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn(
+            "artifact encryption key must not be accessible", error.getvalue()
+        )
+
+        key_path.chmod(0o600)
+        key_path.write_bytes(os.urandom(31))
+        error = StringIO()
+        with redirect_stderr(error), self.assertRaises(SystemExit) as raised:
+            main(arguments)
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn(
+            "artifact encryption key must contain exactly 32 bytes",
+            error.getvalue(),
+        )
+
+        key_path.write_bytes(os.urandom(32))
+        link_path = self.root / "artifact-encryption-link.key"
+        link_path.symlink_to(key_path)
+        link_arguments = list(arguments)
+        link_arguments[3] = str(link_path)
+        error = StringIO()
+        with redirect_stderr(error), self.assertRaises(SystemExit) as raised:
+            main(link_arguments)
+        self.assertEqual(raised.exception.code, 2)
+        self.assertIn("artifact encryption key path is unsafe", error.getvalue())
+
     def test_operator_examples_include_required_artifact_encryption_options(
         self,
     ) -> None:

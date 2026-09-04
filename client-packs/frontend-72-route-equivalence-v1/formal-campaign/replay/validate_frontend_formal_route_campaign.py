@@ -783,26 +783,45 @@ def validate_toolchain_evidence(
         normalized_routes[route_id] = normalized
         if route_bindings.get(route_id) != normalized:
             errors.append(f"toolchain normalized route binding drift: {route_id}")
+    navigation_identity_boundary = (
+        raw.get("implementation_closure") is None
+        and raw.get("engine_preverification") is None
+        and raw.get("semantic_block_ids") == []
+        and raw.get("scenario_manifest_digest") is None
+        and raw.get("scenario_policy") is None
+        and raw.get("mutation_replay") == []
+    )
+    if not navigation_identity_boundary:
+        errors.append("toolchain raw v1 identity boundary drift")
     identity_core = {
         "producer": raw_producer,
+        "implementation_closure": None,
+        "engine_preverification_digest": None,
         "campaign_sha256": engine_digest,
+        "proof_profile": "bounded-navigation-v1",
+        "semantic_block_ids": [],
+        "scenario_manifest_digest": None,
+        "scenario_policy": None,
+        "mutation_replay_digest": canonical_digest([]),
         "policy": raw.get("policy"),
         "profile_execution_ids": [
-            executions[item].get("execution_id") for item in sorted(executions)
+            execution.get("execution_id") for execution in executions.values()
         ],
         "route_execution_bindings": [
             {
-                "route_id": item,
-                "source_execution_id": raw_routes[item].get("source_execution_id"),
-                "target_execution_id": raw_routes[item].get("target_execution_id"),
-                "status": raw_routes[item].get("status"),
+                "route_id": record.get("route_id"),
+                "source_execution_id": record.get("source_execution_id"),
+                "target_execution_id": record.get("target_execution_id"),
+                "status": record.get("status"),
             }
-            for item in sorted(raw_routes)
+            for record in raw_routes.values()
         ],
     }
     if raw.get("evidence_identity") != {
+        "algorithm": "sha256(canonical-json(identity_payload))",
+        "identity_payload": identity_core,
         "sha256": canonical_digest(identity_core),
-        "scope": "producer+campaign+policy+profile-executions+route-bindings",
+        "scope": "producer+engine-preverification+implementation+campaign+scenario+policy+profile-executions+route-bindings",
     }:
         errors.append("toolchain raw evidence identity drift")
     states = {item.get("toolchain_status") for item in normalized_profiles.values()}
@@ -1237,6 +1256,7 @@ def validate_formal(
     corpora: dict[str, Any],
     implementation_fingerprint: str,
     replay_fingerprint: str,
+    execute_solver_replay: bool,
     errors: list[str],
 ) -> None:
     formal = wrapper.get("formal", {})
@@ -1492,8 +1512,10 @@ def validate_formal(
                 f"route {route_id} solver identity/version/options/environment drift"
             )
         replay_key = (LOCKED_Z3_BINARY_SHA256, raw_smt_sha)
-        replay_result = SOLVER_REPLAY_CACHE.get(replay_key)
-        if replay_result is None:
+        replay_result = (
+            SOLVER_REPLAY_CACHE.get(replay_key) if execute_solver_replay else None
+        )
+        if execute_solver_replay and replay_result is None:
             try:
                 completed = subprocess.run(
                     [str(artifact_files[str(solver_binary_id)]), "-in"],
@@ -1510,7 +1532,7 @@ def validate_formal(
                 SOLVER_REPLAY_CACHE[replay_key] = replay_result
             except Exception as exc:
                 errors.append(f"route {route_id} locked solver replay failed: {exc}")
-        if replay_result is not None and replay_result != (
+        if execute_solver_replay and replay_result is not None and replay_result != (
             raw_result.get("exit_code"),
             str(raw_result.get("stdout", "")).encode("utf-8"),
             str(raw_result.get("stderr", "")).encode("utf-8"),
@@ -1589,6 +1611,7 @@ def validate_campaign(
     schema_path: Path | None = None,
     route_schema_path: Path | None = None,
     execute_replay: bool = True,
+    portable_evidence_only: bool = False,
 ) -> dict[str, Any]:
     errors: list[str] = []
     try:
@@ -1891,15 +1914,16 @@ def validate_campaign(
                 )
             if not isinstance(repository_path, str):
                 continue
-            live_path = repo_root / repository_path
-            if live_path.is_file() and not live_path.is_symlink():
-                live_content = live_path.read_bytes()
-                if reference.get("sha256") != digest_bytes(
-                    live_content
-                ) or reference.get("bytes") != len(live_content):
-                    errors.append(
-                        f"stale {bundle_name} live repository capture: {repository_path}"
-                    )
+            if not portable_evidence_only:
+                live_path = repo_root / repository_path
+                if live_path.is_file() and not live_path.is_symlink():
+                    live_content = live_path.read_bytes()
+                    if reference.get("sha256") != digest_bytes(
+                        live_content
+                    ) or reference.get("bytes") != len(live_content):
+                        errors.append(
+                            f"stale {bundle_name} live repository capture: {repository_path}"
+                        )
         required_paths = (
             REQUIRED_IMPLEMENTATION_REPOSITORY_PATHS
             if bundle_name == "implementation"
@@ -2232,6 +2256,7 @@ def validate_campaign(
             corpora,
             str(implementation.get("fingerprint")),
             str(replay.get("fingerprint")),
+            not portable_evidence_only,
             errors,
         )
         for route_key, wrapper_key in (
@@ -2433,7 +2458,9 @@ def validate_campaign(
         "formal_ready": formal_ready and not errors,
         "external_evidence_status": external_evidence_status,
         "independent_verification_status": independent_status,
-        "certification_ready": certification_ready and not errors,
+        "certification_ready": (
+            certification_ready and not errors and not portable_evidence_only
+        ),
         "proved_route_count": sum(
             status == "PROVED" for status in route_formal_statuses
         ),
@@ -2453,14 +2480,26 @@ def main() -> int:
     parser.add_argument("--schema", type=Path)
     parser.add_argument("--route-schema", type=Path)
     parser.add_argument("--no-replay-execute", action="store_true")
+    parser.add_argument(
+        "--portable-evidence-only",
+        action="store_true",
+        help=(
+            "validate captured, digest-bound evidence without comparing live "
+            "repository bytes or executing the receipt-bound solver; does not "
+            "confer certification"
+        ),
+    )
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
+    if args.portable_evidence_only and not args.no_replay_execute:
+        parser.error("--portable-evidence-only requires --no-replay-execute")
     result = validate_campaign(
         Path(args.pack_dir),
         campaign_relative=args.campaign,
         schema_path=args.schema,
         route_schema_path=args.route_schema,
         execute_replay=not args.no_replay_execute,
+        portable_evidence_only=args.portable_evidence_only,
     )
     if args.json:
         print(json.dumps(result, sort_keys=True))

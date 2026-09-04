@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { Icon } from "../components/Icon";
+import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { StatusChip } from "../components/StatusChip";
 import { useAccountSession } from "../components/AccountSessionProvider";
 import { directedLanguageRoutes, translationLanguages } from "../lib/businessLines";
@@ -818,7 +819,7 @@ export function TranslationStudio() {
               <dl className="route-profile-facts">
                 <div><dt>源工具链</dt><dd>{sourceProfile?.compiler}</dd></div>
                 <div><dt>目标运行时</dt><dd>{targetProfile?.runtime}</dd></div>
-                <div><dt>方向 Skill</dt><dd>${selectedRoute.skill}</dd></div>
+                <div><dt>方向功能标识</dt><dd>${selectedRoute.skill}</dd></div>
                 <div><dt>本地执行</dt><dd>{selectedRoute.localExecution}</dd></div>
                 <div><dt>独立验证</dt><dd>{selectedRoute.independentVerification}</dd></div>
                 <div><dt>外部认证</dt><dd>{selectedRoute.externalVerification}</dd></div>
@@ -1075,6 +1076,10 @@ export function TranslationStudio() {
                 )}
               </section>
             )}
+            <TranslationEvidenceCharts
+              semanticCoverage={job.semanticCoverage}
+              behaviorCoverage={job.behaviorCoverage}
+            />
             {job.reason && <p className="warning-text">{translationRunnerFailureMessage(job.reason)}</p>}
             <pre aria-label="跨语言任务日志">{job.logs.map((entry) => `[${entry.stream}] ${entry.message}`).join("\n") || "日志尚未产生。"}</pre>
           </div>

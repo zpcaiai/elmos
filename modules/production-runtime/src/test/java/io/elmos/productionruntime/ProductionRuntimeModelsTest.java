@@ -3,6 +3,7 @@ package io.elmos.productionruntime;
 import io.elmos.productionruntime.ProductionRuntimeModels.AttemptStatus;
 import io.elmos.productionruntime.ProductionRuntimeModels.Checkpoint;
 import io.elmos.productionruntime.ProductionRuntimeModels.Completion;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
 import io.elmos.productionruntime.ProductionRuntimeModels.WorkerRegistration;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +40,16 @@ class ProductionRuntimeModelsTest {
     }
 
     @Test
+    void outputVerificationCannotClaimCertificationOrUseMutableLocalArtifacts() {
+        assertThrows(IllegalArgumentException.class, () -> outputReceipt(
+                "file:///tmp/output", "NOT_CERTIFIED"));
+        assertThrows(IllegalArgumentException.class, () -> outputReceipt(
+                "cas://sha256/" + "a".repeat(64), "CERTIFIED"));
+        assertEquals("a".repeat(64), outputReceipt(
+                "cas://sha256/" + "a".repeat(64), "NOT_CERTIFIED").artifactSha256());
+    }
+
+    @Test
     void workerRegistrationRequiresExactPlacementIdentity() {
         assertThrows(IllegalArgumentException.class, () -> new WorkerRegistration(
                 UUID.randomUUID(), "worker", "POLYGLOT", "https://worker.example.test",
@@ -51,5 +62,22 @@ class ProductionRuntimeModelsTest {
         return new Checkpoint(
                 UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(),
                 "WORKSPACE", 1, "s3://checkpoint/object", stateHash);
+    }
+
+    private static OutputVerificationReceipt outputReceipt(
+            String artifactUri,
+            String certificationStatus
+    ) {
+        return new OutputVerificationReceipt(
+                OutputVerificationReceipt.SCHEMA_VERSION,
+                "spring-modernization-v1",
+                "SPRING_MODERNIZATION",
+                "compile",
+                artifactUri,
+                "A".repeat(64),
+                "repository-owned-output-gate",
+                "PASSED",
+                certificationStatus,
+                Map.of("target_build_pass", true));
     }
 }

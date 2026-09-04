@@ -301,7 +301,7 @@ def test_sota_23_certification_refuses_without_the_rollout_evidence(
         "--canary-evidence", str(evidence),
         "--rollback-evidence", str(evidence),
     )
-    assert granted["certified"] is True
+    assert granted["certified"] is True, granted
     assert granted["signed"]["algorithm"] == "ed25519"
 
 

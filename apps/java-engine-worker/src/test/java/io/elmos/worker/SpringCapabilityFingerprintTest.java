@@ -565,6 +565,41 @@ class SpringCapabilityFingerprintTest {
                 "x".repeat(241))).length());
     }
 
+    @Test void classifiesNonStandardAndLegacyComponents() throws Exception {
+        String buildGradle = """
+                plugins {
+                    id 'java'
+                }
+                dependencies {
+                    compile 'javax.validation:validation-api:2.0.1.Final'
+                    compile 'com.example:spring-boot-starter-custom:1.0.0'
+                }
+                """;
+        Files.writeString(temporaryDirectory.resolve("build.gradle"), buildGradle);
+        write("src/main/java/example/LegacyController.java", """
+                package example;
+                import javax.validation.constraints.NotNull;
+                import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+                public class LegacyController extends WebSecurityConfigurerAdapter {
+                    @NotNull private String name;
+                }
+                """);
+
+        SpringCapabilityFingerprint.Analysis analysis =
+                SpringCapabilityFingerprint.analyze(temporaryDirectory, buildGradle, "build.gradle");
+
+        assertTrue(analysis.unknowns().contains("legacy-javax-validation-requires-jakarta-migration"));
+        assertTrue(analysis.unknowns().contains("deprecated-websecurity-adapter-requires-security-filter-chain"));
+        assertTrue(analysis.unknowns().contains("legacy-gradle-configurations-require-modernization"));
+        assertTrue(analysis.unknowns().contains("custom-spring-boot-starter-requires-compatibility-verification"));
+
+        Map<String, SpringCapabilityFingerprint.CapabilityFact> facts = factsById(analysis);
+        assertEquals(OBSERVED, facts.get("legacy-javax-validation").state());
+        assertEquals(OBSERVED, facts.get("deprecated-websecurity-adapter").state());
+        assertEquals(DECLARED_ONLY, facts.get("legacy-gradle-configurations").state());
+        assertEquals(DECLARED_ONLY, facts.get("custom-spring-boot-starter").state());
+    }
+
     private void write(String relative, String content) throws Exception {
         Path target = temporaryDirectory.resolve(relative);
         Files.createDirectories(target.getParent());

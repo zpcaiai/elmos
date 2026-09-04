@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "owner": "elmos-commercial-billing",
+  "strategy": "flyway-incremental-modernization",
+  "source": {
+    "engine": "postgresql",
+    "versions": [
+      "17.5"
+    ],
+    "edition": "community",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "postgresql-jdbc-42.7.7"
+    ],
+    "charset": "UTF8",
+    "collation": "C",
+    "timezone": "UTC",
+    "extensions": []
+  },
+  "target": {
+    "engine": "postgresql",
+    "versions": [
+      "17.5"
+    ],
+    "edition": "neon-managed",
+    "dialect": "postgresql",
+    "driver_versions": [
+      "postgresql-jdbc-42.7.7"
+    ],
+    "charset": "UTF8",
+    "collation": "C",
+    "timezone": "UTC",
+    "extensions": []
+  },
+  "backfill": {
+    "batch_size": 1000,
+    "checkpoint": "tenant_id",
+    "idempotent": true
+  },
+  "cdc": {
+    "status": "NOT_RUN",
+    "reason": "Production Neon CDC stream requires external cloud lease and approved cutover."
+  },
+  "authority": {
+    "before_cutover": "source",
+    "after_cutover": "NOT_RUN"
+  },
+  "reconciliation": {
+    "grain": "row",
+    "keys": [
+      "tenant_id",
+      "id"
+    ],
+    "required_difference_count": 0
+  },
+  "rollback": {
+    "strategy": "fail-closed-read-only"
+  },
+  "privacy": {
+    "data": "synthetic",
+    "production_data": false
+  }
+}

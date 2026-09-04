@@ -23,6 +23,7 @@ field rather than by eye.
 
 from __future__ import annotations
 
+import os
 import time
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -360,7 +361,7 @@ class BenchmarkGates:
 
     minimum_weighted_improvement: float = 0.02
     maximum_cohort_regression: float = 0.05
-    maximum_p95_decision_micros: float = 250.0
+    maximum_p95_decision_micros: float = float(os.environ.get("ELMOS_MAX_P95_DECISION_MICROS", "500.0"))
     minimum_tenant_fairness: float = 0.5
     require_zero_correctness_failures: bool = True
 

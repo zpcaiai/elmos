@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2511",
+  "skill_name": "frt-2511-internationalization-and-rtl-acceptance",
+  "batch": "G25",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g25/frt-2511-internationalization-and-rtl-acceptance/",
+  "status": "shared_implementation",
+  "handler_kind": "product_workflow",
+  "capability_key": "frt.g25.internationalization-and-rtl-acceptance",
+  "execution_contract_sha256": "sha256:ede98b01ff3ebf3e705a7ddae1b79a73d0ce4f70df96b2ac4f746db110ee1784",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "requirements",
+      "states",
+      "transitions"
+    ],
+    "optional": [
+      "initialState",
+      "journeys",
+      "artifacts"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:a03948e20e3eb2bb5ed59c9567dc3023e8193d1efea6646683345502ef7bc1e6",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

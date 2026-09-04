@@ -67,6 +67,32 @@ def test_output_keeps_split_success_identity_streams_by_default(
     assert toolchains._output(["/usr/bin/env"]) == (stdout + stderr).strip()
 
 
+def test_output_preserves_bounded_sanitized_failure_diagnostic(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        toolchains.subprocess,
+        "run",
+        lambda *args, **kwargs: subprocess.CompletedProcess(
+            args[0],
+            7,
+            stdout="",
+            stderr="bundle verification failed\nnested component invalid\n",
+        ),
+    )
+
+    with pytest.raises(RouteError) as failure:
+        toolchains._output(
+            ["/usr/bin/codesign", "--verify"],
+            include_failure_diagnostic=True,
+        )
+
+    assert str(failure.value) == (
+        "EXACT_TOOLCHAIN_UNAVAILABLE:/usr/bin/codesign:exit=7:"
+        "diagnostic=bundle verification failed?nested component invalid"
+    )
+
+
 def _mock_go_closure(monkeypatch: pytest.MonkeyPatch, observed: str) -> None:
     tree = {
         "root": str(toolchains._EXPECTED_GO_ROOT),

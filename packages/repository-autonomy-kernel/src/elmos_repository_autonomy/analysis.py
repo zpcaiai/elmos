@@ -136,7 +136,11 @@ def compile_ir(index: Mapping[str, Any], task_spec: Mapping[str, Any], source_pr
         if not isinstance(symbol, Mapping):
             continue
         nodes.append({"id": symbol.get("uri"), "kind": symbol.get("kind", "unknown"), "name": symbol.get("name"), "source": {"path": symbol.get("path"), "line": symbol.get("line")}, "semantics": {"preserve": True}})
-    ir = {"version": "2.0.0", "snapshot_sha": index["snapshot_sha"], "task_spec_hash": digest(task_spec), "source_profile": dict(source_profile), "target_profile": dict(target_profile), "nodes": nodes, "unknown_semantics": ["provider-specific behavior", "runtime side effects not represented by static index"], "status": "PARTIAL" if index.get("partial") else "COMPILED"}
+    ir = {"version": "2.0.0", "snapshot_sha": index["snapshot_sha"], "task_spec_hash": digest(task_spec), "source_profile": dict(source_profile), "target_profile": dict(target_profile), "nodes": nodes, "unknown_semantics": ["provider-specific behavior", "runtime side effects not represented by static index"], "status": "COMPILED" if index.get("complete") is True else "PARTIAL",
+          "status_note": ("this function wraps index symbols in {'preserve': True}; it "
+                          "does not lower anything, so COMPILED requires an index that "
+                          "positively asserts completeness rather than merely omitting "
+                          "the partial flag")}
     return {"semantic_ir": ir, "rule_dsl": {"rules": [{"id": "preserve-public-symbols", "when": "node.kind in [type,function]", "assert": "target.symbol exists"}]}, "mutation_dsl": {"mutations": []}, "scenario_dsl": {"scenarios": []}, "evidence_dsl": {"required": ["source-index", "target-build", "differential-runtime"]}, "source_map": {str(node["id"]): node["source"] for node in nodes}}
 
 
@@ -158,7 +162,13 @@ def change_graph(task_spec: Mapping[str, Any], snapshot: Mapping[str, Any], patc
         for patch in [node for node in nodes if node["type"] == "patch"]:
             edges.append({"from": patch["id"], "to": node_id, "type": "validated-by"})
     unverified = [node["id"] for node in nodes if node["type"] != "requirement" and node["status"] not in {"PASS", "PASSED", "ACCEPTED"}]
-    graph = {"version": "2.0.0", "snapshot_sha": snapshot.get("sha256") or digest(snapshot), "nodes": nodes, "edges": edges, "acyclic": True, "unverified_nodes": unverified, "lineage": lineage or {}}
+    # "acyclic" was asserted, never computed. The edges this function builds are
+    # requirement -> patch -> validation by construction, so nothing here CAN
+    # cycle - but a caller reading `acyclic: True` reasonably believes a check
+    # ran against their change set, and none did. The kernel engine builds a real
+    # graph from caller-supplied changes and reports a cycle as a strongly
+    # connected component with a witness path.
+    graph = {"version": "2.0.0", "snapshot_sha": snapshot.get("sha256") or digest(snapshot), "nodes": nodes, "edges": edges, "acyclic": True, "acyclic_checked": False, "acyclic_note": "true by construction of this graph shape, not by a cycle check over the supplied changes", "conflict_detection": "NOT_RUN", "unverified_nodes": unverified, "lineage": lineage or {}}
     return {"change_graph": graph, "change_node": nodes[-1] if len(nodes) > 1 else nodes[0], "change_edge": edges, "merge_plan": {"status": "BLOCKED" if unverified else "READY_FOR_REVIEW", "required": ["conflict-free", "validation-pass", "acceptance"]}, "revert_plan": {"status": "PLANNED", "dependency_closure": [node["id"] for node in nodes], "testable": bool(nodes)}, "provenance_commit": {"status": "NOT_RUN", "git_execution": False}}
 
 

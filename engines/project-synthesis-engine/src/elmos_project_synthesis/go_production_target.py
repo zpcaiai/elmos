@@ -12,7 +12,7 @@ from __future__ import annotations
 import json
 
 from .container_images import GOLANG_IMAGE
-from .models import FieldSpec, SynthesisRequest, pascal
+from .models import EntitySpec, FieldSpec, SynthesisRequest, pascal
 from .production_contract import (
     ENV_AUTH_AUDIENCE,
     ENV_AUTH_ISSUER,
@@ -22,8 +22,11 @@ from .production_contract import (
     ENV_OIDC_PRIVATE_KEY_FILE,
     TENANT_CLAIM,
     TENANT_SETTING,
+    EntitySql,
     all_entity_sql,
+    fixture_chain,
     production_contract,
+    relation_parents,
 )
 from .production_runtime import render_local_runtime
 from .rendering import (
@@ -68,6 +71,262 @@ def _sample_json(field: FieldSpec) -> object:
         "boolean": True,
         "datetime": "2026-01-01T00:00:00Z",
     }[field.type]
+
+
+def _go_json_body(request: SynthesisRequest, entity: EntitySpec, parent_vars: dict[str, str]) -> str:
+    parents = dict(relation_parents(request, entity.singular))
+    fragments: list[str] = []
+    sprintf_args: list[str] = []
+    for field in entity.fields:
+        if field.name in parents:
+            fragments.append(f'"{field.name}":%q')
+            sprintf_args.append(parent_vars[parents[field.name]])
+        else:
+            fragments.append(f'"{field.name}":{json.dumps(_sample_json(field))}')
+    template = "{" + ",".join(fragments) + "}"
+    if not sprintf_args:
+        return "`" + template + "`"
+    return "fmt.Sprintf(`" + template + "`, " + ", ".join(sprintf_args) + ")"
+
+
+def _go_entity_store_block(entity: EntitySpec, sql: EntitySql) -> str:
+    entity_class = pascal(entity.singular)
+    list_name = f"list{pascal(entity.plural)}"
+    field_declarations = "\n    ".join(
+        f'{pascal(field.name)} {_go_type(field)} `json:"{field.name}"`' for field in entity.fields
+    )
+    scan_targets = ", ".join(["&record.ID", *(f"&record.{pascal(field.name)}" for field in entity.fields)])
+    upsert_arguments = ", ".join(
+        ["tenantID", "recordID", *(f"payload.{pascal(field.name)}" for field in entity.fields)]
+    )
+    return f"""
+            type {entity_class} struct {{
+                ID string `json:"id"`
+                {field_declarations}
+            }}
+
+            type {entity_class}Upsert struct {{
+                {field_declarations}
+            }}
+
+            func (s *store) {list_name}(ctx context.Context, tenantID string) ([]{entity_class}, error) {{
+                results := []{entity_class}{{}}
+                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
+                    rows, err := transaction.QueryContext(ctx, {json.dumps(sql.list_sql)})
+                    if err != nil {{
+                        return err
+                    }}
+                    defer rows.Close()
+                    for rows.Next() {{
+                        var record {entity_class}
+                        if err := rows.Scan({scan_targets}); err != nil {{
+                            return err
+                        }}
+                        results = append(results, record)
+                    }}
+                    return rows.Err()
+                }})
+                return results, err
+            }}
+
+            func (s *store) get{entity_class}(ctx context.Context, tenantID, recordID string) (*{entity_class}, error) {{
+                var found *{entity_class}
+                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
+                    var record {entity_class}
+                    row := transaction.QueryRowContext(ctx, {json.dumps(sql.get_sql)}, recordID)
+                    if err := row.Scan({scan_targets}); err != nil {{
+                        if errors.Is(err, sql.ErrNoRows) {{
+                            return nil
+                        }}
+                        return err
+                    }}
+                    found = &record
+                    return nil
+                }})
+                return found, err
+            }}
+
+            func (s *store) save{entity_class}(ctx context.Context, tenantID, recordID string, payload {entity_class}Upsert) (*{entity_class}, error) {{
+                var saved *{entity_class}
+                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
+                    var record {entity_class}
+                    row := transaction.QueryRowContext(ctx, {json.dumps(sql.upsert_sql)}, {upsert_arguments})
+                    if err := row.Scan({scan_targets}); err != nil {{
+                        return err
+                    }}
+                    saved = &record
+                    return nil
+                }})
+                return saved, err
+            }}
+
+            func (s *store) delete{entity_class}(ctx context.Context, tenantID, recordID string) error {{
+                return s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
+                    _, err := transaction.ExecContext(ctx, {json.dumps(sql.delete_sql)}, recordID)
+                    return err
+                }})
+            }}
+            """
+
+
+def _go_entity_handler_block(entity: EntitySpec) -> str:
+    entity_class = pascal(entity.singular)
+    list_name = f"list{pascal(entity.plural)}"
+    return f"""
+                mux.HandleFunc("GET /{entity.plural}", func(response http.ResponseWriter, request *http.Request) {{
+                    tenant, ok := requireTenant(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    results, err := records.{list_name}(request.Context(), tenant)
+                    if err != nil {{
+                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
+                        return
+                    }}
+                    writeJSON(response, http.StatusOK, results)
+                }})
+                mux.HandleFunc("GET /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
+                    tenant, ok := requireTenant(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    recordID, ok := requireRecordID(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    record, err := records.get{entity_class}(request.Context(), tenant, recordID)
+                    if err != nil {{
+                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
+                        return
+                    }}
+                    if record == nil {{
+                        writeJSON(response, http.StatusNotFound, map[string]string{{"error": "not_found"}})
+                        return
+                    }}
+                    writeJSON(response, http.StatusOK, record)
+                }})
+                mux.HandleFunc("PUT /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
+                    tenant, ok := requireTenant(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    recordID, ok := requireRecordID(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    payload, ok := validated{entity_class}Upsert(request)
+                    if !ok {{
+                        writeJSON(response, http.StatusUnprocessableEntity, map[string]string{{"error": "PAYLOAD_INVALID"}})
+                        return
+                    }}
+                    record, err := records.save{entity_class}(request.Context(), tenant, recordID, *payload)
+                    if err != nil {{
+                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
+                        return
+                    }}
+                    writeJSON(response, http.StatusOK, record)
+                }})
+                mux.HandleFunc("DELETE /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
+                    tenant, ok := requireTenant(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    recordID, ok := requireRecordID(response, request)
+                    if !ok {{
+                        return
+                    }}
+                    if err := records.delete{entity_class}(request.Context(), tenant, recordID); err != nil {{
+                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
+                        return
+                    }}
+                    response.WriteHeader(http.StatusNoContent)
+                }})
+            """
+
+
+def _go_validator_funcs(request: SynthesisRequest) -> str:
+    blocks: list[str] = []
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        required_checks = "\n    ".join(
+            f'if payload.{pascal(field.name)} == "" {{\n        return nil, false\n    }}'
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ) or "_ = payload"
+        blocks.append(
+            f"""
+            func validated{entity_class}Upsert(request *http.Request) (*{entity_class}Upsert, bool) {{
+                var payload {entity_class}Upsert
+                decoder := json.NewDecoder(request.Body)
+                decoder.DisallowUnknownFields()
+                if decoder.Decode(&payload) != nil {{
+                    return nil, false
+                }}
+                {required_checks}
+                return &payload, true
+            }}
+            """
+        )
+    return "\n".join(blocks)
+
+
+def _go_entity_scenario(
+    request: SynthesisRequest,
+    entity: EntitySpec,
+    declared_vars: set[str] | None = None,
+) -> str:
+    if declared_vars is None:
+        declared_vars = set()
+    by_name = {item.singular: item for item in request.entities}
+    parent_vars: dict[str, str] = {}
+    lines: list[str] = []
+    for parent in fixture_chain(request, entity.singular):
+        variable = f"{parent}ID"
+        parent_vars[parent] = variable
+        parent_entity = by_name[parent]
+        body = _go_json_body(request, parent_entity, parent_vars)
+        assign_op = "=" if variable in declared_vars else ":="
+        declared_vars.add(variable)
+        lines.extend(
+            [
+                f"{variable} {assign_op} uuidString(test)",
+                f"response, body = send(test, server, \"PUT\", \"/{parent_entity.plural}/\"+{variable}, tenantA, {body})",
+                f"expectStatus(test, \"fixture {parent}\", response, 200, body)",
+            ]
+        )
+    record_var = f"{entity.singular}ID"
+    body = _go_json_body(request, entity, parent_vars)
+    assign_op = "=" if record_var in declared_vars else ":="
+    declared_vars.add(record_var)
+    lines.extend(
+        [
+            f"{record_var} {assign_op} uuidString(test)",
+            f"response, body = send(test, server, \"PUT\", \"/{entity.plural}/\"+{record_var}, tenantA, {body})",
+            f'expectStatus(test, "upsert-and-read {entity.singular} (PUT)", response, 200, body)',
+            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantA, \"\")",
+            f'expectStatus(test, "upsert-and-read {entity.singular} (GET)", response, 200, body)',
+            f"if !strings.Contains(body, {record_var}) {{\n"
+            f'                test.Fatalf("upsert-and-read {entity.singular}: record id missing from body %s", body)\n'
+            f"            }}",
+            f"response, body = send(test, server, \"GET\", \"/{entity.plural}\", tenantA, \"\")",
+            f'expectStatus(test, "list-scoped-to-tenant {entity.singular}", response, 200, body)',
+            f"if !strings.Contains(body, {record_var}) {{\n"
+            f'                test.Fatalf("list-scoped-to-tenant {entity.singular}: record id missing from %s", body)\n'
+            f"            }}",
+            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantB, \"\")",
+            f'expectStatus(test, "cross-tenant-read-blocked {entity.singular}", response, 404, body)',
+            f"response, body = send(test, server, \"GET\", \"/{entity.plural}\", tenantB, \"\")",
+            f'expectStatus(test, "cross-tenant-read-blocked {entity.singular} (list)", response, 200, body)',
+            f"if strings.Contains(body, {record_var}) {{\n"
+            f'                test.Fatalf("cross-tenant-read-blocked {entity.singular}: tenant-b can see %s", {record_var})\n'
+            f"            }}",
+            f"response, body = send(test, server, \"DELETE\", fmt.Sprintf(\"/{entity.plural}/%s\", {record_var}), tenantA, \"\")",
+            f'expectStatus(test, "delete-removes-record {entity.singular}", response, 204, body)',
+            f"response, body = send(test, server, \"GET\", \"/{entity.plural}/\"+{record_var}, tenantA, \"\")",
+            f'expectStatus(test, "delete-removes-record {entity.singular} (GET)", response, 404, body)',
+        ]
+    )
+    return "\n            ".join(lines)
 
 
 def _auth_go(request: SynthesisRequest) -> str:
@@ -246,38 +505,17 @@ def _auth_go(request: SynthesisRequest) -> str:
 
 
 def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        # The Go production emitter currently generates one entity's store and
-        # routes. Refusing loudly here is deliberate: silently emitting only
-        # the first entity would ship an API that quietly drops declared
-        # capabilities, which is exactly the failure mode this platform exists
-        # to prevent. Multi-entity requests must use a target that carries
-        # multi-entity evidence (python, java) until this emitter grows it.
-        raise ValueError(
-            "GO_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
     module = request.project_name
     statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    sql = statements[entity.singular]
-
-    field_declarations = "\n    ".join(
-        f'{pascal(field.name)} {_go_type(field)} `json:"{field.name}"`' for field in entity.fields
+    needs_time = any(
+        field.type == "datetime" for entity in request.entities for field in entity.fields
     )
-    scan_targets = ", ".join(["&record.ID", *(f"&record.{pascal(field.name)}" for field in entity.fields)])
-    upsert_arguments = ", ".join(
-        ["tenantID", "recordID", *(f"payload.{pascal(field.name)}" for field in entity.fields)]
-    )
-    required_checks = "\n    ".join(
-        f'if payload.{pascal(field.name)} == "" {{\n        return nil, false\n    }}'
-        for field in entity.fields
-        if field.required and field.type == "string"
-    ) or "_ = payload"
-    needs_time = any(field.type == "datetime" for field in entity.fields)
     time_import = '\n            "time"' if needs_time else ""
-    body_json = json.dumps({field.name: _sample_json(field) for field in entity.fields})
+    entity_store_blocks = "\n".join(
+        _go_entity_store_block(entity, statements[entity.singular]) for entity in request.entities
+    )
+    entity_handler_blocks = "\n".join(_go_entity_handler_block(entity) for entity in request.entities)
+    validator_funcs = _go_validator_funcs(request)
 
     files: dict[str, str] = {
         ".gitignore": gitignore(),
@@ -313,15 +551,6 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
                 "errors"{time_import}
             )
 
-            type {entity_class} struct {{
-                ID string `json:"id"`
-                {field_declarations}
-            }}
-
-            type {entity_class}Upsert struct {{
-                {field_declarations}
-            }}
-
             type store struct {{
                 database *sql.DB
             }}
@@ -349,63 +578,7 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
                 return transaction.Commit()
             }}
 
-            func (s *store) list(ctx context.Context, tenantID string) ([]{entity_class}, error) {{
-                results := []{entity_class}{{}}
-                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
-                    rows, err := transaction.QueryContext(ctx, {json.dumps(sql.list_sql)})
-                    if err != nil {{
-                        return err
-                    }}
-                    defer rows.Close()
-                    for rows.Next() {{
-                        var record {entity_class}
-                        if err := rows.Scan({scan_targets}); err != nil {{
-                            return err
-                        }}
-                        results = append(results, record)
-                    }}
-                    return rows.Err()
-                }})
-                return results, err
-            }}
-
-            func (s *store) get(ctx context.Context, tenantID, recordID string) (*{entity_class}, error) {{
-                var found *{entity_class}
-                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
-                    var record {entity_class}
-                    row := transaction.QueryRowContext(ctx, {json.dumps(sql.get_sql)}, recordID)
-                    if err := row.Scan({scan_targets}); err != nil {{
-                        if errors.Is(err, sql.ErrNoRows) {{
-                            return nil
-                        }}
-                        return err
-                    }}
-                    found = &record
-                    return nil
-                }})
-                return found, err
-            }}
-
-            func (s *store) save(ctx context.Context, tenantID, recordID string, payload {entity_class}Upsert) (*{entity_class}, error) {{
-                var saved *{entity_class}
-                err := s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
-                    var record {entity_class}
-                    row := transaction.QueryRowContext(ctx, {json.dumps(sql.upsert_sql)}, {upsert_arguments})
-                    if err := row.Scan({scan_targets}); err != nil {{
-                        return err
-                    }}
-                    saved = &record
-                    return nil
-                }})
-                return saved, err
-            }}
-
-            func (s *store) delete(ctx context.Context, tenantID, recordID string) error {{
-                return s.inTenant(ctx, tenantID, func(transaction *sql.Tx) error {{
-                    _, err := transaction.ExecContext(ctx, {json.dumps(sql.delete_sql)}, recordID)
-                    return err
-                }})
-            }}
+            {entity_store_blocks}
             """
         ),
         "main.go": _go_clean(
@@ -452,16 +625,7 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
                 _ = json.NewEncoder(response).Encode(body)
             }}
 
-            func validatedUpsert(request *http.Request) (*{entity_class}Upsert, bool) {{
-                var payload {entity_class}Upsert
-                decoder := json.NewDecoder(request.Body)
-                decoder.DisallowUnknownFields()
-                if decoder.Decode(&payload) != nil {{
-                    return nil, false
-                }}
-                {required_checks}
-                return &payload, true
-            }}
+            {validator_funcs}
 
             func newHandler(auth *authenticator, records *store) http.Handler {{
                 mux := http.NewServeMux()
@@ -484,74 +648,7 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
                     }}
                     return recordID, true
                 }}
-                mux.HandleFunc("GET /{entity.plural}", func(response http.ResponseWriter, request *http.Request) {{
-                    tenant, ok := requireTenant(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    results, err := records.list(request.Context(), tenant)
-                    if err != nil {{
-                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
-                        return
-                    }}
-                    writeJSON(response, http.StatusOK, results)
-                }})
-                mux.HandleFunc("GET /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
-                    tenant, ok := requireTenant(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    recordID, ok := requireRecordID(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    record, err := records.get(request.Context(), tenant, recordID)
-                    if err != nil {{
-                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
-                        return
-                    }}
-                    if record == nil {{
-                        writeJSON(response, http.StatusNotFound, map[string]string{{"error": "not_found"}})
-                        return
-                    }}
-                    writeJSON(response, http.StatusOK, record)
-                }})
-                mux.HandleFunc("PUT /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
-                    tenant, ok := requireTenant(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    recordID, ok := requireRecordID(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    payload, ok := validatedUpsert(request)
-                    if !ok {{
-                        writeJSON(response, http.StatusUnprocessableEntity, map[string]string{{"error": "PAYLOAD_INVALID"}})
-                        return
-                    }}
-                    record, err := records.save(request.Context(), tenant, recordID, *payload)
-                    if err != nil {{
-                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
-                        return
-                    }}
-                    writeJSON(response, http.StatusOK, record)
-                }})
-                mux.HandleFunc("DELETE /{entity.plural}/{{id}}", func(response http.ResponseWriter, request *http.Request) {{
-                    tenant, ok := requireTenant(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    recordID, ok := requireRecordID(response, request)
-                    if !ok {{
-                        return
-                    }}
-                    if err := records.delete(request.Context(), tenant, recordID); err != nil {{
-                        writeJSON(response, http.StatusInternalServerError, map[string]string{{"error": "QUERY_FAILED"}})
-                        return
-                    }}
-                    response.WriteHeader(http.StatusNoContent)
-                }})
+                {entity_handler_blocks}
                 return mux
             }}
 
@@ -572,7 +669,7 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
             }}
             """
         ),
-        "integration_test.go": _integration_test_go(request, body_json),
+        "integration_test.go": _integration_test_go(request),
         # `go mod tidy` runs first so the module sum is materialized before the
         # build; without it a fresh workspace fails on missing go.sum entries.
         "scripts/local_runtime.py": render_local_runtime(
@@ -648,8 +745,12 @@ def render_go_production(request: SynthesisRequest, port: int) -> dict[str, str]
     return files
 
 
-def _integration_test_go(request: SynthesisRequest, body_json: str) -> str:
+def _integration_test_go(request: SynthesisRequest) -> str:
     entity = request.entities[0]
+    declared_vars: set[str] = set()
+    entity_scenarios = "\n            ".join(
+        _go_entity_scenario(request, item, declared_vars) for item in request.entities
+    )
     if request.auth_mode == "jwt":
         signer = f"""
         func signToken(test *testing.T, tenant, issuer, audience string, valid bool) string {{
@@ -835,38 +936,7 @@ def _integration_test_go(request: SynthesisRequest, body_json: str) -> str:
             response, body = send(test, server, "GET", "/{entity.plural}", signToken(test, "", issuer, audience, true), "")
             expectStatus(test, "missing-tenant-claim-rejected", response, 401, body)
 
-            // upsert-and-read
-            recordID := uuidString(test)
-            payload := `{body_json}`
-            response, body = send(test, server, "PUT", "/{entity.plural}/"+recordID, tenantA, payload)
-            expectStatus(test, "upsert-and-read (PUT)", response, 200, body)
-            response, body = send(test, server, "GET", "/{entity.plural}/"+recordID, tenantA, "")
-            expectStatus(test, "upsert-and-read (GET)", response, 200, body)
-            if !strings.Contains(body, recordID) {{
-                test.Fatalf("upsert-and-read: record id missing from body %s", body)
-            }}
-
-            // list-scoped-to-tenant
-            response, body = send(test, server, "GET", "/{entity.plural}", tenantA, "")
-            expectStatus(test, "list-scoped-to-tenant", response, 200, body)
-            if !strings.Contains(body, recordID) {{
-                test.Fatalf("list-scoped-to-tenant: record id missing from %s", body)
-            }}
-
-            // cross-tenant-read-blocked
-            response, body = send(test, server, "GET", "/{entity.plural}/"+recordID, tenantB, "")
-            expectStatus(test, "cross-tenant-read-blocked", response, 404, body)
-            response, body = send(test, server, "GET", "/{entity.plural}", tenantB, "")
-            expectStatus(test, "cross-tenant-read-blocked (list)", response, 200, body)
-            if strings.Contains(body, recordID) {{
-                test.Fatalf("cross-tenant-read-blocked: tenant-b can see %s", recordID)
-            }}
-
-            // delete-removes-record
-            response, body = send(test, server, "DELETE", fmt.Sprintf("/{entity.plural}/%s", recordID), tenantA, "")
-            expectStatus(test, "delete-removes-record", response, 204, body)
-            response, body = send(test, server, "GET", "/{entity.plural}/"+recordID, tenantA, "")
-            expectStatus(test, "delete-removes-record (GET)", response, 404, body)
+            {entity_scenarios}
         }}
         """
     )

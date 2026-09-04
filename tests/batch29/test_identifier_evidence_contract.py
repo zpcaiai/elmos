@@ -119,6 +119,7 @@ def _validate_identifier_and_whole_file_replay(
         target_inventory_record=records["target-module-inventory"][0],
         closure_record=records["whole-file-module-closure"][0],
         javascript_descriptor_record=javascript_descriptor_record,
+        role_records=records,
         route_swift_receipt=None,
         replay_native_behavior=replay_native_behavior,
         failures=failures,

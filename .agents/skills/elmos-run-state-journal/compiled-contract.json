@@ -8,11 +8,11 @@
       "Journal must be durable before acknowledging completion of a step."
     ],
     "inputs": [
-      "run/task event"
+      "`run/task event`"
     ],
     "outputs": [
-      "event log",
-      "state snapshot"
+      "`event log`",
+      "`state snapshot`"
     ],
     "triggers": [
       "every state transition"

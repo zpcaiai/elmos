@@ -68,6 +68,7 @@ class Requirement:
 
 @dataclass(frozen=True)
 class TestObservation:
+    __test__ = False
     test_id: str
     status: ResultStatus | str
     requirement_refs: tuple[str, ...] = ()

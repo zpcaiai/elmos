@@ -35,6 +35,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
@@ -53,9 +54,10 @@ if _PACKAGE not in sys.modules:
 
 from elmos_polyglot_route.models import RouteError  # noqa: E402
 from elmos_polyglot_route.toolchains import (  # noqa: E402
-    _EXPECTED_JAVA_HOME,
+    _kotlin_jvm_binding,
     _qualified_file_record,
     php_tree_identity,
+    sanitized_subprocess_env,
 )
 
 #: The four paths that make a directory a Kotlin compiler distribution rather
@@ -261,20 +263,34 @@ def _kotlinc_version(executable: Path) -> tuple[str | None, str]:
     # reproduce, i.e. a permanent EXACT_TOOLCHAIN_MISMATCH:kotlin.  Both are
     # set because the launcher prefers ${JAVA_HOME}/bin/java and falls back to a
     # bare `java` from PATH.
-    environment = dict(os.environ)
-    environment["JAVA_HOME"] = str(_EXPECTED_JAVA_HOME)
-    environment["PATH"] = os.pathsep.join(
-        [str(_EXPECTED_JAVA_HOME / "bin"), str(executable.parent), environment.get("PATH", "")]
-    )
-    completed = subprocess.run(
-        [str(executable), "-version"],
-        capture_output=True,
-        text=True,
-        stdin=subprocess.DEVNULL,
-        timeout=300,
-        check=False,
-        env=environment,
-    )
+    # Reuse the route engine's fully verified Kotlin/JVM binding. CI binds
+    # Temurin while developer qualification may bind the Homebrew bundle;
+    # hard-coding either home here makes a fresh Kotlin archive appear to have
+    # tree drift before the tree can be checked. `_kotlin_jvm_binding` verifies
+    # the Java/Javac/module/JVM/release digests, version banners, declared home,
+    # and bundle signature before returning the home used below.
+    java_home, _ = _kotlin_jvm_binding()
+    with tempfile.TemporaryDirectory(prefix="elmos-kotlin-pin-env-") as temporary:
+        environment_root = Path(temporary)
+        environment_home = environment_root / "home"
+        environment_tmp = environment_root / "tmp"
+        environment_home.mkdir(mode=0o700)
+        environment_tmp.mkdir(mode=0o700)
+        environment = sanitized_subprocess_env(
+            home=environment_home,
+            temp_dir=environment_tmp,
+            executable_dirs=(java_home / "bin", executable.parent),
+        )
+        environment["JAVA_HOME"] = str(java_home)
+        completed = subprocess.run(
+            [str(executable), "-version"],
+            capture_output=True,
+            text=True,
+            stdin=subprocess.DEVNULL,
+            timeout=300,
+            check=False,
+            env=environment,
+        )
     printed = f"{completed.stderr}{completed.stdout}"
     for line in printed.splitlines():
         candidate = line.strip().removeprefix("info:").strip()

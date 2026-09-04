@@ -109,7 +109,7 @@ EXPECTED_SCRIPT_SUPPORT_FILES = 7
 EXPECTED_TEST_SUPPORT_FILES = 2
 
 _IGNORED_ENGINE_GENERATED_PARTS = frozenset(
-    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache"}
+    {".venv", "__pycache__", ".ruff_cache", ".pytest_cache", ".mypy_cache"}
 )
 
 
@@ -896,6 +896,7 @@ TRUSTED_PREVIOUS_OWNED_MANIFEST_SHA256S = frozenset(
         # preserve the prior generated marker for the receipt refresh.
         "sha256:fc872f534af894096c35b2af2713e7a8b1152751fae37af402d8fac0bcba5f00",
         "sha256:d48312fd1746dfd5664437baacd1c3370fc1cb3a2f0523a3b2fe8afe8bb0b7fe",
+        "sha256:ef456d74fff1a98f0e8a3f5cad44b6ecc965bd73a3f0e38c34c5cd907c4163bf",
     }
 )
 INSTALLED_TREE_DIGEST_SCHEMA = "sha256-v2:name-path-mode-bytes"

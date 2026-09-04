@@ -7,6 +7,7 @@
     "route_key",
     "route_version",
     "status",
+    "certification_decision",
     "gate_results",
     "metrics",
     "evidence_refs",
@@ -18,21 +19,37 @@
       "minimum": 1
     },
     "route_key": {
-      "type": "string"
+      "type": "string",
+      "pattern": "^[a-z]+-to-[a-z]+$"
     },
     "route_version": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
     },
     "status": {
       "enum": [
+        "research",
         "certified",
         "limited",
         "experimental",
         "blocked"
       ]
     },
+    "certification_decision": {
+      "enum": [
+        "CERTIFIED",
+        "NOT_CERTIFIED"
+      ]
+    },
+    "declared_scope": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
+    },
     "gate_results": {
-      "type": "object"
+      "type": "object",
+      "minProperties": 1
     },
     "metrics": {
       "type": "object"
@@ -44,16 +61,23 @@
       }
     },
     "issued_at": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
     },
     "next_review_at": {
-      "type": "string"
+      "type": "string",
+      "minLength": 1,
+      "pattern": ".*\\S.*"
     },
     "evidence_format": {
       "type": "integer",
       "minimum": 1
     },
     "formal_equivalence": {
+      "$ref": "#/$defs/artifact_ref"
+    },
+    "module_equivalence": {
       "$ref": "#/$defs/artifact_ref"
     }
   },
@@ -83,6 +107,87 @@
     }
   },
   "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "research"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "required": [
+          "declared_scope",
+          "next_review_at"
+        ],
+        "properties": {
+          "certification_decision": {
+            "const": "NOT_CERTIFIED"
+          },
+          "declared_scope": {
+            "const": "NO_ROUTE_PROFILE_ADMITTED"
+          },
+          "gate_results": {
+            "type": "object",
+            "required": [
+              "local_execution",
+              "external_execution",
+              "independent_verification"
+            ],
+            "properties": {
+              "local_execution": {
+                "const": "NOT_RUN"
+              },
+              "external_execution": {
+                "const": "NOT_RUN"
+              },
+              "independent_verification": {
+                "const": "NOT_RUN"
+              }
+            },
+            "additionalProperties": false
+          },
+          "metrics": {
+            "type": "object",
+            "required": [
+              "build_green_rate",
+              "first_build_pass_rate",
+              "p0_behavior_pass_rate",
+              "source_map_coverage",
+              "manual_hours",
+              "cost_per_verified_workload"
+            ],
+            "properties": {
+              "build_green_rate": {
+                "type": "null"
+              },
+              "first_build_pass_rate": {
+                "type": "null"
+              },
+              "p0_behavior_pass_rate": {
+                "type": "null"
+              },
+              "source_map_coverage": {
+                "type": "null"
+              },
+              "manual_hours": {
+                "type": "null"
+              },
+              "cost_per_verified_workload": {
+                "type": "null"
+              }
+            },
+            "additionalProperties": false
+          },
+          "evidence_refs": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
     {
       "if": {
         "properties": {

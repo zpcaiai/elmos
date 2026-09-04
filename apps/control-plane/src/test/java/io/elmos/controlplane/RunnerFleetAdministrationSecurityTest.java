@@ -53,11 +53,11 @@ class RunnerFleetAdministrationSecurityTest {
     @Test
     void authenticatedTenantAndActorAreExplicitlyPassedToTheStore() throws Exception {
         mvc.perform(post("/api/v1/runner/nodes/runner-1/attestation/verify")
-                        .with(principal("org-1", "actor-1", "APPROVER")))
+                        .with(platformAdministrator("org-1", "actor-1", "APPROVER")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status").value("READY"));
         mvc.perform(post("/api/v1/runner/nodes/runner-1/drain")
-                        .with(principal("org-1", "actor-1", "OPERATOR")))
+                        .with(platformAdministrator("org-1", "actor-1", "OPERATOR")))
                 .andExpect(status().isAccepted())
                 .andExpect(jsonPath("$.status").value("DRAINING"));
 
@@ -77,13 +77,13 @@ class RunnerFleetAdministrationSecurityTest {
 
         String crossTenant = mvc.perform(post(
                                 "/api/v1/runner/nodes/runner-other-tenant/attestation/verify")
-                        .with(principal("org-1", "actor-1", "APPROVER")))
+                        .with(platformAdministrator("org-1", "actor-1", "APPROVER")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("ELMOS_RUNNER_UNKNOWN"))
                 .andReturn().getResponse().getContentAsString();
         String nonexistent = mvc.perform(post(
                                 "/api/v1/runner/nodes/runner-missing/attestation/verify")
-                        .with(principal("org-1", "actor-1", "APPROVER")))
+                        .with(platformAdministrator("org-1", "actor-1", "APPROVER")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("ELMOS_RUNNER_UNKNOWN"))
                 .andReturn().getResponse().getContentAsString();
@@ -99,13 +99,13 @@ class RunnerFleetAdministrationSecurityTest {
 
         String crossTenant = mvc.perform(post(
                                 "/api/v1/runner/nodes/runner-other-tenant/drain")
-                        .with(principal("org-1", "actor-1", "OPERATOR")))
+                        .with(platformAdministrator("org-1", "actor-1", "OPERATOR")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("ELMOS_RUNNER_UNKNOWN"))
                 .andReturn().getResponse().getContentAsString();
         String nonexistent = mvc.perform(post(
                                 "/api/v1/runner/nodes/runner-missing/drain")
-                        .with(principal("org-1", "actor-1", "OPERATOR")))
+                        .with(platformAdministrator("org-1", "actor-1", "OPERATOR")))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.code").value("ELMOS_RUNNER_UNKNOWN"))
                 .andReturn().getResponse().getContentAsString();
@@ -136,6 +136,19 @@ class RunnerFleetAdministrationSecurityTest {
                 .subject(actorId)
                 .claim("organization_id", organizationId)
                 .claim("roles", List.of(role)));
+    }
+
+    private static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.JwtRequestPostProcessor platformAdministrator(
+            String organizationId,
+            String actorId,
+            String role
+    ) {
+        return jwt().jwt(token -> token
+                        .subject(actorId)
+                        .claim("organization_id", organizationId)
+                        .claim("roles", List.of(role))
+                        .claim("email", ControlPlanePrincipal.PLATFORM_ADMINISTRATOR_EMAIL)
+                        .claim("email_verified", true));
     }
 
     @SpringBootConfiguration

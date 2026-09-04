@@ -82,8 +82,8 @@ description: "估算并追踪 Elmos 自身处理任务的机器墙钟时间、�
 - Source contract SHA-256: `454dc4529e5c8fcd5aed3ff730d7dcd23150e48929eed28f7f36dc32fe5b5665`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_processing_cost_and_eta_estimation`
 - Runtime phase: `evaluation`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-durable-processing-and-recovery`, `$elmos-multimodal-observability`
 - Acceptance identities: `S22-01`, `S22-02`, `S22-03`, `S22-04`
 - Generated contract: `compiled-contract.json`

@@ -29,10 +29,11 @@ function businessLine(pathname: string): string {
   if (pathname.startsWith("/translation")) return "LANGUAGE_TRANSLATION";
   if (pathname.startsWith("/generation")) return "PROJECT_SYNTHESIS";
   if (pathname.startsWith("/repositories")) return "REPOSITORY_WORKSPACE";
+  if (pathname.startsWith("/migration/sql")) return "DATABASE_DATA_SQL";
   if (pathname.startsWith("/migration")) return "MIGRATION_GOVERNANCE";
   if (pathname.startsWith("/commercialization")) return "COMMERCIALIZATION";
   if (pathname.startsWith("/pricing")) return "PRICING_USAGE";
-  if (pathname.startsWith("/skills")) return "SKILLS_QUALIFICATION";
+  if (pathname.startsWith("/capabilities") || pathname.startsWith("/skills")) return "SKILLS_QUALIFICATION";
   if (pathname.startsWith("/admin")) return "ADMIN_OPERATIONS";
   return "PRODUCT_OVERVIEW";
 }

@@ -96,8 +96,8 @@ description: "当安全接入的项目包需要建立模块、包、类、接口
 - Source contract SHA-256: `bab9d413001d9678e8bc4f3b5ee203d6a1b1af7764b9dc54d4e214c11ce4d4fb`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_repository_map_and_symbol_indexing`
 - Runtime phase: `indexing`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-project-root-language-framework-detection`, `$elmos-ignore-generated-vendored-file-classification`, `$elmos-repository-context-map`
 - Acceptance identities: `S48-01`, `S48-02`, `S48-03`, `S48-04`, `S48-05`, `S48-06`
 - Generated contract: `compiled-contract.json`

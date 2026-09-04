@@ -29,7 +29,7 @@ class SnapshotControllerTest {
     }
 
     @Test void derivesAllRepositoryIdentityFromTheTenantCatalog() {
-        bindPrincipal("org-a", Set.of("repository:read"));
+        bindPrincipal("org-a", false, Set.of("repository:read"));
         SnapshotCaptureService service = mock(SnapshotCaptureService.class);
         JdbcGitHubRepositoryCatalog catalog = mock(JdbcGitHubRepositoryCatalog.class);
         SnapshotModel.RepositorySnapshot snapshot = new SnapshotModel.RepositorySnapshot(
@@ -64,7 +64,7 @@ class SnapshotControllerTest {
     }
 
     @Test void archiveAndReconciliationUseOnlyTheTrustedOrganization() {
-        bindPrincipal("org-a", Set.of("repository:write", "admin:operate"));
+        bindPrincipal("org-a", true, Set.of("repository:write", "admin:operate"));
         SnapshotArchiveService archives = mock(SnapshotArchiveService.class);
         SnapshotProvisionalRootReconciler reconciler =
                 mock(SnapshotProvisionalRootReconciler.class);
@@ -91,10 +91,15 @@ class SnapshotControllerTest {
                 new SnapshotController.ArchiveRequest("repo-1", "archive-2")));
     }
 
-    private static void bindPrincipal(String organizationId, Set<String> permissions) {
+    private static void bindPrincipal(
+            String organizationId,
+            boolean platformAdministrator,
+            Set<String> permissions
+    ) {
         var grant = new ControlPlanePrincipal.TenantGrant(Set.of("OPERATOR"), permissions);
         var principal = new ControlPlanePrincipal(
-                organizationId, "actor-1", Set.of("OPERATOR"), permissions,
+                organizationId, "actor-1", platformAdministrator,
+                Set.of("OPERATOR"), permissions,
                 Map.of(organizationId, grant));
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setAttribute(OidcTenantMembershipFilter.PRINCIPAL_ATTRIBUTE, principal);

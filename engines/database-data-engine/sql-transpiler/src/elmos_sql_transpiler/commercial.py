@@ -8,11 +8,13 @@ from typing import Any
 
 import sqlglot
 from sqlglot import exp
-from sqlglot.errors import ErrorLevel, ParseError, TokenError
+from sqlglot.errors import ErrorLevel, ParseError, TokenError, UnsupportedError
 
-from .adapters import target_adapter_by_id
+from . import placeholders
+from .chinadb_adapters import chinadb_adapter_by_id, chinadb_local_adapter_count
 from .models import (
     CommercialAssessmentResult,
+    CommercialAssessmentState,
     CommercialAssessRequest,
     CommercialBlocker,
     CommercialStatement,
@@ -97,7 +99,7 @@ def _catalog() -> dict[str, Any]:
     ):
         raise RuntimeError("ChinaDB commercial registry identity is invalid")
     if (
-        catalog.get("implementationStatus") != "SPEC_ONLY"
+        catalog.get("implementationStatus") != "LOCAL_ADAPTER"
         or catalog.get("externalExecution") != "NOT_RUN"
         or catalog.get("certification") != "NOT_CERTIFIED"
     ):
@@ -124,7 +126,7 @@ def _catalog() -> dict[str, Any]:
 
     for target in targets:
         if (
-            target.get("implementationStatus") != "SPEC_ONLY"
+            target.get("implementationStatus") != "LOCAL_ADAPTER"
             or target.get("externalExecution") != "NOT_RUN"
             or target.get("certification") != "NOT_CERTIFIED"
         ):
@@ -145,7 +147,7 @@ def _catalog() -> dict[str, Any]:
         raise RuntimeError("commercial registry must contain the exact 6 by 13 route matrix")
     for route in routes:
         if (
-            route.get("state") != "SPEC_ONLY"
+            route.get("state") != "LOCAL_ADAPTER"
             or route.get("externalExecution") != "NOT_RUN"
             or route.get("certification") != "NOT_CERTIFIED"
             or route.get("priority") not in {"T1", "T2", "ANALYTICAL"}
@@ -165,12 +167,14 @@ def commercial_capabilities() -> dict[str, Any]:
     result["plannedRouteCount"] = _EXPECTED_ROUTE_COUNT
     result["boundaries"] = {
         "exactCommercialTargetProfilesRegistered": False,
-        "verifiedTargetRenderers": 0,
+        "verifiedTargetRenderers": chinadb_local_adapter_count(),
         "productionDatabaseAccess": False,
-        "targetSqlMayBeEmitted": False,
+        "targetSqlMayBeEmitted": True,
         "claim": (
-            "Static commercial planning registry and source-side typed preflight only; "
-            "no ChinaDB target renderer, target execution, equivalence, or certification evidence."
+            "Local ChinaDB query adapters emit target SQL only for an explicit "
+            "compatibility-mode allow-list; exact product-version profiles, "
+            "target execution, result equivalence, and certification remain "
+            "NOT_RUN / NOT_CERTIFIED."
         ),
     }
     return result
@@ -329,6 +333,11 @@ def _result(
     statements: tuple[CommercialStatement, ...],
     blockers: tuple[CommercialBlocker, ...],
     source_parse: EvidenceState,
+    state: CommercialAssessmentState = "BLOCKED",
+    target_sql: str | None = None,
+    target_adapter: EvidenceState = "NOT_RUN",
+    target_emit: EvidenceState = "NOT_RUN",
+    target_reparse: EvidenceState = "NOT_RUN",
 ) -> CommercialAssessmentResult:
     return CommercialAssessmentResult(
         schema_version="1.0",
@@ -348,12 +357,16 @@ def _result(
             "implementationStatus": target["implementationStatus"],
         },
         route_id=route_id,
-        state="BLOCKED",
+        state=state,
         source_digest=_digest_text(request.sql),
         capability_snapshot_digest=request.capability_snapshot_digest,
         statements=statements,
         blockers=blockers,
+        target_sql=target_sql,
         source_parse=source_parse,
+        target_adapter=target_adapter,
+        target_emit=target_emit,
+        target_reparse=target_reparse,
     )
 
 
@@ -362,11 +375,12 @@ def assess_commercial(
     *,
     max_statements: int = _MAX_STATEMENTS,
 ) -> CommercialAssessmentResult:
-    """Parse an exact source profile and fail closed before ChinaDB emission.
+    """Parse an exact source profile and emit ChinaDB SQL under an explicit mode.
 
-    The request binds a concrete target tuple and the current static planning
-    registry digest. No target adapter is registered by this specification-only
-    extension, so even a fully formed request cannot produce target SQL.
+    Emission is local and fail-closed: unknown compatibility modes, parse
+    failures, opaque commands, and unplanned source families stay BLOCKED.
+    Successful emission is ``LOCAL_EMITTED`` syntax-ready SQL, not execution
+    evidence or certification.
     """
 
     if max_statements < 1 or max_statements > _MAX_STATEMENTS:
@@ -554,15 +568,16 @@ def assess_commercial(
     blockers.append(
         CommercialBlocker(
             code="TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
-            severity="ERROR",
+            severity="WARNING",
             statement_index=None,
             message=(
-                "The request matches the static commercial planning registry, but no "
-                "independently collected target capability snapshot was supplied or executed."
+                "Local emission does not consume an independently collected target "
+                "capability snapshot; external execution and certification stay NOT_RUN."
             ),
         )
     )
-    adapter = target_adapter_by_id(str(target["adapterId"]))
+    adapter = chinadb_adapter_by_id(str(target["adapterId"]))
+    target_dialect: str | None = None
     if adapter is None:
         blockers.append(
             CommercialBlocker(
@@ -570,23 +585,111 @@ def assess_commercial(
                 severity="ERROR",
                 statement_index=None,
                 message=(
-                    "No verified renderer implements the independent commercial target adapter; "
+                    "No local renderer implements the independent commercial target adapter; "
                     "target SQL emission is prohibited."
                 ),
             )
         )
     else:
+        target_dialect = adapter.dialect_for(request.compatibility_mode)
+        if target_dialect is None:
+            blockers.append(
+                CommercialBlocker(
+                    code="COMPATIBILITY_MODE_NOT_MAPPED",
+                    severity="ERROR",
+                    statement_index=None,
+                    message=(
+                        "The requested compatibility mode is not in this target's local "
+                        "allow-list; unnamed native or vendor-specific modes stay blocked."
+                    ),
+                )
+            )
+    error_blockers = tuple(item for item in blockers if item.severity == "ERROR")
+    if error_blockers or adapter is None or target_dialect is None:
+        return _result(
+            request,
+            target,
+            route_id=route_id,
+            statements=tuple(statements),
+            blockers=tuple(blockers),
+            source_parse="PASSED",
+        )
+
+    target_sql_parts: list[str] = []
+    emit_index: int | None = None
+    try:
+        for emit_index, statement in enumerate(source_statements):  # noqa: B007
+            if isinstance(statement, exp.Command):
+                raise UnsupportedError("opaque command nodes are prohibited")
+            rewritten, _mapping = placeholders.rewrite(
+                statement,
+                source.dialect,
+                target_dialect,
+            )
+            emission = adapter.emit(rewritten, dialect=target_dialect)
+            if (
+                emission.adapter_id != adapter.adapter_id
+                or emission.adapter_digest != adapter.adapter_digest
+                or emission.protocol_version != adapter.protocol_version
+            ):
+                raise RuntimeError("ChinaDB adapter returned an inconsistent emission identity")
+            generated = emission.sql
+            parsed_target = sqlglot.parse(
+                generated,
+                read=target_dialect,
+                error_level=ErrorLevel.RAISE,
+            )
+            target_statements = [
+                item for item in parsed_target if isinstance(item, exp.Expression)
+            ]
+            if len(target_statements) != 1:
+                raise UnsupportedError("target re-parse did not yield exactly one statement")
+            target_sql_parts.append(generated.rstrip(";"))
+    except UnsupportedError as error:
         blockers.append(
             CommercialBlocker(
-                code="COMMERCIAL_TARGET_PROFILE_SPEC_ONLY",
+                code="TARGET_EMIT_UNSUPPORTED",
                 severity="ERROR",
-                statement_index=None,
+                statement_index=emit_index,
                 message=(
-                    "An adapter identity exists, but this target has no registered exact profile "
-                    "or external evidence and remains specification-only."
+                    "The local ChinaDB renderer refused a construct outside the "
+                    f"typed subset ({type(error).__name__})."
                 ),
             )
         )
+        return _result(
+            request,
+            target,
+            route_id=route_id,
+            statements=tuple(statements),
+            blockers=tuple(blockers),
+            source_parse="PASSED",
+            target_adapter="PASSED",
+            target_emit="FAILED",
+        )
+    except (ParseError, TokenError):
+        blockers.append(
+            CommercialBlocker(
+                code="TARGET_REPARSE_FAILED",
+                severity="ERROR",
+                statement_index=None,
+                message=(
+                    "Emitted target SQL did not re-parse under the mapped compatibility dialect."
+                ),
+            )
+        )
+        return _result(
+            request,
+            target,
+            route_id=route_id,
+            statements=tuple(statements),
+            blockers=tuple(blockers),
+            source_parse="PASSED",
+            target_adapter="PASSED",
+            target_emit="PASSED",
+            target_reparse="FAILED",
+        )
+
     return _result(
         request,
         target,
@@ -594,4 +697,9 @@ def assess_commercial(
         statements=tuple(statements),
         blockers=tuple(blockers),
         source_parse="PASSED",
+        state="LOCAL_EMITTED",
+        target_sql=";\n\n".join(target_sql_parts) + ";\n",
+        target_adapter="PASSED",
+        target_emit="PASSED",
+        target_reparse="PASSED",
     )

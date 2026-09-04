@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -102,9 +103,12 @@ public class ProductionRuntimeConfiguration {
     public ProductionRuntimeSchedulingService productionRuntimeSchedulingService(
             ProductionRuntimeScheduler scheduler,
             ProductionRuntimeCoordinator coordinator,
-            Clock clock
+            Clock clock,
+            @Value("${elmos.production-runtime.dispatch-parallelism:8}")
+            int dispatchParallelism
     ) {
         return new ProductionRuntimeSchedulingService(
-                scheduler, coordinator, clock, Duration.ofMinutes(15), Duration.ofSeconds(30));
+                scheduler, coordinator, clock, Duration.ofMinutes(15),
+                Duration.ofSeconds(30), dispatchParallelism);
     }
 }

@@ -12,16 +12,16 @@
       "Risk tiers constrain Smart routing; manual mode reports risk mismatch and relies on universal gates/verification unless the chosen model is technically incompatible."
     ],
     "inputs": [
-      "task profile",
-      "capability matrix",
-      "live/normalized pricing",
-      "budget",
-      "model_selection"
+      "`task profile`",
+      "`capability matrix`",
+      "`live/normalized pricing`",
+      "`budget`",
+      "`model_selection`"
     ],
     "outputs": [
-      "ranked model candidates",
-      "chosen model",
-      "routing explanation"
+      "`ranked model candidates`",
+      "`chosen model`",
+      "`routing explanation`"
     ],
     "triggers": [
       "task complexity/risk/context ready"

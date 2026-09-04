@@ -8,13 +8,13 @@
       "High-risk gates cannot be downgraded by cost pressure."
     ],
     "inputs": [
-      "task",
-      "impact map"
+      "`task`",
+      "`impact map`"
     ],
     "outputs": [
-      "risk vector",
-      "minimum model tier",
-      "required gates"
+      "`risk vector`",
+      "`minimum model tier`",
+      "`required gates`"
     ],
     "triggers": [
       "before model routing"

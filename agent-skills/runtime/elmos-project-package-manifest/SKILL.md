@@ -95,8 +95,8 @@ description: "当文件夹或归档需要形成不可变、可比较、可签名
 - Source contract SHA-256: `92f7be6a91871ff955ace51987fa337fe0b58b1b4b9da04587590c52d4249cbe`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_project_package_manifest`
 - Runtime phase: `project-package`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-file-type-detection-and-validation`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S43-01`, `S43-02`, `S43-03`, `S43-04`, `S43-05`, `S43-06`
 - Generated contract: `compiled-contract.json`

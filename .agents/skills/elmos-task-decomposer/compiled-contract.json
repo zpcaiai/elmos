@@ -11,12 +11,12 @@
       "Do not split solely to make task count larger."
     ],
     "inputs": [
-      "requirement spec",
-      "impact map",
-      "architecture index"
+      "`requirement spec`",
+      "`impact map`",
+      "`architecture index`"
     ],
     "outputs": [
-      "atomic task candidates"
+      "`atomic task candidates`"
     ],
     "triggers": [
       "impact map ready"

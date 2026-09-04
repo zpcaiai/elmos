@@ -4,6 +4,22 @@
 > Status vocabulary is closed: `IMPLEMENTED` · `PARTIAL` · `STUB` · `MISSING` ·
 > `BROKEN` · `NOT VERIFIED`.
 
+> ### 2026-09-03 current-source override
+>
+> The dated tables below preserve older campaign evidence and denominators.
+> Current `routes/inventory.json` still declares 13 active languages and 156
+> directed routes, but `pending_analyzer_languages` and
+> `pending_repository_languages` are now empty. Kotlin, React and Flutter have
+> exact local single-unit analyzers and repository surfaces; their 66 routes
+> remain `research / NOT_RUN / NOT_CERTIFIED`, not `PENDING_ANALYZER`.
+> JavaScript remains deprecated. No historical 90-route execution result is
+> promoted to the 156-route surface.
+>
+> Repository test execution now has a complete 42-engine/43-step registry and
+> `make test-engine ENGINE=<name>` entrypoint. This closes the test-entrypoint
+> implementation gap only; it does not close independent verification or
+> certification.
+
 > ### Route-count provenance — read before quoting any denominator (K6)
 >
 > Re-verified 2026-08-19 against the working tree. `routes/inventory.json` is

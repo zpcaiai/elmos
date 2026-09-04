@@ -69,6 +69,126 @@ def _swift_toolchain() -> ExactToolchain:
     )
 
 
+def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(
+    tmp_path: Path,
+) -> None:
+    maximum = native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+    assert maximum == 400_000_000
+    assert 290_664_032 <= maximum
+    assert (
+        "_SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES"
+        in native._swift_build_component_receipt.__code__.co_names
+    )
+
+    oversized = tmp_path / "oversized-clang"
+    with oversized.open("wb") as stream:
+        stream.truncate(maximum + 1)
+    with pytest.raises(RouteError, match="TEST_SWIFT_COMPONENT_TOO_LARGE"):
+        native._stable_read_regular_file(
+            oversized,
+            failure="TEST_SWIFT_COMPONENT_TOO_LARGE",
+            maximum_bytes=maximum,
+        )
+
+
+def test_swift_build_closure_tree_aggregate_limit_fails_closed() -> None:
+    maximum = native._SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES
+    assert maximum == 1_000_000_000
+    first = native._checked_swift_tree_byte_total(
+        0,
+        maximum // 2,
+        failure="TEST_SWIFT_TREE_TOO_LARGE",
+    )
+    assert native._checked_swift_tree_byte_total(
+        first,
+        maximum - first,
+        failure="TEST_SWIFT_TREE_TOO_LARGE",
+    ) == maximum
+    with pytest.raises(RouteError, match="TEST_SWIFT_TREE_TOO_LARGE"):
+        native._checked_swift_tree_byte_total(
+            maximum,
+            1,
+            failure="TEST_SWIFT_TREE_TOO_LARGE",
+        )
+
+
+def test_swift_tree_regular_file_boundary_allows_zero_and_rejects_over_400m(
+    tmp_path: Path,
+) -> None:
+    empty = tmp_path / "empty"
+    empty.touch()
+    assert native._stable_read_regular_file(
+        empty,
+        failure="TEST_SWIFT_TREE_FILE_INVALID",
+        minimum_bytes=0,
+        maximum_bytes=native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
+    ) == b""
+
+    oversized = tmp_path / "oversized-tree-file"
+    with oversized.open("wb") as stream:
+        stream.truncate(native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES + 1)
+    with pytest.raises(RouteError, match="TEST_SWIFT_TREE_FILE_INVALID"):
+        native._stable_read_regular_file(
+            oversized,
+            failure="TEST_SWIFT_TREE_FILE_INVALID",
+            minimum_bytes=0,
+            maximum_bytes=native._SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES,
+        )
+
+
+def test_swift_xcode_directory_chain_has_no_writable_applications_exception() -> None:
+    names = native._verify_swift_xcode_directory_chain.__code__.co_names
+    constants = native._verify_swift_xcode_directory_chain.__code__.co_consts
+    assert "applications_exception" not in names
+    assert 0o775 not in constants
+    assert 80 not in constants
+
+
+def test_stable_regular_file_reader_rejects_lstat_to_open_fifo_swap_without_blocking(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    candidate = tmp_path / "swift-toolchain-component"
+    candidate.write_bytes(b"verified-before-open")
+    real_open = os.open
+    observed_flags: list[int] = []
+
+    def swap_to_fifo(
+        path: os.PathLike[str] | str,
+        flags: int,
+        mode: int = 0o777,
+        *,
+        dir_fd: int | None = None,
+    ) -> int:
+        assert Path(path) == candidate
+        observed_flags.append(flags)
+        # Assert before opening so a regression cannot make this test hang on
+        # the writer-less FIFO it deliberately installs in the race window.
+        assert flags & os.O_NONBLOCK
+        candidate.unlink()
+        os.mkfifo(candidate, 0o600)
+        if dir_fd is None:
+            return real_open(path, flags, mode)
+        return real_open(path, flags, mode, dir_fd=dir_fd)
+
+    monkeypatch.setattr(native.os, "open", swap_to_fifo)
+
+    with pytest.raises(RouteError, match="TEST_SWIFT_FIFO_SWAP"):
+        native._stable_read_regular_file(
+            candidate,
+            failure="TEST_SWIFT_FIFO_SWAP",
+            maximum_bytes=1_024,
+        )
+
+    assert observed_flags == [
+        os.O_RDONLY
+        | os.O_NONBLOCK
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+    ]
+    assert stat.S_ISFIFO(candidate.lstat().st_mode)
+
+
 def _pid_exists(pid: int) -> bool:
     try:
         os.kill(pid, 0)
@@ -309,6 +429,50 @@ def test_swift_git_metadata_manifest_rejects_persistent_directory_timestamp_drif
         native._swift_git_metadata_manifest(repository, require_worktree=True)
 
     assert calls == 6
+
+
+def test_swift_git_metadata_manifest_ignores_only_ancestor_timestamp_drift(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repository = tmp_path / "repository"
+    metadata_root = repository / ".git"
+    metadata_root.mkdir(parents=True)
+    (metadata_root / "HEAD").write_text("pinned\n", encoding="utf-8")
+    calls = 0
+
+    def chain(_path: Path, _failure: str) -> tuple[tuple[object, ...], ...]:
+        nonlocal calls
+        calls += 1
+        return (
+            (
+                str(repository),
+                1,
+                1,
+                stat.S_IFDIR | 0o700,
+                os.getuid(),
+                os.getgid(),
+                calls,
+                calls,
+            ),
+            (
+                str(metadata_root),
+                1,
+                2,
+                stat.S_IFDIR | 0o700,
+                os.getuid(),
+                os.getgid(),
+                1,
+                1,
+            ),
+        )
+
+    monkeypatch.setattr(native, "_verify_secure_directory_chain", chain)
+
+    receipt = native._swift_git_metadata_manifest(repository, require_worktree=True)
+
+    assert receipt["file_count"] == 1
+    assert calls == 4
 
 
 def test_swift_git_metadata_manifest_rejects_file_inode_or_content_drift(

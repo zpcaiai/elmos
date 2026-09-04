@@ -24,6 +24,7 @@ from elmos_polyglot_route.engine import (
     verify_pure_module,
 )
 from elmos_polyglot_route.equivalence import (
+    _module_function_index,
     canonical_json_bytes,
     chunk_equivalence,
     module_equivalence,
@@ -46,6 +47,13 @@ SOURCE_DIGEST = sha256_bytes(SOURCE_BYTES)
 TARGET_DIGEST = sha256_bytes(TARGET_BYTES)
 CORPUS_DIGEST = "sha256:" + "c" * 64
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
+
+JAVASCRIPT_ROUTE_RETIRED = pytest.mark.skip(
+    reason=(
+        "javascript is deprecated; engine.migrate rejects the direction with "
+        "UNSUPPORTED_DIRECTED_ROUTE before any Node.js specific logic runs"
+    )
+)
 
 
 def _require_native_toolchain(language: str) -> None:
@@ -763,6 +771,8 @@ def _compose(
     observations: dict[str, list[dict[str, object]]],
     emitted: EmittedFile,
 ) -> tuple[dict[str, object], dict[str, dict[str, object]]]:
+    _module_function_index(source, "source")
+    _module_function_index(target, "target")
     source_inventory, target_inventory, closure = _synthetic_whole_file_inputs(source, target)
     plan = plan_identifiers(source, target.source_language)
     target_view = target_ir_view(source, plan)
@@ -771,6 +781,8 @@ def _compose(
         "status": "PASSED",
         "policy_id": plan.policy_id,
         "policy_sha256": plan.policy_sha256,
+        "unit_namespace": plan.unit_namespace.to_mapping(),
+        "unit_namespace_sha256": plan.unit_namespace.digest,
         "plan": {"path": "identifier-plan.json", "sha256": plan.digest, "bytes": len(plan_bytes)},
         "raw_target_ir": {
             "path": "target-semantic-ir.raw.json",
@@ -933,10 +945,12 @@ def test_verify_pure_module_persists_byte_bound_children(tmp_path: Path) -> None
     plan = plan_identifiers(source, target.source_language)
     manifest_bytes = canonical_json_bytes(manifest)
     source_inventory, target_inventory, closure = _synthetic_whole_file_inputs(source, target)
+    name_map = {b.source_name: b.target_name for b in plan.bindings if b.role == "function"}
+    raw_target = replace(target, functions=tuple(replace(f, name=name_map[f.name]) for f in target.functions))
 
     report = verify_pure_module(
         source_ir=source,
-        raw_target_ir=target,
+        raw_target_ir=raw_target,
         target_ir=target,
         identifier_plan=plan,
         case_manifest=manifest,
@@ -1670,6 +1684,7 @@ def test_java_to_cpp_whole_file_closure_is_content_bound_and_call_closed(
     assert report["module_contract"]["independence"]["target_call_graph"] == closure["target_call_graph"]
 
 
+@JAVASCRIPT_ROUTE_RETIRED
 def test_java_to_javascript_single_function_migration_relifts_internal_helper(
     tmp_path: Path,
 ) -> None:
@@ -1696,6 +1711,7 @@ def test_java_to_javascript_single_function_migration_relifts_internal_helper(
     assert report["route"] == "java-to-javascript"
 
 
+@JAVASCRIPT_ROUTE_RETIRED
 def test_java_to_javascript_multifunction_module_closes_each_internal_helper(
     tmp_path: Path,
 ) -> None:
@@ -1779,9 +1795,9 @@ def test_module_pipeline_uses_private_input_snapshots_across_phase_tamper(
     real_inventory = route_engine.inventory_module
     tampered = False
 
-    def inventory_then_tamper(path: Path, language: str) -> dict[str, object]:
+    def inventory_then_tamper(path: Path, language: str, **kwargs: object) -> dict[str, object]:
         nonlocal tampered
-        inventory = real_inventory(path, language)  # type: ignore[arg-type]
+        inventory = real_inventory(path, language, **kwargs)  # type: ignore[arg-type]
         if not tampered and language == "java" and path.name == source.name:
             assert path.resolve() != source.resolve()
             source.write_text("public final class EquivalenceModule {}\n", encoding="utf-8")

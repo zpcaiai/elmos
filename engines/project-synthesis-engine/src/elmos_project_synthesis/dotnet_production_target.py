@@ -179,30 +179,124 @@ def _security_source(request: SynthesisRequest) -> str:
 
 
 def _store_source(request: SynthesisRequest) -> str:
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    sql = all_entity_sql(request, placeholder="${}")[0]
-    properties = "\n    ".join(
-        f"public {_csharp_type(field)} {pascal(field.name)} {{ get; init; }}"
-        + (" = string.Empty;" if field.type == "string" else "")
-        for field in entity.fields
-    )
-    # The id column is always the first projected column and is always read as
-    # a string; only the declared fields need type-directed readers.
-    read_arguments = ",\n                    ".join(
-        ["Id = reader.GetGuid(0).ToString()"]
-        + [
-            f"{pascal(field.name)} = {_reader(field, index + 1)}"
-            for index, field in enumerate(entity.fields)
-        ]
-    )
-    # The generated SQL uses positional placeholders ($1, $2, ...), so every
-    # parameter must be added positionally. Mixing a named parameter into a
-    # positional command makes Npgsql fail at execution time.
-    upsert_parameters = "\n                    ".join(
-        f"command.Parameters.AddWithValue(payload.{pascal(field.name)});"
-        for field in entity.fields
-    )
+    statements = {item.entity: item for item in all_entity_sql(request, placeholder="${}")}
+    classes: list[str] = []
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        sql = statements[entity.singular]
+        properties = "\n    ".join(
+            f"public {_csharp_type(field)} {pascal(field.name)} {{ get; init; }}"
+            + (" = string.Empty;" if field.type == "string" else "")
+            for field in entity.fields
+        )
+        read_arguments = ",\n                    ".join(
+            ["Id = reader.GetGuid(0).ToString()"]
+            + [
+                f"{pascal(field.name)} = {_reader(field, index + 1)}"
+                for index, field in enumerate(entity.fields)
+            ]
+        )
+        upsert_parameters = "\n                    ".join(
+            f"command.Parameters.AddWithValue(payload.{pascal(field.name)});"
+            for field in entity.fields
+        )
+        classes.append(
+            f"""
+            public sealed record {entity_class}Upsert
+            {{
+                {properties}
+            }}
+
+            public sealed record {entity_class}
+            {{
+                public string Id {{ get; init; }} = string.Empty;
+
+                {properties}
+            }}
+
+            public sealed class {entity_class}Store
+            {{
+                private readonly NpgsqlDataSource _dataSource;
+
+                public {entity_class}Store(NpgsqlDataSource dataSource) => _dataSource = dataSource;
+
+                private async Task<T> InTenantAsync<T>(
+                    string tenantId,
+                    Func<NpgsqlConnection, NpgsqlTransaction, Task<T>> work)
+                {{
+                    if (string.IsNullOrWhiteSpace(tenantId))
+                    {{
+                        throw new ArgumentException("TENANT_ID_REQUIRED", nameof(tenantId));
+                    }}
+
+                    await using var connection = await _dataSource.OpenConnectionAsync();
+                    await using var transaction = await connection.BeginTransactionAsync();
+                    await using (var bind = new NpgsqlCommand("SELECT set_config('{TENANT_SETTING}', $1, true)", connection, transaction))
+                    {{
+                        bind.Parameters.AddWithValue(tenantId);
+                        await bind.ExecuteNonQueryAsync();
+                    }}
+
+                    var result = await work(connection, transaction);
+                    await transaction.CommitAsync();
+                    return result;
+                }}
+
+                private static {entity_class} Read(NpgsqlDataReader reader) => new()
+                {{
+                    {read_arguments}
+                }};
+
+                public Task<List<{entity_class}>> ListAsync(string tenantId) =>
+                    InTenantAsync(tenantId, async (connection, transaction) =>
+                    {{
+                        var results = new List<{entity_class}>();
+                        await using var command = new NpgsqlCommand({json.dumps(sql.list_sql)}, connection, transaction);
+                        await using var reader = await command.ExecuteReaderAsync();
+                        while (await reader.ReadAsync())
+                        {{
+                            results.Add(Read(reader));
+                        }}
+
+                        return results;
+                    }});
+
+                public Task<{entity_class}?> FindAsync(string tenantId, Guid recordId) =>
+                    InTenantAsync(tenantId, async (connection, transaction) =>
+                    {{
+                        await using var command = new NpgsqlCommand({json.dumps(sql.get_sql)}, connection, transaction);
+                        command.Parameters.AddWithValue(recordId);
+                        await using var reader = await command.ExecuteReaderAsync();
+                        return await reader.ReadAsync() ? Read(reader) : null;
+                    }});
+
+                public Task<{entity_class}> SaveAsync(string tenantId, Guid recordId, {entity_class}Upsert payload) =>
+                    InTenantAsync(tenantId, async (connection, transaction) =>
+                    {{
+                        await using var command = new NpgsqlCommand({json.dumps(sql.upsert_sql)}, connection, transaction);
+                        command.Parameters.AddWithValue(tenantId);
+                        command.Parameters.AddWithValue(recordId);
+                        {upsert_parameters}
+                        await using var reader = await command.ExecuteReaderAsync();
+                        if (!await reader.ReadAsync())
+                        {{
+                            throw new InvalidOperationException("UPSERT_RETURNED_NO_ROW");
+                        }}
+
+                        return Read(reader);
+                    }});
+
+                public Task<bool> DeleteAsync(string tenantId, Guid recordId) =>
+                    InTenantAsync(tenantId, async (connection, transaction) =>
+                    {{
+                        await using var command = new NpgsqlCommand({json.dumps(sql.delete_sql)}, connection, transaction);
+                        command.Parameters.AddWithValue(recordId);
+                        return await command.ExecuteNonQueryAsync() > 0;
+                    }});
+            }}
+            """
+        )
+    joined = "\n".join(classes)
     return clean(
         f"""
         using System.Data;
@@ -210,164 +304,26 @@ def _store_source(request: SynthesisRequest) -> str:
 
         namespace {NAMESPACE};
 
-        public sealed record {entity_class}Upsert
-        {{
-            {properties}
-        }}
-
-        public sealed record {entity_class}
-        {{
-            public string Id {{ get; init; }} = string.Empty;
-
-            {properties}
-        }}
-
-        /// <summary>
-        /// All statements run inside one tenant-scoped transaction.
-        /// </summary>
-        /// <remarks>
-        /// {TENANT_SETTING} is applied with set_config(..., true) so it is
-        /// transaction local and cannot leak to the next borrower of a pooled
-        /// connection. Row level security is FORCED on every table, so that
-        /// binding -- not the SQL text -- confines a request to its tenant.
-        /// </remarks>
-        public sealed class {entity_class}Store
-        {{
-            private readonly NpgsqlDataSource _dataSource;
-
-            public {entity_class}Store(NpgsqlDataSource dataSource) => _dataSource = dataSource;
-
-            private async Task<T> InTenantAsync<T>(
-                string tenantId,
-                Func<NpgsqlConnection, NpgsqlTransaction, Task<T>> work)
-            {{
-                if (string.IsNullOrWhiteSpace(tenantId))
-                {{
-                    throw new ArgumentException("TENANT_ID_REQUIRED", nameof(tenantId));
-                }}
-
-                await using var connection = await _dataSource.OpenConnectionAsync();
-                await using var transaction = await connection.BeginTransactionAsync();
-                await using (var bind = new NpgsqlCommand("SELECT set_config('{TENANT_SETTING}', $1, true)", connection, transaction))
-                {{
-                    bind.Parameters.AddWithValue(tenantId);
-                    await bind.ExecuteNonQueryAsync();
-                }}
-
-                var result = await work(connection, transaction);
-                await transaction.CommitAsync();
-                return result;
-            }}
-
-            private static {entity_class} Read(NpgsqlDataReader reader) => new()
-            {{
-                {read_arguments}
-            }};
-
-            public Task<List<{entity_class}>> ListAsync(string tenantId) =>
-                InTenantAsync(tenantId, async (connection, transaction) =>
-                {{
-                    var results = new List<{entity_class}>();
-                    await using var command = new NpgsqlCommand({json.dumps(sql.list_sql)}, connection, transaction);
-                    await using var reader = await command.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
-                    {{
-                        results.Add(Read(reader));
-                    }}
-
-                    return results;
-                }});
-
-            public Task<{entity_class}?> FindAsync(string tenantId, Guid recordId) =>
-                InTenantAsync(tenantId, async (connection, transaction) =>
-                {{
-                    await using var command = new NpgsqlCommand({json.dumps(sql.get_sql)}, connection, transaction);
-                    command.Parameters.AddWithValue(recordId);
-                    await using var reader = await command.ExecuteReaderAsync();
-                    return await reader.ReadAsync() ? Read(reader) : null;
-                }});
-
-            public Task<{entity_class}> SaveAsync(string tenantId, Guid recordId, {entity_class}Upsert payload) =>
-                InTenantAsync(tenantId, async (connection, transaction) =>
-                {{
-                    await using var command = new NpgsqlCommand({json.dumps(sql.upsert_sql)}, connection, transaction);
-                    command.Parameters.AddWithValue(tenantId);
-                    command.Parameters.AddWithValue(recordId);
-                    {upsert_parameters}
-                    await using var reader = await command.ExecuteReaderAsync();
-                    if (!await reader.ReadAsync())
-                    {{
-                        throw new InvalidOperationException("UPSERT_RETURNED_NO_ROW");
-                    }}
-
-                    return Read(reader);
-                }});
-
-            public Task<bool> DeleteAsync(string tenantId, Guid recordId) =>
-                InTenantAsync(tenantId, async (connection, transaction) =>
-                {{
-                    await using var command = new NpgsqlCommand({json.dumps(sql.delete_sql)}, connection, transaction);
-                    command.Parameters.AddWithValue(recordId);
-                    return await command.ExecuteNonQueryAsync() > 0;
-                }});
-        }}
+        {joined}
         """
     )
 
 
 def _program_source(request: SynthesisRequest, port: int) -> str:
-    entity = request.entities[0]
-    entity_class = pascal(entity.singular)
-    required_checks = "\n    ".join(
-        f'if (string.IsNullOrWhiteSpace(payload.{pascal(field.name)})) return Results.UnprocessableEntity(new {{ error = "PAYLOAD_INVALID" }});'
-        for field in entity.fields
-        if field.required and field.type == "string"
-    ) or "_ = payload;"
-    return clean(
-        f"""
-        using Npgsql;
-        using {NAMESPACE};
-
-        var builder = WebApplication.CreateBuilder(args);
-
-        // The connection string arrives by file reference, never as an inline
-        // setting, so it never appears in process arguments or config dumps.
-        var databaseUrl = File.ReadAllText(
-            TenantAuthenticator.RequiredEnvironment("{ENV_DATABASE_URL_FILE}")).Trim();
-        if (!databaseUrl.StartsWith("postgresql://", StringComparison.Ordinal))
-        {{
-            throw new InvalidOperationException("DATABASE_URL_SCHEME_UNSUPPORTED");
-        }}
-
-        var uri = new Uri(databaseUrl);
-        var credentials = uri.UserInfo.Split(':', 2);
-        var connectionString = new NpgsqlConnectionStringBuilder
-        {{
-            Host = uri.Host,
-            Port = uri.Port < 0 ? 5432 : uri.Port,
-            Database = uri.AbsolutePath.TrimStart('/'),
-            Username = credentials[0],
-            Password = credentials.Length > 1 ? credentials[1] : string.Empty,
-            SslMode = SslMode.Disable,
-            MaxPoolSize = 8,
-        }}.ToString();
-
-        builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
-        builder.Services.AddSingleton<TenantAuthenticator>();
-        builder.Services.AddSingleton<{entity_class}Store>();
-
-        var application = builder.Build();
-
-        string? Tenant(HttpRequest request) =>
-            application.Services.GetRequiredService<TenantAuthenticator>()
-                .TenantFrom(request.Headers.Authorization.ToString());
-
-        application.MapGet("/health", () => Results.Ok(new
-        {{
-            status = "UP",
-            service = "{request.project_name}",
-        }}));
-
+    registrations = "\n        ".join(
+        f"builder.Services.AddSingleton<{pascal(entity.singular)}Store>();"
+        for entity in request.entities
+    )
+    route_blocks: list[str] = []
+    for entity in request.entities:
+        entity_class = pascal(entity.singular)
+        required_checks = "\n            ".join(
+            f'if (string.IsNullOrWhiteSpace(payload.{pascal(field.name)})) return Results.UnprocessableEntity(new {{ error = "PAYLOAD_INVALID" }});'
+            for field in entity.fields
+            if field.required and field.type == "string"
+        ) or "_ = payload;"
+        route_blocks.append(
+            f"""
         application.MapGet("/{entity.plural}", async (HttpRequest request, {entity_class}Store store) =>
         {{
             var tenant = Tenant(request);
@@ -417,13 +373,59 @@ def _program_source(request: SynthesisRequest, port: int) -> str:
             await store.DeleteAsync(tenant, recordId);
             return Results.NoContent();
         }});
+            """
+        )
+    routes = "\n".join(route_blocks)
+    return clean(
+        f"""
+        using Npgsql;
+        using {NAMESPACE};
+
+        var builder = WebApplication.CreateBuilder(args);
+
+        var databaseUrl = File.ReadAllText(
+            TenantAuthenticator.RequiredEnvironment("{ENV_DATABASE_URL_FILE}")).Trim();
+        if (!databaseUrl.StartsWith("postgresql://", StringComparison.Ordinal))
+        {{
+            throw new InvalidOperationException("DATABASE_URL_SCHEME_UNSUPPORTED");
+        }}
+
+        var uri = new Uri(databaseUrl);
+        var credentials = uri.UserInfo.Split(':', 2);
+        var connectionString = new NpgsqlConnectionStringBuilder
+        {{
+            Host = uri.Host,
+            Port = uri.Port < 0 ? 5432 : uri.Port,
+            Database = uri.AbsolutePath.TrimStart('/'),
+            Username = credentials[0],
+            Password = credentials.Length > 1 ? credentials[1] : string.Empty,
+            SslMode = SslMode.Disable,
+            MaxPoolSize = 8,
+        }}.ToString();
+
+        builder.Services.AddSingleton(NpgsqlDataSource.Create(connectionString));
+        builder.Services.AddSingleton<TenantAuthenticator>();
+        {registrations}
+
+        var application = builder.Build();
+
+        string? Tenant(HttpRequest request) =>
+            application.Services.GetRequiredService<TenantAuthenticator>()
+                .TenantFrom(request.Headers.Authorization.ToString());
+
+        application.MapGet("/health", () => Results.Ok(new
+        {{
+            status = "UP",
+            service = "{request.project_name}",
+        }}));
+
+        {routes}
 
         application.Run($"http://{{Environment.GetEnvironmentVariable("HOST") ?? "0.0.0.0"}}:{{Environment.GetEnvironmentVariable("PORT") ?? "{port}"}}");
 
         public partial class Program {{ }}
         """
     )
-
 
 def _integration_test_source(request: SynthesisRequest) -> str:
     entity = request.entities[0]
@@ -586,11 +588,6 @@ def _integration_test_source(request: SynthesisRequest) -> str:
 
 
 def render_dotnet_production(request: SynthesisRequest, port: int) -> dict[str, str]:
-    if len(request.entities) != 1:
-        raise ValueError(
-            "DOTNET_PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY:"
-            + ",".join(entity.singular for entity in request.entities)
-        )
     project_class = request.project_class
     api_project = f"{project_class}.Api"
     test_project = f"{project_class}.Api.Tests"

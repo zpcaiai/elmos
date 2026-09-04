@@ -109,6 +109,16 @@ def main() -> int:
                     description="Durable authenticated and tenant-isolated order API.",
                     entities=entities,
                     relations=(),
+                    permissions=[
+                        {
+                            "actor": "api_user",
+                            "action": action,
+                            "resource": entity["singular"],
+                            "effect": "allow",
+                        }
+                        for entity in entities
+                        for action in ("create", "read", "update", "delete")
+                    ],
                     languages=("rust",),
                     persistence="postgresql",
                     auth_mode=auth_mode,

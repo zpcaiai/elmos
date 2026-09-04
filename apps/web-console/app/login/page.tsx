@@ -5,7 +5,7 @@ import {
   oidcConfigured,
 } from "../lib/server/accountSession";
 
-export const metadata: Metadata = { title: "登录" };
+export const metadata: Metadata = { title: "用户登录" };
 export const dynamic = "force-dynamic";
 
 const errorMessages: Record<string, string> = {
@@ -23,6 +23,9 @@ const errorMessages: Record<string, string> = {
   LOCAL_CREDENTIALS_CONFIGURATION_INVALID: "本地测试账号配置无效。",
   LOCAL_CREDENTIALS_LOCKED: "本地账户暂时锁定，请稍后重试。",
   LOCAL_CREDENTIALS_UNAVAILABLE: "本地测试账号当前不可用。",
+  EMAIL_CREDENTIALS_INVALID: "邮箱或密码错误。",
+  LOGIN_MODE_INVALID: "登录入口无效，请从当前页面重新开始。",
+  ADMIN_LOGIN_ENTRY_REQUIRED: "管理员账户必须从独立的管理员入口登录。",
 };
 
 export default async function LoginPage({
@@ -34,14 +37,22 @@ export default async function LoginPage({
   const configured = oidcConfigured();
   const localConfigured = localCredentialsConfigured();
   const registrationConfigured = localRegistrationConfigured();
-  const returnTo = parameters.returnTo?.startsWith("/") ? parameters.returnTo : "/";
+  const returnTo = parameters.returnTo?.startsWith("/") && !parameters.returnTo.startsWith("//")
+    ? parameters.returnTo
+    : "/";
   const error = parameters.error ? errorMessages[parameters.error] ?? "登录未完成，未建立账户会话。" : null;
   return (
-    <section className="auth-page" aria-labelledby="login-title">
-      <div className="auth-card">
-        <span className="eyebrow">Enterprise identity</span>
-        <h1 id="login-title">登录 ELMOS 控制中心</h1>
-        <p>通过企业 OIDC 身份提供商登录。租户、角色和权限只从已验证的令牌声明派生。</p>
+    <section className="auth-page user-auth-page" aria-labelledby="login-title">
+      <div className="auth-card user-auth-card">
+        <span className="eyebrow">USER ACCESS · EMAIL</span>
+        <h1 id="login-title">用户登录</h1>
+        <p>使用已注册邮箱进入 ELMOS 用户控制中心。租户、角色和权限只由服务端已验证的账户会话决定。</p>
+
+        <div className="user-scope-notice" role="note">
+          <strong>登录后可以使用的功能</strong>
+          <span>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换、多模态输入、前端转换工厂、代码仓库工作区、任务编排与模型路由、迁移工坊、功能能力中心、套餐与用量、账户与组织。</span>
+          <small>平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放。</small>
+        </div>
         {error && <div className="auth-error" role="alert">{error}</div>}
         {parameters.registered === "1" && (
           <div className="auth-success" role="status">账户已创建，请使用新账户登录。</div>
@@ -49,25 +60,34 @@ export default async function LoginPage({
         {configured && (
           <a
             className="button button-primary"
-            href={`/api/auth/login?${new URLSearchParams({ returnTo })}`}
+            href={`/api/auth/login?${new URLSearchParams({ mode: "USER", returnTo })}`}
           >
-            使用企业账户登录
+            使用企业账户登录用户中心
           </a>
         )}
         {localConfigured && (
           <form className="auth-form" method="post" action="/api/auth/login">
-            <h2>本地测试账号</h2>
-            <p>仅限 localhost 的开发测试登录，默认账号为 test/test；生产环境永久禁用。</p>
+            <h2>使用邮箱登录</h2>
+            <p>本地邮箱密码登录仅限 localhost 开发测试；生产环境永久禁用。</p>
             <input type="hidden" name="returnTo" value={returnTo} />
+            <input type="hidden" name="loginMode" value="USER" />
             <label>
-              <span>用户名</span>
-              <input name="username" defaultValue="test" autoComplete="username" required />
+              <span>邮箱</span>
+              <input
+                name="email"
+                type="email"
+                defaultValue="test@example.test"
+                autoComplete="username"
+                inputMode="email"
+                maxLength={254}
+                required
+              />
             </label>
             <label>
               <span>密码</span>
               <input name="password" type="password" autoComplete="current-password" required />
             </label>
-            <button className="button button-primary" type="submit">使用本地测试账号登录</button>
+            <button className="button button-primary" type="submit">使用邮箱登录</button>
           </form>
         )}
         {registrationConfigured && (
@@ -76,13 +96,20 @@ export default async function LoginPage({
             <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>注册本地账户</a>
           </div>
         )}
+        <div className="admin-entry-callout" aria-label="管理员专用入口">
+          <div>
+            <strong>管理员专用入口</strong>
+            <span>管理员登录与普通用户登录使用独立页面和受控会话，可见页面也完全不同。</span>
+          </div>
+          <a className="button admin-entry-button" href="/admin/login">进入管理员登录</a>
+        </div>
         {!configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>
             <span>需要设置精确的 issuer、授权端点、令牌端点、JWKS、client 和回调地址。</span>
           </div>
         )}
-        <small>未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
+        <small>普通用户登录不会授予管理员权限。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
       </div>
     </section>
   );

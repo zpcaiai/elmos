@@ -316,6 +316,8 @@ def _formal_fixture(root: Path) -> tuple[dict[str, Any], Path]:
             "policy_sha256": plan.policy_sha256,
             "plan": plan_reference,
             "plan_digest": plan.digest,
+            "unit_namespace": plan.unit_namespace.to_mapping(),
+            "unit_namespace_sha256": plan.unit_namespace.digest,
             "source_function_name": source_ir.functions[0].name,
             "target_function_name": raw_target_ir.functions[0].name,
             "raw_target_relift_ir": raw_binding,

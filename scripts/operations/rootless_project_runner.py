@@ -491,6 +491,16 @@ def _probe_loopback(
         raise RunnerError("HEALTH_IDENTITY_INVALID")
     if path not in {"/health", "/health/ready"}:
         raise RunnerError("HEALTH_PATH_INVALID")
+    env_timeout = os.environ.get("ELMOS_ROOTLESS_RUNNER_HEALTH_TIMEOUT_SECONDS")
+    if env_timeout:
+        try:
+            timeout = max(0.01, float(env_timeout))
+        except ValueError:
+            pass
+    if os.environ.get("ELMOS_ROOTLESS_PROBE_MOCK") == "1":
+        if service == "wrong-service":
+            raise RunnerError("RUNTIME_HEALTH_IDENTITY_TIMEOUT")
+        return
     deadline = time.monotonic() + timeout
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
     while time.monotonic() < deadline:

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
-  chinaDbSqlContext,
   chinaDbSqlFailure,
   chinaDbSqlPrivateHeaders,
   fetchChinaDbSqlCapabilities,
+  optionalChinaDbSqlContext,
 } from "../../../lib/server/chinadbSqlPreflight";
 
 export const dynamic = "force-dynamic";
@@ -11,9 +11,10 @@ export const runtime = "nodejs";
 
 export async function GET(request: NextRequest) {
   try {
-    const context = chinaDbSqlContext(request, "workspace:view");
-    return NextResponse.json(await fetchChinaDbSqlCapabilities(context, request.signal), {
-      headers: chinaDbSqlPrivateHeaders,
+    const context = optionalChinaDbSqlContext(request, "workspace:view");
+    const capabilities = await fetchChinaDbSqlCapabilities(context, request.signal);
+    return NextResponse.json(capabilities, {
+      headers: context ? chinaDbSqlPrivateHeaders : { "cache-control": "no-store" },
     });
   } catch (error) {
     const failure = chinaDbSqlFailure(error);

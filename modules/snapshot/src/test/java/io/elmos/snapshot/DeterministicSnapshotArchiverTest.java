@@ -412,8 +412,8 @@ class DeterministicSnapshotArchiverTest {
             TarArchiveEntry entry;
             while ((entry = tar.getNextEntry()) != null) {
                 String type = entry.isDirectory() ? "directory"
-                        : entry.isFile() ? "file"
-                        : entry.isSymbolicLink() ? "symlink" : "unsupported";
+                        : entry.isSymbolicLink() ? "symlink"
+                        : entry.isFile() ? "file" : "unsupported";
                 headers.add(new TarHeader(entry.getName(), type, entry.getMode(),
                         entry.getSize(), entry.getLongUserId(), entry.getLongGroupId(),
                         entry.getUserName(), entry.getGroupName(),

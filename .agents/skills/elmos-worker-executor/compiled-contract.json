@@ -11,15 +11,15 @@
       "No primary-model substitution in manual strict mode."
     ],
     "inputs": [
-      "worker prompt",
-      "worktree",
-      "model alias",
-      "model_selection"
+      "`worker prompt`",
+      "`worktree`",
+      "`model alias`",
+      "`model_selection`"
     ],
     "outputs": [
-      "patch",
-      "execution record",
-      "worker evidence"
+      "`patch`",
+      "`execution record`",
+      "`worker evidence`"
     ],
     "triggers": [
       "task dispatched"

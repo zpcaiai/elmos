@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1501",
+  "skill_name": "frt-1501-vue-2-to-arkui-route-pack",
+  "batch": "G15",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g15/frt-1501-vue-2-to-arkui-route-pack/",
+  "status": "shared_implementation",
+  "handler_kind": "directional_route",
+  "capability_key": "frt.g15.vue-2-to-arkui-route-pack",
+  "execution_contract_sha256": "sha256:dc4ae003bae01e5a7d60434c90081574f6071bc2d26710434eba9e65cf05f2f7",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "files"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:91ab13c93380cc38d27fcc3da1f2549a3b8fd690b28242fb15adebec9e3d451f",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

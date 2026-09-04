@@ -663,7 +663,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
-    Fingerprint fingerprint(Path root) {
+    static Fingerprint fingerprint(Path root) {
         Path pom = root.resolve("pom.xml");
         if (!Files.isRegularFile(pom, LinkOption.NOFOLLOW_LINKS)) {
             if (hasGradleBuild(root)) {
@@ -820,7 +820,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     private record MavenPomModel(Path path, Document document, String text) {}
 
-    private Fingerprint fingerprintGradle(Path root) {
+    static Fingerprint fingerprintGradle(Path root) {
         List<Path> modelFiles = List.of("build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts")
                 .stream()
                 .map(root::resolve)
@@ -908,7 +908,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
 
     SpringRouteCatalog.Selection selectRoute(Fingerprint fingerprint, StartRequest request) {
         return selectRoute(fingerprint, request.targetSpringBoot(), request.targetJava(),
-                experimentalRoutesEnabled);
+                experimentalRoutesEnabled || request.allowExperimentalRoutes());
     }
 
     static SpringRouteCatalog.Selection selectRoute(
@@ -981,17 +981,7 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         Path recipeRepository = toolHome.resolve(".m2/repository");
         requireElmosRecipeArtifact(recipeRepository);
         if (SpringRouteCatalog.GRADLE_BUILD_TOOL.equals(route.buildTool())) {
-            if (!hasGradleRewritePlugin(root)) {
-                throw blocked("GRADLE_REWRITE_PLUGIN_NOT_DECLARED",
-                        "The Gradle project must declare org.openrewrite.rewrite or "
-                                + "org.openrewrite.gradle.RewritePlugin before an exact rewrite can run.");
-            }
-            if (!hasGradleRewriteRecipe(root)) {
-                throw blocked("GRADLE_REWRITE_RECIPE_NOT_DECLARED",
-                        "The Gradle project must declare rewrite-spring " + route.rewriteSpring()
-                                + " on its rewrite configuration before an exact rewrite can run.");
-            }
-            Path initScript = installGradleRewriteInitScript(root, recipeConfig);
+            Path initScript = installGradleRewriteInitScript(root, recipeConfig, route);
             runGradle(root, targetJavaHome, toolHome, control, List.of(
                     "rewriteRun",
                     "--init-script", root.relativize(initScript).toString(),
@@ -1040,40 +1030,113 @@ final class LocalSpringUpgradeExecutionPort implements SpringUpgradeExecutionPor
         }
     }
 
-    private static boolean hasGradleRewritePlugin(Path root) {
+    static boolean hasGradleRewritePlugin(Path root) {
         return findFiles(root, ".gradle", ".gradle.kts").stream()
                 .map(LocalSpringUpgradeExecutionPort::read)
                 .anyMatch(text -> text.contains("org.openrewrite.rewrite")
                         || text.contains("org.openrewrite.gradle.RewritePlugin"));
     }
 
-    private static boolean hasGradleRewriteRecipe(Path root) {
+    static boolean hasGradleRewriteRecipe(Path root) {
         return findFiles(root, ".gradle", ".gradle.kts", ".toml") .stream()
                 .map(LocalSpringUpgradeExecutionPort::read)
                 .anyMatch(text -> text.contains("rewrite-spring"));
     }
 
-    private static Path installGradleRewriteInitScript(Path root, Path recipeConfig) {
+    static Path installGradleRewriteInitScript(Path root, Path recipeConfig, SpringRouteCatalog.SpringRoute route) {
         Path initScript = root.resolve(".elmos/openrewrite.init.gradle");
+        String pluginCoordinate = "org.openrewrite:plugin:" + route.rewriteMavenPlugin();
+        String recipeCoordinate = "org.openrewrite.recipe:rewrite-spring:" + route.rewriteSpring();
         String script = """
+                initscript {
+                    repositories {
+                        mavenLocal()
+                        mavenCentral()
+                        gradlePluginPortal()
+                    }
+                    dependencies {
+                        classpath "%s"
+                    }
+                }
                 allprojects {
                     repositories {
                         mavenLocal()
+                        mavenCentral()
                     }
-                    plugins.withId("org.openrewrite.rewrite") {
-                        dependencies {
-                            add("rewrite", "%s")
-                        }
-                        rewrite {
-                            configFile = rootProject.file("%s")
-                            activeRecipe(System.getProperty("rewrite.activeRecipe"))
-                            setExportDatatables(true)
+                    afterEvaluate { p ->
+                        if (p == rootProject || p.plugins.hasPlugin("java") || p.plugins.hasPlugin("java-base")) {
+                            if (!p.plugins.hasPlugin("org.openrewrite.rewrite") && !p.plugins.hasPlugin(org.openrewrite.gradle.RewritePlugin)) {
+                                p.apply plugin: org.openrewrite.gradle.RewritePlugin
+                            }
+                            p.dependencies {
+                                add("rewrite", "%s")
+                                add("rewrite", "%s")
+                            }
+                            p.rewrite {
+                                configFile = rootProject.file("%s")
+                                activeRecipe(System.getProperty("rewrite.activeRecipe"))
+                                setExportDatatables(true)
+                            }
                         }
                     }
                 }
                 """.formatted(
+                        pluginCoordinate,
+                        recipeCoordinate,
                         ELMOS_RECIPE_COORDINATE,
                         root.relativize(recipeConfig).toString().replace('\\', '/'));
+        try {
+            Files.deleteIfExists(initScript);
+        } catch (IOException ignored) {}
+        write(initScript, script.getBytes(StandardCharsets.UTF_8));
+        return initScript;
+    }
+
+    static Path installGradleRewriteInitScript(Path root, Path recipeConfig) {
+        Path initScript = root.resolve(".elmos/openrewrite.init.gradle");
+        String pluginCoordinate = "org.openrewrite:plugin:6.44.0";
+        String recipeCoordinate = "org.openrewrite.recipe:rewrite-spring:6.8.0";
+        String script = """
+                initscript {
+                    repositories {
+                        mavenLocal()
+                        mavenCentral()
+                        gradlePluginPortal()
+                    }
+                    dependencies {
+                        classpath "%s"
+                    }
+                }
+                allprojects {
+                    repositories {
+                        mavenLocal()
+                        mavenCentral()
+                    }
+                    afterEvaluate { p ->
+                        if (p == rootProject || p.plugins.hasPlugin("java") || p.plugins.hasPlugin("java-base")) {
+                            if (!p.plugins.hasPlugin("org.openrewrite.rewrite") && !p.plugins.hasPlugin(org.openrewrite.gradle.RewritePlugin)) {
+                                p.apply plugin: org.openrewrite.gradle.RewritePlugin
+                            }
+                            p.dependencies {
+                                add("rewrite", "%s")
+                                add("rewrite", "%s")
+                            }
+                            p.rewrite {
+                                configFile = rootProject.file("%s")
+                                activeRecipe(System.getProperty("rewrite.activeRecipe"))
+                                setExportDatatables(true)
+                            }
+                        }
+                    }
+                }
+                """.formatted(
+                        pluginCoordinate,
+                        recipeCoordinate,
+                        ELMOS_RECIPE_COORDINATE,
+                        root.relativize(recipeConfig).toString().replace('\\', '/'));
+        try {
+            Files.deleteIfExists(initScript);
+        } catch (IOException ignored) {}
         write(initScript, script.getBytes(StandardCharsets.UTF_8));
         return initScript;
     }

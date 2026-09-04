@@ -230,9 +230,21 @@ def render_local_runtime(
         def free_loopback_port() -> int:
             import socket as socket_module
 
-            with socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM) as probe:
-                probe.bind(("127.0.0.1", 0))
-                return int(probe.getsockname()[1])
+            reserved: set[int] = set()
+            app_port = os.environ.get("PORT")
+            if app_port is not None:
+                try:
+                    reserved.add(int(app_port))
+                except ValueError:
+                    pass
+
+            for _ in range(100):
+                with socket_module.socket(socket_module.AF_INET, socket_module.SOCK_STREAM) as probe:
+                    probe.bind(("127.0.0.1", 0))
+                    candidate = int(probe.getsockname()[1])
+                    if candidate not in reserved:
+                        return candidate
+            raise RuntimeError("FREE_LOOPBACK_PORT_EXHAUSTED")
 
 
         def start_postgres(state: Path) -> tuple[Path, Path, int]:

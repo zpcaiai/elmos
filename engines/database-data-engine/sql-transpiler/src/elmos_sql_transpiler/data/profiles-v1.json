@@ -2,7 +2,7 @@
   "schemaVersion": "1.0",
   "parser": {
     "name": "sqlglot",
-    "version": "30.13.0",
+    "version": "30.14.0",
     "unsupportedLevel": "RAISE"
   },
   "profiles": [
@@ -187,6 +187,11 @@
       "id": "clickhouse-26.6",
       "state": "PLANNED",
       "reason": "OLAP execution, type, aggregate-state, and engine-clause semantics need an independent route pack."
+    },
+    {
+      "id": "redshift-managed-2026-07-28",
+      "state": "PLANNED",
+      "reason": "Managed service feature snapshots and execution evidence require a separate provider profile."
     }
   ]
 }

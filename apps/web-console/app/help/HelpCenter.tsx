@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useAccountSession } from "../components/AccountSessionProvider";
 import { useUiPreferences } from "../components/UiPreferencesProvider";
 
 const businessLines = [
@@ -25,6 +26,13 @@ const businessLines = [
     zhDescription: "对不可变仓库快照做指纹、计划、执行、验证和交付，不把本地成功当生产认证。",
     enDescription: "Fingerprint, plan, execute, verify, and deliver an immutable repository snapshot without treating local success as production certification.",
   },
+  {
+    href: "/migration/sql",
+    zh: "国产数据库 SQL 转换",
+    en: "ChinaDB SQL conversion",
+    zhDescription: "在显式兼容模式下生成本地目标 SQL；实库执行与认证保持 NOT_RUN。",
+    enDescription: "Emit local target SQL under an explicit compatibility mode; live execution and certification stay NOT_RUN.",
+  },
 ] as const;
 
 const deliverySteps = [
@@ -38,14 +46,18 @@ const deliverySteps = [
 const readiness = [
   ["登录、租户与权限", "本地实现并有测试", "外部 IdP 全目录同步 NOT_RUN", "Identity, tenant, and permissions", "Locally implemented and tested", "External IdP directory sync NOT_RUN"],
   ["Git 仓库交付", "真实本地 Git 仓库通过", "GitHub / Gitee 现场执行 NOT_RUN", "Git delivery", "Real local Git fixture passed", "Live GitHub / Gitee execution NOT_RUN"],
-  ["三业务线持久队列", "租约、TTL、容量与恢复通过", "多副本共享卷故障演练 NOT_RUN", "Durable queues", "Lease, TTL, capacity, and recovery passed", "Multi-replica shared-volume drill NOT_RUN"],
+  ["四条业务线持久队列", "租约、TTL、容量与恢复通过", "多副本共享卷故障演练 NOT_RUN", "Durable queues", "Lease, TTL, capacity, and recovery passed", "Multi-replica shared-volume drill NOT_RUN"],
   ["管理端与审计", "租户范围日志、告警、用量、配置可见", "生产通知与部署证据 NOT_RUN", "Admin and audit", "Tenant-scoped logs, alerts, usage, and config visible", "Production notification and deployment evidence NOT_RUN"],
   ["客户端质量", "构建、浏览器、键盘与自动可访问性检查", "独立读屏、视觉基线审批与代表旅程 NOT_RUN", "Client quality", "Build, browser, keyboard, and automated accessibility checks", "Independent AT, visual approval, and representative journeys NOT_RUN"],
 ] as const;
 
 export function HelpCenter() {
+  const account = useAccountSession();
   const { locale } = useUiPreferences();
   const english = locale === "en";
+  const hasAdminAccess = account.status === "authenticated"
+    && account.principal?.isPlatformAdmin === true
+    && account.principal.permissions.includes("admin:read");
 
   return (
     <div className="page-stack help-center">
@@ -55,8 +67,8 @@ export function HelpCenter() {
           <h1>{english ? "Help and readiness" : "帮助与就绪状态"}</h1>
           <p>
             {english
-              ? "Use the three business lines and controlled repository workflow safely. Local engineering evidence is shown separately from external execution."
-              : "安全使用三条业务线与受控仓库流程。本地工程证据与外部执行证据严格分开显示。"}
+              ? "Use the four business lines and controlled repository workflow safely. Local engineering evidence is shown separately from external execution."
+              : "安全使用四条业务线与受控仓库流程。本地工程证据与外部执行证据严格分开显示。"}
           </p>
         </div>
       </header>
@@ -147,7 +159,11 @@ export function HelpCenter() {
               : "管理端按租户展示用户/会话上下文、任务、仓库、审计、告警、用量与脱敏配置。"}
           </p>
         </div>
-        <Link className="button button-primary" href="/admin">{english ? "Open operations admin" : "打开运营管理端"}</Link>
+        <Link className={`button ${hasAdminAccess ? "button-primary" : "admin-entry-button"}`} href={hasAdminAccess ? "/admin" : "/admin/login"}>
+          {hasAdminAccess
+            ? (english ? "Open operations admin" : "打开运营管理端")
+            : (english ? "Administrator sign in" : "前往管理员登录")}
+        </Link>
       </section>
     </div>
   );

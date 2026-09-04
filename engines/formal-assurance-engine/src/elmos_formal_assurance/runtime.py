@@ -118,7 +118,9 @@ class FormalAssuranceRuntime:
         config: RuntimeConfig | None = None,
     ) -> None:
         self.config = config or RuntimeConfig()
-        self.store = store or StateStore()
+        self._owns_store = store is None
+        self._closed = False
+        self.store = store if store is not None else StateStore()
         self.artifact_store = self.config.artifact_store_adapter
         if self.artifact_store is None and self.config.artifact_root is not None:
             assert self.config.artifact_envelope_cipher is not None
@@ -159,6 +161,22 @@ class FormalAssuranceRuntime:
             execution_root=self.config.execution_root,
             observability=self.observability,
         )
+
+    def close(self) -> None:
+        """Release resources created by this runtime without closing injections."""
+        if self._closed:
+            return
+        if self._owns_store:
+            self.store.close()
+        self._closed = True
+
+    def __enter__(self) -> FormalAssuranceRuntime:
+        if self._closed:
+            raise RuntimeError("formal assurance runtime is closed")
+        return self
+
+    def __exit__(self, *_: object) -> None:
+        self.close()
 
     def list_skills(self) -> list[dict[str, Any]]:
         return self.registry.list()

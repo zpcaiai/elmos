@@ -232,12 +232,17 @@ _SOURCE_REJECTION_CODES: dict[Language, frozenset[str]] = {
     ),
     "typescript": frozenset(
         {
+            "TYPESCRIPT_ANNOTATED_DECLARATION_WITHOUT_VALUE",
+            "TYPESCRIPT_ASSIGNMENT_TARGET_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_DESTRUCTURED_PARAMETER_UNSUPPORTED",
             "TYPESCRIPT_EXPLICIT_TYPE_REQUIRED",
             "TYPESCRIPT_FUNCTION_BODY_REQUIRED",
+            "TYPESCRIPT_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET",
+            "TYPESCRIPT_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_NEGATIVE_ZERO_LITERAL_UNSUPPORTED",
             "TYPESCRIPT_NON_FINITE_LITERAL_UNSUPPORTED",
             "TYPESCRIPT_RETURN_EXPRESSION_REQUIRED",
+            "TYPESCRIPT_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET",
             "TYPESCRIPT_UNARY_MINUS_LITERAL_REQUIRED",
             "TYPESCRIPT_UNSUPPORTED_EXPRESSION",
             "TYPESCRIPT_UNSUPPORTED_OPERATOR",
@@ -1291,6 +1296,7 @@ def discover_repository(
                 if not isinstance(candidate, dict):
                     raise RouteError("DISCOVERY_ELIGIBLE_CANDIDATE_INVALID")
                 unit_id = parent_id if len(eligible) == 1 else f"{parent_id}-F{index:03d}"
+                candidate_name = str(candidate.get("function_name", ""))
                 results.append(
                     {
                         "id": unit_id,
@@ -1303,6 +1309,11 @@ def discover_repository(
                             if "javascript_esm_descriptor" in result
                             else {}
                         ),
+                        "candidates": [candidate_name] if candidate_name else list(result.get("candidates", [])),
+                        "candidate_enumeration_complete": bool(
+                            result.get("candidate_enumeration_complete", True)
+                        ),
+                        "candidate_enumeration_reason": result.get("candidate_enumeration_reason"),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
                         "verdict": Verdict.READY,
@@ -1322,6 +1333,18 @@ def discover_repository(
                 blocker_verdict = blocker.get("verdict", Verdict.UNSUPPORTED)
                 if blocker_verdict not in {Verdict.UNSUPPORTED, Verdict.NOT_RUN}:
                     raise RouteError("DISCOVERY_BLOCKER_VERDICT_INVALID")
+                blocker_symbol = (
+                    blocker.get("source_symbol")
+                    if isinstance(blocker.get("source_symbol"), dict)
+                    else {}
+                )
+                blocker_name = str(
+                    blocker.get("function_name")
+                    or blocker_symbol.get("name")
+                    or blocker.get("name")
+                    or ""
+                )
+                blocker_reason = str(blocker.get("reason", blocker_code))
                 results.append(
                     {
                         "id": f"{parent_id}-F{index:03d}",
@@ -1334,13 +1357,23 @@ def discover_repository(
                             if "javascript_esm_descriptor" in result
                             else {}
                         ),
+                        "candidates": [blocker_name] if blocker_name else [],
+                        "candidate_enumeration_complete": bool(
+                            result.get("candidate_enumeration_complete", True)
+                        ),
+                        "candidate_enumeration_reason": result.get("candidate_enumeration_reason"),
                         "profile": PROFILE,
                         "execution_status": "NOT_RUN",
                         "verdict": blocker_verdict,
-                        "reason": str(blocker.get("reason", blocker_code)),
+                        "reason": blocker_reason,
                         "blocker_code": blocker_code,
                         "coverage_key": blocker.get("coverage_key"),
                         "source_symbol": blocker.get("source_symbol"),
+                        "rejected_candidates": (
+                            [{"candidate": blocker_name, "reason": blocker_reason}]
+                            if blocker_name
+                            else []
+                        ),
                         "required_inputs": (
                             ["restore_analyzer_execution_and_replay"]
                             if blocker_verdict == Verdict.NOT_RUN

@@ -8,12 +8,12 @@
       "Never infer low risk solely from low LOC."
     ],
     "inputs": [
-      "task",
-      "repo profile"
+      "`task`",
+      "`repo profile`"
     ],
     "outputs": [
-      "complexity vector",
-      "token/context estimate"
+      "`complexity vector`",
+      "`token/context estimate`"
     ],
     "triggers": [
       "before model routing"

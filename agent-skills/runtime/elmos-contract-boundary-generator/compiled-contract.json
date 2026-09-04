@@ -8,13 +8,13 @@
       "Contract changes affecting public APIs require elevated review tier."
     ],
     "inputs": [
-      "tasks",
-      "architecture index"
+      "`tasks`",
+      "`architecture index`"
     ],
     "outputs": [
-      "interface contracts",
-      "fixtures/stubs",
-      "compatibility rules"
+      "`interface contracts`",
+      "`fixtures/stubs`",
+      "`compatibility rules`"
     ],
     "triggers": [
       "DAG contains cross-task boundaries"

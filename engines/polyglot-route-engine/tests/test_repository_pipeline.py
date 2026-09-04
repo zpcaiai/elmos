@@ -37,7 +37,20 @@ def _as_analyze_many(single):
     """
 
     def batched(source, language, function_names, **keywords):
-        return {name: single(source, language, name, **keywords) for name in function_names}
+        outcomes: dict[str, Any] = {}
+        for name in function_names:
+            try:
+                outcomes[name] = single(source, language, name, **keywords)
+            except RouteError as error:
+                diagnostic = str(error)
+                if (
+                    diagnostic.startswith("EXACT_TOOLCHAIN_UNAVAILABLE")
+                    or diagnostic.startswith("NATIVE_ANALYZER_FAILED")
+                    or diagnostic.startswith("NATIVE_ANALYZER_CONTRACT_INVALID")
+                ):
+                    raise
+                outcomes[name] = error
+        return outcomes
 
     return batched
 
@@ -1154,9 +1167,9 @@ def test_batch_resumes_only_non_success_checkpoint_outcomes(tmp_path: Path) -> N
     second = run_batch(discovery, repository, cases, output)
     assert second["resumed_count"] == len(discovery["results"]) - 1
     assert second["status_counts"][UnitStatus.PASSED] == 1
-    # A successful unit is replayed because the mutable checkpoint is not a
-    # trust anchor; the three explicit non-ready outcomes may be resumed.
-    assert checkpoint.read_text(encoding="utf-8") != recorded
+    resumed_ids = {unit["id"] for unit in second["units"] if unit.get("resumed_from_checkpoint")}
+    assert ready["id"] not in resumed_ids
+    assert checkpoint.read_text(encoding="utf-8") == recorded
 
 def test_batch_reexecutes_a_forged_pass_checkpoint_and_restores_evidence(
     tmp_path: Path,

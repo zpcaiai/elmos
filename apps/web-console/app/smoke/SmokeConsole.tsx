@@ -11,7 +11,7 @@ export function SmokeConsole() {
   const valid = projectRefPattern.test(draft.trim()) && !draft.includes("..");
 
   return (
-    <main className="content-shell">
+    <div className="content-shell">
       <header className="business-hero">
         <h1>一键冒烟运行</h1>
         <p>
@@ -43,6 +43,6 @@ export function SmokeConsole() {
       </section>
 
       {projectRef ? <SmokeRunButton key={projectRef} projectRef={projectRef} /> : null}
-    </main>
+    </div>
   );
 }

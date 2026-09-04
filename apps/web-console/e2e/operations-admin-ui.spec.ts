@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { administratorEmail, installAdministratorSession } from "./helpers/admin-session";
 
 const consoleView = {
   role: "APPROVER",
@@ -72,20 +73,26 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("admin stays locked until an operator supplies a short-lived token", async ({ page }) => {
+test("admin redirects anonymous visitors to the separate administrator login", async ({ page }) => {
   await page.goto("/admin");
-  await expect(page.getByRole("heading", { name: "运营管理端" })).toBeVisible();
-  await expect(page.getByText("管理数据默认锁定")).toBeVisible();
-  await expect(page.getByText("外部生产证据", { exact: false })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/admin\/login/);
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+  await expect(page.getByText("唯一管理员邮箱")).toBeVisible();
 });
 
 test("admin renders tenant-scoped performance and error signals", async ({ page }) => {
+  await installAdministratorSession(page);
   await page.route("**/api/admin/operations?**", async (route) => {
-    expect(route.request().headers().authorization).toBe("Bearer admin-observability-token-32");
+    expect(route.request().headers().authorization).toBeUndefined();
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(consoleView) });
   });
+  const sessionResponsePromise = page.waitForResponse((response) =>
+    new URL(response.url()).pathname === "/api/auth/session"
+    && response.request().method() === "GET");
   await page.goto("/admin");
-  await page.getByLabel("短期管理令牌").fill("admin-observability-token-32");
+  const sessionResponse = await sessionResponsePromise;
+  expect(sessionResponse.ok()).toBe(true);
+  await expect(page.getByText(administratorEmail, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "读取数据" }).click();
 
   await expect(page.getByRole("navigation", { name: "管理端功能" })).toBeVisible();

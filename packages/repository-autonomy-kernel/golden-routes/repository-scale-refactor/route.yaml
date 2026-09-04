@@ -1,0 +1,25 @@
+apiVersion: elmos.ai/v2alpha1
+kind: GoldenRoute
+metadata:
+  name: repository-scale-refactor
+  version: 2.0.0
+spec:
+  title: "Repository-Scale Refactor Golden Route"
+  description: "Large repository architecture refactor with ChangeGraph, worktrees, validation DAG and evidence gate"
+  workflow: repository-autonomy-master@2.0.0
+  releaseGate: P05_DEPLOYMENT_COMPLETE
+  mandatoryGates:
+    - repository-census
+    - changegraph-traceability
+    - parallel-write-isolation
+    - full-validation-dag
+    - security
+    - chaos-recovery
+    - deployment-complete
+  failureInjection:
+    - executor-crash
+    - network-interruption
+    - duplicate-delivery
+    - stale-worker-return
+    - user-pause-resume
+    - prompt-injection-in-repository

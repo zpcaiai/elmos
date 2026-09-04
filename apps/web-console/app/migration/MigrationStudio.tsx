@@ -41,7 +41,7 @@ const extensions: Array<{
   status: "DRAFT" | "REVIEW" | "EXPERIMENTAL";
   icon: IconName;
 }> = [
-  { name: "ChinaDB Commercial Migration", publisher: "ELMOS First-party", type: "SQL 转换增强", description: "登记 47 个可调用迁移 Skill、13 个国产目标与 78 条规划路线；无精确版本、能力快照或验证适配器时失败关闭。", version: "1.0.0", compatibility: "Batch 31 · SPEC_ONLY", status: "EXPERIMENTAL", icon: "database" },
+  { name: "ChinaDB Commercial Migration", publisher: "ELMOS First-party", type: "SQL 转换增强", description: "13 个国产目标的本地查询适配器已注册；仅在显式兼容模式下发射 SQL，实库执行与认证保持 NOT_RUN。", version: "1.0.0", compatibility: "Batch 31 · LOCAL_ADAPTER", status: "EXPERIMENTAL", icon: "database" },
   { name: "Language Adapter SDK", publisher: "ELMOS First-party", type: "语言适配器", description: "对接解析器、PSP、类型语义和发射器，并保留未知语义。", version: "0.1.0", compatibility: "Platform 0.1", status: "EXPERIMENTAL", icon: "code" },
   { name: "Evidence Collector SDK", publisher: "ELMOS First-party", type: "证据采集器", description: "采集原生证据并与归一化记录分离，保留首个失败。", version: "0.1.0", compatibility: "Platform 0.1", status: "REVIEW", icon: "file" },
   { name: "Runner Job SDK", publisher: "ELMOS First-party", type: "Runner 扩展", description: "声明最小能力、网络和文件权限；默认拒绝宿主访问。", version: "0.1.0", compatibility: "Platform 0.1", status: "DRAFT", icon: "server" },
@@ -195,7 +195,7 @@ export function MigrationStudio() {
 
       <section className="metric-grid metric-grid-four" aria-label="迁移能力摘要">
         <article className="metric-card"><span>能力包</span><strong>{capabilities.length}</strong><small>M29–M37 精确分域</small></article>
-        <article className="metric-card"><span>可调用 Skills</span><strong>{capabilities.reduce((sum, item) => sum + item.skillCount, 0)}</strong><small>仓库内结构化能力</small></article>
+        <article className="metric-card"><span>可调用功能</span><strong>{capabilities.reduce((sum, item) => sum + item.skillCount, 0)}</strong><small>仓库内结构化能力</small></article>
         <article className="metric-card"><span>认证上限</span><strong className="metric-word">Gate ready</strong><small>控制台不签发认证</small></article>
         <article className="metric-card"><span>外部执行</span><strong className="metric-word warning-text">NOT_RUN</strong><small>未连接客户环境</small></article>
       </section>
@@ -225,7 +225,7 @@ export function MigrationStudio() {
               {visibleCapabilities.map((capability) => (
                 <button className={`capability-row ${selected === capability.id ? "selected" : ""}`} key={capability.id} onClick={() => setSelected(capability.id)} aria-pressed={selected === capability.id}>
                   <span className={`capability-icon accent-${capability.accent}`}><Icon name={capability.icon} size={20} /></span>
-                  <span className="capability-copy"><span><b>{capability.id}</b>{capability.title}</span><small>{capability.domain} · {capability.skillCount} Skills</small></span>
+                  <span className="capability-copy"><span><b>{capability.id}</b>{capability.title}</span><small>{capability.domain} · {capability.skillCount} 项功能</small></span>
                   <StatusChip status={capability.status} compact />
                   <Icon name="chevron" size={16} />
                 </button>
@@ -243,14 +243,14 @@ export function MigrationStudio() {
             <h2>{selectedCapability.title}</h2>
             <p>{selectedCapability.description}</p>
             <dl className="detail-facts">
-              <div><dt>Skills</dt><dd>{selectedCapability.skillCount}</dd></div>
+              <div><dt>功能数量</dt><dd>{selectedCapability.skillCount}</dd></div>
               <div><dt>Schemas</dt><dd>{selectedCapability.schemaCount}</dd></div>
               <div><dt>外部证据</dt><dd className="warning-text">NOT_RUN</dd></div>
             </dl>
             <div className="gate-block"><span>唯一认证门禁</span><code>{selectedCapability.gateCommand}</code></div>
-            {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>12 个本地实验 Profile 已精确验证</strong><small>结论只覆盖 typed-pure-function-v1；整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
+            {selectedCapability.id === "M29" && <div className="feature-callout"><Icon name="code" size={17} /><div><strong>13 语言活动矩阵已接入</strong><small>156 条路线均保持 NOT_RUN；其中 12 个 typed-pure-function-v1 本地实验 Profile 有精确验证。整库拆分、独立验证与外部认证仍需单独证据。</small><a className="text-link" href="/translation">打开跨语言转换 <Icon name="arrow" size={13} /></a></div></div>}
             {selectedCapability.id === "M30" && <div className="feature-callout"><Icon name="workflow" size={17} /><div><strong>Spring 老项目专属流程已接入</strong><small>支持经典 Spring XML、注解与旧 Boot 画像；外部运行与升级认证仍为 NOT_RUN。</small><a className="text-link" href="/spring">打开 Spring 翻新 <Icon name="arrow" size={13} /></a></div></div>}
-            {selectedCapability.id === "M31" && <div className="feature-callout"><Icon name="database" size={17} /><div><strong>ChinaDB 商业迁移扩展已接入</strong><small>47 个 Runtime Skills 和 13 个目标能力目录可发现；78 条路线仍需精确版本、模式、目标适配器、实库与独立证据。</small><code>elmos-sql-transpiler commercial-capabilities</code><a className="text-link" href="/migration/sql">运行只读 SQL 预检 <Icon name="arrow" size={13} /></a><a className="text-link" href="/api/capabilities/database-sql" target="_blank" rel="noreferrer">查看目标与路线契约 <Icon name="external" size={13} /></a></div></div>}
+            {selectedCapability.id === "M31" && <div className="feature-callout"><Icon name="database" size={17} /><div><strong>ChinaDB 商业迁移扩展已接入</strong><small>13 个国产目标的本地查询适配器已注册；仅在显式兼容模式下发射 SQL。实库执行、结果等价与认证保持 NOT_RUN / NOT_CERTIFIED。</small><code>elmos-sql-transpiler commercial-capabilities</code><a className="text-link" href="/migration/sql">运行 SQL 预检 <Icon name="arrow" size={13} /></a><a className="text-link" href="/api/capabilities/database-sql" target="_blank" rel="noreferrer">查看目标与路线契约 <Icon name="external" size={13} /></a></div></div>}
             {selectedCapability.id === "M36" && <div className="feature-callout"><Icon name="spark" size={17} /><div><strong>开发者预览已接入</strong><small>支持来源—目标导航、受保护区域和无写入预览；真实 IDE Host 证据仍未运行。</small></div></div>}
             <div className="detail-actions"><button className="button button-secondary" onClick={() => openDialog(selectedCapability.id)}>以此创建草稿</button><a className="icon-button bordered" href={`/api/capabilities/migration`} target="_blank" rel="noreferrer" aria-label="打开能力 API"><Icon name="external" size={17} /></a></div>
           </aside>}
@@ -288,7 +288,7 @@ function Marketplace({ extensions: items, query, setQuery }: { extensions: typeo
       <div className="market-main">
         <div className="market-hero">
           <div><span className="overline">BATCH 37 · SAFE EXTENSIBILITY</span><h2>扩展核心之外的能力，<br/>不放宽核心边界。</h2><p>每个扩展都绑定精确 ABI、Publisher、签名、SBOM、Sandbox 与撤销策略。</p></div>
-          <div className="market-symbol"><Icon name="box" size={34} /><span>36</span><small>Marketplace Skills</small></div>
+          <div className="market-symbol"><Icon name="box" size={34} /><span>36</span><small>市场扩展功能</small></div>
         </div>
         <div className="market-toolbar"><label className="search-field"><Icon name="search" size={17} /><span className="sr-only">搜索扩展</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索扩展类型或能力" /></label><StatusChip status="NOT_RUN" /></div>
         <div className="extension-grid">

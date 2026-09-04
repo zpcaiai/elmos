@@ -214,7 +214,7 @@ test("凭证不能切换租户，审阅摘要不能批准被修改的 Intent", a
   });
 });
 
-test("服务端在消费审阅摘要前阻断单实体目标的多实体生产请求", async ({
+test("服务端接受 PostgreSQL 生产配置下的多实体 Go 请求", async ({
   request,
 }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "生产能力边界的代表请求只执行一次");
@@ -244,10 +244,7 @@ test("服务端在消费审阅摘要前阻断单实体目标的多实体生产�
       analysisDigest: analysis.requestDigest,
     },
   });
-  expect(execution.status()).toBe(409);
-  expect(await execution.json()).toMatchObject({
-    reason: "PRODUCTION_PROFILE_SINGLE_ENTITY_ONLY",
-  });
+  expect(execution.ok(), await execution.text()).toBe(true);
 });
 
 test("需求分析、完整代码下载、浏览器限时运行与 GitHub 私有仓库发布闭环", async ({

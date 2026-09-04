@@ -108,6 +108,69 @@ def test_a_psql_client_directive_gets_its_own_code_not_a_parse_failure(
     assert report["totals"]["inSubset"] == 1
 
 
+def test_a_commented_psql_set_is_not_a_parse_failure(tmp_path: Path) -> None:
+    """Measured 2026-09-01: ``--\\n\\set ON_ERROR_STOP on\\nBEGIN;`` was one
+    PARSE_FAILED chunk because the splitter only cut on ``;`` and the
+    classifier only looked at ``lstrip().startswith("\\\\")``."""
+
+    report = _scan(
+        tmp_path,
+        "-- smoke header\n\\set ON_ERROR_STOP on\nBEGIN;\nCREATE TABLE a (x INT NOT NULL);\n",
+    )
+    codes = {finding["reason_code"] for finding in report["findings"]}
+    assert "CERTIFIED_DDL_CLIENT_DIRECTIVE" in codes
+    assert "CERTIFIED_DDL_PARSE_FAILED" not in codes
+    assert report["totals"]["inSubset"] == 1
+
+
+def test_mysql_source_is_a_client_directive_not_a_parse_failure(tmp_path: Path) -> None:
+    report = _scan(
+        tmp_path,
+        "source load_departments.dump\nCREATE TABLE a (x INT NOT NULL);\n",
+        Dialect.MYSQL,
+    )
+    codes = {finding["reason_code"] for finding in report["findings"]}
+    assert "CERTIFIED_DDL_CLIENT_DIRECTIVE" in codes
+    assert "CERTIFIED_DDL_PARSE_FAILED" not in codes
+    assert report["totals"]["inSubset"] == 1
+
+
+def test_mysql_delimiter_does_not_invent_parse_failed_fragments(tmp_path: Path) -> None:
+    """Without DELIMITER awareness, ``END //`` and ``DECLARE ...`` become
+    fake PARSE_FAILED rows. The routine may still be out of subset -- that is
+    a later gate, not a splitter defect."""
+
+    report = _scan(
+        tmp_path,
+        "DELIMITER //\n"
+        "CREATE PROCEDURE rewards_report (IN min_monthly_purchases INT)\n"
+        "BEGIN\n"
+        "  DECLARE last_month_end DATE;\n"
+        "  SELECT 1;\n"
+        "END //\n"
+        "DELIMITER ;\n"
+        "CREATE TABLE a (x INT NOT NULL);\n",
+        Dialect.MYSQL,
+    )
+    excerpts = [finding["excerpt"] for finding in report["findings"]]
+    assert report["totals"]["inSubset"] == 1
+    assert not any(item.strip().upper().startswith("DECLARE ") for item in excerpts)
+    assert not any(item.strip().upper().startswith("END") for item in excerpts)
+    codes = {finding["reason_code"] for finding in report["findings"]}
+    assert "CERTIFIED_DDL_CLIENT_DIRECTIVE" in codes
+
+
+def test_the_fallback_splitter_isolates_a_newline_terminated_psql_command() -> None:
+    statements = split_statements(
+        "-- header\n\\set ON_ERROR_STOP on\nBEGIN;\nCREATE TABLE a (x INT);\n"
+    )
+    texts = [item.text.strip() for item in statements]
+    assert any("\\set ON_ERROR_STOP on" in text for text in texts)
+    assert any(text.upper().startswith("BEGIN") for text in texts)
+    assert any(text.upper().startswith("CREATE TABLE") for text in texts)
+    assert len(statements) == 3
+
+
 def test_the_unreadable_statement_carries_a_line_number(tmp_path: Path) -> None:
     report = _scan(
         tmp_path,

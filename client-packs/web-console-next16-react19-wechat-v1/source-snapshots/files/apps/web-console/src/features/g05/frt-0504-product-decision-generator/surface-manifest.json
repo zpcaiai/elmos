@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-0504",
+  "skill_name": "frt-0504-product-decision-generator",
+  "batch": "G05",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g05/frt-0504-product-decision-generator/",
+  "status": "shared_implementation",
+  "handler_kind": "migration_planning",
+  "capability_key": "frt.g05.product-decision-generator",
+  "execution_contract_sha256": "sha256:f04bc9c1a51f119716a7e46ded89871b1e37c8250c0f8390b96956bcfaff0cf1",
+  "execution_class": "CONTROL_PLANE_ANALYSIS",
+  "input_contract": {
+    "required": [
+      "inventory",
+      "target"
+    ],
+    "optional": [
+      "currentVersions"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:edad210f7f2f8531d8d4e1189e539e81874e86283e92b13139ff1645203284a2",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

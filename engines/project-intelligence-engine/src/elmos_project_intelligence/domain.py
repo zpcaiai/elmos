@@ -24,6 +24,7 @@ from typing import Any
 
 from .canonical import canonical_digest, canonical_json_bytes, validate_digest
 from .flowgraph import function_control_flow
+from .java_structure import is_java_path, java_structure
 from .python_structure import (
     ORIGIN_PARSED,
     ORIGIN_REGEX,
@@ -637,18 +638,20 @@ def _regex_symbols(file: Mapping[str, Any]) -> list[dict[str, Any]]:
     return values
 
 
-def _parsed_python_structure(file: Mapping[str, Any]) -> dict[str, Any] | None:
-    """Return the parsed structure of a Python file, or ``None``.
+def _parsed_file_structure(file: Mapping[str, Any]) -> dict[str, Any] | None:
+    """Return the parsed structure of a Python or Java file, or ``None``.
 
-    ``None`` means either "not Python" or "Python that does not parse".  Both
-    send the caller to the regex fallback, and both are recorded, so a reader
-    is never left guessing which scan produced a given fact.
+    ``None`` means either unsupported language or syntax that does not parse.
+    Both send the caller to the regex fallback, and both are recorded, so a
+    reader is never left guessing which scan produced a given fact.
     """
 
     path = str(file["path"])
-    if not is_python_path(path):
-        return None
-    return module_structure(str(file["text"]), path)
+    if is_python_path(path):
+        return module_structure(str(file["text"]), path)
+    if is_java_path(path):
+        return java_structure(str(file["text"]), path)
+    return None
 
 
 def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
@@ -656,7 +659,7 @@ def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
 
     values: list[dict[str, Any]] = []
     for file in files:
-        structure = _parsed_python_structure(file)
+        structure = _parsed_file_structure(file)
         if structure is None:
             values.extend(_regex_symbols(file))
             continue
@@ -675,7 +678,7 @@ def _symbols(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
 
 
 def _regex_imports(file: Mapping[str, Any]) -> list[dict[str, Any]]:
-    """Scan one file's lines for imports; the fallback for every non-Python file."""
+    """Scan one file's lines for imports; the fallback for every unparsed file."""
 
     patterns = (
         re.compile(r"^\s*from\s+([\w.]+)\s+import\s+"),
@@ -704,14 +707,14 @@ def _regex_imports(file: Mapping[str, Any]) -> list[dict[str, Any]]:
 def _imports(files: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]:
     """Return import edges, preferring a real parser over the regex scan.
 
-    The parser path also reports relative imports (``from . import x``), which
+    The parser path also reports relative imports and Java static imports, which
     the regex never matched, and never mistakes the word ``import`` inside a
     string or comment for a real one.
     """
 
     edges: list[dict[str, Any]] = []
     for file in files:
-        structure = _parsed_python_structure(file)
+        structure = _parsed_file_structure(file)
         if structure is None:
             edges.extend(_regex_imports(file))
             continue
@@ -767,6 +770,32 @@ def _top_words(text: str, limit: int = 12) -> list[str]:
         if token.lower() not in ignored
     )
     return [word for word, _ in counts.most_common(limit)]
+
+
+def _edge_endpoints(edge: Mapping[str, Any]) -> tuple[Any, Any]:
+    """Return one edge's ``(source, target)`` in whichever vocabulary it uses.
+
+    Two spellings reach these handlers and both are legitimate.  ``_graph``
+    builds import edges as ``from``/``to``; a caller that has already compiled
+    a Diagram Spec passes the canonical ``source``/``target``, which
+    ``compile_diagram_spec`` has accepted from the start.
+
+    Every handler that reads an edge must go through this function.  Three of
+    them used to read ``from``/``to`` directly and each failed differently on
+    canonical edges: two printed ``None``, and ``analyze_impact`` returned a
+    correctly shaped answer that was simply wrong -- it reported nothing
+    downstream of a changed file because it had matched no edges at all.  A
+    single reader is what stops that from being reintroduced one handler at a
+    time.
+
+    Preference order matches ``compile_diagram_spec``: canonical keys win, and
+    an edge that mixes the two is not something this function has to decide
+    about because the compiler already rejects it.
+    """
+
+    if "source" in edge or "target" in edge:
+        return edge.get("source"), edge.get("target")
+    return edge.get("from"), edge.get("to")
 
 
 def _graph(inputs: JsonObject) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
@@ -1581,6 +1610,13 @@ def compile_diagram_spec(
         "nodes": sorted(compiled_nodes, key=lambda item: str(item["id"])),
         "edges": sorted(compiled_edges, key=lambda item: str(item["id"])),
     }
+    if "title" in inputs:
+        # ``title`` is a documented property of the published Diagram Spec
+        # schema and both exporters already read it.  The compiler used to drop
+        # it, so every diagram that reached a report or a deck through dispatch
+        # was called "Diagram" and the reader had to guess which one they were
+        # looking at.
+        spec["title"] = _identifier(inputs["title"], "title")
     _validate_diagram_spec(
         spec,
         runtime_scope=runtime_scope,
@@ -1691,8 +1727,9 @@ def generate_document(inputs: JsonObject) -> CapabilityOutcome:
 
     relationship_lines: list[str] = []
     for edge in edges[:100]:
-        source, source_normalized = _safe_markdown_text(edge.get("from"))
-        target, target_normalized = _safe_markdown_text(edge.get("to"))
+        edge_source, edge_target = _edge_endpoints(edge)
+        source, source_normalized = _safe_markdown_text(edge_source)
+        target, target_normalized = _safe_markdown_text(edge_target)
         kind, kind_normalized = _safe_markdown_text(edge.get("kind", "relates"))
         normalized = (
             normalized or source_normalized or target_normalized or kind_normalized
@@ -1743,7 +1780,14 @@ def generate_presentation(inputs: JsonObject) -> CapabilityOutcome:
         {
             "title": "Relationships",
             "bullets": [
-                f"{edge.get('from')} -> {edge.get('to')}" for edge in edges[:8]
+                # Two edge vocabularies reach this handler.  ``_graph`` builds
+                # import edges as from/to, while a caller that already compiled
+                # a Diagram Spec passes the canonical source/target -- which
+                # ``compile_diagram_spec`` has accepted from the start.  Reading
+                # only from/to printed a deck full of "None -> None" for the
+                # second case: a wrong slide, silently, with no rejection.
+                "{} -> {}".format(*_edge_endpoints(edge))
+                for edge in edges[:8]
             ],
         },
     ]
@@ -1866,7 +1910,8 @@ def analyze_impact(inputs: JsonObject) -> CapabilityOutcome:
     _, edges = _graph(inputs)
     reverse: dict[str, set[str]] = defaultdict(set)
     for edge in edges:
-        reverse[str(edge.get("to"))].add(str(edge.get("from")))
+        edge_source, edge_target = _edge_endpoints(edge)
+        reverse[str(edge_target)].add(str(edge_source))
     impacted = set(changed)
     queue = deque(sorted(changed))
     while queue and len(impacted) < 10_000:

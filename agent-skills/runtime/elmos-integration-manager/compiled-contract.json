@@ -8,13 +8,13 @@
       "Never squash away evidence mapping unless mapping retained."
     ],
     "inputs": [
-      "task branches",
-      "DAG",
-      "integration branch"
+      "`task branches`",
+      "`DAG`",
+      "`integration branch`"
     ],
     "outputs": [
-      "integrated commit(s)",
-      "integration log"
+      "`integrated commit(s)`",
+      "`integration log`"
     ],
     "triggers": [
       "task passed local gates/review"

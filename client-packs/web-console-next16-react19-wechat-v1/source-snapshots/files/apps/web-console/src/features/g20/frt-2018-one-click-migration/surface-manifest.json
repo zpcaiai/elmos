@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-2018",
+  "skill_name": "frt-2018-one-click-migration",
+  "batch": "G20",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g20/frt-2018-one-click-migration/",
+  "status": "shared_implementation",
+  "handler_kind": "runtime_operations",
+  "capability_key": "frt.g20.one-click-migration",
+  "execution_contract_sha256": "sha256:80b5b378b4a5b50a267e0949a50b1bcb5879103f4949d96d07d373360a3c35bd",
+  "execution_class": "GOVERNED_EXTERNAL_RUNNER",
+  "input_contract": {
+    "required": [
+      "resources"
+    ],
+    "optional": [
+      "roles",
+      "jobs",
+      "quotas"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:7b03c8a224470e78f4a66a44bd1fcf4063561b2e658d93ec620a1be2ebdeea32",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

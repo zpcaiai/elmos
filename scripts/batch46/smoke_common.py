@@ -12,6 +12,7 @@ import os
 import re
 import socket
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -55,7 +56,45 @@ def read_json(path: Path) -> Any:
 def write_json(path: Path, payload: Any) -> Path:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=False) + "\n", encoding="utf-8")
+    encoded = json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=False) + "\n"
+    # Readers poll status and evidence files while a run is live. Publish the
+    # complete document atomically so they can never observe the truncation
+    # window between open(..., "w") and the final write. Keep the replacement
+    # in the target directory, fsync both file and directory, and preserve an
+    # existing file's mode across the replace.
+    mode = 0o644
+    try:
+        mode = path.stat().st_mode & 0o777
+    except FileNotFoundError:
+        pass
+    temporary_name: str | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as temporary:
+            temporary_name = temporary.name
+            temporary.write(encoded)
+            temporary.flush()
+            os.fsync(temporary.fileno())
+        os.chmod(temporary_name, mode)
+        os.replace(temporary_name, path)
+        directory_fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory_fd)
+        finally:
+            os.close(directory_fd)
+    except BaseException:
+        if temporary_name is not None:
+            try:
+                os.unlink(temporary_name)
+            except FileNotFoundError:
+                pass
+        raise
     return path
 
 

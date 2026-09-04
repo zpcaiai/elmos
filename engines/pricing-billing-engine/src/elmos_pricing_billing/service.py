@@ -40,6 +40,7 @@ class PricingBillingService:
     def __init__(self) -> None:
         self._wallets: dict[str, Money] = {}  # tenant_id -> balance
         self._ledger: list[LedgerEntry] = []
+        self._idempotency_index: dict[tuple[str, str], LedgerEntry] = {}
         self._quotas: dict[str, QuotaLimit] = {}
         self._invoices: dict[str, Invoice] = {}
 
@@ -56,10 +57,10 @@ class PricingBillingService:
         idempotency_key: str,
         reference_id: str = "",
     ) -> LedgerEntry:
-        # Check for idempotent duplicate
-        for entry in self._ledger:
-            if entry.tenant_id == tenant_id and entry.idempotency_key == idempotency_key:
-                return entry
+        # Fast O(1) check for idempotent duplicate
+        key = (tenant_id, idempotency_key)
+        if key in self._idempotency_index:
+            return self._idempotency_index[key]
 
         current = self.get_wallet_balance(tenant_id)
         new_balance = current + amount
@@ -75,6 +76,7 @@ class PricingBillingService:
             idempotency_key=idempotency_key,
         )
         self._ledger.append(entry)
+        self._idempotency_index[key] = entry
         return entry
 
     def record_usage_and_settle(
@@ -83,9 +85,9 @@ class PricingBillingService:
         cost_credits: Money,
         idempotency_key: str,
     ) -> LedgerEntry:
-        for entry in self._ledger:
-            if entry.tenant_id == event.tenant_id and entry.idempotency_key == idempotency_key:
-                return entry
+        key = (event.tenant_id, idempotency_key)
+        if key in self._idempotency_index:
+            return self._idempotency_index[key]
 
         current = self.get_wallet_balance(event.tenant_id)
         if current.amount < cost_credits.amount:
@@ -104,6 +106,7 @@ class PricingBillingService:
             idempotency_key=idempotency_key,
         )
         self._ledger.append(entry)
+        self._idempotency_index[key] = entry
         return entry
 
     def reconcile_tenant_period(

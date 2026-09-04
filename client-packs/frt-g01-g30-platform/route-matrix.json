@@ -9,10 +9,12 @@
       "target_version": "1.2.0",
       "status": "research",
       "evidence_refs": [
-        "../../docs/frt-g01-g30/installed-manifest.json",
-        "../../engines/frontend-client-engine/test/frt-runtime.test.ts"
+        "repository-evidence/files/docs/frt-g01-g30/installed-manifest.json",
+        "repository-evidence/files/engines/frontend-client-engine/test/frt-runtime.test.ts",
+        "repository-evidence/manifest.json"
       ]
-    }
+    },
+    "repository-evidence/manifest.json"
   ],
   "recertification_triggers": [
     "source package manifest or tree digest change",

@@ -14,10 +14,14 @@ from pathlib import Path
 from types import ModuleType
 from typing import Any
 
+from source_package_guard import resolve_source_package
+
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "elmos-language-packs-batch81-95-complete"
-PACKAGE_ROOT = ROOT / PACKAGE_NAME
+PACKAGE_ROOT = resolve_source_package(
+    Path(PACKAGE_NAME), Path("package-manifest.json"), root=ROOT
+) or ROOT / PACKAGE_NAME
 RUNTIME_ROOT = ROOT / "agent-skills" / "runtime"
 INSTALL_MANIFEST = ROOT / "docs" / "language-packs-batch81-95" / "installed-manifest.json"
 SKILL_GENERATOR = Path(

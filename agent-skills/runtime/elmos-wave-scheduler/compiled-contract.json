@@ -9,13 +9,13 @@
       "No concurrent overlapping writes."
     ],
     "inputs": [
-      "DAG",
-      "path locks",
-      "model quotas",
-      "budget"
+      "`DAG`",
+      "`path locks`",
+      "`model quotas`",
+      "`budget`"
     ],
     "outputs": [
-      "execution wave plan"
+      "`execution wave plan`"
     ],
     "triggers": [
       "DAG ready"

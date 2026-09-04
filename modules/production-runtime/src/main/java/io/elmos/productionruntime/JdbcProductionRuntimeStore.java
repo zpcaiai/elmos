@@ -9,6 +9,7 @@ import io.elmos.productionruntime.ProductionRuntimeModels.DispatchIntent;
 import io.elmos.productionruntime.ProductionRuntimeModels.DispatchState;
 import io.elmos.productionruntime.ProductionRuntimeModels.FinalUsage;
 import io.elmos.productionruntime.ProductionRuntimeModels.JobRequest;
+import io.elmos.productionruntime.ProductionRuntimeModels.OutputVerificationReceipt;
 import io.elmos.productionruntime.ProductionRuntimeModels.ProjectRequest;
 import io.elmos.productionruntime.ProductionRuntimeModels.ProgressSnapshot;
 import io.elmos.productionruntime.ProductionRuntimeModels.ReadyWorkItem;
@@ -458,6 +459,119 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     @Override
     public void complete(Completion completion) {
         inTenant(completion.tenantId(), () -> {
+            completeWithinTenant(completion);
+            return null;
+        });
+    }
+
+    @Override
+    public void completeVerified(
+            Completion completion,
+            OutputVerificationReceipt receipt
+    ) {
+        Objects.requireNonNull(receipt, "receipt");
+        if (completion.status() != AttemptStatus.SUCCEEDED) {
+            throw new IllegalArgumentException(
+                    "completeVerified is only valid for successful completions");
+        }
+        inTenant(completion.tenantId(), () -> {
+            WorkloadIdentity identity = jdbc.sql("""
+                    select j.job_type, wi.work_type
+                      from orchestration.work_items wi
+                      join orchestration.jobs j
+                        on j.tenant_id = wi.tenant_id and j.id = wi.job_id
+                     where wi.tenant_id = :tenantId and wi.id = :workItemId
+                     for update of wi
+                    """)
+                    .param("tenantId", completion.tenantId())
+                    .param("workItemId", completion.workItemId())
+                    .query((rs, row) -> new WorkloadIdentity(
+                            rs.getString("job_type"),
+                            rs.getString("work_type")))
+                    .optional().orElseThrow(() -> new ProductionRuntimeException(
+                            "OUTPUT_VERIFICATION_WORK_ITEM_NOT_FOUND",
+                            "output verification references an unknown work item"));
+            ProductionWorkloadPackCatalog.verifyOutput(
+                    identity.jobType(), identity.workType(), receipt);
+            String checksJson = outputChecksJson(receipt);
+            int inserted = jdbc.sql("""
+                    insert into runtime.output_verification_receipts
+                      (tenant_id, work_item_id, attempt_id, schema_version,
+                       pack_id, job_type, work_type, artifact_uri,
+                       artifact_sha256, verifier, verification_status,
+                       certification_status, checks)
+                    values
+                      (:tenantId, :workItemId, :attemptId, :schemaVersion,
+                       :packId, :jobType, :workType, :artifactUri,
+                       :artifactSha256, :verifier, :verificationStatus,
+                       :certificationStatus, cast(:checks as jsonb))
+                    on conflict (attempt_id) do nothing
+                    """)
+                    .param("tenantId", completion.tenantId())
+                    .param("workItemId", completion.workItemId())
+                    .param("attemptId", completion.attemptId())
+                    .param("schemaVersion", receipt.schemaVersion())
+                    .param("packId", receipt.packId())
+                    .param("jobType", receipt.jobType())
+                    .param("workType", receipt.workType())
+                    .param("artifactUri", receipt.artifactUri())
+                    .param("artifactSha256", receipt.artifactSha256())
+                    .param("verifier", receipt.verifier())
+                    .param("verificationStatus", receipt.verificationStatus())
+                    .param("certificationStatus", receipt.certificationStatus())
+                    .param("checks", checksJson)
+                    .update();
+            boolean exactReplay = jdbc.sql("""
+                    select count(*) = 1
+                      from runtime.output_verification_receipts
+                     where tenant_id = :tenantId
+                       and work_item_id = :workItemId
+                       and attempt_id = :attemptId
+                       and schema_version = :schemaVersion
+                       and pack_id = :packId
+                       and job_type = :jobType
+                       and work_type = :workType
+                       and artifact_uri = :artifactUri
+                       and artifact_sha256 = :artifactSha256
+                       and verifier = :verifier
+                       and verification_status = :verificationStatus
+                       and certification_status = :certificationStatus
+                       and checks = cast(:checks as jsonb)
+                    """)
+                    .param("tenantId", completion.tenantId())
+                    .param("workItemId", completion.workItemId())
+                    .param("attemptId", completion.attemptId())
+                    .param("schemaVersion", receipt.schemaVersion())
+                    .param("packId", receipt.packId())
+                    .param("jobType", receipt.jobType())
+                    .param("workType", receipt.workType())
+                    .param("artifactUri", receipt.artifactUri())
+                    .param("artifactSha256", receipt.artifactSha256())
+                    .param("verifier", receipt.verifier())
+                    .param("verificationStatus", receipt.verificationStatus())
+                    .param("certificationStatus", receipt.certificationStatus())
+                    .param("checks", checksJson)
+                    .query(Boolean.class)
+                    .single();
+            if (!exactReplay) {
+                throw new ProductionRuntimeException(
+                        "OUTPUT_VERIFICATION_REPLAY_CONFLICT",
+                        "attempt output verification was replayed with different evidence");
+            }
+            if (inserted == 1) {
+                event(completion.tenantId(), "WORK_ITEM", completion.workItemId(),
+                        "OUTPUT_VERIFICATION_RECORDED", Map.of(
+                                "attemptId", completion.attemptId(),
+                                "artifactSha256", receipt.artifactSha256(),
+                                "packId", receipt.packId(),
+                                "certificationStatus", receipt.certificationStatus()));
+            }
+            completeWithinTenant(completion);
+            return null;
+        });
+    }
+
+    private void completeWithinTenant(Completion completion) {
             var existing = jdbc.sql("""
                     select status, work_item_id, worker_id, fencing_token,
                            error_code, error_message
@@ -486,7 +600,7 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
                         && existing.fencingToken() == completion.fencingToken()
                         && Objects.equals(existing.errorCode(), completion.errorCode())
                         && Objects.equals(existing.errorMessage(), completion.errorMessage());
-                if (exactReplay) return null;
+                if (exactReplay) return;
                 throw new ProductionRuntimeException(
                         "TERMINAL_COMPLETION_CONFLICT",
                         "attempt terminal state was replayed with different fields");
@@ -524,8 +638,16 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
                     .param("jobId", jobId)
                     .query(Integer.class)
                     .single();
-            return null;
-        });
+    }
+
+    private String outputChecksJson(OutputVerificationReceipt receipt) {
+        try {
+            return json.writeValueAsString(receipt.checks());
+        } catch (com.fasterxml.jackson.core.JsonProcessingException ex) {
+            throw new ProductionRuntimeException(
+                    "OUTPUT_VERIFICATION_SERIALIZATION_FAILED",
+                    "output verification checks could not be serialized", ex);
+        }
     }
 
     @Override
@@ -708,6 +830,60 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     }
 
     @Override
+    public java.util.Optional<ProductionRuntimeModels.WorkloadOutputStatus>
+            workloadOutputStatus(UUID tenantId, UUID jobId, UUID workItemId) {
+        ProductionRuntimeModels.require(tenantId, "tenantId");
+        ProductionRuntimeModels.require(jobId, "jobId");
+        ProductionRuntimeModels.require(workItemId, "workItemId");
+        return inTenant(tenantId, () -> jdbc.sql("""
+                        select j.id as job_id, wi.id as work_item_id,
+                               j.job_type, wi.work_type,
+                               j.status as job_status,
+                               wi.status as work_item_status,
+                               receipt.artifact_sha256,
+                               receipt.verification_status,
+                               receipt.certification_status,
+                               receipt.created_at as verified_at
+                          from orchestration.jobs j
+                          join orchestration.work_items wi
+                            on wi.tenant_id = j.tenant_id and wi.job_id = j.id
+                          left join lateral (
+                               select r.artifact_sha256,
+                                      r.verification_status,
+                                      r.certification_status,
+                                      r.created_at
+                                 from runtime.output_verification_receipts r
+                                where r.tenant_id = wi.tenant_id
+                                  and r.work_item_id = wi.id
+                                order by r.created_at desc, r.id desc
+                                limit 1
+                          ) receipt on true
+                         where j.tenant_id = :tenantId
+                           and j.id = :jobId
+                           and wi.id = :workItemId
+                        """)
+                .param("tenantId", tenantId)
+                .param("jobId", jobId)
+                .param("workItemId", workItemId)
+                .query((rs, row) -> {
+                    OffsetDateTime verifiedAt = rs.getObject(
+                            "verified_at", OffsetDateTime.class);
+                    return new ProductionRuntimeModels.WorkloadOutputStatus(
+                            rs.getObject("job_id", UUID.class),
+                            rs.getObject("work_item_id", UUID.class),
+                            rs.getString("job_type"),
+                            rs.getString("work_type"),
+                            rs.getString("job_status"),
+                            rs.getString("work_item_status"),
+                            rs.getString("artifact_sha256"),
+                            rs.getString("verification_status"),
+                            rs.getString("certification_status"),
+                            verifiedAt == null ? null : verifiedAt.toInstant());
+                })
+                .optional());
+    }
+
+    @Override
     public ProgressSnapshot rebuildProgress(UUID tenantId, UUID jobId) {
         return inTenant(tenantId, () -> {
             var counts = jdbc.sql("""
@@ -882,6 +1058,7 @@ public final class JdbcProductionRuntimeStore implements ProductionRuntimeStore 
     private <T> T inTenant(UUID tenantId, java.util.function.Supplier<T> body) { return transactions.execute(status -> { jdbc.sql("select set_config('app.tenant_id', :tenantId, true)").param("tenantId", tenantId.toString()).query(String.class).single(); return body.get(); }); }
 
     private record WorkerRow(String endpointUri, String status, String capabilitiesJson) {}
+    private record WorkloadIdentity(String jobType, String workType) {}
     private record ExistingCompletion(
             AttemptStatus status,
             UUID workItemId,

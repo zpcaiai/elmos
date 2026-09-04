@@ -27,6 +27,11 @@ export const accountCookieNames = {
   tenant: "__Host-elmos_tenant",
 } as const;
 
+export const localAccountCookieNames = {
+  session: "elmos_local_session",
+  accessToken: "elmos_local_access_token",
+} as const;
+
 export type AccountCookieName =
   typeof accountCookieNames[keyof typeof accountCookieNames];
 
@@ -36,6 +41,23 @@ export function accountCookieDeletionOptions(name: AccountCookieName) {
     secure: true,
     sameSite: name === accountCookieNames.refreshToken ? "strict" : "lax",
     path: "/",
+    maxAge: 0,
+    expires: new Date(0),
+  } as const;
+}
+
+export function localAccountCookieOptions(request: Request) {
+  return {
+    httpOnly: true,
+    secure: new URL(trustedPublicOrigin(request)).protocol === "https:",
+    sameSite: "lax",
+    path: "/",
+  } as const;
+}
+
+export function localAccountCookieDeletionOptions(request: Request) {
+  return {
+    ...localAccountCookieOptions(request),
     maxAge: 0,
     expires: new Date(0),
   } as const;
@@ -54,10 +76,28 @@ const roleNames = [
 const maximumCookieValueLength = 3_800;
 const maximumTenantMemberships = 32;
 const localCredentialSessionLifetimeMs = 60 * 60_000;
+const oidcRefreshSessionLifetimeMs = 8 * 60 * 60_000;
 const localCredentialUsernameDefault = "test";
 const localCredentialPasswordDefault = "test";
+const localCredentialEmailDefault = "test@example.test";
 const localPasswordMinimumLength = 8;
 const localAccountStoreVersion = 1;
+
+export const ADMINISTRATOR_EMAIL = "zpchoney@gmail.com" as const;
+
+const administratorRoleNames = new Set<AccountRole>([
+  "OPERATOR",
+  "APPROVER",
+  "TENANT_ADMIN",
+]);
+const administratorPermissions = new Set<AccountPermission>([
+  "admin:read",
+  "admin:operate",
+  "admin:approve",
+  "configuration:manage",
+]);
+
+export type AccountLoginMode = "USER" | "ADMIN";
 
 export type AccountRole = typeof roleNames[number];
 export type AccountPermission =
@@ -179,6 +219,95 @@ const rolePermissions: Record<AccountRole, AccountPermission[]> = {
   TENANT_ADMIN: [...knownPermissions],
 };
 
+function normalizedEmail(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const email = value.trim().toLocaleLowerCase("en-US");
+  return email.length <= 254 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? email
+    : undefined;
+}
+
+function administratorMembership(
+  candidate: TenantMembership,
+  isAdministrator: boolean,
+): TenantMembership {
+  if (isAdministrator) {
+    return {
+      organizationId: candidate.organizationId,
+      roles: [...new Set([...candidate.roles, "APPROVER" as AccountRole])],
+      permissions: [...new Set([
+        ...candidate.permissions,
+        ...administratorPermissions,
+      ])].sort(),
+    };
+  }
+  return {
+    organizationId: candidate.organizationId,
+    roles: candidate.roles.filter((role) => !administratorRoleNames.has(role)),
+    permissions: candidate.permissions.filter(
+      (permission) => !administratorPermissions.has(permission),
+    ),
+  };
+}
+
+function applyAdministratorPolicy(
+  principal: Omit<AccountPrincipal, "emailVerified" | "isPlatformAdmin">,
+  emailVerified: boolean,
+): AccountPrincipal {
+  const email = normalizedEmail(principal.email);
+  const { email: _untrustedEmail, ...principalWithoutEmail } = principal;
+  const isPlatformAdmin = emailVerified && email === ADMINISTRATOR_EMAIL;
+  const memberships = principal.memberships.map((candidate) =>
+    administratorMembership(candidate, isPlatformAdmin));
+  const primary = memberships.find(
+    (candidate) => candidate.organizationId === principal.organizationId,
+  );
+  if (!primary) {
+    throw new AccountSessionError(
+      403,
+      "ACCOUNT_PRIMARY_TENANT_MISSING",
+      "账户主租户授权缺失。",
+    );
+  }
+  return {
+    ...principalWithoutEmail,
+    ...(email ? { email } : {}),
+    emailVerified,
+    isPlatformAdmin,
+    roles: primary.roles,
+    permissions: primary.permissions,
+    memberships,
+  };
+}
+
+export function isPlatformAdministrator(principal: AccountPrincipal): boolean {
+  return principal.isPlatformAdmin === true
+    && principal.emailVerified === true
+    && normalizedEmail(principal.email) === ADMINISTRATOR_EMAIL
+    && principal.permissions.includes("admin:read");
+}
+
+export function assertLoginModeAccess(
+  principal: AccountPrincipal,
+  loginMode: AccountLoginMode,
+): void {
+  const administrator = isPlatformAdministrator(principal);
+  if (loginMode === "ADMIN" && !administrator) {
+    throw new AccountSessionError(
+      403,
+      "ADMIN_EMAIL_REQUIRED",
+      `管理员入口仅允许已验证的 ${ADMINISTRATOR_EMAIL}。`,
+    );
+  }
+  if (loginMode === "USER" && administrator) {
+    throw new AccountSessionError(
+      403,
+      "ADMIN_LOGIN_ENTRY_REQUIRED",
+      "管理员账户必须从独立的管理员入口登录。",
+    );
+  }
+}
+
 export type TenantMembership = {
   organizationId: string;
   roles: AccountRole[];
@@ -189,6 +318,8 @@ export type AccountPrincipal = {
   actorId: string;
   displayName: string;
   email?: string;
+  emailVerified: boolean;
+  isPlatformAdmin: boolean;
   organizationId: string;
   roles: AccountRole[];
   permissions: AccountPermission[];
@@ -199,6 +330,9 @@ type SealedSession = {
   version: 1;
   principal: AccountPrincipal;
   accessTokenHash: string;
+  loginMode?: AccountLoginMode;
+  refreshTokenHash?: string;
+  refreshExpiresAt?: number;
   issuedAt: number;
   expiresAt: number;
 };
@@ -209,6 +343,7 @@ export type AuthorizationFlow = {
   nonce: string;
   verifier: string;
   returnTo: string;
+  loginMode: AccountLoginMode;
   expiresAt: number;
 };
 
@@ -237,6 +372,7 @@ export type OidcConfiguration = {
 export type TokenExchange = {
   accessToken: string;
   refreshToken?: string;
+  refreshExpiresIn?: number;
   idToken: string;
   expiresIn: number;
 };
@@ -311,6 +447,7 @@ export function oidcConfigured(): boolean {
 
 type LocalCredentialConfiguration = {
   username: string;
+  email: string;
   password: string;
   organizationId: string;
 };
@@ -338,10 +475,19 @@ export type LocalRegistrationInput = {
   password: string;
   passwordConfirmation: string;
   displayName: string;
-  email?: string;
+  email: string;
 };
 
+function isAlphaVercelEnvironment(): boolean {
+  return process.env.ELMOS_ALPHA_DEMO === "true"
+    || Boolean(process.env.VERCEL)
+    || Boolean(process.env.VERCEL_URL);
+}
+
 function localCredentialsEnabled(): boolean {
+  if (isAlphaVercelEnvironment() && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS !== "false") {
+    return true;
+  }
   return process.env.NODE_ENV !== "production"
     && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true";
 }
@@ -356,6 +502,9 @@ function localCredentialConfiguration(): LocalCredentialConfiguration {
   }
   const username = process.env.ELMOS_LOCAL_CREDENTIALS_USERNAME?.trim()
     || localCredentialUsernameDefault;
+  const email = normalizedEmail(
+    process.env.ELMOS_LOCAL_CREDENTIALS_EMAIL ?? localCredentialEmailDefault,
+  );
   const password = process.env.ELMOS_LOCAL_CREDENTIALS_PASSWORD
     ?? localCredentialPasswordDefault;
   const organizationId = process.env.ELMOS_LOCAL_CREDENTIALS_ORGANIZATION_ID?.trim()
@@ -363,6 +512,7 @@ function localCredentialConfiguration(): LocalCredentialConfiguration {
   if (
     !identifierPattern.test(username)
     || username.length > 200
+    || !email
     || password.length < 1
     || password.length > 1_024
     || !organizationPattern.test(organizationId)
@@ -373,7 +523,7 @@ function localCredentialConfiguration(): LocalCredentialConfiguration {
       "本地测试账号配置无效。",
     );
   }
-  return { username, password, organizationId };
+  return { username, email, password, organizationId };
 }
 
 export function localCredentialsConfigured(): boolean {
@@ -455,7 +605,12 @@ function localAccountRecord(value: unknown): LocalCredentialAccount | null {
       : Number.NaN;
   const createdAt = typeof candidate.createdAt === "string" ? candidate.createdAt : "";
   const updatedAt = typeof candidate.updatedAt === "string" ? candidate.updatedAt : "";
-  const email = candidate.email;
+  const rawEmail = candidate.email;
+  // v1 stores created before email sign-in used this development-only address.
+  // Keep it readable so an upgrade cannot invalidate the whole local store;
+  // all new/updated registrations still require normalizedEmail().
+  const email = normalizedEmail(rawEmail)
+    ?? (rawEmail === "test@localhost" ? rawEmail : undefined);
   if (
     !identifierPattern.test(username)
     || username.length < 3
@@ -470,12 +625,12 @@ function localAccountRecord(value: unknown): LocalCredentialAccount | null {
     || (lockedUntil !== null && (!Number.isFinite(lockedUntil) || lockedUntil < 0))
     || !createdAt
     || !updatedAt
-    || (email !== undefined && (typeof email !== "string" || email.length > 254))
+    || (rawEmail !== undefined && !email)
   ) return null;
   return {
     username,
     displayName,
-    ...(typeof email === "string" ? { email } : {}),
+    ...(email ? { email } : {}),
     organizationId,
     passwordHash,
     passwordSalt,
@@ -549,7 +704,7 @@ function seededLocalAccount(configuration: LocalCredentialConfiguration): LocalC
   return {
     username: configuration.username,
     displayName: "Local Test Account",
-    email: "test@localhost",
+    email: configuration.email,
     organizationId: configuration.organizationId,
     passwordHash: passwordHash(configuration.password, salt),
     passwordSalt: salt.toString("base64url"),
@@ -594,7 +749,7 @@ function readLocalCredentialStore(
 function localPrincipal(account: LocalCredentialAccount): AccountPrincipal {
   const roles: AccountRole[] = ["DEVELOPER"];
   const primaryMembership = membership(account.organizationId, roles, []);
-  return {
+  return applyAdministratorPolicy({
     actorId: `local:${account.username}`,
     displayName: account.displayName,
     ...(account.email ? { email: account.email } : {}),
@@ -602,7 +757,7 @@ function localPrincipal(account: LocalCredentialAccount): AccountPrincipal {
     roles: primaryMembership.roles,
     permissions: primaryMembership.permissions,
     memberships: [primaryMembership],
-  };
+  }, false);
 }
 
 function issueLocalSession(account: LocalCredentialAccount): LocalCredentialSession {
@@ -628,7 +783,7 @@ export function registerLocalAccount(input: LocalRegistrationInput): void {
   const { path: storePath, store } = readLocalCredentialStore(configuration, true);
   const username = input.username.trim();
   const displayName = input.displayName.trim();
-  const email = input.email?.trim();
+  const email = normalizedEmail(input.email);
   if (!identifierPattern.test(username) || username.length < 3 || username.length > 200) {
     throw registrationError(400, "LOCAL_REGISTRATION_USERNAME_INVALID", "用户名需为 3 至 200 个字符。");
   }
@@ -641,11 +796,20 @@ export function registerLocalAccount(input: LocalRegistrationInput): void {
   if (displayName.length < 2 || displayName.length > 160) {
     throw registrationError(400, "LOCAL_REGISTRATION_DISPLAY_NAME_INVALID", "显示名称需为 2 至 160 个字符。");
   }
-  if (email && (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))) {
+  if (!email) {
     throw registrationError(400, "LOCAL_REGISTRATION_EMAIL_INVALID", "邮箱地址无效。");
   }
-  if (store.accounts.some((account) => safeEqual(account.username, username))) {
-    throw registrationError(409, "LOCAL_ACCOUNT_ALREADY_EXISTS", "该用户名已存在。");
+  if (email === ADMINISTRATOR_EMAIL) {
+    throw registrationError(
+      403,
+      "LOCAL_REGISTRATION_ADMIN_EMAIL_RESERVED",
+      "管理员邮箱不能通过本地注册创建。",
+    );
+  }
+  if (store.accounts.some((account) =>
+    safeEqual(account.username, username)
+    || normalizedEmail(account.email) === email)) {
+    throw registrationError(409, "LOCAL_ACCOUNT_ALREADY_EXISTS", "该用户名或邮箱已存在。");
   }
   const now = new Date().toISOString();
   const salt = randomBytes(16);
@@ -653,7 +817,7 @@ export function registerLocalAccount(input: LocalRegistrationInput): void {
   store.accounts.push({
     username,
     displayName,
-    ...(email ? { email } : {}),
+    email,
     organizationId,
     passwordHash: passwordHash(input.password, salt),
     passwordSalt: salt.toString("base64url"),
@@ -688,9 +852,18 @@ export function assertLocalCredentialRequest(request: Request): void {
     );
   }
   const loopbackHosts = ["127.0.0.1", "localhost", "::1"];
+  const isLoopback = loopbackHosts.includes(requestUrl.hostname)
+    && loopbackHosts.includes(hostUrl.hostname);
+  const isAllowedAlphaHost = (isAlphaVercelEnvironment() || process.env.ELMOS_ALPHA_DEMO === "true")
+    && (
+      hostUrl.hostname === "elmos-alpha.vercel.app"
+      || hostUrl.hostname.endsWith(".vercel.app")
+      || Boolean(process.env.VERCEL_URL && hostUrl.hostname.includes("vercel.app"))
+    )
+    && hostUrl.hostname === requestUrl.hostname;
+
   if (
-    !loopbackHosts.includes(requestUrl.hostname)
-    || !loopbackHosts.includes(hostUrl.hostname)
+    (!isLoopback && !isAllowedAlphaHost)
     || hostUrl.username
     || hostUrl.password
     || hostUrl.pathname !== "/"
@@ -707,11 +880,13 @@ export function assertLocalCredentialRequest(request: Request): void {
 }
 
 export function authenticateLocalCredentials(
-  username: string,
+  emailOrUsername: string,
   password: string,
 ): LocalCredentialSession {
   const configuration = localCredentialConfiguration();
-  if (username.length > 200 || password.length > 1_024) {
+  const identifier = emailOrUsername.trim();
+  const email = normalizedEmail(identifier);
+  if (!identifier || identifier.length > 254 || password.length > 1_024) {
     throw new AccountSessionError(
       401,
       "LOCAL_CREDENTIALS_INVALID",
@@ -720,7 +895,9 @@ export function authenticateLocalCredentials(
   }
   if (localRegistrationStoreConfigured()) {
     const loaded = readLocalCredentialStore(configuration, true);
-    const account = loaded.store.accounts.find((candidate) => safeEqual(candidate.username, username));
+    const account = loaded.store.accounts.find((candidate) =>
+      safeEqual(candidate.username, identifier)
+      || Boolean(email && normalizedEmail(candidate.email) === email));
     if (account) {
       if (account.lockedUntil !== null && account.lockedUntil > Date.now()) {
         throw new AccountSessionError(
@@ -749,20 +926,19 @@ export function authenticateLocalCredentials(
       return issueLocalSession(account);
     }
   }
-  if (
-    !safeEqual(username, configuration.username)
-    || !safeEqual(password, configuration.password)
-  ) {
+  const configuredIdentifierMatches = safeEqual(identifier, configuration.username)
+    || safeEqual(identifier.toLocaleLowerCase("en-US"), configuration.email);
+  if (!configuredIdentifierMatches || !safeEqual(password, configuration.password)) {
     throw new AccountSessionError(
       401,
       "LOCAL_CREDENTIALS_INVALID",
-      "本地测试账号或密码错误。",
+      "本地测试邮箱或密码错误。",
     );
   }
   return issueLocalSession({
     username: configuration.username,
     displayName: "Local Test Account",
-    email: "test@localhost",
+    email: configuration.email,
     organizationId: configuration.organizationId,
     passwordHash: "",
     passwordSalt: "",
@@ -774,6 +950,13 @@ export function authenticateLocalCredentials(
 }
 
 function sessionKey(): Buffer {
+  const configured = process.env.ELMOS_SESSION_SECRET?.trim();
+  if (configured && configured.length >= 32) {
+    return createHash("sha256").update(configured, "utf8").digest();
+  }
+  if (isAlphaVercelEnvironment() || process.env.NODE_ENV !== "production" || localCredentialsEnabled()) {
+    return createHash("sha256").update("elmos-alpha-deterministic-local-session-secret-2026-salt-32", "utf8").digest();
+  }
   const secret = requiredEnvironment("ELMOS_SESSION_SECRET", 32);
   return createHash("sha256").update(secret, "utf8").digest();
 }
@@ -891,7 +1074,7 @@ function membership(
   };
 }
 
-function principalFromClaims(claims: JWTPayload): AccountPrincipal {
+export function accountPrincipalFromOidcClaims(claims: JWTPayload): AccountPrincipal {
   const actorId = typeof claims.sub === "string" ? claims.sub : "";
   const organizationId = typeof claims.organization_id === "string"
     ? claims.organization_id
@@ -928,10 +1111,9 @@ function principalFromClaims(claims: JWTPayload): AccountPrincipal {
     .find((value): value is string => typeof value === "string" && value.trim().length > 0)
     ?.trim()
     .slice(0, 160) ?? actorId;
-  const email = typeof claims.email === "string" && claims.email.length <= 254
-    ? claims.email
-    : undefined;
-  return {
+  const email = normalizedEmail(claims.email);
+  const emailVerified = claims.email_verified === true;
+  return applyAdministratorPolicy({
     actorId,
     displayName,
     ...(email ? { email } : {}),
@@ -939,7 +1121,7 @@ function principalFromClaims(claims: JWTPayload): AccountPrincipal {
     roles: primary.roles,
     permissions: primary.permissions,
     memberships: [...memberships.values()],
-  };
+  }, emailVerified);
 }
 
 const globalJwks = globalThis as typeof globalThis & {
@@ -947,11 +1129,7 @@ const globalJwks = globalThis as typeof globalThis & {
   __elmosOidcJwksUri?: string;
 };
 
-async function verifyIdToken(
-  idToken: string,
-  configuration: OidcConfiguration,
-  expectedNonce?: string,
-): Promise<{ claims: JWTPayload; expiresAt: number }> {
+function oidcJwks(configuration: OidcConfiguration): ReturnType<typeof createRemoteJWKSet> {
   if (
     !globalJwks.__elmosOidcJwks
     || globalJwks.__elmosOidcJwksUri !== configuration.jwksUri
@@ -962,7 +1140,15 @@ async function verifyIdToken(
     });
     globalJwks.__elmosOidcJwksUri = configuration.jwksUri;
   }
-  const verified = await jwtVerify(idToken, globalJwks.__elmosOidcJwks, {
+  return globalJwks.__elmosOidcJwks;
+}
+
+async function verifyIdToken(
+  idToken: string,
+  configuration: OidcConfiguration,
+  expectedNonce?: string,
+): Promise<{ claims: JWTPayload; expiresAt: number }> {
+  const verified = await jwtVerify(idToken, oidcJwks(configuration), {
     issuer: configuration.issuer,
     audience: configuration.clientId,
     algorithms: ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
@@ -982,17 +1168,67 @@ async function verifyIdToken(
   return { claims: verified.payload, expiresAt };
 }
 
-export function createAuthorizationFlow(returnTo: string): {
+async function assertAdministratorAccessTokenIdentity(
+  accessToken: string,
+  principal: AccountPrincipal,
+  configuration: OidcConfiguration,
+): Promise<void> {
+  if (!isPlatformAdministrator(principal)) return;
+  let claims: JWTPayload;
+  try {
+    const verified = await jwtVerify(accessToken, oidcJwks(configuration), {
+      issuer: configuration.issuer,
+      audience: configuration.audience,
+      algorithms: ["RS256", "RS384", "RS512", "ES256", "ES384", "ES512"],
+      clockTolerance: 5,
+    });
+    claims = verified.payload;
+  } catch {
+    throw new AccountSessionError(
+      403,
+      "OIDC_ADMIN_ACCESS_TOKEN_INVALID",
+      "管理员访问令牌不是可验证的目标 API JWT。",
+    );
+  }
+  const accessTokenEmail = normalizedEmail(claims.email);
+  if (
+    typeof claims.sub !== "string"
+    || !safeEqual(claims.sub, principal.actorId)
+    || claims.email_verified !== true
+    || accessTokenEmail !== ADMINISTRATOR_EMAIL
+    || accessTokenEmail !== normalizedEmail(principal.email)
+  ) {
+    throw new AccountSessionError(
+      403,
+      "OIDC_ADMIN_ACCESS_TOKEN_IDENTITY_MISMATCH",
+      "管理员访问令牌身份与已验证的登录身份不一致。",
+    );
+  }
+}
+
+export function createAuthorizationFlow(
+  returnTo: string,
+  loginMode: AccountLoginMode = "USER",
+): {
   flow: AuthorizationFlow;
   sealedFlow: string;
   authorizationUrl: string;
 } {
   const configuration = oidcConfiguration();
-  const safeReturnTo = returnTo.startsWith("/")
+  if (loginMode !== "USER" && loginMode !== "ADMIN") {
+    throw new AccountSessionError(400, "LOGIN_MODE_INVALID", "登录入口无效。");
+  }
+  let safeReturnTo = returnTo.startsWith("/")
     && !returnTo.startsWith("//")
-    && !/[\r\n\0]/.test(returnTo)
+    && !/[\\\r\n\0]/.test(returnTo)
     ? returnTo
     : "/";
+  if (loginMode === "USER" && safeReturnTo.startsWith("/admin")) {
+    safeReturnTo = "/";
+  }
+  if (loginMode === "ADMIN" && !safeReturnTo.startsWith("/admin")) {
+    safeReturnTo = "/admin";
+  }
   const verifier = base64url(randomBytes(48));
   const challenge = base64url(createHash("sha256").update(verifier).digest());
   const flow: AuthorizationFlow = {
@@ -1001,6 +1237,7 @@ export function createAuthorizationFlow(returnTo: string): {
     nonce: base64url(randomBytes(32)),
     verifier,
     returnTo: safeReturnTo,
+    loginMode,
     expiresAt: Date.now() + 10 * 60_000,
   };
   const target = new URL(configuration.authorizationEndpoint);
@@ -1026,6 +1263,7 @@ export function readAuthorizationFlow(
   if (
     flow.version !== 1
     || flow.expiresAt <= Date.now()
+    || (flow.loginMode !== "USER" && flow.loginMode !== "ADMIN")
     || !safeEqual(flow.state, presentedState)
   ) {
     throw new AccountSessionError(401, "OIDC_STATE_INVALID", "OIDC state 已过期或不匹配。");
@@ -1042,6 +1280,9 @@ function tokenResponse(value: unknown): TokenExchange {
   const idToken = typeof record.id_token === "string" ? record.id_token : "";
   const refreshToken = typeof record.refresh_token === "string" ? record.refresh_token : undefined;
   const expiresIn = Number(record.expires_in);
+  const refreshExpiresIn = record.refresh_expires_in === undefined
+    ? undefined
+    : Number(record.refresh_expires_in);
   if (
     accessToken.length < 16
     || accessToken.length > maximumCookieValueLength
@@ -1051,10 +1292,29 @@ function tokenResponse(value: unknown): TokenExchange {
     || !Number.isFinite(expiresIn)
     || expiresIn < 60
     || expiresIn > 24 * 60 * 60
+    || (refreshExpiresIn !== undefined && (
+      !Number.isFinite(refreshExpiresIn)
+      || refreshExpiresIn < 60
+      || refreshExpiresIn > 30 * 24 * 60 * 60
+    ))
   ) {
     throw new AccountSessionError(502, "OIDC_TOKEN_RESPONSE_INVALID", "身份提供商令牌响应缺少必要字段。");
   }
-  return { accessToken, idToken, ...(refreshToken ? { refreshToken } : {}), expiresIn };
+  return {
+    accessToken,
+    idToken,
+    ...(refreshToken ? { refreshToken } : {}),
+    ...(refreshExpiresIn === undefined ? {} : { refreshExpiresIn }),
+    expiresIn,
+  };
+}
+
+function refreshTokenExpiresAt(tokens: TokenExchange): number | undefined {
+  if (!tokens.refreshToken) return undefined;
+  return Date.now() + Math.min(
+    oidcRefreshSessionLifetimeMs,
+    (tokens.refreshExpiresIn ?? oidcRefreshSessionLifetimeMs / 1_000) * 1_000,
+  );
 }
 
 async function postToken(parameters: URLSearchParams): Promise<TokenExchange> {
@@ -1086,7 +1346,13 @@ async function postToken(parameters: URLSearchParams): Promise<TokenExchange> {
 export async function exchangeAuthorizationCode(
   code: string,
   flow: AuthorizationFlow,
-): Promise<{ tokens: TokenExchange; session: string; expiresAt: number; principal: AccountPrincipal }> {
+): Promise<{
+  tokens: TokenExchange;
+  session: string;
+  expiresAt: number;
+  refreshExpiresAt?: number;
+  principal: AccountPrincipal;
+}> {
   const configuration = oidcConfiguration();
   const tokens = await postToken(new URLSearchParams({
     grant_type: "authorization_code",
@@ -1102,20 +1368,52 @@ export async function exchangeAuthorizationCode(
     Date.now() + tokens.expiresIn * 1_000,
     Date.now() + 60 * 60_000,
   );
-  const principal = principalFromClaims(verified.claims);
+  const principal = accountPrincipalFromOidcClaims(verified.claims);
+  try {
+    assertLoginModeAccess(principal, flow.loginMode);
+    await assertAdministratorAccessTokenIdentity(tokens.accessToken, principal, configuration);
+  } catch (error) {
+    await Promise.allSettled([
+      revokeToken(tokens.accessToken),
+      ...(tokens.refreshToken ? [revokeToken(tokens.refreshToken)] : []),
+    ]);
+    throw error;
+  }
+  const refreshExpiresAt = refreshTokenExpiresAt(tokens);
   const session = seal({
     version: 1,
     principal,
     accessTokenHash: hashToken(tokens.accessToken),
+    loginMode: flow.loginMode,
+    ...(tokens.refreshToken ? { refreshTokenHash: hashToken(tokens.refreshToken) } : {}),
+    ...(refreshExpiresAt ? { refreshExpiresAt } : {}),
     issuedAt: Date.now(),
     expiresAt,
   } satisfies SealedSession);
-  return { tokens, session, expiresAt, principal };
+  return { tokens, session, expiresAt, ...(refreshExpiresAt ? { refreshExpiresAt } : {}), principal };
 }
 
 export async function refreshAccountSession(
   refreshToken: string,
-): Promise<{ tokens: TokenExchange; session: string; expiresAt: number; principal: AccountPrincipal }> {
+  expected: {
+    actorId: string;
+    loginMode: AccountLoginMode;
+    refreshExpiresAt: number;
+  },
+): Promise<{
+  tokens: TokenExchange;
+  session: string;
+  expiresAt: number;
+  refreshExpiresAt: number;
+  principal: AccountPrincipal;
+}> {
+  if (expected.refreshExpiresAt <= Date.now()) {
+    throw new AccountSessionError(
+      401,
+      "ACCOUNT_REFRESH_SESSION_EXPIRED",
+      "刷新会话已过期，请重新登录。",
+    );
+  }
   const configuration = oidcConfiguration();
   const tokens = await postToken(new URLSearchParams({
     grant_type: "refresh_token",
@@ -1129,17 +1427,42 @@ export async function refreshAccountSession(
     Date.now() + tokens.expiresIn * 1_000,
     Date.now() + 60 * 60_000,
   );
-  const principal = principalFromClaims(verified.claims);
+  const principal = accountPrincipalFromOidcClaims(verified.claims);
+  try {
+    if (!safeEqual(principal.actorId, expected.actorId)) {
+      throw new AccountSessionError(
+        403,
+        "OIDC_REFRESH_SUBJECT_CHANGED",
+        "刷新后的账户主体与当前会话不一致，请重新登录。",
+      );
+    }
+    assertLoginModeAccess(principal, expected.loginMode);
+    await assertAdministratorAccessTokenIdentity(tokens.accessToken, principal, configuration);
+  } catch (error) {
+    await Promise.allSettled([
+      revokeToken(tokens.accessToken),
+      revokeToken(tokens.refreshToken ?? refreshToken),
+    ]);
+    throw error;
+  }
+  const effectiveRefreshToken = tokens.refreshToken ?? refreshToken;
+  const refreshExpiresAt = tokens.refreshToken
+    ? refreshTokenExpiresAt(tokens) as number
+    : expected.refreshExpiresAt;
   return {
-    tokens: { ...tokens, refreshToken: tokens.refreshToken ?? refreshToken },
+    tokens: { ...tokens, refreshToken: effectiveRefreshToken },
     session: seal({
       version: 1,
       principal,
       accessTokenHash: hashToken(tokens.accessToken),
+      loginMode: expected.loginMode,
+      refreshTokenHash: hashToken(effectiveRefreshToken),
+      refreshExpiresAt,
       issuedAt: Date.now(),
       expiresAt,
     } satisfies SealedSession),
     expiresAt,
+    refreshExpiresAt,
     principal,
   };
 }
@@ -1291,6 +1614,18 @@ export function trustedPublicOrigin(request: Request): string {
     }
     return parsed.origin;
   }
+  if (isAlphaVercelEnvironment() || process.env.ELMOS_ALPHA_DEMO === "true") {
+    const vercelHost = request.headers.get("x-forwarded-host")
+      || request.headers.get("host")
+      || process.env.VERCEL_PROJECT_PRODUCTION_URL
+      || process.env.VERCEL_URL;
+    if (vercelHost) {
+      const cleanHost = vercelHost.replace(/^https?:\/\//, "").replace(/\/$/, "");
+      const proto = request.headers.get("x-forwarded-proto")
+        || (cleanHost.startsWith("localhost") || cleanHost.startsWith("127.0.0.1") ? "http" : "https");
+      return `${proto}://${cleanHost}`;
+    }
+  }
   if (process.env.NODE_ENV === "production") {
     throw new AccountSessionError(
       503,
@@ -1311,6 +1646,75 @@ export function assertSameOriginMutation(request: Request): void {
   }
 }
 
+export function refreshSessionFromRequest(request: Request): {
+  actorId: string;
+  loginMode: AccountLoginMode;
+  refreshToken: string;
+  refreshExpiresAt: number;
+} {
+  const cookies = cookieMap(request.headers.get("cookie"));
+  const sealed = cookies.get(accountCookieNames.session) ?? "";
+  const refreshToken = cookies.get(accountCookieNames.refreshToken) ?? "";
+  if (!refreshToken) {
+    throw new AccountSessionError(401, "REFRESH_TOKEN_REQUIRED", "会话无法刷新，请重新登录。");
+  }
+  if (!sealed) {
+    throw new AccountSessionError(
+      401,
+      "ACCOUNT_REFRESH_SESSION_REQUIRED",
+      "刷新会话缺失，请重新登录。",
+    );
+  }
+  if (refreshToken.length > maximumCookieValueLength) {
+    throw new AccountSessionError(
+      401,
+      "ACCOUNT_REFRESH_SESSION_INVALID",
+      "刷新会话无效，请重新登录。",
+    );
+  }
+  const session = unseal<SealedSession>(sealed, "ACCOUNT_REFRESH_SESSION_INVALID");
+  const now = Date.now();
+  if (
+    session.version !== 1
+    || typeof session.issuedAt !== "number"
+    || typeof session.expiresAt !== "number"
+    || typeof session.refreshExpiresAt !== "number"
+    || typeof session.accessTokenHash !== "string"
+    || typeof session.refreshTokenHash !== "string"
+    || (session.loginMode !== "USER" && session.loginMode !== "ADMIN")
+    || session.issuedAt > now + 60_000
+    || session.expiresAt <= session.issuedAt
+    || session.refreshExpiresAt <= now
+    || session.refreshExpiresAt > session.issuedAt + oidcRefreshSessionLifetimeMs
+    || !safeEqual(session.refreshTokenHash, hashToken(refreshToken))
+  ) {
+    throw new AccountSessionError(
+      401,
+      "ACCOUNT_REFRESH_SESSION_EXPIRED",
+      "刷新会话已过期或不匹配，请重新登录。",
+    );
+  }
+  const accessToken = cookies.get(accountCookieNames.accessToken);
+  if (accessToken && !safeEqual(session.accessTokenHash, hashToken(accessToken))) {
+    throw new AccountSessionError(
+      401,
+      "ACCOUNT_REFRESH_SESSION_INVALID",
+      "刷新会话与访问令牌不匹配，请重新登录。",
+    );
+  }
+  const principal = applyAdministratorPolicy(
+    session.principal,
+    session.principal.emailVerified === true,
+  );
+  assertLoginModeAccess(principal, session.loginMode);
+  return {
+    actorId: principal.actorId,
+    loginMode: session.loginMode,
+    refreshToken,
+    refreshExpiresAt: session.refreshExpiresAt,
+  };
+}
+
 export function accountSessionFromRequest(
   request: Request,
   requiredPermission?: AccountPermission,
@@ -1320,8 +1724,19 @@ export function accountSessionFromRequest(
   expiresAt: number;
 } {
   const cookies = cookieMap(request.headers.get("cookie"));
-  const sealed = cookies.get(accountCookieNames.session) ?? "";
-  const accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  let sealed = cookies.get(accountCookieNames.session) ?? "";
+  let accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
+  let localCredentialSession = false;
+  if (!sealed && !accessToken) {
+    const localSession = cookies.get(localAccountCookieNames.session) ?? "";
+    const localAccessToken = cookies.get(localAccountCookieNames.accessToken) ?? "";
+    if (localSession || localAccessToken) {
+      assertLocalCredentialRequest(request);
+      sealed = localSession;
+      accessToken = localAccessToken;
+      localCredentialSession = true;
+    }
+  }
   if (!sealed || !accessToken) {
     throw new AccountSessionError(401, "ACCOUNT_SESSION_REQUIRED", "请先登录企业账户。");
   }
@@ -1333,15 +1748,23 @@ export function accountSessionFromRequest(
   ) {
     throw new AccountSessionError(401, "ACCOUNT_SESSION_EXPIRED", "企业账户会话已过期，请重新登录。");
   }
-  const selected = activeMembership(
+  const policyPrincipal = applyAdministratorPolicy(
     session.principal,
-    cookies.get(accountCookieNames.tenant),
+    session.principal.emailVerified === true,
+  );
+  const selected = activeMembership(
+    policyPrincipal,
+    localCredentialSession ? undefined : cookies.get(accountCookieNames.tenant),
+  );
+  const constrainedSelection = administratorMembership(
+    selected,
+    isPlatformAdministrator(policyPrincipal),
   );
   const principal = {
-    ...session.principal,
-    organizationId: selected.organizationId,
-    roles: selected.roles,
-    permissions: selected.permissions,
+    ...policyPrincipal,
+    organizationId: constrainedSelection.organizationId,
+    roles: constrainedSelection.roles,
+    permissions: constrainedSelection.permissions,
   };
   if (requiredPermission && !principal.permissions.includes(requiredPermission)) {
     throw new AccountSessionError(403, "ACCOUNT_PERMISSION_REQUIRED", "当前账户缺少执行此操作的权限。");
@@ -1352,6 +1775,10 @@ export function accountSessionFromRequest(
 
 export function sessionCookieMaxAge(expiresAt: number): number {
   return Math.max(0, Math.floor((expiresAt - Date.now()) / 1_000));
+}
+
+export function refreshSessionCookieMaxAge(refreshExpiresAt: number): number {
+  return Math.max(0, Math.floor((refreshExpiresAt - Date.now()) / 1_000));
 }
 
 export function authorizationFlowCookieMaxAge(): number {

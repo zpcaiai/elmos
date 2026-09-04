@@ -245,6 +245,7 @@ export function SpringModernizationStudio() {
   const [githubCatalogStatus, setGithubCatalogStatus] =
     useState<RepositoryCatalog["status"]>("NOT_CONFIGURED");
   const [startAfterVerification, setStartAfterVerification] = useState(false);
+  const [allowExperimentalRoutes, setAllowExperimentalRoutes] = useState(false);
   const [capability, setCapability] = useState<Capability | null>(null);
   const [targetSpringBoot, setTargetSpringBoot] = useState("");
   const [targetJava, setTargetJava] = useState("");
@@ -499,6 +500,7 @@ export function SpringModernizationStudio() {
             : null,
           materializedRelativePath: sourceMode === "MATERIALIZED_SNAPSHOT" ? materializedRelativePath.trim() : null,
           startAfterVerification,
+          allowExperimentalRoutes,
           targetSpringBoot,
           targetJava,
           idempotencyKey: randomKey("spring-upgrade"),
@@ -841,6 +843,10 @@ export function SpringModernizationStudio() {
           <label className="spring-start-toggle">
             <input type="checkbox" checked={startAfterVerification} disabled={!runtimeReady} onChange={(event) => setStartAfterVerification(event.target.checked)} />
             <span><strong>验证通过后自动一键启动</strong><small>{runtimeReady ? "独立验证 PASS 后，在每次运行专属的 Rootless 容器中执行。" : capability?.runtimeRunnerReason ?? "独立 Runtime Runner 尚未配置。"}</small></span>
+          </label>
+          <label className="spring-start-toggle">
+            <input type="checkbox" checked={allowExperimentalRoutes} onChange={(event) => setAllowExperimentalRoutes(event.target.checked)} />
+            <span><strong>允许自适应实验性升级路线</strong><small>对处于受支持大版本区间内的未标定补丁版本，自动放行升级流水线并执行严格编译与探活验证。</small></span>
           </label>
           <div className="business-actions">
             <button className="button button-primary" type="submit" disabled={busy || migrationActive || !runnerReady || !credentialsReady || !selectedTargetSupported}>

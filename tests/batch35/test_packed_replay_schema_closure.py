@@ -18,10 +18,32 @@ ROOT = Path(__file__).resolve().parents[2]
 PACKED_LAUNCHER = ROOT / "scripts/batch35/validate_packed_route.py"
 ENGINE_PROJECT = ROOT / "engines/polyglot-route-engine"
 ENGINE_SOURCE_ROOT = ENGINE_PROJECT / "src/elmos_polyglot_route"
-AMBIENT_TYPESCRIPT_ROOT = Path(
-    "/Users/stephen/.local/share/elmos/toolchains/typescript/5.9.2/"
+REFERENCE_ROUTE = ROOT / "routes/cpp-to-java"
+REFERENCE_ENGINE_MANIFEST = (
+    REFERENCE_ROUTE / "certification/formal-artifacts/engine-source-manifest.json"
+)
+REFERENCE_ENGINE_SOURCES = (
+    REFERENCE_ROUTE / "certification/formal-artifacts/engine-sources"
+)
+_toolchain_root_value = os.environ.get(
+    "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT", ""
+).strip()
+TOOLCHAIN_ROOT = (
+    Path(_toolchain_root_value)
+    if _toolchain_root_value
+    else Path.home() / ".local/share/elmos/toolchains"
+)
+if not TOOLCHAIN_ROOT.is_absolute() or TOOLCHAIN_ROOT != Path(
+    os.path.normpath(str(TOOLCHAIN_ROOT))
+):
+    raise RuntimeError(
+        "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT must be absolute and normalized"
+    )
+AMBIENT_TYPESCRIPT_ROOT = TOOLCHAIN_ROOT / (
+    "typescript/5.9.2/"
     "sha256-61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
 )
+TYPESCRIPT_LAUNCHER_BYTES = b"#!/usr/bin/env node\nrequire('../lib/tsc.js')\n"
 SCHEMA_RELATIVES = (
     "certification/replay/schemas/batch29/formal-input.schema.json",
     "certification/replay/schemas/batch29/identifier-plan.schema.json",
@@ -58,7 +80,10 @@ def _private_locked_interpreter() -> Path:
     if executable.parent.name != "bin" or not executable.is_file():
         raise RuntimeError("packed replay test interpreter layout is invalid")
     venv_root = executable.parent.parent
-    for forbidden_root in (ROOT.resolve(strict=True), ENGINE_PROJECT.resolve(strict=True)):
+    for forbidden_root in (
+        ROOT.resolve(strict=True),
+        ENGINE_PROJECT.resolve(strict=True),
+    ):
         try:
             venv_root.resolve(strict=True).relative_to(forbidden_root)
         except ValueError:
@@ -80,7 +105,9 @@ def _private_locked_interpreter() -> Path:
             config_bytes = config.read_bytes()
             after = config.lstat()
         except OSError as exc:
-            raise RuntimeError("packed replay private uv environment is unavailable") from exc
+            raise RuntimeError(
+                "packed replay private uv environment is unavailable"
+            ) from exc
         stable_identity = (
             "st_dev",
             "st_ino",
@@ -102,14 +129,19 @@ def _private_locked_interpreter() -> Path:
             )
         except UnicodeDecodeError as exc:
             raise RuntimeError("packed replay pyvenv.cfg is not UTF-8") from exc
-        normalized_fields = {key.strip(): value.strip() for key, value in fields.items()}
+        normalized_fields = {
+            key.strip(): value.strip() for key, value in fields.items()
+        }
         expected_fields = {
             "implementation": "CPython",
             "uv": "0.11.16",
             "version_info": "3.12.12",
             "include-system-site-packages": "false",
         }
-        if any(normalized_fields.get(key) != value for key, value in expected_fields.items()):
+        if any(
+            normalized_fields.get(key) != value
+            for key, value in expected_fields.items()
+        ):
             raise RuntimeError("packed replay pyvenv.cfg identity differs")
     return executable
 
@@ -122,28 +154,125 @@ def _write_json(path: Path, value: object) -> None:
     )
 
 
+def _read_reference_source(
+    path: Path,
+    *,
+    expected_digest: str,
+    expected_bytes: int,
+) -> bytes:
+    try:
+        before = path.lstat()
+        if path.is_symlink() or not stat.S_ISREG(before.st_mode):
+            raise RuntimeError(f"reference runtime source is not regular: {path}")
+        content = path.read_bytes()
+        after = path.lstat()
+    except OSError as exc:
+        raise RuntimeError(f"reference runtime source is unavailable: {path}") from exc
+    stable_identity = (
+        "st_dev",
+        "st_ino",
+        "st_mode",
+        "st_nlink",
+        "st_uid",
+        "st_gid",
+        "st_size",
+        "st_mtime_ns",
+        "st_ctime_ns",
+    )
+    if any(getattr(before, key) != getattr(after, key) for key in stable_identity):
+        raise RuntimeError(f"reference runtime source changed during read: {path}")
+    if len(content) != expected_bytes:
+        raise RuntimeError(f"reference runtime source byte count differs: {path}")
+    if "sha256:" + hashlib.sha256(content).hexdigest() != expected_digest:
+        raise RuntimeError(f"reference runtime source digest differs: {path}")
+    return content
+
+
 @lru_cache(maxsize=1)
-def _typescript_capture_receipt() -> dict[str, Any]:
-    interpreter = _private_locked_interpreter()
-    script = (
-        "import json,sys;"
-        f"sys.path.insert(0,{str(ENGINE_PROJECT / 'src')!r});"
-        "from elmos_polyglot_route.toolchains import "
-        "typescript_compiler_capture_receipt;"
-        "print(json.dumps(typescript_compiler_capture_receipt(),sort_keys=True))"
-    )
-    completed = subprocess.run(
-        [str(interpreter), "-I", "-B", "-c", script],
-        cwd=ROOT,
-        check=False,
-        capture_output=True,
-        text=True,
-        timeout=120,
-    )
-    assert completed.returncode == 0, completed.stderr
-    value = json.loads(completed.stdout)
-    assert isinstance(value, dict)
-    return value
+def _reference_runtime_fixture() -> tuple[
+    dict[str, Any],
+    dict[str, tuple[bytes, str]],
+]:
+    launcher = _load(PACKED_LAUNCHER, "packed_reference_runtime_launcher")
+    if (
+        REFERENCE_ENGINE_MANIFEST.is_symlink()
+        or not REFERENCE_ENGINE_MANIFEST.is_file()
+    ):
+        raise RuntimeError("reference engine source manifest is not a regular file")
+    try:
+        reference_source_root = REFERENCE_ENGINE_SOURCES.resolve(strict=True)
+    except OSError as exc:
+        raise RuntimeError("reference engine source root is unavailable") from exc
+    if REFERENCE_ENGINE_SOURCES.is_symlink() or not reference_source_root.is_dir():
+        raise RuntimeError("reference engine source root is not a regular directory")
+    source_manifest = launcher.load_json(REFERENCE_ENGINE_MANIFEST)
+    expected = launcher.validate_runtime_source_receipts(source_manifest)
+    files = source_manifest.get("files")
+    if not isinstance(files, list):
+        raise RuntimeError("reference engine source manifest file set is invalid")
+    entries: dict[str, dict[str, Any]] = {}
+    for entry in files:
+        if not isinstance(entry, dict):
+            raise RuntimeError("reference engine source manifest entry is invalid")
+        repository_path = entry.get("repository_path")
+        if repository_path not in expected:
+            continue
+        if repository_path in entries:
+            raise RuntimeError("reference engine runtime source is duplicated")
+        entries[repository_path] = entry
+    if set(entries) != set(expected):
+        raise RuntimeError("reference engine runtime source set is incomplete")
+
+    runtime_sources: dict[str, tuple[bytes, str]] = {}
+    launcher_repository_path = launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE + "/bin/tsc"
+    for repository_path, (
+        expected_digest,
+        expected_bytes,
+        expected_mode,
+    ) in expected.items():
+        entry = entries[repository_path]
+        if set(entry) != {
+            "repository_path",
+            "captured_path",
+            "sha256",
+            "bytes",
+        }:
+            raise RuntimeError("reference engine runtime source entry is not exact")
+        if (
+            entry.get("captured_path")
+            != launcher.ENGINE_SOURCE_PREFIX + repository_path
+            or entry.get("sha256") != expected_digest
+            or entry.get("bytes") != expected_bytes
+        ):
+            raise RuntimeError("reference engine runtime source binding differs")
+        if repository_path == launcher_repository_path:
+            content = TYPESCRIPT_LAUNCHER_BYTES
+            if len(content) != 45:
+                raise RuntimeError("synthetic TypeScript launcher byte count differs")
+            if "sha256:" + hashlib.sha256(content).hexdigest() != expected_digest:
+                raise RuntimeError("synthetic TypeScript launcher digest differs")
+        else:
+            source_candidate = REFERENCE_ENGINE_SOURCES / repository_path
+            try:
+                if source_candidate.is_symlink():
+                    raise RuntimeError("reference runtime source is a symbolic link")
+                source_path = source_candidate.resolve(strict=True)
+                source_path.relative_to(reference_source_root)
+            except (OSError, ValueError) as exc:
+                raise RuntimeError(
+                    "reference runtime source escapes the frozen source root"
+                ) from exc
+            content = _read_reference_source(
+                source_path,
+                expected_digest=expected_digest,
+                expected_bytes=expected_bytes,
+            )
+        runtime_sources[repository_path] = (content, expected_mode)
+
+    receipts = source_manifest.get("runtime_source_receipts")
+    if not isinstance(receipts, dict):
+        raise RuntimeError("reference runtime source receipts are invalid")
+    return receipts, runtime_sources
 
 
 def _artifact_ref(route: Path, relative: str, role: str) -> dict[str, object]:
@@ -324,8 +453,7 @@ def _build_isolated_module_pack(
                     "# isolated captured engine package\n",
                 ),
                 (
-                    "engines/polyglot-route-engine/src/"
-                    "elmos_polyglot_route/native.py",
+                    "engines/polyglot-route-engine/src/elmos_polyglot_route/native.py",
                     "from .toolchains import typescript_parser_receipt\n",
                 ),
             ]
@@ -365,8 +493,8 @@ def _build_isolated_module_pack(
             "  return Object.is(value, -0) ? 0 : value;\n"
             "}\n"
             "function _elmosRequireFiniteNumber(value: number): number {\n"
-            "  if (typeof value !== \"number\" || !Number.isFinite(value)) {\n"
-            "    throw new TypeError(\"ELMOS_NUMBER_NOT_FINITE\");\n"
+            '  if (typeof value !== "number" || !Number.isFinite(value)) {\n'
+            '    throw new TypeError("ELMOS_NUMBER_NOT_FINITE");\n'
             "  }\n"
             "  return value;\n"
             "}\n"
@@ -377,25 +505,23 @@ def _build_isolated_module_pack(
             encoding="utf-8",
         )
     runtime_entries: list[dict[str, Any]] = []
-    python_source = Path(
-        "/Users/stephen/.local/share/elmos/toolchains/python-build-standalone/"
-        "archives/sha256-" + launcher.PYTHON_ARCHIVE_SHA256 + ".tar.gz"
-    )
-    typescript_receipt = _typescript_capture_receipt()
-    runtime_sources = {
-        launcher.PYTHON_ARCHIVE_RELATIVE: python_source,
-        **{
-            f"{launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{record['path']}": Path(
-                str(record["source_path"])
-            )
-            for record in typescript_receipt["files"]
-        },
-    }
-    for repository_path, source in runtime_sources.items():
+    runtime_receipts, runtime_sources = _reference_runtime_fixture()
+    for repository_path, (content, expected_mode) in runtime_sources.items():
         captured_relative = launcher.ENGINE_SOURCE_PREFIX + repository_path
         captured = route / captured_relative
         captured.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, captured)
+        captured.write_bytes(content)
+        captured.chmod(int(expected_mode, 8))
+        observed = captured.lstat()
+        if (
+            captured.is_symlink()
+            or not stat.S_ISREG(observed.st_mode)
+            or observed.st_nlink != 1
+            or stat.S_IMODE(observed.st_mode) != int(expected_mode, 8)
+        ):
+            raise RuntimeError("captured runtime source mode or type differs")
+        if captured.read_bytes() != content:
+            raise RuntimeError("captured runtime source bytes differ")
         runtime_entries.append(
             {
                 "repository_path": repository_path,
@@ -415,45 +541,7 @@ def _build_isolated_module_pack(
             "kind": "polyglot-route-engine-source-bundle",
             "file_count": len(engine_entries),
             "files": engine_entries,
-            "runtime_source_receipts": {
-                "python_source_archive": {
-                    "schema_version": 1,
-                    "capture_relative_path": launcher.PYTHON_ARCHIVE_RELATIVE,
-                    "sha256": launcher.PYTHON_ARCHIVE_SHA256,
-                    "bytes": launcher.PYTHON_ARCHIVE_BYTES,
-                    "mode": "0444",
-                    "uid": 501,
-                    "gid": 20,
-                    "nlink": 1,
-                    "source_tree_sha256": launcher.PYTHON_SOURCE_TREE_SHA256,
-                    "source_tree_record_count": 1_899,
-                    "source_tree_file_count": 1_890,
-                    "source_tree_bytes": 47_880_708,
-                },
-                "typescript_compiler_closure": {
-                    "schema_version": 1,
-                    "capture_relative_path": (
-                        launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE
-                    ),
-                    "source_manifest_sha256": (
-                        launcher.TYPESCRIPT_SOURCE_MANIFEST_SHA256
-                    ),
-                    "runtime_manifest_sha256": (
-                        launcher.TYPESCRIPT_RUNTIME_MANIFEST_SHA256
-                    ),
-                    "compiler_closure_sha256": launcher.TYPESCRIPT_CLOSURE_SHA256,
-                    "file_count": launcher.TYPESCRIPT_FILE_COUNT,
-                    "bytes": launcher.TYPESCRIPT_CLOSURE_BYTES,
-                    "files": [
-                        {
-                            key: record[key]
-                            for key in ("path", "sha256", "bytes", "mode")
-                        }
-                        for record in typescript_receipt["files"]
-                    ],
-                    "semantic_soundness": "NOT_RUN",
-                },
-            },
+            "runtime_source_receipts": runtime_receipts,
         },
     )
     solver_relative = "certification/artifacts/solver-result.json"
@@ -530,9 +618,7 @@ def _run_pack(
     real_node_relift: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     isolated_python = (
-        _private_locked_interpreter()
-        if real_node_relift
-        else Path("/usr/bin/python3")
+        _private_locked_interpreter() if real_node_relift else Path("/usr/bin/python3")
     )
     assert isolated_python.is_file()
     command = [
@@ -550,6 +636,7 @@ def _run_pack(
             "(allow default)\n"
             f'(deny file-read* (subpath "{AMBIENT_TYPESCRIPT_ROOT}"))\n'
             f'(deny file-read* (subpath "{ENGINE_PROJECT}"))\n'
+            f'(deny file-read* (subpath "{REFERENCE_ENGINE_SOURCES}"))\n'
         )
         command = ["/usr/bin/sandbox-exec", "-p", profile, *command]
     return subprocess.run(
@@ -597,6 +684,14 @@ def test_packed_replay_constants_bind_all_identifier_schemas() -> None:
     assert set(SCHEMA_RELATIVES) <= set(specialized_generator.PACKED_REPLAY_FILES)
 
 
+def test_reference_pack_preserves_frozen_swift_component_read_bound() -> None:
+    captured_validator = (
+        REFERENCE_ENGINE_SOURCES / "scripts/batch29/validate_route.py"
+    ).read_text(encoding="utf-8")
+    assert "if total > 250_000_000:" in captured_validator
+    assert "SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES" not in captured_validator
+
+
 def test_private_locked_interpreter_rejects_repository_venv(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -625,55 +720,98 @@ def test_private_locked_interpreter_rejects_repository_venv(
         _private_locked_interpreter()
 
 
-def test_private_typescript_identity_canonicalizes_cross_user_ownership() -> None:
-    launcher = _load(PACKED_LAUNCHER, "packed_cross_user_typescript_launcher")
-    private_root = Path("/private/elmos-packed-typescript/typescript-5.9.2")
+def _private_typescript_identity_fixture(
+    root: Path,
+) -> tuple[Path, dict[str, object]]:
+    private_root = root / "typescript-5.9.2"
+    binary = private_root / "bin"
+    library = private_root / "lib"
+    binary.mkdir(parents=True)
+    library.mkdir()
+    parser = library / "typescript.js"
+    content = b"parser-private-closure\n"
+    parser.write_bytes(content)
+    parser.chmod(0o444)
+    binary.chmod(0o555)
+    library.chmod(0o555)
+    private_root.chmod(0o555)
+    package_metadata = private_root.lstat()
     manifest: dict[str, object] = {
         "schema_version": 2,
         "kind": "elmos.typescript-5.9.2-full-stdlib-compiler-closure",
         "package_root": {
             "root": str(private_root),
             "mode": "0555",
-            "uid": 1000,
-            "gid": 1000,
-            "nlink": 4,
+            "uid": package_metadata.st_uid,
+            "gid": package_metadata.st_gid,
+            "nlink": package_metadata.st_nlink,
         },
         "directories": [
             {
                 "relative_path": relative,
                 "resolved_path": str(private_root / relative),
                 "mode": "0555",
-                "uid": 1000,
-                "gid": 1000,
-                "nlink": 2,
+                "uid": (private_root / relative).lstat().st_uid,
+                "gid": (private_root / relative).lstat().st_gid,
+                "nlink": (private_root / relative).lstat().st_nlink,
             }
             for relative in ("bin", "lib")
         ],
         "files": [
             {
                 "role": "parser",
-                "resolved_path": str(private_root / "lib/typescript.js"),
-                "bytes": 9_111_680,
-                "sha256": "e5f1f6b3" + "0" * 56,
+                "resolved_path": str(parser),
+                "bytes": len(content),
+                "sha256": hashlib.sha256(content).hexdigest(),
                 "mode": "0444",
-                "uid": 1000,
-                "gid": 1000,
-                "nlink": 1,
+                "uid": parser.lstat().st_uid,
+                "gid": parser.lstat().st_gid,
+                "nlink": parser.lstat().st_nlink,
             }
         ],
         "semantic_soundness": "NOT_RUN",
     }
+    return private_root, manifest
+
+
+def _restore_private_typescript_fixture(private_root: Path) -> None:
+    parser = private_root / "lib/typescript.js"
+    if parser.exists() and not parser.is_symlink():
+        parser.chmod(0o644)
+    for directory in (private_root / "bin", private_root / "lib", private_root):
+        if directory.exists() and not directory.is_symlink():
+            directory.chmod(0o755)
+
+
+def test_private_typescript_identity_canonicalizes_live_private_ownership(
+    tmp_path: Path,
+) -> None:
+    launcher = _load(PACKED_LAUNCHER, "packed_cross_user_typescript_launcher")
+    private_root, manifest = _private_typescript_identity_fixture(tmp_path)
     observed: dict[str, object] = {}
 
     def identity(canonical: dict[str, object]) -> dict[str, object]:
         observed.update(canonical)
-        return {"sha256": "canonical", "file_count": 1, "bytes": 9_111_680}
+        encoded = json.dumps(
+            canonical, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+        files = canonical["files"]
+        assert isinstance(files, list)
+        return {
+            "manifest": canonical,
+            "sha256": hashlib.sha256(encoded).hexdigest(),
+            "file_count": len(files),
+            "bytes": sum(int(item["bytes"]) for item in files),
+        }
 
-    result = launcher._canonical_private_typescript_identity(
-        identity,
-        private_root,
-        manifest,
-    )
+    try:
+        result = launcher._canonical_private_typescript_identity(
+            identity,
+            private_root,
+            manifest,
+        )
+    finally:
+        _restore_private_typescript_fixture(private_root)
 
     package = observed["package_root"]
     directories = observed["directories"]
@@ -687,10 +825,50 @@ def test_private_typescript_identity_canonicalizes_cross_user_ownership() -> Non
         (501, 20, 107),
     ]
     assert (files[0]["uid"], files[0]["gid"], files[0]["nlink"]) == (501, 20, 1)
-    assert result["sha256"] == "canonical"
+    assert result["sha256"] == hashlib.sha256(
+        json.dumps(observed, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     original_package = manifest["package_root"]
     assert isinstance(original_package, dict)
-    assert original_package["uid"] == 1000
+    assert original_package["uid"] == os.getuid()
+
+
+@pytest.mark.parametrize("forgery", ["package", "directory", "file"])
+def test_private_typescript_identity_rejects_forged_live_manifest(
+    tmp_path: Path,
+    forgery: str,
+) -> None:
+    launcher = _load(PACKED_LAUNCHER, f"packed_forged_typescript_{forgery}")
+    private_root, manifest = _private_typescript_identity_fixture(tmp_path)
+    package = manifest["package_root"]
+    directories = manifest["directories"]
+    files = manifest["files"]
+    assert isinstance(package, dict)
+    assert isinstance(directories, list)
+    assert isinstance(files, list)
+    if forgery == "package":
+        package["nlink"] = int(package["nlink"]) + 1
+    elif forgery == "directory":
+        directories[0]["uid"] = int(directories[0]["uid"]) + 1
+    else:
+        files[0]["sha256"] = "0" * 64
+    callback_called = False
+
+    def identity(_canonical: dict[str, object]) -> dict[str, object]:
+        nonlocal callback_called
+        callback_called = True
+        return {}
+
+    try:
+        with pytest.raises(ValueError, match="private TypeScript"):
+            launcher._canonical_private_typescript_identity(
+                identity,
+                private_root,
+                manifest,
+            )
+    finally:
+        _restore_private_typescript_fixture(private_root)
+    assert callback_called is False
 
 
 def test_isolated_packed_module_replay_binds_all_schemas(tmp_path: Path) -> None:
@@ -777,14 +955,12 @@ def test_isolated_packed_runtime_rejects_self_consistent_digest_rewrite(
     manifest_path = route / manifest_relative
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     receipt = manifest["runtime_source_receipts"]["typescript_compiler_closure"]
-    record = next(item for item in receipt["files"] if item["path"] == "lib/typescript.js")
-    repository_path = (
-        launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE + "/lib/typescript.js"
+    record = next(
+        item for item in receipt["files"] if item["path"] == "lib/typescript.js"
     )
+    repository_path = launcher.TYPESCRIPT_CAPTURED_ROOT_RELATIVE + "/lib/typescript.js"
     entry = next(
-        item
-        for item in manifest["files"]
-        if item["repository_path"] == repository_path
+        item for item in manifest["files"] if item["repository_path"] == repository_path
     )
     captured_relative = entry["captured_path"]
     captured = route / captured_relative

@@ -24,6 +24,9 @@ const statusLabels: Record<string, string> = {
   REPOSITORY_CONTRACT: "仓库契约",
   CONTRACT_READY: "契约就绪",
   INSTALLED: "已安装",
+  LOCAL_ADAPTER: "本地适配器",
+  LOCAL_EMITTED: "本地已发射",
+  SPEC_ONLY: "仅规格",
   ADAPTER_DECLARED: "适配器已声明",
 };
 

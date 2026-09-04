@@ -338,7 +338,8 @@ def test_descriptor_drift_during_native_execution_fails_closed(
         executable="/private/exact/node",
         profile=(
             "node-toolchain-closure-schema=v1",
-            "node-closure-sha256=" + "2" * 64,
+            "node-closure-sha256=bd919085f8ae40bca10d5a2da36542eb90c5f18424dc60780c73c70b90d4244b",
+            "node-closure-profile=homebrew-node26-libada-77917065434c-616512",
             "platform=Darwin/arm64",
             "module=ESM",
         ),

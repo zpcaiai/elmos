@@ -18,8 +18,45 @@ PACK_KEY = "spring-boot-2-7-18-to-3-5-3"
 REWRITE_PLUGIN = "6.44.0"
 REWRITE_SPRING = "6.35.0"
 RECIPE_NAME = "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21"
-SOURCE_JAVA = Path("/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home")
-TARGET_JAVA = Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home")
+
+
+def resolve_java_home(version: int, override: str | Path | None = None) -> Path:
+    """Resolve JDK home directory by argument override, environment variables,
+    macOS java_home utility, or standard installation paths."""
+    if override:
+        path = Path(override).expanduser().resolve()
+        if path.is_dir():
+            return path
+    env_keys = [f"JAVA_{version}_HOME", f"JDK_{version}_HOME", "JAVA_HOME"]
+    for key in env_keys:
+        val = os.environ.get(key)
+        if val:
+            path = Path(val).expanduser().resolve()
+            if path.is_dir():
+                return path
+    if shutil.which("/usr/libexec/java_home"):
+        try:
+            res = subprocess.run(
+                ["/usr/libexec/java_home", "-v", str(version)],
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if res.returncode == 0 and res.stdout.strip():
+                candidate = Path(res.stdout.strip()).resolve()
+                if candidate.is_dir():
+                    return candidate
+        except Exception:
+            pass
+    defaults = {
+        17: Path("/Library/Java/JavaVirtualMachines/jdk-17.jdk/Contents/Home"),
+        21: Path("/opt/homebrew/Cellar/openjdk@21/21.0.11/libexec/openjdk.jdk/Contents/Home"),
+    }
+    return defaults.get(version, Path(f"/usr/lib/jvm/java-{version}"))
+
+
+SOURCE_JAVA = resolve_java_home(17)
+TARGET_JAVA = resolve_java_home(21)
 
 
 def governed_qualification_snapshots(certification_dir: Path) -> list[str]:
@@ -601,12 +638,13 @@ def has_public_engineering_evidence(pack: Path) -> bool:
 
 
 def transform_with_openrewrite(
-    *,
     source: Path,
     target: Path,
     pack: Path,
     maven: str,
+    target_java: Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
+    tgt_java = target_java or TARGET_JAVA
     if target.exists():
         shutil.rmtree(target)
     shutil.copytree(
@@ -629,7 +667,7 @@ def transform_with_openrewrite(
             f"-Drewrite.recipeArtifactCoordinates=org.openrewrite.recipe:rewrite-spring:{REWRITE_SPRING}",
         ],
         cwd=target,
-        java_home=TARGET_JAVA,
+        java_home=tgt_java,
         timeout=1_800,
     )
     if "Recipe validation error" in transformed.stdout + transformed.stderr:
@@ -640,11 +678,18 @@ def transform_with_openrewrite(
     return transformed
 
 
-def execute(repo: Path) -> Path:
+def execute(
+    repo: Path,
+    source_java: Path | None = None,
+    target_java: Path | None = None,
+    external_repo: Path | None = None,
+) -> Path:
+    src_java = source_java or SOURCE_JAVA
+    tgt_java = target_java or TARGET_JAVA
     pack = repo / "framework-packs" / PACK_KEY
     if not pack.is_dir():
         raise RuntimeError(f"MISSING_FRAMEWORK_PACK:{pack}")
-    if not SOURCE_JAVA.is_dir() or not TARGET_JAVA.is_dir():
+    if not src_java.is_dir() or not tgt_java.is_dir():
         raise RuntimeError("REQUIRED_JAVA_TOOLCHAINS_MISSING")
     maven = os.environ.get("ELMOS_MAVEN_EXECUTABLE") or shutil.which("mvn")
     if maven is None or not Path(maven).is_file():
@@ -652,7 +697,7 @@ def execute(repo: Path) -> Path:
     maven_version = run(
         [maven, "-version"],
         cwd=pack,
-        java_home=TARGET_JAVA,
+        java_home=tgt_java,
     ).stdout.splitlines()[0]
     if "Apache Maven 3.9.11" not in maven_version:
         raise RuntimeError(f"EXACT_MAVEN_VERSION_REQUIRED:{maven_version}")
@@ -661,7 +706,12 @@ def execute(repo: Path) -> Path:
     # Do not name the project root "target": Maven/OpenRewrite honors the parent
     # repository's target/ ignore rule and would correctly skip that tree.
     target = development / "migrated"
-    materialize(source, "2.7.18", "17")
+    if external_repo and external_repo.is_dir():
+        if source.exists():
+            shutil.rmtree(source)
+        shutil.copytree(external_repo, source, ignore=shutil.ignore_patterns("target", ".git", ".elmos"))
+    else:
+        materialize(source, "2.7.18", "17")
     corpus = {
         "development": [42],
         "holdout": [7],
@@ -687,30 +737,31 @@ def execute(repo: Path) -> Path:
     source_build = run(
         [maven, "-B", "--no-transfer-progress", "verify"],
         cwd=source,
-        java_home=SOURCE_JAVA,
+        java_home=src_java,
     )
     transformation = transform_with_openrewrite(
         source=source,
         target=target,
         pack=pack,
         maven=maven,
+        target_java=tgt_java,
     )
     target_build = run(
         [maven, "-B", "--no-transfer-progress", "verify"],
         cwd=target,
-        java_home=TARGET_JAVA,
+        java_home=tgt_java,
     )
     ids = [identifier for values in corpus.values() for identifier in values]
     local_evidence = pack / "certification"
     source_runtime = start_and_probe(
         source,
-        java_home=SOURCE_JAVA,
+        java_home=src_java,
         ids=ids,
         log_path=local_evidence / "source-runtime.log",
     )
     target_runtime = start_and_probe(
         target,
-        java_home=TARGET_JAVA,
+        java_home=tgt_java,
         ids=ids,
         log_path=local_evidence / "target-runtime.log",
     )
@@ -725,7 +776,7 @@ def execute(repo: Path) -> Path:
         "source": {
             "framework": "spring-boot",
             "version": "2.7.18",
-            "java": run(["java", "-version"], cwd=source, java_home=SOURCE_JAVA).stderr.splitlines()[0],
+            "java": run(["java", "-version"], cwd=source, java_home=src_java).stderr.splitlines()[0],
             "build": "PASSED",
             "build_tail": source_build.stdout[-2_000:],
             "runtime": source_runtime,
@@ -733,7 +784,7 @@ def execute(repo: Path) -> Path:
         "target": {
             "framework": "spring-boot",
             "version": "3.5.3",
-            "java": run(["java", "-version"], cwd=target, java_home=TARGET_JAVA).stderr.splitlines()[0],
+            "java": run(["java", "-version"], cwd=target, java_home=tgt_java).stderr.splitlines()[0],
             "build": "PASSED",
             "build_tail": target_build.stdout[-2_000:],
             "runtime": target_runtime,
@@ -972,11 +1023,17 @@ def execute(repo: Path) -> Path:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--repo-root", default=".")
+    parser = argparse.ArgumentParser(description="Spring Boot reference runner and migration validator")
+    parser.add_argument("--repo-root", default=".", help="Root repository directory")
+    parser.add_argument("--source-java", default=None, help="Path to JDK 17 home")
+    parser.add_argument("--target-java", default=None, help="Path to JDK 21 home")
+    parser.add_argument("--external-repo", default=None, help="Optional external project repository to migrate/validate")
     args = parser.parse_args()
     repo = Path(args.repo_root).resolve()
-    pack = execute(repo)
+    src_java = resolve_java_home(17, args.source_java)
+    tgt_java = resolve_java_home(21, args.target_java)
+    ext_repo = Path(args.external_repo).resolve() if args.external_repo else None
+    pack = execute(repo, source_java=src_java, target_java=tgt_java, external_repo=ext_repo)
     commands = [
         ["python3", "scripts/batch30/validate_framework_pack.py", str(pack)],
         ["python3", "scripts/batch30/run_framework_gate.py", str(pack)],

@@ -2507,6 +2507,7 @@ def _javascript_guard_edges(
 
     ignored_normalizations = {
         "javascript.integer.negative-zero-normalized",
+        "javascript.parameter.integer.negative-zero-normalized",
         "javascript.return.integer.negative-zero-normalized",
     }
     observed_rules = {

@@ -9,12 +9,12 @@
       "Do not omit architectural invariants referenced by risk classifier."
     ],
     "inputs": [
-      "task",
-      "architecture index",
-      "repo"
+      "`task`",
+      "`architecture index`",
+      "`repo`"
     ],
     "outputs": [
-      "context pack manifest"
+      "`context pack manifest`"
     ],
     "triggers": [
       "task ready for routing"

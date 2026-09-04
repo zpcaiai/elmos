@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1600",
+  "skill_name": "frt-1600-web-flutter-route-orchestrator",
+  "batch": "G16",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g16/frt-1600-web-flutter-route-orchestrator/",
+  "status": "shared_implementation",
+  "handler_kind": "route_orchestration",
+  "capability_key": "frt.g16.web-flutter-route-orchestrator",
+  "execution_contract_sha256": "sha256:73744c78e60b46662b76668e83812154163afb6b582548b5fc4e0b44ccf28ba1",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "corpus"
+    ],
+    "optional": [
+      "routeIds"
+    ],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:e14e0aab63587005276a2abbebe48ebd37713ee8127f7895cc940a0fa2245341",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

@@ -25,7 +25,9 @@ import java.util.function.Supplier;
 /**
  * PostgreSQL 17 adapter for {@link ExecutionJobPort}.
  *
- * <p>Every state transition delegates to the Flyway V57 functions. That is
+ * <p>Every state transition delegates to the Flyway-owned functions. Enqueue
+ * uses the tenant-serialized V80 function; claim and lifecycle transitions retain
+ * the V57 {@code FOR UPDATE ... SKIP LOCKED} implementation. That is
  * deliberate: the claim is a {@code FOR UPDATE ... SKIP LOCKED} loop with
  * per-tenant fairness, and expressing it in Java would either need a table lock
  * or would race two schedulers against each other.</p>
@@ -305,23 +307,60 @@ public final class JdbcExecutionJobStore implements ExecutionJobPort {
     }
 
     /**
-     * Translates the {@code ELMOS_*} exceptions raised by the V57 functions into a
-     * typed domain failure. The raw PostgreSQL message never leaves this method, so
-     * a public API response cannot leak schema or query text.
+     * Translates the {@code ELMOS_*} exceptions raised by the Flyway functions into
+     * a typed domain failure. A raw PostgreSQL unique violation is also collapsed to
+     * one stable code. Constraint names, table names, values and query text therefore
+     * never cross the persistence port.
      */
     private static <T> T mapDomainErrors(Supplier<T> work) {
         try {
             return work.get();
         } catch (RuntimeException ex) {
-            String message = rootMessage(ex);
-            int marker = message == null ? -1 : message.indexOf("ELMOS_");
-            if (marker >= 0) {
-                String tail = message.substring(marker);
-                int end = tail.indexOf(' ');
-                throw new ExecutionStateException(end > 0 ? tail.substring(0, end) : tail);
-            }
-            throw ex;
+            throw translateDomainError(ex);
         }
+    }
+
+    static RuntimeException translateDomainError(RuntimeException failure) {
+        if (hasSqlState(failure, "23505")) {
+            return new ExecutionStateException("ELMOS_EXECUTION_STORAGE_CONFLICT");
+        }
+        String code = domainCode(rootMessage(failure));
+        if (code != null) {
+            return new ExecutionStateException(code);
+        }
+        return failure;
+    }
+
+    private static String domainCode(String message) {
+        int marker = message == null ? -1 : message.indexOf("ELMOS_");
+        if (marker < 0) {
+            return null;
+        }
+        int end = marker;
+        while (end < message.length()) {
+            char value = message.charAt(end);
+            if (!(value == '_' || value >= 'A' && value <= 'Z'
+                    || value >= '0' && value <= '9')) {
+                break;
+            }
+            end++;
+        }
+        return end > marker + "ELMOS_".length() ? message.substring(marker, end) : null;
+    }
+
+    private static boolean hasSqlState(Throwable failure, String expected) {
+        Throwable current = failure;
+        while (current != null) {
+            if (current instanceof SQLException sql && expected.equals(sql.getSQLState())) {
+                return true;
+            }
+            Throwable next = current.getCause();
+            if (next == current) {
+                break;
+            }
+            current = next;
+        }
+        return false;
     }
 
     private static String rootMessage(Throwable throwable) {

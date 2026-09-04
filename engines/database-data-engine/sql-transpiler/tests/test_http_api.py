@@ -92,10 +92,10 @@ def test_health_and_capabilities_are_bounded_fail_closed_contracts(
     assert len(response.content) <= http_api.MAX_HTTP_RESPONSE_BYTES
     assert value["targetCount"] == 13
     assert value["plannedRouteCount"] == 78
-    assert value["implementationStatus"] == "SPEC_ONLY"
+    assert value["implementationStatus"] == "LOCAL_ADAPTER"
     assert value["externalExecution"] == "NOT_RUN"
     assert value["certification"] == "NOT_CERTIFIED"
-    assert value["boundaries"]["targetSqlMayBeEmitted"] is False
+    assert value["boundaries"]["targetSqlMayBeEmitted"] is True
 
     skill_response = client.get("/internal/v1/chinadb-skills/capabilities")
     skills = skill_response.json()
@@ -215,7 +215,7 @@ def test_skill_http_rejects_unknown_duplicate_secret_and_stale_inputs(
     assert stale_target.json()["errorCode"] == "CHINADB_SKILL_EXECUTION_REJECTED"
 
 
-def test_valid_typed_preflight_returns_http_200_but_never_target_sql(
+def test_valid_typed_preflight_returns_http_200_with_local_target_sql(
     client: TestClient,
 ) -> None:
     response = client.post(
@@ -225,15 +225,13 @@ def test_valid_typed_preflight_returns_http_200_but_never_target_sql(
     value = response.json()
 
     assert response.status_code == 200
-    assert value["state"] == "BLOCKED"
-    assert value["targetSql"] is None
+    assert value["state"] == "LOCAL_EMITTED"
+    assert value["targetSql"]
     assert value["verification"]["sourceParse"] == "PASSED"
+    assert value["verification"]["targetEmit"] == "PASSED"
     assert all(
         value["verification"][field] == "NOT_RUN"
         for field in (
-            "targetAdapter",
-            "targetEmit",
-            "targetReparse",
             "sourceExecution",
             "targetExecution",
             "resultEquivalence",
@@ -418,6 +416,6 @@ def test_isolated_assessment_process_returns_only_bounded_blocked_json() -> None
     value = json.loads(payload)
 
     assert len(payload) <= http_api.MAX_HTTP_RESPONSE_BYTES
-    assert value["state"] == "BLOCKED"
-    assert value["targetSql"] is None
+    assert value["state"] == "LOCAL_EMITTED"
+    assert value["targetSql"]
     assert value["certification"] == "NOT_CERTIFIED"

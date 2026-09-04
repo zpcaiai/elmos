@@ -43,12 +43,20 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
                 "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
             ),
         )
-        self.assertEqual(
-            4,
-            all_workflows.count(
-                "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
-            ),
-        )
+        expected_evidence_workflows = {
+            ".github/workflows/ci.yml": 3,
+            ".github/workflows/repository-migration-platform-skills.yml": 1,
+            ".github/workflows/vercel-deployment-smoke.yml": 1,
+        }
+        for workflow_path, expected_count in expected_evidence_workflows.items():
+            workflow_text = (ROOT / workflow_path).read_text(encoding="utf-8")
+            self.assertEqual(
+                expected_count,
+                workflow_text.count(
+                    "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a"
+                ),
+                workflow_path,
+            )
         for evidence_path in (
             "apps/web-console/test-results/ci-playwright-report",
             "apps/web-console/test-results/ci-generation-browser-matrix-report",
@@ -65,6 +73,10 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
                 "dotnet-engine",
                 "python-engine",
                 "frontend-client-engine",
+                "polyglot-route-engine-core",
+                "polyglot-route-engine-matrix",
+                "polyglot-route-engine",
+                "polyglot-route-pack-contracts",
                 "polyglot-routes",
                 "project-synthesis",
                 "project-synthesis-acceptance",
@@ -73,11 +85,44 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             }.issubset(jobs)
         )
         rendered = (ROOT / ".github" / "workflows" / "ci.yml").read_text(encoding="utf-8")
-        polyglot_job = json.dumps(jobs["polyglot-routes"], ensure_ascii=False, sort_keys=True)
+        polyglot_core_job = json.dumps(
+            jobs["polyglot-route-engine-core"],
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+        polyglot_matrix_job = json.dumps(
+            jobs["polyglot-route-engine-matrix"],
+            ensure_ascii=False,
+            sort_keys=True,
+        )
         polyglot_verify = next(
             step["run"]
-            for step in jobs["polyglot-routes"]["steps"]
+            for step in jobs["polyglot-route-engine-core"]["steps"]
             if step.get("name") == "Verify compiler-backed route engine"
+        )
+        self.assertEqual(
+            set(jobs["polyglot-route-engine"]["needs"]),
+            {"polyglot-route-engine-core", "polyglot-route-engine-matrix"},
+        )
+        aggregate_verify = next(
+            step["run"]
+            for step in jobs["polyglot-route-engine"]["steps"]
+            if step.get("name") == "Require every route-engine worker"
+        )
+        self.assertIn(
+            'needs.polyglot-route-engine-core.result }}" = "success"',
+            aggregate_verify,
+        )
+        self.assertIn(
+            'needs.polyglot-route-engine-matrix.result }}" = "success"',
+            aggregate_verify,
+        )
+        self.assertEqual(
+            jobs["polyglot-routes"]["name"], "Directed language route contracts"
+        )
+        self.assertEqual(
+            set(jobs["polyglot-routes"]["needs"]),
+            {"polyglot-route-engine", "polyglot-route-pack-contracts"},
         )
         synthesis_evidence_job = json.dumps(
             jobs["project-synthesis-acceptance"],
@@ -87,9 +132,10 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
         self.assertIn("dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode", rendered)
         self.assertIn("uv --directory engines/python-engine run --locked pytest", rendered)
         self.assertIn("pnpm --dir engines/frontend-client-engine install --frozen-lockfile", rendered)
-        self.assertIn('"java-version": "21.0.11"', polyglot_job)
-        self.assertIn('"dotnet-version": "10.0.301"', polyglot_job)
-        self.assertIn('"node-version": "26.0.0"', polyglot_job)
+        for worker_job in (polyglot_core_job, polyglot_matrix_job):
+            self.assertIn('"java-version": "21.0.11"', worker_job)
+            self.assertIn('"dotnet-version": "10.0.301"', worker_job)
+            self.assertIn('"node-version": "26.0.0"', worker_job)
         self.assertIn('export ELMOS_JAVA21_HOME="$JAVA_HOME"', polyglot_verify)
         self.assertIn("python scripts/operations/validate_translation_route_matrix.py", rendered)
         self.assertIn('"java-version": "21.0.11"', synthesis_evidence_job)

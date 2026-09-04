@@ -1,7 +1,14 @@
 .container {
+  --border: var(--line);
+  --text-muted: var(--muted);
+  --foreground: var(--ink);
+  --accent: var(--cyan-dark);
+  --surface-active: var(--cyan-soft);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   display: flex;
   flex-direction: column;
   gap: 20px;
+  min-width: 0;
   padding: 24px;
 }
 
@@ -14,6 +21,7 @@
 .titleRow {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 12px;
 }
 
@@ -39,8 +47,20 @@
   font-size: 0.95rem;
 }
 
+.notice {
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, var(--amber) 45%, var(--line));
+  border-radius: 8px;
+  background: var(--amber-soft);
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
 .tabBar {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
 }
@@ -72,12 +92,14 @@
 
 .mainGrid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
+  min-width: 0;
 }
 
 .fullPanel {
   grid-column: 1 / -1;
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -85,6 +107,7 @@
 }
 
 .panel {
+  min-width: 0;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -98,6 +121,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
   border-bottom: 1px solid var(--border);
   padding-bottom: 12px;
 }
@@ -113,6 +138,7 @@
   border-radius: 4px;
   background: var(--surface-subtle);
   color: var(--text-muted);
+  overflow-wrap: anywhere;
 }
 
 .waterfallList {
@@ -123,12 +149,16 @@
 
 .spanRow {
   display: grid;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: minmax(0, 240px) minmax(0, 1fr);
+  width: 100%;
   gap: 16px;
   align-items: center;
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -152,7 +182,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-green);
+  background: var(--amber);
 }
 
 .spanName {
@@ -171,7 +201,7 @@
 }
 
 .spanBar {
-  background: var(--accent);
+  background: var(--cyan-dark);
   height: 100%;
   display: flex;
   align-items: center;
@@ -190,7 +220,7 @@
 
 .kvGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -211,6 +241,7 @@
 .kValue {
   font-size: 0.9rem;
   font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .subHeading {
@@ -230,7 +261,7 @@
 
 .metricsGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-top: 16px;
 }
@@ -255,6 +286,7 @@
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--foreground);
+  overflow-wrap: anywhere;
 }
 
 .mDesc {
@@ -278,6 +310,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex-wrap: wrap;
 }
 
 .slsaRow code {
@@ -286,4 +320,58 @@
   padding: 2px 6px;
   border-radius: 4px;
   border: 1px solid var(--border);
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 900px) {
+  .mainGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .metricsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    gap: 16px;
+    padding: 8px 0;
+  }
+
+  .titleRow,
+  .panelHeader {
+    align-items: flex-start;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .tabBar {
+    gap: 8px;
+  }
+
+  .tabBtn {
+    width: 100%;
+    min-height: 44px;
+    justify-content: flex-start;
+  }
+
+  .panel,
+  .fullPanel {
+    padding: 14px;
+  }
+
+  .spanRow,
+  .kvGrid,
+  .metricsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .spanName {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
 }

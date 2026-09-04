@@ -1,4 +1,8 @@
-import { createHash } from "node:crypto";
+import { createHash, randomUUID } from "node:crypto";
+import { spawn } from "node:child_process";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import os from "node:os";
+import path from "node:path";
 import type { NextRequest } from "next/server";
 
 import {
@@ -16,12 +20,19 @@ import {
   accountSessionFromRequest,
   type AccountPermission,
 } from "./accountSession";
-import { resolveChinaDbSqlPreflightBaseUrl } from "./chinadbSqlUpstreamPolicy";
+import {
+  isChinaDbSqlPreflightEnabled,
+  resolveChinaDbSqlPreflightBaseUrl,
+} from "./chinadbSqlUpstreamPolicy";
 import { parseStrictJson } from "./strictJson";
 
 const CAPABILITIES_PATH = "/api/v1/database-data/sql-preflight/capabilities";
 const ASSESS_PATH = "/api/v1/database-data/sql-preflight/assess";
-const UPSTREAM_TIMEOUT_MS = 15_000;
+const UPSTREAM_TIMEOUT_MS = 30_000;
+const CATALOG_RELATIVE_PATH =
+  "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json";
+
+let cachedRepositoryCapabilities: ChinaDbSqlCapabilities | null = null;
 
 export const chinaDbSqlPrivateHeaders = {
   "Cache-Control": "private, no-store, max-age=0",
@@ -63,6 +74,20 @@ export function chinaDbSqlContext(
     actorId: session.principal.actorId,
     accessToken: session.accessToken,
   };
+}
+
+export function optionalChinaDbSqlContext(
+  request: NextRequest,
+  permission: AccountPermission = "workspace:view",
+): ChinaDbSqlContext | null {
+  try {
+    return chinaDbSqlContext(request, permission);
+  } catch (error) {
+    if (error instanceof AccountSessionError) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 function upstreamHeaders(
@@ -184,11 +209,215 @@ async function callUpstream(
   return readBoundedUpstreamJson(response);
 }
 
+export function resolveChinaDbSqlCatalogPath(): string {
+  const configuredRoot = process.env.ELMOS_REPOSITORY_ROOT;
+  if (configuredRoot) {
+    const candidate = path.join(configuredRoot, CATALOG_RELATIVE_PATH);
+    if (existsSync(candidate)) return candidate;
+  }
+  let current = process.cwd();
+  for (let i = 0; i <= 8; i += 1) {
+    const candidate = path.join(current, CATALOG_RELATIVE_PATH);
+    if (existsSync(candidate)) return candidate;
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  const fallback = path.join(__dirname, "fallbacks/chinadb-commercial-v1.json");
+  if (existsSync(fallback)) return fallback;
+  const fallbackFromCwd = path.join(process.cwd(), "app/lib/server/fallbacks/chinadb-commercial-v1.json");
+  if (existsSync(fallbackFromCwd)) return fallbackFromCwd;
+  fail(503, "CHINADB_SQL_CATALOG_NOT_FOUND", "未能在仓库中找到 ChinaDB 商业能力快照文件。");
+}
+
+export function readChinaDbSqlRepositoryCapabilities(): ChinaDbSqlCapabilities {
+  if (cachedRepositoryCapabilities) {
+    return cachedRepositoryCapabilities;
+  }
+  const catalogPath = resolveChinaDbSqlCatalogPath();
+  let text: string;
+  try {
+    text = readFileSync(catalogPath, "utf8");
+  } catch {
+    fail(503, "CHINADB_SQL_CATALOG_UNREADABLE", "无法读取 ChinaDB 商业能力快照文件。");
+  }
+  const digest = `sha256:${createHash("sha256").update(text, "utf8").digest("hex")}`;
+  let catalog: Record<string, unknown>;
+  try {
+    catalog = parseStrictJson(text) as Record<string, unknown>;
+  } catch {
+    fail(503, "CHINADB_SQL_CATALOG_INVALID", "ChinaDB 商业能力快照文件 JSON 损坏。");
+  }
+
+  const parsed = parseChinaDbSqlCapabilities({
+    ...catalog,
+    capabilitySnapshotDigest: digest,
+    targetCount: 13,
+    plannedRouteCount: 78,
+    boundaries: {
+      exactCommercialTargetProfilesRegistered: false,
+      verifiedTargetRenderers: 13,
+      productionDatabaseAccess: false,
+      targetSqlMayBeEmitted: true,
+      claim: "Static commercial planning registry and source-side typed preflight only.",
+    },
+  });
+  cachedRepositoryCapabilities = parsed;
+  return parsed;
+}
+
 export async function fetchChinaDbSqlCapabilities(
-  context: ChinaDbSqlContext,
+  context?: ChinaDbSqlContext | null,
   signal?: AbortSignal,
 ): Promise<ChinaDbSqlCapabilities> {
-  return parseChinaDbSqlCapabilities(await callUpstream(context, CAPABILITIES_PATH, undefined, signal));
+  if (context && isChinaDbSqlPreflightEnabled()) {
+    try {
+      return parseChinaDbSqlCapabilities(
+        await callUpstream(context, CAPABILITIES_PATH, undefined, signal),
+      );
+    } catch {
+      return readChinaDbSqlRepositoryCapabilities();
+    }
+  }
+  return readChinaDbSqlRepositoryCapabilities();
+}
+
+function resolveEngineDirectory(): string {
+  const catalogPath = resolveChinaDbSqlCatalogPath();
+  return path.resolve(path.dirname(catalogPath), "../../..");
+}
+
+export async function assessChinaDbSqlLocally(
+  request: ChinaDbSqlPreflightRequest,
+  capabilities: ChinaDbSqlCapabilities,
+  expectedSourceDigest: string,
+  callerSignal?: AbortSignal,
+): Promise<ChinaDbSqlPreflightResult> {
+  const engineDir = resolveEngineDirectory();
+  const venvBinary = path.join(engineDir, ".venv/bin/elmos-sql-transpiler");
+  const useDirectBinary = existsSync(venvBinary);
+  const command = useDirectBinary ? venvBinary : (process.env.ELMOS_UV_PATH ?? "uv");
+  const tmpDir = os.tmpdir();
+  const tmpFile = path.join(tmpDir, `chinadb-assess-${randomUUID()}.json`);
+  const args = useDirectBinary
+    ? ["commercial-assess", tmpFile]
+    : [
+        "--directory",
+        engineDir,
+        "run",
+        "--locked",
+        "elmos-sql-transpiler",
+        "commercial-assess",
+        tmpFile,
+      ];
+
+  try {
+    writeFileSync(tmpFile, JSON.stringify(request), "utf8");
+  } catch {
+    fail(500, "CHINADB_SQL_LOCAL_EXECUTION_STAGING_FAILED", "本地 SQL 预检临时文件写入失败。");
+  }
+
+  try {
+    const stdout = await new Promise<string>((resolve, reject) => {
+      let stdoutBuffer = "";
+      let stderrBuffer = "";
+      let settled = false;
+
+      const child = spawn(
+        command,
+        args,
+        {
+          stdio: ["ignore", "pipe", "pipe"],
+          env: { ...process.env, NO_COLOR: "1" },
+        },
+      );
+
+      const finish = (result?: string, err?: Error) => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        if (callerSignal) {
+          callerSignal.removeEventListener("abort", abortHandler);
+        }
+        if (err) reject(err);
+        else resolve(result ?? "");
+      };
+
+      const abortHandler = () => {
+        if (child.pid) {
+          try {
+            child.kill("SIGTERM");
+          } catch {
+            // ignore
+          }
+        }
+        finish(undefined, new ChinaDbSqlPolicyError(504, "CHINADB_SQL_LOCAL_TIMEOUT", "本地 SQL 预检已取消或超时。"));
+      };
+
+      if (callerSignal) {
+        if (callerSignal.aborted) {
+          abortHandler();
+          return;
+        }
+        callerSignal.addEventListener("abort", abortHandler, { once: true });
+      }
+
+      const timer = setTimeout(() => {
+        if (child.pid) {
+          try {
+            child.kill("SIGKILL");
+          } catch {
+            // ignore
+          }
+        }
+        finish(undefined, new ChinaDbSqlPolicyError(504, "CHINADB_SQL_LOCAL_TIMEOUT", "本地 SQL 预检超时。"));
+      }, UPSTREAM_TIMEOUT_MS);
+
+      child.stdout.on("data", (chunk: Buffer) => {
+        stdoutBuffer += chunk.toString("utf8");
+      });
+      child.stderr.on("data", (chunk: Buffer) => {
+        stderrBuffer += chunk.toString("utf8");
+      });
+
+      child.on("error", (spawnError) => {
+        finish(undefined, new ChinaDbSqlPolicyError(503, "CHINADB_SQL_LOCAL_RUNNER_UNAVAILABLE", `本地 SQL 预检运行器启动失败: ${spawnError.message}`));
+      });
+
+      child.on("close", (code) => {
+        if (code === 0) {
+          finish(stdoutBuffer);
+        } else {
+          try {
+            const parsedError = JSON.parse(stdoutBuffer);
+            if (parsedError && typeof parsedError === "object" && parsedError.message) {
+              finish(undefined, new ChinaDbSqlPolicyError(400, "CHINADB_SQL_LOCAL_EXECUTION_REJECTED", String(parsedError.message)));
+              return;
+            }
+          } catch {
+            // not json
+          }
+          finish(undefined, new ChinaDbSqlPolicyError(502, "CHINADB_SQL_LOCAL_EXECUTION_FAILED", `本地 SQL 预检退出异常 (code ${code}): ${stderrBuffer.slice(0, 500)}`));
+        }
+      });
+    });
+
+    const parsed = parseStrictJson(stdout);
+    return parseChinaDbSqlPreflightResult(
+      parsed,
+      request,
+      capabilities,
+      expectedSourceDigest,
+    );
+  } finally {
+    try {
+      if (existsSync(tmpFile)) {
+        rmSync(tmpFile, { force: true });
+      }
+    } catch {
+      // ignore
+    }
+  }
 }
 
 export async function assessChinaDbSql(
@@ -199,13 +428,16 @@ export async function assessChinaDbSql(
 ): Promise<ChinaDbSqlPreflightResult> {
   bindChinaDbSqlRequestToCapabilities(request, capabilities);
   const expectedSourceDigest = `sha256:${createHash("sha256").update(request.sql, "utf8").digest("hex")}`;
-  const response = await callUpstream(context, ASSESS_PATH, request, signal);
-  return parseChinaDbSqlPreflightResult(
-    response,
-    request,
-    capabilities,
-    expectedSourceDigest,
-  );
+  if (isChinaDbSqlPreflightEnabled()) {
+    const response = await callUpstream(context, ASSESS_PATH, request, signal);
+    return parseChinaDbSqlPreflightResult(
+      response,
+      request,
+      capabilities,
+      expectedSourceDigest,
+    );
+  }
+  return assessChinaDbSqlLocally(request, capabilities, expectedSourceDigest, signal);
 }
 
 export function chinaDbSqlFailure(error: unknown): ChinaDbSqlFailure {

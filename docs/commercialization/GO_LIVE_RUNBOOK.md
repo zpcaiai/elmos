@@ -50,18 +50,24 @@
   ELMOS_OIDC_REVOCATION_ENDPOINT=  ELMOS_OIDC_REDIRECT_URI=
   ELMOS_OIDC_SCOPES=               ELMOS_PUBLIC_ORIGIN=
   ELMOS_SESSION_SECRET=            # openssl rand -base64 48
+  ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED=true
+  ELMOS_ADMIN_LOGIN_EMAIL_FROM=
+  ELMOS_RESEND_API_KEY_FILE=/run/secrets/elmos/resend-api-key
   ```
 - `[ ]` **1.2b 配置 Commercial API 侧 OIDC**（变量名不同，勿混用）：
   ```
   ELMOS_OIDC_ISSUER_URI=  ELMOS_OIDC_JWK_SET_URI=  ELMOS_OIDC_AUDIENCE=
   ```
 - `[ ]` **1.3 定义 scope 与角色 claim**，至少包含 `commercial:billing:admin`，
-      并确认 IdP 能下发租户成员关系 claim（≤32 个）
+      并确认 IdP 能下发租户成员关系 claim（≤32 个）以及可信布尔值 `email_verified`；
+      唯一管理员账户必须精确为 `zpchoney@gmail.com`
 - `[ ]` **1.4 生成试用 pepper**（≥32 字节随机，不入版本库）
   ```bash
   openssl rand -base64 48   # 写入 ELMOS_TRIAL_IDENTITY_PEPPER
   ```
-- `[ ]` **1.5 跑通登录回归**：`pnpm exec playwright test e2e/account-session-ui.spec.ts`
+- `[ ]` **1.5 跑通用户与管理员登录回归**：
+      `pnpm exec playwright test e2e/account-session-ui.spec.ts e2e/admin-login-ui.spec.ts`；
+      在授权环境额外确认管理员登录邮件真实送达并保留服务商回执
 - `[ ]` **1.6 实现组织自服务**：注册后建组织、成员邀请、角色分配、组织切换 UI
       —— **当前仓库无对应实现，新客户组织只能手工开通**
 - `[ ]` **1.7 移除单租户假设**：`ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID`
@@ -222,6 +228,9 @@
 - `[ ]` **8.1 邮件通道**：供应商 + SPF/DKIM/DMARC；开启
       `ELMOS_USAGE_EMAIL_ALERTS_ENABLED=true` **之前**必须完成退订、频控、地址验证、
       供应商回执、失败重试、隐私评审
+- `[ ]` **8.1b 管理员登录安全邮件**：向 Web Console 精确放行
+      `api.resend.com:443`，注入 owner-only Resend Secret，并分别验证接受回执、真实送达、
+      限流/超时/错误密钥均不建立管理员会话
 - `[ ]` **8.2 新用户 Onboarding**：首次任务引导 + 示例仓库
 - `[ ]` **8.3 帮助文档与公开能力支持矩阵**（严格对应 A/B/C 档）
 - `[ ]` **8.4 客服工单入口**

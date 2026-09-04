@@ -65,6 +65,7 @@ case "$RESULT" in
         echo "  · 已经存在一个在册的 PLATFORM_APPROVER —— 引导入口只开一次，" >&2
         echo "    此后授予必须走带审计的路径；" >&2
         echo "  · account_id 不存在；" >&2
+        echo "  · 账户不是 ACTIVE、邮箱未验证，或规范化邮箱不是 zpchoney@gmail.com；" >&2
         echo "  · reason 为空。" >&2
         exit 4
         ;;

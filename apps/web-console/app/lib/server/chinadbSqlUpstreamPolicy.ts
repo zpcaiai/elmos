@@ -8,6 +8,20 @@ function fail(status: number, errorCode: string, message: string): never {
   throw new ChinaDbSqlPolicyError(status, errorCode, message);
 }
 
+export function isChinaDbSqlPreflightEnabled(
+  environment: UpstreamEnvironment = process.env,
+): boolean {
+  if (environment.ELMOS_DATABASE_SQL_PREFLIGHT_ENABLED !== "true") return false;
+  const configured = environment.ELMOS_CONTROL_PLANE_BASE_URL?.trim() ?? "";
+  if (!configured) return false;
+  try {
+    validateControlPlaneBaseUrl(configured, environment);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function resolveChinaDbSqlPreflightBaseUrl(
   environment: UpstreamEnvironment = process.env,
 ): string {

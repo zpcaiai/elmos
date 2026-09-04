@@ -146,9 +146,9 @@ test("租户隔离 API 完成真实只读评估并提供内容寻址产物", asy
   expect(await switchedTenant.json()).toMatchObject({ reason: "TENANT_ID_NOT_BOUND_TO_CREDENTIAL" });
 });
 
-test("Skills 页面可提交、轮询、重试并下载精密迁移作业", async ({ page }, testInfo) => {
+test("功能能力中心可提交、轮询、重试并下载精密迁移作业", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "chromium", "浏览器代表旅程只执行一次");
-  await page.goto("/skills");
+  await page.goto("/capabilities");
   const card = page.getByRole("region", { name: "精密迁移作业" });
   await card.getByText("本地开发认证（生产环境使用企业会话）").click();
   await card.getByLabel("本地租户").fill("local-e2e");

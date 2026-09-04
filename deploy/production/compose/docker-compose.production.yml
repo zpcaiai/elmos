@@ -92,6 +92,9 @@ services:
       # 生产业务请求只入持久队列；Web 容器绝不直接启动客户进程。
       ELMOS_HOSTED_EXECUTION_ENABLED: "true"
       ELMOS_LOCAL_RUNNER_ENABLED: "false"
+    volumes:
+      # 管理员登录邮件 API Key；宿主文件需由容器 UID 10001 读取且不得授予 group/other。
+      - "${ELMOS_SECRET_ROOT:-/srv/elmos/secrets}/resend-api-key:/run/secrets/elmos/resend-api-key:ro"
     networks: [edge, backend]
     expose: ["3000"]
     depends_on:

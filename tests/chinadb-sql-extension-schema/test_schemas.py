@@ -121,7 +121,7 @@ def capability_document():
             "adapterId": f"chinadb.{target_id}.target-adapter.v1",
             "versionRequirement": "exact target version required",
             "compatibilityModeRequirement": "exact compatibility mode required",
-            "implementationStatus": "SPEC_ONLY",
+            "implementationStatus": "LOCAL_ADAPTER",
             "externalExecution": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
         }
@@ -133,7 +133,7 @@ def capability_document():
             "sourceFamily": source_family,
             "targetId": target_id,
             "priority": commercial_priority(source_slug, target_id),
-            "state": "SPEC_ONLY",
+            "state": "LOCAL_ADAPTER",
             "externalExecution": "NOT_RUN",
             "certification": "NOT_CERTIFIED",
         }
@@ -154,17 +154,19 @@ def capability_document():
             {"id": "polardb-x", "label": "PolarDB-X", "reason": "Excluded by package scope."},
             {"id": "tdsql", "label": "TDSQL", "reason": "Excluded by package scope."},
         ],
-        "implementationStatus": "SPEC_ONLY",
+        "implementationStatus": "LOCAL_ADAPTER",
         "externalExecution": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
         "boundaries": {
             "exactCommercialTargetProfilesRegistered": False,
-            "verifiedTargetRenderers": 0,
+            "verifiedTargetRenderers": 13,
             "productionDatabaseAccess": False,
-            "targetSqlMayBeEmitted": False,
+            "targetSqlMayBeEmitted": True,
             "claim": (
-                "Planning inventory only; target adapters and target execution are not "
-                "implemented."
+                "Local ChinaDB query adapters emit target SQL only for an explicit "
+                "compatibility-mode allow-list; exact product-version profiles, "
+                "target execution, result equivalence, and certification remain "
+                "NOT_RUN / NOT_CERTIFIED."
             ),
         },
     }
@@ -207,7 +209,7 @@ def preflight_result():
             "collation": "BINARY",
             "timeZone": "Asia/Shanghai",
             "adapterId": "chinadb.dm8.target-adapter.v1",
-            "implementationStatus": "SPEC_ONLY",
+            "implementationStatus": "LOCAL_ADAPTER",
         },
         "routeId": "oracle--to--dm8",
         "state": "BLOCKED",
@@ -242,6 +244,27 @@ def preflight_result():
         },
         "certification": "NOT_CERTIFIED",
     }
+
+
+def local_emitted_preflight_result():
+    result = preflight_result()
+    result["state"] = "LOCAL_EMITTED"
+    result["targetSql"] = "SELECT order_id FROM orders WHERE customer_id = :customer_id;\n"
+    result["blockers"] = [
+        {
+            "code": "TARGET_CAPABILITY_SNAPSHOT_NOT_EXTERNALLY_VERIFIED",
+            "severity": "WARNING",
+            "statementIndex": None,
+            "message": (
+                "Local emission does not consume an independently collected target "
+                "capability snapshot; external execution and certification stay NOT_RUN."
+            ),
+        }
+    ]
+    result["verification"]["targetAdapter"] = "PASSED"
+    result["verification"]["targetEmit"] = "PASSED"
+    result["verification"]["targetReparse"] = "PASSED"
+    return result
 
 
 def skill_ids():
@@ -906,6 +929,22 @@ class ChinaDbSqlExtensionSchemaTests(unittest.TestCase):
         result = preflight_result()
         result["state"] = "SYNTAX_READY"
         self.assertInvalid(self.result_validator, result)
+
+    def test_local_emitted_preflight_result_accepts_target_sql_without_execution(self):
+        result = local_emitted_preflight_result()
+        self.assertValid(self.result_validator, result)
+
+        leaked_execution = local_emitted_preflight_result()
+        leaked_execution["verification"]["targetExecution"] = "PASSED"
+        self.assertInvalid(self.result_validator, leaked_execution)
+
+        blocked_with_sql = preflight_result()
+        blocked_with_sql["targetSql"] = result["targetSql"]
+        self.assertInvalid(self.result_validator, blocked_with_sql)
+
+        emitted_without_sql = local_emitted_preflight_result()
+        emitted_without_sql["targetSql"] = None
+        self.assertInvalid(self.result_validator, emitted_without_sql)
 
     def test_preflight_result_rejects_untyped_statement_or_missing_blocker(self):
         result = preflight_result()

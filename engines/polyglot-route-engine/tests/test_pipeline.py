@@ -290,7 +290,9 @@ def test_repository_pipeline_rejects_owned_directory_symlinks_without_deleting_t
     sentinel.write_text("retain me\n", encoding="utf-8")
     (output / unsafe_child).symlink_to(protected, target_is_directory=True)
 
-    with pytest.raises(RouteError, match="PIPELINE_OUTPUT_UNSAFE"):
+    with pytest.raises(
+        RouteError, match=r"PIPELINE_(?:OUTPUT_UNSAFE|PATH_CONFINEMENT_FAILED)"
+    ):
         run_repository_pipeline(
             repository,
             f"local:unsafe-{unsafe_child}",

@@ -83,8 +83,8 @@ description: "把统一输入包安全交给需求分析、代码生成、转换
 - Source contract SHA-256: `5a9762357ccb02318f5adfd48782f12c593eab2656d0bc74e08f0c31238223dc`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_downstream_agent_integration`
 - Runtime phase: `delivery`
-- Runtime implementation aggregate SHA-256: `edd4ba80520e30889538b42e50950e7348753b2ea95ec4e32b6cc5516cad4e93`
-- Runtime test aggregate SHA-256: `7e84b7d3d8bd10e4de59195256db88c2b178ab32beafe16d5b690fb93c05542a`
+- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
+- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
 - Exact dependencies: `$elmos-prompt-injection-defense`, `$elmos-context-budget-manager`, `$elmos-source-anchor-and-provenance`
 - Acceptance identities: `S28-01`, `S28-02`, `S28-03`, `S28-04`
 - Generated contract: `compiled-contract.json`

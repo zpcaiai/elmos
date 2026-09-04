@@ -10,6 +10,8 @@ const approvedVisualRoot = path.resolve(
 
 export default defineConfig({
   ...baseConfig,
+  // 基础配置把本 spec 排除在默认跑之外；这里是它唯一被授权执行的入口，必须解除继承来的排除。
+  testIgnore: undefined,
   testMatch: /frt-external-quality\.spec\.ts/,
   outputDir: "./test-results/frt-external-quality",
   reporter: [

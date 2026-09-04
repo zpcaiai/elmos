@@ -1,0 +1,652 @@
+{
+  "schema_version": "elmos.engine-test-registry.v1",
+  "engines": {
+    "ai-capability-engine": {
+      "description": "AI capability runtime and policy tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/ai-capability-engine",
+          "tests": ["engines/ai-capability-engine/tests"],
+          "uv_args": ["--extra", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "ai-platform-engine": {
+      "description": "Batch 23 independent AI platform worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/ai-platform-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "autonomous-qa-engine": {
+      "description": "Autonomous QA engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/autonomous-qa-engine",
+          "tests": ["engines/autonomous-qa-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "build-cache-engine": {
+      "description": "Build cache engine including repository-owned conformance tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 7200,
+          "project": "engines/build-cache-engine",
+          "tests": ["engines/build-cache-engine/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {
+            "ELMOS_MAX_P95_DECISION_MICROS": "2000.0"
+          }
+        }
+      ]
+    },
+    "commercial-capability-expansion-engine": {
+      "description": "Commercial capability expansion runtime tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/commercial-capability-expansion-engine",
+          "tests": ["engines/commercial-capability-expansion-engine/tests"],
+          "uv_args": ["--extra", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "component-dialect-engine": {
+      "description": "Component dialect TypeScript build and Jest suite",
+      "steps": [
+        {
+          "name": "npm-check",
+          "kind": "command",
+          "timeout_seconds": 2400,
+          "argv": ["npm", "--prefix", "engines/component-dialect-engine", "run", "check"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "composite-engine": {
+      "description": "Composite fixtures delegated to the executable composite-modernization domain",
+      "steps": [
+        {
+          "name": "composite-domain-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "modules/composite-modernization",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "database-bigdata-engine": {
+      "description": "Database and Big Data bounded runtime plus integrity integration tests",
+      "steps": [
+        {
+          "name": "repository-runtime-tests",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": null,
+          "tests": ["tests/database-bigdata-skills"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": ["engines/database-bigdata-engine/src", "tooling"],
+          "environment": {
+            "PYTHONDONTWRITEBYTECODE": "1"
+          }
+        }
+      ]
+    },
+    "database-data-engine": {
+      "description": "Database/Data Java worker and nested SQL transpiler",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/database-data-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        },
+        {
+          "name": "sql-transpiler-pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/database-data-engine/sql-transpiler",
+          "tests": ["engines/database-data-engine/sql-transpiler/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "dotnet-engine": {
+      "description": ".NET 10 modernization engine solution",
+      "steps": [
+        {
+          "name": "dotnet-test",
+          "kind": "dotnet",
+          "timeout_seconds": 2400,
+          "solution": "engines/dotnet-engine/Elmos.Dotnet.slnx",
+          "configuration": "Release",
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "edge-iot-industrial-engine": {
+      "description": "Batch 24 edge and industrial worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/edge-iot-industrial-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "enterprise-architecture-engine": {
+      "description": "Batch 26 enterprise architecture worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/enterprise-architecture-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "enterprise-integration-engine": {
+      "description": "Enterprise integration worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/enterprise-integration-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "enterprise-suite-engine": {
+      "description": "Enterprise suite worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/enterprise-suite-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "etgb-engine": {
+      "description": "Enterprise technology graph runtime tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/etgb-engine",
+          "tests": ["engines/etgb-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "formal-assurance-engine": {
+      "description": "Formal assurance kernel engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/formal-assurance-engine",
+          "tests": ["engines/formal-assurance-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "frontend-client-engine": {
+      "description": "Frontend client TypeScript build and Node test suite",
+      "steps": [
+        {
+          "name": "pnpm-check",
+          "kind": "command",
+          "timeout_seconds": 2400,
+          "argv": ["pnpm", "--dir", "engines/frontend-client-engine", "run", "check"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "functional-assurance-engine": {
+      "description": "Functional assurance runtime and 178-Skill dispatch tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/functional-assurance-engine",
+          "tests": ["engines/functional-assurance-engine/tests"],
+          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "infrastructure-engine": {
+      "description": "Infrastructure modernization Java worker",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/infrastructure-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "knowledge-skill-model-foundry-engine": {
+      "description": "Knowledge/Skill/Model foundry engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/knowledge-skill-model-foundry-engine",
+          "tests": ["engines/knowledge-skill-model-foundry-engine/tests"],
+          "uv_args": ["--extra", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "legacy-web-modernization-engine": {
+      "description": "Legacy web modernization engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/legacy-web-modernization-engine",
+          "tests": ["engines/legacy-web-modernization-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "mainframe-engine": {
+      "description": "Mainframe modernization Java worker",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/mainframe-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "multimodal-intake-engine": {
+      "description": "Multimodal intake engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/multimodal-intake-engine",
+          "tests": ["engines/multimodal-intake-engine/tests", "tests/multimodal-intake/test_integration.py"],
+          "uv_args": ["--with", "pytest==8.4.1"],
+          "pythonpath": ["engines/multimodal-intake-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
+    "openhands-absorption-engine": {
+      "description": "OpenHands absorption engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/openhands-absorption-engine",
+          "tests": ["engines/openhands-absorption-engine/tests"],
+          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "operations-sre-itsm-engine": {
+      "description": "Batch 25 operations/SRE/ITSM worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/operations-sre-itsm-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "polyglot-route-engine": {
+      "description": "Compiler-backed polyglot route engine",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 21600,
+          "project": "engines/polyglot-route-engine",
+          "tests": ["engines/polyglot-route-engine/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "polyglot-semantic-compiler-engine": {
+      "description": "Polyglot semantic compiler repository assurance tests",
+      "steps": [
+        {
+          "name": "repository-pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/polyglot-semantic-compiler-engine",
+          "tests": ["tests/polyglot-semantic-assurance-skills"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": ["engines/polyglot-semantic-compiler-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
+    "pricing-billing-engine": {
+      "description": "Pricing and billing reference engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/pricing-billing-engine",
+          "tests": ["engines/pricing-billing-engine/tests", "tests/pricing-billing-skills"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "project-intelligence-engine": {
+      "description": "Project intelligence runtime tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/project-intelligence-engine",
+          "tests": ["engines/project-intelligence-engine/tests"],
+          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "project-synthesis-engine": {
+      "description": "Eight-target project synthesis engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 7200,
+          "project": "engines/project-synthesis-engine",
+          "tests": ["engines/project-synthesis-engine/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "proof-driven-harness-engine": {
+      "description": "Proof-driven harness engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 7200,
+          "project": "engines/proof-driven-harness-engine",
+          "tests": ["engines/proof-driven-harness-engine/tests"],
+          "uv_args": ["--locked", "--with", "pytest==9.0.3"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "proof-driven-harness-intelligence-engine": {
+      "description": "Proof-driven harness intelligence tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/proof-driven-harness-intelligence-engine",
+          "tests": ["engines/proof-driven-harness-intelligence-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "python-engine": {
+      "description": "Python 3.14 modernization engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 2400,
+          "project": "engines/python-engine",
+          "tests": ["engines/python-engine/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "security-compliance-engine": {
+      "description": "Security and compliance Java worker",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/security-compliance-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        },
+        {
+          "name": "iam-transpiler-pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/security-compliance-engine",
+          "tests": ["engines/security-compliance-engine/tests"],
+          "uv_args": ["--with", "pytest"],
+          "pythonpath": ["engines/security-compliance-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
+    "semantic-assurance-engine": {
+      "description": "Semantic assurance engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "project": "engines/semantic-assurance-engine",
+          "tests": ["engines/semantic-assurance-engine/tests", "tests/semantic-assurance-expansion-skills"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": ["engines/semantic-assurance-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
+    "software-delivery-platform-engine": {
+      "description": "Batch 22 software delivery platform worker contract",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/software-delivery-platform-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "software-factory-engine": {
+      "description": "Software factory engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/software-factory-engine",
+          "tests": ["engines/software-factory-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "spring-golden-route-engine": {
+      "description": "Spring golden route engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/spring-golden-route-engine",
+          "tests": ["engines/spring-golden-route-engine/tests"],
+          "uv_args": ["--with", "pytest==8.4.2"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "sql-dialect-engine": {
+      "description": "SQL dialect translation engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/sql-dialect-engine",
+          "tests": ["engines/sql-dialect-engine/tests"],
+          "uv_args": ["--locked", "--group", "dev"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "test-quality-engine": {
+      "description": "Test and quality engineering Java worker",
+      "steps": [
+        {
+          "name": "maven-verify",
+          "kind": "maven",
+          "timeout_seconds": 2400,
+          "module": "engines/test-quality-engine",
+          "goals": ["verify"],
+          "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "uir-java-python": {
+      "description": "Java-to-Python UIR compiler and runtime equivalence tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "tests": ["engines/uir-java-python/tests"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "tree_sitter>=0.23,<1.0", "--with", "tree_sitter_java>=0.23,<1.0"],
+          "pythonpath": ["engines/uir-java-python"],
+          "environment": {}
+        }
+      ]
+    },
+    "unified-cli-gateway": {
+      "description": "Unified CLI cross-engine dispatch tests",
+      "steps": [
+        {
+          "name": "repository-pytest",
+          "kind": "pytest",
+          "timeout_seconds": 3600,
+          "project": "engines/database-data-engine/sql-transpiler",
+          "tests": ["tests/unified-cli-gateway"],
+          "uv_args": ["--locked", "--group", "dev", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": [
+            "engines/unified-cli-gateway/src",
+            "engines/polyglot-semantic-compiler-engine/src",
+            "engines/commercial-capability-expansion-engine/src",
+            "engines/semantic-assurance-engine/src",
+            "engines/knowledge-skill-model-foundry-engine/src",
+            "engines/build-cache-engine/src",
+            "engines/formal-assurance-engine/src",
+            "engines/autonomous-qa-engine/src",
+            "engines/sql-dialect-engine/src",
+            "engines/security-compliance-engine/src",
+            "engines/edge-iot-industrial-engine/src"
+          ],
+          "environment": {}
+        }
+      ]
+    }
+  }
+}

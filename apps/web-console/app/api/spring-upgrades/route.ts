@@ -132,6 +132,7 @@ async function startFromRepositoryWorkspace(
         snapshotId: `workspace-${repositoryWorkspaceId}`,
         materializedRelativePath: materialized.relativePath,
         startAfterVerification: input.startAfterVerification === true,
+        allowExperimentalRoutes: input.allowExperimentalRoutes === true,
         targetSpringBoot: input.targetSpringBoot,
         targetJava: input.targetJava,
         idempotencyKey,

@@ -19,14 +19,14 @@
       "UI labels/prices are presentation metadata; backend policy remains authoritative."
     ],
     "inputs": [
-      "model_selection` conforming to `schemas/model-selection.schema.json",
-      "config/model-registry.yaml",
-      "config/model-selection-policy.yaml",
-      "config/router-policy.yaml",
+      "`model_selection` conforming to `schemas/model-selection.schema.json`",
+      "`config/model-registry.yaml`",
+      "`config/model-selection-policy.yaml`",
+      "`config/router-policy.yaml`",
       "current provider availability / quotas when available"
     ],
     "outputs": [
-      "validated `model_selection.json",
+      "validated `model_selection.json`",
       "effective routing constraints for the run",
       "UI model catalog containing exactly Smart + the ten allowlisted models",
       "preflight warnings or blocking reasons",

@@ -3,6 +3,8 @@ import { spawnSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, rmSync, symlinkSync } from "node:fs";
 import path from "node:path";
 
+import { installAdministratorSession } from "./helpers/admin-session";
+
 /**
  * Batch 46 一键运行按钮。
  *
@@ -10,6 +12,11 @@ import path from "node:path";
  * 真的续期与回收，断言证据由冒烟包自己写下。下半部分按仓库既有 UI 约定用
  * page.route 打桩，验证倒计时、到期禁用、续期表单、回收报告与证据展示。
  */
+
+// /smoke is a platform operations surface and requires an administrator session.
+test.beforeEach(async ({ page }) => {
+  await installAdministratorSession(page);
+});
 
 const runnerHeaders = {
   "Content-Type": "application/json",

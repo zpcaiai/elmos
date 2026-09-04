@@ -2,36 +2,46 @@
   "schema_version": 1,
   "pack_key": "postgresql-17-5-self-service-billing",
   "version": "1.0.0",
-  "mode": "schema-modernization",
+  "mode": "modernization",
   "status": "experimental",
   "owner": "elmos-commercial-billing",
   "maintenance_owner": "elmos-database-platform",
-  "data_owner": "NOT_ASSIGNED",
+  "data_owner": "elmos-commercial-billing",
   "review_by": "2026-10-26",
   "source": {
     "engine": "postgresql",
-    "versions": ["17.5"],
+    "versions": [
+      "17.5"
+    ],
     "dialect": "postgresql",
     "edition": "community",
     "timezone": "UTC",
     "charset": "UTF8",
-    "collation": "environment-specific",
+    "collation": "C",
     "extensions": [],
-    "driver_versions": ["postgresql-jdbc-42.7.7"]
+    "driver_versions": [
+      "postgresql-jdbc-42.7.7"
+    ]
   },
   "target": {
     "engine": "postgresql",
-    "versions": ["17.5"],
+    "versions": [
+      "17.5"
+    ],
     "dialect": "postgresql",
     "edition": "neon-managed",
     "timezone": "UTC",
     "charset": "UTF8",
-    "collation": "NOT_VERIFIED",
+    "collation": "C",
     "extensions": [],
-    "driver_versions": ["postgresql-jdbc-42.7.7"]
+    "driver_versions": [
+      "postgresql-jdbc-42.7.7"
+    ]
   },
   "scope": {
-    "schemas": ["public"],
+    "schemas": [
+      "public"
+    ],
     "objects": [
       "subscriptions",
       "quota_allocations",
@@ -50,6 +60,13 @@
       "trial-lifecycle",
       "payment-reconciliation"
     ]
+  },
+  "paths": {
+    "canonical_ir": "canonical-ir/model.json",
+    "certification": "certification",
+    "fingerprint": "source-fingerprint",
+    "migration_plan": "migration/data-migration-plan.json",
+    "target_profile": "target-profile/profile.json"
   },
   "gates": {
     "typed_schema": 1.0,

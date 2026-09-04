@@ -52,12 +52,12 @@ def handle_plan_catalog_entitlements(req: RequestContract) -> Mapping[str, Any]:
     }
 
 def handle_task_cost_estimation(req: RequestContract) -> Mapping[str, Any]:
-    prompt_tokens = int(req.inputs.get("prompt_tokens", 2000))
-    completion_tokens = int(req.inputs.get("completion_tokens", 1000))
-    runner_seconds = float(req.inputs.get("runner_seconds", 30.0))
+    prompt_tokens = Decimal(str(req.inputs.get("prompt_tokens", 2000)))
+    completion_tokens = Decimal(str(req.inputs.get("completion_tokens", 1000)))
+    runner_seconds = Decimal(str(req.inputs.get("runner_seconds", 30.0)))
     
     # Token rate: $0.003/1k input, $0.015/1k output, $0.0002/runner-second
-    cost_usd = (prompt_tokens * 0.000003) + (completion_tokens * 0.000015) + (runner_seconds * 0.0002)
+    cost_usd = (prompt_tokens * Decimal("0.000003")) + (completion_tokens * Decimal("0.000015")) + (runner_seconds * Decimal("0.0002"))
     return {
         "skill": "elmos-task-cost-estimation",
         "status": "COMPLETED",

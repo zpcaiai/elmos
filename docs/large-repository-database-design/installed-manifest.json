@@ -295,6 +295,59 @@
     "referenced_path_present_in_archive": false,
     "importer_executes_workflow": false
   },
+  "postgresql_partition_constraint_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V020__runs_tasks_sessions_and_recovery.sql",
+    "source_sha256": "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e",
+    "affected_tables": [
+      "exec.run_event",
+      "exec.session_event"
+    ],
+    "source_partition_keys": [
+      "run_id",
+      "session_id"
+    ],
+    "declared_unique_key": [
+      "tenant_id",
+      "event_id"
+    ],
+    "postgresql_requirement": "every unique key on a partitioned table must include every partition-key column",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
+  "postgresql_account_slot_uniqueness_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V010__tenancy_projects_jobs_and_admission.sql",
+    "source_sha256": "sha256:ca02afa6f4df7881ad85b1139faf137732a0146dbcf247abf4e40205bca53829",
+    "affected_table": "core.account_task_slot",
+    "source_constraint": "UNIQUE NULLS NOT DISTINCT (tenant_id, claimed_by_run_id)",
+    "runtime_requirement": "three unclaimed slots per account and at most one claimed slot per tenant and run",
+    "compatibility_overlay": "UNIQUE (tenant_id, claimed_by_run_id)",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
+  "postgresql_temporal_identity_uniqueness_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V020__runs_tasks_sessions_and_recovery.sql",
+    "source_sha256": "sha256:1d9b6641ed8f2f423938ff067de56a33b86dc754220832d423a078b81ac5bc6e",
+    "affected_table": "exec.run",
+    "source_constraint": "UNIQUE NULLS NOT DISTINCT (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+    "runtime_requirement": "multiple non-Temporal runs per tenant while preserving uniqueness when a complete Temporal identity is present",
+    "compatibility_overlay": "UNIQUE (tenant_id, temporal_namespace, temporal_workflow_id, temporal_run_id)",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
+  "postgresql_claim_ready_task_ambiguity_defect": {
+    "state": "PRESERVED_CANONICAL_SOURCE_REQUIRES_COMPATIBILITY_OVERLAY",
+    "source_migration": "skills/elmos-large-repository-database-design-v1.0.0/database/migrations/V090__transactional_runtime_functions.sql",
+    "source_sha256": "sha256:8eb1646c5c0200a81769edc542b26fd6beb3d515bf122b570b140a6c797a6ddf",
+    "affected_function": "exec.claim_ready_task",
+    "source_query": "unqualified run_attempt id, tenant_id, run_id, status, and attempt_no inside a RETURNS TABLE function",
+    "runtime_requirement": "claim one ready task while preserving tenant, run-attempt, lease, and fencing-token identities",
+    "compatibility_overlay": "qualify the run_attempt relation as ra and every referenced column",
+    "canonical_source_mutated": false,
+    "production_resolution": "NOT_APPROVED"
+  },
   "installation": {
     "runtime_root": "agent-skills/runtime",
     "workspace_root": ".agents/skills",

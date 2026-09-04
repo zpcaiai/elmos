@@ -80,6 +80,8 @@ TYPESCRIPT_COMPILER_CLOSURE_SHA256 = (
 )
 TYPESCRIPT_COMPILER_FILE_COUNT = 108
 TYPESCRIPT_COMPILER_BYTES = 19_067_381
+SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000
+SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES = 1_000_000_000
 
 SPECIALIZED_NEGATIVE_CASES = {
     "java": frozenset({"java-int-width", "java-string-raw-reference-equality"}),
@@ -2412,16 +2414,17 @@ def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...],
     for part in directory.parts[1:]:
         cursor = cursor / part
         metadata = cursor.lstat()
-        applications_exception = cursor == Path("/Applications") and (
-            stat.S_IMODE(metadata.st_mode) == 0o775
-            and metadata.st_uid == 0
-            and metadata.st_gid == 80
+        is_applications_root = cursor == Path("/Applications")
+        unsafe_mode = (
+            stat.S_IMODE(metadata.st_mode) & 0o002
+            if is_applications_root
+            else stat.S_IMODE(metadata.st_mode) & 0o022
         )
         if (
             stat.S_ISLNK(metadata.st_mode)
             or not stat.S_ISDIR(metadata.st_mode)
             or metadata.st_uid != 0
-            or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+            or unsafe_mode
         ):
             raise ValueError(f"unsafe Xcode directory: {cursor}")
         identities.append(
@@ -2442,17 +2445,33 @@ def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...],
 
 def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_result]:
     before = file_path.lstat()
+    if (
+        not stat.S_ISREG(before.st_mode)
+        or before.st_size < 0
+        or before.st_size > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+    ):
+        raise ValueError("Swift closure component exceeds maximum size")
     descriptor = os.open(
         file_path,
-        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+        | getattr(os, "O_NOFOLLOW", 0),
     )
     try:
         opened_before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened_before.st_mode)
+            or opened_before.st_size < 0
+            or opened_before.st_size
+            > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+        ):
+            raise ValueError("Swift closure component exceeds maximum size")
         chunks: list[bytes] = []
         total = 0
         while chunk := os.read(descriptor, 1024 * 1024):
             total += len(chunk)
-            if total > 250_000_000:
+            if total > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES:
                 raise ValueError("Swift closure component exceeds maximum size")
             chunks.append(chunk)
         opened_after = os.fstat(descriptor)
@@ -2993,6 +3012,23 @@ def _independently_rebuild_swift_network_probe() -> None:
             raise ValueError("probe build/execution closure changed during replay")
 
 
+def _checked_swift_tree_byte_total(
+    current: int,
+    additional: int,
+    *,
+    role: str,
+) -> int:
+    if (
+        type(current) is not int
+        or type(additional) is not int
+        or current < 0
+        or additional < 0
+        or additional > SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES - current
+    ):
+        raise ValueError(f"tree exceeds aggregate byte bound: {role}")
+    return current + additional
+
+
 def _observe_swift_build_closure() -> dict[str, Any]:
     sdk_root = Path(SWIFT_SDK_ROOT)
     sdk_link = sdk_root.lstat()
@@ -3060,6 +3096,7 @@ def _observe_swift_build_closure() -> dict[str, Any]:
 
         def discover(tree_root: Path, tree_role: str) -> list[Path]:
             files: list[Path] = []
+            declared_total = 0
             candidates = sorted(
                 tree_root.rglob("*"),
                 key=lambda item: item.relative_to(tree_root).as_posix(),
@@ -3079,6 +3116,11 @@ def _observe_swift_build_closure() -> dict[str, Any]:
                 ):
                     raise ValueError(f"tree entry is unsafe: {tree_role}")
                 if stat.S_ISREG(metadata.st_mode):
+                    declared_total = _checked_swift_tree_byte_total(
+                        declared_total,
+                        metadata.st_size,
+                        role=tree_role,
+                    )
                     files.append(item)
             return files
 
@@ -3087,7 +3129,11 @@ def _observe_swift_build_closure() -> dict[str, Any]:
         total = 0
         for item in paths:
             content, _metadata = _stable_read_swift_closure_file(item)
-            total += len(content)
+            total = _checked_swift_tree_byte_total(
+                total,
+                len(content),
+                role=role,
+            )
             file_records.append(
                 {
                     "path": item.relative_to(resolved).as_posix(),
@@ -6382,8 +6428,7 @@ def validate_formal_equivalence(
                                 is True
                             )
                             validate_live_sources = (
-                                is_specialized
-                                and (live_repository_root / "engines").is_dir()
+                                (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()

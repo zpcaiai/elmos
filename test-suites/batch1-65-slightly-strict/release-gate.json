@@ -4,7 +4,7 @@
   "decision": "BLOCKED",
   "certification_authority": false,
   "maximum_success_decision": "READY_FOR_EXTERNAL_GATE",
-  "evaluated_at": "2026-07-22T10:49:08.620523Z",
+  "evaluated_at": "2026-09-03T16:10:02.154485Z",
   "field_evidence_status": "NOT_RUN",
   "profile_id": "elmos-slightly-strict-v1",
   "metrics": {
@@ -55,5 +55,5 @@
   ],
   "control_manifest_digest": "sha256:74c5934b0c28a27bf0f57d0f559f3f3e95c0e71440ffefa7061d13c548ca1730",
   "result_catalog_digest": "sha256:f5b5e20ece19b6eccbe1bb083cdf6fc919692babf653c4f0197d73f6840abe75",
-  "gate_digest": "sha256:883d23f676ed687906f3dc0829cd2fbc0484d7a295ecb53a94715e686daec561"
+  "gate_digest": "sha256:d0734f1428d0d062f4f60ea1afbdfb9788b3531b5d06a0e4860c9f92345cb064"
 }

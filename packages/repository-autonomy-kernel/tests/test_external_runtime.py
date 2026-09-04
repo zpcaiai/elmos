@@ -26,7 +26,6 @@ from elmos_repository_autonomy.external_runtime import (
 )
 from elmos_repository_autonomy.models import bytes_digest, canonical_json
 
-
 ADAPTER_BODY = r"""
 import base64
 import json

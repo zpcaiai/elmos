@@ -10,13 +10,13 @@
       "No concurrent tasks may own overlapping paths unless declared merge-safe."
     ],
     "inputs": [
-      "tasks"
+      "`tasks`"
     ],
     "outputs": [
-      "DAG",
-      "waves",
-      "critical path",
-      "path lock plan"
+      "`DAG`",
+      "`waves`",
+      "`critical path`",
+      "`path lock plan`"
     ],
     "triggers": [
       "validated task set"

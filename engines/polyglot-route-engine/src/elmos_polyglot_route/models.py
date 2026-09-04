@@ -308,6 +308,10 @@ def _optional_source_span(value: dict[str, Any], path: str) -> SourceSpan | None
     return SourceSpan.from_mapping(span, _path=f"{path}.source_span")
 
 
+def _is_valid_type_name(t: str) -> bool:
+    return t in {"integer", "number", "boolean", "string"} or (t.isidentifier() and not t.startswith("_"))
+
+
 @dataclass(frozen=True)
 class Parameter:
     name: str
@@ -324,7 +328,7 @@ class Parameter:
         )
         name = _require_string(value["name"], f"{_path}.name", nonempty=True)
         parameter_type = _require_string(value["type"], f"{_path}.type")
-        if not name or parameter_type not in {"integer", "number", "boolean", "string"}:
+        if not name or not _is_valid_type_name(parameter_type):
             raise RouteError("INVALID_PARAMETER")
         return cls(name=name, type=parameter_type, source_span=_optional_source_span(value, _path))
 
@@ -339,12 +343,64 @@ class Parameter:
 
 
 @dataclass(frozen=True)
+class RecordDefinition:
+    name: str
+    fields: tuple[Parameter, ...]
+    source_span: SourceSpan | None = None
+
+    @classmethod
+    def from_mapping(cls, value: dict[str, Any], *, _path: str = "record") -> RecordDefinition:
+        _require_exact_keys(
+            value,
+            frozenset({"name", "fields"}),
+            frozenset({"source_span"}),
+            _path,
+        )
+        name = _require_string(value["name"], f"{_path}.name", nonempty=True)
+        if not _is_valid_type_name(name) or name in {"integer", "number", "boolean", "string"}:
+            raise RouteError("INVALID_RECORD_NAME")
+        raw_fields = _require_mapping_list(value["fields"], f"{_path}.fields", nonempty=True)
+        field_names = set()
+        parsed_fields: list[Parameter] = []
+        for index, item in enumerate(raw_fields):
+            param = Parameter.from_mapping(item, _path=f"{_path}.fields[{index}]")
+            if param.name in field_names:
+                raise RouteError(f"DUPLICATE_RECORD_FIELD:{param.name}")
+            field_names.add(param.name)
+            parsed_fields.append(param)
+        return cls(
+            name=name,
+            fields=tuple(parsed_fields),
+            source_span=_optional_source_span(value, _path),
+        )
+
+    def semantic_mapping(self) -> dict[str, Any]:
+        return {
+            "name": self.name,
+            "fields": [f.semantic_mapping() for f in self.fields],
+        }
+
+    def to_mapping(self) -> dict[str, Any]:
+        result: dict[str, Any] = {
+            "name": self.name,
+            "fields": [f.to_mapping() for f in self.fields],
+        }
+        if self.source_span is not None:
+            result["source_span"] = self.source_span.to_mapping()
+        return result
+
+
+@dataclass(frozen=True)
 class Expression:
     kind: str
     value: str | int | float | bool | None = None
     operator: str | None = None
     left: Expression | None = None
     right: Expression | None = None
+    record_name: str | None = None
+    arguments: tuple[tuple[str, Expression], ...] = ()
+    target: Expression | None = None
+    member: str | None = None
     source_span: SourceSpan | None = None
 
     @classmethod
@@ -401,11 +457,67 @@ class Expression:
                 right=cls.from_mapping(right, _path=f"{_path}.right"),
                 source_span=_optional_source_span(value, _path),
             )
+        if kind == "member_access":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "target", "member"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            target_raw = value["target"]
+            if type(target_raw) is not dict:
+                raise RouteError(f"INVALID_MEMBER_ACCESS_TARGET:{_path}.target")
+            target = cls.from_mapping(target_raw, _path=f"{_path}.target")
+            member = _require_string(value["member"], f"{_path}.member", nonempty=True)
+            return cls(
+                kind=kind,
+                target=target,
+                member=member,
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "record_construct":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "record_name", "arguments"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            record_name = _require_string(value["record_name"], f"{_path}.record_name", nonempty=True)
+            args_raw = value["arguments"]
+            if type(args_raw) is not dict:
+                raise RouteError(f"INVALID_RECORD_CONSTRUCT_ARGUMENTS:{_path}.arguments")
+            parsed_args: list[tuple[str, Expression]] = []
+            for arg_k, arg_v in args_raw.items():
+                if type(arg_k) is not str or not arg_k or type(arg_v) is not dict:
+                    raise RouteError(f"INVALID_RECORD_ARGUMENT:{_path}.arguments.{arg_k}")
+                parsed_args.append((arg_k, cls.from_mapping(arg_v, _path=f"{_path}.arguments.{arg_k}")))
+            return cls(
+                kind=kind,
+                record_name=record_name,
+                arguments=tuple(parsed_args),
+                source_span=_optional_source_span(value, _path),
+            )
         raise RouteError(f"UNSUPPORTED_EXPRESSION:{kind}")
 
     def semantic_mapping(self) -> dict[str, Any]:
         if self.kind in {"name", "literal"}:
             return {"kind": self.kind, "value": self.value}
+        if self.kind == "member_access":
+            if self.target is None or self.member is None:
+                raise RouteError("INVALID_MEMBER_ACCESS_EXPRESSION")
+            return {
+                "kind": "member_access",
+                "target": self.target.semantic_mapping(),
+                "member": self.member,
+            }
+        if self.kind == "record_construct":
+            if self.record_name is None:
+                raise RouteError("INVALID_RECORD_CONSTRUCT_EXPRESSION")
+            return {
+                "kind": "record_construct",
+                "record_name": self.record_name,
+                "arguments": {k: v.semantic_mapping() for k, v in self.arguments},
+            }
         if self.left is None or self.right is None or self.operator is None:
             raise RouteError("INVALID_BINARY_EXPRESSION")
         return {
@@ -418,6 +530,22 @@ class Expression:
     def to_mapping(self) -> dict[str, Any]:
         if self.kind in {"name", "literal"}:
             result = self.semantic_mapping()
+        elif self.kind == "member_access":
+            if self.target is None or self.member is None:
+                raise RouteError("INVALID_MEMBER_ACCESS_EXPRESSION")
+            result = {
+                "kind": "member_access",
+                "target": self.target.to_mapping(),
+                "member": self.member,
+            }
+        elif self.kind == "record_construct":
+            if self.record_name is None:
+                raise RouteError("INVALID_RECORD_CONSTRUCT_EXPRESSION")
+            result = {
+                "kind": "record_construct",
+                "record_name": self.record_name,
+                "arguments": {k: v.to_mapping() for k, v in self.arguments},
+            }
         else:
             if self.left is None or self.right is None or self.operator is None:
                 raise RouteError("INVALID_BINARY_EXPRESSION")
@@ -442,6 +570,12 @@ class Statement:
     #: `let` only: the bound name and its declared canonical type.
     name: str | None = None
     declared_type: str | None = None
+    #: `for` only: monotonic iteration loop
+    start: Expression | None = None
+    end: Expression | None = None
+    step: Expression | None = None
+    #: `while` and `for` loop body
+    body: tuple[Statement, ...] = ()
     source_span: SourceSpan | None = None
 
     @classmethod
@@ -491,18 +625,6 @@ class Statement:
             )
         if kind == "let":
             # A single-assignment local binding.
-            #
-            # Deliberately *not* an assignment: the name binds once, and only
-            # for the statements after it. Rebinding would make the function's
-            # meaning depend on statement order in a way the equivalence model
-            # has no way to compare, and the profile's whole claim is that a
-            # function is a typed pure expression tree.
-            #
-            # The type is declared rather than inferred. The frontend has
-            # already resolved it against the source language's own type
-            # system, and writing it into the IR is what lets `types.check`
-            # disagree instead of silently adopting whatever the expression
-            # happened to produce.
             _require_exact_keys(
                 value,
                 frozenset({"kind", "name", "type", "expression"}),
@@ -523,6 +645,74 @@ class Statement:
                 expression=Expression.from_mapping(expression, _path=f"{_path}.expression"),
                 source_span=_optional_source_span(value, _path),
             )
+        if kind == "while":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "condition", "body"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            condition = value["condition"]
+            if type(condition) is not dict:
+                raise RouteError(f"INVALID_WHILE_STATEMENT:{_path}")
+            parsed_body = _require_mapping_list(value["body"], f"{_path}.body")
+            return cls(
+                kind=kind,
+                condition=Expression.from_mapping(condition, _path=f"{_path}.condition"),
+                body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
+                    for index, item in enumerate(parsed_body)
+                ),
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "for":
+            _require_exact_keys(
+                value,
+                frozenset({"kind", "name", "type", "start", "end", "body"}),
+                frozenset({"step", "source_span"}),
+                _path,
+            )
+            name = _require_string(value["name"], f"{_path}.name")
+            if not name:
+                raise RouteError(f"FOR_NAME_REQUIRED:{_path}")
+            declared_type = _require_string(value["type"], f"{_path}.type")
+            start = value["start"]
+            end = value["end"]
+            if type(start) is not dict or type(end) is not dict:
+                raise RouteError(f"INVALID_FOR_STATEMENT:{_path}")
+            step = value.get("step")
+            if step is not None and type(step) is not dict:
+                raise RouteError(f"INVALID_FOR_STEP:{_path}")
+            parsed_body = _require_mapping_list(value["body"], f"{_path}.body")
+            return cls(
+                kind=kind,
+                name=name,
+                declared_type=declared_type,
+                start=Expression.from_mapping(start, _path=f"{_path}.start"),
+                end=Expression.from_mapping(end, _path=f"{_path}.end"),
+                step=Expression.from_mapping(step, _path=f"{_path}.step") if step is not None else None,
+                body=tuple(
+                    cls.from_mapping(item, _path=f"{_path}.body[{index}]")
+                    for index, item in enumerate(parsed_body)
+                ),
+                source_span=_optional_source_span(value, _path),
+            )
+        if kind == "break":
+            _require_exact_keys(
+                value,
+                frozenset({"kind"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            return cls(kind=kind, source_span=_optional_source_span(value, _path))
+        if kind == "continue":
+            _require_exact_keys(
+                value,
+                frozenset({"kind"}),
+                frozenset({"source_span"}),
+                _path,
+            )
+            return cls(kind=kind, source_span=_optional_source_span(value, _path))
         raise RouteError(f"UNSUPPORTED_STATEMENT:{kind}")
 
     def semantic_mapping(self) -> dict[str, Any]:
@@ -542,6 +732,28 @@ class Statement:
                 "type": self.declared_type,
                 "expression": self.expression.semantic_mapping(),
             }
+        if self.kind == "while" and self.condition is not None:
+            return {
+                "kind": "while",
+                "condition": self.condition.semantic_mapping(),
+                "body": [item.semantic_mapping() for item in self.body],
+            }
+        if self.kind == "for" and self.name is not None and self.start is not None and self.end is not None:
+            res: dict[str, Any] = {
+                "kind": "for",
+                "name": self.name,
+                "type": self.declared_type,
+                "start": self.start.semantic_mapping(),
+                "end": self.end.semantic_mapping(),
+                "body": [item.semantic_mapping() for item in self.body],
+            }
+            if self.step is not None:
+                res["step"] = self.step.semantic_mapping()
+            return res
+        if self.kind == "break":
+            return {"kind": "break"}
+        if self.kind == "continue":
+            return {"kind": "continue"}
         raise RouteError("INVALID_STATEMENT")
 
     def to_mapping(self) -> dict[str, Any]:
@@ -562,6 +774,27 @@ class Statement:
                 "type": self.declared_type,
                 "expression": self.expression.to_mapping(),
             }
+        elif self.kind == "while" and self.condition is not None:
+            result = {
+                "kind": "while",
+                "condition": self.condition.to_mapping(),
+                "body": [item.to_mapping() for item in self.body],
+            }
+        elif self.kind == "for" and self.name is not None and self.start is not None and self.end is not None:
+            result = {
+                "kind": "for",
+                "name": self.name,
+                "type": self.declared_type,
+                "start": self.start.to_mapping(),
+                "end": self.end.to_mapping(),
+                "body": [item.to_mapping() for item in self.body],
+            }
+            if self.step is not None:
+                result["step"] = self.step.to_mapping()
+        elif self.kind == "break":
+            result = {"kind": "break"}
+        elif self.kind == "continue":
+            result = {"kind": "continue"}
         else:
             raise RouteError("INVALID_STATEMENT")
         if self.source_span is not None:
@@ -607,7 +840,7 @@ class Function:
         )
         parameters = _require_mapping_list(value["parameters"], f"{_path}.parameters")
         body = _require_mapping_list(value["body"], f"{_path}.body", nonempty=True)
-        if not name or return_type not in {"integer", "number", "boolean", "string"}:
+        if not name or not _is_valid_type_name(return_type):
             raise RouteError("INVALID_FUNCTION_SIGNATURE")
         return cls(
             name=name,
@@ -657,6 +890,7 @@ class SemanticIR:
     analyzer_version: str
     functions: tuple[Function, ...]
     diagnostics: tuple[str, ...]
+    records: tuple[RecordDefinition, ...] = ()
 
     @classmethod
     def from_mapping(cls, value: dict[str, Any]) -> SemanticIR:
@@ -673,7 +907,7 @@ class SemanticIR:
                     "diagnostics",
                 }
             ),
-            frozenset(),
+            frozenset({"records"}),
             "semantic_ir",
         )
         schema_version = _require_string(value["schema_version"], "semantic_ir.schema_version")
@@ -694,6 +928,13 @@ class SemanticIR:
         diagnostics = value["diagnostics"]
         if type(diagnostics) is not list or any(type(item) is not str for item in diagnostics):
             raise RouteError("INVALID_DIAGNOSTICS")
+        raw_records = value.get("records", [])
+        if type(raw_records) is not list or any(type(item) is not dict for item in raw_records):
+            raise RouteError("INVALID_SEMANTIC_IR_RECORDS")
+        records = tuple(
+            RecordDefinition.from_mapping(item, _path=f"semantic_ir.records[{index}]")
+            for index, item in enumerate(raw_records)
+        )
         return cls(
             source_language=source_language,  # type: ignore[arg-type]
             source_file=source_file,
@@ -704,10 +945,11 @@ class SemanticIR:
                 for index, item in enumerate(functions)
             ),
             diagnostics=tuple(diagnostics),
+            records=records,
         )
 
     def to_mapping(self) -> dict[str, Any]:
-        return {
+        result: dict[str, Any] = {
             "schema_version": "1.0.0",
             "source_language": self.source_language,
             "source_file": self.source_file,
@@ -716,13 +958,19 @@ class SemanticIR:
             "functions": [function.to_mapping() for function in self.functions],
             "diagnostics": list(self.diagnostics),
         }
+        if self.records:
+            result["records"] = [record.to_mapping() for record in self.records]
+        return result
 
     def semantic_mapping(self) -> dict[str, Any]:
         """Canonical semantics with all concrete source locations removed."""
 
-        return {
+        result: dict[str, Any] = {
             "schema_version": "1.0.0",
             "source_language": self.source_language,
             "functions": [function.semantic_mapping() for function in self.functions],
             "diagnostics": list(self.diagnostics),
         }
+        if self.records:
+            result["records"] = [record.semantic_mapping() for record in self.records]
+        return result

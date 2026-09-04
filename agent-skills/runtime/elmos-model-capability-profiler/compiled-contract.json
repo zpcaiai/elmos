@@ -8,12 +8,12 @@
       "Do not overfit from fewer than configured samples."
     ],
     "inputs": [
-      "model registry",
-      "historical execution records"
+      "`model registry`",
+      "`historical execution records`"
     ],
     "outputs": [
-      "capability matrix",
-      "success probability estimates"
+      "`capability matrix`",
+      "`success probability estimates`"
     ],
     "triggers": [
       "router evaluation",

@@ -15,17 +15,17 @@
       "Hard budget/security gates override throughput."
     ],
     "inputs": [
-      "requirement",
-      "repository root",
-      "budget policy",
-      "model registry",
-      "model_selection` (Smart or manual, validated by `elmos-model-selection-controller`)"
+      "`requirement`",
+      "`repository root`",
+      "`budget policy`",
+      "`model registry`",
+      "`model_selection` (Smart or manual, validated by `elmos-model-selection-controller`)"
     ],
     "outputs": [
-      "run manifest",
-      "task DAG",
-      "integrated patch",
-      "certification report"
+      "`run manifest`",
+      "`task DAG`",
+      "`integrated patch`",
+      "`certification report`"
     ],
     "triggers": [
       "medium/large repository feature",

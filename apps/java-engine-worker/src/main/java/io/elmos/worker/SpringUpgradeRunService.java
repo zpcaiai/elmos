@@ -51,6 +51,7 @@ final class SpringUpgradeRunService {
     private final DurableRunLeaseStore leaseStore;
     private final ConcurrentMap<String, RunState> runs = new ConcurrentHashMap<>();
     private final ConcurrentMap<String, IdempotencyEntry> idempotency = new ConcurrentHashMap<>();
+    private final AtomicBoolean closed = new AtomicBoolean();
 
     SpringUpgradeRunService(
             SpringUpgradeExecutionPort transformer,
@@ -136,6 +137,7 @@ final class SpringUpgradeRunService {
 
     RunView create(String authenticatedOrganizationId, StartRequest request) {
         validateRequest(authenticatedOrganizationId, request);
+        if (closed.get()) throw new Conflict("WORKER_SHUTTING_DOWN");
         String scope = authenticatedOrganizationId + "|create|" + request.idempotencyKey();
         String fingerprint = fingerprint(request);
         synchronized (idempotency) {
@@ -164,9 +166,10 @@ final class SpringUpgradeRunService {
             result = new ArrayList<>(state.logs);
             truncated = state.logsTruncated;
         }
-        if (state.runtimeHandle != null && state.runtimeHandle.runtimeId() != null) {
+        RuntimeHandle runtimeHandle = state.runtimeHandle.get();
+        if (runtimeHandle != null && runtimeHandle.runtimeId() != null) {
             try {
-                for (String line : transformer.runtimeLogs(state.runtimeHandle)) {
+                for (String line : transformer.runtimeLogs(runtimeHandle)) {
                     result.add(redact(line));
                 }
             } catch (RuntimeException error) {
@@ -202,6 +205,7 @@ final class SpringUpgradeRunService {
     RunView startRuntime(String organizationId, String runId) {
         RunState state = require(organizationId, runId);
         synchronized (state) {
+            if (closed.get()) throw new Conflict("WORKER_SHUTTING_DOWN");
             if (!downloadAvailable(state)) throw new Conflict("INDEPENDENT_VALIDATION_REQUIRED");
             requireArtifactIntegrity(state);
             if (!transformer.runtimeConfigured()) {
@@ -209,6 +213,9 @@ final class SpringUpgradeRunService {
             }
             if (state.runtimeStatus == RuntimeStatus.HEALTHY || state.runtimeStatus == RuntimeStatus.STARTING) {
                 return view(state);
+            }
+            if (state.runtimeStopRequested.get() || state.runtimeHandle.get() != null) {
+                throw new Conflict("RUNTIME_STOP_REQUIRED");
             }
             state.runtimeStopRequested.set(false);
             state.runtimeStatus = RuntimeStatus.STARTING;
@@ -222,25 +229,28 @@ final class SpringUpgradeRunService {
 
     RunView stopRuntime(String organizationId, String runId) {
         RunState state = require(organizationId, runId);
-        RuntimeHandle handle;
-        Process activeProcess;
         Future<?> runtimeFuture;
         synchronized (state) {
-            if (state.runtimeStatus == RuntimeStatus.NOT_STARTED || state.runtimeStatus == RuntimeStatus.STOPPED) {
+            if ((state.runtimeStatus == RuntimeStatus.NOT_STARTED
+                    || state.runtimeStatus == RuntimeStatus.STOPPED)
+                    && state.runtimeHandle.get() == null) {
                 return view(state);
             }
             state.runtimeStopRequested.set(true);
-            handle = state.runtimeHandle;
-            activeProcess = state.activeProcess.getAndSet(null);
             runtimeFuture = state.runtimeFuture;
         }
         if (runtimeFuture != null) runtimeFuture.cancel(true);
-        if (activeProcess != null && activeProcess.isAlive()) activeProcess.destroyForcibly();
-        transformer.stop(handle, control(state));
+        try {
+            stopOwnedRuntime(state);
+        } catch (RuntimeException error) {
+            markRuntimeStopFailure(state, error);
+            throw error;
+        }
         synchronized (state) {
-            state.runtimeHandle = null;
             state.runtimeStatus = RuntimeStatus.STOPPED;
             state.activeProcess.set(null);
+            state.failureCode = null;
+            state.failureMessage = null;
             touch(state);
             return view(state);
         }
@@ -248,20 +258,33 @@ final class SpringUpgradeRunService {
 
     RunView cancel(String organizationId, String runId) {
         RunState state = require(organizationId, runId);
+        Future<?> future;
+        Future<?> runtimeFuture;
+        Process process;
         synchronized (state) {
             if (terminal(state.status)) throw new Conflict("RUN_ALREADY_TERMINAL");
             state.cancelled.set(true);
-            Process process = state.activeProcess.getAndSet(null);
-            if (process != null) process.destroyForcibly();
-            if (state.future != null) state.future.cancel(true);
+            state.runtimeStopRequested.set(true);
+            process = state.activeProcess.getAndSet(null);
+            future = state.future;
+            runtimeFuture = state.runtimeFuture;
             state.status = RunStatus.CANCELLED;
             appendEvent(state, state.stage, "CANCELLED", "Migration run cancelled");
             touch(state);
-            return view(state);
         }
+        if (process != null && process.isAlive()) process.destroyForcibly();
+        if (runtimeFuture != null) runtimeFuture.cancel(true);
+        if (future != null) future.cancel(true);
+        try {
+            stopOwnedRuntime(state);
+        } catch (RuntimeException error) {
+            markRuntimeStopFailure(state, error);
+        }
+        return view(state);
     }
 
     RunView retry(String organizationId, String runId, String retryIdempotencyKey) {
+        if (closed.get()) throw new Conflict("WORKER_SHUTTING_DOWN");
         RunState source = require(organizationId, runId);
         if (retryIdempotencyKey == null || retryIdempotencyKey.isBlank() || retryIdempotencyKey.length() > 128) {
             throw new InvalidRequest("A bounded retry idempotency key is required.");
@@ -284,7 +307,8 @@ final class SpringUpgradeRunService {
                     source.request.startAfterVerification(),
                     retryIdempotencyKey,
                     source.request.targetSpringBoot(),
-                    source.request.targetJava()
+                    source.request.targetJava(),
+                    source.request.allowExperimentalRoutes()
             );
             RunState state = newState(request, runId, source.attempt + 1);
             runs.put(state.runId, state);
@@ -387,8 +411,10 @@ final class SpringUpgradeRunService {
                 lease.heartbeat();
             } catch (DurableRunLeaseStore.LeaseException error) {
                 state.cancelled.set(true);
+                state.runtimeStopRequested.set(true);
                 Process process = state.activeProcess.getAndSet(null);
                 if (process != null) process.destroyForcibly();
+                scheduleRuntimeStop(state);
             } catch (RuntimeException error) {
                 synchronized (state) {
                     appendEvent(state, state.stage, state.status.name(),
@@ -471,6 +497,7 @@ final class SpringUpgradeRunService {
             }
         } finally {
             heartbeat.cancel(false);
+            if (state.cancelled.get()) terminalStatus = RunStatus.CANCELLED;
             String outcome = switch (terminalStatus) {
                 case SUCCEEDED -> "SUCCEEDED";
                 case CANCELLED -> "CANCELLED";
@@ -711,30 +738,48 @@ final class SpringUpgradeRunService {
     }
 
     private void launchRuntime(RunState state) {
+        RuntimeHandle returnedHandle = null;
+        boolean retained = false;
+        boolean stopAttempted = false;
         try {
-            RuntimeHandle handle = transformer.start(state.result, state.request, state.runRoot, control(state));
-            if (state.runtimeStopRequested.get()) {
-                transformer.stop(handle, control(state));
+            returnedHandle = Objects.requireNonNull(
+                    transformer.start(state.result, state.request, state.runRoot, control(state)),
+                    "runtime handle");
+            synchronized (state.runtimeLifecycle) {
+                if (!state.runtimeHandle.compareAndSet(null, returnedHandle)) {
+                    stopAttempted = true;
+                    stopUnownedRuntime(state, returnedHandle);
+                    throw new BlockedException(
+                            "RUNTIME_HANDLE_CONFLICT",
+                            "A different isolated runtime is already owned by this run.");
+                }
+                if (runtimeStopRequired(state)) {
+                    stopAttempted = true;
+                    stopOwnedRuntimeLocked(state, returnedHandle);
+                } else {
+                    synchronized (state) {
+                        state.runtimePort = returnedHandle.port();
+                        state.healthPath = returnedHandle.healthPath();
+                        state.runtimeStatus = RuntimeStatus.HEALTHY;
+                        state.failureCode = null;
+                        state.failureMessage = null;
+                        touch(state);
+                    }
+                    retained = true;
+                }
+            }
+            if (!retained) {
                 synchronized (state) {
-                    state.runtimeHandle = null;
                     state.runtimeStatus = RuntimeStatus.STOPPED;
                     state.activeProcess.set(null);
+                    state.failureCode = null;
+                    state.failureMessage = null;
                     touch(state);
                 }
-                return;
-            }
-            synchronized (state) {
-                state.runtimeHandle = handle;
-                state.runtimePort = handle.port();
-                state.healthPath = handle.healthPath();
-                state.runtimeStatus = RuntimeStatus.HEALTHY;
-                state.failureCode = null;
-                state.failureMessage = null;
-                touch(state);
             }
         } catch (BlockedException error) {
             synchronized (state) {
-                if (state.runtimeStopRequested.get()) {
+                if (runtimeStopRequired(state) && state.runtimeHandle.get() == null) {
                     state.runtimeStatus = RuntimeStatus.STOPPED;
                     state.failureCode = null;
                     state.failureMessage = null;
@@ -748,7 +793,7 @@ final class SpringUpgradeRunService {
             }
         } catch (RuntimeException error) {
             synchronized (state) {
-                if (state.runtimeStopRequested.get()) {
+                if (runtimeStopRequired(state) && state.runtimeHandle.get() == null) {
                     state.runtimeStatus = RuntimeStatus.STOPPED;
                     state.failureCode = null;
                     state.failureMessage = null;
@@ -760,7 +805,140 @@ final class SpringUpgradeRunService {
                 }
                 touch(state);
             }
+        } finally {
+            if (returnedHandle != null && !retained && !stopAttempted) {
+                try {
+                    stopMatchingRuntime(state, returnedHandle);
+                } catch (RuntimeException error) {
+                    markRuntimeStopFailure(state, error);
+                }
+            }
         }
+    }
+
+    /**
+     * Stops the currently owned local or remote runtime exactly once at a
+     * time. The durable handle remains published until the execution port has
+     * confirmed STOP, so an unknown remote outcome is retryable after either a
+     * caller retry or worker restart.
+     */
+    private boolean stopOwnedRuntime(RunState state) {
+        synchronized (state.runtimeLifecycle) {
+            RuntimeHandle handle = state.runtimeHandle.get();
+            if (handle == null) {
+                destroyProcess(state.activeProcess.getAndSet(null));
+                return false;
+            }
+            stopOwnedRuntimeLocked(state, handle);
+            return true;
+        }
+    }
+
+    private void stopMatchingRuntime(RunState state, RuntimeHandle expected) {
+        synchronized (state.runtimeLifecycle) {
+            if (state.runtimeHandle.get() == expected) {
+                stopOwnedRuntimeLocked(state, expected);
+            }
+        }
+    }
+
+    private void stopOwnedRuntimeLocked(RunState state, RuntimeHandle handle) {
+        Process activeProcess = state.activeProcess.getAndSet(null);
+        boolean confirmed = false;
+        try {
+            transformer.stop(handle, stopControl(state));
+            confirmed = true;
+        } finally {
+            destroyProcess(activeProcess);
+            if (handle.process() != activeProcess) destroyProcess(handle.process());
+            if (confirmed) state.runtimeHandle.compareAndSet(handle, null);
+        }
+    }
+
+    private void stopUnownedRuntime(RunState state, RuntimeHandle handle) {
+        try {
+            transformer.stop(handle, stopControl(state));
+        } finally {
+            destroyProcess(handle.process());
+        }
+    }
+
+    private void scheduleRuntimeStop(RunState state) {
+        try {
+            tasks.execute(() -> {
+                try {
+                    stopOwnedRuntime(state);
+                    synchronized (state) {
+                        if (state.runtimeHandle.get() == null) {
+                            state.runtimeStatus = RuntimeStatus.STOPPED;
+                            touch(state);
+                        }
+                    }
+                } catch (RuntimeException error) {
+                    markRuntimeStopFailure(state, error);
+                }
+            });
+        } catch (RejectedExecutionException ignored) {
+            // close() owns the same idempotent cleanup once task admission ends.
+        }
+    }
+
+    private void markRuntimeStopFailure(RunState state, RuntimeException error) {
+        synchronized (state) {
+            state.runtimeStatus = RuntimeStatus.UNHEALTHY;
+            state.failureCode = error instanceof BlockedException blocked
+                    ? blocked.code() : "APPLICATION_RUNTIME_STOP_FAILED";
+            state.failureMessage = "The isolated application runtime stop outcome is unknown; retry stop.";
+            appendEvent(state, Stage.STOP_APPLICATION, "BLOCKED", state.failureMessage);
+            try {
+                touch(state);
+            } catch (RuntimeException ignored) {
+                // The previously durable handle remains authoritative and can
+                // be reconciled after restart even when this update cannot be written.
+            }
+        }
+    }
+
+    private boolean runtimeStopRequired(RunState state) {
+        return closed.get() || state.cancelled.get()
+                || state.runtimeStopRequested.get()
+                || Thread.currentThread().isInterrupted();
+    }
+
+    private SpringUpgradeExecutionPort.Control stopControl(RunState state) {
+        return new SpringUpgradeExecutionPort.Control() {
+            @Override public void stage(Stage stage, String message) {
+                synchronized (state) {
+                    state.stage = stage;
+                    appendEvent(state, stage, "RUNNING", message);
+                    appendLog(state, stage.name() + " " + message);
+                    try {
+                        touch(state);
+                    } catch (RuntimeException ignored) {
+                        // Cleanup must still reach the remote runtime when the
+                        // evidence volume is temporarily unavailable.
+                    }
+                }
+            }
+
+            @Override public void log(String line) {
+                synchronized (state) {
+                    appendLog(state, line);
+                }
+            }
+
+            @Override public void process(Process process) {
+                state.activeProcess.set(process);
+            }
+
+            @Override public boolean cancelled() {
+                return true;
+            }
+        };
+    }
+
+    private static void destroyProcess(Process process) {
+        if (process != null && process.isAlive()) process.destroyForcibly();
     }
 
     private SpringUpgradeExecutionPort.Control control(RunState state) {
@@ -914,13 +1092,13 @@ final class SpringUpgradeRunService {
             String remoteRuntimeId = nullableText(node, "remote_runtime_id");
             if (remoteRuntimeId != null) {
                 UUID.fromString(remoteRuntimeId);
-                state.runtimeHandle = new RuntimeHandle(
+                state.runtimeHandle.set(new RuntimeHandle(
                         null,
                         remoteRuntimeId,
                         request.organizationId(),
                         state.runtimePort == null ? 8080 : state.runtimePort,
                         state.healthPath
-                );
+                ));
             }
             if (state.runtimeStatus == RuntimeStatus.STARTING || state.runtimeStatus == RuntimeStatus.HEALTHY) {
                 state.runtimeStatus = RuntimeStatus.UNHEALTHY;
@@ -1173,7 +1351,8 @@ final class SpringUpgradeRunService {
         value.put("failure_message", state.failureMessage);
         value.put("health_path", state.healthPath);
         value.put("runtime_port", state.runtimePort);
-        value.put("remote_runtime_id", state.runtimeHandle == null ? null : state.runtimeHandle.runtimeId());
+        RuntimeHandle runtimeHandle = state.runtimeHandle.get();
+        value.put("remote_runtime_id", runtimeHandle == null ? null : runtimeHandle.runtimeId());
         value.put("created_at", state.createdAt);
         value.put("updated_at", state.updatedAt);
         value.put("events", List.copyOf(state.events));
@@ -1310,10 +1489,32 @@ final class SpringUpgradeRunService {
 
     @PreDestroy
     void close() {
+        if (!closed.compareAndSet(false, true)) return;
         for (RunState state : runs.values()) {
             state.cancelled.set(true);
-            Process process = state.activeProcess.getAndSet(null);
-            if (process != null) process.destroyForcibly();
+            state.runtimeStopRequested.set(true);
+            Future<?> runtimeFuture = state.runtimeFuture;
+            if (runtimeFuture != null) runtimeFuture.cancel(true);
+            Future<?> future = state.future;
+            if (future != null) future.cancel(true);
+            try {
+                stopOwnedRuntime(state);
+                synchronized (state) {
+                    if (state.runtimeHandle.get() == null
+                            && state.runtimeStatus != RuntimeStatus.NOT_STARTED) {
+                        state.runtimeStatus = RuntimeStatus.STOPPED;
+                        try {
+                            touch(state);
+                        } catch (RuntimeException ignored) {
+                            // Remote STOP was confirmed; durable state retains
+                            // the old handle only for an idempotent restart retry.
+                        }
+                    }
+                }
+            } catch (RuntimeException error) {
+                markRuntimeStopFailure(state, error);
+            }
+            destroyProcess(state.activeProcess.getAndSet(null));
         }
         tasks.shutdownNow();
         scheduler.shutdownNow();
@@ -1356,6 +1557,8 @@ final class SpringUpgradeRunService {
         final AtomicBoolean cancelled = new AtomicBoolean();
         final AtomicBoolean runtimeStopRequested = new AtomicBoolean();
         final AtomicReference<Process> activeProcess = new AtomicReference<>();
+        final AtomicReference<RuntimeHandle> runtimeHandle = new AtomicReference<>();
+        final Object runtimeLifecycle = new Object();
         final AtomicLong eventSequence = new AtomicLong();
         final Deque<Event> events = new ArrayDeque<>();
         final Deque<String> logs = new ArrayDeque<>();
@@ -1368,7 +1571,6 @@ final class SpringUpgradeRunService {
         Future<?> future;
         Future<?> runtimeFuture;
         ExecutionResult result;
-        RuntimeHandle runtimeHandle;
         IndependentValidationResult independentValidation;
         Fingerprint fingerprint;
         String selectedPackKey;

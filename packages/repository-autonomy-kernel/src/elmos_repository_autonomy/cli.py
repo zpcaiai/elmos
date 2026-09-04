@@ -13,8 +13,10 @@ from .catalog import PACKAGE_ID, PACKAGE_VERSION, SKILL_SPECS
 from .dispatcher import AutonomyRuntime
 from .errors import KernelError
 from .external_runtime import ExternalQualificationPreflight, load_qualification_manifest
+from .kernel_bridge import engine_report
 from .postgres import PostgresMigrationRunner, PostgresSessionFactory
 from .postgres_wave_store import PostgresWaveStore
+from .seal_key import bind_seal_key_from_environment
 from .server import serve
 from .storage import DurableStore
 
@@ -23,6 +25,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="elmos-autonomy")
     sub = parser.add_subparsers(dest="command", required=True)
     sub.add_parser("catalog")
+    sub.add_parser("engines", help="which engine answers each skill, and the recorded reason")
     conformance_parser = sub.add_parser("conformance")
     conformance_parser.add_argument("adapter")
     conformance_parser.add_argument("--responses", default="{}", help="JSON object keyed by conformance case")
@@ -44,6 +47,11 @@ def main(argv: list[str] | None = None) -> int:
     serve_parser.add_argument("--port", type=int, default=8080)
     serve_parser.add_argument("--allow-unverified-local-identity", action="store_true")
     serve_parser.add_argument("--postgres-control-service")
+    serve_parser.add_argument(
+        "--no-seal-key", action="store_true",
+        help="start without an evidence seal key; every release gate will then "
+             "fail closed with EVIDENCE_UNVERIFIABLE",
+    )
     migrate_parser = sub.add_parser("postgres-migrate")
     migrate_parser.add_argument("--service", required=True)
     migrate_parser.add_argument(
@@ -65,6 +73,13 @@ def main(argv: list[str] | None = None) -> int:
     preflight_parser = sub.add_parser("external-preflight")
     preflight_parser.add_argument("--manifest", required=True)
     args = parser.parse_args(argv)
+    if args.command == "engines":
+        # Two implementations of the same contract live in this package. An
+        # operator holding a result must be able to find out which one produced
+        # it without reading the source, so the routing table is a first-class
+        # output rather than an implementation detail.
+        print(json.dumps(engine_report(), ensure_ascii=False, indent=2))
+        return 0
     if args.command == "catalog":
         print(json.dumps({"package": PACKAGE_ID, "version": PACKAGE_VERSION, "skills": [{"name": item.name, "priority": item.priority, "pack": item.pack, "inputs": item.inputs, "outputs": item.outputs} for item in SKILL_SPECS.values()]}, ensure_ascii=False, indent=2))
         return 0
@@ -74,6 +89,11 @@ def main(argv: list[str] | None = None) -> int:
         except json.JSONDecodeError as exc:
             parser.error(f"payload is not valid JSON: {exc}")
             return 2
+        # Optional here: a one-shot dispatch of `repository-census` must not be
+        # blocked because no seal key is configured.  A dispatch that does reach
+        # the release gate still fails closed inside the kernel, which is the
+        # same answer arriving from the right place.
+        bind_seal_key_from_environment(required=False)
         result = AutonomyRuntime().execute(args.skill, payload)
         print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
         return 0 if result.status.value not in {"BLOCKED", "REJECTED"} else 1
@@ -115,6 +135,16 @@ def main(argv: list[str] | None = None) -> int:
             with_store.close()
         return 0 if result["p05"]["issued"] else 1
     if args.command == "serve":
+        # Required here, and deliberately before anything is constructed.  A
+        # server that boots without a seal key evaluates every release gate to
+        # EVIDENCE_UNVERIFIABLE while reporting itself healthy, which is worse
+        # than not booting: the failure looks like a property of the bundles
+        # being submitted rather than of the deployment.  `--no-seal-key` is the
+        # explicit opt-out for a deployment that does not evaluate release
+        # gates, so skipping the key is a stated choice rather than an omission.
+        if not args.no_seal_key:
+            bound = bind_seal_key_from_environment(required=True)
+            print(f"evidence seal key bound ({bound} bytes)", file=sys.stderr)
         control_store = None
         if args.postgres_control_service:
             control_store = PostgresWaveStore(

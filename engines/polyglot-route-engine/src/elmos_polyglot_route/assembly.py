@@ -139,9 +139,12 @@ def _exact_toolchain_identity_sha256(identity: Mapping[str, Any]) -> str:
         ).encode("ascii")
     ).hexdigest()
 
-_EXPECTED_CMAKE_PREFIX = Path("/opt/homebrew/Cellar/cmake/4.4.0")
-_EXPECTED_CMAKE_EXECUTABLE = Path("/opt/homebrew/Cellar/cmake/4.4.0/bin/cmake")
-_EXPECTED_CMAKE_RESOURCE_ROOT = Path("/opt/homebrew/Cellar/cmake/4.4.0/share/cmake")
+_EXPECTED_CMAKE_HOMEBREW_PREFIX = Path(
+    os.environ.get("ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX", "/opt/homebrew")
+).expanduser()
+_EXPECTED_CMAKE_PREFIX = _EXPECTED_CMAKE_HOMEBREW_PREFIX / "Cellar/cmake/4.4.0"
+_EXPECTED_CMAKE_EXECUTABLE = _EXPECTED_CMAKE_PREFIX / "bin/cmake"
+_EXPECTED_CMAKE_RESOURCE_ROOT = _EXPECTED_CMAKE_PREFIX / "share/cmake"
 _EXPECTED_CMAKE_VERSION = "cmake version 4.4.0"
 _EXPECTED_CMAKE_BYTES = 14_081_864
 _EXPECTED_CMAKE_SHA256 = "8f136fce6bb8e9dbea38320f8a615b1f4896fe80cc7da5c1ff3da69e834f5d4c"

@@ -298,11 +298,9 @@ profile emits executable default-deny authorization,
 tenant-bound queries plus forced PostgreSQL RLS, forward migrations, file-based
 Secret references, Prometheus metrics, structured request logs, Kubernetes
 security/network policy, SLO definitions, and backup/restore runbooks.
-Java and Python accept multi-entity production requests; Go, TypeScript, C#,
-Kotlin, PHP, and Rust currently enforce an explicit single-entity production
-boundary. Uncompiled rules, ambiguous production relations, multi-entity
-requests outside that exact boundary, and every unsupported profile/target
-tuple fail closed.
+Java, Python, Go, TypeScript, C#, Kotlin, PHP, and Rust all accept
+multi-entity production requests. Uncompiled rules, ambiguous production
+relations, and every unsupported profile/target tuple fail closed.
 
 The portable starter acceptance executes every exact toolchain available on the
 current host and preserves unavailable targets as `NOT_RUN`:

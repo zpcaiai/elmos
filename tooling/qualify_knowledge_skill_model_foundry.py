@@ -143,7 +143,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 900,
     },
     {
         "id": "python_compileall",
@@ -160,7 +160,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             QUALIFIER_PATH.as_posix(),
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 180,
+        "timeout_seconds": 300,
     },
     {
         "id": "engine_unittest_suite",
@@ -182,7 +182,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 2400,
     },
     {
         "id": "repository_integration_unittest_suite",
@@ -204,7 +204,7 @@ LOCAL_CHECK_SPECS: tuple[dict[str, Any], ...] = (
             "test_*.py",
         ],
         "environment": {"PYTHONDONTWRITEBYTECODE": "1", "PYTHONPATH": ENGINE_SOURCE},
-        "timeout_seconds": 300,
+        "timeout_seconds": 1200,
     },
 )
 

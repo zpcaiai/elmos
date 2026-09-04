@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "pack_key": "postgresql-17-5-self-service-billing",
+  "status": "research",
+  "exact_tuple": {
+    "source": {
+      "engine": "postgresql",
+      "versions": [
+        "17.5"
+      ],
+      "edition": "community",
+      "dialect": "postgresql",
+      "driver_versions": [
+        "UNSET"
+      ],
+      "charset": "UNSET",
+      "collation": "UNSET",
+      "timezone": "UTC",
+      "extensions": []
+    },
+    "target": {
+      "engine": "postgresql",
+      "versions": [
+        "17.5"
+      ],
+      "edition": "neon-managed",
+      "dialect": "postgresql",
+      "driver_versions": [
+        "UNSET"
+      ],
+      "charset": "UNSET",
+      "collation": "UNSET",
+      "timezone": "UTC",
+      "extensions": []
+    }
+  },
+  "metrics": {},
+  "restrictions": [],
+  "evidence_refs": [],
+  "approved_by": []
+}

@@ -70,7 +70,9 @@ class ProductionRuntimeBillingGateController {
                     "gate:usage:" + request.idempotencyKey(),
                     fixture.providerPricingVersionId(),
                     fixture.commercialPricingVersionId(),
-                    0, 0, 0, 0, BigDecimal.ZERO, BigDecimal.ZERO));
+                    fixture.inputTokens(), fixture.cachedInputTokens(),
+                    fixture.outputTokens(), fixture.reasoningTokens(),
+                    fixture.providerTotalCost(), fixture.customerCreditCost()));
             return Map.of(
                     "status", "PASS",
                     "reservationId", reservation.reservationId(),

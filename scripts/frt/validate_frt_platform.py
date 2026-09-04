@@ -71,6 +71,7 @@ REQUIRED_SURFACES = {
     "scripts/frt/run_frt_route_toolchains.mjs",
     "schemas/frt-g01-g30/gate-result.schema.json",
     "scripts/frt/refresh_frt_local_evidence.py",
+    "scripts/frt/repository_evidence.py",
     "scripts/frt/external_evidence.py",
     "scripts/frt/external_campaign_parameters.py",
     "scripts/frt/external_qualification.py",
@@ -159,6 +160,15 @@ def main() -> int:
     for relative in REQUIRED_SURFACES:
         if not (ROOT / relative).is_file():
             fail(f"FRT integration surface is missing: {relative}")
+    subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "frt" / "repository_evidence.py"),
+            "check",
+        ],
+        cwd=ROOT,
+        check=True,
+    )
     subprocess.run(
         [
             sys.executable,

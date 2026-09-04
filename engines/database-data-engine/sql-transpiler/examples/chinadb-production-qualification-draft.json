@@ -5,7 +5,7 @@
     "projectId": "project-required",
     "actorId": "actor-required"
   },
-  "capabilitySnapshotDigest": "sha256:e5ea97babb0a340929a8afad37116d73d920b0991e30cc636d1277b7102d7bbc",
+  "capabilitySnapshotDigest": "sha256:aec49d861260e473e806fa4648a72699363d818bff9740b94581879e5a12d85b",
   "trustStoreDigest": null,
   "implementer": {
     "actorId": "actor-required",

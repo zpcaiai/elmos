@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "generated_by": "tooling/integrate_frt_g01_g30.py",
+  "skill_id": "FRT-1804",
+  "skill_name": "frt-1804-state-management-pack-framework",
+  "batch": "G18",
+  "surface": "web_console",
+  "logical_path": "apps/web-console/src/features/g18/frt-1804-state-management-pack-framework/",
+  "status": "shared_implementation",
+  "handler_kind": "compatibility",
+  "capability_key": "frt.g18.state-management-pack-framework",
+  "execution_contract_sha256": "sha256:e42a137e9d04b26cea467cd9cdba4a0b0259e935ecb7302a5b4f376032ee894f",
+  "execution_class": "SANDBOX_RUNNER",
+  "input_contract": {
+    "required": [
+      "packs"
+    ],
+    "optional": [],
+    "additionalProperties": false
+  },
+  "contract_version": "1.0.0",
+  "source_sha256": "sha256:1b3f36fdcb80ad18eb3d0fbd0c9c918a8b00f0f43aa84ec3a5007956a52f451c",
+  "implementation_paths": [
+    "apps/web-console/app/frontend/FrontendTransformationStudio.tsx",
+    "apps/web-console/app/api/frt/catalog/route.ts"
+  ],
+  "not_applicable": false,
+  "approval_evidence": [],
+  "certification": "NOT_CERTIFIED"
+}

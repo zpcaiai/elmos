@@ -804,6 +804,47 @@ def test_all_eight_production_targets_render_distinct_deployment_manifests() -> 
         assert "runAsNonRoot: true" in files[path]
 
 
+def test_all_eight_production_targets_render_multi_entity_postgresql_workspaces() -> None:
+    draft = create_draft(
+        name="commerce-orders",
+        description="Authenticated durable customer and order API.",
+        entities=(
+            {
+                "singular": "customer",
+                "plural": "customers",
+                "fields": [{"name": "name", "type": "string", "required": True}],
+            },
+            {
+                "singular": "order",
+                "plural": "orders",
+                "fields": [
+                    {"name": "customer_id", "type": "string", "required": True},
+                    {"name": "total", "type": "number", "required": True},
+                ],
+            },
+        ),
+        relations=(
+            {
+                "source": "order",
+                "target": "customer",
+                "source_field": "customer_id",
+                "target_field": "id",
+                "kind": "many-to-one",
+                "required": True,
+            },
+        ),
+        languages=SUPPORTED_LANGUAGES,
+        persistence="postgresql",
+        auth_mode="jwt",
+        permissions=allow_crud("customer", "order"),
+    )
+    files = render_workspace(SynthesisRequest.from_mapping(approve_request(draft, actor="user:reviewer")))
+    joined = "\n".join(files.values())
+    assert "/customers" in joined
+    assert "/orders" in joined
+    assert "SINGLE_ENTITY_ONLY" not in joined
+
+
 def test_production_profile_compiles_business_rules_and_blocks_ambiguous_relations() -> None:
     draft = create_draft(
         name="inventory-api",

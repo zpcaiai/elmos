@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://elmos.dev/schemas/batch31/chinadb-sql-preflight-result.schema.json",
   "title": "ELMOS ChinaDB SQL conversion preflight result",
-  "description": "Typed source assessment for an unimplemented ChinaDB target adapter. A conforming result is blocked, emits no target SQL, and carries no runtime or certification claim.",
+  "description": "Typed source assessment for a ChinaDB target. LOCAL_EMITTED results include local target SQL; execution, equivalence, and certification stay NOT_RUN / NOT_CERTIFIED. BLOCKED results emit no target SQL.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -40,7 +40,10 @@
       "pattern": "^[a-z0-9][a-z0-9-]*--to--(dm8|kingbasees|opengauss|tidb|gbase-8s|gbase-8c|gbase-8a|highgo-hgdb|oceanbase-oracle|oceanbase-mysql|gaussdb-oracle|gaussdb-m|goldendb)$"
     },
     "state": {
-      "const": "BLOCKED"
+      "enum": [
+        "BLOCKED",
+        "LOCAL_EMITTED"
+      ]
     },
     "sourceDigest": {
       "$ref": "#/$defs/digest"
@@ -64,7 +67,10 @@
       }
     },
     "targetSql": {
-      "type": "null"
+      "type": [
+        "string",
+        "null"
+      ]
     },
     "verification": {
       "$ref": "#/$defs/verification"
@@ -122,6 +128,45 @@
         "properties": {
           "statements": {
             "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "LOCAL_EMITTED"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "targetSql": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "BLOCKED"
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "properties": {
+          "targetSql": {
+            "type": "null"
           }
         }
       }
@@ -220,7 +265,7 @@
           "pattern": "^chinadb\\.[a-z0-9][a-z0-9-]*\\.target-adapter\\.v1$"
         },
         "implementationStatus": {
-          "const": "SPEC_ONLY"
+          "const": "LOCAL_ADAPTER"
         }
       }
     },
@@ -323,13 +368,25 @@
           ]
         },
         "targetAdapter": {
-          "const": "NOT_RUN"
+          "enum": [
+            "NOT_RUN",
+            "PASSED",
+            "FAILED"
+          ]
         },
         "targetEmit": {
-          "const": "NOT_RUN"
+          "enum": [
+            "NOT_RUN",
+            "PASSED",
+            "FAILED"
+          ]
         },
         "targetReparse": {
-          "const": "NOT_RUN"
+          "enum": [
+            "NOT_RUN",
+            "PASSED",
+            "FAILED"
+          ]
         },
         "sourceExecution": {
           "const": "NOT_RUN"

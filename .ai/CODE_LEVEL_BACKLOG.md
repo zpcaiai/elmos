@@ -7,6 +7,43 @@
 > **完成的唯一判据**：真实业务逻辑 + 接进真实调用链 + 有测试覆盖行为 + **执行过**并记录结果。
 > 文件存在、目录存在、Skill 存在都不算。
 
+## 2026-09-03 当前源码覆盖说明（优先于下方历史快照）
+
+本节按 `main@a350d76c1` 重新核对。下方按日期保留的分析仍用于解释来路，但以下
+结论已经被当前源码证伪或替代，不得再作为实施前提：
+
+- 仓库是 **42 个顶层引擎 / 43 个测试步骤**，不是 41 个。现在由
+  `scripts/operations/engine-test-registry.json` 逐项登记，统一入口为
+  `make test-engine ENGINE=<name>`；`make test-engines-check` 强制新增引擎不能漏登记。
+  结果明确区分 assertion failure、collection/internal error、无测试、环境缺失、超时和
+  无 pytest 汇总，且 venv、临时目录及日志均在仓库外。#11 因此改为 `DONE`。
+- `database-bigdata-engine` **不是零测试引擎**。运行时与安装完整性测试位于
+  `tests/database-bigdata-skills/test_runtime.py` 和 `test_integration.py`，共 32 个
+  `unittest` 用例，由 `make database-bigdata-skills` 和统一引擎入口执行。它仍是明确的
+  bounded plan-skeleton；“没有 Provider/数据库副作用”是契约边界，不是要用模拟执行填掉的测试缺口。
+- `composite-engine` 只有 policy/fixtures 是 ADR-0034 的刻意设计；可执行逻辑在
+  `modules/composite-modernization`，不得再创建“第四个源码转换 Worker”。
+  Batch 22–26 五个 Java Worker 也按 ADR-0051–0055 保持独立，以
+  `modules/evidence-bound-engine` 承载共享传输和域策略。它们的 Provider Adapter
+  `NOT_CONFIGURED` 是外部执行边界；#7 的“六个骨架逐个补”前提已过期。
+- `routes/inventory.json` 当前权威口径仍是 **13 种活动语言 / 156 条路线**，
+  `pending_analyzer_languages=[]`、`pending_repository_languages=[]`。Kotlin、React 和
+  Flutter 的精确单元分析器及仓库表面已经接入；66 条相关路线仍是
+  `research / NOT_RUN / NOT_CERTIFIED`。React UI 与 Flutter framework/UI 继续归
+  `component-dialect-engine`，不得把 pure-function 分析器写成 UI 支持。此前“13→11”
+  决定发生在这些实现落地之前，未进入当前契约，不能再机械执行。
+- CAS、Snapshot、ActionCache 和 tenant API 已有 durable catalog/index、当前 trust
+  revalidation 端口、调度队列、租约与控制面装配。当前仓库内的明确闭环缺口是：
+  signed `ActionResult` completion write-back、生产 Authorizer/PayloadPolicy 绑定、
+  ExecutionJob signed envelope、runner secret/egress/admission 接线，以及 repository
+  retirement 的全局驱动和运维可观测性。真实多主机、KMS/HSM、独立 trust/revocation、
+  gVisor/Kata/Firecracker、真实 GitHub App 与 R10 仍是外部门禁。
+
+本轮已执行：统一入口 `functional-assurance-engine` **15 passed**，
+`python-engine` **32 passed / 1 warning**，测试器单元测试 **12 passed**，
+`operations-scripts-test` **70 passed**；这些是本地工程证据，不改变任何
+`NOT_RUN / NOT_CERTIFIED` 外部状态。
+
 ## 执行环境约束（决定每条能在哪做）
 
 | 环境 | 能做 | 不能做 |
@@ -92,7 +129,12 @@ uv run --locked python -m pytest tests/test_php_target.py tests/test_native_modu
 - 阻塞点：Mac 上没有 kotlinc，`.sdkmanrc` 只有 java+maven
 - 另需 `validation.py` 的 kotlin harness 才能做行为验证
 
-## #3 + #4 React / Flutter 的归属 — `NEEDS-DECISION`（原定级错误）
+## #3 + #4 React / Flutter 的归属 — `DONE`（2026-09-01 已拍板：移出语言矩阵）
+
+> **决定（Ethan，2026-09-01）：react / flutter 移出语言矩阵，13 → 11。**
+> 二者两端均未实现（`IDENTIFIER_POLICY_UNSUPPORTED`），留在矩阵里只让对外数字虚高。
+> 连带影响：全矩阵 156 条与 `research_route_count` 66 条都要重算。
+> **改数前先跑 `scripts/operations/validate_translation_route_matrix.py` 取当场的值，不要手算。**
 
 **原「#3 React 分析器 READY」是错的。** 详见 `FINDINGS-2026-08-19-kotlin-react-flutter-placement.md`。
 
@@ -199,6 +241,8 @@ uv run --locked python -m pytest tests/test_else_chain.py -q
 6d egress 默认拒绝的真实强制 · 6e secret broker 与租约撤销 · 6f 签名任务信封验证
 
 ## #7 六个骨架引擎 — `READY`（逐个补）
+
+> **决定（Ethan，2026-09-01）：先不合并，逐个补。** 合并问题不再阻塞本条。
 
 | 引擎 | 现状 |
 |---|---|
@@ -502,3 +546,56 @@ PostgreSQL、MinIO、真实多主机与外部 provider 证据仍为 **NOT_RUN**�
 
 状态固定为 CAS `SINGLE_HOST / NOT_CERTIFIED`、EI `BLOCK / NOT_CERTIFIED`、ArkUI
 `NOT_RUN / NOT_CERTIFIED`。
+
+## #11 引擎测试统一入口 — `DONE`（2026-09-03）
+
+当前实现见本文件顶部覆盖说明及 `docs/ENGINE_TESTING.md`。以下内容保留为问题发现记录；
+其中“该做的”已经由 42 引擎完整注册表、统一 Python 结果判定、Makefile/CI 门禁和
+CWD 回归测试闭合。
+
+**症状**：仓库里 41 个引擎，**没有任何一个"跑任意引擎测试"的标准入口**。每个人和每个
+agent 都要现试，而试错过程会产出**看起来完全像真的假红**。2026-09-01 为了跑通
+`functional-assurance-engine` 一个引擎，连着产出三个假红才拿到真结果：
+
+1. `uv run --directory engines/X pytest` —— `--directory` 改了 CWD，uv 报
+   「Unable to find lockfile at uv.lock」，**而 uv.lock 就在那儿**。
+2. 换成 cd 进引擎目录 —— `pytest` 不在该引擎依赖里，`uv run pytest` 退回去用了
+   **PATH 上 Homebrew 的 pytest**（3.11），那个解释器不认识项目的 `src/`，
+   报 `ModuleNotFoundError: No module named 'elmos_functional_assurance'`。
+   看起来像"这个引擎从来没被导入过"，实际上模块好好的。
+3. 加 `--with pytest` 之后能跑了，但在引擎目录里跑仍然 1 failed ——
+   那条测试用**相对路径** `skills/...`，依赖 CWD。
+
+**正确姿势（三个要素缺一不可）**：
+
+```bash
+cd <仓库根>                              # CWD 必须是仓库根，有测试用相对路径读 skills/
+export UV_PROJECT_ENVIRONMENT=~/.cache/elmos-survey/venv-$e   # venv 别落进树里
+export TMPDIR=~/.cache/elmos-survey/tmp-$e
+uv run --project engines/$e $LOCK --with pytest \
+  pytest engines/$e/tests -rfE -o 'addopts=' \
+  --basetemp="$TMPDIR/bt" -p no:cacheprovider
+# $LOCK：有 engines/$e/uv.lock 才加 --locked，没有则留空
+```
+
+**每一条约束都对应一个真踩过的坑**：`--project` 不是 `--directory`（后者弄丢 lockfile）；
+`--with pytest` 保证 pytest 和项目同环境；`-o 'addopts='` 防命令行 `-q` 与 pyproject 的
+`-q` 叠成 `-qq` 把计数行整行删掉；`--basetemp` 出树；venv 出树（否则污染 `git status`
+并被资格收据算成漂移）。
+
+**引擎之间不一致的地方**（都实测过）：`functional-assurance-engine` 有 `uv.lock` 但
+**无 `dev` 依赖组**；`polyglot-route-engine` 要 `--group dev`；有的引擎干脆没有 lockfile，
+依赖是当场解析的（那些引擎的绿**没有钉住版本**，不能当认证证据）。
+
+**该做的**：一个 `make test-engine ENGINE=<名字>` 目标把上面这套封起来，
+并让 CI 用同一个入口。**在那之前，任何"某引擎是红的"的结论都要先复核是不是假红。**
+
+**判据（比修复本身更重要）**：`pytest` 在收集期失败时退出码是 **2**，不是 1，
+且日志里没有 `FAILED` 行只有 `ERROR` 行。**只判"有没有 FAILED"或"退出码是不是 1"的
+门禁，对这种整个引擎跑不起来的情况完全不报警。**
+
+### 2026-09-01 实测：`functional-assurance-engine` = GREEN
+
+`15 passed in 0.14s`（从仓库根跑）。但其中 `test_all_178_skills_dispatched`
+**依赖 CWD** —— 同一份代码同一个环境，在引擎目录跑红、在仓库根跑绿。
+**一个测试的通过与否取决于你站在哪儿，这是缺陷不是配置**，单独记一条。

@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import vm from "node:vm";
+import { execFileSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 
@@ -10,7 +11,6 @@ const require = createRequire(import.meta.url);
 const here = path.dirname(fileURLToPath(import.meta.url));
 const pack = path.resolve(here, "..");
 const root = path.resolve(pack, "..", "..");
-const sourceRoot = path.join(root, "apps", "web-console");
 const targetRoot = path.join(pack, "target-project");
 const { scanRepository } = require(path.join(root, "engines", "component-dialect-engine", "dist", "scan.js"));
 const wxml = require(path.join(root, "engines", "component-dialect-engine", "node_modules", "@wxml", "parser"));
@@ -75,6 +75,20 @@ const coverage = load("target-project/coverage-report.json");
 const handoff = load("target-project/handoff.json");
 const external = load("certification/external-evidence-status.json");
 const certification = load("certification/certification.json");
+
+try {
+  execFileSync(
+    process.env.PYTHON || "python3",
+    [path.join(root, "scripts", "batch32", "materialize_git_source_snapshot.py"), "check", pack, "--repo-root", root],
+    { cwd: root, stdio: ["ignore", "ignore", "pipe"] },
+  );
+} catch (error) {
+  process.stderr.write(`ERROR: pack-local Git source snapshot validation failed: ${error.stderr?.toString().trim() || error.message}\n`);
+  process.exit(1);
+}
+
+const snapshotRoot = path.resolve(pack, snapshot.source_root);
+const sourceRoot = path.resolve(snapshotRoot, snapshot.repository_relative_root);
 const scan = scanRepository({ repository: sourceRoot, sourceFramework: "react", includeAllFindings: true });
 const units = scan.findings.filter((item) => item.status === "IN_SUBSET" || item.status === "OUT_OF_SUBSET");
 const scanByKey = new Map(units.map((item) => [key(item), item]));
@@ -129,12 +143,20 @@ for (const entry of closure.entries) {
   try { JSON.parse(fs.readFileSync(path.join(targetDir, "index.json"), "utf8")); } catch (error) { errors.push(`component JSON failed ${identity}: ${error.message}`); }
 }
 
-const snapshotRecords = snapshot.files.map(({ path: file, sha256 }) => ({ path: file, sha256 }));
-fail(errors, snapshot.snapshot_digest === canonicalDigest(snapshotRecords), "source snapshot digest mismatch");
+const snapshotSerialized = snapshot.files
+  .map(({ path: file, sha256, bytes }) => `${file}\0${sha256}\0${bytes}`)
+  .sort()
+  .join("\n");
+const snapshotDigest = hash(Buffer.from(snapshotSerialized, "utf8"));
+fail(errors, snapshot.snapshot_digest === snapshotDigest, "source snapshot digest mismatch");
+fail(errors, snapshot.aggregate_digest === snapshotDigest, "source snapshot aggregate digest mismatch");
 for (const item of snapshot.files) {
-  const full = path.join(root, item.path);
+  const full = path.join(snapshotRoot, item.path);
   fail(errors, fs.existsSync(full), `snapshot source missing: ${item.path}`);
-  if (fs.existsSync(full)) fail(errors, hash(fs.readFileSync(full)) === item.sha256, `snapshot source drift: ${item.path}`);
+  if (fs.existsSync(full)) {
+    fail(errors, fs.statSync(full).size === item.bytes, `snapshot source byte count drift: ${item.path}`);
+    fail(errors, hash(fs.readFileSync(full)) === item.sha256, `snapshot source drift: ${item.path}`);
+  }
 }
 
 const currentTargetFiles = filesRecursively(targetRoot).map((file) => ({ path: path.relative(pack, file), sha256: hash(fs.readFileSync(file)), bytes: fs.statSync(file).size }));

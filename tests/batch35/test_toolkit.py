@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import tempfile
@@ -721,17 +722,47 @@ class Tests(unittest.TestCase):
                 blockers,
             )
 
-    def test_validator_fails_closed_without_jsonschema(self):
-        pack = ROOT / "verification-packs/elmos-project-generation-source-ingestion"
-        completed = run_command(
+    def test_validator_uses_fail_closed_local_schema_without_jsonschema(self):
+        source = ROOT / "verification-packs/elmos-project-generation-source-ingestion"
+        isolated_environment = {
+            key: value
+            for key, value in os.environ.items()
+            if key not in {"PYTHONHOME", "PYTHONPATH"}
+        }
+        isolated_environment["ELMOS_BATCH35_FORCE_LOCAL_JSONSCHEMA"] = "true"
+        valid = run_command(
             [
                 sys.executable,
                 "-S",
                 str(SCRIPTS / "validate_verification_pack.py"),
-                str(pack),
-            ]
+                str(source),
+            ],
+            env=isolated_environment,
+            capture_output=True,
+            text=True,
         )
-        self.assertEqual(completed.returncode, 1)
+        self.assertEqual(valid.returncode, 0, valid.stderr)
+
+        with tempfile.TemporaryDirectory() as directory:
+            pack = Path(directory) / source.name
+            copytree(source, pack)
+            manifest = load(pack / "pack.json")
+            manifest["owner"] = 7
+            write(pack / "pack.json", manifest)
+            refresh_integrity_manifest(pack)
+            invalid = run_command(
+                [
+                    sys.executable,
+                    "-S",
+                    str(SCRIPTS / "validate_verification_pack.py"),
+                    str(pack),
+                ],
+                env=isolated_environment,
+                capture_output=True,
+                text=True,
+            )
+        self.assertEqual(invalid.returncode, 1)
+        self.assertIn("pack.json", invalid.stderr)
 
     def test_not_run_corpus_cannot_certify(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1014,6 +1045,124 @@ class Tests(unittest.TestCase):
             result = load(pack / "certification/gate-result.json")
             self.assertEqual(result["certification_readiness"], "BLOCKED")
             self.assertIn("verification pack validation failed", result["failures"])
+
+    def test_environment_identity_reference_digest_contract_and_not_run_reason_fail_closed(self):
+        source = ROOT / "verification-packs/elmos-project-generation-source-ingestion"
+
+        def validate(pack, repository_root=None):
+            command = [
+                sys.executable,
+                str(SCRIPTS / "validate_verification_pack.py"),
+                str(pack),
+            ]
+            if repository_root is not None:
+                command.extend(["--repository-root", str(repository_root)])
+            return run_command(
+                command,
+                capture_output=True,
+                text=True,
+            )
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            record_path = pack / "certification/local-test-result.json"
+            record = load(record_path)
+            record.pop("environment_identity_ref")
+            write(record_path, record)
+            refresh_integrity_manifest(pack)
+            completed = validate(pack)
+            self.assertEqual(1, completed.returncode)
+            self.assertIn("environment identity is unsafe or missing", completed.stderr)
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            record_path = pack / "certification/local-test-result.json"
+            record = load(record_path)
+            record["environment"] = "not-an-object"
+            write(record_path, record)
+            refresh_integrity_manifest(pack)
+            completed = validate(pack)
+            self.assertEqual(1, completed.returncode)
+            self.assertNotIn("Traceback", completed.stderr)
+            self.assertIn("environment must be an object", completed.stderr)
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            record_path = pack / "certification/local-test-result.json"
+            record = load(record_path)
+            record["environment_identity_ref"] = "../outside-environment.json"
+            write(record_path, record)
+            refresh_integrity_manifest(pack)
+            completed = validate(pack)
+            self.assertEqual(1, completed.returncode)
+            self.assertIn("environment identity is unsafe or missing", completed.stderr)
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            environment_path = pack / "certification/local-test-environment.json"
+            environment_path.write_bytes(environment_path.read_bytes() + b"\n")
+            refresh_integrity_manifest(pack)
+            completed = validate(pack)
+            self.assertEqual(1, completed.returncode)
+            self.assertIn("environment identity digest drift", completed.stderr)
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            environment_path = pack / "certification/local-test-environment.json"
+            environment = load(environment_path)
+            environment["schema_version"] = 2
+            write(environment_path, environment)
+            environment_bytes = environment_path.read_bytes()
+            environment_digest = "sha256:" + hashlib.sha256(
+                environment_bytes
+            ).hexdigest()
+            record_path = pack / "certification/local-test-result.json"
+            record = load(record_path)
+            record["environment_digest"] = environment_digest
+            environment_binding = next(
+                binding
+                for binding in record["repository_bindings"]
+                if binding.get("role") == "environment"
+            )
+            environment_binding.update(
+                {
+                    "byte_size": len(environment_bytes),
+                    "sha256": environment_digest,
+                }
+            )
+            write(record_path, record)
+            manifest = load(pack / "pack.json")
+            manifest["scope"]["environment_digest"] = environment_digest
+            write(pack / "pack.json", manifest)
+            certification = load(pack / "certification/certification.json")
+            certification["exact_scope"]["environment_digest"] = environment_digest
+            write(pack / "certification/certification.json", certification)
+            repository = Path(d) / "repository"
+            materialize_bound_repository(pack, repository)
+            bound_environment = repository / environment_binding["path"]
+            bound_environment.parent.mkdir(parents=True, exist_ok=True)
+            copy2(environment_path, bound_environment)
+            refresh_integrity_manifest(pack)
+            completed = validate(pack, repository)
+            self.assertEqual(1, completed.returncode)
+            self.assertIn("environment identity contract drift", completed.stderr)
+
+        with tempfile.TemporaryDirectory() as d:
+            pack = Path(d) / source.name
+            copytree(source, pack)
+            record_path = pack / "certification/local-test-result.json"
+            record = load(record_path)
+            record["environment"].pop("browser_execution_reason")
+            write(record_path, record)
+            refresh_integrity_manifest(pack)
+            completed = validate(pack)
+            self.assertEqual(1, completed.returncode)
+            self.assertIn("browser NOT_RUN reason is missing", completed.stderr)
 
     def test_unrelated_real_file_cannot_replace_a_scoped_binding(self):
         source = ROOT / "verification-packs/elmos-project-generation-source-ingestion"

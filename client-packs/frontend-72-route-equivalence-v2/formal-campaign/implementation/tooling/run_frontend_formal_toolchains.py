@@ -497,10 +497,10 @@ WEB_CONSOLE_PACKAGE_PATH = WEB_CONSOLE_ROOT / "package.json"
 LOCKED_PLAYWRIGHT_VERSION = "1.61.1"
 LOCKED_AXE_PLAYWRIGHT_VERSION = "4.12.1"
 LOCKED_WEB_CONSOLE_LOCK_SHA256 = (
-    "sha256:67299fc4ca09e70505c4b7c8eeb533701c97e2ffee8a0b87f554dd9fbda6f8a9"
+    "sha256:92de83a9244292f011ef88fd6d1838febf79951b10881c859bf36846fd9ce6e6"
 )
 LOCKED_WEB_CONSOLE_PACKAGE_SHA256 = (
-    "sha256:bb2b99c7c10b7f2d3ff046b2ab1dff30e9f8a56235a06301b9bef074d66a2448"
+    "sha256:684fe37e2fe3936382459a4df51d39c570eb3cfd9454313921a9fa80e96f5f80"
 )
 LOCKED_PLAYWRIGHT_PACKAGE_SHA256 = (
     "sha256:9d8556509e073169efec663b7f71c13f17d7002b307d00d48bf88ee91c387f3e"
@@ -549,29 +549,45 @@ INTERACTION_ENGINE_LOCK_PATH = INTERACTION_ENGINE_ROOT / "pnpm-lock.yaml"
 INTERACTION_ENGINE_TYPESCRIPT_PACKAGE_PATH = (
     INTERACTION_ENGINE_ROOT / "node_modules/typescript/package.json"
 )
+INTERACTION_ENGINE_NODE_TYPES_PUBLIC_ROOT = (
+    INTERACTION_ENGINE_ROOT / "node_modules/@types/node"
+)
+INTERACTION_ENGINE_NODE_TYPES_PNPM_ROOT = (
+    INTERACTION_ENGINE_ROOT
+    / "node_modules/.pnpm/@types+node@24.3.0/node_modules/@types/node"
+)
+INTERACTION_ENGINE_NODE_TYPES_PACKAGE_PATH = (
+    INTERACTION_ENGINE_NODE_TYPES_PUBLIC_ROOT / "package.json"
+)
 LOCKED_INTERACTION_ENGINE_NODE_VERSION = "v26.0.0"
 LOCKED_INTERACTION_ENGINE_NODE_SHA256 = (
     "sha256:73cc3e9b5d2b1753ea3395a5bf39787ef85f20f048a0f0744761860b81b8fbdb"
 )
-LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT = 53
+LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT = 54
 LOCKED_INTERACTION_ENGINE_SOURCE_TREE_SHA256 = (
-    "sha256:5489d83c6c5eee7aedb089f69b1180d79ae781313225cb4d0a602144725c1e3b"
+    "sha256:2e5ced79783397c2e3e97b779244d0c6d6bf8e2e605253557b5fb3bc6db30cf0"
 )
-LOCKED_INTERACTION_ENGINE_DIST_TREE_FILE_COUNT = 159
+LOCKED_INTERACTION_ENGINE_DIST_TREE_FILE_COUNT = 162
 LOCKED_INTERACTION_ENGINE_DIST_TREE_SHA256 = (
-    "sha256:e7c22e6a2d78a3a4a9eb12b05204529c168e2d204e7404cdebdbd1aaebcea7ab"
+    "sha256:cef7f08a9451314ef27a8e4064d4317ad006635f8e76d570b7487a0f36f9d975"
 )
 LOCKED_INTERACTION_ENGINE_FILE_SHA256 = {
     "cli_source": "sha256:695527da9f1470c4cdf17d9bd1e3f74502382a2945400ca82a770d97a6739c60",
     "equivalence_source": "sha256:a830b31a9cb25c231783a3e8a25a12484fe9f9a83e714711b204ad06043da67f",
     "cli_dist": "sha256:159603fa85be7e6525a34b362eb6e05432979e08729acebb79b42217927f10a8",
     "equivalence_dist": "sha256:a4f00762b0dcb256ae43758f97acc9e0951d577209cd54e5916ad3f7e5c9b8ab",
-    "package": "sha256:4e15dd29f10d03cc76f2d91cca03ce7ddfa14f57a078ef06a6b005c807a13b81",
+    "package": "sha256:afee6fb3a196ccb241db87cc45e8a12cb5150394c52f6bbaed61c21b710c64fe",
     "tsconfig": "sha256:445643bccad04d5cb5aeae088bd9430b462b260e524412d4d19897484f73f273",
-    "lock": "sha256:77592e787157ec5fb0fad3548906ee8d06524674b0698557ce15134a34b28603",
+    "lock": "sha256:6332bb41562d1a33fe282b05c451cac07ecd1bc686d2fd8b474c26445b3c1748",
     "typescript_package": "sha256:5a0bb7f286c4b3f1413a42c05f902311b161f70e5f52d9da10490443bfd595a3",
+    "node_types_package": "sha256:89cb280743d8e75899ce6848e2d6502b47b0409e403a7fbc956a2d0aec9cb182",
 }
 LOCKED_INTERACTION_ENGINE_TYPESCRIPT_VERSION = "5.9.2"
+LOCKED_INTERACTION_ENGINE_NODE_TYPES_VERSION = "24.3.0"
+LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT = 67
+LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256 = (
+    "sha256:b0c1c8b3aaa62dfb2f57156c9493db374c5ae99b6f9e27e3bc2344e8e5704fe3"
+)
 INTERACTION_ENGINE_VERIFY_TIMEOUT_SECONDS = 120
 SOLVER_RESULT_KEYS = {
     "schema_version",
@@ -3298,7 +3314,43 @@ def tree_digest(root: Path) -> dict[str, Any] | None:
                     "byte_count": len(data),
                 }
             )
+        elif not path.is_dir():
+            raise ValidationError(
+                f"build output contains non-regular entry: {path.relative_to(root)}"
+            )
     return {"file_count": len(rows), "digest": digest_json(rows), "files": rows}
+
+
+def locked_interaction_engine_node_types_root() -> Path:
+    """Resolve the exact pnpm package root without trusting an ambient link."""
+
+    public_root = INTERACTION_ENGINE_NODE_TYPES_PUBLIC_ROOT
+    expected_root = INTERACTION_ENGINE_NODE_TYPES_PNPM_ROOT
+    expected_link = "../.pnpm/@types+node@24.3.0/node_modules/@types/node"
+    if not public_root.is_symlink():
+        raise ValidationError("frozen frontend interaction engine Node types link drift")
+    try:
+        link_value = os.readlink(public_root)
+        resolved_public = public_root.resolve(strict=True)
+        resolved_expected = expected_root.resolve(strict=True)
+    except (OSError, RuntimeError) as error:
+        raise ValidationError(
+            f"frozen frontend interaction engine Node types root is unavailable: {error}"
+        ) from error
+    if link_value != expected_link or resolved_public != resolved_expected:
+        raise ValidationError("frozen frontend interaction engine Node types link drift")
+    current = INTERACTION_ENGINE_ROOT
+    for part in expected_root.relative_to(INTERACTION_ENGINE_ROOT).parts:
+        current = current / part
+        if current.is_symlink():
+            raise ValidationError(
+                "frozen frontend interaction engine Node types pnpm root contains symlink"
+            )
+    if not resolved_expected.is_dir():
+        raise ValidationError(
+            "frozen frontend interaction engine Node types root is not a directory"
+        )
+    return resolved_expected
 
 
 @dataclass(frozen=True)
@@ -6791,10 +6843,14 @@ def locked_interaction_engine_implementation_identity() -> dict[str, Any]:
 
     source_tree = tree_digest(INTERACTION_ENGINE_SOURCE_ROOT)
     dist_tree = tree_digest(INTERACTION_ENGINE_DIST_ROOT)
-    if source_tree is None or dist_tree is None:
+    node_types_root = locked_interaction_engine_node_types_root()
+    node_types_tree = tree_digest(node_types_root)
+    if source_tree is None or dist_tree is None or node_types_tree is None:
         raise ValidationError(
             "frozen frontend interaction engine trees are unavailable"
         )
+    node_types_tree["files"].sort(key=lambda row: str(row["path"]))
+    node_types_tree["digest"] = digest_json(node_types_tree["files"])
     if (
         source_tree["file_count"] != LOCKED_INTERACTION_ENGINE_SOURCE_TREE_FILE_COUNT
         or source_tree["digest"] != LOCKED_INTERACTION_ENGINE_SOURCE_TREE_SHA256
@@ -6802,6 +6858,15 @@ def locked_interaction_engine_implementation_identity() -> dict[str, Any]:
         or dist_tree["digest"] != LOCKED_INTERACTION_ENGINE_DIST_TREE_SHA256
     ):
         raise ValidationError("frozen frontend interaction engine tree identity drift")
+    if (
+        node_types_tree["file_count"]
+        != LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_FILE_COUNT
+        or node_types_tree["digest"]
+        != LOCKED_INTERACTION_ENGINE_NODE_TYPES_TREE_SHA256
+    ):
+        raise ValidationError(
+            "frozen frontend interaction engine Node types tree identity drift"
+        )
 
     file_paths = {
         "cli_source": INTERACTION_ENGINE_CLI_SOURCE_PATH,
@@ -6812,6 +6877,7 @@ def locked_interaction_engine_implementation_identity() -> dict[str, Any]:
         "tsconfig": INTERACTION_ENGINE_TSCONFIG_PATH,
         "lock": INTERACTION_ENGINE_LOCK_PATH,
         "typescript_package": INTERACTION_ENGINE_TYPESCRIPT_PACKAGE_PATH,
+        "node_types_package": INTERACTION_ENGINE_NODE_TYPES_PACKAGE_PATH,
     }
     files = {
         key: file_identity(path, f"frontend interaction engine {key}")
@@ -6824,12 +6890,22 @@ def locked_interaction_engine_implementation_identity() -> dict[str, Any]:
         INTERACTION_ENGINE_TYPESCRIPT_PACKAGE_PATH,
         "frontend interaction engine TypeScript package",
     )
+    node_types_package = read_json(
+        INTERACTION_ENGINE_NODE_TYPES_PACKAGE_PATH,
+        "frontend interaction engine Node types package",
+    )
     if (
         typescript_package.get("name") != "typescript"
         or typescript_package.get("version")
         != LOCKED_INTERACTION_ENGINE_TYPESCRIPT_VERSION
     ):
         raise ValidationError("frozen frontend interaction engine TypeScript drift")
+    if (
+        node_types_package.get("name") != "@types/node"
+        or node_types_package.get("version")
+        != LOCKED_INTERACTION_ENGINE_NODE_TYPES_VERSION
+    ):
+        raise ValidationError("frozen frontend interaction engine Node types drift")
 
     node_path_value = shutil.which("node")
     if node_path_value is None:
@@ -6851,8 +6927,10 @@ def locked_interaction_engine_implementation_identity() -> dict[str, Any]:
             "root": str(INTERACTION_ENGINE_DIST_ROOT.resolve()),
             **dist_tree,
         },
+        "node_types_tree": {"root": str(node_types_root), **node_types_tree},
         "files": files,
         "typescript_version": LOCKED_INTERACTION_ENGINE_TYPESCRIPT_VERSION,
+        "node_types_version": LOCKED_INTERACTION_ENGINE_NODE_TYPES_VERSION,
     }
     identity["closure_digest"] = digest_json(identity)
     return identity

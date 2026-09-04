@@ -39,7 +39,17 @@ func fail(code string) {
 	os.Exit(2)
 }
 
-func canonicalType(expr ast.Expr) string {
+type recordField struct {
+	name string
+	typ  string
+}
+
+type recordDef struct {
+	name   string
+	fields []recordField
+}
+
+func canonicalType(expr ast.Expr, records map[string]recordDef) string {
 	ident, ok := expr.(*ast.Ident)
 	if !ok {
 		fail("GO_UNSUPPORTED_TYPE")
@@ -54,6 +64,9 @@ func canonicalType(expr ast.Expr) string {
 	case "string":
 		return "string"
 	default:
+		if _, ok := records[ident.Name]; ok {
+			return ident.Name
+		}
 		fail("GO_UNSUPPORTED_TYPE:" + ident.Name)
 	}
 	return ""
@@ -67,7 +80,7 @@ var emittedBinaryHelpers = map[string]string{
 	"elmosCheckedMod": "%",
 }
 
-func expression(expr ast.Expr, emittedTarget bool) map[string]any {
+func expression(expr ast.Expr, emittedTarget bool, records map[string]recordDef) map[string]any {
 	switch value := expr.(type) {
 	case *ast.Ident:
 		if value.Name == "true" || value.Name == "false" {
@@ -92,7 +105,7 @@ func expression(expr ast.Expr, emittedTarget bool) map[string]any {
 		}
 		return map[string]any{"kind": "literal", "value": literal}
 	case *ast.ParenExpr:
-		return expression(value.X, emittedTarget)
+		return expression(value.X, emittedTarget, records)
 	case *ast.BinaryExpr:
 		op := value.Op.String()
 		switch op {
@@ -102,7 +115,48 @@ func expression(expr ast.Expr, emittedTarget bool) map[string]any {
 		}
 		return map[string]any{
 			"kind": "binary", "operator": op,
-			"left": expression(value.X, emittedTarget), "right": expression(value.Y, emittedTarget),
+			"left": expression(value.X, emittedTarget, records), "right": expression(value.Y, emittedTarget, records),
+		}
+	case *ast.SelectorExpr:
+		return map[string]any{
+			"kind":   "member_access",
+			"target": expression(value.X, emittedTarget, records),
+			"member": value.Sel.Name,
+		}
+	case *ast.CompositeLit:
+		ident, ok := value.Type.(*ast.Ident)
+		if !ok {
+			fail(fmt.Sprintf("GO_UNSUPPORTED_EXPRESSION:%T", expr))
+		}
+		rec, ok := records[ident.Name]
+		if !ok {
+			fail("GO_UNSUPPORTED_RECORD_TYPE:" + ident.Name)
+		}
+		argsMap := map[string]any{}
+		for i, elt := range value.Elts {
+			switch kv := elt.(type) {
+			case *ast.KeyValueExpr:
+				kIdent, ok := kv.Key.(*ast.Ident)
+				if !ok {
+					fail("GO_INVALID_RECORD_CONSTRUCT_KEY")
+				}
+				argsMap[kIdent.Name] = expression(kv.Value, emittedTarget, records)
+			default:
+				if i >= len(rec.fields) {
+					fail("GO_RECORD_CONSTRUCT_TOO_MANY_ARGS:" + rec.name)
+				}
+				argsMap[rec.fields[i].name] = expression(elt, emittedTarget, records)
+			}
+		}
+		for _, f := range rec.fields {
+			if _, ok := argsMap[f.name]; !ok {
+				fail("GO_RECORD_CONSTRUCT_MISSING_FIELD:" + rec.name + "." + f.name)
+			}
+		}
+		return map[string]any{
+			"kind":        "record_construct",
+			"record_name": rec.name,
+			"arguments":   argsMap,
 		}
 	case *ast.CallExpr:
 		if !emittedTarget || value.Ellipsis.IsValid() {
@@ -118,14 +172,14 @@ func expression(expr ast.Expr, emittedTarget bool) map[string]any {
 			}
 			return map[string]any{
 				"kind": "binary", "operator": operator,
-				"left": expression(value.Args[0], true), "right": expression(value.Args[1], true),
+				"left": expression(value.Args[0], true, records), "right": expression(value.Args[1], true, records),
 			}
 		}
 		if callee.Name == "elmosNonZeroFloat64" {
 			if len(value.Args) != 1 {
 				fail("GO_EMITTED_HELPER_ARITY:" + callee.Name)
 			}
-			return expression(value.Args[0], true)
+			return expression(value.Args[0], true, records)
 		}
 		fail("GO_EMITTED_HELPER_UNRECOGNIZED:" + callee.Name)
 	default:
@@ -145,7 +199,7 @@ func expression(expr ast.Expr, emittedTarget bool) map[string]any {
 // semantic reason.
 //
 // A nested `if` keeps its own Init check because the recursion re-enters here.
-func ifStatement(statement *ast.IfStmt, emittedTarget bool) map[string]any {
+func ifStatement(statement *ast.IfStmt, emittedTarget bool, records map[string]recordDef) map[string]any {
 	if statement.Init != nil {
 		fail("GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET")
 	}
@@ -153,20 +207,20 @@ func ifStatement(statement *ast.IfStmt, emittedTarget bool) map[string]any {
 	if statement.Else != nil {
 		switch alternative := statement.Else.(type) {
 		case *ast.BlockStmt:
-			elseBody = statements(alternative, emittedTarget)
+			elseBody = statements(alternative, emittedTarget, records)
 		case *ast.IfStmt:
-			elseBody = []map[string]any{ifStatement(alternative, emittedTarget)}
+			elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records)}
 		default:
 			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", statement.Else))
 		}
 	}
 	return map[string]any{
-		"kind": "if", "condition": expression(statement.Cond, emittedTarget),
-		"then": statements(statement.Body, emittedTarget), "else": elseBody,
+		"kind": "if", "condition": expression(statement.Cond, emittedTarget, records),
+		"then": statements(statement.Body, emittedTarget, records), "else": elseBody,
 	}
 }
 
-func statements(block *ast.BlockStmt, emittedTarget bool) []map[string]any {
+func statements(block *ast.BlockStmt, emittedTarget bool, records map[string]recordDef) []map[string]any {
 	result := make([]map[string]any, 0, len(block.List))
 	for _, raw := range block.List {
 		switch statement := raw.(type) {
@@ -174,9 +228,137 @@ func statements(block *ast.BlockStmt, emittedTarget bool) []map[string]any {
 			if len(statement.Results) != 1 {
 				fail("GO_RETURN_EXPRESSION_REQUIRED")
 			}
-			result = append(result, map[string]any{"kind": "return", "expression": expression(statement.Results[0], emittedTarget)})
+			result = append(result, map[string]any{"kind": "return", "expression": expression(statement.Results[0], emittedTarget, records)})
 		case *ast.IfStmt:
-			result = append(result, ifStatement(statement, emittedTarget))
+			result = append(result, ifStatement(statement, emittedTarget, records))
+		case *ast.DeclStmt:
+			genDecl, ok := statement.Decl.(*ast.GenDecl)
+			if !ok || genDecl.Tok != token.VAR {
+				fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", statement.Decl))
+			}
+			if len(genDecl.Specs) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			valueSpec, ok := genDecl.Specs[0].(*ast.ValueSpec)
+			if !ok {
+				fail("GO_UNSUPPORTED_DECLARATION_SPEC")
+			}
+			if len(valueSpec.Names) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			if len(valueSpec.Values) == 0 {
+				fail("GO_ANNOTATED_DECLARATION_WITHOUT_VALUE")
+			}
+			if len(valueSpec.Values) != 1 {
+				fail("GO_MULTIPLE_DECLARATIONS_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			if valueSpec.Type == nil {
+				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			result = append(result, map[string]any{
+				"kind":       "let",
+				"name":       valueSpec.Names[0].Name,
+				"type":       canonicalType(valueSpec.Type, records),
+				"expression": expression(valueSpec.Values[0], emittedTarget, records),
+			})
+		case *ast.AssignStmt:
+			if statement.Tok == token.DEFINE {
+				fail("GO_UNANNOTATED_ASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			fail("GO_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET")
+		case *ast.BranchStmt:
+			if statement.Label != nil {
+				fail("GO_LABELED_BRANCH_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			switch statement.Tok {
+			case token.BREAK:
+				result = append(result, map[string]any{"kind": "break"})
+			case token.CONTINUE:
+				result = append(result, map[string]any{"kind": "continue"})
+			case token.GOTO:
+				fail("GO_GOTO_OUTSIDE_CERTIFIED_SUBSET")
+			case token.FALLTHROUGH:
+				fail("GO_FALLTHROUGH_OUTSIDE_CERTIFIED_SUBSET")
+			default:
+				fail(fmt.Sprintf("GO_UNSUPPORTED_BRANCH:%s", statement.Tok))
+			}
+		case *ast.ForStmt:
+			if statement.Init == nil && statement.Post == nil {
+				if statement.Cond == nil {
+					fail("GO_INFINITE_LOOP_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				result = append(result, map[string]any{
+					"kind":      "while",
+					"condition": expression(statement.Cond, emittedTarget, records),
+					"body":      statements(statement.Body, emittedTarget, records),
+				})
+			} else if statement.Init != nil && statement.Cond != nil && statement.Post != nil {
+				assign, ok := statement.Init.(*ast.AssignStmt)
+				if !ok || (assign.Tok != token.DEFINE && assign.Tok != token.ASSIGN) || len(assign.Lhs) != 1 || len(assign.Rhs) != 1 {
+					fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				ident, ok := assign.Lhs[0].(*ast.Ident)
+				if !ok {
+					fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+				}
+				varName := ident.Name
+				var startExpr map[string]any
+				if call, ok := assign.Rhs[0].(*ast.CallExpr); ok {
+					if callFun, ok := call.Fun.(*ast.Ident); ok && callFun.Name == "int64" && len(call.Args) == 1 {
+						startExpr = expression(call.Args[0], emittedTarget, records)
+					} else {
+						fail("GO_FOR_INIT_OUTSIDE_CERTIFIED_SUBSET")
+					}
+				} else {
+					startExpr = expression(assign.Rhs[0], emittedTarget, records)
+				}
+
+				binCond, ok := statement.Cond.(*ast.BinaryExpr)
+				if !ok {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				leftIdent, ok := binCond.X.(*ast.Ident)
+				if !ok || leftIdent.Name != varName {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				if binCond.Op != token.LSS {
+					fail("GO_FOR_CONDITION_NON_MONOTONIC")
+				}
+				endExpr := expression(binCond.Y, emittedTarget, records)
+
+				var stepExpr map[string]any
+				if inc, ok := statement.Post.(*ast.IncDecStmt); ok {
+					postIdent, ok := inc.X.(*ast.Ident)
+					if !ok || postIdent.Name != varName || inc.Tok != token.INC {
+						fail("GO_FOR_POST_NON_MONOTONIC")
+					}
+				} else if postAssign, ok := statement.Post.(*ast.AssignStmt); ok {
+					postIdent, ok := postAssign.Lhs[0].(*ast.Ident)
+					if !ok || postIdent.Name != varName || postAssign.Tok != token.ADD_ASSIGN || len(postAssign.Rhs) != 1 {
+						fail("GO_FOR_POST_NON_MONOTONIC")
+					}
+					stepExpr = expression(postAssign.Rhs[0], emittedTarget, records)
+				} else {
+					fail("GO_FOR_POST_NON_MONOTONIC")
+				}
+
+				forLoop := map[string]any{
+					"kind":  "for",
+					"name":  varName,
+					"type":  "integer",
+					"start": startExpr,
+					"end":   endExpr,
+					"body":  statements(statement.Body, emittedTarget, records),
+				}
+				if stepExpr != nil {
+					forLoop["step"] = stepExpr
+				}
+				result = append(result, forLoop)
+			} else {
+				fail("GO_FOR_SHAPE_OUTSIDE_CERTIFIED_SUBSET")
+			}
+		case *ast.RangeStmt:
+			fail("GO_RANGE_LOOP_OUTSIDE_CERTIFIED_SUBSET")
 		default:
 			fail(fmt.Sprintf("GO_UNSUPPORTED_STATEMENT:%T", raw))
 		}
@@ -400,6 +582,62 @@ func main() {
 	}
 }
 
+func parseRecords(parsed *ast.File) ([]recordDef, map[string]recordDef) {
+	recordDefs := []recordDef{}
+	recordMap := map[string]recordDef{}
+
+	// First pass: collect struct type definitions
+	rawStructs := map[string]*ast.StructType{}
+	for _, declaration := range parsed.Decls {
+		genDecl, ok := declaration.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.TYPE {
+			continue
+		}
+		for _, spec := range genDecl.Specs {
+			typeSpec, ok := spec.(*ast.TypeSpec)
+			if !ok {
+				continue
+			}
+			structType, ok := typeSpec.Type.(*ast.StructType)
+			if !ok {
+				continue
+			}
+			name := typeSpec.Name.Name
+			if _, exists := rawStructs[name]; exists {
+				fail("GO_DUPLICATE_RECORD:" + name)
+			}
+			rawStructs[name] = structType
+			recordDefs = append(recordDefs, recordDef{name: name})
+			recordMap[name] = recordDef{name: name}
+		}
+	}
+
+	// Second pass: resolve fields
+	for i, r := range recordDefs {
+		structType := rawStructs[r.name]
+		fields := []recordField{}
+		seenFields := map[string]bool{}
+		for _, field := range structType.Fields.List {
+			if len(field.Names) == 0 {
+				fail("GO_EMBEDDED_FIELD_OUTSIDE_CERTIFIED_SUBSET")
+			}
+			fieldType := canonicalType(field.Type, recordMap)
+			for _, ident := range field.Names {
+				fName := ident.Name
+				if seenFields[fName] {
+					fail("GO_DUPLICATE_FIELD:" + r.name + "." + fName)
+				}
+				seenFields[fName] = true
+				fields = append(fields, recordField{name: fName, typ: fieldType})
+			}
+		}
+		recordDefs[i].fields = fields
+		recordMap[r.name] = recordDefs[i]
+	}
+
+	return recordDefs, recordMap
+}
+
 // analyzeFunction is the single source of truth for one function's result.
 // Batch mode calls exactly this, so a batch entry cannot drift from what the
 // per-function invocation it replaces would have produced.
@@ -409,6 +647,7 @@ func analyzeFunction(
 	functionName string,
 	emittedTarget bool,
 ) map[string]any {
+	recordDefs, recordMap := parseRecords(parsed)
 	var candidate *ast.FuncDecl
 	for _, declaration := range parsed.Decls {
 		if function, ok := declaration.(*ast.FuncDecl); ok && function.Name.Name == functionName {
@@ -427,12 +666,15 @@ func analyzeFunction(
 		if len(field.Names) != 1 {
 			fail("GO_ONE_NAME_PER_PARAMETER_REQUIRED")
 		}
-		parameters = append(parameters, map[string]string{"name": field.Names[0].Name, "type": canonicalType(field.Type)})
+		parameters = append(parameters, map[string]string{
+			"name": field.Names[0].Name,
+			"type": canonicalType(field.Type, recordMap),
+		})
 	}
 	if candidate.Type.Results == nil || len(candidate.Type.Results.List) != 1 {
 		fail("GO_SINGLE_RETURN_TYPE_REQUIRED")
 	}
-	return map[string]any{
+	payload := map[string]any{
 		"schema_version":   "1.0.0",
 		"source_language":  "go",
 		"source_file":      filepath.Base(sourcePath),
@@ -441,11 +683,29 @@ func analyzeFunction(
 		"functions": []map[string]any{{
 			"name":        candidate.Name.Name,
 			"parameters":  parameters,
-			"return_type": canonicalType(candidate.Type.Results.List[0].Type),
-			"body":        statements(candidate.Body, emittedTarget),
+			"return_type": canonicalType(candidate.Type.Results.List[0].Type, recordMap),
+			"body":        statements(candidate.Body, emittedTarget, recordMap),
 		}},
 		"diagnostics": []string{},
 	}
+	if len(recordDefs) > 0 {
+		recordsList := make([]map[string]any, len(recordDefs))
+		for i, r := range recordDefs {
+			fieldsList := make([]map[string]string, len(r.fields))
+			for j, f := range r.fields {
+				fieldsList[j] = map[string]string{
+					"name": f.name,
+					"type": f.typ,
+				}
+			}
+			recordsList[i] = map[string]any{
+				"name":   r.name,
+				"fields": fieldsList,
+			}
+		}
+		payload["records"] = recordsList
+	}
+	return payload
 }
 
 // analyzeFunctionGuarded runs one function's analysis and converts a domain

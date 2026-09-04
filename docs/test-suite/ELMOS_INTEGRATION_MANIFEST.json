@@ -671,8 +671,8 @@
     },
     {
       "path": "schemas/test-suite/test-result.schema.json",
-      "sha256": "0e029efe2122fc3836da97bf8f809c59b3d17851ce562f8c08cfe7705712ecb4",
-      "bytes": 3366
+      "sha256": "f1a1360ec191235b8f8b2a73ac7b059de48e40495e906de1828da3e83de09178",
+      "bytes": 3721
     },
     {
       "path": "schemas/test-suite/test-suite.schema.json",
@@ -761,8 +761,8 @@
     },
     {
       "path": "scripts/test-suite/run_strict_test_gate.py",
-      "sha256": "4a347057a9bcd14dc010fcbff7abf5834477317a7abacf39333cb07fdd276110",
-      "bytes": 24733
+      "sha256": "b96a403dbbbe9cf6e5457428500718830ed4202c125dd23fa257d1f273dd51c2",
+      "bytes": 24763
     },
     {
       "path": "scripts/test-suite/scaffold_test_results.py",
@@ -776,8 +776,8 @@
     },
     {
       "path": "scripts/test-suite/validate_batch1_65_slightly_strict.py",
-      "sha256": "5368365a9d9eb07c4a451c00b4c57cb4182c0ac77c94791b917ed77391904759",
-      "bytes": 23546
+      "sha256": "5d74d652ba8ad6c89d176b3b4ce4ff96370ce6414e3df676bcf0158fb0b86276",
+      "bytes": 23956
     },
     {
       "path": "scripts/test-suite/validate_batch66_80_slightly_strict.py",
@@ -871,7 +871,7 @@
     },
     {
       "path": "test-suites/batch1-37-strict/cases/manifest.json",
-      "sha256": "9bc99e2895a2e199dee57513c0bf7e0edf4dace32a13af95e40f19297f37abac",
+      "sha256": "f7c42ba8da634921b40ce4a03863556c37196fb4e3f57f9a08367ccf3d6fbb7b",
       "bytes": 7980
     },
     {
@@ -2965,5 +2965,5 @@
       "bytes": 25432
     }
   ],
-  "payload_digest": "sha256:09c6c3f46999463a5e858437dc3fbdd3dab18c2086089805557e2f9927c7a05e"
+  "payload_digest": "sha256:32c3843c20bdd66935ce0602947c1f147885352cc28ce5e0e6694312669a16b7"
 }

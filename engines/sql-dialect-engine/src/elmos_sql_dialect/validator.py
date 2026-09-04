@@ -59,6 +59,11 @@ def _routine_parser_fallback(sql: str, dialect: Dialect) -> tuple[str, ...] | No
                 "sqlglot exposes this PL/SQL routine as an opaque command; "
                 "typed emission was structurally checked and real Oracle execution is still required",
             )
+    if upper.startswith(("CREATE TRIGGER ", "CREATE OR REPLACE TRIGGER ")):
+        return (
+            "sqlglot does not fully model vendor trigger execution bodies; "
+            "typed emission was structurally checked and real execution is still required",
+        )
     return None
 
 

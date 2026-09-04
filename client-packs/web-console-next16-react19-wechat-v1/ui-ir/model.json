@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "pack_key": "web-console-next16-react19-wechat-v1",
-  "source_snapshot_digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+  "source_snapshot_digest": "sha256:67b44b68d3c6065d8199f2f01297e6968db49d9cb9957be1b12f51f629f27497",
   "routes": [
     {
       "id": "route.account-page",
@@ -7400,7 +7400,7 @@
       "id": "resource.source-snapshot",
       "kind": "content-addressed-git-snapshot",
       "name": "Pinned web console source snapshot",
-      "digest": "sha256:6f8660266f5e6c7125d02934edfa406a56b7660e5dbe6bf41c155ef0d5d147ee",
+      "digest": "sha256:67b44b68d3c6065d8199f2f01297e6968db49d9cb9957be1b12f51f629f27497",
       "references": [],
       "source_refs": [
         "apps/web-console/package.json"

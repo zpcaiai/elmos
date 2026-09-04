@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "profile_key": "postgresql-17-5-self-service-billing-target",
+  "version": "1.0.0",
+  "owner": "elmos-commercial-billing",
+  "engine": "postgresql",
+  "versions": [
+    "17.5"
+  ],
+  "edition": "neon-managed",
+  "dialect": "postgresql",
+  "driver_versions": [
+    "postgresql-jdbc-42.7.7"
+  ],
+  "charset": "UTF8",
+  "collation": "C",
+  "timezone": "UTC",
+  "extensions": [],
+  "provision": {
+    "commands": [
+      "createdb"
+    ],
+    "image_digests": []
+  },
+  "health_check": {
+    "query": "SELECT 1"
+  },
+  "security": {
+    "credential_mode": "neon-pooled-ssl",
+    "tls": "require"
+  },
+  "migration": {
+    "ddl_strategy": "flyway-v49-modernization",
+    "data_strategy": "reconciled-ledger"
+  }
+}

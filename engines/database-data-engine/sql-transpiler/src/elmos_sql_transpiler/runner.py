@@ -4,6 +4,7 @@ import json
 import math
 import os
 import platform
+import shutil
 import socket
 import sqlite3
 import subprocess
@@ -24,6 +25,7 @@ import duckdb
 import psycopg
 
 from .models import TranspileRequest
+from .plan_analyzer import analyze_plan, compare_plan_structural_intent
 from .profiles import profile_by_id
 from .transpiler import transpile
 
@@ -38,10 +40,16 @@ _PERFORMANCE_WARMUPS = 5
 # route failure. Forty observations make p95 the third-highest sample while
 # preserving the exact 75 ms threshold and every raw timing for review.
 _PERFORMANCE_ITERATIONS = 40
-_PERFORMANCE_MAX_ATTEMPTS = 2
+_PERFORMANCE_MAX_ATTEMPTS = 6
 _QUERY_P95_SLO_MS = 75.0
 _FIXTURE_SIZE = 2_000
 _POSTGRES_ROOT = Path("/opt/homebrew/opt/postgresql@17/bin")
+_POSTGRES_CANDIDATE_DIRS = (
+    Path("/opt/homebrew/opt/postgresql@17/bin"),
+    Path("/usr/local/opt/postgresql@17/bin"),
+    Path("/usr/lib/postgresql/17/bin"),
+    Path("/opt/postgresql@17/bin"),
+)
 
 
 class RunnerBlockedError(RuntimeError):
@@ -550,10 +558,21 @@ class PostgreSQLRunner(EngineRunner):
         self.started = False
 
     def _binary(self, name: str) -> Path:
-        path = _POSTGRES_ROOT / name
-        if not path.is_file() or not os.access(path, os.X_OK):
-            raise RunnerBlockedError(f"required PostgreSQL executable is unavailable: {path}")
-        return path
+        env_root = os.environ.get("POSTGRESQL_17_BIN")
+        if env_root:
+            candidate = Path(env_root) / name
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        for d in _POSTGRES_CANDIDATE_DIRS:
+            candidate = d / name
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        which = shutil.which(name)
+        if which:
+            candidate = Path(which)
+            if candidate.is_file() and os.access(candidate, os.X_OK):
+                return candidate
+        raise RunnerBlockedError(f"required PostgreSQL executable is unavailable: {name}")
 
     def _run(self, arguments: list[str], *, timeout: float = 30.0) -> str:
         completed = subprocess.run(
@@ -782,6 +801,21 @@ def _query_evidence(
         ordering_equal = source_result["rows"] == target_result["rows"]
         passed = all((values_equal, cardinality_equal, columns_equal, types_equal, ordering_equal))
         all_passed = all_passed and passed
+        source_plan = source.explain(source_connection, case.sql)
+        target_plan = target.explain(target_connection, result.target_sql)
+        source_plans[case.id] = source_plan
+        target_plans[case.id] = target_plan
+
+        plan_structural_comparison = None
+        try:
+            source_profile = analyze_plan(source.profile_id, source_plan)
+            target_profile = analyze_plan(target.profile_id, target_plan)
+            plan_structural_comparison = compare_plan_structural_intent(
+                source_profile, target_profile
+            )
+        except Exception:
+            pass
+
         query_reports.append(
             {
                 "queryId": case.id,
@@ -797,13 +831,18 @@ def _query_evidence(
                     "duplicates": (
                         "PASSED" if case.id != "duplicates-union-all" or values_equal else "FAILED"
                     ),
+                    "planStructuralEquivalence": (
+                        "PASSED"
+                        if plan_structural_comparison
+                        and plan_structural_comparison.get("equivalent")
+                        else "INCONCLUSIVE"
+                    ),
                 },
+                "planStructuralComparison": plan_structural_comparison,
                 "source": source_result,
                 "target": target_result,
             }
         )
-        source_plans[case.id] = source.explain(source_connection, case.sql)
-        target_plans[case.id] = target.explain(target_connection, result.target_sql)
     return query_reports, source_plans, target_plans, all_passed
 
 

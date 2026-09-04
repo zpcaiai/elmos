@@ -8,12 +8,12 @@
       "No dynamic fallback to unregistered models."
     ],
     "inputs": [
-      "model alias",
-      "registry",
-      "model_selection"
+      "`model alias`",
+      "`registry`",
+      "`model_selection`"
     ],
     "outputs": [
-      "allow/deny decision"
+      "`allow/deny decision`"
     ],
     "triggers": [
       "any model selection"

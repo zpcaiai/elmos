@@ -17,7 +17,7 @@ from sqlglot import exp
 
 from elmos_sql_dialect.models import Dialect
 from elmos_sql_dialect.scan import discover_sql_files
-from elmos_sql_dialect.statement_splitter import split_statements
+from elmos_sql_dialect.statement_splitter import looks_like_client_directive, split_statements
 
 # Constructs that do NOT mean the same thing in PostgreSQL ARE, MySQL 8 ICU and
 # Oracle POSIX. Anything matching these cannot be admitted on pattern grounds.
@@ -38,8 +38,8 @@ def scan_patterns(root: Path, dialect: Dialect) -> list[str]:
             statements = list(sqlglot.parse(text, read=dialect.value))
         except Exception:
             statements = []
-            for raw in split_statements(text):
-                if raw.text.lstrip().startswith("\\"):
+            for raw in split_statements(text, dialect=dialect):
+                if looks_like_client_directive(raw.text, dialect):
                     continue
                 try:
                     statements.extend(sqlglot.parse(raw.text, read=dialect.value))

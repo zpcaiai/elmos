@@ -10,13 +10,13 @@
       "Never promote outside the hard allowlist or bypass a manual strict selection."
     ],
     "inputs": [
-      "task",
-      "attempt history",
-      "router policy",
-      "model_selection"
+      "`task`",
+      "`attempt history`",
+      "`router policy`",
+      "`model_selection`"
     ],
     "outputs": [
-      "next attempt plan or terminal stop"
+      "`next attempt plan or terminal stop`"
     ],
     "triggers": [
       "classified failure"

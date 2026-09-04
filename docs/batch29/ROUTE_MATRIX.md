@@ -37,11 +37,10 @@ The generated registry retains these exact set identities:
   66 directions that have Kotlin, React, or Flutter on at least one side.
 - Matrix expansion is exact and explicit: 13 × 12, with no self routes.
 - Local maturity distribution: 90 `limited`, 66 `research`, 0 `certified`.
-- Current local execution: all 156 routes are `NOT_RUN`. Thirty-eight old routes
-  retain historical local artifacts, but their captured engine-source bytes no
-  longer match the live engine snapshot; inventory generation invalidates those
-  results instead of advertising stale `PASSED_LOCAL` evidence. The new 66
-  directions have not been replayed as route evidence.
+- Current local execution: all 156 routes are `NOT_RUN` by design. The exact
+  split is `38` manifest-drift directions + `52` not-executed directions +
+  `66` V3 research campaigns not replayed. Stale historical artifacts are invalidated
+  against the live engine snapshot; no stale `PASSED_LOCAL` evidence is exported.
 - Repository execution: all 156 governed routes are `NOT_RUN`.
 - Independent verification and external/customer certification: `NOT_RUN`.
 - Certification decision: `NOT_CERTIFIED` for every route.

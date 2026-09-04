@@ -25,6 +25,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, BinaryIO
 
+from . import native_cas_bridge
 from .atomic import try_reflink
 from .canonical import (
     DIGEST_PREFIX,
@@ -155,6 +156,10 @@ class ContentAddressableStore:
         if self.contains(digest):
             return digest
         self._check_quota(len(data))
+        if self.compression == "none" and native_cas_bridge.is_native_available():
+            res = native_cas_bridge.native_put_bytes(self.root, data, expected_digest, artifact_kind)
+            if res:
+                return res
         destination = self.path_for(digest)
         destination.parent.mkdir(parents=True, exist_ok=True)
         payload, compression = self._maybe_compress(data)
@@ -287,6 +292,12 @@ class ContentAddressableStore:
     # -- reads ------------------------------------------------------------
     def get_bytes(self, digest: str, verify: bool = True) -> bytes:
         info = self.info(digest)
+        if not info.compressed and native_cas_bridge.is_native_available():
+            native_data = native_cas_bridge.native_get_bytes(self.root, digest, verify=verify)
+            if native_data is not None:
+                return native_data
+            if verify and self.is_quarantined(digest):
+                raise CorruptObject("stored object is corrupt", digest=digest, actual="corrupt")
         raw = info.path.read_bytes()
         data = gzip.decompress(raw) if info.compressed else raw
         if verify:

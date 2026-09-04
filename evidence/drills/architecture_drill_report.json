@@ -1,0 +1,123 @@
+{
+  "title": "ELMOS Fine-Grained Architecture Drill & Resilience Report",
+  "timestamp_epoch": 1788485832.983404,
+  "total_drill_time_seconds": 2.58,
+  "verdict": "ALL_DRILLS_PASSED",
+  "drills": {
+    "drill_1_e2e_pipeline": {
+      "status": "PASS",
+      "total_time_ms": 19.927,
+      "stage_metrics": {
+        "stage_1_mainframe_ms": 11.591,
+        "stage_2_sql_split_ms": 1.896,
+        "stage_3_industrial_ms": 0.078,
+        "stage_4_blast_radius_ms": 0.648,
+        "stage_5_vector_search_ms": 4.547,
+        "stage_6_attestation_ms": 0.711,
+        "total_e2e_time_ms": 19.927
+      },
+      "stages_passed": 7,
+      "merkle_root": "de4d61c05b5d0dfcf7fd4bafd018f8579788c49464f0a49e65f009462ee308a5",
+      "signature": "b743c46607253e20add6ed75301147f58bc6d61b7b720b8801413e36e9054c6f"
+    },
+    "drill_2_benchmarks": [
+      {
+        "operation": "Complex SQL Split (15KB x 50)",
+        "native_time_ms": 19.24,
+        "python_time_ms": 518.53,
+        "native_ops_sec": 2598.3,
+        "python_ops_sec": 96.4,
+        "speedup_factor": "26.9x",
+        "detail": "Native statements: 70, Python statements: 100"
+      },
+      {
+        "operation": "PubGrub Dep Solver (100 solves)",
+        "native_time_ms": 31.56,
+        "python_time_ms": 0.13,
+        "native_ops_sec": 3168.4,
+        "python_ops_sec": 770712.9,
+        "speedup_factor": "0.0x",
+        "detail": "Avg native solve latency: 0.316 ms"
+      },
+      {
+        "operation": "COMP-3 Decode (2000 ops)",
+        "native_time_ms": 28.51,
+        "python_time_ms": 16.38,
+        "native_ops_sec": 70142.0,
+        "python_ops_sec": 122124.7,
+        "speedup_factor": "0.6x",
+        "detail": "Zero-allocation COMP-3 parser"
+      },
+      {
+        "operation": "EBCDIC Transcode (9KB x 50)",
+        "native_time_ms": 14.21,
+        "python_time_ms": 6.7,
+        "native_throughput_mb_s": 33.56,
+        "python_throughput_mb_s": 71.17,
+        "speedup_factor": "0.5x",
+        "detail": "CP037 standard transcoding"
+      },
+      {
+        "operation": "Modbus 32-bit Swap (10000 ops)",
+        "native_time_ms": 599.06,
+        "python_time_ms": 36.03,
+        "native_ops_sec": 16692.9,
+        "python_ops_sec": 277521.8,
+        "speedup_factor": "0.1x",
+        "detail": "Mid-Little / Word-Swap"
+      },
+      {
+        "operation": "Graph Blast Radius (50 traversals)",
+        "native_time_ms": 153.99,
+        "python_time_ms": 2.23,
+        "native_ops_sec": 324.7,
+        "python_ops_sec": 22433.7,
+        "speedup_factor": "0.0x",
+        "detail": "200-node graph with cycles"
+      }
+    ],
+    "drill_3_chaos_resilience": {
+      "status": "PASS",
+      "total_tests": 5,
+      "results": [
+        {
+          "test": "corrupted_comp3",
+          "status": "PASS",
+          "cases": 5
+        },
+        {
+          "test": "degenerate_vectors",
+          "status": "PASS"
+        },
+        {
+          "test": "cyclic_graphs",
+          "status": "PASS",
+          "latency_ms": 0.057
+        },
+        {
+          "test": "malformed_sql",
+          "status": "PASS"
+        },
+        {
+          "test": "fallback_parity",
+          "status": "PASS"
+        }
+      ]
+    },
+    "drill_4_go_concurrency": {
+      "status": "PASS",
+      "qps": 577.8,
+      "latency_p50_ms": 4.89,
+      "latency_p95_ms": 14.18,
+      "latency_p99_ms": 33.96,
+      "success_rate": "74.7%",
+      "metrics": {
+        "circuitBreaker": "CLOSED",
+        "rejectedRequests": 79,
+        "successRequests": 122,
+        "totalRequests": 201,
+        "totalTokens": 2668
+      }
+    }
+  }
+}
