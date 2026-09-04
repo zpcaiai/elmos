@@ -125,7 +125,11 @@ def main() -> int:
             "pack_key": pack_key,
             "enabled": False,
             "components": [],
-            "exit_criteria": [],
+            "status": "NOT_RUN",
+            "reason": "Coexistence is disabled until an application-specific compatibility contract is approved.",
+            "exit_criteria": [
+                "Retire the source runtime only after target parity, rollback, and customer acceptance pass."
+            ],
         },
         pack / "certification" / "evidence.json": evidence,
         pack / "certification" / "certification.json": certification,

@@ -44,6 +44,7 @@ final class SpringRouteCatalog {
     static final String GRADLE_BUILD_TOOL = "gradle";
     static final String MAVEN_TOOLCHAIN = "maven-3.9.11";
     static final String GRADLE_TOOLCHAIN = "gradle-8.14.3";
+    static final String LAUNCH_ROUTE_ID = "boot-2.7-maven-to-boot-3.5.3-java-21";
 
     /** The source framework family is part of the directed route identity. */
     enum SourceFamily {
@@ -70,6 +71,12 @@ final class SpringRouteCatalog {
         NOT_RUN,
         /** The route is declared for inventory purposes and has no driver yet. */
         NOT_IMPLEMENTED
+    }
+
+    enum LaunchStatus {
+        DESIGN_PARTNER,
+        EXPERIMENTAL,
+        INVENTORY_ONLY
     }
 
     record SpringRoute(
@@ -760,8 +767,15 @@ final class SpringRouteCatalog {
     }
 
     record Selection(SpringRoute route, EvidenceStatus evidence) {
+        LaunchStatus launchStatus() {
+            if (route.routeId().equals(LAUNCH_ROUTE_ID)) return LaunchStatus.DESIGN_PARTNER;
+            if (evidence == EvidenceStatus.NOT_IMPLEMENTED) return LaunchStatus.INVENTORY_ONLY;
+            return LaunchStatus.EXPERIMENTAL;
+        }
+
         boolean requiresExperimentalOptIn() {
-            return evidence != EvidenceStatus.PASSED_LOCAL;
+            return evidence != EvidenceStatus.PASSED_LOCAL
+                    || launchStatus() != LaunchStatus.DESIGN_PARTNER;
         }
     }
 

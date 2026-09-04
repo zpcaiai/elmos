@@ -346,6 +346,12 @@ class SpringUpgradeRunServiceTest {
         assertEquals("exact:5.3.39", mvc.get("sourceConstraint"));
         assertEquals("EXACT", mvc.get("sourceVersionMatch"));
         assertEquals("5.3.39", mvc.get("exactSourceVersion"));
+        assertEquals("EXPERIMENTAL", mvc.get("launchStatus"));
+        Map<String, Object> launch = routes.stream()
+                .filter(route -> SpringRouteCatalog.LAUNCH_ROUTE_ID.equals(route.get("routeId")))
+                .findFirst().orElseThrow();
+        assertEquals("DESIGN_PARTNER", launch.get("launchStatus"));
+        assertEquals(false, service.capabilities().get("operatorExperimentalRoutesEnabled"));
     }
 
     private SpringUpgradeRunService service(

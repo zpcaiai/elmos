@@ -3,6 +3,9 @@
   "pack_key": "spring-framework-5-3-mvc-to-spring-boot-3-5-3",
   "enabled": false,
   "components": [],
-  "exit_criteria": [],
-  "evaluation_status": "NOT_RUN"
+  "exit_criteria": [
+    "Retire the external Servlet container only after exact WAR behavior, rollback, and customer acceptance pass."
+  ],
+  "reason": "Classic MVC coexistence needs an application-specific external-container and routing contract.",
+  "status": "NOT_RUN"
 }

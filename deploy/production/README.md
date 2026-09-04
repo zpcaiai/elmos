@@ -1,6 +1,6 @@
 # deploy/production
 
-更新日期：2026-07-29
+更新日期：2026-09-04
 本目录是**第一版商业化部署的制品**。它们尚未在任何环境执行过——
 RISK-DEPLOY-001 与 RISK-SRE-001 保持 `OPEN`，直到在 staging 真实起停并留下证据。
 
@@ -25,6 +25,7 @@ deploy/production/
 - `scripts/operations/provision_runner_host.sh` —— Runner 主机预置与失败关闭校验
 - `scripts/operations/configure_control_plane_runtime_role.sh` —— 控制面最小权限运行角色
 - `scripts/commercial/validate_pricing_catalog_publication.py` —— 定价目录发布门禁
+- `scripts/batch30/validate_spring_launch_readiness.py` —— Spring 精确首发路线、生产环境与外部证据门禁
 
 ---
 
@@ -32,7 +33,7 @@ deploy/production/
 
 | 制品 | 已验证 | 未验证 |
 |---|---|---|
-| `docker-compose.production.yml` | YAML 可解析、8 个服务、锚点合并正确、profile 切分正确 | **从未 `up` 过**；`read_only`/`user` 标记 VERIFY-REQUIRED 的项依赖镜像实际写入路径 |
+| `docker-compose.production.yml` | YAML 可解析、9 个服务、锚点合并正确、profile 切分正确；Spring 静态首发合同已校验 | **从未 `up` 过**；`read_only`/`user` 标记 VERIFY-REQUIRED 的项依赖镜像实际写入路径，Spring 外部证据仍 `NOT_RUN` |
 | `prometheus-rules.yml` | `promtool check rules` → SUCCESS: 12 rules found | 未对接指标源；无一条告警被真实触发/恢复；阈值未用基线校准 |
 | `provision_runner_host.sh` | `bash -n` 通过；`--check` 与 4 类危险路径守卫已实测（退出码 3/4 符合预期） | `--apply` 从未在真实主机执行 |
 | `validate_pricing_catalog_publication.py` | 6 个用例实测通过（含伪造 PUBLISHED 被阻断、免费套餐被改成收费被拒） | 未接入 CI |
@@ -70,11 +71,17 @@ sudo -E scripts/operations/provision_runner_host.sh --apply
 # 同一个 enrollment Secret 绝不能跨副本复用。
 
 # 5. 应用主机（先在 staging）
+python3 scripts/batch30/validate_spring_launch_readiness.py
+# Spring profile 启动前还必须在受控 shell 中执行环境预检；脚本只报告字段名，不输出 Secret。
+python3 scripts/batch30/validate_spring_launch_readiness.py --check-environment
 docker compose --env-file /srv/elmos/elmos.env \
   -f deploy/production/compose/docker-compose.production.yml up -d
 docker compose --env-file /srv/elmos/elmos.env \
   -f deploy/production/compose/docker-compose.production.yml \
   --profile spring up -d                           # 只在售卖 Spring 升级时
+
+# 正式放量必须再提供外部证据收据；模板中的 NOT_RUN 不能通过。
+make spring-launch-gate SPRING_EXTERNAL_EVIDENCE=/受控路径/spring-external-evidence.json
 
 # 6. 告警
 promtool check rules deploy/production/observability/prometheus-rules.yml
