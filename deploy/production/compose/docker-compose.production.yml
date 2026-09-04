@@ -251,6 +251,10 @@ services:
     <<: *java-service
     profiles: ["spring"]
     build: { context: ../../.., dockerfile: apps/java-engine-worker/Dockerfile }
+    # The Spring worker consumes only the explicit allowlist below.  The full
+    # application env_file contains unrelated credentials and must not enter
+    # this narrower ingress-authentication security boundary.
+    env_file: []
     user: "10001:10001"
     read_only: true
     pids_limit: 1024
@@ -258,9 +262,22 @@ services:
       - "/tmp:rw,noexec,nosuid,size=512m"
       - "/home/elmos/.m2:rw,noexec,nosuid,size=512m"
     environment:
+      # Fail closed at the process boundary: image/env-file JVM flags, JSON
+      # configuration, or servlet mappings must not change the path signed by
+      # the BFF.  The launch gate separately rejects these names in the actual
+      # deployment env and invoking process environment.
+      SPRING_APPLICATION_JSON: ""
+      JAVA_TOOL_OPTIONS: ""
+      _JAVA_OPTIONS: ""
+      JAVA_OPTS: ""
+      JDK_JAVA_OPTIONS: ""
+      SERVER_SERVLET_CONTEXT_PATH: ""
+      SERVER_SERVLET_PATH: ""
+      SPRING_MVC_SERVLET_PATH: ""
       ELMOS_SPRING_UPGRADE_ENABLED: "true"
       ELMOS_SPRING_ENGINE_AUTH_ENABLED: "true"
       ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
+      ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT: /var/lib/elmos/spring-engine-auth-replay
       # ⚠ 以下两项必须由真实的 rootless / 网络策略证明置为 true，
       #   在证明产生前保持 false 会让 Spring 升级失败关闭 —— 这是正确行为
       ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED: "${ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED:-false}"

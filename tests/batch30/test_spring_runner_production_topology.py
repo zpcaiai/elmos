@@ -131,6 +131,58 @@ class SpringRunnerProductionTopologyTests(TestCase):
             with self.subTest(service=name):
                 self.assertNotIn("env_file", service)
 
+    def test_replay_state_uses_required_role_specific_host_binds(self) -> None:
+        paths = TOPOLOGY.ContractPaths()
+        runner = TOPOLOGY.read_yaml(paths.runner_compose)
+        application = TOPOLOGY.read_yaml(paths.application_compose)
+        overlay = TOPOLOGY.read_yaml(paths.application_spring_overlay)
+        broker = runner["services"]["spring-runner-broker"]
+        runner_target = "/var/lib/elmos/spring-auth-replay"
+        runner_mount = TOPOLOGY.volume_for_target(broker, runner_target)
+        self.assertIsNotNone(runner_mount)
+        assert runner_mount is not None
+        self.assertTrue(
+            runner_mount["source"].startswith(
+                "${ELMOS_SPRING_RUNNER_REPLAY_HOST_PATH:?"
+            )
+        )
+        self.assertFalse(runner_mount["read_only"])
+        self.assertIs(False, runner_mount["bind"]["create_host_path"])
+        self.assertEqual(
+            {
+                "ELMOS_SPRING_RUNTIME_REPLAY_ROOT": runner_target + "/runtime",
+                "ELMOS_SPRING_VERIFIER_REPLAY_ROOT": runner_target + "/verifier",
+                "ELMOS_SPRING_TRANSFORMER_REPLAY_ROOT": runner_target + "/transformer",
+            },
+            {
+                key: broker["environment"][key]
+                for key in (
+                    "ELMOS_SPRING_RUNTIME_REPLAY_ROOT",
+                    "ELMOS_SPRING_VERIFIER_REPLAY_ROOT",
+                    "ELMOS_SPRING_TRANSFORMER_REPLAY_ROOT",
+                )
+            },
+        )
+
+        engine_target = "/var/lib/elmos/spring-engine-auth-replay"
+        worker = application["services"]["java-engine-worker"]
+        self.assertEqual(
+            engine_target,
+            worker["environment"]["ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT"],
+        )
+        engine_mount = TOPOLOGY.volume_for_target(
+            overlay["services"]["java-engine-worker"], engine_target
+        )
+        self.assertIsNotNone(engine_mount)
+        assert engine_mount is not None
+        self.assertTrue(
+            engine_mount["source"].startswith(
+                "${ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH:?"
+            )
+        )
+        self.assertFalse(engine_mount["read_only"])
+        self.assertIs(False, engine_mount["bind"]["create_host_path"])
+
     def test_application_env_excludes_runner_security_domain_configuration(self) -> None:
         environment = TOPOLOGY.ContractPaths().environment_example.read_text(
             encoding="utf-8"
@@ -150,6 +202,44 @@ class SpringRunnerProductionTopologyTests(TestCase):
             (TOPOLOGY.RUNNER_ENVIRONMENT_ALLOWLIST - shared_contract_keys)
             & application_keys,
         )
+
+    def test_spring_worker_clears_path_overrides_and_excludes_broad_env_file(self) -> None:
+        application = TOPOLOGY.read_yaml(
+            TOPOLOGY.ContractPaths().application_compose
+        )
+        worker = application["services"]["java-engine-worker"]
+
+        self.assertEqual([], worker["env_file"])
+        for name in TOPOLOGY.WORKER_PATH_OVERRIDE_ENVIRONMENTS:
+            with self.subTest(name=name):
+                self.assertEqual("", worker["environment"][name])
+
+    def test_static_contract_rejects_servlet_path_override_or_broad_env_file(self) -> None:
+        paths = TOPOLOGY.ContractPaths()
+        cases = {
+            "servlet-path": (
+                '      SERVER_SERVLET_CONTEXT_PATH: ""',
+                '      SERVER_SERVLET_CONTEXT_PATH: "/hidden"',
+                "must clear dangerous path override SERVER_SERVLET_CONTEXT_PATH",
+            ),
+            "broad-env-file": (
+                "    env_file: []",
+                '    env_file: ["${ELMOS_ENV_FILE:-../elmos-commercial.env}"]',
+                "must not receive the broad application env_file",
+            ),
+        }
+        for label, (before, after, expected) in cases.items():
+            with self.subTest(label=label), tempfile.TemporaryDirectory(
+                prefix=f"spring-worker-{label}-"
+            ) as directory:
+                mutated = Path(directory) / "application.yml"
+                source = paths.application_compose.read_text(encoding="utf-8")
+                self.assertIn(before, source)
+                mutated.write_text(source.replace(before, after, 1), encoding="utf-8")
+                errors = TOPOLOGY.validate_static(
+                    TOPOLOGY.ContractPaths(application_compose=mutated)
+                )
+            self.assertTrue(any(expected in item for item in errors), errors)
 
     def test_static_contract_rejects_runner_service_env_file_injection(self) -> None:
         paths = TOPOLOGY.ContractPaths()
@@ -189,6 +279,29 @@ class SpringRunnerProductionTopologyTests(TestCase):
         self.assertEqual([], errors)
         self.assertEqual(3, config.count("location = /internal/v1/spring-"))
         self.assertNotIn("listen 8082", config)
+
+    def test_ingress_body_limits_match_controller_allocation_bounds(self) -> None:
+        config = TOPOLOGY.ContractPaths().ingress_config.read_text(encoding="utf-8")
+
+        self.assertIn("client_max_body_size 1k;", config)
+        for path, limit in TOPOLOGY.BROKER_BODY_LIMITS.items():
+            with self.subTest(path=path):
+                location = TOPOLOGY.re.search(
+                    rf"location = {TOPOLOGY.re.escape(path)} \{{(?P<body>.*?)\n    \}}",
+                    config,
+                    flags=TOPOLOGY.re.DOTALL,
+                )
+                self.assertIsNotNone(location)
+                assert location is not None
+                self.assertIn(f"client_max_body_size {limit};", location.group("body"))
+
+        weakened = config.replace("client_max_body_size 64k;", "client_max_body_size 8m;", 1)
+        errors: list[str] = []
+        TOPOLOGY.validate_ingress(errors, weakened)
+        self.assertTrue(
+            any("request-body limit must remain 64k" in item for item in errors),
+            errors,
+        )
 
     def test_static_contract_rejects_non_internal_ingress_or_broker_network(self) -> None:
         paths = TOPOLOGY.ContractPaths()
@@ -239,6 +352,59 @@ class SpringRunnerProductionTopologyTests(TestCase):
                 minimum_size=32,
             )
         self.assertTrue(any("mode must be 0400 or 0600" in item for item in errors))
+
+    def test_hmac_secret_rejects_ascii_and_unicode_boundary_whitespace(self) -> None:
+        for suffix in (b"\n", "\u00a0".encode("utf-8")):
+            with self.subTest(suffix=suffix), tempfile.TemporaryDirectory(
+                prefix="spring-runner-hmac-whitespace-"
+            ) as directory:
+                secret = Path(directory).resolve() / "secret"
+                secret.write_bytes(b"x" * 32 + suffix)
+                secret.chmod(0o600)
+                errors: list[str] = []
+                record = TOPOLOGY.owner_only_file(
+                    errors,
+                    secret,
+                    label="test HMAC",
+                    expected_uid=os.getuid(),
+                    expected_gid=os.getgid(),
+                    minimum_size=32,
+                    canonical_hmac_secret=True,
+                )
+            self.assertIsNone(record)
+            self.assertTrue(any("HMAC whitespace" in item for item in errors), errors)
+
+    def test_protected_replay_directory_rejects_permissive_mode_and_symlink_parent(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="spring-runner-replay-") as directory:
+            root = Path(directory).resolve()
+            permissive = root / "permissive"
+            permissive.mkdir(mode=0o755)
+            permissive_errors: list[str] = []
+            TOPOLOGY.protected_directory(
+                permissive_errors,
+                permissive,
+                label="replay",
+                expected_uid=os.getuid(),
+                expected_gid=os.getgid(),
+            )
+
+            real_parent = root / "real"
+            real_parent.mkdir(mode=0o700)
+            replay = real_parent / "replay"
+            replay.mkdir(mode=0o700)
+            linked_parent = root / "linked"
+            linked_parent.symlink_to(real_parent, target_is_directory=True)
+            symlink_errors: list[str] = []
+            TOPOLOGY.protected_directory(
+                symlink_errors,
+                linked_parent / "replay",
+                label="replay",
+                expected_uid=os.getuid(),
+                expected_gid=os.getgid(),
+            )
+
+        self.assertTrue(any("mode must equal 0700" in item for item in permissive_errors))
+        self.assertTrue(any("symbolic-link" in item for item in symlink_errors))
 
     def test_environment_file_is_inert_allowlisted_data_with_explicit_override(self) -> None:
         with tempfile.TemporaryDirectory(prefix="spring-runner-env-") as directory:

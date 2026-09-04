@@ -58,6 +58,7 @@ elmos:
       host-artifact-root: ${ELMOS_JAVA_UPGRADE_ARTIFACT_HOST_ROOT:}
       hmac-secret-file: ${ELMOS_SPRING_RUNTIME_HMAC_SECRET_FILE:}
       auth-window-seconds: ${ELMOS_SPRING_RUNTIME_AUTH_WINDOW_SECONDS:90}
+      replay-root: ${ELMOS_SPRING_RUNTIME_REPLAY_ROOT:}
     spring-verifier:
       enabled: ${ELMOS_EPHEMERAL_SPRING_VERIFIER_ENABLED:false}
       image-digest: ${ELMOS_SPRING_VERIFIER_IMAGE_DIGEST:}
@@ -70,6 +71,7 @@ elmos:
       host-evidence-root: ${ELMOS_SPRING_VERIFIER_HOST_EVIDENCE_ROOT:}
       hmac-secret-file: ${ELMOS_SPRING_VERIFIER_HMAC_SECRET_FILE:}
       auth-window-seconds: ${ELMOS_SPRING_VERIFIER_AUTH_WINDOW_SECONDS:90}
+      replay-root: ${ELMOS_SPRING_VERIFIER_REPLAY_ROOT:}
     spring-transformer:
       enabled: ${ELMOS_EPHEMERAL_SPRING_TRANSFORMER_ENABLED:false}
       image-digest: ${ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST:}
@@ -80,6 +82,7 @@ elmos:
       host-run-root: ${ELMOS_SPRING_TRANSFORMER_HOST_RUN_ROOT:}
       hmac-secret-file: ${ELMOS_SPRING_TRANSFORMER_HMAC_SECRET_FILE:}
       auth-window-seconds: ${ELMOS_SPRING_TRANSFORMER_AUTH_WINDOW_SECONDS:90}
+      replay-root: ${ELMOS_SPRING_TRANSFORMER_REPLAY_ROOT:}
     secrets:
       enabled: ${ELMOS_WORKSPACE_SECRETS_ENABLED:false}
     provider-secret-root: ${ELMOS_PROVIDER_SECRET_ROOT:}

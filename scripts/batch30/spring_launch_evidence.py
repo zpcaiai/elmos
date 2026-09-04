@@ -104,6 +104,139 @@ SPRING_CONFIGURATION_ENV_KEYS = (
     "ELMOS_VERIFIER_HMAC_SECRET_HOST_PATH",
 )
 
+# Exact non-secret environment inputs which can change the effective Spring
+# worker runtime.  Presence is part of the digest because Spring's
+# ``${ENV:default}`` semantics distinguish an absent variable from an explicitly
+# empty one.  File paths naming mounted secrets are configuration; secret bytes
+# are never read here.
+SPRING_WORKER_CONFIGURATION_ENV_KEYS = (
+    "ELMOS_ALLOWED_GIT_HOSTS",
+    "ELMOS_ALLOW_FILE_REPOSITORIES",
+    "ELMOS_ENGINE_PORT",
+    "ELMOS_GRADLE_EXECUTABLE",
+    "ELMOS_MAVEN_DEPENDENCY_SEED",
+    "ELMOS_MAVEN_EXECUTABLE",
+    "ELMOS_OSV_API_BASE",
+    "ELMOS_OSV_ENABLED",
+    "ELMOS_SHUTDOWN_TIMEOUT",
+    "ELMOS_SOURCE_JAVA_HOME",
+    "ELMOS_SPRING_CODING_AGENT_ENABLED",
+    "ELMOS_SPRING_ENGINE_AUTH_ENABLED",
+    "ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT",
+    "ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE",
+    "ELMOS_SPRING_ENGINE_AUTH_WINDOW_SECONDS",
+    "ELMOS_SPRING_LOCAL_ENGINEERING_ENABLED",
+    "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL",
+    "ELMOS_SPRING_RUNTIME_RUNNER_ENABLED",
+    "ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE",
+    "ELMOS_SPRING_UPGRADE_ENABLED",
+    "ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED",
+    "ELMOS_SPRING_UPGRADE_GLOBAL_CAPACITY",
+    "ELMOS_SPRING_UPGRADE_JAVA_HOMES",
+    "ELMOS_SPRING_UPGRADE_LEASE_TTL_SECONDS",
+    "ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED",
+    "ELMOS_SPRING_UPGRADE_QUEUE_TTL_SECONDS",
+    "ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED",
+    "ELMOS_SPRING_UPGRADE_TENANT_CAPACITY",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_ID",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE",
+    "ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT",
+    "ELMOS_TARGET_JAVA_HOME",
+    "ELMOS_WORKSPACE_ROOT",
+)
+# Repository-controlled image and Compose values.  Keeping these values
+# explicit lets the launch gate independently calculate what docker inspect
+# must report instead of trusting a digest supplied by an operator.
+SPRING_WORKER_FIXED_ENVIRONMENT = {
+    "ELMOS_ALLOW_FILE_REPOSITORIES": "false",
+    "ELMOS_MAVEN_EXECUTABLE": "/usr/share/maven/bin/mvn",
+    "ELMOS_SHUTDOWN_TIMEOUT": "30s",
+    "ELMOS_SOURCE_JAVA_HOME": "/opt/java/openjdk-17",
+    "ELMOS_SPRING_CODING_AGENT_ENABLED": "false",
+    "ELMOS_SPRING_ENGINE_AUTH_ENABLED": "true",
+    "ELMOS_SPRING_ENGINE_AUTH_REPLAY_ROOT": "/var/lib/elmos/spring-engine-auth-replay",
+    "ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE": "/run/secrets/elmos-spring-engine-hmac",
+    "ELMOS_SPRING_RUNTIME_RUNNER_SECRET_FILE": "/run/secrets/elmos-runtime-hmac",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_SECRET_FILE": "/run/secrets/elmos-transformer-hmac",
+    "ELMOS_SPRING_UPGRADE_ENABLED": "true",
+    "ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED": "false",
+    "ELMOS_SPRING_UPGRADE_JAVA_HOMES": "8=/opt/java/openjdk-8,11=/opt/java/openjdk-11",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_SECRET_FILE": "/run/secrets/elmos-verifier-hmac",
+    "ELMOS_SPRING_UPGRADE_WORKSPACE_ROOT": "/workspace/private-runner",
+    "ELMOS_TARGET_JAVA_HOME": "/opt/java/openjdk",
+}
+SPRING_WORKER_DYNAMIC_ENV_KEYS = (
+    "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL",
+    "ELMOS_SPRING_RUNTIME_RUNNER_ENABLED",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL",
+    "ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED",
+    "ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED",
+    "ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED",
+    "ELMOS_SPRING_UPGRADE_VERIFIER_ID",
+)
+# The production Compose contract intentionally clears exactly these process
+# overrides.  No relaxed spelling is accepted, and every value must remain the
+# empty string.  Other Spring/server/management/JVM overrides must be absent.
+SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT = frozenset(
+    {
+        "SPRING_APPLICATION_JSON",
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JAVA_OPTS",
+        "JDK_JAVA_OPTIONS",
+        "SERVER_SERVLET_CONTEXT_PATH",
+        "SERVER_SERVLET_PATH",
+        "SPRING_MVC_SERVLET_PATH",
+    }
+)
+SPRING_WORKER_EFFECTIVE_ENV_KEYS = tuple(
+    sorted(
+        {
+            *SPRING_WORKER_CONFIGURATION_ENV_KEYS,
+            *SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT,
+        }
+    )
+)
+SPRING_WORKER_CONTAINER_ENTRYPOINT = (
+    "java",
+    "-XX:MaxRAMPercentage=70",
+    "-jar",
+    "/app/app.jar",
+)
+REQUIRED_RUNTIME_IMAGE_NAMES = frozenset(
+    {"worker", "proxy", "transformer", "runner"}
+)
+DOCKER_ENVIRONMENT_ASSIGNMENT = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*)=(.*)$", re.DOTALL)
+DANGEROUS_SPRING_WORKER_ENV_KEYS = frozenset(
+    {
+        "SPRING_APPLICATION_JSON",
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JAVA_OPTS",
+        "JAVA_OPTIONS",
+        "JDK_JAVA_OPTIONS",
+        "JVM_OPTS",
+        "JVM_OPTIONS",
+        "CATALINA_OPTS",
+        "SERVER_SERVLET_CONTEXT_PATH",
+        "SERVER_SERVLET_PATH",
+        "SPRING_MVC_SERVLET_PATH",
+        "SPRING_CONFIG_LOCATION",
+        "SPRING_CONFIG_ADDITIONAL_LOCATION",
+        "SPRING_CONFIG_IMPORT",
+        "SPRING_PROFILES_ACTIVE",
+        "SPRING_PROFILES_INCLUDE",
+        "ELMOS_TRUSTED_SINGLE_TENANT_ORGANIZATION_ID",
+    }
+)
+
 DIGEST_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
 REVISION_RE = re.compile(r"^[0-9a-f]{40}$")
 IDENTITY_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}$")
@@ -785,7 +918,7 @@ def _immutable_uri(value: Any, digest: str, label: str) -> str:
     return value
 
 
-def _load_json_bytes(content: bytes, label: str) -> dict[str, Any]:
+def _load_strict_json_bytes(content: bytes, label: str) -> Any:
     def strict_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for key, item in pairs:
@@ -804,7 +937,11 @@ def _load_json_bytes(content: bytes, label: str) -> dict[str, Any]:
         )
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError) as exc:
         raise SpringLaunchEvidenceError(f"{label} must be strict UTF-8 JSON: {exc}") from exc
-    return _object(value, label)
+    return value
+
+
+def _load_json_bytes(content: bytes, label: str) -> dict[str, Any]:
+    return _object(_load_strict_json_bytes(content, label), label)
 
 
 def _canonical_json_document(content: bytes, label: str) -> dict[str, Any]:
@@ -1209,10 +1346,263 @@ def _committed_file_bytes(
     return blob_result.stdout
 
 
+def _normalized_environment_name(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", name).upper()
+
+
+_DANGEROUS_SPRING_WORKER_ENV_NORMALIZED = frozenset(
+    _normalized_environment_name(name)
+    for name in DANGEROUS_SPRING_WORKER_ENV_KEYS
+)
+_SPRING_WORKER_ENV_CANONICAL_BY_NORMALIZED = {
+    _normalized_environment_name(name): name
+    for name in (
+        *SPRING_WORKER_CONFIGURATION_ENV_KEYS,
+        *SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT,
+    )
+}
+
+
+def _dangerous_spring_worker_environment_name(name: str) -> bool:
+    normalized = _normalized_environment_name(name)
+    return (
+        normalized in _DANGEROUS_SPRING_WORKER_ENV_NORMALIZED
+        or normalized.startswith("SPRING")
+        or normalized.startswith("SERVER")
+        or normalized.startswith("MANAGEMENT")
+        or normalized.startswith("ELMOSWORKER")
+        or normalized.startswith("JVM")
+    )
+
+
+def normalized_spring_worker_environment(
+    environment: Mapping[str, str],
+) -> dict[str, dict[str, Any]]:
+    """Return every supported key with an explicit presence/value record."""
+
+    values: dict[str, dict[str, Any]] = {}
+    for name in SPRING_WORKER_EFFECTIVE_ENV_KEYS:
+        if name not in environment:
+            values[name] = {"present": False}
+            continue
+        raw = environment[name]
+        if not isinstance(raw, str):
+            raise SpringLaunchEvidenceError(
+                f"effective Spring worker environment value {name} must be a string"
+            )
+        values[name] = {"present": True, "value": raw}
+    return values
+
+
+def expected_spring_worker_environment(
+    spring_environment: Mapping[str, str],
+) -> dict[str, str]:
+    """Build the exact worker environment expected from controlled deployment inputs.
+
+    ``spring_environment`` is the already validated effective Spring/Compose
+    input mapping.  Fixed values come from the pinned worker image and
+    production Compose contract; dynamic values retain their validated host
+    values.  Unsupported configuration keys remain absent.  The eight
+    process-level overrides deliberately cleared by Compose are included as
+    exact empty assignments by a separate allowlist.
+    """
+
+    expected = dict(SPRING_WORKER_FIXED_ENVIRONMENT)
+    for name in SPRING_WORKER_DYNAMIC_ENV_KEYS:
+        if name not in spring_environment:
+            raise SpringLaunchEvidenceError(
+                f"expected Spring worker environment value {name} is required"
+            )
+        raw = spring_environment[name]
+        if not isinstance(raw, str):
+            raise SpringLaunchEvidenceError(
+                f"expected Spring worker environment value {name} must be a string"
+            )
+        expected[name] = raw
+    expected.update(
+        {
+            name: ""
+            for name in SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT
+        }
+    )
+    return expected
+
+
+def expected_spring_worker_configuration_digest(
+    spring_environment: Mapping[str, str],
+) -> str:
+    """Return the independently derived expected worker environment digest."""
+
+    return spring_worker_configuration_digest(
+        expected_spring_worker_environment(spring_environment)
+    )
+
+
+def spring_worker_configuration_digest(environment: Mapping[str, str]) -> str:
+    """Digest normalized, non-secret configuration for ``java-engine-worker``.
+
+    This digest intentionally has a different contract from the host-side
+    ``configuration_digest``.  It proves which effective container values were
+    observed; it is not, and must never be presented as, the combined digest of
+    the host Spring environment and Compose environment-file bytes.
+    """
+
+    values = normalized_spring_worker_environment(environment)
+    return canonical_digest(
+        {
+            "schema_version": 1,
+            "namespace": NAMESPACE,
+            "contract": "spring-launch-effective-worker-environment-v2",
+            "service": "java-engine-worker",
+            "values": values,
+        }
+    )
+
+
+def _snapshot_local_json_evidence_reference(
+    value: Any,
+    *,
+    roots: tuple[Path, ...],
+    label: str,
+) -> ContentObservation:
+    reference = _object(value, label)
+    _exact_fields(reference, EVIDENCE_REFERENCE_FIELDS, label)
+    digest = _digest(reference.get("digest"), f"{label}.digest")
+    size = _positive_size(reference.get("size_bytes"), f"{label}.size_bytes")
+    if reference.get("media_type") != "application/json":
+        raise SpringLaunchEvidenceError(f"{label}.media_type must be application/json")
+    uri = _immutable_uri(reference.get("uri"), digest, f"{label}.uri")
+    if urlparse(uri).scheme != "file":
+        raise SpringLaunchEvidenceError(f"{label}.uri must be a local file URI")
+    verification = _object(reference.get("verification"), f"{label}.verification")
+    _exact_fields(verification, {"mode", "local_uri"}, f"{label}.verification")
+    if verification.get("mode") != "LOCAL_BYTES":
+        raise SpringLaunchEvidenceError(
+            f"{label}.verification.mode must be exactly LOCAL_BYTES"
+        )
+    if verification.get("local_uri") != uri:
+        raise SpringLaunchEvidenceError(
+            f"{label}.verification.local_uri must equal its immutable local URI"
+        )
+    return _snapshot_content_reference(
+        {
+            "uri": uri,
+            "digest": digest,
+            "size_bytes": size,
+            "media_type": "application/json",
+        },
+        roots,
+        f"{label}.local_bytes",
+        max_bytes=MAX_JSON_BYTES,
+        capture_content=True,
+    )
+
+
+def _spring_worker_environment_from_inspect(
+    content: bytes,
+    *,
+    label: str,
+    expected_image_digest: str,
+) -> dict[str, str]:
+    document = _load_strict_json_bytes(content, label)
+    if not isinstance(document, list) or len(document) != 1:
+        raise SpringLaunchEvidenceError(
+            f"{label} must contain exactly one java-engine-worker container"
+        )
+    container = _object(document[0], f"{label}[0]")
+    config = _object(container.get("Config"), f"{label}[0].Config")
+    labels = _object(config.get("Labels"), f"{label}[0].Config.Labels")
+    if labels.get("com.docker.compose.service") != "java-engine-worker":
+        raise SpringLaunchEvidenceError(
+            f"{label} must identify the unique java-engine-worker Compose service"
+        )
+    image_digest = _digest(container.get("Image"), f"{label}[0].Image")
+    if image_digest != expected_image_digest:
+        raise SpringLaunchEvidenceError(
+            f"{label} immutable worker image digest does not match the signed environment manifest"
+        )
+    configured_image = config.get("Image")
+    if (
+        not isinstance(configured_image, str)
+        or not configured_image
+        or len(configured_image) > 512
+        or any(character.isspace() or ord(character) < 0x20 for character in configured_image)
+        or configured_image.casefold() == "latest"
+        or configured_image.casefold().endswith(":latest")
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label}[0].Config.Image must be a bounded non-latest image reference"
+        )
+    entrypoint = config.get("Entrypoint")
+    if (
+        not isinstance(entrypoint, list)
+        or tuple(entrypoint) != SPRING_WORKER_CONTAINER_ENTRYPOINT
+        or any(not isinstance(item, str) for item in entrypoint)
+    ):
+        raise SpringLaunchEvidenceError(
+            f"{label}[0].Config.Entrypoint must exactly match the controlled worker image entrypoint"
+        )
+    command = config.get("Cmd")
+    if command is not None and command != []:
+        raise SpringLaunchEvidenceError(
+            f"{label}[0].Config.Cmd must be null or an empty array so command-line configuration cannot override the worker contract"
+        )
+    entries = config.get("Env")
+    if not isinstance(entries, list):
+        raise SpringLaunchEvidenceError(f"{label} Config.Env must be an array")
+    values: dict[str, str] = {}
+    normalized_names: dict[str, str] = {}
+    for index, raw in enumerate(entries):
+        if not isinstance(raw, str):
+            raise SpringLaunchEvidenceError(
+                f"{label} Config.Env[{index}] must be a string assignment"
+            )
+        match = DOCKER_ENVIRONMENT_ASSIGNMENT.fullmatch(raw)
+        if match is None:
+            raise SpringLaunchEvidenceError(
+                f"{label} Config.Env[{index}] must be an exact NAME=VALUE assignment"
+            )
+        name, value = match.groups()
+        if name in values:
+            raise SpringLaunchEvidenceError(
+                f"{label} Config.Env contains duplicate key {name}"
+            )
+        normalized = _normalized_environment_name(name)
+        prior = normalized_names.setdefault(normalized, name)
+        if prior != name:
+            raise SpringLaunchEvidenceError(
+                f"{label} Config.Env contains relaxed-binding aliases {prior} and {name}"
+            )
+        canonical_name = _SPRING_WORKER_ENV_CANONICAL_BY_NORMALIZED.get(normalized)
+        if canonical_name is not None and name != canonical_name:
+            raise SpringLaunchEvidenceError(
+                f"{label} Spring worker override {name} must use exact key {canonical_name}"
+            )
+        if name in SPRING_WORKER_ALLOWED_EXPLICIT_EMPTY_ENVIRONMENT:
+            if value != "":
+                raise SpringLaunchEvidenceError(
+                    f"{label} dangerous override {name} must be exactly empty"
+                )
+            values[name] = value
+            continue
+        if _dangerous_spring_worker_environment_name(name):
+            raise SpringLaunchEvidenceError(
+                f"{label} dangerous override {name} must be absent"
+            )
+        values[name] = value
+        if normalized.startswith("ELMOSSPRING"):
+            if canonical_name is None:
+                raise SpringLaunchEvidenceError(
+                    f"{label} contains unsupported Spring worker override {name}"
+                )
+    return values
+
+
 def _validate_environment_manifest(
     observation: ContentObservation,
     *,
     binding: dict[str, Any],
+    roots: tuple[Path, ...],
     observed_at: datetime,
     max_age: timedelta,
 ) -> dict[str, Any]:
@@ -1235,6 +1625,9 @@ def _validate_environment_manifest(
         "launch_profile_digest",
         "artifact_digest",
         "configuration_digest",
+        "compose_environment_file_digest",
+        "container_inspect",
+        "effective_spring_configuration_digest",
         "network_policy_digest",
         "rootless_policy_digest",
         "runtime_image_digests",
@@ -1264,6 +1657,8 @@ def _validate_environment_manifest(
         )
     for name in (
         "configuration_digest",
+        "compose_environment_file_digest",
+        "effective_spring_configuration_digest",
         "network_policy_digest",
         "rootless_policy_digest",
     ):
@@ -1271,13 +1666,13 @@ def _validate_environment_manifest(
     images = document.get("runtime_image_digests")
     if (
         not isinstance(images, dict)
-        or len(images) < 3
+        or not REQUIRED_RUNTIME_IMAGE_NAMES.issubset(images)
         or any(not isinstance(name, str) or not name for name in images)
         or any(DIGEST_RE.fullmatch(str(value)) is None for value in images.values())
         or len(set(images.values())) != len(images)
     ):
         raise SpringLaunchEvidenceError(
-            "environment manifest.runtime_image_digests must contain at least three distinct digest-pinned images"
+            "environment manifest.runtime_image_digests must contain distinct digest-pinned worker, proxy, transformer, and runner images"
         )
     captured_at = _utc_instant(
         document.get("captured_at"), "environment manifest.captured_at"
@@ -1293,6 +1688,29 @@ def _validate_environment_manifest(
     if document.get("secrets_embedded") is not False:
         raise SpringLaunchEvidenceError(
             "environment manifest.secrets_embedded must be exactly false"
+        )
+    container_inspect = _snapshot_local_json_evidence_reference(
+        document.get("container_inspect"),
+        roots=roots,
+        label="environment manifest.container_inspect",
+    )
+    if container_inspect.digest in {
+        observation.digest,
+        binding["launch_profile"]["digest"],
+        binding["artifact"]["digest"],
+    }:
+        raise SpringLaunchEvidenceError(
+            "container inspect bytes must be distinct from the environment manifest, launch profile, and artifact"
+        )
+    worker_environment = _spring_worker_environment_from_inspect(
+        container_inspect.content,
+        label="environment manifest.container_inspect.local_bytes",
+        expected_image_digest=images["worker"],
+    )
+    effective_digest = spring_worker_configuration_digest(worker_environment)
+    if document.get("effective_spring_configuration_digest") != effective_digest:
+        raise SpringLaunchEvidenceError(
+            "environment manifest effective Spring configuration digest does not match container inspect bytes"
         )
     expected = {
         "deployed_revision": binding["deployed_revision"],
@@ -1386,6 +1804,7 @@ def _validate_binding(
     environment_manifest = _validate_environment_manifest(
         environment,
         binding=binding,
+        roots=roots,
         observed_at=observed_at,
         max_age=max_age,
     )
@@ -1712,6 +2131,8 @@ def verify_spring_launch_receipt(
     expected_region: str | None = None,
     expected_environment_class: str | None = None,
     expected_configuration_digest: str | None = None,
+    expected_compose_environment_file_digest: str | None = None,
+    expected_effective_spring_configuration_digest: str | None = None,
     repo_root: Path = ROOT,
     now: datetime | None = None,
     max_age: timedelta = DEFAULT_MAX_AGE,
@@ -1760,12 +2181,16 @@ def verify_spring_launch_receipt(
         "region": expected_region,
         "environment_class": expected_environment_class,
         "configuration_digest": expected_configuration_digest,
+        "compose_environment_file_digest": expected_compose_environment_file_digest,
+        "effective_spring_configuration_digest": (
+            expected_effective_spring_configuration_digest
+        ),
     }
     for field, expected_value in expected_environment_values.items():
         if expected_value is None:
             continue
-        if field == "configuration_digest":
-            _digest(expected_value, "expected configuration digest")
+        if field.endswith("_digest"):
+            _digest(expected_value, f"expected {field}")
         elif field == "environment_class":
             if expected_value not in {"STAGING", "PRODUCTION"}:
                 raise SpringLaunchEvidenceError(
@@ -1865,6 +2290,7 @@ def verify_spring_launch_receipt(
             "all nine external gates must bind content-distinct evidence"
         )
     primary_digests = {item.digest for item in primary.values()}
+    primary_digests.add(environment_manifest["container_inspect"]["digest"])
     if primary_digests.intersection(evidence_digests):
         raise SpringLaunchEvidenceError(
             "gate evidence must be distinct from profile, artifact, and environment bytes"
@@ -2198,6 +2624,15 @@ def verify_spring_launch_receipt(
         "environment_id": environment_manifest["environment_id"],
         "deployment_id": environment_manifest["deployment_id"],
         "configuration_digest": environment_manifest["configuration_digest"],
+        "compose_environment_file_digest": environment_manifest[
+            "compose_environment_file_digest"
+        ],
+        "container_inspect_digest": environment_manifest["container_inspect"][
+            "digest"
+        ],
+        "effective_spring_configuration_digest": environment_manifest[
+            "effective_spring_configuration_digest"
+        ],
         "network_policy_digest": environment_manifest["network_policy_digest"],
         "rootless_policy_digest": environment_manifest["rootless_policy_digest"],
         "binding_digest": binding_digest,
@@ -2234,6 +2669,8 @@ def verify_spring_launch_receipt_file(
     expected_region: str | None = None,
     expected_environment_class: str | None = None,
     expected_configuration_digest: str | None = None,
+    expected_compose_environment_file_digest: str | None = None,
+    expected_effective_spring_configuration_digest: str | None = None,
     repo_root: Path = ROOT,
     now: datetime | None = None,
     max_age: timedelta = DEFAULT_MAX_AGE,
@@ -2266,6 +2703,12 @@ def verify_spring_launch_receipt_file(
         expected_region=expected_region,
         expected_environment_class=expected_environment_class,
         expected_configuration_digest=expected_configuration_digest,
+        expected_compose_environment_file_digest=(
+            expected_compose_environment_file_digest
+        ),
+        expected_effective_spring_configuration_digest=(
+            expected_effective_spring_configuration_digest
+        ),
         repo_root=repo_root,
         now=now,
         max_age=max_age,
@@ -2497,6 +2940,12 @@ def _verification_options(args: argparse.Namespace) -> dict[str, Any]:
         "expected_region": args.expected_region,
         "expected_environment_class": args.expected_environment_class,
         "expected_configuration_digest": args.expected_configuration_digest,
+        "expected_compose_environment_file_digest": (
+            args.expected_compose_environment_file_digest
+        ),
+        "expected_effective_spring_configuration_digest": (
+            args.expected_effective_spring_configuration_digest
+        ),
         "max_age": timedelta(seconds=args.max_age_seconds),
     }
 
@@ -2517,6 +2966,10 @@ def _add_verification_arguments(parser: argparse.ArgumentParser) -> None:
         required=True,
     )
     parser.add_argument("--expected-configuration-digest", required=True)
+    parser.add_argument("--expected-compose-environment-file-digest", required=True)
+    parser.add_argument(
+        "--expected-effective-spring-configuration-digest", required=True
+    )
     parser.add_argument(
         "--max-age-seconds",
         type=int,

@@ -498,29 +498,34 @@ def _write_typescript_validation_project(
         "strict": True,
         "outDir": "dist",
     }
+    package_data: dict[str, Any] = {
+        "private": True,
+        "type": "module",
+    }
     if react:
         compiler_options.update({"jsx": "react-jsx", "types": []})
-        (output / "package.json").write_text(
-            json.dumps(
-                {
-                    "private": True,
-                    "type": "module",
-                    "dependencies": {
-                        "react": "19.2.7",
-                        "react-dom": "19.2.7",
-                    },
-                    "devDependencies": {
-                        "@types/react": "19.1.10",
-                        "@types/react-dom": "19.1.7",
-                        "typescript": "5.9.2",
-                    },
+        package_data.update(
+            {
+                "dependencies": {
+                    "react": "19.2.7",
+                    "react-dom": "19.2.7",
                 },
-                indent=2,
-                sort_keys=True,
-            )
-            + "\n",
-            encoding="utf-8",
+                "devDependencies": {
+                    "@types/react": "19.1.10",
+                    "@types/react-dom": "19.1.7",
+                    "typescript": "5.9.2",
+                },
+            }
         )
+    (output / "package.json").write_text(
+        json.dumps(
+            package_data,
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     (output / "tsconfig.json").write_text(
         json.dumps(
             {

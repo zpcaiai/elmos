@@ -1,0 +1,40 @@
+# Spring application-security-domain activation overlay.
+#
+# The baseline application Compose intentionally does not mount this Secret:
+# web-console is always started for non-Spring business lines, while the Java
+# worker is profile-gated.  Include this file only after the Spring launch
+# preflight succeeds.  Both consumers receive the same application-host file;
+# the independent Runner host must never receive it.
+#
+# Status: UNVERIFIED_TEMPLATE / external runtime evidence NOT_RUN.
+
+services:
+  web-console:
+    environment:
+      ELMOS_SPRING_PROXY_ENABLED: "true"
+      ELMOS_SPRING_PROXY_MULTI_TENANT: "true"
+      ELMOS_SPRING_ENGINE_AUTH_ENABLED: "true"
+      ELMOS_SPRING_ENGINE_AUTH_SECRET_FILE: /run/secrets/elmos-spring-engine-hmac
+    volumes:
+      - type: bind
+        source: "${ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH:?application-host engine HMAC file is required}"
+        target: /run/secrets/elmos-spring-engine-hmac
+        read_only: true
+        bind: { create_host_path: false }
+    # Compose rejects this dependency when the operator forgets --profile
+    # spring, rather than enabling the public proxy without its worker.
+    depends_on:
+      java-engine-worker: { condition: service_started }
+
+  java-engine-worker:
+    volumes:
+      - type: bind
+        source: "${ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH:?application-host engine HMAC file is required}"
+        target: /run/secrets/elmos-spring-engine-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH:?application-host replay directory is required}"
+        target: /var/lib/elmos/spring-engine-auth-replay
+        read_only: false
+        bind: { create_host_path: false }

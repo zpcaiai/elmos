@@ -5,6 +5,7 @@ import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.api.exception.NotFoundException;
 import com.github.dockerjava.api.model.*;
 import io.elmos.workspace.WorkspaceInfrastructurePorts;
+import io.elmos.security.SpringHmacProtocol;
 
 import java.io.IOException;
 import java.net.URI;
@@ -155,6 +156,8 @@ final class EphemeralSpringVerifierBroker {
                             "ELMOS_VERIFIER_INPUT_ROOT=/input/runs",
                             "ELMOS_VERIFIER_EVIDENCE_ROOT=/verification/" + request.runId(),
                             "ELMOS_VERIFIER_HMAC_SECRET_VALUE=" + secretValue,
+                            "ELMOS_VERIFIER_REPLAY_ROOT=/verification/" + request.runId()
+                                    + "/.auth-replay",
                             "HTTPS_PROXY=" + egressProxyUrl,
                             "https_proxy=" + egressProxyUrl,
                             "NO_PROXY=127.0.0.1,localhost",
@@ -188,7 +191,8 @@ final class EphemeralSpringVerifierBroker {
     private byte[] callVerifier(String containerName, byte[] body, byte[] secret) {
         String timestamp = Long.toString(clock.instant().getEpochSecond());
         String nonce = UUID.randomUUID().toString();
-        String signature = SpringRuntimeAuthentication.sign(secret, timestamp, nonce, body);
+        String signature = SpringRuntimeAuthentication.sign(
+                secret, SpringHmacProtocol.Role.VERIFIER, timestamp, nonce, body);
         HttpRequest request = HttpRequest.newBuilder(
                         URI.create("http://" + containerName + ":8082/internal/v1/spring-verifications"))
                 .timeout(Duration.ofMinutes(35))

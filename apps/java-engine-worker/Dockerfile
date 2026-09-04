@@ -25,3 +25,4 @@ ENV ELMOS_SOURCE_JAVA_HOME=/opt/java/openjdk-17 \
 USER 10001:10001
 EXPOSE 8081
 ENTRYPOINT ["java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]
+CMD []

@@ -66,11 +66,15 @@ SPRING_SECRET_PATH_ENVIRONMENT = (
     "ELMOS_TRANSFORMER_HMAC_SECRET_HOST_PATH",
     "ELMOS_SPRING_RUNTIME_HMAC_SECRET_HOST_PATH",
 )
+SPRING_REPLAY_PATH_ENVIRONMENT = (
+    "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH",
+)
 SPRING_ENVIRONMENT_ALLOWLIST = frozenset(
     REQUIRED_TRUE_ENVIRONMENT
     + REQUIRED_FALSE_ENVIRONMENT
     + SPRING_URL_ENVIRONMENT
     + SPRING_SECRET_PATH_ENVIRONMENT
+    + SPRING_REPLAY_PATH_ENVIRONMENT
     + (
         "ELMOS_SPRING_UPGRADE_VERIFIER_ID",
         "ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH",
@@ -81,6 +85,28 @@ MAX_ENVIRONMENT_FILE_BYTES = 64 * 1024
 ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Z][A-Z0-9_]*)=(.*)")
 SAFE_ENVIRONMENT_VALUE = re.compile(r"[A-Za-z0-9._~:/@,+%=-]*")
 EXACT_IDENTITY = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:@/+\-]{1,199}")
+COMPOSE_ENVIRONMENT_ASSIGNMENT = re.compile(r"([A-Za-z_][A-Za-z0-9_]*)=(.*)")
+DANGEROUS_DEPLOYMENT_ENVIRONMENT = frozenset(
+    {
+        "SPRING_APPLICATION_JSON",
+        "JAVA_TOOL_OPTIONS",
+        "_JAVA_OPTIONS",
+        "JAVA_OPTS",
+        "JDK_JAVA_OPTIONS",
+        "SERVER_SERVLET_CONTEXT_PATH",
+        "SERVER_SERVLET_PATH",
+        "SPRING_MVC_SERVLET_PATH",
+        "SPRING_CONFIG_LOCATION",
+        "SPRING_CONFIG_ADDITIONAL_LOCATION",
+        "SPRING_CONFIG_IMPORT",
+        "SPRING_PROFILES_ACTIVE",
+        "SPRING_PROFILES_INCLUDE",
+    }
+)
+DANGEROUS_DEPLOYMENT_ENVIRONMENT_NORMALIZED = frozenset(
+    re.sub(r"[^A-Za-z0-9]", "", name).upper()
+    for name in DANGEROUS_DEPLOYMENT_ENVIRONMENT
+)
 
 
 def load(path: Path) -> dict:
@@ -154,47 +180,52 @@ def valid_https_endpoint(value: str) -> bool:
     )
 
 
-def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
-    """Parse a small Spring-only environment file as data, never as shell code."""
+def secure_environment_file_bytes(
+    errors: list[str], path: Path, *, label: str
+) -> bytes | None:
+    """Read one owner-only env file without following links or accepting path races."""
     if not path.is_absolute():
-        errors.append("Spring environment file path must be absolute")
-        return {}
+        errors.append(f"{label} path must be absolute")
+        return None
+    ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
     try:
-        if has_symbolic_link_parent(path):
-            errors.append("Spring environment file must not traverse symbolic-link parent directories")
-            return {}
-    except OSError:
-        errors.append("Spring environment file is missing or unreadable")
-        return {}
-    try:
+        for parent in path.parents:
+            parent_details = parent.lstat()
+            if stat.S_ISLNK(parent_details.st_mode):
+                errors.append(f"{label} must not traverse symbolic-link parent directories")
+                return None
+            if not stat.S_ISDIR(parent_details.st_mode):
+                errors.append(f"{label} parent path must contain directories only")
+                return None
+            ancestor_metadata.append((parent, stable_file_metadata(parent_details)))
         details = path.lstat()
     except OSError:
-        errors.append("Spring environment file is missing or unreadable")
-        return {}
+        errors.append(f"{label} is missing or unreadable")
+        return None
     if stat.S_ISLNK(details.st_mode):
-        errors.append("Spring environment file must not be a symbolic link")
-        return {}
+        errors.append(f"{label} must not be a symbolic link")
+        return None
     if not stat.S_ISREG(details.st_mode):
-        errors.append("Spring environment file must be a regular file")
-        return {}
+        errors.append(f"{label} must be a regular file")
+        return None
     if details.st_nlink != 1:
-        errors.append("Spring environment file must not be hard-linked")
-        return {}
+        errors.append(f"{label} must not be hard-linked")
+        return None
     try:
         resolved = path.resolve(strict=True)
     except OSError:
-        errors.append("Spring environment file is missing or unreadable")
-        return {}
+        errors.append(f"{label} is missing or unreadable")
+        return None
     if resolved.is_relative_to(ROOT.resolve()):
-        errors.append("Spring environment file must be mounted from outside the repository")
-        return {}
+        errors.append(f"{label} must be mounted from outside the repository")
+        return None
 
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
     try:
         descriptor = os.open(path, flags)
     except OSError:
-        errors.append("Spring environment file is missing, unreadable, or not a regular non-symlink file")
-        return {}
+        errors.append(f"{label} is missing, unreadable, or not a regular non-symlink file")
+        return None
     raw = b""
     try:
         opened_details = os.fstat(descriptor)
@@ -202,18 +233,18 @@ def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
             not stat.S_ISREG(opened_details.st_mode)
             or stable_file_metadata(opened_details) != stable_file_metadata(details)
         ):
-            errors.append("Spring environment file changed while it was being validated")
-            return {}
+            errors.append(f"{label} changed while it was being validated")
+            return None
         mode = stat.S_IMODE(opened_details.st_mode)
         if opened_details.st_uid != os.getuid():
-            errors.append("Spring environment file must be owned by the current user")
-            return {}
+            errors.append(f"{label} must be owned by the current user")
+            return None
         if mode not in {0o400, 0o600}:
-            errors.append("Spring environment file permissions must be 0400 or 0600")
-            return {}
+            errors.append(f"{label} permissions must be 0400 or 0600")
+            return None
         if opened_details.st_size > MAX_ENVIRONMENT_FILE_BYTES:
-            errors.append("Spring environment file exceeds the 65536-byte limit")
-            return {}
+            errors.append(f"{label} exceeds the 65536-byte limit")
+            return None
         chunks: list[bytes] = []
         remaining = MAX_ENVIRONMENT_FILE_BYTES + 1
         while remaining:
@@ -225,20 +256,34 @@ def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
         raw = b"".join(chunks)
         after_read_details = os.fstat(descriptor)
         after_read_path_details = path.lstat()
+        ancestors_unchanged = all(
+            not stat.S_ISLNK((current := parent.lstat()).st_mode)
+            and stable_file_metadata(current) == before
+            for parent, before in ancestor_metadata
+        )
         if (
             stable_file_metadata(after_read_details) != stable_file_metadata(opened_details)
             or stable_file_metadata(after_read_path_details) != stable_file_metadata(opened_details)
             or len(raw) != opened_details.st_size
+            or not ancestors_unchanged
         ):
-            errors.append("Spring environment file identity or size changed while it was being read")
-            return {}
+            errors.append(f"{label} identity or size changed while it was being read")
+            return None
     except OSError:
-        errors.append("Spring environment file changed or became unreadable while it was being read")
-        return {}
+        errors.append(f"{label} changed or became unreadable while it was being read")
+        return None
     finally:
         os.close(descriptor)
     if len(raw) > MAX_ENVIRONMENT_FILE_BYTES:
-        errors.append("Spring environment file exceeds the 65536-byte limit")
+        errors.append(f"{label} exceeds the 65536-byte limit")
+        return None
+    return raw
+
+
+def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
+    """Parse a small Spring-only environment file as data, never as shell code."""
+    raw = secure_environment_file_bytes(errors, path, label="Spring environment file")
+    if raw is None:
         return {}
     try:
         contents = raw.decode("utf-8")
@@ -273,6 +318,144 @@ def parse_environment_file(errors: list[str], path: Path) -> dict[str, str]:
             continue
         values[name] = value
     return values
+
+
+def normalized_environment_name(name: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", name).upper()
+
+
+def dangerous_deployment_environment_name(name: str) -> bool:
+    normalized = normalized_environment_name(name)
+    return (
+        normalized in DANGEROUS_DEPLOYMENT_ENVIRONMENT_NORMALIZED
+        or normalized.startswith("SPRINGCONFIG")
+        or normalized.startswith("SPRINGPROFILES")
+    )
+
+
+def parse_compose_environment_file(
+    errors: list[str], path: Path
+) -> tuple[dict[str, str], str | None]:
+    """Parse the actual Compose env-file as inert data and bind its exact bytes."""
+    raw = secure_environment_file_bytes(
+        errors, path, label="Compose deployment environment file"
+    )
+    if raw is None:
+        return {}, None
+    try:
+        contents = raw.decode("utf-8")
+    except UnicodeDecodeError:
+        errors.append("Compose deployment environment file must be valid UTF-8")
+        return {}, None
+    if "\x00" in contents:
+        errors.append("Compose deployment environment file must not contain NUL bytes")
+        return {}, None
+
+    values: dict[str, str] = {}
+    seen: set[str] = set()
+    for line_number, line in enumerate(contents.splitlines(), start=1):
+        if not line.strip() or line.lstrip().startswith("#"):
+            continue
+        if line != line.strip():
+            errors.append(
+                f"Compose deployment environment file line {line_number} has leading or trailing whitespace"
+            )
+            continue
+        match = COMPOSE_ENVIRONMENT_ASSIGNMENT.fullmatch(line)
+        if not match:
+            errors.append(
+                f"Compose deployment environment file line {line_number} must be an exact KEY=VALUE assignment"
+            )
+            continue
+        name, value = match.groups()
+        if name in seen:
+            errors.append(
+                f"Compose deployment environment file line {line_number} duplicates {name}"
+            )
+            continue
+        seen.add(name)
+        if "$" in value:
+            errors.append(
+                f"Compose deployment environment file line {line_number} contains forbidden interpolation"
+            )
+            continue
+        if dangerous_deployment_environment_name(name):
+            errors.append(
+                f"Compose deployment environment file must not define dangerous override {name}"
+            )
+            continue
+        if name in SPRING_ENVIRONMENT_ALLOWLIST and not SAFE_ENVIRONMENT_VALUE.fullmatch(value):
+            errors.append(
+                f"Compose deployment environment file line {line_number} has an unsafe Spring value"
+            )
+            continue
+        values[name] = value
+    return values, "sha256:" + hashlib.sha256(raw).hexdigest()
+
+
+def validate_compose_environment_binding(
+    errors: list[str],
+    *,
+    path: Path,
+    compose_environment: Mapping[str, str],
+    spring_environment: Mapping[str, str],
+) -> None:
+    configured_path = compose_environment.get("ELMOS_ENV_FILE", "")
+    require(
+        errors,
+        configured_path == str(path),
+        "Compose deployment environment must set ELMOS_ENV_FILE to its exact validated path",
+    )
+    for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST):
+        require(
+            errors,
+            name in compose_environment,
+            f"Compose deployment environment is missing Spring key {name}",
+        )
+        if name in compose_environment and name in spring_environment:
+            require(
+                errors,
+                compose_environment[name] == spring_environment[name],
+                f"Compose deployment environment Spring value differs from SPRING_ENV_FILE for {name}",
+            )
+    require(
+        errors,
+        FORBIDDEN_SINGLE_TENANT_ENVIRONMENT not in compose_environment,
+        "Compose deployment environment must not define a single-tenant Spring identity",
+    )
+    for name in os.environ:
+        if dangerous_deployment_environment_name(name):
+            errors.append(f"process environment must not define dangerous override {name}")
+    if "ELMOS_ENV_FILE" in os.environ:
+        require(
+            errors,
+            os.environ["ELMOS_ENV_FILE"] == str(path),
+            "process ELMOS_ENV_FILE must equal --compose-environment-file",
+        )
+    for name in sorted(SPRING_ENVIRONMENT_ALLOWLIST):
+        if name in os.environ and name in spring_environment:
+            require(
+                errors,
+                os.environ[name] == spring_environment[name],
+                f"process environment Spring value differs from SPRING_ENV_FILE for {name}",
+            )
+
+
+def deployment_configuration_digest(
+    spring_configuration_digest: str, compose_environment_digest: str
+) -> str:
+    payload = json.dumps(
+        {
+            "schema_version": 1,
+            "contract": "spring-launch-deployment-environment-v1",
+            "spring_configuration_digest": spring_configuration_digest,
+            "compose_environment_file_digest": compose_environment_digest,
+        },
+        ensure_ascii=True,
+        separators=(",", ":"),
+        sort_keys=True,
+    ).encode("utf-8")
+    return "sha256:" + hashlib.sha256(payload).hexdigest()
 
 
 def effective_environment(file_values: Mapping[str, str]) -> dict[str, str]:
@@ -338,11 +521,55 @@ def inspect_secret_file(
             or len(contents) != opened_details.st_size
         ):
             return False, None, None, "changed while it was being read"
+        try:
+            decoded = contents.decode("utf-8", errors="strict")
+        except UnicodeError:
+            return False, None, None, "must contain canonical UTF-8 bytes"
+        if not decoded or decoded[0].isspace() or decoded[-1].isspace():
+            return False, None, None, "must not have leading or trailing whitespace"
         return True, identity, hashlib.sha256(contents).digest(), None
     except OSError:
         return False, None, None, "changed or became unreadable while it was being read"
     finally:
         os.close(descriptor)
+
+
+def inspect_owner_only_directory(path: Path) -> tuple[bool, tuple[int, int] | None, str | None]:
+    """Validate the host bind root used for persistent anti-replay state."""
+    if not path.is_absolute() or path == Path("/") or path != Path(os.path.normpath(path)):
+        return False, None, "must use a normalized absolute non-root path"
+    ancestor_metadata: list[tuple[Path, tuple[int, ...]]] = []
+    try:
+        for parent in path.parents:
+            details = parent.lstat()
+            if not stat.S_ISDIR(details.st_mode) or stat.S_ISLNK(details.st_mode):
+                return False, None, "must not traverse symbolic-link or non-directory parents"
+            ancestor_metadata.append((parent, stable_file_metadata(details)))
+        before = path.lstat()
+        resolved = path.resolve(strict=True)
+        after = path.lstat()
+    except OSError:
+        return False, None, "must be an existing directory"
+    if resolved.is_relative_to(ROOT.resolve()):
+        return False, None, "must be outside the repository"
+    if (
+        not stat.S_ISDIR(before.st_mode)
+        or stat.S_ISLNK(before.st_mode)
+        or stat.S_IMODE(before.st_mode) != 0o700
+        or before.st_uid != os.getuid()
+        or stable_file_metadata(before) != stable_file_metadata(after)
+    ):
+        return False, None, "must be an owner-only 0700 non-symlink directory owned by the current user"
+    try:
+        if not all(
+            not stat.S_ISLNK((current := parent.lstat()).st_mode)
+            and stable_file_metadata(current) == expected
+            for parent, expected in ancestor_metadata
+        ):
+            return False, None, "or a parent changed while it was being validated"
+    except OSError:
+        return False, None, "or a parent changed while it was being validated"
+    return True, (before.st_dev, before.st_ino), None
 
 
 def validate_contract(errors: list[str], profile: dict) -> None:
@@ -390,7 +617,26 @@ def validate_code(errors: list[str]) -> None:
     require(errors, spring_application_compose.count("ELMOS_SPRING_ENGINE_HMAC_SECRET_HOST_PATH") == 2, "Spring activation overlay must mount one engine HMAC into exactly two consumers")
     require(errors, "java-engine-worker:" in spring_application_compose and "condition: service_started" in spring_application_compose, "Spring activation overlay must fail closed when the worker profile is omitted")
     require(errors, "X-ELMOS-Engine-Body-SHA256" in engine_auth and "X-ELMOS-Engine-Signature" in engine_auth, "Spring BFF request signing is not body bound")
-    require(errors, "BODY_SHA256" in engine_filter and "nonces.putIfAbsent" in engine_filter, "Spring worker request authentication lacks body binding or replay rejection")
+    require(
+        errors,
+        "BODY_SHA256" in engine_filter
+        and "FileNonceStore" in engine_filter
+        and "nonces.claim(" in engine_filter,
+        "Spring worker request authentication lacks body binding or persistent replay rejection",
+    )
+    require(
+        errors,
+        "ELMOS_SPRING_ENGINE_REPLAY_HOST_PATH" in spring_application_compose
+        and "/var/lib/elmos/spring-engine-auth-replay" in spring_application_compose,
+        "Spring worker persistent replay state is not bound from an explicit host directory",
+    )
+    require(
+        errors,
+        "canonicalApplicationPath(request)" in engine_filter
+        and "request.getContextPath()" in engine_filter
+        and "request.getServletPath()" in engine_filter,
+        "Spring worker authentication is not bound to a canonical application path",
+    )
     require(errors, "micrometer-registry-prometheus" in worker_pom, "Spring worker must include the Prometheus registry")
     require(errors, "include: health,info,prometheus" in worker_config, "Spring worker must expose internal health and Prometheus endpoints")
     require(errors, 'ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"' in compose, "production experimental routes must be hard disabled")
@@ -412,6 +658,8 @@ def validate_external(
     expected_region: str | None,
     expected_environment_class: str | None,
     expected_configuration_digest: str | None,
+    expected_compose_environment_file_digest: str | None,
+    expected_effective_spring_configuration_digest: str | None,
 ) -> dict | None:
     initial_error_count = len(errors)
     if not path.is_absolute():
@@ -453,6 +701,12 @@ def validate_external(
             expected_region=expected_region,
             expected_environment_class=expected_environment_class,
             expected_configuration_digest=expected_configuration_digest,
+            expected_compose_environment_file_digest=(
+                expected_compose_environment_file_digest
+            ),
+            expected_effective_spring_configuration_digest=(
+                expected_effective_spring_configuration_digest
+            ),
             repo_root=ROOT,
         )
     except (OSError, ValueError) as error:
@@ -514,14 +768,36 @@ def validate_environment(errors: list[str], environment: Mapping[str, str]) -> N
     if len(secret_identities) == len(SPRING_SECRET_PATH_ENVIRONMENT):
         require(errors, len(set(secret_identities)) == len(secret_identities), "Spring HMAC secrets must use four distinct files/inodes")
         require(errors, len(set(secret_digests)) == len(secret_digests), "Spring HMAC secrets must use four distinct secret values")
+    replay_paths: list[Path] = []
+    for name in SPRING_REPLAY_PATH_ENVIRONMENT:
+        replay_path = Path(environment.get(name, ""))
+        replay_paths.append(replay_path)
+        valid, _, failure = inspect_owner_only_directory(replay_path)
+        if not valid:
+            errors.append(f"{name} {failure}" if failure else f"{name} is invalid")
+    if workspace_valid and replay_paths:
+        try:
+            workspace_resolved = workspace.resolve(strict=True)
+            for replay_path in replay_paths:
+                replay_resolved = replay_path.resolve(strict=True)
+                require(
+                    errors,
+                    replay_resolved != workspace_resolved
+                    and not replay_resolved.is_relative_to(workspace_resolved)
+                    and not workspace_resolved.is_relative_to(replay_resolved),
+                    "Spring replay state must be isolated from the shared Spring workspace",
+                )
+        except OSError:
+            pass
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Validate the bounded Spring launch profile without executing environment-file contents.",
         epilog=(
-            "Environment files accept only allowlisted KEY=VALUE data. Explicit process environment "
-            "variables take precedence over file values; an explicit empty value remains empty and fails closed."
+            "The Spring file accepts only allowlisted KEY=VALUE data. The actual Compose env file is "
+            "parsed as inert data and digest-bound. Explicit process values take precedence for local "
+            "preflight; deployment binding requires them to equal the controlled files."
         ),
     )
     parser.add_argument("--external-evidence", type=Path)
@@ -541,31 +817,71 @@ def main() -> int:
         type=Path,
         help="load an owner-only Spring environment file from outside the repository; implies --check-environment",
     )
+    parser.add_argument(
+        "--compose-environment-file",
+        type=Path,
+        help=(
+            "load and digest-bind the owner-only ELMOS_ENV_FILE used by the production "
+            "Compose deployment; requires --environment-file"
+        ),
+    )
     args = parser.parse_args()
     errors: list[str] = []
     profile = load(PROFILE)
     validate_contract(errors, profile)
     validate_code(errors)
     file_environment = parse_environment_file(errors, args.environment_file) if args.environment_file else {}
-    check_environment = args.check_environment or args.environment_file is not None
+    compose_environment: dict[str, str] = {}
+    compose_environment_digest: str | None = None
+    if args.compose_environment_file:
+        compose_environment, compose_environment_digest = parse_compose_environment_file(
+            errors, args.compose_environment_file
+        )
+        if args.environment_file is None:
+            errors.append("--compose-environment-file requires --environment-file")
+        else:
+            validate_compose_environment_binding(
+                errors,
+                path=args.compose_environment_file,
+                compose_environment=compose_environment,
+                spring_environment=file_environment,
+            )
+    check_environment = (
+        args.check_environment
+        or args.environment_file is not None
+        or args.compose_environment_file is not None
+    )
     effective = effective_environment(file_environment)
     configuration_digest: str | None = None
+    expected_effective_spring_configuration_digest: str | None = None
     if check_environment:
         validate_environment(errors, effective)
         try:
             if str(ROOT) not in sys.path:
                 sys.path.insert(0, str(ROOT))
             from scripts.batch30.spring_launch_evidence import (
+                expected_spring_worker_configuration_digest,
                 spring_environment_configuration_digest,
             )
 
-            configuration_digest = spring_environment_configuration_digest(effective)
+            spring_configuration_digest = spring_environment_configuration_digest(effective)
+            configuration_digest = (
+                deployment_configuration_digest(
+                    spring_configuration_digest, compose_environment_digest
+                )
+                if compose_environment_digest is not None
+                else spring_configuration_digest
+            )
+            expected_effective_spring_configuration_digest = (
+                expected_spring_worker_configuration_digest(effective)
+            )
         except (OSError, ValueError) as error:
             errors.append(f"Spring environment configuration digest failed: {error}")
 
     if args.require_production_evidence:
         required_production_arguments = {
             "--environment-file": args.environment_file,
+            "--compose-environment-file": args.compose_environment_file,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
             "--expected-deployment-id": args.expected_deployment_id,
@@ -580,6 +896,7 @@ def main() -> int:
     if args.external_evidence and not args.require_production_evidence:
         required_intake_arguments = {
             "--environment-file": args.environment_file,
+            "--compose-environment-file": args.compose_environment_file,
             "--expected-trust-store-digest": args.expected_trust_store_digest,
             "--expected-environment-id": args.expected_environment_id,
             "--expected-deployment-id": args.expected_deployment_id,
@@ -611,6 +928,10 @@ def main() -> int:
                 expected_region=args.expected_region,
                 expected_environment_class=args.expected_environment_class,
                 expected_configuration_digest=configuration_digest,
+                expected_compose_environment_file_digest=compose_environment_digest,
+                expected_effective_spring_configuration_digest=(
+                    expected_effective_spring_configuration_digest
+                ),
             )
     elif args.require_production_evidence:
         errors.append("production evidence is required but --external-evidence was not supplied")
@@ -624,7 +945,14 @@ def main() -> int:
     )
     if check_environment:
         print("ENVIRONMENT_PRECEDENCE=PROCESS_ENVIRONMENT_OVER_FILE")
+        if compose_environment_digest is not None:
+            print("COMPOSE_ENVIRONMENT_BINDING=ELMOS_ENV_FILE_VERIFIED")
+            print(f"COMPOSE_ENVIRONMENT_FILE_DIGEST={compose_environment_digest}")
         print(f"SPRING_CONFIGURATION_DIGEST={configuration_digest}")
+        print(
+            "EXPECTED_SPRING_WORKER_CONFIGURATION_DIGEST="
+            f"{expected_effective_spring_configuration_digest}"
+        )
     print("EXTERNAL_EVIDENCE_INTAKE=" + ("VALIDATED_NOT_CERTIFIED" if args.external_evidence else "NOT_RUN"))
     print("CERTIFICATION=NOT_CERTIFIED")
     return 0

@@ -311,7 +311,7 @@ def _output(
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=30,
+                timeout=60,
                 env=env,
             )
     except (OSError, subprocess.TimeoutExpired) as error:

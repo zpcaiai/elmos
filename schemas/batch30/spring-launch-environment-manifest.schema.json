@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://elmos.example/schemas/batch30/spring-launch-environment-manifest.schema.json",
+  "title": "Batch 30 Spring launch canonical environment manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "namespace",
+    "environment_id",
+    "deployment_id",
+    "environment_class",
+    "provider",
+    "region",
+    "tenant_mode",
+    "execution_plane",
+    "deployed_revision",
+    "launch_profile_digest",
+    "artifact_digest",
+    "configuration_digest",
+    "compose_environment_file_digest",
+    "container_inspect",
+    "effective_spring_configuration_digest",
+    "network_policy_digest",
+    "rootless_policy_digest",
+    "runtime_image_digests",
+    "captured_at",
+    "secrets_embedded"
+  ],
+  "properties": {
+    "schema_version": {"const": 1},
+    "namespace": {"const": "batch30-spring-launch-external-evidence"},
+    "environment_id": {"$ref": "#/$defs/identity"},
+    "deployment_id": {"$ref": "#/$defs/identity"},
+    "environment_class": {"enum": ["STAGING", "PRODUCTION"]},
+    "provider": {"$ref": "#/$defs/identity"},
+    "region": {"$ref": "#/$defs/identity"},
+    "tenant_mode": {"const": "MULTI_TENANT"},
+    "execution_plane": {"const": "PRIVATE_ROOTLESS_RUNNER_BROKER"},
+    "deployed_revision": {"type": "string", "pattern": "^[0-9a-f]{40}$"},
+    "launch_profile_digest": {"$ref": "#/$defs/digest"},
+    "artifact_digest": {"$ref": "#/$defs/digest"},
+    "configuration_digest": {"$ref": "#/$defs/digest"},
+    "compose_environment_file_digest": {"$ref": "#/$defs/digest"},
+    "container_inspect": {"$ref": "#/$defs/localJsonEvidenceReference"},
+    "effective_spring_configuration_digest": {"$ref": "#/$defs/digest"},
+    "network_policy_digest": {"$ref": "#/$defs/digest"},
+    "rootless_policy_digest": {"$ref": "#/$defs/digest"},
+    "runtime_image_digests": {
+      "type": "object",
+      "required": ["worker", "proxy", "transformer", "runner"],
+      "minProperties": 4,
+      "propertyNames": {"$ref": "#/$defs/identity"},
+      "additionalProperties": {"$ref": "#/$defs/digest"}
+    },
+    "captured_at": {"$ref": "#/$defs/utcInstant"},
+    "secrets_embedded": {"const": false}
+  },
+  "$defs": {
+    "identity": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:@/+\\-]{1,199}$"
+    },
+    "digest": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "localJsonEvidenceReference": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "digest", "size_bytes", "media_type", "verification"],
+      "properties": {
+        "uri": {
+          "type": "string",
+          "pattern": "^file://(?:localhost)?/[^\\s]+$"
+        },
+        "digest": {"$ref": "#/$defs/digest"},
+        "size_bytes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 4194304
+        },
+        "media_type": {"const": "application/json"},
+        "verification": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["mode", "local_uri"],
+          "properties": {
+            "mode": {"const": "LOCAL_BYTES"},
+            "local_uri": {
+              "type": "string",
+              "pattern": "^file://(?:localhost)?/[^\\s]+$"
+            }
+          }
+        }
+      }
+    },
+    "utcInstant": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(?:\\.[0-9]{1,9})?Z$"
+    }
+  }
+}

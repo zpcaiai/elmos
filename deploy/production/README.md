@@ -123,7 +123,8 @@ uv run --quiet --with pyyaml \
 # 由同一受控配置源生成 Compose 与门禁使用的 Spring 值；chmod 0600，禁止 source/eval。
 python3 scripts/batch30/validate_spring_launch_readiness.py
 python3 scripts/batch30/validate_spring_launch_readiness.py \
-  --environment-file /controlled/spring.env
+  --environment-file /controlled/spring.env \
+  --compose-environment-file /srv/elmos/elmos.env
 docker compose --env-file /srv/elmos/elmos.env \
   -f deploy/production/compose/docker-compose.production.yml up -d
 docker compose --env-file /srv/elmos/elmos.env \
@@ -138,6 +139,7 @@ docker compose --env-file /srv/elmos/elmos.env \
 # 命令里从待验证 trust store 临时计算后自我固定。
 make spring-launch-gate \
   SPRING_ENV_FILE=/controlled/spring.env \
+  ELMOS_ENV_FILE=/srv/elmos/elmos.env \
   SPRING_EXTERNAL_EVIDENCE=/controlled/evidence/spring-launch-receipt.json \
   SPRING_TRUST_STORE=/controlled/trust/spring-trust-store.json \
   SPRING_TRUST_STORE_DIGEST="$APPROVED_SPRING_TRUST_STORE_DIGEST" \
@@ -158,6 +160,19 @@ promtool check rules deploy/production/observability/prometheus-rules.yml
 python3 scripts/commercial/validate_pricing_catalog_publication.py
 python3 scripts/commercial/validate_pricing_catalog_publication.py --check-publishable
 ```
+
+`SPRING_ENV_FILE` 的 19 个 Spring 值必须与实际 `ELMOS_ENV_FILE` 完全一致；后者
+还必须把 `ELMOS_ENV_FILE` 自身设置为同一绝对路径。门禁以无 shell、无插值的数据
+解析器稳定读取两者，并把实际 Compose env 文件的字节摘要纳入
+`SPRING_CONFIGURATION_DIGEST`。两份文件与调用进程均不得设置
+`SPRING_APPLICATION_JSON`、`JAVA_TOOL_OPTIONS`、`_JAVA_OPTIONS`、
+`JDK_JAVA_OPTIONS`、servlet/context path 或 Spring config/profile 覆盖；不要
+`source`/`eval` 任一文件。生产 overlay 同时在 Worker 容器边界清空 JVM/JSON/path
+覆盖且不向 Worker 注入宽泛应用 env_file。
+
+外部 staging 收据还必须引用并摘要绑定该部署的原始容器 inspect 产物，证明镜像
+`ENV`、Compose 合并和运行时层之后的 Worker effective environment 仍与签名配置
+一致；只提供两份宿主 env 文件摘要不能通过正式证据门禁。
 
 无外部收据的 Spring preflight 成功输出明确包含：
 

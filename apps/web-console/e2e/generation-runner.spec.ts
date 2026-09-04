@@ -816,6 +816,19 @@ for (const authMode of ["jwt", "oidc"] as const) {
       status: "BLOCKED",
       reason: "AUTHENTICATION_REQUIRED",
     });
+    const admissionWarmup = await request.post("/api/generation/jobs", {
+      headers: {
+        ...runnerHeaders,
+        Authorization: "Bearer invalid-runner-token-token-token",
+      },
+      data: {},
+      timeout: 180_000,
+    });
+    expect(admissionWarmup.status()).toBe(401);
+    expect(await admissionWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
     await page.goto("/generation");
     await page.evaluate(() => window.localStorage.clear());
     await page.reload();
@@ -903,6 +916,21 @@ for (const authMode of ["jwt", "oidc"] as const) {
       status: "BLOCKED",
       reason: "AUTHENTICATION_REQUIRED",
     });
+    const stopWarmup = await request.post(
+      `/api/generation/jobs/${acceptedJob.id}/stop`,
+      {
+        headers: {
+          ...runnerHeaders,
+          Authorization: "Bearer invalid-runner-token-token-token",
+        },
+        timeout: 180_000,
+      },
+    );
+    expect(stopWarmup.status()).toBe(401);
+    expect(await stopWarmup.json()).toMatchObject({
+      status: "BLOCKED",
+      reason: "AUTHENTICATION_REQUIRED",
+    });
     const runtimeStartResponsePromise = page.waitForResponse((response) => (
       response.request().method() === "POST"
       && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/run`
@@ -917,7 +945,26 @@ for (const authMode of ["jwt", "oidc"] as const) {
     });
     await expect(page.getByText("RUNNING", { exact: true })).toBeVisible({ timeout: 30_000 });
     await expect(page.getByLabel("任务日志")).toContainText("Runtime health probe passed on 127.0.0.1:");
+    const runtimeStopResponsePromise = page.waitForResponse((response) => (
+      response.request().method() === "POST"
+      && new URL(response.url()).pathname === `/api/generation/jobs/${acceptedJob.id}/stop`
+    ), { timeout: 120_000 });
     await page.getByRole("button", { name: "停止" }).click();
-    await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 20_000 });
+    const runtimeStopResponse = await runtimeStopResponsePromise;
+    if (!runtimeStopResponse.ok()) {
+      throw new Error(`generation runtime stop failed: ${await runtimeStopResponse.text()}`);
+    }
+    expect(await runtimeStopResponse.json()).toMatchObject({
+      runtime: {
+        status: "STOPPED",
+        reason: "STOPPED_BY_AUTHORIZED_ACTOR",
+      },
+    });
+    await expect(page.getByText("STOPPED", { exact: true })).toBeVisible({ timeout: 30_000 });
+    // The enterprise journey leaves a polling page and several long-lived API
+    // connections behind. Close both fixtures explicitly so Playwright does
+    // not spend its five-minute worker shutdown budget draining idle sockets.
+    await page.close();
+    await request.dispose();
   });
 }

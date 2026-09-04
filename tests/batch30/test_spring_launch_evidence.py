@@ -5,6 +5,7 @@ import copy
 import hashlib
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -24,6 +25,7 @@ from scripts.batch30.spring_launch_evidence import (
     PROFILE,
     REVIEWER_ROLE,
     ROUTE_ID,
+    SPRING_WORKER_CONFIGURATION_ENV_KEYS,
     VERIFIER_ROLE,
     SpringLaunchEvidenceError,
     VerifiedEnvelope,
@@ -33,7 +35,9 @@ from scripts.batch30.spring_launch_evidence import (
     _write_new_owner_only,
     assemble_spring_launch_receipt,
     content_reference,
+    expected_spring_worker_environment,
     receipt_digest,
+    spring_worker_configuration_digest,
     verify_spring_launch_receipt,
     verify_spring_launch_receipt_file,
 )
@@ -78,6 +82,68 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
         self.assertEqual(receipt_digest(left), receipt_digest(right))
         self.assertRegex(receipt_digest(left), r"^sha256:[0-9a-f]{64}$")
 
+    def test_worker_configuration_digest_binds_presence_and_supported_inventory(self) -> None:
+        explicit_empty = {
+            name: "" for name in SPRING_WORKER_CONFIGURATION_ENV_KEYS
+        }
+        self.assertNotEqual(
+            spring_worker_configuration_digest({}),
+            spring_worker_configuration_digest(explicit_empty),
+        )
+        image_injected = dict(explicit_empty)
+        image_injected["ELMOS_ALLOWED_GIT_HOSTS"] = "unreviewed.example"
+        self.assertNotEqual(
+            spring_worker_configuration_digest(explicit_empty),
+            spring_worker_configuration_digest(image_injected),
+        )
+        expected = expected_spring_worker_environment(
+            {
+                "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL": "https://spring-runner.example/runtime",
+                "ELMOS_SPRING_RUNTIME_RUNNER_ENABLED": "true",
+                "ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL": "https://spring-runner.example/transform",
+                "ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED": "true",
+                "ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED": "true",
+                "ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED": "true",
+                "ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL": "https://spring-runner.example/verify",
+                "ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED": "true",
+                "ELMOS_SPRING_UPGRADE_VERIFIER_ID": "independent-verifier-one",
+            }
+        )
+        expected_digest = spring_worker_configuration_digest(expected)
+        for name in (
+            "SPRING_APPLICATION_JSON",
+            "JAVA_TOOL_OPTIONS",
+            "_JAVA_OPTIONS",
+            "JAVA_OPTS",
+            "JDK_JAVA_OPTIONS",
+            "SERVER_SERVLET_CONTEXT_PATH",
+            "SERVER_SERVLET_PATH",
+            "SPRING_MVC_SERVLET_PATH",
+        ):
+            with self.subTest(missing_explicit_empty=name):
+                missing = dict(expected)
+                del missing[name]
+                self.assertNotEqual(
+                    expected_digest,
+                    spring_worker_configuration_digest(missing),
+                )
+
+        application_yaml = (
+            ROOT / "apps/java-engine-worker/src/main/resources/application.yml"
+        ).read_text(encoding="utf-8")
+        configured = set(
+            re.findall(r"\$\{(ELMOS_[A-Z0-9_]+)(?::[^}]*)?\}", application_yaml)
+        )
+        self.assertEqual(set(SPRING_WORKER_CONFIGURATION_ENV_KEYS), configured)
+        dockerfile = (ROOT / "apps/java-engine-worker/Dockerfile").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn(
+            'ENTRYPOINT ["java","-XX:MaxRAMPercentage=70","-jar","/app/app.jar"]',
+            dockerfile,
+        )
+        self.assertRegex(dockerfile, r"(?m)^CMD \[\]$")
+
     def test_verify_cli_rejects_unsigned_placeholder_receipts(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary).resolve()
@@ -109,6 +175,10 @@ class SpringLaunchEvidenceTests(unittest.TestCase):
                     "STAGING",
                     "--expected-configuration-digest",
                     "sha256:" + "1" * 64,
+                    "--expected-compose-environment-file-digest",
+                    "sha256:" + "2" * 64,
+                    "--expected-effective-spring-configuration-digest",
+                    "sha256:" + "3" * 64,
                 ],
                 cwd=ROOT,
                 check=False,
@@ -296,6 +366,53 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         artifact.write_bytes(b"exact deployed artifact bytes")
         profile_ref = self.ref(profile)
         artifact_ref = self.ref(artifact, "application/java-archive")
+        worker_environment = expected_spring_worker_environment(
+            {
+            "ELMOS_SPRING_RUNTIME_RUNNER_BASE_URL": "https://spring-runner.example/runtime",
+            "ELMOS_SPRING_RUNTIME_RUNNER_ENABLED": "true",
+            "ELMOS_SPRING_TRANSFORMER_BROKER_BASE_URL": "https://spring-runner.example/transform",
+            "ELMOS_SPRING_TRANSFORMER_BROKER_ENABLED": "true",
+            "ELMOS_SPRING_UPGRADE_NETWORK_POLICY_ATTESTED": "true",
+            "ELMOS_SPRING_UPGRADE_ROOTLESS_ATTESTED": "true",
+            "ELMOS_SPRING_UPGRADE_VERIFIER_BASE_URL": "https://spring-runner.example/verify",
+            "ELMOS_SPRING_UPGRADE_VERIFIER_ENABLED": "true",
+            "ELMOS_SPRING_UPGRADE_VERIFIER_ID": "independent-verifier-one",
+            }
+        )
+        inspect_value = [
+            {
+                "Name": "/elmos-java-engine-worker-1",
+                "Image": "sha256:" + "8" * 64,
+                "Config": {
+                    "Image": "elmos-java-engine-worker:staging-one",
+                    "Entrypoint": [
+                        "java",
+                        "-XX:MaxRAMPercentage=70",
+                        "-jar",
+                        "/app/app.jar",
+                    ],
+                    "Cmd": [],
+                    "Labels": {
+                        "com.docker.compose.project": "elmos-staging",
+                        "com.docker.compose.service": "java-engine-worker",
+                    },
+                    "Env": [
+                        f"{name}={value}"
+                        for name, value in sorted(worker_environment.items())
+                    ],
+                },
+            }
+        ]
+        container_inspect = self.evidence_root / "java-engine-worker.inspect.json"
+        self.write_json(container_inspect, inspect_value)
+        container_inspect_ref = self.ref(container_inspect)
+        container_inspect_evidence = {
+            **container_inspect_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": container_inspect_ref["uri"],
+            },
+        }
         environment_value = {
             "schema_version": 1,
             "namespace": NAMESPACE,
@@ -310,9 +427,15 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             "launch_profile_digest": profile_ref["digest"],
             "artifact_digest": artifact_ref["digest"],
             "configuration_digest": "sha256:" + "1" * 64,
+            "compose_environment_file_digest": "sha256:" + "7" * 64,
+            "container_inspect": container_inspect_evidence,
+            "effective_spring_configuration_digest": spring_worker_configuration_digest(
+                worker_environment
+            ),
             "network_policy_digest": "sha256:" + "2" * 64,
             "rootless_policy_digest": "sha256:" + "3" * 64,
             "runtime_image_digests": {
+                "worker": "sha256:" + "8" * 64,
                 "proxy": "sha256:" + "4" * 64,
                 "transformer": "sha256:" + "5" * 64,
                 "runner": "sha256:" + "6" * 64,
@@ -574,6 +697,52 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         receipt["receipt_digest"] = receipt_digest(receipt)
         return receipt
 
+    def rewrite_container_inspect(
+        self,
+        receipt: dict[str, object],
+        *,
+        value: object | None = None,
+        raw: bytes | None = None,
+    ) -> None:
+        if (value is None) == (raw is None):
+            raise ValueError("provide exactly one container inspect representation")
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        inspect_path = Path(
+            environment["container_inspect"]["verification"]["local_uri"].removeprefix(
+                "file://"
+            )
+        )
+        if raw is not None:
+            inspect_path.write_bytes(raw)
+        else:
+            self.write_json(inspect_path, value)
+        inspect_ref = self.ref(inspect_path)
+        environment["container_inspect"] = {
+            **inspect_ref,
+            "verification": {
+                "mode": "LOCAL_BYTES",
+                "local_uri": inspect_ref["uri"],
+            },
+        }
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+
+    @staticmethod
+    def container_inspect_document(receipt: dict[str, object]) -> list[object]:
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        inspect_path = Path(
+            environment["container_inspect"]["verification"]["local_uri"].removeprefix(
+                "file://"
+            )
+        )
+        return json.loads(inspect_path.read_text(encoding="utf-8"))
+
     def verify(
         self, receipt: dict[str, object], **options: object
     ) -> dict[str, object]:
@@ -657,9 +826,16 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
 
     def test_complete_receipt_verifies_but_does_not_certify(self) -> None:
         trust_digest = _load_trust(self.trust_path).store.digest
+        receipt = self.make_receipt(
+            controlled_index=True, sampled_signatures=True
+        )
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
         with self.sampled_signature_verification():
             result = self.verify(
-                self.make_receipt(controlled_index=True, sampled_signatures=True),
+                receipt,
                 expected_trust_store_digest=trust_digest,
                 expected_environment_id="staging-one",
                 expected_deployment_id="deployment-one",
@@ -667,12 +843,24 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
                 expected_region="cn-test-one",
                 expected_environment_class="STAGING",
                 expected_configuration_digest="sha256:" + "1" * 64,
+                expected_compose_environment_file_digest="sha256:" + "7" * 64,
+                expected_effective_spring_configuration_digest=environment[
+                    "effective_spring_configuration_digest"
+                ],
             )
         self.assertEqual("VERIFIED_EXTERNAL_RECEIPT", result["evidence_status"])
         self.assertEqual("NOT_CERTIFIED", result["certification"])
         self.assertFalse(result["certification_promoted"])
         self.assertEqual(list(GATE_IDS), result["verified_gate_ids"])
         self.assertEqual("sha256:" + "1" * 64, result["configuration_digest"])
+        self.assertEqual(
+            "sha256:" + "7" * 64,
+            result["compose_environment_file_digest"],
+        )
+        self.assertEqual(
+            environment["container_inspect"]["digest"],
+            result["container_inspect_digest"],
+        )
         self.assertEqual("staging-one", result["environment_id"])
 
         with self.assertRaisesRegex(SpringLaunchEvidenceError, "expected trust store digest"):
@@ -684,6 +872,22 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             self.verify(
                 self.make_receipt(),
                 expected_environment_id="different-environment",
+            )
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError,
+            "expected compose_environment_file_digest",
+        ):
+            self.verify(
+                self.make_receipt(),
+                expected_compose_environment_file_digest="sha256:" + "0" * 64,
+            )
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError,
+            "expected effective_spring_configuration_digest",
+        ):
+            self.verify(
+                self.make_receipt(),
+                expected_effective_spring_configuration_digest="sha256:" + "0" * 64,
             )
 
     def test_launch_profile_must_match_the_committed_revision(self) -> None:
@@ -698,6 +902,210 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
             ):
                 self.verify(receipt)
 
+    def test_container_inspect_bytes_and_strict_json_are_bound(self) -> None:
+        receipt = self.make_receipt()
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        inspect_path = Path(
+            environment["container_inspect"]["verification"]["local_uri"].removeprefix(
+                "file://"
+            )
+        )
+        inspect_path.write_bytes(inspect_path.read_bytes() + b"\n")
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "byte count mismatch"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        duplicate_key_json = json.dumps(document, sort_keys=True).replace(
+            '"Env":', '"Env": [], "Env":', 1
+        ).encode("utf-8")
+        self.rewrite_container_inspect(receipt, raw=duplicate_key_json)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "duplicate object key 'Env'"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        non_finite_json = json.dumps(document, sort_keys=True).replace(
+            '"Config":', '"NonFinite": NaN, "Config":', 1
+        ).encode("utf-8")
+        self.rewrite_container_inspect(receipt, raw=non_finite_json)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "non-finite JSON number NaN"):
+            self.verify(receipt)
+
+    def test_container_inspect_requires_one_exact_worker_and_unique_env(self) -> None:
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        self.rewrite_container_inspect(receipt, value=[document[0], document[0]])
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "exactly one java-engine-worker"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        document[0]["Config"]["Labels"]["com.docker.compose.service"] = "other-service"
+        self.rewrite_container_inspect(receipt, value=document)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "unique java-engine-worker Compose service"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        document[0]["Config"]["Env"].append(
+            document[0]["Config"]["Env"][0]
+        )
+        self.rewrite_container_inspect(receipt, value=document)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "contains duplicate key"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        document[0]["Config"]["Env"].extend(
+            ["CUSTOM_APP_SETTING=1", "custom_app_setting=1"]
+        )
+        self.rewrite_container_inspect(receipt, value=document)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "relaxed-binding aliases"):
+            self.verify(receipt)
+
+    def test_container_inspect_binds_image_and_exact_command(self) -> None:
+        receipt = self.make_receipt()
+        document = self.container_inspect_document(receipt)
+        document[0]["Image"] = "sha256:" + "9" * 64
+        self.rewrite_container_inspect(receipt, value=document)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "immutable worker image digest"):
+            self.verify(receipt)
+
+        for field, value, message in (
+            ("Image", "elmos-java-engine-worker:latest", "non-latest image reference"),
+            (
+                "Entrypoint",
+                ["java", "-jar", "/app/app.jar", "--elmos.worker.spring-upgrade.enabled=false"],
+                "must exactly match",
+            ),
+            (
+                "Cmd",
+                ["--spring.application.json={}"],
+                "Config.Cmd must be null or an empty array",
+            ),
+        ):
+            with self.subTest(field=field):
+                receipt = self.make_receipt()
+                document = self.container_inspect_document(receipt)
+                document[0]["Config"][field] = value
+                self.rewrite_container_inspect(receipt, value=document)
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.verify(receipt)
+
+    def test_container_inspect_rejects_effective_security_overrides(self) -> None:
+        for assignment, message in (
+            (
+                "SPRING_PROFILES_ACTIVE=production",
+                "dangerous override SPRING_PROFILES_ACTIVE",
+            ),
+            ("spring_main_lazy_initialization=true", "dangerous override spring_main"),
+            (
+                "spring_application_json={}",
+                "must use exact key SPRING_APPLICATION_JSON",
+            ),
+            ("JVM_OPTS=-Dserver.servlet.context-path=/hidden", "dangerous override JVM_OPTS"),
+            ("JVM_OPTS=", "dangerous override JVM_OPTS"),
+            ("SERVER_PORT=", "dangerous override SERVER_PORT"),
+            (
+                "management_endpoints_web_exposure_include=",
+                "dangerous override management_endpoints",
+            ),
+            (
+                "ELMOS_WORKER_SPRING_UPGRADE_INGRESS_AUTH_ENABLED=",
+                "dangerous override ELMOS_WORKER",
+            ),
+            (
+                "ELMOS_SPRING_UNDECLARED_SWITCH=true",
+                "unsupported Spring worker override",
+            ),
+            (
+                "ELMOS_SPRING_UNDECLARED_SWITCH=",
+                "unsupported Spring worker override",
+            ),
+            (
+                "elmos_spring_undeclared_switch=true",
+                "unsupported Spring worker override",
+            ),
+            (
+                "elmos_spring_coding_agent_enabled=false",
+                "must use exact key ELMOS_SPRING_CODING_AGENT_ENABLED",
+            ),
+            (
+                "elmos_allowed_git_hosts=github.com",
+                "must use exact key ELMOS_ALLOWED_GIT_HOSTS",
+            ),
+            (
+                "spring_application_json=",
+                "must use exact key SPRING_APPLICATION_JSON",
+            ),
+            (
+                "SPRING_APPLICATION_JSON={}",
+                "dangerous override SPRING_APPLICATION_JSON must be exactly empty",
+            ),
+        ):
+            with self.subTest(assignment=assignment):
+                receipt = self.make_receipt()
+                document = self.container_inspect_document(receipt)
+                name = assignment.partition("=")[0]
+                normalized_name = "".join(character for character in name if character.isalnum()).upper()
+                document[0]["Config"]["Env"] = [
+                    entry
+                    for entry in document[0]["Config"]["Env"]
+                    if "".join(
+                        character
+                        for character in entry.partition("=")[0]
+                        if character.isalnum()
+                    ).upper()
+                    != normalized_name
+                ]
+                document[0]["Config"]["Env"].append(assignment)
+                self.rewrite_container_inspect(receipt, value=document)
+                with self.assertRaisesRegex(SpringLaunchEvidenceError, message):
+                    self.verify(receipt)
+
+        receipt = self.make_receipt()
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        environment["effective_spring_configuration_digest"] = "sha256:" + "0" * 64
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+        with self.assertRaisesRegex(
+            SpringLaunchEvidenceError,
+            "does not match container inspect bytes",
+        ):
+            self.verify(receipt)
+
+    def test_container_inspect_reference_must_be_local_bytes(self) -> None:
+        receipt = self.make_receipt()
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        environment["container_inspect"]["verification"]["mode"] = "CONTROLLED_INDEX"
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "exactly LOCAL_BYTES"):
+            self.verify(receipt)
+
+        receipt = self.make_receipt()
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        environment["container_inspect"]["verification"]["local_uri"] = (
+            self.evidence_root / "different.inspect.json"
+        ).as_uri()
+        self.write_json(environment_path, environment, canonical=True)
+        receipt["binding"]["environment"] = self.ref(environment_path)
+        with self.assertRaisesRegex(SpringLaunchEvidenceError, "must equal its immutable local URI"):
+            self.verify(receipt)
+
     def test_signed_controlled_index_closes_remote_evidence(self) -> None:
         with self.fast_signature_verification():
             result = self.verify(self.make_receipt(controlled_index=True))
@@ -706,6 +1114,7 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
     def test_receipt_and_supporting_schemas_accept_fixture(self) -> None:
         from jsonschema import Draft202012Validator
 
+        schemas = {}
         for name in (
             "spring-launch-external-evidence.schema.json",
             "spring-launch-trust-store.schema.json",
@@ -714,11 +1123,43 @@ class SignedSpringLaunchReceiptTests(unittest.TestCase):
         ):
             schema = json.loads((ROOT / "schemas" / "batch30" / name).read_text())
             Draft202012Validator.check_schema(schema)
+            schemas[name] = schema
         receipt = self.make_receipt(controlled_index=True)
-        schema = json.loads(
-            (ROOT / "schemas/batch30/spring-launch-external-evidence.schema.json").read_text()
+        Draft202012Validator(
+            schemas["spring-launch-external-evidence.schema.json"]
+        ).validate(receipt)
+        trust = json.loads(self.trust_path.read_text(encoding="utf-8"))
+        Draft202012Validator(
+            schemas["spring-launch-trust-store.schema.json"]
+        ).validate(trust)
+        assert receipt["evidence_index"] is not None
+        index_path = Path(
+            receipt["evidence_index"]["content"]["uri"].removeprefix("file://")
         )
-        Draft202012Validator(schema).validate(receipt)
+        index = json.loads(index_path.read_text(encoding="utf-8"))
+        Draft202012Validator(
+            schemas["spring-launch-evidence-index.schema.json"]
+        ).validate(index)
+        environment_path = Path(
+            receipt["binding"]["environment"]["uri"].removeprefix("file://")
+        )
+        environment = json.loads(environment_path.read_text(encoding="utf-8"))
+        environment_schema = schemas[
+            "spring-launch-environment-manifest.schema.json"
+        ]
+        Draft202012Validator(environment_schema).validate(environment)
+
+        for required_field in (
+            "compose_environment_file_digest",
+            "container_inspect",
+            "effective_spring_configuration_digest",
+        ):
+            invalid = copy.deepcopy(environment)
+            del invalid[required_field]
+            self.assertTrue(
+                list(Draft202012Validator(environment_schema).iter_errors(invalid)),
+                required_field,
+            )
 
     def test_tampered_evidence_bytes_and_signature_fail_closed(self) -> None:
         receipt = self.make_receipt()

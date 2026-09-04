@@ -1,6 +1,8 @@
 package io.elmos.workspaceservice;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.elmos.security.FileNonceStore;
+import io.elmos.security.SpringHmacProtocol;
 import com.github.dockerjava.api.DockerClient;
 import com.github.dockerjava.core.DefaultDockerClientConfig;
 import com.github.dockerjava.core.DockerClientImpl;
@@ -19,7 +21,6 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Clock;
@@ -121,10 +122,13 @@ class WorkspaceServiceConfiguration {
             @Value("${elmos.workspace.spring-runtime.service-artifact-root:}") String serviceArtifactRoot,
             @Value("${elmos.workspace.spring-runtime.host-artifact-root:}") String hostArtifactRoot,
             @Value("${elmos.workspace.spring-runtime.hmac-secret-file:}") String secretFile,
+            @Value("${elmos.workspace.spring-runtime.replay-root:}") String replayRoot,
             @Value("${elmos.workspace.spring-runtime.auth-window-seconds:90}") long authWindowSeconds
     ) {
-        if (serviceArtifactRoot.isBlank() || hostArtifactRoot.isBlank() || secretFile.isBlank()) {
-            throw new IllegalStateException("Spring runtime roots and HMAC secret file are required");
+        if (serviceArtifactRoot.isBlank() || hostArtifactRoot.isBlank()
+                || secretFile.isBlank() || replayRoot.isBlank()) {
+            throw new IllegalStateException(
+                    "Spring runtime roots, HMAC secret file and replay root are required");
         }
         return new RootlessSpringRuntimeService(
                 docker,
@@ -132,7 +136,12 @@ class WorkspaceServiceConfiguration {
                 imageDigest,
                 Path.of(serviceArtifactRoot),
                 Path.of(hostArtifactRoot),
-                new SpringRuntimeAuthentication(readSecret(Path.of(secretFile)), clock, authWindowSeconds),
+                new SpringRuntimeAuthentication(
+                        readSecret(Path.of(secretFile), "Spring runtime"),
+                        SpringHmacProtocol.Role.RUNTIME,
+                        clock,
+                        authWindowSeconds,
+                        new FileNonceStore(Path.of(replayRoot), clock)),
                 json
         );
     }
@@ -156,14 +165,17 @@ class WorkspaceServiceConfiguration {
             @Value("${elmos.workspace.spring-verifier.service-evidence-root:}") String serviceEvidenceRoot,
             @Value("${elmos.workspace.spring-verifier.host-evidence-root:}") String hostEvidenceRoot,
             @Value("${elmos.workspace.spring-verifier.hmac-secret-file:}") String hmacSecretFile,
+            @Value("${elmos.workspace.spring-verifier.replay-root:}") String replayRoot,
             @Value("${elmos.workspace.spring-verifier.auth-window-seconds:90}") long authWindowSeconds
     ) {
         if (serviceInputRoot.isBlank()
                 || hostInputRoot.isBlank()
                 || serviceEvidenceRoot.isBlank()
                 || hostEvidenceRoot.isBlank()
-                || hmacSecretFile.isBlank()) {
-            throw new IllegalStateException("Ephemeral Spring verifier roots and HMAC secret are required");
+                || hmacSecretFile.isBlank()
+                || replayRoot.isBlank()) {
+            throw new IllegalStateException(
+                    "Ephemeral Spring verifier roots, HMAC secret and replay root are required");
         }
         return new EphemeralSpringVerifierBroker(
                 docker,
@@ -177,9 +189,11 @@ class WorkspaceServiceConfiguration {
                 Path.of(serviceEvidenceRoot),
                 Path.of(hostEvidenceRoot),
                 new SpringRuntimeAuthentication(
-                        readSecret(Path.of(hmacSecretFile)),
+                        readSecret(Path.of(hmacSecretFile), "Spring verifier"),
+                        SpringHmacProtocol.Role.VERIFIER,
                         clock,
-                        authWindowSeconds
+                        authWindowSeconds,
+                        new FileNonceStore(Path.of(replayRoot), clock)
                 ),
                 json,
                 clock
@@ -203,10 +217,13 @@ class WorkspaceServiceConfiguration {
             @Value("${elmos.workspace.spring-transformer.service-run-root:}") String serviceRunRoot,
             @Value("${elmos.workspace.spring-transformer.host-run-root:}") String hostRunRoot,
             @Value("${elmos.workspace.spring-transformer.hmac-secret-file:}") String hmacSecretFile,
+            @Value("${elmos.workspace.spring-transformer.replay-root:}") String replayRoot,
             @Value("${elmos.workspace.spring-transformer.auth-window-seconds:90}") long authWindowSeconds
     ) {
-        if (serviceRunRoot.isBlank() || hostRunRoot.isBlank() || hmacSecretFile.isBlank()) {
-            throw new IllegalStateException("Ephemeral Spring transformer roots and HMAC secret are required");
+        if (serviceRunRoot.isBlank() || hostRunRoot.isBlank()
+                || hmacSecretFile.isBlank() || replayRoot.isBlank()) {
+            throw new IllegalStateException(
+                    "Ephemeral Spring transformer roots, HMAC secret and replay root are required");
         }
         return new EphemeralSpringTransformerBroker(
                 docker,
@@ -218,27 +235,18 @@ class WorkspaceServiceConfiguration {
                 Path.of(serviceRunRoot),
                 Path.of(hostRunRoot),
                 new SpringRuntimeAuthentication(
-                        readSecret(Path.of(hmacSecretFile)),
+                        readSecret(Path.of(hmacSecretFile), "Spring transformer"),
+                        SpringHmacProtocol.Role.TRANSFORMER,
                         clock,
-                        authWindowSeconds
+                        authWindowSeconds,
+                        new FileNonceStore(Path.of(replayRoot), clock)
                 ),
                 json,
                 clock
         );
     }
 
-    private static byte[] readSecret(Path path) {
-        try {
-            if (!Files.isRegularFile(path) || Files.isSymbolicLink(path)) {
-                throw new IllegalStateException("Spring runtime HMAC secret file is unavailable");
-            }
-            byte[] raw = Files.readAllBytes(path);
-            if (raw.length > 4096) throw new IllegalStateException("Spring runtime HMAC secret file is too large");
-            byte[] value = new String(raw, StandardCharsets.UTF_8).trim().getBytes(StandardCharsets.UTF_8);
-            if (value.length < 32) throw new IllegalStateException("Spring runtime HMAC secret must contain at least 32 bytes");
-            return value;
-        } catch (IOException error) {
-            throw new IllegalStateException("Spring runtime HMAC secret file could not be read", error);
-        }
+    private static byte[] readSecret(Path path, String label) {
+        return SpringHmacProtocol.readSecret(path, label);
     }
 }

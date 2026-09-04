@@ -1,0 +1,210 @@
+# ELMOS Spring production Runner security domain.
+#
+# This is a standalone deployment, not an override for docker-compose.production.yml.
+# Run it on a dedicated Linux host with a rootless Docker daemon.  The application
+# host reaches only spring-runner-ingress over HTTPS; the Docker socket remains
+# confined to spring-runner-broker.
+#
+# Status: UNVERIFIED_TEMPLATE / external runtime evidence NOT_RUN.
+
+name: elmos-spring-runner
+
+x-runner-hardening: &runner-hardening
+  init: true
+  restart: unless-stopped
+  read_only: true
+  cap_drop: ["ALL"]
+  security_opt: ["no-new-privileges:true"]
+  pids_limit: 512
+  logging:
+    driver: json-file
+    options: { max-size: "20m", max-file: "5" }
+
+services:
+  spring-runner-ingress:
+    <<: *runner-hardening
+    image: "${ELMOS_SPRING_INGRESS_IMAGE:?digest-pinned ingress image is required}"
+    user: "10004:10004"
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 1
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=32m"
+    ports:
+      - target: 8443
+        published: "${ELMOS_SPRING_RUNNER_HTTPS_PORT:?HTTPS port is required}"
+        host_ip: "${ELMOS_SPRING_RUNNER_HTTPS_BIND_ADDRESS:?private bind address is required}"
+        protocol: tcp
+    volumes:
+      - type: bind
+        source: "${ELMOS_SPRING_INGRESS_CONFIG_HOST_PATH:?ingress config is required}"
+        target: /etc/nginx/nginx.conf
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_INGRESS_TLS_CERT_HOST_PATH:?TLS certificate is required}"
+        target: /run/secrets/tls/tls.crt
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_INGRESS_TLS_KEY_HOST_PATH:?TLS private key is required}"
+        target: /run/secrets/tls/tls.key
+        read_only: true
+        bind: { create_host_path: false }
+    networks: [spring-runner-edge, spring-runner-broker]
+    depends_on:
+      spring-runner-broker: { condition: service_healthy }
+    healthcheck:
+      test: ["CMD", "nginx", "-t", "-c", "/etc/nginx/nginx.conf"]
+      interval: 15s
+      timeout: 3s
+      retries: 4
+      start_period: 10s
+
+  spring-runner-broker:
+    <<: *runner-hardening
+    image: "${ELMOS_SPRING_WORKSPACE_SERVICE_IMAGE:?digest-pinned workspace-service image is required}"
+    # UID 10001 owns the application files and mapped broker-secret copies.
+    # Supplementary group 0 maps to the unprivileged rootless-daemon group and
+    # grants access only to its owner/group-only Unix socket.
+    user: "10001:10001"
+    group_add: ["0"]
+    mem_limit: 4g
+    cpus: 4
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=256m"
+    # Runner env is consumed only by Compose interpolation after the dedicated
+    # preflight parses it as inert allowlisted data.  Never inject that whole
+    # host contract (socket/TLS/host paths/UIDs/images) into this container.
+    environment:
+      ELMOS_DATABASE_URL: "${ELMOS_SPRING_RUNNER_DATABASE_URL:?runner database URL is required}"
+      ELMOS_DATABASE_USER: "${ELMOS_SPRING_RUNNER_DATABASE_USER:?runner database user is required}"
+      ELMOS_DATABASE_PASSWORD: "${ELMOS_SPRING_RUNNER_DATABASE_PASSWORD:?runner database password is required}"
+      ELMOS_WORKSPACE_DOCKER_ENABLED: "true"
+      ELMOS_WORKSPACE_SECRETS_ENABLED: "false"
+      ELMOS_SNAPSHOT_ARTIFACT_ROOT: /var/lib/elmos/snapshot-artifacts
+      ELMOS_COMMAND_ARTIFACT_ROOT: /var/lib/elmos/command-artifacts
+      ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST: "${ELMOS_SNAPSHOT_HELPER_IMAGE_DIGEST:?snapshot helper digest is required}"
+      ELMOS_EGRESS_PROXY_IMAGE_DIGEST: "${ELMOS_EGRESS_PROXY_IMAGE_DIGEST:?egress proxy digest is required}"
+      ELMOS_SPRING_RUNTIME_ENABLED: "true"
+      ELMOS_JAVA_RUNTIME_IMAGE_DIGEST: "${ELMOS_JAVA_RUNTIME_IMAGE_DIGEST:?runtime digest is required}"
+      ELMOS_JAVA_UPGRADE_ARTIFACT_ROOT: /var/lib/elmos/java-verifier-evidence
+      ELMOS_JAVA_UPGRADE_ARTIFACT_HOST_ROOT: "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?evidence host root is required}"
+      ELMOS_SPRING_RUNTIME_HMAC_SECRET_FILE: /run/secrets/elmos-runtime-hmac
+      ELMOS_SPRING_RUNTIME_REPLAY_ROOT: /var/lib/elmos/spring-auth-replay/runtime
+      ELMOS_EPHEMERAL_SPRING_VERIFIER_ENABLED: "true"
+      ELMOS_SPRING_VERIFIER_IMAGE_DIGEST: "${ELMOS_SPRING_VERIFIER_IMAGE_DIGEST:?verifier digest is required}"
+      ELMOS_SPRING_VERIFIER_ID: "${ELMOS_SPRING_UPGRADE_VERIFIER_ID:?verifier identity is required}"
+      ELMOS_JAVA_UPGRADE_INTERNAL_NETWORK: elmos-spring-runner-broker
+      ELMOS_JAVA_UPGRADE_EGRESS_PROXY_URL: http://spring-runner-egress-proxy:8080
+      ELMOS_SPRING_VERIFIER_SERVICE_INPUT_ROOT: /var/lib/elmos/java-upgrade-runs
+      ELMOS_SPRING_VERIFIER_HOST_INPUT_ROOT: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?shared workspace is required}"
+      ELMOS_SPRING_VERIFIER_SERVICE_EVIDENCE_ROOT: /var/lib/elmos/java-verifier-evidence
+      ELMOS_SPRING_VERIFIER_HOST_EVIDENCE_ROOT: "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?evidence host root is required}"
+      ELMOS_SPRING_VERIFIER_HMAC_SECRET_FILE: /run/secrets/elmos-verifier-hmac
+      ELMOS_SPRING_VERIFIER_REPLAY_ROOT: /var/lib/elmos/spring-auth-replay/verifier
+      ELMOS_EPHEMERAL_SPRING_TRANSFORMER_ENABLED: "true"
+      ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST: "${ELMOS_SPRING_TRANSFORMER_IMAGE_DIGEST:?transformer digest is required}"
+      ELMOS_SPRING_TRANSFORMER_SERVICE_RUN_ROOT: /var/lib/elmos/java-upgrade-runs
+      ELMOS_SPRING_TRANSFORMER_HOST_RUN_ROOT: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?shared workspace is required}"
+      ELMOS_SPRING_TRANSFORMER_HMAC_SECRET_FILE: /run/secrets/elmos-transformer-hmac
+      ELMOS_SPRING_TRANSFORMER_REPLAY_ROOT: /var/lib/elmos/spring-auth-replay/transformer
+      ELMOS_ALLOWED_GIT_HOSTS: "${ELMOS_ALLOWED_GIT_HOSTS:-github.com}"
+      ELMOS_SHUTDOWN_TIMEOUT: "30s"
+    volumes:
+      - type: bind
+        source: "${ELMOS_ROOTLESS_DOCKER_SOCKET:?rootless Docker socket is required}"
+        target: /run/docker.sock
+        read_only: false
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SNAPSHOT_ARTIFACT_HOST_PATH:?snapshot artifact root is required}"
+        target: /var/lib/elmos/snapshot-artifacts
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_COMMAND_ARTIFACT_HOST_PATH:?command artifact root is required}"
+        target: /var/lib/elmos/command-artifacts
+        read_only: false
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_JAVA_UPGRADE_WORKSPACE_HOST_PATH:?shared workspace is required}"
+        target: /var/lib/elmos/java-upgrade-runs
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_VERIFIER_EVIDENCE_HOST_PATH:?evidence host root is required}"
+        target: /var/lib/elmos/java-verifier-evidence
+        read_only: false
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_BROKER_RUNTIME_HMAC_SECRET_HOST_PATH:?broker runtime HMAC copy is required}"
+        target: /run/secrets/elmos-runtime-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_BROKER_VERIFIER_HMAC_SECRET_HOST_PATH:?broker verifier HMAC copy is required}"
+        target: /run/secrets/elmos-verifier-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_BROKER_TRANSFORMER_HMAC_SECRET_HOST_PATH:?broker transformer HMAC copy is required}"
+        target: /run/secrets/elmos-transformer-hmac
+        read_only: true
+        bind: { create_host_path: false }
+      - type: bind
+        source: "${ELMOS_SPRING_RUNNER_REPLAY_HOST_PATH:?persistent replay directory is required}"
+        target: /var/lib/elmos/spring-auth-replay
+        read_only: false
+        bind: { create_host_path: false }
+    networks: [spring-runner-broker, spring-runner-control]
+    expose: ["8082"]
+    healthcheck:
+      test: ["CMD", "bash", "-ec", "exec 3<>/dev/tcp/127.0.0.1/8082"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 20s
+
+  spring-runner-egress-proxy:
+    <<: *runner-hardening
+    image: "${ELMOS_SPRING_EGRESS_PROXY_IMAGE:?digest-pinned egress proxy image is required}"
+    user: "10001:10001"
+    pids_limit: 128
+    mem_limit: 512m
+    cpus: 1
+    tmpfs:
+      - "/tmp:rw,noexec,nosuid,size=32m"
+    environment:
+      ELMOS_PROXY_PORT: "8080"
+      ELMOS_WORKSPACE_ID: spring-production-runner
+      ELMOS_NETWORK_POLICY_ID: spring-production-default-deny
+      ELMOS_NETWORK_POLICY_VERSION: "${ELMOS_NETWORK_POLICY_VERSION:?approved policy version is required}"
+      ELMOS_EGRESS_ALLOWED_HOSTS: "${ELMOS_JAVA_UPGRADE_EGRESS_HOSTS:-github.com,api.github.com,objects.githubusercontent.com}"
+    networks: [spring-runner-broker, spring-runner-egress]
+
+networks:
+  # RootlessKit/Docker port publishing forwards the host listener independently
+  # of container egress.  Keep this bridge internal so a compromised ingress has
+  # no default route; --check-running and the staging HTTPS probe must prove the
+  # published mapping works on the selected rootless engine.
+  spring-runner-edge:
+    name: elmos-spring-runner-edge
+    driver: bridge
+    internal: true
+  # Broker, proxy, and all short-lived transformer/verifier containers use this
+  # internal network. Runtime containers are created with network=none.
+  spring-runner-broker:
+    name: elmos-spring-runner-broker
+    driver: bridge
+    internal: true
+  # Only the allowlist proxy joins this network. Host firewall policy remains an
+  # independently attested production obligation.
+  spring-runner-egress:
+    name: elmos-spring-runner-egress
+    driver: bridge
+  # Pre-provisioned internal network containing exactly the approved private
+  # PostgreSQL proxy/endpoint. It must carry the labels checked by the preflight.
+  spring-runner-control:
+    external: true
+    name: "${ELMOS_SPRING_RUNNER_CONTROL_NETWORK:?internal control network is required}"

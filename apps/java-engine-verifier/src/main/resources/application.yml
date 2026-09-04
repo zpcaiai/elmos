@@ -34,3 +34,4 @@ elmos:
     dependency-cache-root: ${ELMOS_VERIFIER_DEPENDENCY_CACHE_ROOT:}
     timeout-minutes: ${ELMOS_VERIFIER_TIMEOUT_MINUTES:30}
     auth-window-seconds: ${ELMOS_VERIFIER_AUTH_WINDOW_SECONDS:90}
+    replay-root: ${ELMOS_VERIFIER_REPLAY_ROOT:/verification/.auth-replay}

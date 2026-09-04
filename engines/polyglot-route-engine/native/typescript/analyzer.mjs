@@ -31,6 +31,18 @@ const sourceFile = ts.createSourceFile(
   ts.ScriptKind.TS,
 );
 
+function byteOffset(characterOffset) {
+  return Buffer.byteLength(source.slice(0, characterOffset), "utf8");
+}
+
+function span(node) {
+  return {
+    file: sourceName,
+    start_byte: byteOffset(node.getStart(sourceFile)),
+    end_byte: byteOffset(node.end),
+  };
+}
+
 function typeName(node, records = new Map()) {
   if (!node) throw new Error("TYPESCRIPT_EXPLICIT_TYPE_REQUIRED");
   const value = node.getText(sourceFile).trim();
@@ -311,6 +323,7 @@ function sourceExpression(node, records = new Map(), expectedType = null, functi
       kind: "member_access",
       target: sourceExpression(node.expression, records, null, functionNames),
       member: node.name.text,
+      source_span: span(node),
     };
   }
   if (ts.isObjectLiteralExpression(node)) {
@@ -333,23 +346,25 @@ function sourceExpression(node, records = new Map(), expectedType = null, functi
       kind: "record_construct",
       record_name: recName,
       arguments: argsMap,
+      source_span: span(node),
     };
   }
-  if (ts.isIdentifier(node)) return { kind: "name", value: node.text };
+  if (ts.isIdentifier(node)) return { kind: "name", value: node.text, source_span: span(node) };
   if (ts.isNumericLiteral(node)) {
-    return { kind: "literal", value: numericLiteralDetails(node).value };
+    return { kind: "literal", value: numericLiteralDetails(node).value, source_span: span(node) };
   }
   const negativeLiteral = negativeNumericLiteralDetails(node);
-  if (negativeLiteral !== null) return { kind: "literal", value: negativeLiteral.value };
-  if (ts.isStringLiteral(node)) return { kind: "literal", value: node.text };
-  if (node.kind === ts.SyntaxKind.TrueKeyword) return { kind: "literal", value: true };
-  if (node.kind === ts.SyntaxKind.FalseKeyword) return { kind: "literal", value: false };
+  if (negativeLiteral !== null) return { kind: "literal", value: negativeLiteral.value, source_span: span(node) };
+  if (ts.isStringLiteral(node)) return { kind: "literal", value: node.text, source_span: span(node) };
+  if (node.kind === ts.SyntaxKind.TrueKeyword) return { kind: "literal", value: true, source_span: span(node) };
+  if (node.kind === ts.SyntaxKind.FalseKeyword) return { kind: "literal", value: false, source_span: span(node) };
   if (ts.isBinaryExpression(node)) {
     return {
       kind: "binary",
       operator: sourceOperator(node.operatorToken.kind),
       left: sourceExpression(node.left, records, null, functionNames),
       right: sourceExpression(node.right, records, null, functionNames),
+      source_span: span(node),
     };
   }
   if (ts.isCallExpression(node)) {
@@ -359,6 +374,7 @@ function sourceExpression(node, records = new Map(), expectedType = null, functi
         kind: "call",
         function_name: name,
         arguments: node.arguments.map((arg) => sourceExpression(arg, records, null, functionNames)),
+        source_span: span(node),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_EXPRESSION:${ts.SyntaxKind[node.kind]}`);
@@ -379,6 +395,7 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false,
       kind: "member_access",
       target: emittedExpression(node.expression, { records, functionNames }),
       member: node.name.text,
+      source_span: span(node),
     };
   }
   if (ts.isObjectLiteralExpression(node)) {
@@ -405,17 +422,18 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false,
       kind: "record_construct",
       record_name: recName,
       arguments: argsMap,
+      source_span: span(node),
     };
   }
-  if (ts.isIdentifier(node)) return { kind: "name", value: node.text };
+  if (ts.isIdentifier(node)) return { kind: "name", value: node.text, source_span: span(node) };
   if (ts.isNumericLiteral(node)) {
-    return { kind: "literal", value: numericLiteralDetails(node).value };
+    return { kind: "literal", value: numericLiteralDetails(node).value, source_span: span(node) };
   }
   const negativeLiteral = negativeNumericLiteralDetails(node);
-  if (negativeLiteral !== null) return { kind: "literal", value: negativeLiteral.value };
-  if (ts.isStringLiteral(node)) return { kind: "literal", value: node.text };
-  if (node.kind === ts.SyntaxKind.TrueKeyword) return { kind: "literal", value: true };
-  if (node.kind === ts.SyntaxKind.FalseKeyword) return { kind: "literal", value: false };
+  if (negativeLiteral !== null) return { kind: "literal", value: negativeLiteral.value, source_span: span(node) };
+  if (ts.isStringLiteral(node)) return { kind: "literal", value: node.text, source_span: span(node) };
+  if (node.kind === ts.SyntaxKind.TrueKeyword) return { kind: "literal", value: true, source_span: span(node) };
+  if (node.kind === ts.SyntaxKind.FalseKeyword) return { kind: "literal", value: false, source_span: span(node) };
   if (ts.isBinaryExpression(node)) {
     const liftedOperator = emittedOperator(node.operatorToken.kind);
     const guarded = liftedOperator === "/" || liftedOperator === "%";
@@ -427,6 +445,7 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false,
       operator: liftedOperator,
       left: emittedExpression(node.left, { records, functionNames }),
       right: emittedExpression(node.right, { allowNonZero: guarded, records, functionNames }),
+      source_span: span(node),
     };
   }
   if (ts.isCallExpression(node)) {
@@ -470,6 +489,7 @@ function emittedExpression(node, { allowNonZero = false, allowMathTrunc = false,
         arguments: node.arguments.map((arg) =>
           emittedExpression(arg, { records, functionNames })
         ),
+        source_span: span(node),
       };
     }
     throw new Error(`TYPESCRIPT_EMITTED_HELPER_UNRECOGNIZED:${name || "<complex>"}`);
@@ -910,6 +930,7 @@ function parseForStatement(node, parseExpr, parseStmts, records = new Map()) {
     start: startExpr,
     end: endExpr,
     body: bodyStmts,
+    source_span: span(node),
   };
   if (stepExpr !== null) {
     res.step = stepExpr;
@@ -920,7 +941,11 @@ function parseForStatement(node, parseExpr, parseStmts, records = new Map()) {
 function sourceStatements(nodes, records = new Map(), functionNames = new Set()) {
   return nodes.map((node) => {
     if (ts.isReturnStatement(node) && node.expression) {
-      return { kind: "return", expression: sourceExpression(node.expression, records, null, functionNames) };
+      return {
+        kind: "return",
+        expression: sourceExpression(node.expression, records, null, functionNames),
+        source_span: span(node),
+      };
     }
     if (ts.isIfStatement(node)) {
       return {
@@ -928,6 +953,7 @@ function sourceStatements(nodes, records = new Map(), functionNames = new Set())
         condition: sourceExpression(node.expression, records, null, functionNames),
         then: sourceStatements(statementNodes(node.thenStatement), records, functionNames),
         else: node.elseStatement ? sourceStatements(statementNodes(node.elseStatement), records, functionNames) : [],
+        source_span: span(node),
       };
     }
     if (ts.isWhileStatement(node)) {
@@ -935,6 +961,7 @@ function sourceStatements(nodes, records = new Map(), functionNames = new Set())
         kind: "while",
         condition: sourceExpression(node.expression, records, null, functionNames),
         body: sourceStatements(statementNodes(node.statement), records, functionNames),
+        source_span: span(node),
       };
     }
     if (ts.isForStatement(node)) {
@@ -947,11 +974,11 @@ function sourceStatements(nodes, records = new Map(), functionNames = new Set())
     }
     if (ts.isBreakStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
-      return { kind: "break" };
+      return { kind: "break", source_span: span(node) };
     }
     if (ts.isContinueStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
-      return { kind: "continue" };
+      return { kind: "continue", source_span: span(node) };
     }
     if (ts.isDoStatement(node)) {
       throw new Error("TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET");
@@ -995,6 +1022,7 @@ function sourceStatements(nodes, records = new Map(), functionNames = new Set())
         name: decl.name.text,
         type: canonicalType,
         expression: sourceExpression(decl.initializer, records, canonicalType, functionNames),
+        source_span: span(node),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
@@ -1004,7 +1032,11 @@ function sourceStatements(nodes, records = new Map(), functionNames = new Set())
 function emittedStatements(nodes, records = new Map(), expectedReturn = null, functionNames = new Set()) {
   return nodes.map((node) => {
     if (ts.isReturnStatement(node) && node.expression) {
-      return { kind: "return", expression: emittedExpression(node.expression, { records, expectedType: expectedReturn, functionNames }) };
+      return {
+        kind: "return",
+        expression: emittedExpression(node.expression, { records, expectedType: expectedReturn, functionNames }),
+        source_span: span(node),
+      };
     }
     if (ts.isIfStatement(node)) {
       return {
@@ -1012,6 +1044,7 @@ function emittedStatements(nodes, records = new Map(), expectedReturn = null, fu
         condition: emittedExpression(node.expression, { records, functionNames }),
         then: emittedStatements(statementNodes(node.thenStatement), records, expectedReturn, functionNames),
         else: node.elseStatement ? emittedStatements(statementNodes(node.elseStatement), records, expectedReturn, functionNames) : [],
+        source_span: span(node),
       };
     }
     if (ts.isWhileStatement(node)) {
@@ -1019,6 +1052,7 @@ function emittedStatements(nodes, records = new Map(), expectedReturn = null, fu
         kind: "while",
         condition: emittedExpression(node.expression, { records, functionNames }),
         body: emittedStatements(statementNodes(node.statement), records, expectedReturn, functionNames),
+        source_span: span(node),
       };
     }
     if (ts.isForStatement(node)) {
@@ -1031,11 +1065,11 @@ function emittedStatements(nodes, records = new Map(), expectedReturn = null, fu
     }
     if (ts.isBreakStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
-      return { kind: "break" };
+      return { kind: "break", source_span: span(node) };
     }
     if (ts.isContinueStatement(node)) {
       if (node.label) throw new Error("TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET");
-      return { kind: "continue" };
+      return { kind: "continue", source_span: span(node) };
     }
     if (ts.isDoStatement(node)) {
       throw new Error("TYPESCRIPT_DO_WHILE_OUTSIDE_CERTIFIED_SUBSET");
@@ -1079,6 +1113,7 @@ function emittedStatements(nodes, records = new Map(), expectedReturn = null, fu
         name: decl.name.text,
         type: canonicalType,
         expression: emittedExpression(decl.initializer, { records, expectedType: canonicalType, functionNames }),
+        source_span: span(node),
       };
     }
     throw new Error(`TYPESCRIPT_UNSUPPORTED_STATEMENT:${ts.SyntaxKind[node.kind]}`);
@@ -1298,7 +1333,11 @@ function extractFunctionSignature(item, emittedTarget, records) {
     if (!ts.isIdentifier(parameter.name)) {
       throw new Error("TYPESCRIPT_DESTRUCTURED_PARAMETER_UNSUPPORTED");
     }
-    return { name: parameter.name.text, declaredType: typeName(parameter.type, records) };
+    return {
+      name: parameter.name.text,
+      declaredType: typeName(parameter.type, records),
+      source_span: span(parameter.name),
+    };
   });
   if (!emittedTarget) {
     return {
@@ -1306,8 +1345,10 @@ function extractFunctionSignature(item, emittedTarget, records) {
       parameters: parameters.map((parameter) => ({
         name: parameter.name,
         type: parameter.declaredType,
+        source_span: parameter.source_span,
       })),
       return_type: typeName(item.type, records),
+      source_span: span(item),
     };
   }
   const split = splitParameterGuards([...item.body.statements], parameters);
@@ -1316,6 +1357,7 @@ function extractFunctionSignature(item, emittedTarget, records) {
     type: parameter.declaredType === "number" && split.guarded.has(parameter.name)
       ? "integer"
       : parameter.declaredType,
+    source_span: parameter.source_span,
   }));
   const declaredReturn = typeName(item.type, records);
   const returns = returnExpressions(split.body);
@@ -1336,6 +1378,7 @@ function extractFunctionSignature(item, emittedTarget, records) {
     name: item.name.text,
     parameters: liftedParameters,
     return_type: liftedReturn,
+    source_span: span(item),
   };
 }
 
@@ -1347,11 +1390,13 @@ function parseSingleFunction(item, emittedTarget, records, allFunctionNames, fun
       parameters: sig.parameters,
       return_type: sig.return_type,
       body: sourceStatements([...item.body.statements], records, allFunctionNames),
+      source_span: span(item),
     };
   }
   const parameters = item.parameters.map((parameter) => ({
     name: parameter.name.text,
     declaredType: typeName(parameter.type, records),
+    source_span: span(parameter.name),
   }));
   const split = splitParameterGuards([...item.body.statements], parameters);
   const environment = new Map(sig.parameters.map((parameter) => [parameter.name, parameter.type]));
@@ -1364,6 +1409,7 @@ function parseSingleFunction(item, emittedTarget, records, allFunctionNames, fun
     parameters: sig.parameters,
     return_type: sig.return_type,
     body: emittedStatements(split.body, records, sig.return_type, allFunctionNames),
+    source_span: span(item),
   };
 }
 
@@ -1446,10 +1492,6 @@ function analyzeNamedFunction(functionName) {
   };
 }
 
-function byteOffset(characterOffset) {
-  return Buffer.byteLength(source.slice(0, characterOffset), "utf8");
-}
-
 function inventoryModule() {
   const inventoryDiagnostics = diagnostics();
   const subjects = [];
@@ -1460,11 +1502,6 @@ function inventoryModule() {
       helperDeclarationCounts.set(name, (helperDeclarationCounts.get(name) ?? 0) + 1);
     }
   }
-  const span = (node) => ({
-    file: sourceName,
-    start_byte: byteOffset(node.getStart(sourceFile)),
-    end_byte: byteOffset(node.end),
-  });
   const add = (node, name, qualifiedName, declarationKind, analyzable, signature) => {
     subjects.push({
       name,
