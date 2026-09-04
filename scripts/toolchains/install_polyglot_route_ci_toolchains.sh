@@ -52,14 +52,20 @@ case "${CI_PROFILE}" in
 esac
 case "${CI_PROFILE}" in
   full)
-    if [[ "${ImageOS:-}" != "macos26" \
-      || "${ImageVersion:-}" != "20260728.0273.1" \
-      || "$(sw_vers -productVersion)" != "26.5.2" \
-      || "$(sw_vers -buildVersion)" != "25F84" \
-      || "$(uname -m)" != "arm64" ]]; then
-      printf 'The full pinned Node closure requires GitHub macos26 image 20260728.0273.1.\n' >&2
+    HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"
+    readonly HOST_PROFILE
+    if [[ "${ImageOS:-}" != "macos26" || "$(uname -m)" != "arm64" ]]; then
+      printf 'The full pinned Node closure requires a recognized GitHub macos26 arm64 image.\n' >&2
       exit 2
     fi
+    case "${HOST_PROFILE}" in
+      "20260728.0273.1:26.5.2:25F84"|"20260831.0337.3:26.6.2:25G83") ;;
+      *)
+        printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
+          "${HOST_PROFILE}" >&2
+        exit 2
+        ;;
+    esac
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -767,11 +773,21 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"
   TEMURIN_JAVA_HOME="$(cd "${JAVA_HOME}" && pwd -P)"
   readonly TEMURIN_JAVA_HOME
-  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"
-  if [[ "${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_SUFFIX} ]]; then
-    printf 'setup-java did not provide the pinned Temurin home: %s\n' "${TEMURIN_JAVA_HOME}" >&2
-    exit 3
-  fi
+  TEMURIN_HOST_BINDING="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion):${TEMURIN_JAVA_HOME}"
+  readonly TEMURIN_HOST_BINDING
+  # setup-java has emitted both cache-directory labels for this exact Temurin
+  # artifact on two exact GitHub-hosted arm64 image profiles. Bind each label
+  # to the image/OS/build tuple that emitted it, then bind the actual JDK below
+  # by file digests, version output, bundle signature, team, and CDHash.
+  case "${TEMURIN_HOST_BINDING}" in
+    "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
+    *)
+      printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
+        "${TEMURIN_HOST_BINDING}" >&2
+      exit 3
+      ;;
+  esac
   TEMURIN_JAVA_BUNDLE="$(cd "${TEMURIN_JAVA_HOME}/../.." && pwd -P)"
   readonly TEMURIN_JAVA_BUNDLE
   readonly TEMURIN_JAVA_SHA256="afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"

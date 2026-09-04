@@ -699,7 +699,26 @@ def _codesign_receipt(path: Path) -> dict[str, object]:
     expected = SIGNATURE_PROFILES.get(path)
     if expected is not None and not expected.issubset(lines):
         missing = sorted(expected - lines)
-        raise RuntimeError(f"OpenSSL signature identity mismatch for {path}: {missing!r}")
+        identity_prefixes = (
+            "Identifier=",
+            "Format=",
+            "CodeDirectory ",
+            "Hash type=",
+            "CandidateCDHashFull ",
+            "CMSDigest=",
+            "CDHash=",
+            "Signature=",
+            "TeamIdentifier=",
+            "Sealed Resources=",
+            "Internal requirements ",
+        )
+        observed = sorted(
+            line for line in lines if line.startswith(identity_prefixes)
+        )
+        raise RuntimeError(
+            f"OpenSSL signature identity mismatch for {path}: "
+            f"missing={missing!r} observed={observed!r}"
+        )
     return {"path": str(path), "details": sorted(expected or ())}
 
 

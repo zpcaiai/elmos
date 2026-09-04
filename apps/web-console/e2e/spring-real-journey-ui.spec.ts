@@ -194,6 +194,7 @@ const capabilities = {
     },
   ],
   experimentalRoutesRequireOptIn: true,
+  operatorExperimentalRoutesEnabled: true,
   transformerConfigured: true,
   transformerReason: "Rootless private Runner is configured.",
   runtimeRunnerConfigured: true,

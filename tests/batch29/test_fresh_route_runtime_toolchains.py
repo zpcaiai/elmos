@@ -301,9 +301,22 @@ def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None
         '    bash "${REPOSITORY_ROOT}/scripts/toolchains/'
         'install_polyglot_route_toolchains.sh"'
     )
+    cache_path = (
+        "/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/"
+        "21.0.11-10.0/arm64/Contents/Home"
+    )
+    cache_path_lts_label = (
+        "/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/"
+        "21.0.11-10.0.LTS/arm64/Contents/Home"
+    )
 
     assert temurin_guard in installer
     assert installer.index(temurin_guard) < installer.index(homebrew_install)
+    assert cache_path in installer
+    assert cache_path_lts_label in installer
+    assert f"20260728.0273.1:26.5.2:25F84:{cache_path}" in installer
+    assert f"20260831.0337.3:26.6.2:25G83:{cache_path_lts_label}" in installer
+    assert "Java_Temurin-Hotspot_jdk/*" not in installer
     assert signature_verification in installer
     assert environment_binding in installer
     assert installer_binding in installer
