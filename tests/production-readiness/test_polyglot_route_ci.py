@@ -594,6 +594,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         route_workers = route_engine_job + route_matrix_job
         all_route_jobs = route_pack_job + route_workers
+        csharp_restore = (
+            "dotnet restore \\\n"
+            "            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+            "Elmos.Dotnet.SemanticCli.csproj \\\n"
+            "            --locked-mode"
+        )
 
         self.assertLess(cargo_fetch, core_partition)
         self.assertLess(cargo_fetch, native_core_build)
@@ -743,6 +749,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             all_route_jobs.count("git diff --exit-code -- Package.resolved"),
             3,
         )
+        self.assertEqual(all_route_jobs.count(csharp_restore), 3)
+        for job in (route_pack_job, route_engine_job, route_matrix_job):
+            self.assertLess(job.index(csharp_restore), job.index("swift package resolve"))
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)
