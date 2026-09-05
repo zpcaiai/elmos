@@ -877,6 +877,8 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
             "binary": copy.deepcopy(binary),
         },
     }
+    registered = validator._registered_swift_receipt_contract(receipt)
+    receipt["toolchain"] = copy.deepcopy(registered["toolchain"])
     canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
     receipt["canonical_identity"] = {
         "sha256": validator._receipt_payload_sha256(canonical),
