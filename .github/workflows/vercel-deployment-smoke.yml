@@ -4,22 +4,50 @@ on:
   push:
     branches: [main]
     paths:
+      - ".vercelignore"
       - "apps/web-console/**"
+      - "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json"
+      - "routes/inventory.json"
+      - "routes/*/route.json"
+      - "routes/*/support-matrix.json"
+      - "routes/*/certification/certification.json"
+      - "routes/*/certification/evidence.json"
+      - "pom.xml"
+      - "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json"
+      - "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj"
+      - "engines/frontend-client-engine/src/polyglot.ts"
+      - "engines/polyglot-route-engine/native/**"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py"
+      - "scripts/operations/wait_for_vercel_deployment.py"
       - ".github/workflows/vercel-deployment-smoke.yml"
   pull_request:
     branches: [main]
     paths:
+      - ".vercelignore"
       - "apps/web-console/**"
+      - "contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json"
+      - "routes/inventory.json"
+      - "routes/*/route.json"
+      - "routes/*/support-matrix.json"
+      - "routes/*/certification/certification.json"
+      - "routes/*/certification/evidence.json"
+      - "pom.xml"
+      - "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json"
+      - "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj"
+      - "engines/frontend-client-engine/src/polyglot.ts"
+      - "engines/polyglot-route-engine/native/**"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/clang_analyzer.py"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+      - "engines/polyglot-route-engine/src/elmos_polyglot_route/python_analyzer.py"
+      - "scripts/operations/wait_for_vercel_deployment.py"
       - ".github/workflows/vercel-deployment-smoke.yml"
   workflow_dispatch:
-    inputs:
-      deployment_url:
-        description: "HTTPS Vercel deployment URL to probe"
-        required: false
-        type: string
 
 permissions:
   contents: read
+  deployments: read
 
 concurrency:
   group: vercel-deployment-smoke-${{ github.ref }}
@@ -31,10 +59,22 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     env:
-      ELMOS_E2E_BASE_URL: ${{ inputs.deployment_url || vars.ELMOS_VERCEL_SMOKE_URL || 'https://elmos-alpha.vercel.app' }}
+      ELMOS_DEPLOYMENT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      ELMOS_VERCEL_EXPECTED_COMMIT_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: "${{ env.ELMOS_DEPLOYMENT_SHA }}"
+
+      - name: Resolve exact successful Vercel deployment
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          python3 scripts/operations/wait_for_vercel_deployment.py
+          --repository "${GITHUB_REPOSITORY}"
+          --sha "${ELMOS_DEPLOYMENT_SHA}"
+          --github-env "${GITHUB_ENV}"
 
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7

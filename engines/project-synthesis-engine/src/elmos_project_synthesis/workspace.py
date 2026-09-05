@@ -15,7 +15,14 @@ from .go_target import render_go
 from .insights import render_generation_insights, render_insights_markdown
 from .java_target import render_java
 from .kotlin_target import render_kotlin
-from .models import TARGET_PROFILES, SynthesisRequest, request_payload, sha256_json
+from .models import (
+    TARGET_PROFILES,
+    SynthesisRequest,
+    p0_request_blockers,
+    p0_scope_payload,
+    request_payload,
+    sha256_json,
+)
 from .php_target import render_php
 from .production_profile import render_production_assets
 from .project_documentation import (
@@ -32,6 +39,7 @@ from .project_graphs import (
 from .python_target import render_python
 from .rendering import clean, pretty_json
 from .rust_target import render_rust
+from .supply_chain import SBOM_PATH, build_dependency_sbom, canonical_json, sbom_status, sha256_bytes
 from .typescript_target import render_typescript
 
 ENGINE_VERSION = "1.4.0"
@@ -542,7 +550,9 @@ def _root_readme(request: SynthesisRequest) -> str:
         - `deploy/cloud-run-control.py`: plan-first Cloud Run deploy, health, rollback, and cleanup controller.
         - `deploy/cloud-run-request.example.json`: private-ingress, digest-pinned deployment request template.
         - `deploy/cloud-run-authorization.example.json`: fail-closed exact-scope authorization template.
-        - `.elmos/generation-manifest.json`: ownership, hashes, trace links, and claim boundary.
+        - `requirements/dependency-sbom.cdx.json`: CycloneDX dependency inventory with per-target
+          transitive-resolution completeness; missing native lock evidence stays explicit.
+        - `.elmos/generation-manifest.json`: ownership, hashes, P0 scope, supply-chain links, and claim boundary.
 
         ## Current boundary
 
@@ -651,6 +661,9 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
             raise WorkspaceConflictError(f"DUPLICATE_GENERATED_PATH:{path}")
         files[path] = content
 
+    dependency_sbom = build_dependency_sbom(request, files)
+    files[SBOM_PATH] = pretty_json(dependency_sbom)
+
     insight_path = "requirements/project-insights.json"
     insight_report_path = "docs/PROJECT_INSIGHTS.md"
     managed_paths = [
@@ -682,8 +695,10 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         for path, content in sorted(files.items())
     ]
     manifest_entry_by_path = {entry["path"]: entry for entry in manifest_entries}
+    p0_scope = p0_scope_payload()
+    p0_blockers = p0_request_blockers(request)
     manifest = {
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "engine": "elmos.project-synthesis",
         "engine_version": ENGINE_VERSION,
         "request_sha256": request.request_hash,
@@ -692,6 +707,32 @@ def render_workspace(request: SynthesisRequest) -> dict[str, str]:
         "production_delivery_status": "NOT_RUN",
         "certification_status": "NOT_CERTIFIED",
         "external_evidence_status": "NOT_RUN",
+        "p0_launch_scope": {
+            "id": p0_scope["scope_id"],
+            "sha256": sha256_bytes(canonical_json(p0_scope)),
+            "request_status": "IN_SCOPE" if not p0_blockers else "OUT_OF_SCOPE",
+            "blockers": p0_blockers,
+        },
+        "supply_chain": {
+            "sbom": {
+                "path": SBOM_PATH,
+                "format": "CycloneDX",
+                "spec_version": dependency_sbom["specVersion"],
+                "sha256": manifest_entry_by_path[SBOM_PATH]["sha256"],
+                "transitive_inventory_status": sbom_status(
+                    dependency_sbom, "elmos:transitive-inventory-status"
+                ),
+                "artifact_integrity_status": sbom_status(
+                    dependency_sbom, "elmos:artifact-integrity-status"
+                ),
+                "dependency_graph_status": sbom_status(
+                    dependency_sbom, "elmos:dependency-graph-status"
+                ),
+            },
+            "release_manifest_status": "NOT_CREATED",
+            "release_signature_status": "NOT_RUN",
+            "trusted_root_status": "NOT_RUN",
+        },
         "documentation": {
             "status": DOCUMENTATION_STATUS,
             "external_review_status": "NOT_RUN",

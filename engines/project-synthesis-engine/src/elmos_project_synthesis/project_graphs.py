@@ -790,3 +790,49 @@ def validate_workspace_graphs(workspace: Path) -> None:
         raise RuntimeError("PROJECT_STRUCTURE_CONTENT_INVALID")
     if dependencies != expected_dependencies:
         raise RuntimeError("DEPENDENCY_GRAPH_CONTENT_INVALID")
+
+    manifest_schema = manifest.get("schema_version")
+    if manifest_schema not in {"1.1.0", "1.2.0"}:
+        raise RuntimeError("GENERATION_MANIFEST_SCHEMA_INVALID")
+    if manifest_schema == "1.2.0":
+        # Local import avoids making the graph primitives depend on the
+        # higher-level supply-chain collector during module initialization.
+        from .models import p0_request_blockers, p0_scope_payload
+        from .supply_chain import SBOM_PATH, build_dependency_sbom, canonical_json, sbom_status, sha256_bytes
+
+        if SBOM_PATH not in files:
+            raise RuntimeError("GENERATION_MANIFEST_SBOM_MISSING")
+        sbom = _read_json_object(root / SBOM_PATH, "GENERATION_SBOM_INVALID")
+        managed_content = {
+            path: (root / path).read_text(encoding="utf-8")
+            for path in files
+            if path != SBOM_PATH
+        }
+        if sbom != build_dependency_sbom(request, managed_content):
+            raise RuntimeError("GENERATION_SBOM_CONTENT_INVALID")
+        supply_chain = manifest.get("supply_chain")
+        p0_scope = manifest.get("p0_launch_scope")
+        expected_scope = p0_scope_payload()
+        expected_scope_sha256 = sha256_bytes(canonical_json(expected_scope))
+        if p0_scope != {
+            "id": expected_scope["scope_id"],
+            "sha256": expected_scope_sha256,
+            "request_status": "IN_SCOPE" if not p0_request_blockers(request) else "OUT_OF_SCOPE",
+            "blockers": p0_request_blockers(request),
+        }:
+            raise RuntimeError("GENERATION_MANIFEST_P0_SCOPE_INVALID")
+        if supply_chain != {
+            "sbom": {
+                "path": SBOM_PATH,
+                "format": "CycloneDX",
+                "spec_version": "1.6",
+                "sha256": files[SBOM_PATH],
+                "transitive_inventory_status": sbom_status(sbom, "elmos:transitive-inventory-status"),
+                "artifact_integrity_status": sbom_status(sbom, "elmos:artifact-integrity-status"),
+                "dependency_graph_status": sbom_status(sbom, "elmos:dependency-graph-status"),
+            },
+            "release_manifest_status": "NOT_CREATED",
+            "release_signature_status": "NOT_RUN",
+            "trusted_root_status": "NOT_RUN",
+        }:
+            raise RuntimeError("GENERATION_MANIFEST_SUPPLY_CHAIN_INVALID")

@@ -1,6 +1,8 @@
 [Unit]
-Description=ELMOS generation rootless runtime lease reaper
-After=network.target
+Description=ELMOS governed generation Runner Web Console
+After=network-online.target elmos-generation-runtime-reaper.service
+Wants=network-online.target
+Requires=elmos-generation-runtime-reaper.service
 StartLimitIntervalSec=300
 StartLimitBurst=5
 
@@ -9,13 +11,13 @@ Type=simple
 User=elmos-runner
 Group=elmos-runner
 EnvironmentFile=/etc/elmos/generation-runner.env
-# The helper receives only the validated ELMOS-prefixed engine context. Never
-# inherit an operator shell's Docker context or a rootful/TCP endpoint.
-UnsetEnvironment=HOME XDG_RUNTIME_DIR DOCKER_HOST DOCKER_CONTEXT CONTAINER_HOST
+Environment=NODE_ENV=production
+UnsetEnvironment=HOME XDG_RUNTIME_DIR DOCKER_HOST DOCKER_CONTEXT CONTAINER_HOST NPM_TOKEN NODE_AUTH_TOKEN
 ExecStartPre=/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/deploy/local-runner/validate_production_contract.py --runtime
-ExecStart=/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/scripts/operations/generation_runtime_reaper.py --root ${ELMOS_LOCAL_RUNNER_ROOT} --repository-root ${ELMOS_REPOSITORY_ROOT} --engine ${ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE} --interval-seconds 1
-Restart=always
-RestartSec=2
+ExecStart=/usr/bin/env ${ELMOS_LOCAL_RUNNER_PNPM_PATH} --dir ${ELMOS_REPOSITORY_ROOT}/apps/web-console start --hostname 127.0.0.1 --port 3000
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=90
 TimeoutStopSec=45
 KillMode=mixed
 KillSignal=SIGTERM
@@ -39,12 +41,10 @@ RestrictSUIDSGID=true
 RestrictRealtime=true
 SystemCallArchitectures=native
 RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6 AF_NETLINK
-IPAddressDeny=any
-IPAddressAllow=localhost
-CPUQuota=25%
-MemoryMax=256M
-TasksMax=64
-LimitNOFILE=1024
+CPUQuota=200%
+MemoryMax=2G
+TasksMax=768
+LimitNOFILE=8192
 UMask=0077
 
 [Install]
