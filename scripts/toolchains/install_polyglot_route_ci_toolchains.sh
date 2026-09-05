@@ -747,7 +747,7 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"
   TEMURIN_JAVA_HOME="$(cd "${JAVA_HOME}" && pwd -P)"
   readonly TEMURIN_JAVA_HOME
-  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
+  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"
   if [[ "${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_SUFFIX} ]]; then
     printf 'setup-java did not provide the pinned Temurin home: %s\n' "${TEMURIN_JAVA_HOME}" >&2
     exit 3
