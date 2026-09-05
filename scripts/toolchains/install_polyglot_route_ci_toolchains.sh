@@ -58,13 +58,21 @@ case "${CI_PROFILE}" in
       exit 2
     fi
     case "${host_identity}" in
-      "macos26|20260728.0273.1|26.5.2|25F84"|\
-      "macos26|20260831.0337.3|26.6.2|25G83") ;;
+      "macos26|20260728.0273.1|26.5.2|25F84")
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca"
+        ;;
+      "macos26|20260831.0337.3|26.6.2|25G83")
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+        ;;
       *)
         printf 'The full pinned Node closure requires an allowlisted exact GitHub macos26 image.\n' >&2
         exit 2
         ;;
     esac
+    readonly NODE_TAHOE_OPENSSL_CRYPTO_SHA256
+    readonly NODE_TAHOE_OPENSSL_SSL_SHA256
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -224,11 +232,12 @@ install_pinned_formula() {
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-core/${commit}/${source_path}"
 
   download_verified "${url}" "${source_sha256}" "${source}"
-  python3 - "${source}" "${target}" <<'PY'
+  python3 - "${source}" "${target}" "${token}" <<'PY'
 from pathlib import Path
 import sys
 
 source = Path(sys.argv[1]).read_text(encoding="utf-8")
+token = sys.argv[3]
 marker = "  bottle do\n"
 if source.count(marker) != 1:
     raise SystemExit("pinned Homebrew formula has an unexpected bottle contract")
@@ -245,6 +254,22 @@ if autobump_lines:
     # no_autobump! is official-tap publication metadata. Homebrew rejects it
     # in a local tap; removing it does not alter source or bottle identity.
     source = source.replace(autobump_lines[0], "", 1)
+# OpenSSL 3.6.3 uses the current Homebrew `symlink(..., overwrite: true)`
+# post-install DSL, while the rolling macOS 26 image can still carry a brew
+# version that rejects that keyword. The route closure neither owns nor uses
+# Homebrew's shared CA configuration, so omit only this digest-bound metadata
+# block instead of mutating the runner's existing certificate link. Fail if
+# the pinned formula's exact statement ever changes.
+openssl_postinstall = (
+    "  post_install_steps do\n"
+    '    symlink "{{etc}}/ca-certificates/cert.pem", '
+    '"{{pkgetc}}/cert.pem", overwrite: true\n'
+    "  end\n"
+)
+if token == "openssl@3":
+    if source.count(openssl_postinstall) != 1:
+        raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
+    source = source.replace(openssl_postinstall, "", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
@@ -371,24 +396,83 @@ install_pinned_ada_url() {
   fi
 }
 
+NODE_COMPONENT_MISMATCH_COUNT=0
+
 verify_pinned_node26_component() {
   local path="$1"
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
-  local observed
-  if [[ ! -f "${path}" || -L "${path}" \
-    || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
-    printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
-      "${path}" >&2
-    exit 3
-  fi
-  observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
-  if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "$(file_sha256 "${path}")" != "${expected_sha256}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (%s)\n' \
-      "${path}" "${observed}" >&2
-    exit 3
+  if ! python3 -I -B - \
+      "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
+import hashlib
+import os
+import re
+import stat
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+if (
+    re.fullmatch(r"[0-7]{3}", sys.argv[2]) is None
+    or re.fullmatch(r"[1-9][0-9]*", sys.argv[3]) is None
+    or re.fullmatch(r"[0-9a-f]{64}", sys.argv[4]) is None
+):
+    print(
+        f"Pinned Node closure expected identity is invalid: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
+try:
+    path_metadata = path.lstat()
+    realpath = path.resolve(strict=True)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        metadata = os.fstat(descriptor)
+        hasher = hashlib.sha256()
+        while chunk := os.read(descriptor, 1024 * 1024):
+            hasher.update(chunk)
+        digest = hasher.hexdigest()
+    finally:
+        os.close(descriptor)
+    final_metadata = path.lstat()
+except OSError as error:
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}: {error}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+stable_fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink", "st_size")
+if (
+    not stat.S_ISREG(path_metadata.st_mode)
+    or stat.S_ISLNK(path_metadata.st_mode)
+    or realpath != path
+    or any(
+        getattr(path_metadata, field) != getattr(metadata, field)
+        or getattr(metadata, field) != getattr(final_metadata, field)
+        for field in stable_fields
+    )
+):
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+observed = (
+    f"{stat.S_IMODE(metadata.st_mode):o}:{metadata.st_uid}:{metadata.st_gid}:"
+    f"{metadata.st_nlink}:{metadata.st_size}:{digest}"
+)
+if observed != expected:
+    print(
+        f"Pinned Node closure component identity mismatch: {path} "
+        f"(observed={observed} expected={expected})",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+PY
+  then
+    NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))
   fi
 }
 
@@ -421,6 +505,7 @@ install_pinned_sqlite() {
 install_pinned_node26_closure() {
   local profile="$1"
   local hdrhistogram_version
+  NODE_COMPONENT_MISMATCH_COUNT=0
   case "${profile}" in
     tahoe) hdrhistogram_version="0.11.10" ;;
     sequoia) hdrhistogram_version="0.11.9" ;;
@@ -593,7 +678,7 @@ hdrhistogram_c/0.11.10/lib/libhdr_histogram.6.3.3.dylib|444|57920|90286f692dd222
 icu4c@78/78.3/lib/libicudata.78.3.dylib|444|33371136|cd7bfc3af59bc6766d4fa50c7afe50b2ec009dd665b23bcc6b467978e22acf77
 icu4c@78/78.3/lib/libicui18n.78.3.dylib|444|3168704|b950df7ced46bf344ed5970c50a3c751f310ad61c4a1ec170a748127aea84bf0
 icu4c@78/78.3/lib/libicuuc.78.3.dylib|444|1859408|a78b3424a391c7afad52c0d69df9cdb7818b6c20f909a14d193ae0c66a5c1119
-libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|9e14b36e03a09a83341d716f5bc38ed1be5ef2ec74ba4c19fb20a5962615c
+libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c
 libnghttp3/1.18.0/lib/libnghttp3.9.9.0.dylib|444|183968|67b632b1abcb414c15ace565a5cf37a44d1a46f87fa9d65d1346b70adc94a448
 libngtcp2/1.25.0/lib/libngtcp2.16.dylib|444|349904|2321f690a5ac5d3a859638ed28f58cf08fb3ce844ff9fa5fac7d2a0c2b9be0e7
 libuv/1.52.1/lib/libuv.1.0.0.dylib|444|189408|c56f794e7c9dbcf8c45fba6109836196263a4d5e95936eee7601593532c6cfe9
@@ -602,14 +687,23 @@ merve/1.2.2_1/lib/libmerve.1.2.2.dylib|444|77776|cda7651d81af902d5964705451e7bcb
 nbytes/0.1.4/lib/libnbytes.dylib|444|35136|b063a6b50d0982379e5a78fa22904e9299ac0048d82cae4f90bd4ad11fa40f65
 node/26.0.0/bin/node|555|50672|542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9
 node/26.0.0/lib/libnode.147.dylib|444|70661840|980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88
-openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71
-openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca
 simdjson/4.6.4/lib/libsimdjson.33.0.0.dylib|444|95296|031cfb565154f822e33b9227ef392c257260c5ebb8fbfc9f317c56be82bfa16a
 simdutf/9.0.0/lib/libsimdutf.34.0.0.dylib|444|222064|2abb9e7c8fb437094c5488f74408f7dd0a7b20a16e5c871a877d60e14f53ee36
 sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21d3f929bc7c3565f2edf3079ce54f978b44cb7f
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
+    verify_pinned_node26_component \
+      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libcrypto.3.dylib" \
+      "444" "4856256" "${NODE_TAHOE_OPENSSL_CRYPTO_SHA256}"
+    verify_pinned_node26_component \
+      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libssl.3.dylib" \
+      "444" "872080" "${NODE_TAHOE_OPENSSL_SSL_SHA256}"
+  fi
+  if [[ "${NODE_COMPONENT_MISMATCH_COUNT}" -ne 0 ]]; then
+    printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
+      "${NODE_COMPONENT_MISMATCH_COUNT}" >&2
+    exit 3
   fi
 }
 

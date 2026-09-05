@@ -91,6 +91,7 @@ REQUIRED_RUNTIME_CHANNELS = {
 EVIDENCE_STATES = {"PASSED", "FAILED", "NOT_RUN", "NOT_APPLICABLE"}
 SELF_CONTAINED_REPLAY_TIMEOUT_SECONDS = 300
 ENGINE_VERIFIER_TIMEOUT_SECONDS = 600
+_JSONSCHEMA_VALIDATOR_CACHE: dict[str, Any] = {}
 LOCKED_NODE_IDENTITIES = (
     {
         "realpath": "/opt/homebrew/Cellar/node/26.0.0/bin/node",
@@ -1786,7 +1787,16 @@ def validate_schema(
     )
     if jsonschema is not None:
         try:
-            jsonschema.validate(value, effective)
+            schema_digest = v1.canonical_digest(effective)
+            validator = _JSONSCHEMA_VALIDATOR_CACHE.get(schema_digest)
+            if validator is None:
+                validator_class = jsonschema.validators.validator_for(effective)
+                validator_class.check_schema(effective)
+                validator = validator_class(effective)
+                _JSONSCHEMA_VALIDATOR_CACHE[schema_digest] = validator
+            violation = next(validator.iter_errors(value), None)
+            if violation is not None:
+                raise violation
         except Exception as exc:
             errors.append(f"{label} schema violation: {exc}")
 
