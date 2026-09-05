@@ -181,10 +181,8 @@ jobs:
           # runner-writable checkout path, and /usr/bin/python3 is root-owned.
           test -x /usr/bin/python3
           test "$(/usr/bin/uname -m)" = "arm64"
-          case "$(/usr/bin/sw_vers -productVersion)|$(/usr/bin/sw_vers -buildVersion)" in
-            "15.7.7|24G720"|"15.7.9|24G830") ;;
-            *) exit 2 ;;
-          esac
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -216,10 +214,8 @@ jobs:
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
-          case "$(/usr/bin/sw_vers -productVersion)|$(/usr/bin/sw_vers -buildVersion)" in
-            "15.7.7|24G720"|"15.7.9|24G830") ;;
-            *) exit 2 ;;
-          esac
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"
@@ -297,6 +293,14 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          # Hydrate only the revision pinned by Package.resolved while network
+          # access is still allowed. Swift analyzer execution later consumes
+          # this verified seed offline and fails closed on any tree drift.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Run complete Batch 29 and route-pack contracts
         run: |
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
@@ -307,9 +311,36 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked
           make b29-skills-test
           python scripts/operations/validate_translation_route_matrix.py
-          for route in routes/*/; do
-            python scripts/batch29/run_route_gate.py "$route"
-          done
+          # Execute every active LIMITED route with its native source and target
+          # toolchains. The immutable legacy 30 are verified read-only by the
+          # runner; the 66 V3 research routes remain explicit NOT_RUN.
+          python scripts/batch29/run_polyglot_routes.py \
+            --route-set nine-language-complete-72
+          python scripts/batch29/run_polyglot_routes.py \
+            --route-set php-php85-active-completion-18
+          # The two route-set runners above already invoke the authoritative
+          # gate for all 60 admitted mutable routes. Gate the immutable legacy
+          # 30 and V3 research-only 66 here so all 156 active contracts are
+          # checked exactly once without fabricating V3 execution evidence.
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          sys.path.insert(0, str(Path("scripts/batch29").resolve()))
+          from route_sets import CORE_ROUTE_KEYS, V3_EXACT_ROUTE_KEYS
+
+          gate = Path("scripts/batch29/run_route_gate.py")
+          for route_key in (*CORE_ROUTE_KEYS, *V3_EXACT_ROUTE_KEYS):
+              subprocess.run(
+                  [sys.executable, str(gate), str(Path("routes") / route_key)],
+                  check=True,
+              )
+          PY
+          python scripts/batch29/run_polyglot_routes.py \
+            --verify-route-set thirteen-language-complete-156
+          python scripts/batch29/run_polyglot_routes.py \
+            --verify-route-set eleven-language-complete-110
 
   polyglot-route-engine-core:
     name: Directed route engine core qualification
@@ -353,22 +384,27 @@ jobs:
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Prepare exact Apple route host
         run: scripts/toolchains/prepare_apple_route_ci_host.sh
-      - name: Capture non-certifying Apple route host identity
-        run: |
-          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
-          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
-            | tee "${diagnostic}"
-          python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py \
-            --verify-jsonl "${diagnostic}"
-      - name: Provision digest-bound route toolchains
-        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
-      - name: Install locked tools
+      - name: Install locked diagnostic runtime
         run: |
           python -m pip install --disable-pip-version-check uv==0.11.16
           uv python install 3.12.12
           printf '%s\n' \
             "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv" \
             >>"${GITHUB_ENV}"
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
+      - name: Capture non-certifying Apple route host identity
+        run: |
+          diagnostic="${RUNNER_TEMP}/elmos-apple-route-ci-diagnostic.jsonl"
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/diagnose_apple_route_ci.py" \
+            | tee "${diagnostic}"
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/diagnose_apple_route_ci.py" \
+              --verify-jsonl "${diagnostic}"
+      - name: Provision digest-bound route toolchains
+        run: scripts/toolchains/install_polyglot_route_ci_toolchains.sh
+      - name: Install locked tools
+        run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           # The native Rust analyzer executes with --offline --locked so a
@@ -378,6 +414,17 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          cargo build \
+            --locked \
+            --release \
+            --manifest-path native/rust-core/Cargo.toml
+          # Resolve the exact Package.resolved graph before the offline native
+          # analyzer phase. Any lockfile rewrite is an immediate gate failure.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,
@@ -489,6 +536,13 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          # Each matrix shard runs on a fresh host and therefore needs its own
+          # exact Swift dependency seed before offline analyzer execution.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Verify exact source-language matrix shard
         env:
           ELMOS_ROUTE_SOURCE_LANGUAGE: ${{ matrix.source_language }}
@@ -621,6 +675,10 @@ jobs:
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
+      - name: Build native dependency solver
+        run: >-
+          cargo build --locked --release
+          --manifest-path native/rust-core/Cargo.toml
       - name: Verify installed Project Synthesis distribution boundary
         run: |
           python tooling/validate_project_synthesis_integration.py --require-packages |
@@ -799,6 +857,14 @@ jobs:
         run: pnpm --dir engines/frontend-client-engine build
       - name: Verify WeChat Native QR encoder
         run: pnpm --dir apps/web-console test:qr-code
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Verify translation Runner evidence and cancellation invariants
@@ -885,7 +951,22 @@ jobs:
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
+        env:
+          # The immutable legacy route receipts bind an older engine source
+          # closure. Replaying them against this revision would be a false
+          # provenance claim; the adapter test requires a fail-closed result,
+          # no migration artifact, and explicit NOT_RUN/NOT_CERTIFIED states.
+          ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY: NOT_RUN
         run: make precision-migration-b01-44-check
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
 
@@ -916,6 +997,15 @@ jobs:
         run: |
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
           pnpm --dir apps/web-console install --frozen-lockfile
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          uv --directory engines/database-data-engine/sql-transpiler run --locked \
+            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Install exact browser engines
@@ -1093,9 +1183,9 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          # Batch 30 validates a receipt that is deliberately bound to an
-          # earlier repository head. Preserve that object instead of weakening
-          # the receipt check on the default shallow checkout.
+          # Batch 30 validates the exact historical Git blobs named by its
+          # immutable local qualification receipt. A shallow PR merge checkout
+          # does not contain that receipt-bound commit object.
           fetch-depth: 0
       - name: Set up Python 3.14.6
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0

@@ -143,7 +143,13 @@ def test_typescript_rejects_labeled_break(tmp_path: Path) -> None:
         "    }\n"
         "    return n;",
     )
-    with pytest.raises(RouteError, match="TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET|TYPESCRIPT_UNSUPPORTED_STATEMENT:LabeledStatement"):
+    with pytest.raises(
+        RouteError,
+        match=(
+            "TYPESCRIPT_LABELED_BREAK_OUTSIDE_CERTIFIED_SUBSET|"
+            "TYPESCRIPT_UNSUPPORTED_STATEMENT:LabeledStatement"
+        ),
+    ):
         analyze(source, "typescript", "subject")
 
 

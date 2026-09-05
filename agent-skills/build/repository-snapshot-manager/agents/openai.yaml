@@ -1,0 +1,4 @@
+interface:
+  display_name: "Repository Snapshot Manager"
+  short_description: "Capture deterministic repository snapshots"
+  default_prompt: "Use $repository-snapshot-manager to implement or review this ELMOS Batch 2 capability."

@@ -15,9 +15,9 @@ test("anonymous administrator entries perform a document navigation", async ({ p
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 
   await page.goto("/");
-  const mobileNavigation = page.getByRole("button", { name: "打开导航" });
-  if (await mobileNavigation.isVisible()) {
-    await mobileNavigation.click();
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
+    await page.getByRole("button", { name: "打开导航" }).click();
+    await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
   }
   const sidebarAdminLogin = page.locator("aside").getByRole("link", {
     name: /管理员登录入口/,

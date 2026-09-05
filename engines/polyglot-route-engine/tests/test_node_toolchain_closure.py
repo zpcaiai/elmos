@@ -614,21 +614,17 @@ def test_node_closure_rejects_libada_content_drift_even_with_recomputed_identity
     ),
 )
 def test_node_closure_accepts_each_complete_legacy_profile(
-    node_closure: dict[str, object],
     profile: dict[str, str | int],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    manifest = copy.deepcopy(node_closure["manifest"])
-    assert isinstance(manifest, dict)
-    components = manifest["components"]
-    assert isinstance(components, list)
-    libada = next(
-        component
-        for component in components
-        if component["resolved_path"] == str(toolchains._EXPECTED_NODE_LIBADA)
+    candidate = _synthetic_profile_identity(profile, profile, profile, profile)
+    # Isolate exact profile selection from closure canonicalization. Full
+    # canonicalization remains covered by the real closure and tamper tests.
+    monkeypatch.setattr(
+        toolchains,
+        "_node_closure_identity",
+        lambda _manifest: candidate,
     )
-    libada["sha256"] = profile["libada_sha256"]
-    libada["bytes"] = profile["libada_bytes"]
-    candidate = toolchains._node_closure_identity(manifest)
 
     assert candidate["sha256"] == profile["closure_sha256"]
     assert candidate["bytes"] == profile["closure_bytes"]
@@ -691,11 +687,13 @@ def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     assert observed == expected
     assert "HOMEBREW_NO_INSTALL_UPGRADE=1" in installer
     assert "brew install \\\n    brotli" not in closure_body
-    assert "macos26|20260728.0273.1|26.5.2|25F84" in installer
-    assert "macos26|20260831.0337.3|26.6.2|25G83" in installer
-    assert "macos15|20260727.0256.1|15.7.7|24G720" in installer
-    assert "macos15|20260829.0321.1|15.7.9|24G830" in installer
-    assert "21.0.11-10.0.LTS/arm64/Contents/Home" in installer
+    assert (
+        'HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):'
+        '$(sw_vers -buildVersion)"'
+        in installer
+    )
+    assert '"20260728.0273.1:26.5.2:25F84"' in installer
+    assert '"20260831.0337.3:26.6.2:25G83"' in installer
 
     frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[
         1

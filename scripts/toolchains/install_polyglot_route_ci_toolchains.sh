@@ -44,6 +44,7 @@ readonly HOMEBREW_CELLAR
 readonly UV_PATH="${HOMEBREW_CELLAR}/uv/0.11.16/bin/uv"
 readonly TAP_NAME="elmos/pinned-route-ci"
 readonly CI_PROFILE="${ELMOS_POLYGLOT_ROUTE_CI_PROFILE:-full}"
+HOMEBREW_ROUTE_PROFILE_ID=""
 temporary_root="$(mktemp -d "${RUNNER_TEMP}/elmos-route-ci-toolchains.XXXXXX")"
 
 case "${CI_PROFILE}" in
@@ -52,30 +53,25 @@ case "${CI_PROFILE}" in
 esac
 case "${CI_PROFILE}" in
   full)
-    host_identity="${ImageOS:-}|${ImageVersion:-}|$(sw_vers -productVersion)|$(sw_vers -buildVersion)"
-    if [[ "$(uname -m)" != "arm64" ]]; then
-      printf 'The full pinned Node closure requires a GitHub macos26 arm64 image.\n' >&2
+    HOST_PROFILE="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion)"
+    readonly HOST_PROFILE
+    if [[ "${ImageOS:-}" != "macos26" || "$(uname -m)" != "arm64" ]]; then
+      printf 'The full pinned Node closure requires a recognized GitHub macos26 arm64 image.\n' >&2
       exit 2
     fi
-    case "${host_identity}" in
-      "macos26|20260728.0273.1|26.5.2|25F84")
-        # Homebrew's current 3.6.3 bottle rebuild is shared by both
-        # allowlisted images; bind the installed bytes, not the older image's
-        # preloaded bottle identity.
-        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
-        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+    case "${HOST_PROFILE}" in
+      "20260728.0273.1:26.5.2:25F84")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260728.0273.1"
         ;;
-      "macos26|20260831.0337.3|26.6.2|25G83")
-        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
-        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+      "20260831.0337.3:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
         ;;
       *)
-        printf 'The full pinned Node closure requires an allowlisted exact GitHub macos26 image.\n' >&2
+        printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
+          "${HOST_PROFILE}" >&2
         exit 2
         ;;
     esac
-    readonly NODE_TAHOE_OPENSSL_CRYPTO_SHA256
-    readonly NODE_TAHOE_OPENSSL_SSL_SHA256
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -166,17 +162,10 @@ PY
     fi
     ;;
   frontend-formal)
-    host_identity="${ImageOS:-}|${ImageVersion:-}|$(sw_vers -productVersion)|$(sw_vers -buildVersion)"
-    case "${host_identity}" in
-      "macos15|20260727.0256.1|15.7.7|24G720"|\
-      "macos15|20260829.0321.1|15.7.9|24G830") ;;
-      *)
-        printf 'The frontend formal Node closure requires an allowlisted exact GitHub macos15 image.\n' >&2
-        exit 2
-        ;;
-    esac
-    if [[ "$(uname -m)" != "arm64" ]]; then
-      printf 'The frontend formal Node closure requires arm64.\n' >&2
+    if [[ "${ImageOS:-}" != "macos15" \
+      || "${ImageVersion:-}" != "20260829.0321.1" \
+      || "$(sw_vers -productVersion)" != 15.* ]]; then
+      printf 'The frontend formal Node closure requires GitHub macos15 image 20260829.0321.1.\n' >&2
       exit 2
     fi
     ;;
@@ -257,22 +246,16 @@ if autobump_lines:
     # no_autobump! is official-tap publication metadata. Homebrew rejects it
     # in a local tap; removing it does not alter source or bottle identity.
     source = source.replace(autobump_lines[0], "", 1)
-# OpenSSL 3.6.3 uses the current Homebrew `symlink(..., overwrite: true)`
-# post-install DSL, while the rolling macOS 26 image can still carry a brew
-# version that rejects that keyword. The route closure neither owns nor uses
-# Homebrew's shared CA configuration, so omit only this digest-bound metadata
-# block instead of mutating the runner's existing certificate link. Fail if
-# the pinned formula's exact statement ever changes.
-openssl_postinstall = (
-    "  post_install_steps do\n"
-    '    symlink "{{etc}}/ca-certificates/cert.pem", '
-    '"{{pkgetc}}/cert.pem", overwrite: true\n'
-    "  end\n"
-)
+token = sys.argv[3]
 if token == "openssl@3":
-    if source.count(openssl_postinstall) != 1:
+    # The pinned formula uses the newer `overwrite:` spelling, while the
+    # hosted runner's Homebrew DSL accepts the equivalent, long-supported
+    # `force:` keyword. Bind this compatibility transform to one exact token
+    # and one exact source occurrence so upstream drift still fails closed.
+    overwrite = "overwrite: true"
+    if source.count(overwrite) != 1:
         raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
-    source = source.replace(openssl_postinstall, "", 1)
+    source = source.replace(overwrite, "force: true", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
@@ -406,76 +389,21 @@ verify_pinned_node26_component() {
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
-  if ! python3 -I -B - \
-      "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
-import hashlib
-import os
-import re
-import stat
-import sys
-from pathlib import Path
-
-path = Path(sys.argv[1])
-if (
-    re.fullmatch(r"[0-7]{3}", sys.argv[2]) is None
-    or re.fullmatch(r"[1-9][0-9]*", sys.argv[3]) is None
-    or re.fullmatch(r"[0-9a-f]{64}", sys.argv[4]) is None
-):
-    print(
-        f"Pinned Node closure expected identity is invalid: {path}",
-        file=sys.stderr,
-    )
-    raise SystemExit(1)
-expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
-try:
-    path_metadata = path.lstat()
-    realpath = path.resolve(strict=True)
-    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
-    try:
-        metadata = os.fstat(descriptor)
-        hasher = hashlib.sha256()
-        while chunk := os.read(descriptor, 1024 * 1024):
-            hasher.update(chunk)
-        digest = hasher.hexdigest()
-    finally:
-        os.close(descriptor)
-    final_metadata = path.lstat()
-except OSError as error:
-    print(
-        f"Pinned Node closure component is unavailable or unsafe: {path}: {error}",
-        file=sys.stderr,
-    )
-    raise SystemExit(1)
-stable_fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink", "st_size")
-if (
-    not stat.S_ISREG(path_metadata.st_mode)
-    or stat.S_ISLNK(path_metadata.st_mode)
-    or realpath != path
-    or any(
-        getattr(path_metadata, field) != getattr(metadata, field)
-        or getattr(metadata, field) != getattr(final_metadata, field)
-        for field in stable_fields
-    )
-):
-    print(
-        f"Pinned Node closure component is unavailable or unsafe: {path}",
-        file=sys.stderr,
-    )
-    raise SystemExit(1)
-observed = (
-    f"{stat.S_IMODE(metadata.st_mode):o}:{metadata.st_uid}:{metadata.st_gid}:"
-    f"{metadata.st_nlink}:{metadata.st_size}:{digest}"
-)
-if observed != expected:
-    print(
-        f"Pinned Node closure component identity mismatch: {path} "
-        f"(observed={observed} expected={expected})",
-        file=sys.stderr,
-    )
-    raise SystemExit(1)
-PY
-  then
-    NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))
+  local observed
+  if [[ ! -f "${path}" || -L "${path}" \
+    || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
+    printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
+      "${path}" >&2
+    return 1
+  fi
+  observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
+  local observed_sha256
+  observed_sha256="$(file_sha256 "${path}")"
+  if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
+    || "${observed_sha256}" != "${expected_sha256}" ]]; then
+    printf 'Pinned Node closure component identity mismatch: %s (%s:%s)\n' \
+      "${path}" "${observed}" "${observed_sha256}" >&2
+    return 1
   fi
 }
 
@@ -668,9 +596,12 @@ node|26.0.0
 EOF
 
   if [[ "${profile}" == "tahoe" ]]; then
+    local component_failures=0
     while IFS='|' read -r path mode byte_count digest; do
-      verify_pinned_node26_component \
-        "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"
+      if ! verify_pinned_node26_component \
+          "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"; then
+        component_failures=$((component_failures + 1))
+      fi
     done <<'EOF'
 ada-url/3.4.4/lib/libada.3.4.4.dylib|444|598704|b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8
 brotli/1.2.0/lib/libbrotlicommon.1.2.0.dylib|444|150128|eb4c35c72adfea50045e0901767820b32a6b434685c0a4753ca9d3f9b389e44f
@@ -690,23 +621,19 @@ merve/1.2.2_1/lib/libmerve.1.2.2.dylib|444|77776|cda7651d81af902d5964705451e7bcb
 nbytes/0.1.4/lib/libnbytes.dylib|444|35136|b063a6b50d0982379e5a78fa22904e9299ac0048d82cae4f90bd4ad11fa40f65
 node/26.0.0/bin/node|555|50672|542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9
 node/26.0.0/lib/libnode.147.dylib|444|70661840|980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88
+openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5
+openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e
 simdjson/4.6.4/lib/libsimdjson.33.0.0.dylib|444|95296|031cfb565154f822e33b9227ef392c257260c5ebb8fbfc9f317c56be82bfa16a
 simdutf/9.0.0/lib/libsimdutf.34.0.0.dylib|444|222064|2abb9e7c8fb437094c5488f74408f7dd0a7b20a16e5c871a877d60e14f53ee36
 sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21d3f929bc7c3565f2edf3079ce54f978b44cb7f
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
-    verify_pinned_node26_component \
-      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libcrypto.3.dylib" \
-      "444" "4856256" "${NODE_TAHOE_OPENSSL_CRYPTO_SHA256}"
-    verify_pinned_node26_component \
-      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libssl.3.dylib" \
-      "444" "872080" "${NODE_TAHOE_OPENSSL_SSL_SHA256}"
-  fi
-  if [[ "${NODE_COMPONENT_MISMATCH_COUNT}" -ne 0 ]]; then
-    printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
-      "${NODE_COMPONENT_MISMATCH_COUNT}" >&2
-    exit 3
+    if (( component_failures != 0 )); then
+      printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
+        "${component_failures}" >&2
+      exit 3
+    fi
   fi
 }
 
@@ -856,12 +783,19 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"
   TEMURIN_JAVA_HOME="$(cd "${JAVA_HOME}" && pwd -P)"
   readonly TEMURIN_JAVA_HOME
-  case "${TEMURIN_JAVA_HOME}" in
-    */Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home|\
-    */Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home) ;;
+  TEMURIN_HOST_BINDING="${ImageVersion:-}:$(sw_vers -productVersion):$(sw_vers -buildVersion):${TEMURIN_JAVA_HOME}"
+  readonly TEMURIN_HOST_BINDING
+  # setup-java has emitted both cache-directory labels for this exact Temurin
+  # artifact on two exact GitHub-hosted arm64 image profiles. Bind each label
+  # to the image/OS/build tuple that emitted it, then bind the actual JDK below
+  # by file digests, version output, bundle signature, team, and CDHash.
+  case "${TEMURIN_HOST_BINDING}" in
+    "20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"|\
+    "20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home") ;;
     *)
-    printf 'setup-java did not provide the pinned Temurin home: %s\n' "${TEMURIN_JAVA_HOME}" >&2
-    exit 3
+      printf 'setup-java Temurin home is not bound to the exact hosted image: %s\n' \
+        "${TEMURIN_HOST_BINDING}" >&2
+      exit 3
       ;;
   esac
   TEMURIN_JAVA_BUNDLE="$(cd "${TEMURIN_JAVA_HOME}/../.." && pwd -P)"
@@ -913,6 +847,11 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # hashes every resolved component and fails closed if any formula has drifted.
   install_pinned_node26_closure tahoe
   install_pinned_formula \
+    "cmake" "4.4.0" \
+    "b189098af6b85e6dcdd34d5b6b95d8c1b34adbc3" \
+    "Formula/c/cmake.rb" \
+    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"
+  install_pinned_formula \
     "dotnet" "10.0.301" \
     "12d2ab0af5e553745d065e02d444f8985983c03a" \
     "Formula/d/dotnet.rb" \
@@ -927,6 +866,16 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
     "a2577b1c0ea25dd77e22a00515c8eb06d111ceff" \
     "Casks/f/flutter.rb" \
     "476d39d9cd9a9f2af485a61888dcdc646ca659b106b7d05a934e91efd3e62510"
+  # The cask contains flutter_tools/pubspec.lock but not its generated
+  # package_config.json. Materialize that exact locked graph before the route
+  # analyzer switches to offline/default-deny execution. The analyzer then
+  # re-hashes every package it loads and rejects lock or closure drift.
+  (
+    cd "${HOMEBREW_PREFIX}/share/flutter/packages/flutter_tools"
+    HOME="${PINNED_HOME}" \
+      "${HOMEBREW_PREFIX}/share/flutter/bin/cache/dart-sdk/bin/dart" \
+      pub get --enforce-lockfile
+  )
 fi
 
 readonly CAPTURE_ROOT="${REPOSITORY_ROOT}/routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime"
@@ -1042,6 +991,9 @@ fi
   printf 'ELMOS_BATCH29_PINNED_UV_PATH=%s\n' "${UV_PATH}"
   printf 'ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR=%s\n' "${PINNED_LOCAL}"
   printf 'ELMOS_POLYGLOT_ROUTE_CI_PROFILE=%s\n' "${CI_PROFILE}"
+  if [[ "${CI_PROFILE}" == "full" ]]; then
+    printf 'ELMOS_HOMEBREW_ROUTE_PROFILE_ID=%s\n' "${HOMEBREW_ROUTE_PROFILE_ID}"
+  fi
 } >>"${GITHUB_ENV}"
 if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin" >>"${GITHUB_PATH}"

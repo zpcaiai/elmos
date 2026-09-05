@@ -153,3 +153,17 @@ def test_java_shadowing_parameter_rejected(tmp_path: Path) -> None:
     semantic = analyze(source, "java", "total")
     with pytest.raises(RouteError, match="LET_NAME_ALREADY_BOUND:price"):
         types.check(semantic)
+
+
+def test_java_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> None:
+    source = tmp_path / "Subject.java"
+    source.write_text(
+        "public final class Subject { public static long calculate(long value) { return value; } }\n",
+        encoding="utf-8",
+    )
+
+    with pytest.raises(
+        RouteError,
+        match="^FUNCTION_NOT_FOUND:__elmos_missing_function__$",
+    ):
+        analyze(source, "java", "__elmos_missing_function__")

@@ -426,3 +426,28 @@ def test_native_scan_project_graph(tmp_path: Path) -> None:
     assert result["has_cycles"] is False
     assert len(result["topological_order"]) == 2
 
+
+def test_native_scan_project_graph_rejects_non_object_payload_and_frees_memory(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import ctypes
+
+    from elmos_polyglot_route import native_graph_bridge
+
+    payload = ctypes.create_string_buffer(b'["not", "a", "graph"]')
+
+    class FakeLibrary:
+        def __init__(self) -> None:
+            self.freed: list[int] = []
+
+        def elmos_scan_project_graph(self, _root: bytes, _max_files: int) -> int:
+            return ctypes.addressof(payload)
+
+        def elmos_free_string(self, pointer: int) -> None:
+            self.freed.append(pointer)
+
+    library = FakeLibrary()
+    monkeypatch.setattr(native_graph_bridge, "_get_lib", lambda: library)
+
+    assert native_graph_bridge.native_scan_project_graph("/bounded") is None
+    assert library.freed == [ctypes.addressof(payload)]

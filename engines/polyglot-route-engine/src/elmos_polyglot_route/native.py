@@ -35,7 +35,9 @@ from .models import (
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
 from .toolchains import (
+    AppleRouteHostProfile,
     ExactToolchain,
+    apple_route_host_profile,
     exact_toolchain,
     node_closure_profile_id,
     sanitized_subprocess_env,
@@ -710,6 +712,42 @@ _SWIFT_BUILD_TREE_SPECS: tuple[tuple[object, ...], ...] = (
         136_132,
     ),
 )
+
+
+def _apple_native_profile() -> AppleRouteHostProfile:
+    return apple_route_host_profile("swift")
+
+
+def _profiled_swift_build_component_specs() -> tuple[tuple[object, ...], ...]:
+    overrides = {
+        role: (sha256_value, byte_count)
+        for role, sha256_value, byte_count in _apple_native_profile().component_overrides
+    }
+    known_roles = {str(spec[0]) for spec in _SWIFT_BUILD_COMPONENT_SPECS}
+    if not set(overrides) <= known_roles:
+        raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:components")
+    return tuple(
+        (*spec[:4], *overrides[str(spec[0])], *spec[6:])
+        if str(spec[0]) in overrides
+        else spec
+        for spec in _SWIFT_BUILD_COMPONENT_SPECS
+    )
+
+
+def _profiled_swift_build_tree_specs() -> tuple[tuple[object, ...], ...]:
+    overrides = {
+        role: (sha256_value, file_count, byte_count)
+        for role, sha256_value, file_count, byte_count in _apple_native_profile().tree_overrides
+    }
+    known_roles = {str(spec[0]) for spec in _SWIFT_BUILD_TREE_SPECS}
+    if not set(overrides) <= known_roles:
+        raise RouteError("SWIFT_ANALYZER_BUILD_CLOSURE_PROFILE_INVALID:trees")
+    return tuple(
+        (*spec[:3], *overrides[str(spec[0])])
+        if str(spec[0]) in overrides
+        else spec
+        for spec in _SWIFT_BUILD_TREE_SPECS
+    )
 _SWIFT_ANALYZER_LOCK = threading.Lock()
 _SWIFT_ANALYZER_TEMPORARY: tempfile.TemporaryDirectory[str] | None = None
 _SWIFT_ANALYZER_BINARY: Path | None = None
@@ -1245,10 +1283,11 @@ def _capture_apple_git(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[dict[str, str], tuple[object, ...]]:
+    profile = _apple_native_profile()
     file_before, identity_before = _verified_swift_xcode_regular_file(
         _APPLE_GIT,
-        expected_sha256=_APPLE_GIT_SHA256,
-        expected_bytes=_APPLE_GIT_BYTES,
+        expected_sha256=profile.apple_git_sha256,
+        expected_bytes=profile.apple_git_bytes,
         failure="SWIFT_ANALYZER_GIT_PROVENANCE_MISMATCH",
     )
     version = _run_swift_build_step(
@@ -1260,8 +1299,8 @@ def _capture_apple_git(
     ).stdout.strip()
     file_after, identity_after = _verified_swift_xcode_regular_file(
         _APPLE_GIT,
-        expected_sha256=_APPLE_GIT_SHA256,
-        expected_bytes=_APPLE_GIT_BYTES,
+        expected_sha256=profile.apple_git_sha256,
+        expected_bytes=profile.apple_git_bytes,
         failure="SWIFT_ANALYZER_GIT_PROVENANCE_MISMATCH",
     )
     if file_before != file_after or identity_before != identity_after:
@@ -1362,6 +1401,7 @@ def _verified_swift_system_tool(
 
 
 def _verify_swift_sandbox_signature(root: Path, environment: dict[str, str]) -> None:
+    profile = _apple_native_profile()
     _run_swift_build_step(
         [str(_CODESIGN), "--verify", "--strict", str(_SANDBOX_EXEC)],
         cwd=root,
@@ -1381,7 +1421,7 @@ def _verify_swift_sandbox_signature(root: Path, environment: dict[str, str]) -> 
         "Identifier=com.apple.sandbox-exec" not in signature_lines
         or "Authority=Apple Root CA" not in signature_lines
         or "TeamIdentifier=not set" not in signature_lines
-        or f"CandidateCDHashFull sha256={_SANDBOX_EXEC_CDHASH_FULL}" not in signature_lines
+        or f"CandidateCDHashFull sha256={profile.sandbox_exec_cdhash_full}" not in signature_lines
     ):
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:sandbox-exec-signature")
 
@@ -1651,7 +1691,7 @@ def _swift_network_probe_sdk_identity() -> tuple[object, ...]:
 
 
 def _swift_network_probe_compiler_receipt() -> dict[str, Any]:
-    matches = [spec for spec in _SWIFT_BUILD_COMPONENT_SPECS if spec[0] == "clang"]
+    matches = [spec for spec in _profiled_swift_build_component_specs() if spec[0] == "clang"]
     if len(matches) != 1:
         raise RouteError("NETWORK_ISOLATION_NOT_RUN:probe-compiler")
     return _swift_build_component_receipt(matches[0], {})
@@ -1693,6 +1733,7 @@ def _verified_swift_network_isolation(
     root: Path,
     environment: dict[str, str],
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    profile = _apple_native_profile()
     policy_bytes = _SANDBOX_EXEC_POLICY.encode("utf-8")
     _require_swift_network_probe_build_environment(root, environment)
     source_bytes = _SANDBOX_NETWORK_PROBE_SOURCE.encode("utf-8")
@@ -1704,14 +1745,14 @@ def _verified_swift_network_isolation(
     try:
         sandbox_before, sandbox_identity_before = _verified_swift_system_tool(
             _SANDBOX_EXEC,
-            expected_sha256=_SANDBOX_EXEC_SHA256,
-            expected_bytes=_SANDBOX_EXEC_BYTES,
+            expected_sha256=profile.sandbox_exec_sha256,
+            expected_bytes=profile.sandbox_exec_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
         )
         verifier_before, verifier_identity_before = _verified_swift_system_tool(
             _CODESIGN,
-            expected_sha256=_CODESIGN_SHA256,
-            expected_bytes=_CODESIGN_BYTES,
+            expected_sha256=profile.codesign_sha256,
+            expected_bytes=profile.codesign_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
         )
         _verify_swift_sandbox_signature(root, environment)
@@ -1785,14 +1826,14 @@ def _verified_swift_network_isolation(
         )
         sandbox_after, sandbox_identity_after = _verified_swift_system_tool(
             _SANDBOX_EXEC,
-            expected_sha256=_SANDBOX_EXEC_SHA256,
-            expected_bytes=_SANDBOX_EXEC_BYTES,
+            expected_sha256=profile.sandbox_exec_sha256,
+            expected_bytes=profile.sandbox_exec_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
         )
         verifier_after, verifier_identity_after = _verified_swift_system_tool(
             _CODESIGN,
-            expected_sha256=_CODESIGN_SHA256,
-            expected_bytes=_CODESIGN_BYTES,
+            expected_sha256=profile.codesign_sha256,
+            expected_bytes=profile.codesign_bytes,
             failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
         )
         _verify_swift_sandbox_signature(root, environment)
@@ -1815,7 +1856,7 @@ def _verified_swift_network_isolation(
     receipt: dict[str, Any] = {
         "status": "PASSED",
         "scope": "swift-build-process-tree",
-        "sandbox": {**sandbox_after, "cdhash_full": _SANDBOX_EXEC_CDHASH_FULL},
+        "sandbox": {**sandbox_after, "cdhash_full": profile.sandbox_exec_cdhash_full},
         "verifier": verifier_after,
         "policy": {
             "text": _SANDBOX_EXEC_POLICY,
@@ -1862,6 +1903,7 @@ def _require_current_swift_network_execution_identity(
     root: Path,
     environment: dict[str, str],
 ) -> None:
+    profile = _apple_native_profile()
     _require_swift_network_probe_build_environment(root, environment)
     expected_keys = {
         "policy_sha256",
@@ -1882,14 +1924,14 @@ def _require_current_swift_network_execution_identity(
     policy_sha256 = "sha256:" + hashlib.sha256(policy_bytes).hexdigest()
     sandbox_before, sandbox_identity_before = _verified_swift_system_tool(
         _SANDBOX_EXEC,
-        expected_sha256=_SANDBOX_EXEC_SHA256,
-        expected_bytes=_SANDBOX_EXEC_BYTES,
+        expected_sha256=profile.sandbox_exec_sha256,
+        expected_bytes=profile.sandbox_exec_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
     )
     verifier_before, verifier_identity_before = _verified_swift_system_tool(
         _CODESIGN,
-        expected_sha256=_CODESIGN_SHA256,
-        expected_bytes=_CODESIGN_BYTES,
+        expected_sha256=profile.codesign_sha256,
+        expected_bytes=profile.codesign_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
     )
     _verify_swift_sandbox_signature(root, environment)
@@ -1922,14 +1964,14 @@ def _require_current_swift_network_execution_identity(
     )
     sandbox_after, sandbox_identity_after = _verified_swift_system_tool(
         _SANDBOX_EXEC,
-        expected_sha256=_SANDBOX_EXEC_SHA256,
-        expected_bytes=_SANDBOX_EXEC_BYTES,
+        expected_sha256=profile.sandbox_exec_sha256,
+        expected_bytes=profile.sandbox_exec_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:sandbox-exec-provenance",
     )
     verifier_after, verifier_identity_after = _verified_swift_system_tool(
         _CODESIGN,
-        expected_sha256=_CODESIGN_SHA256,
-        expected_bytes=_CODESIGN_BYTES,
+        expected_sha256=profile.codesign_sha256,
+        expected_bytes=profile.codesign_bytes,
         failure="NETWORK_ISOLATION_NOT_RUN:codesign-provenance",
     )
     _verify_swift_sandbox_signature(root, environment)
@@ -3865,8 +3907,14 @@ def _swift_build_closure_receipt() -> dict[str, Any]:
         "scope": _SWIFT_BUILD_CLOSURE_SCOPE,
         "compiler_runtime_soundness": "NOT_RUN",
         "certification": "NOT_CERTIFIED",
-        "components": [_swift_build_component_receipt(spec, content_cache) for spec in _SWIFT_BUILD_COMPONENT_SPECS],
-        "trees": [_swift_build_tree_receipt(spec) for spec in _SWIFT_BUILD_TREE_SPECS],
+        "components": [
+            _swift_build_component_receipt(spec, content_cache)
+            for spec in _profiled_swift_build_component_specs()
+        ],
+        "trees": [
+            _swift_build_tree_receipt(spec)
+            for spec in _profiled_swift_build_tree_specs()
+        ],
     }
 
 
@@ -8097,7 +8145,7 @@ def analyze(
             ),
             receipt,
         )
-        return SemanticIR.from_mapping(value)
+        return _external_semantic_ir(value)
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         arguments = [str(source), function_name]

@@ -72,7 +72,7 @@ class RuntimeOperabilityTests(unittest.TestCase):
 
     def test_spring_capability_response_never_outpaces_exact_route_evidence(self) -> None:
         source = (
-            ROOT / "apps/web-console/app/api/capabilities/spring/route.ts"
+            ROOT / "apps/web-console/app/api/capabilities/spring/_route.ts"
         ).read_text(encoding="utf-8")
 
         self.assertIn('build: "Maven 3.9.11"', source)
@@ -173,6 +173,41 @@ class RuntimeOperabilityTests(unittest.TestCase):
         invalid = copy.deepcopy(valid)
         invalid["management"]["endpoint"]["health"]["probes"]["enabled"] = False
         self.assertTrue(any("probes.enabled" in error for error in validate_service_config("test", invalid)))
+
+    def test_prometheus_exposure_is_scoped_to_the_spring_worker(self) -> None:
+        valid = {
+            "server": {
+                "port": "${ELMOS_JAVA_WORKER_PORT:8083}",
+                "shutdown": "graceful",
+                "error": {
+                    "include-message": "never",
+                    "include-binding-errors": "never",
+                    "include-stacktrace": "never",
+                },
+            },
+            "spring": {
+                "application": {"name": "elmos-java-engine-worker"},
+                "lifecycle": {"timeout-per-shutdown-phase": "${ELMOS_SHUTDOWN_TIMEOUT:30s}"},
+                "mvc": {"problemdetails": {"enabled": True}},
+            },
+            "management": {
+                "endpoint": {
+                    "health": {
+                        "probes": {"enabled": True, "add-additional-paths": True},
+                        "show-details": "never",
+                    }
+                },
+                "endpoints": {"web": {"exposure": {"include": "health,info,prometheus"}}},
+            },
+        }
+        worker_path = "apps/java-engine-worker/src/main/resources/application.yml"
+        self.assertEqual([], validate_service_config(worker_path, valid))
+        self.assertTrue(
+            any(
+                "EXACT_INTERNAL_ENDPOINTS_REQUIRED:health,info" in error
+                for error in validate_service_config("test/application.yml", valid)
+            )
+        )
 
     def test_production_database_credentials_cannot_have_defaults(self) -> None:
         valid = {

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sandbox Security Boundary"
+  short_description: "Review untrusted customer code execution and sandbox policies"
+  default_prompt: "Use $sandbox-security-boundary for any ELMOS feature that could execute customer code or expose credentials or networks."

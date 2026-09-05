@@ -102,6 +102,14 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             installer,
         )
         self.assertIn('done <<<"${installed_formula_inventory}"', installer)
+        self.assertIn('if token == "openssl@3":', installer)
+        self.assertIn('if source.count(overwrite) != 1:', installer)
+        self.assertIn('source.replace(overwrite, "force: true", 1)', installer)
+        self.assertIn(
+            "libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|"
+            "9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c",
+            installer,
+        )
 
         node_inventory_block = (
             '  if [[ "${token}" == "node" ]]; then'
@@ -227,17 +235,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('source.get("spec") == "stable"', frontend_job)
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
-            "20260727.0256.1",
-            "15.7.7",
-            "24G720",
             "20260829.0321.1",
             "15.7.9",
             "24G830",
-            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
-            "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
-            "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
-            "3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-            "30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
             "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
             "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
             "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
@@ -290,7 +290,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('test "$(command -v openssl)" = "${openssl_bin}"', frontend_job)
         for step in (root_seal_step, bind_step):
             self.assertIn(
-                '"15.7.7|24G720"|"15.7.9|24G830"',
+                'test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"',
+                step,
+            )
+            self.assertIn(
+                'test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"',
                 step,
             )
 
@@ -563,6 +567,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "  polyglot-route-engine-core:", 1
         )[0]
         cargo_fetch = route_engine_job.index("cargo fetch")
+        native_core_build = route_engine_job.index(
+            "--manifest-path native/rust-core/Cargo.toml"
+        )
         private_environment = route_engine_job.index(
             "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv"
         )
@@ -575,9 +582,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         core_partition = route_engine_job.index(
             "all_test_files = sorted(tests_root.rglob(\"test_*.py\"))"
         )
-        apple_diagnostic = route_engine_job.index(
-            "python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py"
+        diagnostic_command = (
+            'python -I -B "${GITHUB_WORKSPACE}/scripts/toolchains/'
+            'diagnose_apple_route_ci.py"'
         )
+        apple_diagnostic = route_engine_job.index(diagnostic_command)
         host_preparation = route_engine_job.index(
             "scripts/toolchains/prepare_apple_route_ci_host.sh"
         )
@@ -588,16 +597,17 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         all_route_jobs = route_pack_job + route_workers
 
         self.assertLess(cargo_fetch, core_partition)
+        self.assertLess(cargo_fetch, native_core_build)
+        self.assertLess(native_core_build, core_partition)
         self.assertLess(private_environment, route_sync)
         self.assertLess(route_sync, closure_tests)
         self.assertLess(closure_tests, core_partition)
         self.assertLess(host_preparation, apple_diagnostic)
+        self.assertLess(route_sync, apple_diagnostic)
         self.assertLess(apple_diagnostic, route_provision)
         self.assertLess(apple_diagnostic, closure_tests)
         self.assertEqual(
-            route_workers.count(
-                "python3 -I -B scripts/toolchains/diagnose_apple_route_ci.py"
-            ),
+            route_workers.count(diagnostic_command),
             2,
         )
         self.assertEqual(route_workers.count("--verify-jsonl"), 1)
@@ -697,13 +707,43 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         matrix = route_pack_job.index(
             "python scripts/operations/validate_translation_route_matrix.py"
         )
+        active_route_execution = route_pack_job.index(
+            "--route-set nine-language-complete-72"
+        )
+        php_route_execution = route_pack_job.index(
+            "--route-set php-php85-active-completion-18"
+        )
         route_gates = route_pack_job.index(
-            'python scripts/batch29/run_route_gate.py "$route"'
+            "from route_sets import CORE_ROUTE_KEYS, V3_EXACT_ROUTE_KEYS"
+        )
+        active_route_set = route_pack_job.index(
+            "--verify-route-set thirteen-language-complete-156"
+        )
+        historical_route_set = route_pack_job.index(
+            "--verify-route-set eleven-language-complete-110"
         )
         self.assertIn("timeout-minutes: 360", route_pack_job)
         self.assertLess(route_pack_sync, batch29)
         self.assertLess(batch29, matrix)
-        self.assertLess(matrix, route_gates)
+        self.assertLess(matrix, active_route_execution)
+        self.assertLess(active_route_execution, php_route_execution)
+        self.assertLess(php_route_execution, route_gates)
+        self.assertLess(route_gates, active_route_set)
+        self.assertLess(active_route_set, historical_route_set)
+        self.assertIn(
+            '[sys.executable, str(gate), str(Path("routes") / route_key)]',
+            route_pack_job,
+        )
+        self.assertIn(
+            "for route_key in (*CORE_ROUTE_KEYS, *V3_EXACT_ROUTE_KEYS)",
+            route_pack_job,
+        )
+        self.assertNotIn("for route in routes/*/", route_pack_job)
+        self.assertEqual(all_route_jobs.count("swift package resolve"), 3)
+        self.assertEqual(
+            all_route_jobs.count("git diff --exit-code -- Package.resolved"),
+            3,
+        )
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)

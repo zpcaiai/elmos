@@ -25,9 +25,9 @@ LIBCRYPTO: Final = Path(
 EXPECTED_VERSION: Final = (
     "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
 )
-EXPECTED_IMAGE: tuple[str, str] = ("macos15", "20260829.0321.1")
-EXPECTED_MACOS_PRODUCT_VERSION = "15.7.9"
-EXPECTED_MACOS_BUILD_VERSION = "24G830"
+EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
+EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
+EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
 OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
 
@@ -90,7 +90,7 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 878_752,
-        "sha256": "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
+        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
     },
     LIBSSL: {
         "role": "libssl",
@@ -99,7 +99,7 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 887_984,
-        "sha256": "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
+        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -108,7 +108,7 @@ _LEGACY_UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 4_870_832,
-        "sha256": "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
+        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
     },
 }
 
@@ -154,9 +154,9 @@ _LEGACY_SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CMSDigest=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CDHash=3e4544b02a72a69188b14e6bbc0b04a2ee41649e",
+        "CandidateCDHashFull sha256=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
+        "CMSDigest=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
+        "CDHash=b2920ada65fae0087ed680e1cfc58c8e21a20a9a",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -167,9 +167,9 @@ _LEGACY_SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
-        "CMSDigest=30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
-        "CDHash=30bbb115d12435513d93702de62223c174b52194",
+        "CandidateCDHashFull sha256=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
+        "CMSDigest=a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
+        "CDHash=a8f03e63667ae72e9928cafa28a677fe8cafd9c0",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -717,14 +717,22 @@ def _seal_runtime() -> dict[str, object]:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
     opt_link_before = _opt_link_receipt(UNSEALED_OPT_LINK_PROFILE)
-    files_before = tuple(
-        _stable_file_receipt(
-            path,
-            UNSEALED_FILE_PROFILES,
-            validate_parent_chain=False,
-        )
-        for path in UNSEALED_FILE_PROFILES
-    )
+    file_receipts: list[dict[str, object]] = []
+    file_identity_errors: list[str] = []
+    for path in UNSEALED_FILE_PROFILES:
+        try:
+            file_receipts.append(
+                _stable_file_receipt(
+                    path,
+                    UNSEALED_FILE_PROFILES,
+                    validate_parent_chain=False,
+                )
+            )
+        except RuntimeError as error:
+            file_identity_errors.append(str(error))
+    if file_identity_errors:
+        raise RuntimeError("\n".join(file_identity_errors))
+    files_before = tuple(file_receipts)
     directory_initial = {
         Path(str(receipt["path"])): receipt for receipt in directories_before
     }
@@ -790,7 +798,26 @@ def _codesign_receipt(path: Path) -> dict[str, object]:
     expected = SIGNATURE_PROFILES.get(path)
     if expected is not None and not expected.issubset(lines):
         missing = sorted(expected - lines)
-        raise RuntimeError(f"OpenSSL signature identity mismatch for {path}: {missing!r}")
+        identity_prefixes = (
+            "Identifier=",
+            "Format=",
+            "CodeDirectory ",
+            "Hash type=",
+            "CandidateCDHashFull ",
+            "CMSDigest=",
+            "CDHash=",
+            "Signature=",
+            "TeamIdentifier=",
+            "Sealed Resources=",
+            "Internal requirements ",
+        )
+        observed = sorted(
+            line for line in lines if line.startswith(identity_prefixes)
+        )
+        raise RuntimeError(
+            f"OpenSSL signature identity mismatch for {path}: "
+            f"missing={missing!r} observed={observed!r}"
+        )
     return {"path": str(path), "details": sorted(expected or ())}
 
 
