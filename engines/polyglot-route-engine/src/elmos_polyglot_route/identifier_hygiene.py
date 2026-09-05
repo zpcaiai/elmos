@@ -1052,6 +1052,9 @@ def plan_identifiers(
 
     if ir.diagnostics:
         raise RouteError("IDENTIFIER_SOURCE_DIAGNOSTICS_PRESENT")
+    source_function_names = [function.name for function in ir.functions]
+    if len(set(source_function_names)) != len(source_function_names):
+        raise RouteError("IDENTIFIER_SOURCE_FUNCTION_DUPLICATED")
     types.check(ir)
     policy = policy_for_language(target_language)
     source_ir_sha256 = _source_ir_digest(ir)
@@ -1067,9 +1070,6 @@ def plan_identifiers(
             "unit_namespace_sha256": selected_namespace.digest,
         }
     )
-    source_function_names = [function.name for function in ir.functions]
-    if len(set(source_function_names)) != len(source_function_names):
-        raise RouteError("IDENTIFIER_SOURCE_FUNCTION_DUPLICATED")
 
     bindings: list[IdentifierBinding] = []
     function_bindings: list[IdentifierBinding] = []

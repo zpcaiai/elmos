@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any
 
 from .assembly import (
+    _UNIT_ID_PATTERN,
     assemble_project,
     verify_archived_assembly_closure,
     verify_assembled_project,
@@ -198,8 +199,10 @@ def _cases_manifest(cases: Path, plan: dict[str, Any]) -> tuple[dict[str, Any], 
     inventory.sort(key=lambda item: str(item["path"]))
     by_path = {str(item["path"]): item for item in inventory}
     expected: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
     for unit in plan.get("work_units", []):
         unit_id = str(unit.get("id", ""))
+        seen_ids.add(unit_id)
         relative = f"{unit_id}.json"
         entry = by_path.get(relative)
         expected.append(
@@ -211,6 +214,21 @@ def _cases_manifest(cases: Path, plan: dict[str, Any]) -> tuple[dict[str, Any], 
                 "sha256": entry["sha256"] if entry else None,
             }
         )
+    for item in inventory:
+        relative = str(item["path"])
+        if relative.endswith(".json") and "/" not in relative:
+            unit_id = relative[:-5]
+            if unit_id not in seen_ids and _UNIT_ID_PATTERN.fullmatch(unit_id):
+                seen_ids.add(unit_id)
+                expected.append(
+                    {
+                        "work_unit_id": unit_id,
+                        "path": relative,
+                        "status": "PRESENT",
+                        "bytes": item["bytes"],
+                        "sha256": item["sha256"],
+                    }
+                )
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "kind": "elmos.behavior-cases-manifest",
