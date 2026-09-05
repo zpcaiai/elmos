@@ -102,14 +102,14 @@
     },
     {
       "claimId": "b40-dependabot-alert-status",
-      "statement": "The GitHub Dependabot snapshot for zpcaiai/elmos at commit ecc29d1dacc72aae413822455a5205fde6115fb2 contains 0 open alerts out of 289 total alerts; critical open alerts: 0; high open alerts: 0.",
+      "statement": "The GitHub Dependabot snapshot for zpcaiai/elmos at commit c30b3297457b5dd1312ba2b6fb0ea7d744971395 contains 0 open alerts out of 290 total alerts; critical open alerts: 0; high open alerts: 0.",
       "scope": {
         "repository": "zpcaiai/elmos",
-        "commit": "ecc29d1dacc72aae413822455a5205fde6115fb2",
-        "alertCount": 289,
+        "commit": "c30b3297457b5dd1312ba2b6fb0ea7d744971395",
+        "alertCount": 290,
         "stateCounts": {
           "dismissed": 108,
-          "fixed": 181
+          "fixed": 182
         },
         "openBySeverity": {
           "critical": 0,
