@@ -877,7 +877,6 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
             "binary": copy.deepcopy(binary),
         },
     }
-    bind_swift_receipt_to_selected_host_profile(validator, receipt)
     canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
     receipt["canonical_identity"] = {
         "sha256": validator._receipt_payload_sha256(canonical),
@@ -896,6 +895,16 @@ def bind_swift_receipt_to_selected_host_profile(
     profile = profile or validator._selected_swift_host_profile()
     if profile is None:
         raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    toolchain_profile = receipt["toolchain"]["profile"]
+    receipt["toolchain"]["profile"] = [
+        toolchain_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *[
+            item
+            for item in toolchain_profile[1:]
+            if not item.startswith("apple-host-profile=")
+        ],
+    ]
     receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["dependency"]["mirror"]["git"] = {
