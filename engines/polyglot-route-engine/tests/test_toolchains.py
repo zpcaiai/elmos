@@ -26,9 +26,19 @@ def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
     )
 
     assert legacy.profile_id == "github-macos26-20260728.0273.1"
-    assert legacy.swiftc_sha256 != current.swiftc_sha256
-    assert legacy.apple_git_sha256 != current.apple_git_sha256
+    assert current.profile_id == "github-macos26-20260831.0337.3"
+    assert legacy.swiftc_sha256 == current.swiftc_sha256
+    assert legacy.apple_git_sha256 == current.apple_git_sha256
     assert legacy.sandbox_exec_sha256 != current.sandbox_exec_sha256
+
+    local = toolchains._select_apple_route_host_profile(
+        image_version="",
+        product_version="26.6.2",
+        build_version="25G83",
+        xcode="Xcode 26.6\nBuild version 17F113",
+    )
+    assert local.profile_id == "local-macos26-20260904"
+    assert local.swiftc_sha256 != current.swiftc_sha256
 
     sanitized_child = toolchains._select_apple_route_host_profile(
         image_version="",

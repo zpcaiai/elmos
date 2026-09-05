@@ -3542,11 +3542,28 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     )
 
     toolchain = receipt.get("toolchain")
-    swiftc_sha256 = toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None
+    dependency = receipt.get("dependency")
+    mirror = dependency.get("mirror") if isinstance(dependency, dict) else None
+    git = mirror.get("git") if isinstance(mirror, dict) else None
+    network = receipt.get("network_isolation")
+    sandbox = network.get("sandbox") if isinstance(network, dict) else None
+    verifier = network.get("verifier") if isinstance(network, dict) else None
+    observed_identity = (
+        toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
+        git.get("sha256") if isinstance(git, dict) else None,
+        sandbox.get("sha256") if isinstance(sandbox, dict) else None,
+        verifier.get("sha256") if isinstance(verifier, dict) else None,
+    )
     matches = tuple(
         profile
         for profile in _APPLE_ROUTE_HOST_PROFILES
-        if "sha256:" + profile.swiftc_sha256 == swiftc_sha256
+        if (
+            "sha256:" + profile.swiftc_sha256,
+            "sha256:" + profile.apple_git_sha256,
+            "sha256:" + profile.sandbox_exec_sha256,
+            "sha256:" + profile.codesign_sha256,
+        )
+        == observed_identity
     )
     if len(matches) != 1:
         raise ValueError("receipt does not select one registered Apple host profile")

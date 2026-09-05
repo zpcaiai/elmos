@@ -3845,9 +3845,13 @@ class AppleRouteHostProfile:
     codesign_bytes: int
 
 
-_APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
-    profile_id="github-macos26-20260831.0337.3",
-    image_version="20260831.0337.3",
+# The locally installed 26.6 bundle and GitHub's 26.6 runner bundle report the
+# same marketing version but are different byte closures.  Keep them as whole,
+# non-interchangeable profiles; receipt matching below also includes the Xcode
+# Git and OS signing-tool identities so a hybrid cannot select either profile.
+_APPLE_ROUTE_LOCAL_PROFILE = AppleRouteHostProfile(
+    profile_id="local-macos26-20260904",
+    image_version="",
     product_version="26.6.2",
     build_version="25G83",
     xcode=_EXPECTED_XCODE,
@@ -3921,9 +3925,30 @@ _APPLE_ROUTE_LEGACY_PROFILE = AppleRouteHostProfile(
     codesign_bytes=459_824,
 )
 
+_APPLE_ROUTE_CURRENT_PROFILE = AppleRouteHostProfile(
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
+    product_version="26.6.2",
+    build_version="25G83",
+    xcode=_EXPECTED_XCODE,
+    macos_sdk=_EXPECTED_MACOS_SDK,
+    clang_sha256=_APPLE_ROUTE_LEGACY_PROFILE.clang_sha256,
+    swiftc_sha256=_APPLE_ROUTE_LEGACY_PROFILE.swiftc_sha256,
+    component_overrides=_APPLE_ROUTE_LEGACY_PROFILE.component_overrides,
+    tree_overrides=_APPLE_ROUTE_LEGACY_PROFILE.tree_overrides,
+    apple_git_sha256=_APPLE_ROUTE_LEGACY_PROFILE.apple_git_sha256,
+    apple_git_bytes=_APPLE_ROUTE_LEGACY_PROFILE.apple_git_bytes,
+    sandbox_exec_sha256=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_sha256,
+    sandbox_exec_cdhash_full=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_cdhash_full,
+    sandbox_exec_bytes=_APPLE_ROUTE_LOCAL_PROFILE.sandbox_exec_bytes,
+    codesign_sha256=_APPLE_ROUTE_LOCAL_PROFILE.codesign_sha256,
+    codesign_bytes=_APPLE_ROUTE_LOCAL_PROFILE.codesign_bytes,
+)
+
 _APPLE_ROUTE_HOST_PROFILES = (
     _APPLE_ROUTE_LEGACY_PROFILE,
     _APPLE_ROUTE_CURRENT_PROFILE,
+    _APPLE_ROUTE_LOCAL_PROFILE,
 )
 
 
@@ -3945,6 +3970,13 @@ def _select_apple_route_host_profile(
         == (product_version, build_version, xcode)
         and (not image_version or profile.image_version == image_version)
     )
+    if not image_version:
+        # A sanitized local child has no GitHub image identity.  Prefer the
+        # explicit local closure when the OS tuple otherwise overlaps a hosted
+        # image; older tuples with only one registered profile remain valid.
+        local_matches = tuple(profile for profile in matches if not profile.image_version)
+        if local_matches:
+            matches = local_matches
     if len(matches) != 1:
         observed = "/".join(
             (image_version, product_version, build_version, xcode.replace("\n", "/"))
