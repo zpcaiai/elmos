@@ -503,17 +503,14 @@ def test_ci_java_profiles_never_mutate_or_inject_a_homebrew_signature() -> None:
     assert 'ELMOS_JAVA21_HOME="${TEMURIN_JAVA_HOME}"' in installer
     assert 'ELMOS_JAVA21_DISTRIBUTION=temurin' in installer
     assert (
-        'readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/'
-        '21.0.11-10.0/arm64/Contents/Home"'
+        '"20260728.0273.1:26.5.2:25F84:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"'
     ) in installer
     assert (
-        'readonly TEMURIN_JAVA_HOME_LTS_SUFFIX="Java_Temurin-Hotspot_jdk/'
-        '21.0.11-10.0.LTS/arm64/Contents/Home"'
+        '"20260831.0337.3:26.6.2:25G83:/Users/runner/hostedtoolcache/'
+        'Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"'
     ) in installer
-    assert (
-        '"${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_SUFFIX} \\\n'
-        '    && "${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_LTS_SUFFIX}'
-    ) in installer
+    assert 'case "${TEMURIN_HOST_BINDING}" in' in installer
     assert homebrew_install in installer
     assert all(
         marker not in installer

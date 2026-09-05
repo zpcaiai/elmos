@@ -37,7 +37,7 @@ test("deployed console renders its critical public routes", async ({ page }, tes
   expect(compatibilityResponse?.status()).toBe(200);
   expect(compatibilityResponse?.headers()["content-type"] ?? "").toContain("text/html");
   expect(new URL(page.url()).pathname).toBe("/capabilities");
-  await expect(page.getByRole("heading", { name: "功能能力中心" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "平台已实现的功能", level: 1 })).toBeVisible();
 
   const generationCapability = await page.request.get("/api/capabilities/generation");
   expect(generationCapability.status()).toBe(200);
