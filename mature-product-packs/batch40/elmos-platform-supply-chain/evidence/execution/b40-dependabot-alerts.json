@@ -1,52 +1,110 @@
 {
   "check": "batch40-dependabot-alerts",
   "batch": 40,
-  "status": "BLOCKED",
+  "status": "PASS",
   "repository": "zpcaiai/elmos",
-  "commit": "4fc2678d7c411c54ae8f35e35ad7a25e6e9644aa",
+  "commit": "ecc29d1dacc72aae413822455a5205fde6115fb2",
   "endpoint": "https://api.github.com/repos/zpcaiai/elmos/dependabot/alerts",
-  "queriedAt": "2026-08-31T04:00:15.520000Z",
+  "queriedAt": "2026-09-05T03:32:32Z",
   "replayCommand": "gh api repos/zpcaiai/elmos/dependabot/alerts --paginate --slurp",
-  "inputSha256": "sha256:d013927ffa7d16aed2611dd9c735e2b9924ac25d510bd569ac8051385e0a1bde",
-  "alertCount": 277,
+  "inputSha256": "sha256:6db313e81ca4c77df4dfb4e2268e34ba3a7c4ac7077055cc9c1c205a1048b70b",
+  "alertCount": 289,
   "stateCounts": {
-    "dismissed": 129,
-    "fixed": 147,
-    "open": 1
+    "dismissed": 108,
+    "fixed": 181
   },
-  "openCount": 1,
+  "openCount": 0,
   "openBySeverity": {
     "critical": 0,
     "high": 0,
     "low": 0,
-    "medium": 1
+    "medium": 0
   },
   "maxOpen": 0,
   "metrics": {
     "criticalVulnerabilityCount": 0,
     "highVulnerabilityCount": 0
   },
-  "openAlerts": [
-    {
-      "number": 31,
-      "state": "open",
-      "package": "pytest",
-      "manifestPath": "engines/project-synthesis-engine/uv.lock",
-      "severity": "medium",
-      "ghsaId": "GHSA-6w46-j5rx-g56g",
-      "vulnerableVersionRange": "< 9.0.3",
-      "firstPatchedVersion": "9.0.3"
-    }
-  ],
-  "blockers": [
-    "open Dependabot alert #31 medium pytest (engines/project-synthesis-engine/uv.lock)"
-  ],
+  "openAlerts": [],
+  "blockers": [],
   "limitations": [
     "This is an exact GitHub Dependabot alert API snapshot, not a complete build-graph SCA result.",
     "A clean snapshot does not prove that unreported, unreachable, or non-GitHub advisories do not exist.",
     "The snapshot is self-attested evidence until an independently authorized verifier signs it."
   ],
   "alerts": [
+    {
+      "number": 292,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 290,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 289,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/uv.lock"
+    },
+    {
+      "number": 288,
+      "state": "dismissed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 287,
+      "state": "dismissed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 286,
+      "state": "dismissed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 285,
+      "state": "fixed",
+      "package": "@xmldom/xmldom",
+      "manifestPath": "apps/web-console/pnpm-lock.yaml"
+    },
+    {
+      "number": 284,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/formal-assurance-engine/pyproject.toml"
+    },
+    {
+      "number": 283,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
+    },
+    {
+      "number": 280,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
+    },
+    {
+      "number": 279,
+      "state": "fixed",
+      "package": "cryptography",
+      "manifestPath": "engines/functional-assurance-engine/uv.lock"
+    },
+    {
+      "number": 278,
+      "state": "dismissed",
+      "package": "deepmerge-ts",
+      "manifestPath": "client-packs/web-console-next16-react19-wechat-v1/source-snapshots/files/apps/web-console/pnpm-lock.yaml"
+    },
     {
       "number": 277,
       "state": "fixed",
@@ -565,31 +623,31 @@
     },
     {
       "number": 191,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
       "number": 190,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
       "number": 189,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
     },
     {
       "number": 188,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
     },
     {
       "number": 187,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "deepmerge-ts",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
@@ -601,13 +659,13 @@
     },
     {
       "number": 185,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
     },
     {
       "number": 184,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v2/formal-campaign/engine-verifier/package.json"
     },
@@ -619,31 +677,31 @@
     },
     {
       "number": 182,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "nanoid",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 181,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 180,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 179,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
     },
     {
       "number": 178,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "verification-packs/frontend-72-route-formal-equivalence-v1/formal-campaign/implementation/package.json"
     },
@@ -877,7 +935,7 @@
     },
     {
       "number": 139,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "pytest",
       "manifestPath": "routes/java-to-csharp/certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/uv.lock"
     },
@@ -1081,31 +1139,31 @@
     },
     {
       "number": 105,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
       "number": 104,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/pnpm-lock.yaml"
     },
     {
       "number": 103,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
     },
     {
       "number": 102,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/engines/frontend-client-engine/package.json"
     },
     {
       "number": 101,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "deepmerge-ts",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/implementation/apps/web-console/pnpm-lock.yaml"
     },
@@ -1117,13 +1175,13 @@
     },
     {
       "number": 99,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
     },
     {
       "number": 98,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v2/formal-campaign/engine-verifier/package.json"
     },
@@ -1135,31 +1193,31 @@
     },
     {
       "number": 96,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "nanoid",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 95,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 94,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/pnpm-lock.yaml"
     },
     {
       "number": 93,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
     },
     {
       "number": 92,
-      "state": "dismissed",
+      "state": "fixed",
       "package": "vue-template-compiler",
       "manifestPath": "client-packs/frontend-72-route-equivalence-v1/formal-campaign/implementation/package.json"
     },
@@ -1525,13 +1583,9 @@
     },
     {
       "number": 31,
-      "state": "open",
+      "state": "fixed",
       "package": "pytest",
-      "manifestPath": "engines/project-synthesis-engine/uv.lock",
-      "severity": "medium",
-      "ghsaId": "GHSA-6w46-j5rx-g56g",
-      "vulnerableVersionRange": "< 9.0.3",
-      "firstPatchedVersion": "9.0.3"
+      "manifestPath": "engines/project-synthesis-engine/uv.lock"
     },
     {
       "number": 30,
