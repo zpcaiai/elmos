@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Webhook Ingestion"
+  short_description: "Verify and deduplicate GitHub webhooks"
+  default_prompt: "Use $github-webhook-ingestion to implement or review this ELMOS Batch 2 capability."

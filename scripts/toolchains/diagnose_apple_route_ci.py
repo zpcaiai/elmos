@@ -36,6 +36,10 @@ EXPECTED_IMAGE_OS = "macos26"
 EXPECTED_IMAGE_VERSION = "20260728.0273.1"
 EXPECTED_PRODUCT_VERSION = "26.5.2"
 EXPECTED_BUILD_VERSION = "25F84"
+EXPECTED_HOST_PROFILES = {
+    EXPECTED_IMAGE_VERSION: (EXPECTED_PRODUCT_VERSION, EXPECTED_BUILD_VERSION),
+    "20260831.0337.3": ("26.6.2", "25G83"),
+}
 HOSTED_SOURCE_XCODE_APP = Path("/Applications/Xcode_26.6.app")
 EXPECTED_XCODE_APP = Path("/Applications/Xcode.app")
 EXPECTED_XCODE_VERSION = "Xcode 26.6\nBuild version 17F113\n"
@@ -62,6 +66,15 @@ _UNSET = object()
 
 class DiagnosticError(RuntimeError):
     """Raised when a live path is unsafe, unreadable, or changes during capture."""
+
+
+def _expected_host_versions(image_version: object) -> tuple[str, str]:
+    if not isinstance(image_version, str):
+        raise DiagnosticError("Apple route image version is invalid")
+    expected = EXPECTED_HOST_PROFILES.get(image_version)
+    if expected is None:
+        raise DiagnosticError("Apple route image version is not allowlisted")
+    return expected
 
 
 def _identity(metadata: os.stat_result) -> tuple[int, ...]:
@@ -1218,11 +1231,13 @@ def _validate_diagnostic_records(
         raise DiagnosticError("Apple route diagnostic exact inventory is incomplete")
 
     environment = records[0]
+    expected_product_version, expected_build_version = _expected_host_versions(
+        environment.get("image_version")
+    )
     if (
         environment.get("image_os") != EXPECTED_IMAGE_OS
-        or environment.get("image_version") != EXPECTED_IMAGE_VERSION
-        or environment.get("product_version") != EXPECTED_PRODUCT_VERSION
-        or environment.get("build_version") != EXPECTED_BUILD_VERSION
+        or environment.get("product_version") != expected_product_version
+        or environment.get("build_version") != expected_build_version
         or environment.get("machine") != "arm64"
         or environment.get("validator_sha256") != validator_sha256
         or environment.get("xcode_version_stdout") != EXPECTED_XCODE_VERSION
@@ -1660,6 +1675,7 @@ def diagnose(repository_root: Path, *, skip_network_probe: bool) -> list[dict[st
     environment = {"LANG": "C", "LC_ALL": "C", "PATH": SYSTEM_PATH}
     cwd = repository_root.resolve(strict=True)
     script_sha256 = _script_sha256(repository_root)
+    image_version = os.environ.get("ImageVersion")
     if (
         os.environ.get("GITHUB_ACTIONS") != "true"
         or os.environ.get("RUNNER_ENVIRONMENT") != "github-hosted"
@@ -1667,7 +1683,7 @@ def diagnose(repository_root: Path, *, skip_network_probe: bool) -> list[dict[st
         or os.environ.get("ELMOS_APPLE_ROUTE_XCODE_PHYSICAL")
         != str(EXPECTED_XCODE_APP)
         or os.environ.get("ImageOS") != EXPECTED_IMAGE_OS
-        or os.environ.get("ImageVersion") != EXPECTED_IMAGE_VERSION
+        or image_version not in EXPECTED_HOST_PROFILES
         or os.uname().machine != "arm64"
     ):
         raise DiagnosticError("diagnostic requires the exact prepared GitHub host")
@@ -1746,9 +1762,12 @@ def diagnose(repository_root: Path, *, skip_network_probe: bool) -> list[dict[st
 
     selected_developer_identity = _path_identity(physical_developer)
     selected_sdk_identity = _path_identity(sdk_path)
+    expected_product_version, expected_build_version = _expected_host_versions(
+        image_version
+    )
     if (
-        product_version.stdout.strip() != EXPECTED_PRODUCT_VERSION
-        or build_version.stdout.strip() != EXPECTED_BUILD_VERSION
+        product_version.stdout.strip() != expected_product_version
+        or build_version.stdout.strip() != expected_build_version
         or xcode_version.stdout != EXPECTED_XCODE_VERSION
         or xcode_version.stderr
         or sdk_version.stdout.strip() != "26.5"

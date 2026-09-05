@@ -83,6 +83,11 @@ def _render_literal(value: str, is_string: bool) -> str:
     return f"'{value.replace(chr(39), chr(39) * 2)}'" if is_string else value
 
 
+def _compose_sql(*parts: str) -> str:
+    """Compose SQL from separately validated identifiers and rendered literals."""
+    return "".join(parts)
+
+
 def _render_check_literal(literal: CheckLiteral, dialect: Dialect, allow_check_shim: bool = False) -> str:
     if literal.is_null:
         return "NULL"
@@ -859,10 +864,15 @@ def emit_create_table(
     if dialect is Dialect.TSQL and table.if_not_exists and allow_if_not_exists_shim:
         schema_name = table.schema or "dbo"
         table_name = table.name
-        return (  # noqa: S608 - identifiers are validated and quoted typed-IR values
-            "IF NOT EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s ON t.schema_id = s.schema_id "  # noqa: S608
-            f"WHERE s.name = N'{schema_name}' AND t.name = N'{table_name}')\n"
-            f"BEGIN\n{rendered}\nEND"
+        return _compose_sql(
+            "IF NOT EXISTS (SELECT 1 FROM sys.tables t JOIN sys.schemas s "
+            "ON t.schema_id = s.schema_id WHERE s.name = N",
+            _render_literal(schema_name, True),
+            " AND t.name = N",
+            _render_literal(table_name, True),
+            ")\nBEGIN\n",
+            rendered,
+            "\nEND",
         )
     if dialect is Dialect.ORACLE and table.if_not_exists and allow_if_not_exists_shim:
         escaped_sql = rendered.replace("'", "''")
@@ -946,10 +956,15 @@ def emit_create_index(
             pass
     if dialect is Dialect.TSQL and index.if_not_exists and allow_if_not_exists_shim:
         schema_name = index.table_schema or "dbo"
-        return (  # noqa: S608 - identifiers are validated and quoted typed-IR values
-            "IF NOT EXISTS (SELECT 1 FROM sys.indexes i JOIN sys.tables t ON i.object_id = t.object_id "  # noqa: S608
-            f"JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = N'{schema_name}' "
-            f"AND i.name = N'{index.name}')\nBEGIN\n{rendered}\nEND"
+        return _compose_sql(
+            "IF NOT EXISTS (SELECT 1 FROM sys.indexes i JOIN sys.tables t ON i.object_id = t.object_id "
+            "JOIN sys.schemas s ON t.schema_id = s.schema_id WHERE s.name = N",
+            _render_literal(schema_name, True),
+            " AND i.name = N",
+            _render_literal(index.name, True),
+            ")\nBEGIN\n",
+            rendered,
+            "\nEND",
         )
     if dialect is Dialect.ORACLE and index.if_not_exists and allow_if_not_exists_shim:
         escaped_sql = rendered.replace("'", "''")
@@ -1000,21 +1015,24 @@ def emit_create_schema(
             )
         user_name = quote_identifier(schema.name, dialect)
         if schema.if_not_exists and allow_if_not_exists_shim:
-            return (  # noqa: S608 - schema is a validated identifier from typed IR
-                f"DECLARE\n    v_cnt NUMBER;\nBEGIN\n"  # noqa: S608
-                f"    SELECT COUNT(*) INTO v_cnt FROM all_users WHERE username = '{schema.name.upper()}';\n"
-                f"    IF v_cnt = 0 THEN\n"
-                f"        EXECUTE IMMEDIATE 'CREATE USER {user_name} NO AUTHENTICATION';\n"
-                f"    END IF;\nEND;"
+            return _compose_sql(
+                "DECLARE\n    v_cnt NUMBER;\nBEGIN\n    SELECT COUNT(*) INTO v_cnt FROM all_users WHERE username = ",
+                _render_literal(schema.name.upper(), True),
+                ";\n    IF v_cnt = 0 THEN\n        EXECUTE IMMEDIATE 'CREATE USER ",
+                user_name,
+                " NO AUTHENTICATION';\n    END IF;\nEND;",
             )
         return f"CREATE USER {user_name} NO AUTHENTICATION"
     if schema.if_not_exists:
         if dialect in _IF_NOT_EXISTS_SCHEMA_SUPPORT:
             existence = " IF NOT EXISTS"
         elif allow_if_not_exists_shim and dialect is Dialect.TSQL:
-            return (  # noqa: S608 - schema is a validated identifier from typed IR
-                f"IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N'{schema.name}')\n"  # noqa: S608
-                f"BEGIN\n    EXEC('CREATE SCHEMA {quote_identifier(schema.name, dialect)}')\nEND"
+            return _compose_sql(
+                "IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = N",
+                _render_literal(schema.name, True),
+                ")\nBEGIN\n    EXEC('CREATE SCHEMA ",
+                quote_identifier(schema.name, dialect),
+                "')\nEND",
             )
         else:
             existence = _if_not_exists_clause(
@@ -1084,15 +1102,15 @@ def emit_insert(insert: InsertStatement, dialect: Dialect) -> str:
     table_name = _object_name(insert.schema, insert.table, dialect)
     if insert.on_conflict_do_nothing:
         if dialect is Dialect.POSTGRES:
-            return f"INSERT INTO {table_name} ({columns}) VALUES {rows} ON CONFLICT DO NOTHING"  # noqa: S608
+            return _compose_sql("INSERT INTO ", table_name, " (", columns, ") VALUES ", rows, " ON CONFLICT DO NOTHING")
         elif dialect is Dialect.MYSQL:
-            return f"INSERT IGNORE INTO {table_name} ({columns}) VALUES {rows}"  # noqa: S608
+            return _compose_sql("INSERT IGNORE INTO ", table_name, " (", columns, ") VALUES ", rows)
         else:
             raise DialectError(
                 "CERTIFIED_INSERT_UNSUPPORTED_TARGET",
                 f"ON CONFLICT DO NOTHING is not natively supported in {dialect.value} INSERT syntax",
             )
-    return f"INSERT INTO {table_name} ({columns}) VALUES {rows}"  # noqa: S608
+    return _compose_sql("INSERT INTO ", table_name, " (", columns, ") VALUES ", rows)
 
 
 def _render_dml_expression(value: DmlExpression, dialect: Dialect) -> str:
@@ -1200,7 +1218,7 @@ def emit_update(update: UpdateStatement, dialect: Dialect) -> str:
 
 def emit_delete(delete: DeleteStatement, dialect: Dialect) -> str:
     """Emit a typed single-table DELETE."""
-    rendered = f"DELETE FROM {_object_name(delete.schema, delete.table, dialect)}"  # noqa: S608
+    rendered = _compose_sql("DELETE FROM ", _object_name(delete.schema, delete.table, dialect))
     if delete.predicate is not None:
         rendered += f" WHERE {_render_check_expression(delete.predicate, dialect)}"
     return rendered

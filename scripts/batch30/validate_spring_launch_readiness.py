@@ -1095,7 +1095,8 @@ def inspect_secret_file(
                     False,
                     None,
                     None,
-                    f"must not traverse ancestors owned outside root/runtime UID trust boundary; expected UID/GID 0:* or {owner_uid}:*",
+                    "must not traverse ancestors owned outside root/runtime UID "
+                    f"trust boundary; expected UID/GID 0:* or {owner_uid}:*",
                 )
             ancestor_metadata.append((parent, stable_directory_identity(parent_details)))
         path_details = path.lstat()
@@ -1326,7 +1327,8 @@ def inspect_owner_only_directory(
                 return (
                     False,
                     None,
-                    f"must not traverse ancestors owned outside root/runtime UID trust boundary; expected UID/GID 0:* or {owner_uid}:*",
+                    "must not traverse ancestors owned outside root/runtime UID "
+                    f"trust boundary; expected UID/GID 0:* or {owner_uid}:*",
                 )
             ancestor_metadata.append((parent, stable_directory_identity(details)))
         before = path.lstat()
@@ -1433,8 +1435,8 @@ def validate_code(errors: list[str]) -> None:
     require(errors, "micrometer-registry-prometheus" in worker_pom, "Spring worker must include the Prometheus registry")
     require(
         errors,
-        "\n        include: health,info\n" in worker_config,
-        "Spring worker must expose only the minimal internal health and info endpoints",
+        "\n        include: health,info,prometheus\n" in worker_config,
+        "Spring worker must expose only the minimal internal health, info, and Prometheus endpoints",
     )
     require(errors, 'ELMOS_SPRING_UPGRADE_EXPERIMENTAL_ROUTES_ENABLED: "false"' in compose, "production experimental routes must be hard disabled")
     require(errors, 'ELMOS_SPRING_CODING_AGENT_ENABLED: "false"' in compose, "production long-tail coding agent must be hard disabled")

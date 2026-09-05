@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-04T09:10:46Z",
+  "capturedAt": "2026-09-05T04:38:31Z",
   "format": "elmos-formal-local-environment/v1",
   "machine": "arm64",
   "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
@@ -27,17 +27,17 @@
       "name": "mvn",
       "path": "/opt/homebrew/Cellar/maven/3.9.10/bin/mvn",
       "sha256": "sha256:028b56796c2b82784b832caf63bd8c0a94efc131dd32f39fe55c853a2df7a939",
-      "status": "PROBE_FAILED",
-      "versionOutput": "TimeoutExpired",
-      "versionOutputDigest": "sha256:39e6da0dfffd8cfedeb661adb69150b2c6b12208cb8ec3a48b197cdb339d8178"
+      "status": "AVAILABLE",
+      "versionOutput": "Apache Maven 3.9.10 (5f519b97e944483d878815739f519b2eade0a91d)\nMaven home: /opt/homebrew/Cellar/maven/3.9.10/libexec\nJava version: 26.0.1, vendor: Homebrew, runtime: /opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home\nDefault locale: en_US, platform encoding: UTF-8\nOS name: \"mac os x\", version: \"26.6.2\", arch: \"aarch64\", family: \"mac\"",
+      "versionOutputDigest": "sha256:792f69a2d190b67726a2dea8e522467dd44db5e183d93df69863821217dd0793"
     },
     {
       "name": "gradle",
       "path": "/opt/homebrew/Cellar/gradle/9.5.1/bin/gradle",
       "sha256": "sha256:a7c4dfa7d4a23eb18fe41de39764d90ceb2bae05fd2ca3f55ffe459daad30d6a",
-      "status": "PROBE_FAILED",
-      "versionOutput": "TimeoutExpired",
-      "versionOutputDigest": "sha256:39e6da0dfffd8cfedeb661adb69150b2c6b12208cb8ec3a48b197cdb339d8178"
+      "status": "AVAILABLE",
+      "versionOutput": "------------------------------------------------------------\nGradle 9.5.1\n------------------------------------------------------------\n\nBuild time:    2026-05-12 13:19:42 UTC\nRevision:      fd78213f09782e62ca4957f9cfd3d90c6c3f1767\n\nKotlin:        2.3.20\nGroovy:        4.0.29\nAnt:           Apache Ant(TM) version 1.10.15 compiled on August 25 2024\nLauncher JVM:  26.0.1 (Homebrew 26.0.1)\nDaemon JVM:    /opt/homebrew/Cellar/openjdk/26.0.1/libexec/openjdk.jdk/Contents/Home (no Daemon JVM specified, using current Java home)\nOS:            Mac OS X 26.6.2 aarch64",
+      "versionOutputDigest": "sha256:28f0a6bbba0afadcac7901b5486a423ed7056187e80a0ee72349cd21e9e35fba"
     },
     {
       "name": "dotnet",
@@ -66,7 +66,7 @@
     {
       "name": "rustc",
       "path": "/Users/stephen/.local/share/elmos/toolchains/rust/1.89.0/bin/rustc",
-      "sha256": "sha256:8863b3ea9823e4aac9562b1b8e0c374ee611cefd95569d165fcb8f7209774228",
+      "sha256": "sha256:f239969023c6420dedf75ba3890401a77d176e83bd11ee2caa39bd6a862ac0c7",
       "status": "AVAILABLE",
       "versionOutput": "rustc 1.89.0 (29483883e 2025-08-04)",
       "versionOutputDigest": "sha256:62b5c37aaa2182e71e4741c0b003df6fd1d30cdbc5d2f25ac17d1a42ecc2f02c"

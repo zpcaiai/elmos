@@ -1,4 +1,4 @@
-package io.elmos.delivery;
+package io.elmos.deliveryplatform;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.executiondomain.DomainDefinitions;
