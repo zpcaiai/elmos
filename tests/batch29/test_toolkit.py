@@ -4696,6 +4696,21 @@ print('\\n'.join(failures))
                 ),
                 frozenset({expected}),
             )
+        self.assertEqual(
+            runner.stable_native_route_error(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/bin/go:{expected}",
+                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
+            ),
+            expected,
+        )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "^NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID:",
+        ):
+            runner.stable_native_route_error(
+                f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
+                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
+            )
         for source in ("java", "javascript", "typescript"):
             self.assertEqual(
                 validator.nodejs_negative_expected_reasons(
@@ -4800,7 +4815,10 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
+                side_effect=runner.RouteError(
+                    "NATIVE_ANALYZER_FAILED:/opt/elmos/bin/python3:"
+                    + runner.MISSING_SYMBOL_FAILURE
+                ),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"

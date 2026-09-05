@@ -431,16 +431,25 @@ def nodejs_route_error_code(reason: str) -> str | None:
     return code
 
 
-def nodejs_stable_route_error(reason: str) -> str:
-    """Remove only the private absolute analyzer snapshot path from an error."""
+def stable_native_route_error(reason: str, *, invalid_code: str) -> str:
+    """Remove only a verified absolute native-analyzer path from an error."""
 
     prefix = "NATIVE_ANALYZER_FAILED:"
     if not reason.startswith(prefix):
         return reason
     wrapped = reason[len(prefix) :].split(":", 1)
     if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
-        raise RuntimeError(f"NODEJS_NATIVE_ERROR_WRAPPER_INVALID:{reason}")
+        raise RuntimeError(f"{invalid_code}:{reason}")
     return wrapped[1]
+
+
+def nodejs_stable_route_error(reason: str) -> str:
+    """Remove only the private absolute analyzer snapshot path from an error."""
+
+    return stable_native_route_error(
+        reason,
+        invalid_code="NODEJS_NATIVE_ERROR_WRAPPER_INVALID",
+    )
 
 
 def declared_input_domain(route_key: str) -> str:
@@ -5514,7 +5523,10 @@ def execute_negative(
                 Path(temporary) / "output",
             )
         except RouteError as exc:
-            reason = str(exc)
+            reason = stable_native_route_error(
+                str(exc),
+                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
+            )
         else:
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"
