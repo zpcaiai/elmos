@@ -87,6 +87,31 @@ test("notification configuration fails closed before establishing an admin sessi
   assert.equal(called, false);
 });
 
+test("Vercel Marketplace RESEND_API_KEY is accepted without copying the secret", async () => {
+  let authorization = "";
+  await notifyAdministratorLogin(
+    new Request("https://console.example.com/api/auth/descope/otp/verify"),
+    administratorPrincipal(),
+    "DESCOPE_EMAIL_OTP",
+    {
+      environment: {
+        ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED: "true",
+        ELMOS_ADMIN_LOGIN_EMAIL_FROM: "ELMOS Security <onboarding@resend.dev>",
+        RESEND_API_KEY: "re_marketplace_key_with_more_than_24_chars",
+      },
+      eventId: "66666666-6666-4666-8666-666666666666",
+      fetchImpl: async (_url, init) => {
+        authorization = init.headers.Authorization;
+        return new Response(
+          JSON.stringify({ id: "77777777-7777-4777-8777-777777777777" }),
+          { status: 200 },
+        );
+      },
+    },
+  );
+  assert.equal(authorization, "Bearer re_marketplace_key_with_more_than_24_chars");
+});
+
 test("provider rejection fails closed and does not return a delivery receipt", async () => {
   await assert.rejects(
     notifyAdministratorLogin(

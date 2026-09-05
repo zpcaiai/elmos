@@ -92,6 +92,10 @@ import * as route088 from "./wallet/_route";
 import * as route089 from "./wallet/ledger/_route";
 import * as route090 from "./wallet/topup/[topupOrderId]/_route";
 import * as route091 from "./wallet/topup/_route";
+import * as route092 from "./auth/descope/otp/start/_route";
+import * as route093 from "./auth/descope/otp/verify/_route";
+import * as route094 from "./auth/descope/wechat/start/_route";
+import * as route095 from "./auth/descope/wechat/callback/_route";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type ApiHandler = (
@@ -126,6 +130,10 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "auth/register", value: route021 as ApiRouteModule },
   { template: "auth/session", value: route022 as ApiRouteModule },
   { template: "auth/tenant", value: route023 as ApiRouteModule },
+  { template: "auth/descope/otp/start", value: route092 as ApiRouteModule },
+  { template: "auth/descope/otp/verify", value: route093 as ApiRouteModule },
+  { template: "auth/descope/wechat/start", value: route094 as ApiRouteModule },
+  { template: "auth/descope/wechat/callback", value: route095 as ApiRouteModule },
   { template: "billing/cancel", value: route024 as ApiRouteModule },
   { template: "billing/checkout", value: route025 as ApiRouteModule },
   { template: "billing/subscription", value: route026 as ApiRouteModule },

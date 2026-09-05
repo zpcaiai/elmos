@@ -20,6 +20,7 @@ const maximumProviderResponseBytes = 8 * 1024;
 
 export type AdministratorLoginAuthentication =
   | "OIDC"
+  | "DESCOPE_EMAIL_OTP"
   | "LOCAL_DEVELOPMENT_CREDENTIAL";
 
 export type AdministratorLoginNotificationReceipt = {
@@ -33,6 +34,7 @@ type NotificationEnvironment = {
   ELMOS_ADMIN_LOGIN_EMAIL_FROM?: string;
   ELMOS_RESEND_API_KEY?: string;
   ELMOS_RESEND_API_KEY_FILE?: string;
+  RESEND_API_KEY?: string;
 };
 
 type NotificationOptions = {
@@ -47,7 +49,15 @@ function notificationError(code: string, message: string): AccountSessionError {
 }
 
 function configuredApiKey(environment: NotificationEnvironment): string {
-  const inline = environment.ELMOS_RESEND_API_KEY?.trim() ?? "";
+  const applicationInline = environment.ELMOS_RESEND_API_KEY?.trim() ?? "";
+  const marketplaceInline = environment.RESEND_API_KEY?.trim() ?? "";
+  if (applicationInline && marketplaceInline) {
+    throw notificationError(
+      "ADMIN_LOGIN_NOTIFICATION_CONFIGURATION_INVALID",
+      "管理员登录邮件通知密钥来源配置冲突。",
+    );
+  }
+  const inline = applicationInline || marketplaceInline;
   const configuredFile = environment.ELMOS_RESEND_API_KEY_FILE?.trim() ?? "";
   if (!inline && !configuredFile) {
     throw notificationError(
@@ -193,6 +203,7 @@ export async function notifyAdministratorLogin(
     ELMOS_ADMIN_LOGIN_EMAIL_FROM: process.env.ELMOS_ADMIN_LOGIN_EMAIL_FROM,
     ELMOS_RESEND_API_KEY: process.env.ELMOS_RESEND_API_KEY,
     ELMOS_RESEND_API_KEY_FILE: process.env.ELMOS_RESEND_API_KEY_FILE,
+    RESEND_API_KEY: process.env.RESEND_API_KEY,
   };
   if (environment.ELMOS_ADMIN_LOGIN_NOTIFICATIONS_ENABLED !== "true") {
     throw notificationError(

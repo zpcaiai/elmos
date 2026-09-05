@@ -8,18 +8,24 @@ import { exportJWK, generateKeyPair, SignJWT } from "jose";
 import {
   ADMINISTRATOR_EMAIL,
   accountPrincipalFromOidcClaims,
+  accountPrincipalFromDescopeIdentity,
   accountCookieNames,
   accountSessionFromRequest,
   assertLoginModeAccess,
   assertLocalCredentialRequest,
   authenticateLocalCredentials,
   createAuthorizationFlow,
+  createDescopeAccountSession,
+  createDescopeOauthFlow,
+  createDescopeOtpChallenge,
   exchangeAuthorizationCode,
   localAccountCookieNames,
   localCredentialsConfigured,
   localRegistrationConfigured,
   refreshAccountSession,
   refreshSessionFromRequest,
+  readDescopeOauthFlow,
+  readDescopeOtpChallenge,
   registerLocalAccount,
 } from "../app/lib/server/accountSession.ts";
 
@@ -41,6 +47,7 @@ const trackedEnvironment = [
   "ELMOS_OIDC_CLIENT_SECRET",
   "ELMOS_OIDC_REDIRECT_URI",
   "ELMOS_OIDC_AUDIENCE",
+  "ELMOS_DESCOPE_DEFAULT_ORGANIZATION_ID",
 ];
 
 function withEnvironment(overrides, callback) {
@@ -542,5 +549,151 @@ test("authorization flows reject cross-origin path tricks and keep admin routes 
     assert.equal(createAuthorizationFlow("/admin", "USER").flow.returnTo, "/");
     assert.equal(createAuthorizationFlow("/workspace", "ADMIN").flow.returnTo, "/admin");
     assert.equal(createAuthorizationFlow("/admin/audit?hours=1", "ADMIN").flow.returnTo, "/admin/audit?hours=1");
+  });
+});
+
+test("Descope grants administrator rights only after current email OTP verification", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    const identity = {
+      userId: "descope-user-admin-123",
+      displayName: "Platform Administrator",
+      email: ADMINISTRATOR_EMAIL,
+      verifiedEmail: true,
+      phone: "+8613812345678",
+      verifiedPhone: true,
+    };
+    const emailPrincipal = accountPrincipalFromDescopeIdentity(identity, "EMAIL_OTP");
+    assert.equal(emailPrincipal.isPlatformAdmin, true);
+    assert.ok(emailPrincipal.permissions.includes("admin:approve"));
+    assert.doesNotThrow(() => assertLoginModeAccess(emailPrincipal, "ADMIN"));
+
+    for (const method of ["PHONE_OTP", "WECHAT_OAUTH"]) {
+      const principal = accountPrincipalFromDescopeIdentity(identity, method);
+      assert.equal(principal.isPlatformAdmin, false, `${method} must not elevate a linked admin identity`);
+      assert.ok(!principal.permissions.includes("admin:read"));
+      assert.throws(
+        () => assertLoginModeAccess(principal, "ADMIN"),
+        (error) => error?.code === "ADMIN_EMAIL_REQUIRED" && error?.status === 403,
+      );
+    }
+  });
+});
+
+test("Descope self-registration reserves the administrator mailbox", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    assert.throws(
+      () => createDescopeOtpChallenge({
+        channel: "EMAIL",
+        intent: "REGISTER",
+        loginMode: "USER",
+        loginId: ADMINISTRATOR_EMAIL.toUpperCase(),
+        displayName: "Reserved Admin",
+        returnTo: "/",
+      }),
+      (error) => error?.code === "DESCOPE_ADMIN_EMAIL_RESERVED" && error?.status === 403,
+    );
+    assert.throws(
+      () => createDescopeOtpChallenge({
+        channel: "SMS",
+        intent: "LOGIN",
+        loginMode: "ADMIN",
+        loginId: "+8613812345678",
+        returnTo: "/admin",
+      }),
+      (error) => error?.code === "ADMIN_EMAIL_REQUIRED" && error?.status === 403,
+    );
+  });
+});
+
+test("Descope encrypted challenges bind method, mode, identity and safe return path", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    const { sealedChallenge } = createDescopeOtpChallenge({
+      channel: "SMS",
+      intent: "REGISTER",
+      loginMode: "USER",
+      loginId: "+8613812345678",
+      displayName: "Phone User",
+      returnTo: "/admin/audit",
+    });
+    const challenge = readDescopeOtpChallenge(sealedChallenge);
+    assert.equal(challenge.channel, "SMS");
+    assert.equal(challenge.intent, "REGISTER");
+    assert.equal(challenge.loginId, "+8613812345678");
+    assert.equal(challenge.returnTo, "/");
+
+    const { sealedFlow } = createDescopeOauthFlow({
+      provider: "wechat",
+      intent: "LOGIN",
+      returnTo: "//evil.example/path",
+    });
+    const flow = readDescopeOauthFlow(sealedFlow);
+    assert.equal(flow.provider, "wechat");
+    assert.equal(flow.loginMode, "USER");
+    assert.equal(flow.returnTo, "/");
+  });
+});
+
+test("Descope sessions retain provider and method bindings during refresh", () => {
+  withEnvironment({
+    NODE_ENV: "test",
+    ELMOS_SESSION_SECRET: "local-test-session-secret-at-least-32-characters",
+  }, () => {
+    const accessToken = `access.${"a".repeat(100)}.signature`;
+    const refreshToken = `refresh.${"b".repeat(100)}.signature`;
+    const result = createDescopeAccountSession({
+      identity: {
+        userId: "descope-user-phone-123",
+        displayName: "Phone User",
+        phone: "+8613812345678",
+        verifiedPhone: true,
+      },
+      authenticationMethod: "PHONE_OTP",
+      loginMode: "USER",
+      accessToken,
+      refreshToken,
+      expiresAt: Date.now() + 15 * 60_000,
+      refreshExpiresAt: Date.now() + 4 * 60 * 60_000,
+    });
+    const request = new Request("https://console.example.test/api/auth/session", {
+      headers: {
+        cookie: `${accountCookieNames.session}=${result.session}; ${accountCookieNames.accessToken}=${accessToken}; ${accountCookieNames.refreshToken}=${refreshToken}`,
+      },
+    });
+    assert.equal(accountSessionFromRequest(request).principal.actorId, "descope:descope-user-phone-123");
+    const refresh = refreshSessionFromRequest(request);
+    assert.equal(refresh.provider, "DESCOPE");
+    assert.equal(refresh.descopeAuthenticationMethod, "PHONE_OTP");
+    assert.equal(refresh.actorId, "descope:descope-user-phone-123");
+  });
+});
+
+test("Descope production sessions fail closed without a random sealing secret", () => {
+  withEnvironment({ NODE_ENV: "production" }, () => {
+    assert.throws(
+      () => createDescopeAccountSession({
+        identity: {
+          userId: "descope-user-phone-123",
+          phone: "+8613812345678",
+          verifiedPhone: true,
+        },
+        authenticationMethod: "PHONE_OTP",
+        loginMode: "USER",
+        accessToken: `access.${"a".repeat(100)}.signature`,
+        refreshToken: `refresh.${"b".repeat(100)}.signature`,
+        expiresAt: Date.now() + 15 * 60_000,
+        refreshExpiresAt: Date.now() + 4 * 60 * 60_000,
+      }),
+      (error) => error?.code === "ACCOUNT_SESSION_SECRET_NOT_CONFIGURED"
+        && error?.status === 503,
+    );
   });
 });
