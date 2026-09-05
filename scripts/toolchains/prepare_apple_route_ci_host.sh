@@ -4,9 +4,6 @@ set -euo pipefail
 umask 077
 
 readonly EXPECTED_IMAGE_OS="macos26"
-readonly EXPECTED_IMAGE_VERSION="20260831.0337.3"
-readonly EXPECTED_PRODUCT_VERSION="26.6.2"
-readonly EXPECTED_BUILD_VERSION="25G83"
 readonly EXPECTED_XCODE_VERSION="Xcode 26.6"
 readonly EXPECTED_XCODE_BUILD="Build version 17F113"
 readonly SOURCE_XCODE_APP="/Applications/Xcode_26.6.app"
@@ -28,17 +25,23 @@ HOST_PRODUCT_VERSION="$(/usr/bin/sw_vers -productVersion)"
 readonly HOST_PRODUCT_VERSION
 HOST_BUILD_VERSION="$(/usr/bin/sw_vers -buildVersion)"
 readonly HOST_BUILD_VERSION
+HOST_IMAGE_IDENTITY="${ImageOS:-}|${ImageVersion:-}|${HOST_PRODUCT_VERSION}|${HOST_BUILD_VERSION}"
+readonly HOST_IMAGE_IDENTITY
 if [[ "${HOST_SYSTEM}" != "Darwin" \
   || "${HOST_MACHINE}" != "arm64" \
   || "${GITHUB_ACTIONS:-}" != "true" \
-  || "${RUNNER_ENVIRONMENT:-}" != "github-hosted" \
-  || "${ImageOS:-}" != "${EXPECTED_IMAGE_OS}" \
-  || "${ImageVersion:-}" != "${EXPECTED_IMAGE_VERSION}" \
-  || "${HOST_PRODUCT_VERSION}" != "${EXPECTED_PRODUCT_VERSION}" \
-  || "${HOST_BUILD_VERSION}" != "${EXPECTED_BUILD_VERSION}" ]]; then
+  || "${RUNNER_ENVIRONMENT:-}" != "github-hosted" ]]; then
   printf 'Refusing to prepare Apple route host outside the exact macos26 image.\n' >&2
   exit 2
 fi
+case "${HOST_IMAGE_IDENTITY}" in
+  "${EXPECTED_IMAGE_OS}|20260728.0273.1|26.5.2|25F84"|\
+  "${EXPECTED_IMAGE_OS}|20260831.0337.3|26.6.2|25G83") ;;
+  *)
+    printf 'Refusing to prepare Apple route host outside an allowlisted exact macos26 image.\n' >&2
+    exit 2
+    ;;
+esac
 : "${RUNNER_TEMP:?RUNNER_TEMP must be provided by GitHub Actions}"
 : "${GITHUB_ENV:?GITHUB_ENV must be provided by GitHub Actions}"
 

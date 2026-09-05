@@ -52,14 +52,19 @@ case "${CI_PROFILE}" in
 esac
 case "${CI_PROFILE}" in
   full)
-    if [[ "${ImageOS:-}" != "macos26" \
-      || "${ImageVersion:-}" != "20260728.0273.1" \
-      || "$(sw_vers -productVersion)" != "26.5.2" \
-      || "$(sw_vers -buildVersion)" != "25F84" \
-      || "$(uname -m)" != "arm64" ]]; then
-      printf 'The full pinned Node closure requires GitHub macos26 image 20260728.0273.1.\n' >&2
+    host_identity="${ImageOS:-}|${ImageVersion:-}|$(sw_vers -productVersion)|$(sw_vers -buildVersion)"
+    if [[ "$(uname -m)" != "arm64" ]]; then
+      printf 'The full pinned Node closure requires a GitHub macos26 arm64 image.\n' >&2
       exit 2
     fi
+    case "${host_identity}" in
+      "macos26|20260728.0273.1|26.5.2|25F84"|\
+      "macos26|20260831.0337.3|26.6.2|25G83") ;;
+      *)
+        printf 'The full pinned Node closure requires an allowlisted exact GitHub macos26 image.\n' >&2
+        exit 2
+        ;;
+    esac
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -150,10 +155,17 @@ PY
     fi
     ;;
   frontend-formal)
-    if [[ "${ImageOS:-}" != "macos15" \
-      || "${ImageVersion:-}" != "20260727.0256.1" \
-      || "$(sw_vers -productVersion)" != 15.* ]]; then
-      printf 'The frontend formal Node closure requires GitHub macos15 image 20260727.0256.1.\n' >&2
+    host_identity="${ImageOS:-}|${ImageVersion:-}|$(sw_vers -productVersion)|$(sw_vers -buildVersion)"
+    case "${host_identity}" in
+      "macos15|20260727.0256.1|15.7.7|24G720"|\
+      "macos15|20260829.0321.1|15.7.9|24G830") ;;
+      *)
+        printf 'The frontend formal Node closure requires an allowlisted exact GitHub macos15 image.\n' >&2
+        exit 2
+        ;;
+    esac
+    if [[ "$(uname -m)" != "arm64" ]]; then
+      printf 'The frontend formal Node closure requires arm64.\n' >&2
       exit 2
     fi
     ;;

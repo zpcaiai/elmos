@@ -181,8 +181,10 @@ jobs:
           # runner-writable checkout path, and /usr/bin/python3 is root-owned.
           test -x /usr/bin/python3
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
+          case "$(/usr/bin/sw_vers -productVersion)|$(/usr/bin/sw_vers -buildVersion)" in
+            "15.7.7|24G720"|"15.7.9|24G830") ;;
+            *) exit 2 ;;
+          esac
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -214,8 +216,10 @@ jobs:
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
+          case "$(/usr/bin/sw_vers -productVersion)|$(/usr/bin/sw_vers -buildVersion)" in
+            "15.7.7|24G720"|"15.7.9|24G830") ;;
+            *) exit 2 ;;
+          esac
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"

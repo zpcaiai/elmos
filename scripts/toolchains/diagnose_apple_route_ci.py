@@ -33,6 +33,14 @@ MAX_TREE_BYTES = 1_000_000_000
 MAX_COMMAND_OUTPUT_BYTES = 1_000_000
 MAX_DIAGNOSTIC_OUTPUT_BYTES = 10_000_000
 EXPECTED_IMAGE_OS = "macos26"
+EXPECTED_HOST_PROFILES = frozenset(
+    {
+        ("macos26", "20260728.0273.1", "26.5.2", "25F84"),
+        ("macos26", "20260831.0337.3", "26.6.2", "25G83"),
+    }
+)
+# Deterministic fixture profile used by local verifier tests. Runtime acceptance
+# is always checked against the full exact allowlist above.
 EXPECTED_IMAGE_VERSION = "20260831.0337.3"
 EXPECTED_PRODUCT_VERSION = "26.6.2"
 EXPECTED_BUILD_VERSION = "25G83"
@@ -1219,10 +1227,13 @@ def _validate_diagnostic_records(
 
     environment = records[0]
     if (
-        environment.get("image_os") != EXPECTED_IMAGE_OS
-        or environment.get("image_version") != EXPECTED_IMAGE_VERSION
-        or environment.get("product_version") != EXPECTED_PRODUCT_VERSION
-        or environment.get("build_version") != EXPECTED_BUILD_VERSION
+        (
+            environment.get("image_os"),
+            environment.get("image_version"),
+            environment.get("product_version"),
+            environment.get("build_version"),
+        )
+        not in EXPECTED_HOST_PROFILES
         or environment.get("machine") != "arm64"
         or environment.get("validator_sha256") != validator_sha256
         or environment.get("xcode_version_stdout") != EXPECTED_XCODE_VERSION
@@ -1666,8 +1677,11 @@ def diagnose(repository_root: Path, *, skip_network_probe: bool) -> list[dict[st
         or os.environ.get("ELMOS_APPLE_ROUTE_XCODE_SEALED") != "1"
         or os.environ.get("ELMOS_APPLE_ROUTE_XCODE_PHYSICAL")
         != str(EXPECTED_XCODE_APP)
-        or os.environ.get("ImageOS") != EXPECTED_IMAGE_OS
-        or os.environ.get("ImageVersion") != EXPECTED_IMAGE_VERSION
+        or (
+            os.environ.get("ImageOS"),
+            os.environ.get("ImageVersion"),
+        )
+        not in {(profile[0], profile[1]) for profile in EXPECTED_HOST_PROFILES}
         or os.uname().machine != "arm64"
     ):
         raise DiagnosticError("diagnostic requires the exact prepared GitHub host")
@@ -1747,8 +1761,13 @@ def diagnose(repository_root: Path, *, skip_network_probe: bool) -> list[dict[st
     selected_developer_identity = _path_identity(physical_developer)
     selected_sdk_identity = _path_identity(sdk_path)
     if (
-        product_version.stdout.strip() != EXPECTED_PRODUCT_VERSION
-        or build_version.stdout.strip() != EXPECTED_BUILD_VERSION
+        (
+            os.environ.get("ImageOS"),
+            os.environ.get("ImageVersion"),
+            product_version.stdout.strip(),
+            build_version.stdout.strip(),
+        )
+        not in EXPECTED_HOST_PROFILES
         or xcode_version.stdout != EXPECTED_XCODE_VERSION
         or xcode_version.stderr
         or sdk_version.stdout.strip() != "26.5"

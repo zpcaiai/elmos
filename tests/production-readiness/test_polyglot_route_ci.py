@@ -227,6 +227,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('source.get("spec") == "stable"', frontend_job)
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
+            "20260727.0256.1",
+            "15.7.7",
+            "24G720",
             "20260829.0321.1",
             "15.7.9",
             "24G830",
@@ -235,6 +238,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
             "b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
             "a8f03e63667ae72e9928cafa28a677fe8cafd9c065f3ddf8c8e451682b7c59bd",
+            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
+            "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
+            "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
+            "3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
+            "30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
         ):
             self.assertIn(pinned_value, verifier)
         for required_control in (
@@ -282,11 +290,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('test "$(command -v openssl)" = "${openssl_bin}"', frontend_job)
         for step in (root_seal_step, bind_step):
             self.assertIn(
-                'test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"',
-                step,
-            )
-            self.assertIn(
-                'test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"',
+                '"15.7.7|24G720"|"15.7.9|24G830"',
                 step,
             )
 
@@ -302,6 +306,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
 
         self.assertEqual(len(verifier.FILE_PROFILES), 3)
         self.assertEqual(len(verifier.UNSEALED_FILE_PROFILES), 3)
+        self.assertEqual(len(verifier.HOST_PROFILES), 2)
         for path, profile in verifier.FILE_PROFILES.items():
             self.assertEqual((profile["uid"], profile["gid"]), (0, 0))
             self.assertEqual(
