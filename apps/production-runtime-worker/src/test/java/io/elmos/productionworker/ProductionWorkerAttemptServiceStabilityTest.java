@@ -120,8 +120,10 @@ class ProductionWorkerAttemptServiceStabilityTest {
         assertFalse(service.executorsShutdown());
         service.close();
         assertTrue(service.executorsShutdown());
+        assertTrue(service.executorsTerminated());
         service.close();
         assertTrue(service.executorsShutdown());
+        assertTrue(service.executorsTerminated());
     }
 
     @Test
@@ -134,10 +136,11 @@ class ProductionWorkerAttemptServiceStabilityTest {
         service = service(json, workerId, base, routeCatalog(json, base),
                 Duration.ofSeconds(10), Duration.ofSeconds(10));
 
-        service.accept(envelope(workerId, base, Map.of(
+        DispatchEnvelope dispatch = envelope(workerId, base, Map.of(
                 "jobId", UUID.randomUUID().toString(),
                 "jobType", "PROJECT_GENERATION",
-                "workType", "synthesize")));
+                "workType", "synthesize"));
+        service.accept(dispatch);
 
         assertTrue(completionReceived.await(3, TimeUnit.SECONDS));
         JsonNode completion = json.readTree(completionBody.get()).path("completion");
@@ -146,6 +149,15 @@ class ProductionWorkerAttemptServiceStabilityTest {
                 completion.path("errorCode").asText());
         assertTrue(json.readTree(completionBody.get())
                 .path("outputVerification").isNull());
+        long deadline = System.nanoTime() + Duration.ofSeconds(3).toNanos();
+        while (service.find(dispatch.attemptId()).status()
+                != ProductionWorkerAttemptService.LocalStatus.FAILED
+                && System.nanoTime() < deadline) {
+            Thread.sleep(10);
+        }
+        assertEquals(
+                ProductionWorkerAttemptService.LocalStatus.FAILED,
+                service.find(dispatch.attemptId()).status());
     }
 
     private ProductionWorkerAttemptService service(

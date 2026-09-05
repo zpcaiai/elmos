@@ -1037,13 +1037,33 @@ final class ProductionWorkerAttemptService {
     @PreDestroy
     void close() {
         if (!closed.compareAndSet(false, true)) return;
-        heartbeatScheduler.shutdownNow();
-        reconciliationScheduler.shutdownNow();
-        heartbeatExecutor.shutdownNow();
-        providerReconciliationExecutor.shutdownNow();
-        checkpointReconciliationExecutor.shutdownNow();
-        completionReconciliationExecutor.shutdownNow();
-        executors.shutdownNow();
+        List<ExecutorService> ownedExecutors = List.of(
+                heartbeatScheduler,
+                reconciliationScheduler,
+                heartbeatExecutor,
+                providerReconciliationExecutor,
+                checkpointReconciliationExecutor,
+                completionReconciliationExecutor,
+                executors);
+        ownedExecutors.forEach(ExecutorService::shutdownNow);
+        awaitTermination(ownedExecutors, Duration.ofSeconds(10));
+    }
+
+    private static void awaitTermination(
+            List<ExecutorService> ownedExecutors,
+            Duration timeout
+    ) {
+        long deadline = System.nanoTime() + timeout.toNanos();
+        for (ExecutorService executor : ownedExecutors) {
+            long remaining = deadline - System.nanoTime();
+            if (remaining <= 0) return;
+            try {
+                executor.awaitTermination(remaining, TimeUnit.NANOSECONDS);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+                return;
+            }
+        }
     }
 
     boolean executorsShutdown() {
@@ -1055,6 +1075,16 @@ final class ProductionWorkerAttemptService {
                 && checkpointReconciliationExecutor.isShutdown()
                 && completionReconciliationExecutor.isShutdown()
                 && executors.isShutdown();
+    }
+
+    boolean executorsTerminated() {
+        return heartbeatScheduler.isTerminated()
+                && reconciliationScheduler.isTerminated()
+                && heartbeatExecutor.isTerminated()
+                && providerReconciliationExecutor.isTerminated()
+                && checkpointReconciliationExecutor.isTerminated()
+                && completionReconciliationExecutor.isTerminated()
+                && executors.isTerminated();
     }
 
     boolean journalHealthy() {
