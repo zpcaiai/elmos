@@ -4981,7 +4981,7 @@ def execute_specialized_negative(
                     raise RuntimeError("MISSING_SYMBOL_CREATED_ARTIFACTS")
             expected_fragments = (
                 ("NO_SUPPORTED_FUNCTIONS",)
-                if source in {"java", "swift"}
+                if source == "swift"
                 else ("FUNCTION_NOT_FOUND:__elmos_missing_function__",)
             )
             input_refs = [

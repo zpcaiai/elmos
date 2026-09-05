@@ -1,11 +1,322 @@
 {
-  "behavior_pass_rate": 0.0,
+  "artifact_manifest": {
+    "bytes": 5759,
+    "path": "certification/artifacts/holdout/artifact-manifest.json",
+    "sha256": "sha256:dd543645594c6e52c77a6956eb0b738fcf6b53694063b13310783060e69114fa"
+  },
+  "artifact_root": "certification/artifacts/holdout",
+  "authorization": "local-engineering-validation",
+  "behavior_case_count": 3,
+  "behavior_equivalence": {
+    "artifact_path": "behavior-equivalence.json",
+    "artifact_sha256": "sha256:9b134e2b3ab972c14b9fa4926736a24f569ac637b699097cd778fda9cc10cad9",
+    "case_count": 3,
+    "oracle_conflict_count": 0,
+    "pass_count": 3,
+    "source_runtime_passed": true,
+    "status": "PASSED",
+    "target_runtime_passed": true
+  },
+  "behavior_pass_rate": 1.0,
   "certification_status": "NOT_CERTIFIED",
+  "chunk_equivalence": {
+    "artifact_path": "chunk-map.json",
+    "artifact_sha256": "sha256:450012b57409307c22076c16d783ba940f68cf2cce95d0e176373855723b89d8",
+    "coverage": 1.0,
+    "mapped_source_chunk_count": 17,
+    "required_source_chunk_count": 17,
+    "status": "PASSED",
+    "unexpected_target_chunk_count": 0
+  },
   "corpus": "holdout",
-  "critical_unknown_semantics": 1,
+  "critical_unknown_semantics": 0,
+  "executor": "local-toolchain",
+  "external_certification_status": "NOT_RUN",
+  "formal_composition": {
+    "artifact_path": "formal-composition.json",
+    "artifact_sha256": "sha256:9ee8bf008155c58cea1904c9b10ace5ea78361f04aed953b200073d2b5aeca1e",
+    "assumption_boundary": "typed-pure-function-v1 / L0 only",
+    "formal_input_digest": "sha256:f4d7a2a7772b09a998c5d6306047ebeb980cf6aa97b2d23fabc693b61992d12f",
+    "formal_input_path": "formal-input.json",
+    "formal_input_sha256": "sha256:f4d7a2a7772b09a998c5d6306047ebeb980cf6aa97b2d23fabc693b61992d12f",
+    "proof_artifact_digests": [
+      {
+        "formal_input_sha256": "sha256:f4d7a2a7772b09a998c5d6306047ebeb980cf6aa97b2d23fabc693b61992d12f",
+        "path": "formal-equivalence.smt2",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:7a21cf8f92578fb15fa6fd83dc79c37d0618be13a37400e8b2d9eadc3ae657fc",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      },
+      {
+        "formal_input_sha256": "sha256:f4d7a2a7772b09a998c5d6306047ebeb980cf6aa97b2d23fabc693b61992d12f",
+        "path": "formal-proof-result.json",
+        "property_id": "L0-DENOTATIONAL-EQUIVALENCE",
+        "sha256": "sha256:0e35659666baa544ee66a1501de7ff1fa5d527b56de22c4ed1e66564554d7293",
+        "status": "PROVED",
+        "strength": "THEOREM_UNDER_ASSUMPTIONS"
+      }
+    ],
+    "property_status": "PROVED",
+    "solver_input_digest": "sha256:7a21cf8f92578fb15fa6fd83dc79c37d0618be13a37400e8b2d9eadc3ae657fc",
+    "status": "PROVED_UNDER_ASSUMPTIONS",
+    "unsupported_semantics": [
+      "heap-and-object-identity",
+      "mutable-state-and-aliasing",
+      "exceptions-as-user-visible-control-flow",
+      "async-and-concurrency",
+      "io-network-database-and-framework-effects",
+      "reflection-dynamic-loading-and-native-interop"
+    ]
+  },
+  "identifier_hygiene": {
+    "normalized_target_ir": {
+      "path": "target-semantic-ir.normalized.json",
+      "sha256": "sha256:8b999ca00e2682357be2ba621fa7bab452aa71503a888b30d60e3e74fd8f8774",
+      "status": "PASSED"
+    },
+    "plan_path": "identifier-plan.json",
+    "plan_sha256": "sha256:b8cce7ac8813ecc7a773781c9c773196cc3b77566eeeae39aaa4a85017595898",
+    "policy_id": "typed-alpha-hygiene-v2",
+    "policy_sha256": "sha256:9b9be00d5edbc01a1a96ee9ee6e793dadabdb59e5f6799cc4670227fb427cf78",
+    "raw_target_relift": {
+      "path": "target-semantic-ir.raw.json",
+      "sha256": "sha256:61a4244b7267d38953a1f225a89e9a72a57706fbdde50774b0d241704e3d137c",
+      "status": "PASSED"
+    },
+    "renamed": true,
+    "source_function_name": "clamp",
+    "status": "PASSED",
+    "target_function_name": "elmos_fn_bde6d03dcfad148a",
+    "unit_namespace": {
+      "kind": "elmos.identifier-unit-namespace",
+      "repository_snapshot_sha256": null,
+      "schema_version": "1.0.0",
+      "scope": "standalone-artifact",
+      "source_logical_path": "clamp.cpp",
+      "source_sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1",
+      "work_unit_id": null
+    },
+    "unit_namespace_sha256": "sha256:7e0d428fae25ae44ae7ef4b5726563fcdb7aea911d62ceea25d41b66a5671cf4"
+  },
   "independent_verifier": "NOT_RUN",
+  "layered_equivalence": {
+    "artifact_path": "layered-equivalence.json",
+    "artifact_sha256": "sha256:df0b472da5010debf2745d59eb126db7a7ca93b7badac79575d05e9ae367eb0f",
+    "status": "PASSED"
+  },
+  "limitations": [
+    "Only typed, side-effect-free functions using return, if, literals, names, and supported binary operators are in scope.",
+    "Object graphs, exceptions, async, reflection, I/O, framework, database, and concurrency semantics remain outside this route profile."
+  ],
+  "repository_execution_mode": false,
+  "repository_language_lifecycle": null,
   "route": "cpp-to-csharp",
-  "schema_version": 1,
-  "source_map_coverage": 0.0,
-  "status": "NOT_RUN"
+  "route_maturity": "LIMITED",
+  "route_pack_status": "DECLARED",
+  "schema_version": "1.0.0",
+  "scope": "typed-pure-function-v1",
+  "semantic_equivalence": {
+    "artifact_path": "semantic-equivalence.json",
+    "artifact_sha256": "sha256:7adf4e9288508c96fcfcebabd5e75427784276db5a30b58aec74fc96130cb799",
+    "difference_count": 0,
+    "source_ir_path": "source-semantic-ir.json",
+    "source_ir_sha256": "sha256:16d4835e9ee042427b3eb97c36f8410ef84cf58d3bc74794860edf57ae178268",
+    "status": "PASSED",
+    "target_ir_path": "target-semantic-ir.normalized.json",
+    "target_ir_sha256": "sha256:8b999ca00e2682357be2ba621fa7bab452aa71503a888b30d60e3e74fd8f8774"
+  },
+  "semantic_ir_sha256": "sha256:16d4835e9ee042427b3eb97c36f8410ef84cf58d3bc74794860edf57ae178268",
+  "source": {
+    "analyzer": "clang AST (JSON)",
+    "analyzer_version": "Apple clang version 21.0.0 (clang-2100.1.1.101)",
+    "function_name": "clamp",
+    "language": "cpp",
+    "path": "clamp.cpp",
+    "sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1"
+  },
+  "source_map_coverage": 1.0,
+  "source_validation": {
+    "artifact_path": "clamp.cpp",
+    "artifact_sha256": "sha256:8bf0ad52d8c66a4937da68acd847e86f25027d8e299cd7f2139d697e66b1b1b1",
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+          "-std=c++20",
+          "-isysroot",
+          "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+          "-Wall",
+          "-Wextra",
+          "-Werror",
+          "-o",
+          "source_harness",
+          "source_harness.cpp"
+        ],
+        "stderr": "",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "./source_harness"
+        ],
+        "stderr": "",
+        "stdout": "ELMOS_OBSERVATION\t0\ti64-dec\t10\nELMOS_OBSERVATION\t1\ti64-dec\t0\nELMOS_OBSERVATION\t2\ti64-dec\t7\n"
+      }
+    ],
+    "language": "cpp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "i64-dec",
+        "raw": "10",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "i64-dec",
+        "raw": "0",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "i64-dec",
+        "raw": "7",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "role": "source",
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++",
+      "executable_sha256": "7def90dd8829726686213a747fc5bff1583df933dae5edc55d755479e0bfe00a",
+      "language": "cpp",
+      "profile": [
+        "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
+        "xcode=26.6/17F113",
+        "macosx-sdk=26.5",
+        "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",
+        "c++20"
+      ],
+      "version": "Apple clang version 21.0.0 (clang-2100.1.1.101)"
+    }
+  },
+  "status": "PASSED",
+  "target": {
+    "function_name": "elmos_fn_bde6d03dcfad148a",
+    "language": "csharp",
+    "path": "Migrated.cs",
+    "sha256": "sha256:a5ae34c025ab472fa7697cc3686d20071ec4c96647f54e1ed9bf8da8bbeb2178"
+  },
+  "validation": {
+    "case_count": 3,
+    "commands": [
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "build",
+          "RouteHarness.csproj",
+          "-c",
+          "Release"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "  Determining projects to restore...\n  Restored /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-oicu0gj4/holdout/RouteHarness.csproj (in 3.43 sec).\n  RouteHarness -> /private/var/folders/4h/yp1x6drd3y92s2w4pthqh89c0000gn/T/elmos-cpp-to-csharp-oicu0gj4/holdout/bin/Release/net10.0/RouteHarness.dll\n\nBuild succeeded.\n    0 Warning(s)\n    0 Error(s)\n\nTime Elapsed 00:00:46.55\n"
+      },
+      {
+        "command": [
+          "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+          "run",
+          "--project",
+          "RouteHarness.csproj",
+          "-c",
+          "Release",
+          "--no-build"
+        ],
+        "stderr": "\nWelcome to .NET 10.0!\n---------------------\nSDK Version: 10.0.301\n\n----------------\nInstalled an ASP.NET Core HTTPS development certificate.\nTo trust the certificate, run 'dotnet dev-certs https --trust'\nLearn about HTTPS: https://aka.ms/dotnet-https\n\n----------------\nWrite your first app: https://aka.ms/dotnet-hello-world\nFind out what's new: https://aka.ms/dotnet-whats-new\nExplore documentation: https://aka.ms/dotnet-docs\nReport issues and find source on GitHub: https://github.com/dotnet/core\nUse 'dotnet --help' to see available commands or visit: https://aka.ms/dotnet-cli\n--------------------------------------------------------------------------------------\n",
+        "stdout": "ELMOS_OBSERVATION\t0\tb64\tMTA=\nELMOS_OBSERVATION\t1\tb64\tMA==\nELMOS_OBSERVATION\t2\tb64\tNw==\n"
+      }
+    ],
+    "language": "csharp",
+    "observations": [
+      {
+        "case_id": 0,
+        "encoding": "b64",
+        "raw": "MTA=",
+        "status": "RETURNED",
+        "value": 10
+      },
+      {
+        "case_id": 1,
+        "encoding": "b64",
+        "raw": "MA==",
+        "status": "RETURNED",
+        "value": 0
+      },
+      {
+        "case_id": 2,
+        "encoding": "b64",
+        "raw": "Nw==",
+        "status": "RETURNED",
+        "value": 7
+      }
+    ],
+    "status": "PASSED",
+    "toolchain": {
+      "auxiliary": null,
+      "auxiliary_sha256": null,
+      "executable": "/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+      "executable_sha256": "b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+      "language": "csharp",
+      "profile": [
+        "dotnet-profile-schema=v1",
+        "platform=Darwin/arm64",
+        "distribution=Homebrew-dotnet",
+        "homebrew-bundle-profile=local-macos26-20260904",
+        "dotnet-root=/opt/homebrew/Cellar/dotnet/10.0.301/libexec",
+        "sdk-version=10.0.301",
+        "hostfxr-version=10.0.9",
+        "runtime-framework=Microsoft.NETCore.App",
+        "runtime-version=10.0.9",
+        "rid=osx-arm64",
+        "targeting-pack-version=10.0.9",
+        "apphost-pack-version=10.0.9",
+        "wrapper-path=/opt/homebrew/Cellar/dotnet/10.0.301/bin/dotnet",
+        "wrapper-sha256=135ed085e642e17a1cf55cd61a039c53d79998579b5fafa607e8e731d18ab85e",
+        "wrapper-bytes=136",
+        "muxer-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/dotnet",
+        "muxer-sha256=b8195397b57f7df4e4f2c8626c9613738c9e57311d9b23f689846e88d616cbb2",
+        "muxer-bytes=140432",
+        "sdk-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/sdk/10.0.301",
+        "sdk-tree-sha256=bef3d3ea1d59cea9886bb8b9bc5c52174da2d923fdaa634e98395250b2d274ab",
+        "sdk-tree-file-count=3031",
+        "sdk-tree-bytes=360219604",
+        "hostfxr-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/host/fxr/10.0.9",
+        "hostfxr-tree-sha256=617b873814d0013e3005da134b7b1432c91d8a42407cd4554ceabc29cc0a0f3c",
+        "hostfxr-tree-file-count=1",
+        "hostfxr-tree-bytes=449376",
+        "runtime-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/shared/Microsoft.NETCore.App/10.0.9",
+        "runtime-tree-sha256=bd69ee3fb7f237deedb6f99532afc8023a9b8ab016dd60b101e4f5a95e0884b9",
+        "runtime-tree-file-count=188",
+        "runtime-tree-bytes=81526751",
+        "reference-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Ref/10.0.9",
+        "reference-pack-tree-sha256=da4febffbad4f86171e05436ad91885096c9a7d8a177a5480c1b4856e1d6e845",
+        "reference-pack-tree-file-count=348",
+        "reference-pack-tree-bytes=40730732",
+        "apphost-pack-path=/opt/homebrew/Cellar/dotnet/10.0.301/libexec/packs/Microsoft.NETCore.App.Host.osx-arm64/10.0.9",
+        "apphost-pack-tree-sha256=af2915a0316b1a6715304aaebd2b6dadda66463cdd296eeff42977cb2ace0789",
+        "apphost-pack-tree-file-count=7",
+        "apphost-pack-tree-bytes=11573800",
+        "hostfxr-sha256=9387e328807ac3d29fb0f203bbefdf07d10d4e2200e307515ac16273657267a2",
+        "hostpolicy-sha256=145952fb2f06831089127216152a3e4c47ab7ffb74ddaaf4cd06410314de57ff"
+      ],
+      "version": "10.0.301"
+    }
+  }
 }

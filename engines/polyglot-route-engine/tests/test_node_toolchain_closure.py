@@ -615,8 +615,18 @@ def test_node_closure_rejects_libada_content_drift_even_with_recomputed_identity
 )
 def test_node_closure_accepts_each_complete_legacy_profile(
     profile: dict[str, str | int],
+    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     candidate = _synthetic_profile_identity(profile, profile, profile, profile)
+    # This test isolates exact profile selection from closure canonicalization.
+    # Full manifest canonicalization is exercised by the real node_closure
+    # fixture and the tamper tests above; a three-component synthetic manifest
+    # intentionally cannot reproduce a complete 25-component closure digest.
+    monkeypatch.setattr(
+        toolchains,
+        "_node_closure_identity",
+        lambda _manifest: candidate,
+    )
 
     assert candidate["sha256"] == profile["closure_sha256"]
     assert candidate["bytes"] == profile["closure_bytes"]

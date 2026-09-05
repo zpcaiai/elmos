@@ -39,23 +39,23 @@
 }
 
 int main() {
-    const auto actual_0 = clamp(-10, 0, 100);
+    const auto actual_0 = elmos_fn_c975e17d9e6a9021(-10, 0, 100);
     const auto expected_0 = 0;
     if (actual_0 != expected_0) return 1;
     std::cout << "ELMOS_OBSERVATION\t0\ti64-dec\t" << std::to_string(actual_0) << "\n";
-    const auto actual_1 = clamp(55, 0, 100);
+    const auto actual_1 = elmos_fn_c975e17d9e6a9021(55, 0, 100);
     const auto expected_1 = 55;
     if (actual_1 != expected_1) return 2;
     std::cout << "ELMOS_OBSERVATION\t1\ti64-dec\t" << std::to_string(actual_1) << "\n";
-    const auto actual_2 = clamp(101, 0, 100);
+    const auto actual_2 = elmos_fn_c975e17d9e6a9021(101, 0, 100);
     const auto expected_2 = 100;
     if (actual_2 != expected_2) return 3;
     std::cout << "ELMOS_OBSERVATION\t2\ti64-dec\t" << std::to_string(actual_2) << "\n";
-    const auto actual_3 = clamp(0, 0, 100);
+    const auto actual_3 = elmos_fn_c975e17d9e6a9021(0, 0, 100);
     const auto expected_3 = 0;
     if (actual_3 != expected_3) return 4;
     std::cout << "ELMOS_OBSERVATION\t3\ti64-dec\t" << std::to_string(actual_3) << "\n";
-    const auto actual_4 = clamp(100, 0, 100);
+    const auto actual_4 = elmos_fn_c975e17d9e6a9021(100, 0, 100);
     const auto expected_4 = 100;
     if (actual_4 != expected_4) return 5;
     std::cout << "ELMOS_OBSERVATION\t4\ti64-dec\t" << std::to_string(actual_4) << "\n";

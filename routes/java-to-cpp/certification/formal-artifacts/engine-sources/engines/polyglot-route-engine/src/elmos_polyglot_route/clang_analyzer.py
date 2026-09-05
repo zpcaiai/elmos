@@ -188,20 +188,27 @@ def _run_clang(
         scratch = root / "tmp"
         home.mkdir(mode=0o700)
         scratch.mkdir(mode=0o700)
-        completed = subprocess.run(
-            command,
-            cwd=source.parent,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=120,
-            env=sanitized_subprocess_env(
-                home=home,
-                temp_dir=scratch,
-                executable_dirs=(Path(executable).resolve().parent,),
-            ),
-        )
-    errors = [line for line in completed.stderr.splitlines() if ": error:" in line or ": fatal error:" in line]
+        try:
+            completed = subprocess.run(
+                command,
+                cwd=source.parent,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=120,
+                env=sanitized_subprocess_env(
+                    home=home,
+                    temp_dir=scratch,
+                    executable_dirs=(Path(executable).resolve().parent,),
+                ),
+            )
+        except subprocess.TimeoutExpired as error:
+            raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
+    errors = [
+        line
+        for line in completed.stderr.splitlines()
+        if ": error:" in line or ": fatal error:" in line
+    ]
     if errors:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:" + "; ".join(errors[:5])[:2_000])
     if completed.returncode != 0 or not completed.stdout.strip():

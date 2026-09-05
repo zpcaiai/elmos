@@ -707,7 +707,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         php_route_execution = route_pack_job.index(
             "--route-set php-php85-active-completion-18"
         )
-        route_gates = route_pack_job.index("from route_sets import EVIDENCED_ROUTE_KEYS")
+        route_gates = route_pack_job.index(
+            "from route_sets import CORE_ROUTE_KEYS, V3_EXACT_ROUTE_KEYS"
+        )
         active_route_set = route_pack_job.index(
             "--verify-route-set thirteen-language-complete-156"
         )
@@ -724,6 +726,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertLess(active_route_set, historical_route_set)
         self.assertIn(
             '[sys.executable, str(gate), str(Path("routes") / route_key)]',
+            route_pack_job,
+        )
+        self.assertIn(
+            "for route_key in (*CORE_ROUTE_KEYS, *V3_EXACT_ROUTE_KEYS)",
             route_pack_job,
         )
         self.assertNotIn("for route in routes/*/", route_pack_job)

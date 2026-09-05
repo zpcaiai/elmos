@@ -22,10 +22,18 @@ from enum import StrEnum
 from pathlib import Path
 from typing import Any
 
-import z3  # type: ignore[import-untyped]
+try:
+    import z3  # type: ignore[import-untyped]
+except ImportError:
+    z3 = None
 
 from . import canonical, types
 from .emitter import EmittedFile
+from .identifier_hygiene import (
+    IdentifierPlan,
+    IdentifierUnitNamespace,
+    alpha_normalize_target,
+)
 from .models import (
     TYPED_PURE_MODULE_PROFILE,
     Expression,
@@ -52,6 +60,9 @@ L1_PLUS_UNSUPPORTED = (
 FORMAL_RELATION_SCOPE = "canonical-normalized-source-ir-to-target-relift-ir"
 PURE_MODULE_PROFILE = TYPED_PURE_MODULE_PROFILE
 SPECIALIZED_INPUT_DOMAIN = "canonical-finite-no-error-input-domain"
+NODEJS_INPUT_DOMAIN = "nodejs-es2022-esm-safe-integer-finite-v1"
+SPECIALIZED_OUT_OF_DOMAIN_BEHAVIOR = "BLOCKED_NOT_EQUIVALENTLY_MODELED"
+NODEJS_OUT_OF_DOMAIN_BEHAVIOR = "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1"
 
 
 class EvidenceStatus(StrEnum):
@@ -138,11 +149,7 @@ def _without_source_spans(value: Any) -> Any:
     """Return the semantic value used by hashes/proofs, excluding locations."""
 
     if isinstance(value, dict):
-        return {
-            key: _without_source_spans(item)
-            for key, item in value.items()
-            if key != "source_span"
-        }
+        return {key: _without_source_spans(item) for key, item in value.items() if key != "source_span"}
     if isinstance(value, list):
         return [_without_source_spans(item) for item in value]
     return value
@@ -207,23 +214,108 @@ def verify_formal_input_closure(root: Path, reference: dict[str, Any]) -> dict[s
         artifact_reference = _mapping(binding.get("artifact"), f"{label}.artifact")
         verify_content_reference(root, artifact_reference)
         semantic_ir = _mapping(binding.get("semantic_ir"), f"{label}.semantic_ir")
+        artifact_path = root.resolve() / str(artifact_reference["path"])
+        try:
+            persisted_semantic_ir_bytes = artifact_path.read_bytes()
+            persisted_semantic_ir = json.loads(persisted_semantic_ir_bytes.decode("utf-8"))
+        except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+            raise RouteError(f"FORMAL_INPUT_IR_ARTIFACT_JSON_INVALID:{label}") from error
+        if persisted_semantic_ir != semantic_ir:
+            raise RouteError(f"FORMAL_INPUT_IR_ARTIFACT_CONTENT_MISMATCH:{label}")
+        canonical_semantic_ir_bytes = canonical_json_bytes(semantic_ir)
+        canonical_semantic_ir_sha256 = sha256_bytes(canonical_semantic_ir_bytes)
+        if artifact_reference.get("sha256") != canonical_semantic_ir_sha256:
+            raise RouteError(f"FORMAL_INPUT_IR_ARTIFACT_DIGEST_MISMATCH:{label}")
+        if persisted_semantic_ir_bytes != canonical_semantic_ir_bytes:
+            raise RouteError(f"FORMAL_INPUT_IR_ARTIFACT_BYTES_MISMATCH:{label}")
         functions = semantic_ir.get("functions")
         if not isinstance(functions, list) or len(functions) != 1:
             raise RouteError(f"FORMAL_INPUT_FUNCTION_SET_INVALID:{label}")
         formal_function = _mapping(binding.get("formal_function"), f"{label}.formal_function")
         if formal_function != _without_source_spans(functions[0]):
             raise RouteError(f"FORMAL_INPUT_FUNCTION_DRIFT:{label}")
-        if binding.get("semantic_ir_sha256") != sha256_bytes(canonical_json_bytes(semantic_ir)):
+        if binding.get("semantic_ir_sha256") != canonical_semantic_ir_sha256:
             raise RouteError(f"FORMAL_INPUT_SEMANTIC_IR_DIGEST_MISMATCH:{label}")
         if binding.get("formal_function_sha256") != sha256_bytes(canonical_json_bytes(formal_function)):
             raise RouteError(f"FORMAL_INPUT_FUNCTION_DIGEST_MISMATCH:{label}")
+
+    hygiene = _mapping(payload.get("identifier_hygiene"), "identifier_hygiene")
+    if hygiene.get("kind") != "elmos.verified-alpha-normalization":
+        raise RouteError("FORMAL_INPUT_IDENTIFIER_HYGIENE_KIND_INVALID")
+    plan_reference = _mapping(hygiene.get("plan"), "identifier_hygiene.plan")
+    verify_content_reference(root, plan_reference)
+    plan_path = root.resolve() / str(plan_reference["path"])
+    try:
+        plan_payload = json.loads(plan_path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RouteError("FORMAL_INPUT_IDENTIFIER_PLAN_JSON_INVALID") from error
+    plan = IdentifierPlan.from_mapping(_mapping(plan_payload, "identifier_hygiene.plan_payload"))
+    unit_namespace = IdentifierUnitNamespace.from_mapping(
+        _mapping(hygiene.get("unit_namespace"), "identifier_hygiene.unit_namespace")
+    )
+    if (
+        hygiene.get("plan_digest") != plan.digest
+        or plan_reference.get("sha256") != plan.digest
+        or hygiene.get("policy_id") != plan.policy_id
+        or hygiene.get("policy_sha256") != plan.policy_sha256
+        or hygiene.get("unit_namespace_sha256") != unit_namespace.digest
+        or plan.unit_namespace.to_mapping() != unit_namespace.to_mapping()
+    ):
+        raise RouteError("FORMAL_INPUT_IDENTIFIER_PLAN_BINDING_MISMATCH")
+
+    source_binding = _mapping(payload.get("source_normalized_ir"), "source_normalized_ir")
+    target_binding = _mapping(payload.get("target_relift_normalized_ir"), "target_relift_normalized_ir")
+    source_ir = SemanticIR.from_mapping(_mapping(source_binding.get("semantic_ir"), "source_semantic_ir"))
+    target_ir = SemanticIR.from_mapping(_mapping(target_binding.get("semantic_ir"), "target_semantic_ir"))
+    raw_binding = _mapping(hygiene.get("raw_target_relift_ir"), "identifier_hygiene.raw_target_relift_ir")
+    if raw_binding.get("role") != "emitted-target-relift-raw-ir":
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_ROLE_INVALID")
+    raw_reference = _mapping(raw_binding.get("artifact"), "identifier_hygiene.raw_target_relift_ir.artifact")
+    verify_content_reference(root, raw_reference)
+    raw_mapping = _mapping(raw_binding.get("semantic_ir"), "identifier_hygiene.raw_target_relift_ir.semantic_ir")
+    raw_path = root.resolve() / str(raw_reference["path"])
+    try:
+        persisted_raw_bytes = raw_path.read_bytes()
+        persisted_raw_mapping = json.loads(persisted_raw_bytes.decode("utf-8"))
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_ARTIFACT_JSON_INVALID") from error
+    if persisted_raw_mapping != raw_mapping:
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_ARTIFACT_CONTENT_MISMATCH")
+    canonical_raw_bytes = canonical_json_bytes(raw_mapping)
+    canonical_raw_sha256 = sha256_bytes(canonical_raw_bytes)
+    if raw_reference.get("sha256") != canonical_raw_sha256:
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_ARTIFACT_DIGEST_MISMATCH")
+    if persisted_raw_bytes != canonical_raw_bytes:
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_ARTIFACT_BYTES_MISMATCH")
+    raw_functions = raw_mapping.get("functions")
+    if not isinstance(raw_functions, list) or len(raw_functions) != 1:
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_FUNCTION_SET_INVALID")
+    raw_function = _mapping(raw_binding.get("formal_function"), "identifier_hygiene.raw_target_relift_ir.function")
+    if (
+        raw_function != _without_source_spans(raw_functions[0])
+        or raw_binding.get("semantic_ir_sha256") != canonical_raw_sha256
+        or raw_binding.get("formal_function_sha256") != sha256_bytes(canonical_json_bytes(raw_function))
+    ):
+        raise RouteError("FORMAL_INPUT_RAW_TARGET_IR_DRIFT")
+    raw_target_ir = SemanticIR.from_mapping(raw_mapping)
+    normalized = alpha_normalize_target(source_ir, raw_target_ir, plan)
+    if normalized.to_mapping() != target_ir.to_mapping():
+        raise RouteError("FORMAL_INPUT_ALPHA_NORMALIZATION_MISMATCH")
+    normalized_reference = _mapping(hygiene.get("normalized_target_ir"), "identifier_hygiene.normalized_target_ir")
+    if normalized_reference != _mapping(target_binding.get("artifact"), "target_relift_normalized_ir.artifact"):
+        raise RouteError("FORMAL_INPUT_NORMALIZED_TARGET_REFERENCE_MISMATCH")
+    if (
+        hygiene.get("source_function_name") != source_ir.functions[0].name
+        or hygiene.get("target_function_name") != raw_target_ir.functions[0].name
+    ):
+        raise RouteError("FORMAL_INPUT_IDENTIFIER_FUNCTION_BINDING_MISMATCH")
     return payload
 
 
 def formal_solver_identity() -> dict[str, Any]:
     return {
         "name": "z3",
-        "version": z3.get_version_string(),
+        "version": z3.get_version_string() if z3 is not None else "unavailable",
         "timeout_ms": FORMAL_TIMEOUT_MS,
         "random_seed": 0,
         "theories": ["QF_BV", "FP", "Seq", "Bool", "Int"],
@@ -451,12 +543,10 @@ def _statement_span_tree(statement: Statement, label: str) -> _SpanTree:
     if statement.condition is not None:
         children.append(_expression_span_tree(statement.condition, f"{label}/condition"))
     children.extend(
-        _statement_span_tree(child, f"{label}/then/{index}")
-        for index, child in enumerate(statement.then_body)
+        _statement_span_tree(child, f"{label}/then/{index}") for index, child in enumerate(statement.then_body)
     )
     children.extend(
-        _statement_span_tree(child, f"{label}/else/{index}")
-        for index, child in enumerate(statement.else_body)
+        _statement_span_tree(child, f"{label}/else/{index}") for index, child in enumerate(statement.else_body)
     )
     return _SpanTree(label, statement.source_span, tuple(children))
 
@@ -502,18 +592,14 @@ def validate_ir_source_spans(
                 raise RouteError(f"SOURCE_SPAN_FILE_MISMATCH:{role}:{child.label}")
             if span.end_byte > len(artifact_bytes):
                 raise RouteError(f"SOURCE_SPAN_OUT_OF_BOUNDS:{role}:{child.label}")
-            if parent is not None and (
-                span.start_byte < parent.start_byte or span.end_byte > parent.end_byte
-            ):
+            if parent is not None and (span.start_byte < parent.start_byte or span.end_byte > parent.end_byte):
                 raise RouteError(f"SOURCE_SPAN_PARENT_COVERAGE_INVALID:{role}:{child.label}")
             ranged.append((span.start_byte, span.end_byte, child.label))
             validate_siblings(child.children, span)
         ranged.sort()
         for previous, current in zip(ranged, ranged[1:], strict=False):
             if previous[1] > current[0]:
-                raise RouteError(
-                    f"SOURCE_SPAN_SIBLING_OVERLAP:{role}:{previous[2]}:{current[2]}"
-                )
+                raise RouteError(f"SOURCE_SPAN_SIBLING_OVERLAP:{role}:{previous[2]}:{current[2]}")
 
     validate_siblings(trees, None)
     return {
@@ -595,13 +681,17 @@ def chunk_equivalence(
         ),
     }
     spans_complete = all(item["concrete_span"] is not None for item in (*source_chunks, *target_chunks))
-    if require_concrete_spans and spans_complete and all(
-        item is not None
-        for item in (
-            source_artifact_bytes,
-            target_artifact_bytes,
-            source_logical_file,
-            target_logical_file,
+    if (
+        require_concrete_spans
+        and spans_complete
+        and all(
+            item is not None
+            for item in (
+                source_artifact_bytes,
+                target_artifact_bytes,
+                source_logical_file,
+                target_logical_file,
+            )
         )
     ):
         assert source_artifact_bytes is not None
@@ -634,10 +724,7 @@ def chunk_equivalence(
             and mismatch_count == 0
             and not unexpected
             and coverage == 1.0
-            and (
-                not require_concrete_spans
-                or span_validation["status"] == EvidenceStatus.PASSED
-            )
+            and (not require_concrete_spans or span_validation["status"] == EvidenceStatus.PASSED)
         )
         else EvidenceStatus.FAILED
     )
@@ -653,12 +740,8 @@ def chunk_equivalence(
         "required_source_chunk_count": required,
         "mapped_source_chunk_count": mapped,
         "mismatch_count": mismatch_count,
-        "missing_source_span_count": sum(
-            1 for item in source_chunks if item["concrete_span"] is None
-        ),
-        "missing_target_span_count": sum(
-            1 for item in target_chunks if item["concrete_span"] is None
-        ),
+        "missing_source_span_count": sum(1 for item in source_chunks if item["concrete_span"] is None),
+        "missing_target_span_count": sum(1 for item in target_chunks if item["concrete_span"] is None),
         "unexpected_target_chunk_count": len(unexpected),
         "unexpected_target_paths": unexpected,
         "coverage": coverage,
@@ -703,6 +786,46 @@ def _same_value(left: object, right: object, value_type: str) -> bool:
     return False
 
 
+def _normalize_independent_expected(value: object, value_type: str) -> object:
+    """Normalize only the representation of a typed independent oracle value.
+
+    JSON does not retain the distinction between an integer token used for a
+    canonical ``number`` and an FP64 value such as ``5.0``.  Persist behavior
+    evidence in the representation required by the declared return type so
+    downstream byte-level closure checks compare like with like.  This must
+    remain independent of canonical and native observations: an integer is
+    widened only when the conversion is exact, while every other type remains
+    strict.  Existing floats are returned unchanged, preserving negative-zero
+    and their binary64 bit pattern.
+    """
+
+    if value_type == "number":
+        if type(value) is float:
+            return value
+        if type(value) is int:
+            try:
+                normalized = float(value)
+            except OverflowError as error:
+                raise RouteError("BEHAVIOR_EXPECTED_NUMBER_NOT_EXACT_BINARY64") from error
+            if not math.isfinite(normalized) or int(normalized) != value:
+                raise RouteError("BEHAVIOR_EXPECTED_NUMBER_NOT_EXACT_BINARY64")
+            return normalized
+        raise RouteError("BEHAVIOR_EXPECTED_TYPE_MISMATCH:number")
+    if value_type == "integer":
+        if type(value) is int:
+            return value
+        raise RouteError("BEHAVIOR_EXPECTED_TYPE_MISMATCH:integer")
+    if value_type == "boolean":
+        if type(value) is bool:
+            return value
+        raise RouteError("BEHAVIOR_EXPECTED_TYPE_MISMATCH:boolean")
+    if value_type == "string":
+        if type(value) is str:
+            return value
+        raise RouteError("BEHAVIOR_EXPECTED_TYPE_MISMATCH:string")
+    raise RouteError(f"BEHAVIOR_EXPECTED_TYPE_UNSUPPORTED:{value_type}")
+
+
 def behavior_equivalence(
     function: Function,
     cases: list[dict[str, Any]],
@@ -728,7 +851,7 @@ def behavior_equivalence(
             canonical_error = type(error).__name__
         source_native = source_by_case.get(case_id)
         target_native = target_by_case.get(case_id)
-        expected = case["expected"]
+        expected = _normalize_independent_expected(case["expected"], function.return_type)
         oracle_agrees = canonical_status == "RETURNED" and _same_value(
             canonical_value,
             expected,
@@ -841,7 +964,7 @@ class _Encoder:
         for parameter in function.parameters:
             variable = self._variable(f"{role}_{parameter.name}", parameter.type)
             self.environment[parameter.name] = variable
-            if runtime_language == "typescript" and parameter.type == "integer":
+            if runtime_language in {"typescript", "react", "javascript"} and parameter.type == "integer":
                 self._safe_integer_assumption(variable, f"parameter:{parameter.name}")
 
     @staticmethod
@@ -871,7 +994,16 @@ class _Encoder:
     def _safe_integer_assumption(self, value: Any, label: str) -> None:
         signed = z3.BV2Int(value, is_signed=True)
         self.assumptions.append(z3.And(signed >= -SAFE_INTEGER_MAX, signed <= SAFE_INTEGER_MAX))
-        self.assumption_labels.append(f"typescript-safe-integer:{label}")
+        self.assumption_labels.append(f"{self.runtime_language}-safe-integer:{label}")
+
+    def _finite_number_assumption(self, value: Any, label: str) -> None:
+        self.assumptions.append(
+            z3.And(
+                z3.Not(z3.fpIsNaN(value)),
+                z3.Not(z3.fpIsInf(value)),
+            )
+        )
+        self.assumption_labels.append(f"{self.runtime_language}-finite-number:{label}")
 
     @staticmethod
     def _first_error(left: Any, right: Any) -> Any:
@@ -915,6 +1047,12 @@ class _Encoder:
             elif value_type == "number":
                 if not isinstance(expression.value, float):
                     raise _UnsupportedFormal("FORMAL_NUMBER_LITERAL_INVALID")
+                if (
+                    self.runtime_language in {"typescript", "react", "javascript"}
+                    and expression.value == 0.0
+                    and math.copysign(1.0, expression.value) < 0
+                ):
+                    raise _UnsupportedFormal(f"{self.runtime_language.upper()}_NEGATIVE_ZERO_LITERAL_UNSUPPORTED")
                 value = z3.FPVal(expression.value, z3.Float64())
             elif value_type == "boolean":
                 value = z3.BoolVal(bool(expression.value))
@@ -959,7 +1097,7 @@ class _Encoder:
                     value = left.value / right.value if operator == "/" else z3.SRem(left.value, right.value)
                 else:
                     raise _UnsupportedFormal(f"FORMAL_INTEGER_OPERATOR_UNSUPPORTED:{operator}")
-                if self.runtime_language == "typescript":
+                if self.runtime_language in {"typescript", "react", "javascript"}:
                     self._safe_integer_assumption(value, f"expression:{operator}:{len(self.assumptions)}")
                 error = z3.If(prior_error != 0, prior_error, operation_error)
                 return _ExpressionDenotation(value, "integer", error)
@@ -980,6 +1118,11 @@ class _Encoder:
                     raise _UnsupportedFormal(f"FORMAL_FLOAT_OPERATOR_UNSUPPORTED:{operator}")
                 zero_error = z3.fpIsZero(right_value) if operator in {"/", "%"} else z3.BoolVal(False)
                 operation_error = z3.If(zero_error, z3.IntVal(2), z3.IntVal(0))
+                if self.runtime_language in {"typescript", "react", "javascript"}:
+                    self._finite_number_assumption(
+                        value,
+                        f"expression:{operator}:{len(self.assumptions)}",
+                    )
                 return _ExpressionDenotation(
                     value,
                     "number",
@@ -1076,7 +1219,13 @@ class _Encoder:
         return current
 
     def encode(self) -> _FunctionDenotation:
-        return self.statements(self.function.body, "/body")
+        denotation = self.statements(self.function.body, "/body")
+        if (
+            self.runtime_language in {"typescript", "react", "javascript"}
+            and self.function.return_type == "number"
+        ):
+            self._finite_number_assumption(denotation.value, "return")
+        return denotation
 
 
 def _value_divergence(left: _FunctionDenotation, right: _FunctionDenotation) -> Any:
@@ -1133,15 +1282,14 @@ def formal_equivalence(
 ) -> tuple[dict[str, Any], str]:
     formal_input = dict(formal_input_reference) if formal_input_reference else None
     specialized_pair = is_specialized_pair(source_language, target_language)
-    selected_input_domain = input_domain or (
-        SPECIALIZED_INPUT_DOMAIN if specialized_pair else "profile-total-domain"
-    )
+    selected_input_domain = input_domain or (SPECIALIZED_INPUT_DOMAIN if specialized_pair else "profile-total-domain")
     if selected_input_domain not in {
         SPECIALIZED_INPUT_DOMAIN,
+        NODEJS_INPUT_DOMAIN,
         "profile-total-domain",
     }:
         raise RouteError(f"FORMAL_INPUT_DOMAIN_UNSUPPORTED:{selected_input_domain}")
-    no_error_domain = selected_input_domain == SPECIALIZED_INPUT_DOMAIN
+    no_error_domain = selected_input_domain in {SPECIALIZED_INPUT_DOMAIN, NODEJS_INPUT_DOMAIN}
     input_reference_valid = formal_input is None or (
         isinstance(formal_input.get("path"), str) and formal_input.get("sha256") == input_digest
     )
@@ -1162,7 +1310,7 @@ def formal_equivalence(
         },
         "solver": formal_solver_identity(),
         "assumption_boundary": (
-            f"typed-pure-function-v1 / L0 / {SPECIALIZED_INPUT_DOMAIN}"
+            f"typed-pure-function-v1 / L0 / {selected_input_domain}"
             if no_error_domain
             else "typed-pure-function-v1 / L0 only"
         ),
@@ -1272,9 +1420,7 @@ def formal_equivalence(
         # is therefore the machine-checkable domain on which neither
         # canonical denotation raises an arithmetic error.  Satisfiability is
         # checked below, so an empty safe domain cannot pass vacuously.
-        encoded_assumptions.extend(
-            [source_value.error == 0, aligned_target_value.error == 0]
-        )
+        encoded_assumptions.extend([source_value.error == 0, aligned_target_value.error == 0])
         assumption_labels.extend(
             [
                 "canonical-no-error-domain:source",
@@ -1460,14 +1606,23 @@ def validate_pure_module_manifest_shape(manifest: dict[str, Any]) -> None:
     if manifest.get("schema_version") != SCHEMA_VERSION or manifest.get("profile") != PURE_MODULE_PROFILE:
         raise RouteError("PURE_MODULE_CASE_MANIFEST_PROFILE_INVALID")
     composition = manifest.get("composition")
-    expected_composition = {
-        "call_graph": [],
-        "global_state": "none",
-        "effects": "none",
-        "exceptions": "canonical-arithmetic-errors-only",
-        "input_domain": SPECIALIZED_INPUT_DOMAIN,
-    }
-    if not isinstance(composition, dict) or composition != expected_composition:
+    expected_compositions = (
+        {
+            "call_graph": [],
+            "global_state": "none",
+            "effects": "none",
+            "exceptions": "canonical-arithmetic-errors-only",
+            "input_domain": SPECIALIZED_INPUT_DOMAIN,
+        },
+        {
+            "call_graph": [],
+            "global_state": "none",
+            "effects": "none",
+            "exceptions": "domain-guards-fail-closed-before-execution",
+            "input_domain": NODEJS_INPUT_DOMAIN,
+        },
+    )
+    if not isinstance(composition, dict) or composition not in expected_compositions:
         raise RouteError("PURE_MODULE_CASE_MANIFEST_COMPOSITION_INVALID")
     entries = manifest.get("functions")
     if not isinstance(entries, list):
@@ -1485,9 +1640,7 @@ def validate_pure_module_manifest_shape(manifest: dict[str, Any]) -> None:
             raise RouteError(f"PURE_MODULE_CASE_MANIFEST_PARAMETERS_INVALID:{entry_index}")
         for parameter_index, parameter in enumerate(parameters):
             if not isinstance(parameter, dict):
-                raise RouteError(
-                    f"PURE_MODULE_CASE_MANIFEST_PARAMETER_INVALID:{entry_index}:{parameter_index}"
-                )
+                raise RouteError(f"PURE_MODULE_CASE_MANIFEST_PARAMETER_INVALID:{entry_index}:{parameter_index}")
             _require_exact_keys(
                 parameter,
                 {"name", "type"},
@@ -1538,9 +1691,7 @@ def normalize_pure_module_case_manifest(
                 raise RouteError(f"PURE_MODULE_CASE_ARGUMENT_COUNT_MISMATCH:{symbol}:{case_index}")
             for parameter, argument in zip(function.parameters, arguments, strict=True):
                 if not _case_value_matches_type(argument, parameter.type):
-                    raise RouteError(
-                        f"PURE_MODULE_CASE_ARGUMENT_TYPE_MISMATCH:{symbol}:{case_index}:{parameter.name}"
-                    )
+                    raise RouteError(f"PURE_MODULE_CASE_ARGUMENT_TYPE_MISMATCH:{symbol}:{case_index}:{parameter.name}")
             if not _case_value_matches_type(case["expected"], function.return_type):
                 raise RouteError(f"PURE_MODULE_CASE_EXPECTED_TYPE_MISMATCH:{symbol}:{case_index}")
             normalized_case = {"args": list(arguments), "expected": case["expected"]}
@@ -1575,6 +1726,8 @@ def module_equivalence(
     target_inventory_sha256: str,
     target_inventory_byte_count: int,
     whole_file_closure: dict[str, Any],
+    identifier_hygiene: dict[str, Any],
+    javascript_esm_descriptor: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
     """Compose per-function layers for one independent pure-function module.
 
@@ -1591,8 +1744,7 @@ def module_equivalence(
     target_symbols = sorted(target_index)
     if source_symbols != target_symbols:
         raise RouteError(
-            "PURE_MODULE_SYMBOL_SET_MISMATCH:"
-            f"source={','.join(source_symbols)}:target={','.join(target_symbols)}"
+            f"PURE_MODULE_SYMBOL_SET_MISMATCH:source={','.join(source_symbols)}:target={','.join(target_symbols)}"
         )
     for symbol in source_symbols:
         if source_index[symbol].signature_mapping() != target_index[symbol].signature_mapping():
@@ -1603,13 +1755,20 @@ def module_equivalence(
     if set(target_observations) != set(source_index):
         raise RouteError("PURE_MODULE_TARGET_OBSERVATION_SYMBOL_SET_MISMATCH")
 
+    composition_contract = case_manifest.get("composition")
+    if not isinstance(composition_contract, dict):
+        raise RouteError("PURE_MODULE_CASE_MANIFEST_COMPOSITION_INVALID")
+    input_domain = str(composition_contract.get("input_domain"))
+    out_of_domain_behavior = (
+        NODEJS_OUT_OF_DOMAIN_BEHAVIOR if input_domain == NODEJS_INPUT_DOMAIN else SPECIALIZED_OUT_OF_DOMAIN_BEHAVIOR
+    )
     module_input = {
         "profile": PURE_MODULE_PROFILE,
         "route": {
             "source_language": source.source_language,
             "target_language": target.source_language,
         },
-        "input_domain": SPECIALIZED_INPUT_DOMAIN,
+        "input_domain": input_domain,
         "source_artifact_sha256": source_artifact_sha256,
         "target_artifact_sha256": target_artifact_sha256,
         "source_artifact_byte_count": len(source_artifact_bytes),
@@ -1625,7 +1784,10 @@ def module_equivalence(
         "target_inventory_sha256": target_inventory_sha256,
         "target_inventory_byte_count": target_inventory_byte_count,
         "whole_file_closure_sha256": sha256_bytes(canonical_json_bytes(whole_file_closure)),
+        "identifier_hygiene": identifier_hygiene,
     }
+    if javascript_esm_descriptor is not None:
+        module_input["javascript_esm_descriptor"] = javascript_esm_descriptor
     module_input_sha256 = sha256_bytes(canonical_json_bytes(module_input))
     function_reports: list[dict[str, Any]] = []
     proof_closures_by_symbol: dict[str, dict[str, Any]] = {}
@@ -1666,7 +1828,7 @@ def module_equivalence(
                 "source_language": source.source_language,
                 "target_language": target.source_language,
             },
-            "input_domain": SPECIALIZED_INPUT_DOMAIN,
+            "input_domain": input_domain,
             "module_input_sha256": module_input_sha256,
             "symbol": symbol,
             "signature": source_function.signature_mapping(),
@@ -1675,6 +1837,33 @@ def module_equivalence(
             "target_function": target_function_mapping,
             "target_function_sha256": sha256_bytes(canonical_json_bytes(target_function_mapping)),
             "case_manifest_sha256": case_manifest_sha256,
+            "identifier_hygiene": {
+                "plan": {
+                    "role": "identifier-plan",
+                    "path": identifier_hygiene["plan"]["path"],
+                    "sha256": identifier_hygiene["plan"]["sha256"],
+                    "bytes": identifier_hygiene["plan"]["bytes"],
+                },
+                "unit_namespace": identifier_hygiene["unit_namespace"],
+                "unit_namespace_sha256": identifier_hygiene["unit_namespace_sha256"],
+                "raw_target_ir": {
+                    "role": "raw-target-ir",
+                    "path": identifier_hygiene["raw_target_ir"]["path"],
+                    "sha256": identifier_hygiene["raw_target_ir"]["sha256"],
+                    "bytes": identifier_hygiene["raw_target_ir"]["bytes"],
+                },
+                "normalized_target_ir": {
+                    "role": "normalized-target-ir",
+                    "path": identifier_hygiene["normalized_target_ir"]["path"],
+                    "sha256": identifier_hygiene["normalized_target_ir"]["sha256"],
+                    "bytes": identifier_hygiene["normalized_target_ir"]["bytes"],
+                },
+                "function": next(
+                    function_mapping
+                    for function_mapping in identifier_hygiene["functions"]
+                    if function_mapping["canonical_symbol"] == symbol
+                ),
+            },
         }
         formal_input_sha256 = sha256_bytes(canonical_json_bytes(formal_input))
         formal_input_path = f"formal-function-{function_index:03d}-input.json"
@@ -1691,7 +1880,7 @@ def module_equivalence(
             target.source_language,
             formal_input_sha256,
             formal_input_reference=formal_input_reference,
-            input_domain=SPECIALIZED_INPUT_DOMAIN,
+            input_domain=input_domain,
         )
         solver_input_sha256 = sha256_bytes(smt2.encode("utf-8"))
         assumptions = formal.get("assumptions")
@@ -1821,12 +2010,8 @@ def module_equivalence(
             "source_profile_symbols": source_symbols,
             "target_profile_symbols": target_symbols,
             "target_helper_symbols": whole_file_closure["target_helper_symbols"],
-            "verified_language_prelude": whole_file_closure[
-                "verified_language_prelude"
-            ],
-            "verified_language_wrapper": whole_file_closure[
-                "verified_language_wrapper"
-            ],
+            "verified_language_prelude": whole_file_closure["verified_language_prelude"],
+            "verified_language_wrapper": whole_file_closure["verified_language_wrapper"],
             "manifest_symbols": sorted(cases_by_symbol),
             "exact_profile_symbol_set": True,
             "exact_generated_helper_symbol_set": True,
@@ -1835,14 +2020,10 @@ def module_equivalence(
             "independence": {
                 "source_user_call_graph_edges": [],
                 "source_user_call_graph_closure": "EMPTY_AND_CLOSED",
-                "target_call_graph_policy": whole_file_closure[
-                    "target_call_graph_policy"
-                ],
+                "target_call_graph_policy": whole_file_closure["target_call_graph_policy"],
                 "target_call_graph": whole_file_closure["target_call_graph"],
                 "target_generated_helper_symbols": whole_file_closure["target_helper_symbols"],
-                "target_builtin_normalizations": whole_file_closure[
-                    "target_builtin_normalizations"
-                ],
+                "target_builtin_normalizations": whole_file_closure["target_builtin_normalizations"],
                 "function_calls": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
                 "mutable_state": "UNSUPPORTED",
                 "shared_state": "ABSENT_BY_IR_CONSTRUCTION",
@@ -1856,19 +2037,15 @@ def module_equivalence(
             "status": EvidenceStatus.PASSED if passed else EvidenceStatus.FAILED,
             "proof_strength": "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS",
             "input_domain": module_input["input_domain"],
-            "out_of_domain_arithmetic_behavior": "BLOCKED_NOT_EQUIVALENTLY_MODELED",
+            "out_of_domain_arithmetic_behavior": out_of_domain_behavior,
             "original_source_bytes_theorem": False,
             "source_compiler_runtime_soundness": "NOT_RUN",
             "target_compiler_runtime_soundness": "NOT_RUN",
             "analyzer_and_emitter_soundness": "ASSUMPTION",
             "source_user_call_graph": "EMPTY_AND_CLOSED",
             "target_call_graph": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS",
-            "target_profile_to_emitted_call_graph_status": whole_file_closure[
-                "target_call_graph"
-            ]["status"],
-            "target_profile_to_emitted_call_graph_scope": whole_file_closure[
-                "target_call_graph"
-            ]["scope"],
+            "target_profile_to_emitted_call_graph_status": whole_file_closure["target_call_graph"]["status"],
+            "target_profile_to_emitted_call_graph_scope": whole_file_closure["target_call_graph"]["scope"],
         },
         "unsupported_semantics": list(L1_PLUS_UNSUPPORTED),
         "certification_status": "NOT_CERTIFIED",
