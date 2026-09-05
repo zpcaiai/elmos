@@ -61,7 +61,7 @@
       "language": "java",
       "framework": "spring-boot",
       "runtime": "21",
-      "toolchain": "OpenJDK 21.0.11 / Maven 3.9.10",
+      "toolchain": "Java 21 / Maven 3.9.10",
       "source_skill": "PG077-PG088",
       "maturity": "limited",
       "required_evidence": [
@@ -76,7 +76,7 @@
       "language": "python",
       "framework": "fastapi",
       "runtime": "3.12",
-      "toolchain": "CPython 3.12.12 / uv 0.11.16",
+      "toolchain": "Python 3.12 / uv 0.11.16",
       "source_skill": "PG089-PG100",
       "maturity": "limited",
       "required_evidence": [
@@ -109,7 +109,7 @@
       "language": "typescript",
       "framework": "nestjs-fastify",
       "runtime": "26.0.0",
-      "toolchain": "Node.js 26.0.0 / pnpm 10.12.4",
+      "toolchain": "Node 26.0.0 / pnpm 10.12.4",
       "source_skill": "PG226",
       "maturity": "limited",
       "required_evidence": [
@@ -143,7 +143,7 @@
       "language": "kotlin",
       "framework": "ktor",
       "runtime": "2.2.20",
-      "toolchain": "Kotlin 2.2.20 / OpenJDK 21.0.11 / Gradle 8.14.3",
+      "toolchain": "Kotlin 2.2.20 / Java 21 / Gradle 8.14.3",
       "source_skill": "PG250",
       "maturity": "limited",
       "required_evidence": [
@@ -174,7 +174,7 @@
       "language": "rust",
       "framework": "axum",
       "runtime": "1.89.0",
-      "toolchain": "rustc 1.89.0 / cargo 1.89.0",
+      "toolchain": "Rust 1.89.0 / Cargo 1.89.0",
       "source_skill": "PG287",
       "maturity": "limited",
       "required_evidence": [

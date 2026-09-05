@@ -181,8 +181,8 @@ jobs:
           # runner-writable checkout path, and /usr/bin/python3 is root-owned.
           test -x /usr/bin/python3
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -214,8 +214,8 @@ jobs:
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"
@@ -819,7 +819,7 @@ jobs:
         run: |
           test "$(python3.12 --version)" = "Python 3.12.12"
           test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
-          test "$(uv --version)" = "uv 0.11.16"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
           test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
@@ -939,7 +939,7 @@ jobs:
         run: |
           test "$(python3.12 --version)" = "Python 3.12.12"
           test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
-          test "$(uv --version)" = "uv 0.11.16"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
           test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
@@ -1113,6 +1113,10 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Batch 30 validates a receipt-bound historical harness commit.
+          # A depth-one PR merge checkout cannot provide those Git blobs.
+          fetch-depth: 0
       - name: Set up Python 3.14.6
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
