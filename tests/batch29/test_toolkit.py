@@ -885,6 +885,45 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
     return receipt
 
 
+def bind_swift_receipt_to_selected_host_profile(
+    validator: object,
+    receipt: dict[str, object],
+) -> None:
+    """Bind every host-owned receipt identity to one registered profile."""
+
+    profile = validator._selected_swift_host_profile()
+    if profile is None:
+        raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["dependency"]["mirror"]["git"] = {
+        "path": validator.SWIFT_GIT_PATH,
+        "sha256": "sha256:" + profile.apple_git_sha256,
+        "version": validator.SWIFT_GIT_VERSION,
+    }
+    receipt["network_isolation"]["sandbox"].update(
+        {
+            "sha256": "sha256:" + profile.sandbox_exec_sha256,
+            "bytes": profile.sandbox_exec_bytes,
+            "cdhash_full": profile.sandbox_exec_cdhash_full,
+        }
+    )
+    receipt["network_isolation"]["verifier"].update(
+        {
+            "sha256": "sha256:" + profile.codesign_sha256,
+            "bytes": profile.codesign_bytes,
+        }
+    )
+    contract = validator._registered_swift_receipt_contract(receipt)
+    receipt["toolchain"] = copy.deepcopy(contract["toolchain"])
+    receipt["dependency"]["mirror"]["git"] = copy.deepcopy(contract["git"])
+    receipt["network_isolation"]["sandbox"] = copy.deepcopy(contract["sandbox"])
+    receipt["network_isolation"]["verifier"] = copy.deepcopy(contract["verifier"])
+    receipt["network_isolation"]["probe"]["build"]["compiler"] = copy.deepcopy(
+        contract["probe_compiler"]
+    )
+
+
 class ToolkitTests(unittest.TestCase):
     def test_non_apple_ci_profile_does_not_claim_an_unsealed_xcode_tree(self) -> None:
         validator = load_route_validator()
@@ -2725,7 +2764,7 @@ print('\\n'.join(failures))
                 lambda value: value["dependency"]["mirror"]["git"].update(
                     {"sha256": "sha256:" + "4" * 64}
                 ),
-                "mirror.git identity is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "unknown mirror seed",
@@ -2999,7 +3038,7 @@ print('\\n'.join(failures))
                 lambda value: value["network_isolation"]["verifier"].update(
                     {"sha256": "sha256:" + "1" * 64}
                 ),
-                "network_isolation policy/provenance is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "build argv",
@@ -3169,6 +3208,7 @@ print('\\n'.join(failures))
             try:
                 receipt = portable_swift_analyzer_receipt(validator)
                 receipt["network_isolation"] = network_isolation
+                bind_swift_receipt_to_selected_host_profile(validator, receipt)
                 binary = {
                     "name": "ElmosSwiftAnalyzer",
                     "path": str(binary_path),
