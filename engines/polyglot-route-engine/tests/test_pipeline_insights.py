@@ -124,12 +124,6 @@ def test_behavior_coverage_rejects_unclosed_or_contradictory_batches(
         _behavior_coverage_summary(_discovery(4), batch)
 
 
-@pytest.mark.skip(
-    reason="behavior_coverage is not in the pipeline report on this branch yet: the "
-    "coverage machinery was deferred to one follow-up together with the project "
-    "graph and the runner's coverage fields. The two unit tests above still cover "
-    "_behavior_coverage_summary itself."
-)
 def test_pipeline_report_and_manifest_share_fail_closed_behavior_insights(tmp_path: Path) -> None:
     repository = tmp_path / "repository"
     repository.mkdir()

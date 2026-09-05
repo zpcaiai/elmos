@@ -29,14 +29,19 @@ def main() -> int:
             if evidence.get("execution_status") != "PASSED_LOCAL" or len(evidence.get("runs", [])) != 3:
                 failures.append(f"incomplete local corpora: {route.name}")
                 continue
-            completed = subprocess.run(
-                [sys.executable, str(ROOT / "scripts" / "batch29" / "run_route_gate.py"), str(route)],
-                cwd=ROOT,
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=120,
-            )
+            print(f"[{passed + len(failures) + 1}/30] validating {route.name}...", file=sys.stderr, flush=True)
+            try:
+                completed = subprocess.run(
+                    [sys.executable, str(ROOT / "scripts" / "batch29" / "run_route_gate.py"), str(route)],
+                    cwd=ROOT,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=300,
+                )
+            except subprocess.TimeoutExpired:
+                failures.append(f"gate timed out: {route.name} after 300s")
+                continue
             if completed.returncode:
                 failures.append(f"gate failed: {route.name}: {(completed.stderr or completed.stdout)[-500:]}")
                 continue

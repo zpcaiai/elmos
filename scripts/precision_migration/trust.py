@@ -130,17 +130,22 @@ def run_trusted_openssl(
     arguments: Iterable[str],
     *,
     input_bytes: bytes | None = None,
-    timeout: int = 10,
+    timeout: int | None = None,
 ) -> subprocess.CompletedProcess[bytes]:
     """Run the fixed OS OpenSSL binary with no inherited path or Python hooks."""
 
     executable = trusted_openssl_path()
+    effective_timeout = (
+        int(os.environ.get("ELMOS_OPENSSL_TIMEOUT_SECONDS", "30"))
+        if timeout is None
+        else timeout
+    )
     return subprocess.run(
         [str(executable), *arguments],
         input=input_bytes,
         check=False,
         capture_output=True,
-        timeout=timeout,
+        timeout=effective_timeout,
         env={
             "HOME": "/nonexistent",
             "LANG": "C",

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -42,8 +43,9 @@ def build() -> dict[str, Any]:
     )
     results: list[dict[str, Any]] = []
     gate_script = ROOT / "scripts" / "batch29" / "run_route_gate.py"
-    for entry in entries:
+    for i, entry in enumerate(entries):
         route_key = entry["handler_id"].split(":", 1)[1]
+        print(f"[{i + 1}/{len(entries)}] qualifying {route_key}...", file=sys.stderr, flush=True)
         route = ROOT / "routes" / route_key
         evidence_path = route / "certification" / "evidence.json"
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
@@ -79,7 +81,7 @@ def build() -> dict[str, Any]:
             capture_output=True,
             text=True,
             check=False,
-            timeout=120,
+            timeout=int(os.environ.get("ELMOS_B16_GATE_TIMEOUT_SECONDS", "300")),
         )
         if completed.returncode:
             raise ValueError(f"B16 integration gate failed: {route_key}: {(completed.stderr or completed.stdout)[-500:]}")

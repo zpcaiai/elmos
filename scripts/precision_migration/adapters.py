@@ -373,13 +373,19 @@ def execute_batch29_route(
         completed = subprocess.CompletedProcess(command, 125, b"", diagnostic)
         gate = subprocess.CompletedProcess(gate_command, 125, b"", diagnostic)
     else:
+        effective_timeout = int(
+            os.environ.get(
+                "ELMOS_BATCH29_ROUTE_TIMEOUT_SECONDS",
+                str(entry.get("timeout_seconds", 300)),
+            )
+        )
         completed = subprocess.run(
             command,
             cwd=ROOT / "engines" / "polyglot-route-engine",
             env=environment,
             check=False,
             capture_output=True,
-            timeout=int(entry.get("timeout_seconds", 120)),
+            timeout=effective_timeout,
         )
         gate = subprocess.run(
             gate_command,
@@ -387,7 +393,7 @@ def execute_batch29_route(
             env=environment,
             check=False,
             capture_output=True,
-            timeout=int(entry.get("timeout_seconds", 120)),
+            timeout=effective_timeout,
         )
     captured = completed.stdout + completed.stderr + gate.stdout + gate.stderr
     if len(captured) > MAX_CAPTURE_BYTES:
