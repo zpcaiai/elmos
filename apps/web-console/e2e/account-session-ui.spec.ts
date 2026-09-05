@@ -13,6 +13,10 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
   await page.goto("/");
+  const mobileNavigation = page.getByRole("button", { name: "打开导航" });
+  if (await mobileNavigation.isVisible()) {
+    await mobileNavigation.click();
+  }
   const sidebarLogin = page.locator("aside").getByRole("link", {
     name: /用户登录/,
   });

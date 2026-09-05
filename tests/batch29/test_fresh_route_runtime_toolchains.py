@@ -282,6 +282,8 @@ def test_ci_installer_reports_every_node_closure_identity_mismatch() -> None:
     assert "os.open(path, os.O_RDONLY | os.O_NOFOLLOW)" in installer
     assert "metadata = os.fstat(descriptor)" in installer
     assert "getattr(metadata, field) != getattr(final_metadata, field)" in installer
+    assert 're.fullmatch(r"[0-9a-f]{64}", sys.argv[4])' in installer
+    assert "Pinned Node closure expected identity is invalid" in installer
     assert "f\"(observed={observed} expected={expected})\"" in installer
     assert "Pinned Node closure has %s component identity mismatch(es)." in installer
 

@@ -407,11 +407,22 @@ verify_pinned_node26_component() {
       "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
 import hashlib
 import os
+import re
 import stat
 import sys
 from pathlib import Path
 
 path = Path(sys.argv[1])
+if (
+    re.fullmatch(r"[0-7]{3}", sys.argv[2]) is None
+    or re.fullmatch(r"[1-9][0-9]*", sys.argv[3]) is None
+    or re.fullmatch(r"[0-9a-f]{64}", sys.argv[4]) is None
+):
+    print(
+        f"Pinned Node closure expected identity is invalid: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
 expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
 try:
     path_metadata = path.lstat()
@@ -667,7 +678,7 @@ hdrhistogram_c/0.11.10/lib/libhdr_histogram.6.3.3.dylib|444|57920|90286f692dd222
 icu4c@78/78.3/lib/libicudata.78.3.dylib|444|33371136|cd7bfc3af59bc6766d4fa50c7afe50b2ec009dd665b23bcc6b467978e22acf77
 icu4c@78/78.3/lib/libicui18n.78.3.dylib|444|3168704|b950df7ced46bf344ed5970c50a3c751f310ad61c4a1ec170a748127aea84bf0
 icu4c@78/78.3/lib/libicuuc.78.3.dylib|444|1859408|a78b3424a391c7afad52c0d69df9cdb7818b6c20f909a14d193ae0c66a5c1119
-libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|9e14b36e03a09a83341d716f5bc38ed1be5ef2ec74ba4c19fb20a5962615c
+libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c
 libnghttp3/1.18.0/lib/libnghttp3.9.9.0.dylib|444|183968|67b632b1abcb414c15ace565a5cf37a44d1a46f87fa9d65d1346b70adc94a448
 libngtcp2/1.25.0/lib/libngtcp2.16.dylib|444|349904|2321f690a5ac5d3a859638ed28f58cf08fb3ce844ff9fa5fac7d2a0c2b9be0e7
 libuv/1.52.1/lib/libuv.1.0.0.dylib|444|189408|c56f794e7c9dbcf8c45fba6109836196263a4d5e95936eee7601593532c6cfe9

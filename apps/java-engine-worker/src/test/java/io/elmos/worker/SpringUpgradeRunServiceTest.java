@@ -156,6 +156,11 @@ class SpringUpgradeRunServiceTest {
                 () -> service.create("org-a", changed));
         assertThrows(SpringUpgradeRunService.Conflict.class,
                 () -> service.retry("org-a", first.runId(), "retry-key"));
+        // The assertions above intentionally exercise a non-terminal run. Wait
+        // for its worker before JUnit releases the owner-managed @TempDir so a
+        // legitimate lease receipt cannot race the recursive cleanup.
+        assertEquals(RunStatus.SUCCEEDED,
+                awaitTerminal(first.runId(), "org-a").status());
     }
 
     @Test void terminalFailureCanBeRetriedAsANewTraceableAttempt() {
