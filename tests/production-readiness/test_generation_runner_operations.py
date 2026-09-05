@@ -670,7 +670,7 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
             ROOT / "apps" / "web-console" / "app" / "lib" / "server" / "generationRunner.ts"
         ).read_text(encoding="utf-8")
         health_route = (
-            ROOT / "apps" / "web-console" / "app" / "api" / "health" / "route.ts"
+            ROOT / "apps" / "web-console" / "app" / "api" / "health" / "_route.ts"
         ).read_text(encoding="utf-8")
         readiness_source = (
             ROOT
@@ -689,7 +689,7 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
             / "api"
             / "auth"
             / "callback"
-            / "route.ts"
+            / "_route.ts"
         ).read_text(encoding="utf-8")
         login_page = (
             ROOT / "apps" / "web-console" / "app" / "login" / "page.tsx"

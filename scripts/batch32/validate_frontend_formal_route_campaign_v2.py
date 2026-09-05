@@ -1135,6 +1135,7 @@ REQUIRED_REPLAY_REPOSITORY_PATHS = frozenset(
     }
 )
 SOLVER_REPLAY_CACHE: dict[tuple[str, str], tuple[int, bytes, bytes]] = {}
+SOLVER_REPLAY_TIMEOUT_SECONDS = 30
 MAIN_SOLVER_KEYS = frozenset(v1.ENGINE_SOLVER_RESULT_KEYS)
 VACUITY_SOLVER_KEYS = MAIN_SOLVER_KEYS | {"precheck_status"}
 BLOCK_RESULT_KEYS = frozenset(
@@ -1408,7 +1409,7 @@ def validate_solver_artifact(
                 [str(binary_path), "-in"],
                 input=smt,
                 capture_output=True,
-                timeout=10,
+                timeout=SOLVER_REPLAY_TIMEOUT_SECONDS,
                 check=False,
             )
             replay = (completed.returncode, completed.stdout, completed.stderr)

@@ -25,9 +25,9 @@ LIBCRYPTO: Final = Path(
 EXPECTED_VERSION: Final = (
     "OpenSSL 3.6.3 9 Jun 2026 (Library: OpenSSL 3.6.3 9 Jun 2026)"
 )
-EXPECTED_IMAGE: tuple[str, str] = ("macos15", "20260829.0321.1")
-EXPECTED_MACOS_PRODUCT_VERSION = "15.7.9"
-EXPECTED_MACOS_BUILD_VERSION = "24G830"
+EXPECTED_IMAGE: Final = ("macos15", "20260829.0321.1")
+EXPECTED_MACOS_PRODUCT_VERSION: Final = "15.7.9"
+EXPECTED_MACOS_BUILD_VERSION: Final = "24G830"
 OPT_LINK: Final = Path("/opt/homebrew/opt/openssl@3")
 OPT_LINK_TARGET: Final = "../Cellar/openssl@3/3.6.3"
 
@@ -82,37 +82,7 @@ SEALED_OPT_LINK_PROFILE: Final = {
     "gid": 0,
 }
 
-_LEGACY_UNSEALED_FILE_PROFILES: Final = {
-    OPENSSL: {
-        "role": "openssl",
-        "mode": "0555",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 878_752,
-        "sha256": "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
-    },
-    LIBSSL: {
-        "role": "libssl",
-        "mode": "0444",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 887_984,
-        "sha256": "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
-    },
-    LIBCRYPTO: {
-        "role": "libcrypto",
-        "mode": "0444",
-        "uid": 501,
-        "gid": 80,
-        "nlink": 1,
-        "bytes": 4_870_832,
-        "sha256": "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
-    },
-}
-
-_REFRESHED_UNSEALED_FILE_PROFILES: Final = {
+UNSEALED_FILE_PROFILES: Final = {
     OPENSSL: {
         "role": "openssl",
         "mode": "0555",
@@ -142,42 +112,12 @@ _REFRESHED_UNSEALED_FILE_PROFILES: Final = {
     },
 }
 
-UNSEALED_FILE_PROFILES = _REFRESHED_UNSEALED_FILE_PROFILES
-FILE_PROFILES = {
+FILE_PROFILES: Final = {
     path: {**profile, "uid": 0, "gid": 0}
     for path, profile in UNSEALED_FILE_PROFILES.items()
 }
 
-_LEGACY_SIGNATURE_PROFILES: Final = {
-    LIBSSL: {
-        "Identifier=libssl.3",
-        "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
-        "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CMSDigest=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CDHash=3e4544b02a72a69188b14e6bbc0b04a2ee41649e",
-        "Signature=adhoc",
-        "TeamIdentifier=not set",
-        "Sealed Resources=none",
-        "Internal requirements count=0 size=12",
-    },
-    LIBCRYPTO: {
-        "Identifier=libcrypto.3",
-        "Format=Mach-O thin (arm64)",
-        "CodeDirectory v=20400 size=37924 flags=0x2(adhoc) hashes=1180+2 location=embedded",
-        "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
-        "CMSDigest=30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
-        "CDHash=30bbb115d12435513d93702de62223c174b52194",
-        "Signature=adhoc",
-        "TeamIdentifier=not set",
-        "Sealed Resources=none",
-        "Internal requirements count=0 size=12",
-    },
-}
-
-_REFRESHED_SIGNATURE_PROFILES: Final = {
+SIGNATURE_PROFILES: Final = {
     LIBSSL: {
         "Identifier=libssl.3",
         "Format=Mach-O thin (arm64)",
@@ -205,45 +145,6 @@ _REFRESHED_SIGNATURE_PROFILES: Final = {
         "Internal requirements count=0 size=12",
     },
 }
-
-SIGNATURE_PROFILES = _REFRESHED_SIGNATURE_PROFILES
-
-HOST_PROFILES: Final = {
-    ("macos15", "20260727.0256.1"): {
-        "product_version": "15.7.7",
-        "build_version": "24G720",
-        "files": _LEGACY_UNSEALED_FILE_PROFILES,
-        "signatures": _LEGACY_SIGNATURE_PROFILES,
-    },
-    ("macos15", "20260829.0321.1"): {
-        "product_version": "15.7.9",
-        "build_version": "24G830",
-        "files": _REFRESHED_UNSEALED_FILE_PROFILES,
-        "signatures": _REFRESHED_SIGNATURE_PROFILES,
-    },
-}
-
-
-def _activate_host_profile(image_os: str, image_version: str) -> Mapping[str, object]:
-    profile = HOST_PROFILES.get((image_os, image_version))
-    if profile is None:
-        raise RuntimeError("GitHub hosted image identity mismatch")
-    global EXPECTED_IMAGE
-    global EXPECTED_MACOS_PRODUCT_VERSION
-    global EXPECTED_MACOS_BUILD_VERSION
-    global UNSEALED_FILE_PROFILES
-    global FILE_PROFILES
-    global SIGNATURE_PROFILES
-    EXPECTED_IMAGE = (image_os, image_version)
-    EXPECTED_MACOS_PRODUCT_VERSION = str(profile["product_version"])
-    EXPECTED_MACOS_BUILD_VERSION = str(profile["build_version"])
-    UNSEALED_FILE_PROFILES = profile["files"]  # type: ignore[assignment]
-    FILE_PROFILES = {
-        path: {**file_profile, "uid": 0, "gid": 0}
-        for path, file_profile in UNSEALED_FILE_PROFILES.items()
-    }
-    SIGNATURE_PROFILES = profile["signatures"]  # type: ignore[assignment]
-    return profile
 
 DEPENDENCIES: Final = {
     OPENSSL: (
@@ -424,7 +325,6 @@ def _stable_file_receipt(
     profiles: Mapping[Path, Mapping[str, object]] = FILE_PROFILES,
     *,
     validate_parent_chain: bool = True,
-    validate_expected: bool = True,
 ) -> dict[str, object]:
     expected = profiles[path]
     if validate_parent_chain:
@@ -485,7 +385,7 @@ def _stable_file_receipt(
         "bytes": total,
         "sha256": digest.hexdigest(),
     }
-    if validate_expected and profile_receipt != {"path": str(path), **expected}:
+    if profile_receipt != {"path": str(path), **expected}:
         raise RuntimeError(
             f"OpenSSL component identity mismatch: {profile_receipt!r}"
         )
@@ -718,30 +618,22 @@ def _seal_runtime() -> dict[str, object]:
         raise RuntimeError("OpenSSL runtime root sealing requires effective uid 0")
     directories_before = _directory_receipts(UNSEALED_DIRECTORY_PROFILES)
     opt_link_before = _opt_link_receipt(UNSEALED_OPT_LINK_PROFILE)
-    files_before = tuple(
-        _stable_file_receipt(
-            path,
-            UNSEALED_FILE_PROFILES,
-            validate_parent_chain=False,
-            validate_expected=False,
-        )
-        for path in UNSEALED_FILE_PROFILES
-    )
-    mismatches = [
-        receipt
-        # Root sealing deliberately uses the immutable macOS system Python,
-        # which is older than the project toolchain and does not implement
-        # zip(strict=...). Both sequences are built from the same mapping, so
-        # their cardinality is already identical by construction.
-        for path, receipt in zip(UNSEALED_FILE_PROFILES, files_before)
-        if {
-            key: receipt[key]
-            for key in ("role", "path", "mode", "uid", "gid", "nlink", "bytes", "sha256")
-        }
-        != {"path": str(path), **UNSEALED_FILE_PROFILES[path]}
-    ]
-    if mismatches:
-        raise RuntimeError(f"OpenSSL component identity mismatches: {mismatches!r}")
+    file_receipts: list[dict[str, object]] = []
+    file_identity_errors: list[str] = []
+    for path in UNSEALED_FILE_PROFILES:
+        try:
+            file_receipts.append(
+                _stable_file_receipt(
+                    path,
+                    UNSEALED_FILE_PROFILES,
+                    validate_parent_chain=False,
+                )
+            )
+        except RuntimeError as error:
+            file_identity_errors.append(str(error))
+    if file_identity_errors:
+        raise RuntimeError("\n".join(file_identity_errors))
+    files_before = tuple(file_receipts)
     directory_initial = {
         Path(str(receipt["path"])): receipt for receipt in directories_before
     }
@@ -793,7 +685,7 @@ def _run_with_runtime_guard(
             )
 
 
-def _codesign_receipt(path: Path, *, validate_expected: bool = True) -> dict[str, object]:
+def _codesign_receipt(path: Path) -> dict[str, object]:
     environment = _clean_environment()
     _run_with_runtime_guard(
         ["/usr/bin/codesign", "--verify", "--strict", "--verbose=2", str(path)],
@@ -805,8 +697,9 @@ def _codesign_receipt(path: Path, *, validate_expected: bool = True) -> dict[str
     )
     lines = set((details.stdout + details.stderr).splitlines())
     expected = SIGNATURE_PROFILES.get(path)
-    if expected is not None:
-        prefixes = (
+    if expected is not None and not expected.issubset(lines):
+        missing = sorted(expected - lines)
+        identity_prefixes = (
             "Identifier=",
             "Format=",
             "CodeDirectory ",
@@ -819,19 +712,14 @@ def _codesign_receipt(path: Path, *, validate_expected: bool = True) -> dict[str
             "Sealed Resources=",
             "Internal requirements ",
         )
-        observed = sorted(line for line in lines if line.startswith(prefixes))
-    else:
-        observed = []
-    if validate_expected and expected is not None and not expected.issubset(lines):
-        missing = sorted(expected - lines)
+        observed = sorted(
+            line for line in lines if line.startswith(identity_prefixes)
+        )
         raise RuntimeError(
             f"OpenSSL signature identity mismatch for {path}: "
-            f"missing={missing!r}, observed={observed!r}"
+            f"missing={missing!r} observed={observed!r}"
         )
-    return {
-        "path": str(path),
-        "details": sorted(expected or ()) if validate_expected else observed,
-    }
+    return {"path": str(path), "details": sorted(expected or ())}
 
 
 def _dependency_paths(path: Path) -> tuple[str, ...]:
@@ -865,30 +753,7 @@ def _dylib_id(path: Path) -> str:
 def _runtime_receipt() -> dict[str, object]:
     authority_before = _sealed_authority_receipt()
     files_before = _stable_runtime_file_receipts()
-    observed_signatures = [
-        _codesign_receipt(path, validate_expected=False) for path in FILE_PROFILES
-    ]
-    signature_mismatches = []
-    for receipt in observed_signatures:
-        path = Path(str(receipt["path"]))
-        expected = SIGNATURE_PROFILES.get(path)
-        observed = set(receipt["details"])
-        if expected is not None and not expected.issubset(observed):
-            signature_mismatches.append(
-                {
-                    "path": str(path),
-                    "missing": sorted(expected - observed),
-                    "observed": sorted(observed),
-                }
-            )
-    if signature_mismatches:
-        raise RuntimeError(
-            f"OpenSSL signature identity mismatches: {signature_mismatches!r}"
-        )
-    signatures = [
-        {"path": str(path), "details": sorted(SIGNATURE_PROFILES.get(path, ()))}
-        for path in FILE_PROFILES
-    ]
+    signatures = [_codesign_receipt(path) for path in FILE_PROFILES]
     dependencies = {
         str(path): list(_dependency_paths(path)) for path in FILE_PROFILES
     }
@@ -1029,9 +894,8 @@ def _forbidden_environment_names(environment: Mapping[str, str]) -> set[str]:
 def _verify_host(image_os: str | None, image_version: str | None) -> None:
     if sys.platform != "darwin" or os.uname().machine != "arm64":
         raise RuntimeError("OpenSSL runtime verifier requires Darwin arm64")
-    if not isinstance(image_os, str) or not isinstance(image_version, str):
+    if (image_os, image_version) != EXPECTED_IMAGE:
         raise RuntimeError("GitHub hosted image identity mismatch")
-    _activate_host_profile(image_os, image_version)
     if (
         _run(["/usr/bin/sw_vers", "-productVersion"]).stdout.strip()
         != EXPECTED_MACOS_PRODUCT_VERSION

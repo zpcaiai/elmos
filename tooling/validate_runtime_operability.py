@@ -35,6 +35,9 @@ SERVICE_CONFIGS = (
     "engines/software-delivery-platform-engine/src/main/resources/application.yml",
     "engines/test-quality-engine/src/main/resources/application.yml",
 )
+ADDITIONAL_INTERNAL_MANAGEMENT_ENDPOINTS = {
+    "apps/java-engine-worker/src/main/resources/application.yml": frozenset({"prometheus"}),
+}
 DATABASE_SERVICES = (
     "apps/control-plane/src/main/resources",
     "apps/workspace-service/src/main/resources",
@@ -102,8 +105,14 @@ def validate_service_config(relative: str, config: dict[str, Any]) -> list[str]:
         errors.append(f"{relative}:spring.lifecycle.timeout-per-shutdown-phase:EXTERNALIZED_TIMEOUT_REQUIRED")
     exposure = _value(config, "management.endpoints.web.exposure.include")
     exposed = {part.strip() for part in str(exposure or "").split(",") if part.strip()}
-    if exposed != {"health", "info"}:
-        errors.append(f"{relative}:management.endpoints.web.exposure.include:ONLY_HEALTH_INFO_ALLOWED")
+    allowed_exposure = {"health", "info"} | set(
+        ADDITIONAL_INTERNAL_MANAGEMENT_ENDPOINTS.get(relative, ())
+    )
+    if exposed != allowed_exposure:
+        errors.append(
+            f"{relative}:management.endpoints.web.exposure.include:"
+            f"EXACT_INTERNAL_ENDPOINTS_REQUIRED:{','.join(sorted(allowed_exposure))}"
+        )
     port = _value(config, "server.port")
     if not isinstance(port, str) or PORT_PATTERN.fullmatch(port) is None:
         errors.append(f"{relative}:server.port:BOUNDED_ENV_DEFAULT_REQUIRED")

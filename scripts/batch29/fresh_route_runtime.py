@@ -1343,10 +1343,20 @@ def run_in_fresh_locked_runtime(
                 "ELMOS_POLYGLOT_ROUTE_TOOLCHAIN_ROOT",
                 "ELMOS_PROJECT_SYNTHESIS_TOOLCHAIN_ROOT",
                 "ELMOS_POLYGLOT_ROUTE_HOMEBREW_PREFIX",
+                "ELMOS_HOMEBREW_ROUTE_PROFILE_ID",
                 "ELMOS_JAVA21_HOME",
                 "ELMOS_JAVA21_DISTRIBUTION",
                 "ELMOS_BATCH29_PINNED_UV_PATH",
                 "ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR",
+                "ELMOS_POLYGLOT_ROUTE_CI_PROFILE",
+                "CI",
+                "GITHUB_ACTIONS",
+                "RUNNER_ENVIRONMENT",
+                "ImageOS",
+                "ImageVersion",
+                "ELMOS_APPLE_ROUTE_XCODE_SEALED",
+                "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL",
+                "ELMOS_APPLE_ROUTE_XCODE_TREE_IDENTITY",
             )
             if key in os.environ
         }

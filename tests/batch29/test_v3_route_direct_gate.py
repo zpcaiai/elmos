@@ -115,6 +115,24 @@ class V3DirectRouteGateTests(unittest.TestCase):
             gate_output,
         )
 
+    def test_repository_research_route_needs_no_fabricated_execution_tree(self):
+        route = ROOT / "routes" / "kotlin-to-react"
+        self.assertFalse((route / "lowering").exists())
+        self.assertFalse((route / "corpus" / "development").exists())
+
+        with mock.patch.object(
+            GATE,
+            "validate_route_main",
+            side_effect=AssertionError("implementation validator is not applicable"),
+        ):
+            gate_status, gate_output = invoke(GATE, route)
+
+        self.assertEqual(gate_status, 0, gate_output)
+        self.assertIn(
+            "status=research decision=NOT_CERTIFIED",
+            gate_output,
+        )
+
     def assert_contract_tamper_fails(
         self,
         relative: str,
@@ -151,7 +169,11 @@ class V3DirectRouteGateTests(unittest.TestCase):
             evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
             evidence["execution_status"] = "PASSED_LOCAL"
             write_json(evidence_path, evidence)
-            with mock.patch.object(GATE, "validate_route_main", return_value=0):
+            with mock.patch.object(
+                GATE,
+                "validate_route_main",
+                side_effect=AssertionError("implementation validator is not applicable"),
+            ):
                 gate_status, gate_output = invoke(GATE, route)
 
         self.assertEqual(gate_status, 2, gate_output)

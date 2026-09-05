@@ -13,7 +13,7 @@ test("anonymous user login entries perform a document navigation", async ({ page
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
 
   await page.goto("/");
-  if ((page.viewportSize()?.width ?? 0) <= 900) {
+  if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
     await page.getByRole("button", { name: "打开导航" }).click();
     await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
   }

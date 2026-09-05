@@ -1,0 +1,5 @@
+{
+  "eval_id": 2,
+  "eval_name": "restricted-code-no-public-failover",
+  "prompt": "A private migration contains restricted source code. Its approved private model provider is unavailable, a public model is healthy, and the tenant has no remaining model budget. Decide routing, usage, secret, and workflow state."
+}

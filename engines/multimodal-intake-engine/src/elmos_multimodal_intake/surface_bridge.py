@@ -1004,8 +1004,8 @@ class SurfaceSkillBridge:
         "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx": (b"useMicrophoneRecorder", b"get_session"),
         "apps/web-console/app/intake/MultimodalIntakeWorkbench.module.css": (b"inlineControl",),
         "apps/web-console/app/intake/useMicrophoneRecorder.ts": (b"getUserMedia", b"encodeWaveFile"),
-        "apps/web-console/app/api/multimodal-intake/v1/execute/route.ts": (b"executeMultimodalSkill",),
-        "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/route.ts": (
+        "apps/web-console/app/api/multimodal-intake/v1/execute/_route.ts": (b"executeMultimodalSkill",),
+        "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/_route.ts": (
             b"readMultimodalProgressBatch", b"Last-Event-ID",
         ),
         "apps/web-console/app/lib/server/multimodalIntakeRunner.ts": (

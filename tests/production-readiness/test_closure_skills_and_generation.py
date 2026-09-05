@@ -130,7 +130,20 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             sort_keys=True,
         )
         self.assertIn("dotnet restore engines/dotnet-engine/Elmos.Dotnet.slnx --locked-mode", rendered)
-        self.assertIn("uv --directory engines/python-engine run --locked pytest", rendered)
+        self.assertIn(
+            "python3 scripts/operations/run_engine_tests.py python-engine",
+            rendered,
+        )
+        engine_registry = json.loads(
+            (ROOT / "scripts/operations/engine-test-registry.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        python_steps = engine_registry["engines"]["python-engine"]["steps"]
+        self.assertEqual(len(python_steps), 1)
+        self.assertEqual(python_steps[0]["kind"], "pytest")
+        self.assertEqual(python_steps[0]["project"], "engines/python-engine")
+        self.assertEqual(python_steps[0]["tests"], ["engines/python-engine/tests"])
         self.assertIn("pnpm --dir engines/frontend-client-engine install --frozen-lockfile", rendered)
         for worker_job in (polyglot_core_job, polyglot_matrix_job):
             self.assertIn('"java-version": "21.0.11"', worker_job)
@@ -288,7 +301,7 @@ class ClosureSkillsAndGenerationTests(unittest.TestCase):
             / "api"
             / "capabilities"
             / "generation"
-            / "route.ts"
+            / "_route.ts"
         ).read_text(encoding="utf-8")
         self.assertIn('source: "REPOSITORY_CONTRACT"', route)
         self.assertIn('externalExecutionEvidence: "NOT_RUN"', route)

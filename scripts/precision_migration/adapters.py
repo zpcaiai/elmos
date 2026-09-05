@@ -336,8 +336,17 @@ def execute_batch29_route(
         cases_ref = verify_content_reference(assets[cases_index], evidence_roots)
     except (IndexError, OSError, ValueError) as exc:
         raise AdapterError(f"B16 route input verification failed: {exc}") from exc
+    environment = os.environ.copy()
+    environment["PYTHONDONTWRITEBYTECODE"] = "1"
+    native_receipt_replay = environment.get(
+        "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY", ""
+    )
+    if native_receipt_replay not in {"", "NOT_RUN"}:
+        raise AdapterError(
+            "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY must be empty or NOT_RUN"
+        )
     engine_python = ROOT / "engines" / "polyglot-route-engine" / ".venv" / "bin" / "python"
-    if not engine_python.is_file():
+    if native_receipt_replay != "NOT_RUN" and not engine_python.is_file():
         raise AdapterError("pinned polyglot route runtime is unavailable")
     migration_output = output_dir / "migration"
     if migration_output.exists():
@@ -352,15 +361,6 @@ def execute_batch29_route(
         "--output", str(migration_output),
     ]
     started = time.monotonic()
-    environment = os.environ.copy()
-    environment["PYTHONDONTWRITEBYTECODE"] = "1"
-    native_receipt_replay = environment.get(
-        "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY", ""
-    )
-    if native_receipt_replay not in {"", "NOT_RUN"}:
-        raise AdapterError(
-            "ELMOS_PRECISION_NATIVE_RECEIPT_REPLAY must be empty or NOT_RUN"
-        )
     gate_command = [
         sys.executable,
         str(ROOT / "scripts" / "batch29" / "run_route_gate.py"),

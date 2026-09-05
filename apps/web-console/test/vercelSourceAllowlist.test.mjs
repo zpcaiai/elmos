@@ -62,8 +62,9 @@ test("tracked project inputs are bounded regular files", () => {
     "vercel.json",
     "public/.gitkeep",
     "app/capabilities/page.tsx",
-    "app/api/capabilities/generation/route.ts",
-    "app/api/health/route.ts",
+    "app/api/[[...path]]/route.ts",
+    "app/api/capabilities/generation/_route.ts",
+    "app/api/health/_route.ts",
     "app/lib/server/fallbacks/inventory.json",
   ]) {
     assert.ok(included.includes(relative), `missing project input ${relative}`);

@@ -48,6 +48,7 @@ on:
 permissions:
   contents: read
   deployments: read
+  id-token: write
 
 concurrency:
   group: vercel-deployment-smoke-${{ github.ref }}
@@ -97,7 +98,18 @@ jobs:
       - name: Install Chromium for the deployment probe
         run: pnpm --dir apps/web-console exec playwright install --with-deps chromium
 
+      - name: Request short-lived Vercel Trusted Source token
+        id: vercel-trusted-source
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            const token = await core.getIDToken();
+            core.setSecret(token);
+            core.setOutput("token", token);
+
       - name: Run deployment surface smoke
+        env:
+          ELMOS_VERCEL_TRUSTED_OIDC_TOKEN: ${{ steps.vercel-trusted-source.outputs.token }}
         run: pnpm --dir apps/web-console test:vercel-smoke
 
       - name: Preserve deployment smoke evidence

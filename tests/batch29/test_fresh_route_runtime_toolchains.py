@@ -301,9 +301,22 @@ def test_ci_java_profiles_use_the_verified_setup_java_temurin_contract() -> None
         '    bash "${REPOSITORY_ROOT}/scripts/toolchains/'
         'install_polyglot_route_toolchains.sh"'
     )
+    cache_path = (
+        "/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/"
+        "21.0.11-10.0/arm64/Contents/Home"
+    )
+    cache_path_lts_label = (
+        "/Users/runner/hostedtoolcache/Java_Temurin-Hotspot_jdk/"
+        "21.0.11-10.0.LTS/arm64/Contents/Home"
+    )
 
     assert temurin_guard in installer
     assert installer.index(temurin_guard) < installer.index(homebrew_install)
+    assert cache_path in installer
+    assert cache_path_lts_label in installer
+    assert f"20260728.0273.1:26.5.2:25F84:{cache_path}" in installer
+    assert f"20260831.0337.3:26.6.2:25G83:{cache_path_lts_label}" in installer
+    assert "Java_Temurin-Hotspot_jdk/*" not in installer
     assert signature_verification in installer
     assert environment_binding in installer
     assert installer_binding in installer
@@ -705,7 +718,7 @@ def test_captured_typescript_closure_rejects_non_content_addressed_path(
         )
 
 
-def test_fresh_runtime_forwards_only_explicit_archive_input(
+def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -738,6 +751,12 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
         assert environment["ELMOS_JAVA21_HOME"] == "/fixed/java/Contents/Home"
         assert environment["ELMOS_JAVA21_DISTRIBUTION"] == "temurin"
+        assert environment["ELMOS_HOMEBREW_ROUTE_PROFILE_ID"] == (
+            "github-macos26-20260831.0337.3"
+        )
+        assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "full"
+        assert environment["CI"] == "true"
+        assert environment["GITHUB_ACTIONS"] == "true"
         assert "JAVA_HOME" not in environment
         assert "_JAVA_OPTIONS" not in environment
         assert command[command.index("run") + 1] == "--no-dev"
@@ -753,6 +772,13 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
     monkeypatch.setenv("ELMOS_BATCH29_PYTHON_ARCHIVE", "/private/tmp/ambient")
     monkeypatch.setenv("ELMOS_JAVA21_HOME", "/fixed/java/Contents/Home")
     monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv(
+        "ELMOS_HOMEBREW_ROUTE_PROFILE_ID",
+        "github-macos26-20260831.0337.3",
+    )
+    monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "full")
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("JAVA_HOME", "/hostile/java")
     monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
@@ -790,4 +816,18 @@ def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_p
             ["--selector-smoke"],
         )
         == 0
+    )
+
+
+def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    full_profile = installer.split('if [[ "${CI_PROFILE}" == "full" ]]; then', 1)[1]
+
+    assert (
+        'install_pinned_formula \\\n'
+        '    "cmake" "4.4.0" \\\n'
+        '    "b189098af6b85e6dcdd34d5b6b95d8c1b34adbc3" \\\n'
+        '    "Formula/c/cmake.rb" \\\n'
+        '    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"'
+        in full_profile
     )

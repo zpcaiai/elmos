@@ -2,6 +2,15 @@ import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
 const routes = ["/", "/frontend", "/capabilities", "/help"] as const;
+const trustedOidcToken = process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim();
+
+test.beforeEach(async ({ context }) => {
+  if (trustedOidcToken) {
+    await context.setExtraHTTPHeaders({
+      "x-vercel-trusted-oidc-idp-token": trustedOidcToken,
+    });
+  }
+});
 
 test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];

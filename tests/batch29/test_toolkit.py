@@ -885,7 +885,88 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
     return receipt
 
 
+def bind_swift_receipt_to_selected_host_profile(
+    validator: object,
+    receipt: dict[str, object],
+) -> None:
+    """Bind every host-owned receipt identity to one registered profile."""
+
+    profile = validator._selected_swift_host_profile()
+    if profile is None:
+        raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
+    receipt["dependency"]["mirror"]["git"] = {
+        "path": validator.SWIFT_GIT_PATH,
+        "sha256": "sha256:" + profile.apple_git_sha256,
+        "version": validator.SWIFT_GIT_VERSION,
+    }
+    receipt["network_isolation"]["sandbox"].update(
+        {
+            "sha256": "sha256:" + profile.sandbox_exec_sha256,
+            "bytes": profile.sandbox_exec_bytes,
+            "cdhash_full": profile.sandbox_exec_cdhash_full,
+        }
+    )
+    receipt["network_isolation"]["verifier"].update(
+        {
+            "sha256": "sha256:" + profile.codesign_sha256,
+            "bytes": profile.codesign_bytes,
+        }
+    )
+    contract = validator._registered_swift_receipt_contract(receipt)
+    receipt["toolchain"] = copy.deepcopy(contract["toolchain"])
+    receipt["dependency"]["mirror"]["git"] = copy.deepcopy(contract["git"])
+    receipt["network_isolation"]["sandbox"] = copy.deepcopy(contract["sandbox"])
+    receipt["network_isolation"]["verifier"] = copy.deepcopy(contract["verifier"])
+    receipt["network_isolation"]["probe"]["build"]["compiler"] = copy.deepcopy(
+        contract["probe_compiler"]
+    )
+
+
 class ToolkitTests(unittest.TestCase):
+    def test_non_apple_ci_profile_does_not_claim_an_unsealed_xcode_tree(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "GITHUB_ACTIONS": "true",
+                    "RUNNER_ENVIRONMENT": "github-hosted",
+                    "ImageOS": "macos26",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile"
+            ) as selector,
+        ):
+            self.assertIsNone(validator._selected_swift_host_profile())
+            selector.assert_not_called()
+
+    def test_partial_apple_sealing_claim_still_reaches_strict_selector(self) -> None:
+        validator = load_route_validator()
+        with (
+            mock.patch.dict(
+                os.environ,
+                {
+                    "ImageVersion": "20260831.0337.3",
+                    "ELMOS_APPLE_ROUTE_XCODE_SEALED": "1",
+                },
+                clear=True,
+            ),
+            mock.patch.object(validator.platform, "system", return_value="Darwin"),
+            mock.patch(
+                "elmos_polyglot_route.toolchains.apple_route_host_profile",
+                side_effect=RuntimeError("partial Apple host claim"),
+            ) as selector,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
+                validator._selected_swift_host_profile()
+            selector.assert_called_once_with("swift")
+
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
         maximum = validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
@@ -1589,13 +1670,24 @@ class ToolkitTests(unittest.TestCase):
             (repository / "scripts" / "batch29").mkdir(parents=True, exist_ok=True)
             (repository / "schemas" / "batch29").mkdir(parents=True, exist_ok=True)
 
-            accepted = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            validator = load_route_validator()
+            manifest = json.loads((route / "route.json").read_text())
+            certification = json.loads(
+                (route / "certification" / "certification.json").read_text()
             )
-            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
+            _, accepted_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
+            )
+            self.assertFalse(
+                any(
+                    "engine source manifest live file" in failure
+                    for failure in accepted_failures
+                ),
+                accepted_failures,
+            )
 
             live_engine = (
                 repository
@@ -1606,15 +1698,20 @@ class ToolkitTests(unittest.TestCase):
                 / "engine.py"
             )
             live_engine.write_text("# drifted engine fixture\n")
-            rejected = subprocess.run(
-                [sys.executable, str(SCRIPTS / "validate_route.py"), str(route)],
-                text=True,
-                capture_output=True,
-                check=False,
+            _, rejected_failures = validator.validate_formal_equivalence(
+                route,
+                manifest,
+                certification,
+                validate_live_engine_sources=True,
             )
 
-            self.assertEqual(rejected.returncode, 1)
-            self.assertIn("engine source manifest live file drifted", rejected.stderr)
+            self.assertTrue(
+                any(
+                    "engine source manifest live file drifted" in failure
+                    for failure in rejected_failures
+                ),
+                rejected_failures,
+            )
 
     def test_proof_runtime_rejects_pythonpath_shadow_package_in_fresh_process(self):
         with tempfile.TemporaryDirectory() as td:
@@ -2667,7 +2764,7 @@ print('\\n'.join(failures))
                 lambda value: value["dependency"]["mirror"]["git"].update(
                     {"sha256": "sha256:" + "4" * 64}
                 ),
-                "mirror.git identity is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "unknown mirror seed",
@@ -2941,7 +3038,7 @@ print('\\n'.join(failures))
                 lambda value: value["network_isolation"]["verifier"].update(
                     {"sha256": "sha256:" + "1" * 64}
                 ),
-                "network_isolation policy/provenance is invalid",
+                "Apple host profile is not registered",
             ),
             (
                 "build argv",
@@ -3111,6 +3208,7 @@ print('\\n'.join(failures))
             try:
                 receipt = portable_swift_analyzer_receipt(validator)
                 receipt["network_isolation"] = network_isolation
+                bind_swift_receipt_to_selected_host_profile(validator, receipt)
                 binary = {
                     "name": "ElmosSwiftAnalyzer",
                     "path": str(binary_path),
@@ -4534,6 +4632,33 @@ print('\\n'.join(failures))
             check=False,
         )
 
+    def test_missing_symbol_negative_reason_is_one_exact_native_contract(self):
+        runner = load_polyglot_runner()
+        validator = load_route_validator()
+        expected = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
+        self.assertEqual(runner.MISSING_SYMBOL_FAILURE, expected)
+        self.assertEqual(validator.MISSING_SYMBOL_FAILURE, expected)
+        for source in ("java", "cpp", "objc", "swift"):
+            self.assertEqual(
+                validator.specialized_negative_expected_reasons(
+                    f"{source}-to-csharp",
+                    source,
+                    "missing-symbol-fails-closed",
+                ),
+                frozenset({expected}),
+            )
+        for source in ("java", "javascript", "typescript"):
+            self.assertEqual(
+                validator.nodejs_negative_expected_reasons(
+                    route_key=f"{source}-to-typescript",
+                    source_language=source,
+                    case_id="missing-symbol-fails-closed",
+                    development_function="calculate",
+                ),
+                frozenset({expected}),
+            )
+
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,
     ):
@@ -4627,12 +4752,17 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError("FUNCTION_NOT_FOUND"),
+                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"
                 )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"],
+                runner.MISSING_SYMBOL_FAILURE,
+            )
             self.assertTrue((route / "certification" / "gate-report.md").is_file())
             self.assertTrue((route / "README.md").is_file())
             self.assertIn(

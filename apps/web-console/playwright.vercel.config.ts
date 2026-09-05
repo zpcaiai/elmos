@@ -4,6 +4,9 @@ import { existsSync } from "node:fs";
 const configuredBaseURL = process.env.ELMOS_E2E_BASE_URL?.trim();
 const configuredChromiumExecutable = process.env.ELMOS_E2E_CHROMIUM_EXECUTABLE?.trim();
 const expectedCommitSha = process.env.ELMOS_VERCEL_EXPECTED_COMMIT_SHA?.trim().toLowerCase();
+const hasVercelTrustedOidcToken = Boolean(
+  process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim(),
+);
 if (!configuredBaseURL) {
   throw new Error("ELMOS_E2E_BASE_URL_REQUIRED");
 }
@@ -49,7 +52,9 @@ export default defineConfig({
     baseURL,
     locale: "zh-CN",
     colorScheme: "light",
-    trace: "retain-on-failure",
+    // A Playwright trace records request headers. Never persist the short-lived
+    // Trusted Source token in an uploaded failure artifact.
+    trace: hasVercelTrustedOidcToken ? "off" : "retain-on-failure",
     screenshot: "only-on-failure",
     video: "retain-on-failure",
     ...(process.env.https_proxy || process.env.http_proxy
