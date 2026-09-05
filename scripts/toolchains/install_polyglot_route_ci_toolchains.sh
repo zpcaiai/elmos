@@ -44,6 +44,7 @@ readonly HOMEBREW_CELLAR
 readonly UV_PATH="${HOMEBREW_CELLAR}/uv/0.11.16/bin/uv"
 readonly TAP_NAME="elmos/pinned-route-ci"
 readonly CI_PROFILE="${ELMOS_POLYGLOT_ROUTE_CI_PROFILE:-full}"
+HOMEBREW_ROUTE_PROFILE_ID=""
 temporary_root="$(mktemp -d "${RUNNER_TEMP}/elmos-route-ci-toolchains.XXXXXX")"
 
 case "${CI_PROFILE}" in
@@ -59,7 +60,12 @@ case "${CI_PROFILE}" in
       exit 2
     fi
     case "${HOST_PROFILE}" in
-      "20260728.0273.1:26.5.2:25F84"|"20260831.0337.3:26.6.2:25G83") ;;
+      "20260728.0273.1:26.5.2:25F84")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260728.0273.1"
+        ;;
+      "20260831.0337.3:26.6.2:25G83")
+        HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
+        ;;
       *)
         printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
           "${HOST_PROFILE}" >&2
@@ -976,6 +982,9 @@ fi
   printf 'ELMOS_BATCH29_PINNED_UV_PATH=%s\n' "${UV_PATH}"
   printf 'ELMOS_BATCH29_TOOLCHAIN_CACHE_ANCHOR=%s\n' "${PINNED_LOCAL}"
   printf 'ELMOS_POLYGLOT_ROUTE_CI_PROFILE=%s\n' "${CI_PROFILE}"
+  if [[ "${CI_PROFILE}" == "full" ]]; then
+    printf 'ELMOS_HOMEBREW_ROUTE_PROFILE_ID=%s\n' "${HOMEBREW_ROUTE_PROFILE_ID}"
+  fi
 } >>"${GITHUB_ENV}"
 if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   printf '%s\n' "${HOMEBREW_CELLAR}/uv/0.11.16/bin" >>"${GITHUB_PATH}"

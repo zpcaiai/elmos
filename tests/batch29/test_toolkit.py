@@ -4668,6 +4668,33 @@ print('\\n'.join(failures))
             check=False,
         )
 
+    def test_missing_symbol_negative_reason_is_one_exact_native_contract(self):
+        runner = load_polyglot_runner()
+        validator = load_route_validator()
+        expected = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
+        self.assertEqual(runner.MISSING_SYMBOL_FAILURE, expected)
+        self.assertEqual(validator.MISSING_SYMBOL_FAILURE, expected)
+        for source in ("java", "cpp", "objc", "swift"):
+            self.assertEqual(
+                validator.specialized_negative_expected_reasons(
+                    f"{source}-to-csharp",
+                    source,
+                    "missing-symbol-fails-closed",
+                ),
+                frozenset({expected}),
+            )
+        for source in ("java", "javascript", "typescript"):
+            self.assertEqual(
+                validator.nodejs_negative_expected_reasons(
+                    route_key=f"{source}-to-typescript",
+                    source_language=source,
+                    case_id="missing-symbol-fails-closed",
+                    development_function="calculate",
+                ),
+                frozenset({expected}),
+            )
+
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,
     ):
@@ -4761,12 +4788,17 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError("FUNCTION_NOT_FOUND"),
+                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"
                 )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"],
+                runner.MISSING_SYMBOL_FAILURE,
+            )
             self.assertTrue((route / "certification" / "gate-report.md").is_file())
             self.assertTrue((route / "README.md").is_file())
             self.assertIn(
@@ -4785,7 +4817,7 @@ print('\\n'.join(failures))
             validator.specialized_negative_expected_reasons(
                 "swift-to-cpp", "swift", "missing-symbol-fails-closed"
             ),
-            frozenset({"NO_SUPPORTED_FUNCTIONS"}),
+            frozenset({"FUNCTION_NOT_FOUND:__elmos_missing_function__"}),
         )
 
 
