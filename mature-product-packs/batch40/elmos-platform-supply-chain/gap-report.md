@@ -3,7 +3,7 @@
 - Pack: `elmos-platform-supply-chain`
 - Skills in scope: 24
 - Blocking gaps: 24
-- Open gaps: 28
+- Open gaps: 27
 
 This inventory is a work list. It grants no status and is not evidence.
 
@@ -63,4 +63,3 @@ This inventory is a work list. It grants no status and is not evidence.
 - [metric] sbomCoverage is 0.9199, below the required 1.0
 - [status] certification status is NOT_RUN
 - [evidence] claim b40-credential-scan-triage is INCONCLUSIVE
-- [evidence] claim b40-dependabot-alert-status is FAIL

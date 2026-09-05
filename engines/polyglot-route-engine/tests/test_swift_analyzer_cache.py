@@ -17,7 +17,7 @@ import pytest
 
 from elmos_polyglot_route import native
 from elmos_polyglot_route.models import RouteError
-from elmos_polyglot_route.toolchains import ExactToolchain
+from elmos_polyglot_route.toolchains import ExactToolchain, sanitized_subprocess_env
 
 _OBJECT_STORE_TEST_BYTES = b"standalone-object"
 _OBJECT_STORE_TEST_CONTENT_SHA256 = "sha256:e574d8cfa92c7d75a6f50893003add458b47bf5aefea19b64f9cd9a2c07847fb"
@@ -237,6 +237,32 @@ def _swift_probe_environment(root: Path) -> dict[str, str]:
         "PYTHONNOUSERSITE": "1",
         "SWIFT_DETERMINISTIC_HASHING": "1",
     }
+
+
+def test_swift_probe_environment_drops_ambient_host_profile_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile_id = "github-macos26-20260831.0337.3"
+    monkeypatch.setenv("ELMOS_HOMEBREW_ROUTE_PROFILE_ID", profile_id)
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("RUNNER_ENVIRONMENT", "github-hosted")
+    monkeypatch.setenv("ImageOS", "macos26")
+    home = tmp_path / "home"
+    scratch = tmp_path / "tmp"
+    home.mkdir()
+    scratch.mkdir()
+
+    environment = sanitized_subprocess_env(
+        home=home,
+        temp_dir=scratch,
+        executable_dirs=(native._SWIFT_TOOLCHAIN_ROOT / "usr/bin",),
+    )
+    environment.update(native._SWIFT_DETERMINISTIC_ENVIRONMENT)
+
+    native._require_swift_network_probe_build_environment(tmp_path, environment)
+    assert "ELMOS_HOMEBREW_ROUTE_PROFILE_ID" not in environment
+    assert "GITHUB_ACTIONS" not in environment
 
 
 def _install_mocked_swift_network_probe_runtime(

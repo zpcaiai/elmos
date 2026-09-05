@@ -265,7 +265,12 @@ def test_java_declared_home_cannot_replace_the_pinned_distribution(
         path.chmod(0o700)
     monkeypatch.setenv("ELMOS_JAVA21_HOME", str(fake))
 
-    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_DECLARED_HOME_MISMATCH:java"):
+    expected = (
+        "EXACT_TOOLCHAIN_DECLARED_HOME_INVALID:java:temurin"
+        if os.environ.get("ELMOS_JAVA21_DISTRIBUTION") == "temurin"
+        else "EXACT_TOOLCHAIN_DECLARED_HOME_MISMATCH:java"
+    )
+    with pytest.raises(RouteError, match=expected):
         toolchains.exact_toolchain("java")
 
 
@@ -456,22 +461,23 @@ def test_typescript_toolchain_resolves_pinned_node_in_minimal_environment() -> N
 
 def test_csharp_toolchain_binds_full_console_build_and_runtime_bundle() -> None:
     selected = toolchains.exact_toolchain("csharp")
+    bundle_profile = toolchains.homebrew_route_bundle_profile()
 
     assert selected.executable == str(toolchains._EXPECTED_DOTNET_MUXER)
-    assert selected.executable_sha256 == toolchains._EXPECTED_DOTNET_MUXER_SHA256
+    assert selected.executable_sha256 == bundle_profile.dotnet_muxer_sha256
     expected_fields = {
         "dotnet-profile-schema=v1",
         "sdk-version=10.0.301",
         "hostfxr-version=10.0.9",
         "runtime-version=10.0.9",
         "rid=osx-arm64",
-        f"sdk-tree-sha256={toolchains._EXPECTED_DOTNET_SDK_TREE_SHA256}",
-        f"hostfxr-tree-sha256={toolchains._EXPECTED_DOTNET_HOSTFXR_TREE_SHA256}",
-        f"runtime-tree-sha256={toolchains._EXPECTED_DOTNET_RUNTIME_TREE_SHA256}",
-        f"reference-pack-tree-sha256={toolchains._EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256}",
-        f"apphost-pack-tree-sha256={toolchains._EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256}",
-        f"hostfxr-sha256={toolchains._EXPECTED_DOTNET_HOSTFXR_SHA256}",
-        f"hostpolicy-sha256={toolchains._EXPECTED_DOTNET_HOSTPOLICY_SHA256}",
+        f"sdk-tree-sha256={bundle_profile.dotnet_sdk_tree_sha256}",
+        f"hostfxr-tree-sha256={bundle_profile.dotnet_hostfxr_tree_sha256}",
+        f"runtime-tree-sha256={bundle_profile.dotnet_runtime_tree_sha256}",
+        f"reference-pack-tree-sha256={bundle_profile.dotnet_reference_pack_tree_sha256}",
+        f"apphost-pack-tree-sha256={bundle_profile.dotnet_apphost_pack_tree_sha256}",
+        f"hostfxr-sha256={bundle_profile.dotnet_hostfxr_sha256}",
+        f"hostpolicy-sha256={bundle_profile.dotnet_hostpolicy_sha256}",
     }
     assert expected_fields <= set(selected.profile)
     assert toolchains.verify_csharp_toolchain(selected)["muxer"]
@@ -479,6 +485,98 @@ def test_csharp_toolchain_binds_full_console_build_and_runtime_bundle() -> None:
     tampered = replace(selected, profile=(*selected.profile[:-1], "hostpolicy-sha256=same-version-replacement"))
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_DOTNET_IDENTITY_MISMATCH"):
         toolchains.verify_csharp_toolchain(tampered)
+
+
+def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
+    local = toolchains._select_homebrew_route_bundle_profile(
+        image_version="",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+    legacy_hosted = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260728.0273.1",
+        product_version="26.5.2",
+        build_version="25F84",
+    )
+    current_hosted = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260831.0337.3",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+
+    assert local.profile_id == "local-macos26-20260904"
+    assert legacy_hosted.dotnet_muxer_sha256 == local.dotnet_muxer_sha256
+    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert current_hosted.dotnet_muxer_sha256 == (
+        "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
+    )
+    assert current_hosted.php_tree_sha256 == (
+        "6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942"
+    )
+    assert current_hosted.php_tree_bytes == 129_952_823
+    assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
+    assert current_hosted.php_tree_bytes != local.php_tree_bytes
+
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
+        toolchains._select_homebrew_route_bundle_profile(
+            image_version="20990101.0000.0",
+            product_version="26.6.2",
+            build_version="25G83",
+        )
+
+
+def test_homebrew_hosted_profile_survives_an_isolated_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
+    monkeypatch.setattr(
+        toolchains,
+        "_output",
+        lambda command, **_kwargs: (
+            profile.product_version if "-productVersion" in command else profile.build_version
+        ),
+    )
+    monkeypatch.delenv("ImageVersion", raising=False)
+    monkeypatch.setenv(toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV, profile.profile_id)
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("RUNNER_ENVIRONMENT", "github-hosted")
+    monkeypatch.setenv("ImageOS", "macos26")
+    toolchains.homebrew_route_bundle_profile.cache_clear()
+    try:
+        assert toolchains.homebrew_route_bundle_profile() == profile
+    finally:
+        toolchains.homebrew_route_bundle_profile.cache_clear()
+
+
+def test_homebrew_hosted_profile_id_mismatch_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
+    monkeypatch.setenv(
+        toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV,
+        "github-macos26-unrecognized",
+    )
+    toolchains.homebrew_route_bundle_profile.cache_clear()
+    try:
+        with pytest.raises(
+            RouteError,
+            match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH",
+        ):
+            toolchains.homebrew_route_bundle_profile()
+    finally:
+        toolchains.homebrew_route_bundle_profile.cache_clear()
+
+
+def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
+    selected = toolchains.exact_toolchain("php")
+    bundle_profile = toolchains.homebrew_route_bundle_profile()
+
+    assert f"homebrew-bundle-profile={bundle_profile.profile_id}" in selected.profile
+    assert f"php-tree-sha256={bundle_profile.php_tree_sha256}" in selected.profile
+    assert f"php-tree-bytes={bundle_profile.php_tree_bytes}" in selected.profile
 
 
 def test_dotnet_tree_rejects_parent_symlink_escape(
@@ -592,8 +690,11 @@ def test_swift_analyzer_is_fresh_built_outside_repository_build_cache() -> None:
     assert dependency_cache["sha256"] == "sha256:" + native._SWIFT_SYNTAX_TREE_SHA256
     assert dependency_cache["file_count"] == native._SWIFT_SYNTAX_TREE_FILE_COUNT
     assert dependency_cache["bytes"] == native._SWIFT_SYNTAX_TREE_BYTES
-    assert receipt["toolchain"]["swiftc_sha256"] == "sha256:" + toolchains._EXPECTED_SWIFTC_SHA256
-    assert receipt["toolchain"]["swift_driver_sha256"] == "sha256:" + toolchains._EXPECTED_SWIFTC_SHA256
+    selected_host = toolchains.apple_route_host_profile("swift")
+    assert receipt["toolchain"]["swiftc_sha256"] == "sha256:" + selected_host.swiftc_sha256
+    assert receipt["toolchain"]["swift_driver_sha256"] == (
+        "sha256:" + selected_host.swiftc_sha256
+    )
     assert receipt["binary"]["sha256"] == "sha256:" + hashlib.sha256(binary.read_bytes()).hexdigest()
     assert receipt["binary"]["bytes"] == binary.stat().st_size
     assert set(receipt) == {

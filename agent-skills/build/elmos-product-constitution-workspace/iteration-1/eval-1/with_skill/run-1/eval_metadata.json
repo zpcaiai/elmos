@@ -1,0 +1,5 @@
+{
+  "eval_id": 1,
+  "eval_name": "server-derived-tenant-and-rls",
+  "prompt": "An authenticated org-a operator sends a create-migration request whose JSON body says organizationId=org-b. A proposed repository query fetches MigrationRun by id without an organization predicate. Decide the implementation and evidence requirements."
+}

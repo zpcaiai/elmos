@@ -116,8 +116,20 @@ def _expression(
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
-                "right": _expression(node.right, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+                "left": _expression(
+                    node.left,
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    function_names=function_names,
+                    emitted_target=emitted_target,
+                ),
+                "right": _expression(
+                    node.right,
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    function_names=function_names,
+                    emitted_target=emitted_target,
+                ),
             }
     if isinstance(node, ast.Compare) and len(node.ops) == 1 and len(node.comparators) == 1:
         operator = {
@@ -132,8 +144,20 @@ def _expression(
             return {
                 "kind": "binary",
                 "operator": operator,
-                "left": _expression(node.left, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
-                "right": _expression(node.comparators[0], record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+                "left": _expression(
+                    node.left,
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    function_names=function_names,
+                    emitted_target=emitted_target,
+                ),
+                "right": _expression(
+                    node.comparators[0],
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    function_names=function_names,
+                    emitted_target=emitted_target,
+                ),
             }
     if isinstance(node, ast.BoolOp) and len(node.values) >= 2:
         # Python's parser FLATTENS `a and b and c` into one three-value node,
@@ -149,13 +173,25 @@ def _expression(
         # NOT named `folded`: that name already holds the signed-literal fold
         # at the top of this function, and reusing it makes mypy read the two
         # as one variable of two incompatible types.
-        chain = _expression(node.values[0], record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target)
+        chain = _expression(
+            node.values[0],
+            record_names=record_names,
+            record_defs=record_defs,
+            function_names=function_names,
+            emitted_target=emitted_target,
+        )
         for value in node.values[1:]:
             chain = {
                 "kind": "binary",
                 "operator": operator,
                 "left": chain,
-                "right": _expression(value, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+                "right": _expression(
+                    value,
+                    record_names=record_names,
+                    record_defs=record_defs,
+                    function_names=function_names,
+                    emitted_target=emitted_target,
+                ),
             }
         return chain
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.Not):
@@ -169,7 +205,13 @@ def _expression(
         return {
             "kind": "binary",
             "operator": "==",
-            "left": _expression(node.operand, record_names=record_names, record_defs=record_defs, function_names=function_names, emitted_target=emitted_target),
+            "left": _expression(
+                node.operand,
+                record_names=record_names,
+                record_defs=record_defs,
+                function_names=function_names,
+                emitted_target=emitted_target,
+            ),
             "right": {"kind": "literal", "value": False},
         }
     if isinstance(node, ast.UnaryOp) and isinstance(node.op, ast.USub | ast.UAdd):
@@ -669,20 +711,6 @@ def _parse_record(node: ast.ClassDef, known_record_names: set[str]) -> RecordDef
         raise RouteError(f"PYTHON_RECORD_EMPTY:{node.name}")
     return RecordDefinition(name=node.name, fields=tuple(fields))
 
-
-def analyze_python(path: Path, function_name: str, *, emitted_target: bool = False) -> SemanticIR:
-    source = path.read_text(encoding="utf-8")
-    tree = ast.parse(source, filename=path.name, feature_version=(3, 12))
-    records_list: list[RecordDefinition] = []
-    record_defs: dict[str, RecordDefinition] = {}
-    for node in tree.body:
-        if isinstance(node, ast.ClassDef) and _is_dataclass(node):
-            if node.name in record_defs:
-                raise RouteError(f"PYTHON_DUPLICATE_RECORD_NAME:{node.name}")
-            rec = _parse_record(node, set(record_defs.keys()))
-            record_defs[rec.name] = rec
-            records_list.append(rec)
-    record_names = set(record_defs.keys())
 
 def _parse_function(
     candidate: ast.FunctionDef | ast.AsyncFunctionDef,

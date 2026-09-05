@@ -10,7 +10,7 @@ import {
   resetDescopeOtpVerifyFixture,
 } from "./descopeOtpVerifyRoute.fixture.mjs";
 
-const routeUrl = new URL("../app/api/auth/descope/otp/verify/route.ts", import.meta.url);
+const routeUrl = new URL("../app/api/auth/descope/otp/verify/_route.ts", import.meta.url);
 const fixtureUrl = new URL("./descopeOtpVerifyRoute.fixture.mjs", import.meta.url).href;
 const dependencies = new Set([
   "../../../../../lib/server/accountSession",

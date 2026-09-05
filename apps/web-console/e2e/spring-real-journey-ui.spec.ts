@@ -136,6 +136,7 @@ const capabilities = {
       targetJava: "21",
       recipeId: "io.elmos.openrewrite.SpringBoot2_7_18To3_5_3Java21",
       evidenceStatus: "PASSED_LOCAL",
+      launchStatus: "DESIGN_PARTNER",
       verifiedSourceSpringBoot: "2.7.18",
       verifiedSourceJava: "17",
     },
@@ -193,6 +194,7 @@ const capabilities = {
     },
   ],
   experimentalRoutesRequireOptIn: true,
+  operatorExperimentalRoutesEnabled: true,
   transformerConfigured: true,
   transformerReason: "Rootless private Runner is configured.",
   runtimeRunnerConfigured: true,
@@ -480,6 +482,8 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   ).toBeVisible();
   const targetSelector = page.getByLabel("Spring 目标精确版本");
   await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(0);
+  await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(0);
+  await page.getByLabel("允许实验性升级路线").check();
   await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(1);
 
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/legacy-orders.git");

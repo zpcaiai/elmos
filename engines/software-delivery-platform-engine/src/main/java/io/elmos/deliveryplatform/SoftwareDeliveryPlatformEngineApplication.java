@@ -1,4 +1,4 @@
-package io.elmos.delivery;
+package io.elmos.deliveryplatform;
 
 import io.elmos.executiondomain.DomainDefinitions;
 import io.elmos.executiondomain.EvidenceBoundDomainEngine;

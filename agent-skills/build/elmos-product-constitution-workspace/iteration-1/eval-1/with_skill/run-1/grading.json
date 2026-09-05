@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "The decision rejects organizationId from the request body as a tenant authority.",
+      "passed": true,
+      "evidence": "result.md calls the body field untrusted and requires rejecting the org-a/org-b mismatch."
+    },
+    {
+      "text": "The repository lookup is constrained by server-derived organization and backed by row-level security.",
+      "passed": true,
+      "evidence": "result.md requires findByOrganizationIdAndId(org-a, runId), transaction-local app.organization_id, and ENABLE/FORCE RLS."
+    },
+    {
+      "text": "The cross-tenant attempt returns a non-enumerating denial and emits immutable audit evidence.",
+      "passed": true,
+      "evidence": "result.md specifies generic denied/not-found and an append-only, hash-chain-valid DENY audit event without target data."
+    },
+    {
+      "text": "The output does not suggest disabling RLS or running customer work in the control plane.",
+      "passed": true,
+      "evidence": "result.md explicitly keeps RLS and excludes builds, shell, Recipes, and agents from the control-plane path."
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "execution_metrics": {
+    "tool_calls": {}, "total_tool_calls": 0, "total_steps": 1,
+    "errors_encountered": 0, "output_chars": 0, "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The proposed decision derives org-a from authentication and rejects org-b from the body.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The first bullet of result.md states both requirements."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": ["No without-skill baseline was executed because this turn did not authorize subagent evaluation."],
+    "workarounds": ["Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The assertions distinguish server-derived tenancy, application scoping, database enforcement, and evidence behavior."
+  }
+}

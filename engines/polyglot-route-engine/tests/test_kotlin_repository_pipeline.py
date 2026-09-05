@@ -20,6 +20,11 @@ from elmos_polyglot_route.source_analyzer import inventory_module
 from elmos_polyglot_route.toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
 from elmos_polyglot_route.validation import _kotlin_jvm_bin
 
+EXPECTED_KOTLIN_VERSION = {
+    "homebrew": "kotlinc-jvm 2.2.20 (JRE 21.0.11)",
+    "temurin": "kotlinc-jvm 2.2.20 (JRE 21.0.11+10-LTS)",
+}[os.environ.get("ELMOS_JAVA21_DISTRIBUTION", "homebrew")]
+
 
 def _write_cases(cases: Path, values: list[list[dict[str, object]]]) -> None:
     cases.mkdir()
@@ -280,7 +285,7 @@ def test_kotlin_target_repository_assembles_compiles_and_runs_two_files(
     assert report["included_unit_count"] == 2
     assert report["build_verification"]["status"] == "PASSED"
     assert report["build_verification"]["toolchain"]["language"] == "kotlin"
-    assert report["build_verification"]["toolchain"]["version"] == ("kotlinc-jvm 2.2.20 (JRE 21.0.11)")
+    assert report["build_verification"]["toolchain"]["version"] == EXPECTED_KOTLIN_VERSION
     assert report["certification_status"] == "NOT_CERTIFIED"
 
     assembled = output / "assembled"
@@ -289,7 +294,7 @@ def test_kotlin_target_repository_assembles_compiles_and_runs_two_files(
     assert manifest["build_verification_status"] == "PASSED"
     assert manifest["included_unit_count"] == 2
     kotlin_identity = manifest["build_verification"]["kotlin_exact_toolchain"]
-    assert kotlin_identity["version"] == "kotlinc-jvm 2.2.20 (JRE 21.0.11)"
+    assert kotlin_identity["version"] == EXPECTED_KOTLIN_VERSION
     assert any(
         value.startswith("kotlin-compiler-jar-sha256=")
         for value in kotlin_identity["profile"]
