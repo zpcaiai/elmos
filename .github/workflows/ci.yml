@@ -679,14 +679,14 @@ jobs:
           toolchain: "1.89.0"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
-      - name: Build locked native dependency solver
-        working-directory: native/rust-core
+      - name: Build native dependency solver
         env:
           CARGO_NET_OFFLINE: "true"
         run: |
           test "$(rustc --version)" = "rustc 1.89.0 (29483883e 2025-08-04)"
           test "$(cargo --version)" = "cargo 1.89.0 (c24e10642 2025-06-23)"
-          cargo build --locked --release --lib
+          cargo build --locked --release --lib \
+            --manifest-path native/rust-core/Cargo.toml
       - name: Verify installed Project Synthesis distribution boundary
         run: |
           python tooling/validate_project_synthesis_integration.py --require-packages |
