@@ -888,12 +888,23 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
 def bind_swift_receipt_to_selected_host_profile(
     validator: object,
     receipt: dict[str, object],
+    profile: object | None = None,
 ) -> None:
     """Bind every host-owned receipt identity to one registered profile."""
 
-    profile = validator._selected_swift_host_profile()
+    profile = profile or validator._selected_swift_host_profile()
     if profile is None:
         raise AssertionError("Swift receipt fixture requires a selected Apple profile")
+    toolchain_profile = receipt["toolchain"]["profile"]
+    receipt["toolchain"]["profile"] = [
+        toolchain_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *[
+            item
+            for item in toolchain_profile[1:]
+            if not item.startswith("apple-host-profile=")
+        ],
+    ]
     receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["toolchain"]["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
     receipt["dependency"]["mirror"]["git"] = {
@@ -966,6 +977,42 @@ class ToolkitTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
                 validator._selected_swift_host_profile()
             selector.assert_called_once_with("swift")
+
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
+        from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
+
+        for profile in _APPLE_ROUTE_HOST_PROFILES:
+            with self.subTest(profile=profile.profile_id):
+                receipt = portable_swift_analyzer_receipt(validator)
+                bind_swift_receipt_to_selected_host_profile(
+                    validator,
+                    receipt,
+                    profile,
+                )
+                self.assertEqual(
+                    receipt["toolchain"]["profile"][1],
+                    f"apple-host-profile={profile.profile_id}",
+                )
+                contract = validator._registered_swift_receipt_contract(receipt)
+                self.assertEqual(contract["profile"], profile)
+                self.assertEqual(contract["toolchain"], receipt["toolchain"])
+
+                forged = copy.deepcopy(receipt)
+                forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+                failures: list[str] = []
+                validator._validate_swift_analyzer_receipt_document(
+                    forged,
+                    label="forged Swift analyzer receipt",
+                    failures=failures,
+                )
+                self.assertTrue(
+                    any(
+                        "toolchain exact identity is invalid" in failure
+                        for failure in failures
+                    ),
+                    failures,
+                )
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
@@ -4658,6 +4705,96 @@ print('\\n'.join(failures))
                 ),
                 frozenset({expected}),
             )
+
+    def test_generic_negative_stabilizes_only_exact_native_missing_symbol(self):
+        runner = load_polyglot_runner()
+        expected = runner.MISSING_SYMBOL_FAILURE
+
+        self.assertEqual(runner.stable_missing_symbol_failure(expected), expected)
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}"
+            ),
+            expected,
+        )
+        self.assertEqual(
+            runner.stable_missing_symbol_failure(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2"
+            ),
+            expected,
+        )
+        for rejected in (
+            f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nforged",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 1",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:{expected}\nexit status 2\nforged",
+            "NATIVE_ANALYZER_FAILED:/opt/elmos/go:FUNCTION_NOT_FOUND:other",
+            f"NATIVE_ANALYZER_FAILED:/opt/elmos/go:prefix:{expected}",
+        ):
+            with self.subTest(rejected=rejected):
+                self.assertIsNone(runner.stable_missing_symbol_failure(rejected))
+
+    def test_generic_negative_records_exact_reason_from_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:/opt/elmos/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+                + "\nexit status 2"
+            )
+            with mock.patch.object(
+                runner,
+                "migrate",
+                side_effect=runner.RouteError(wrapped),
+            ):
+                reference = runner.execute_negative(route, fixtures, "go", "cpp")
+
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"], runner.MISSING_SYMBOL_FAILURE
+            )
+
+    def test_generic_negative_rejects_non_exact_native_wrapper(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td).resolve()
+            route = root / "routes" / "go-to-cpp"
+            (route / "certification").mkdir(parents=True)
+            fixtures = root / "fixtures"
+            source = fixtures / "go" / "pricing.go"
+            cases = fixtures / "behavior-cases.json"
+            source.parent.mkdir(parents=True)
+            source.write_text(
+                "package pricing\nfunc calculate(a int64, b int64) int64 { return a + b }\n"
+            )
+            cases.write_text('[{"args":[1,2],"expected":3}]\n')
+            wrapped = (
+                "NATIVE_ANALYZER_FAILED:relative/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+            )
+            with (
+                mock.patch.object(
+                    runner,
+                    "migrate",
+                    side_effect=runner.RouteError(wrapped),
+                ),
+                self.assertRaisesRegex(
+                    RuntimeError,
+                    "^NEGATIVE_CASE_WRONG_FAILURE:go-to-cpp:",
+                ),
+            ):
+                runner.execute_negative(route, fixtures, "go", "cpp")
 
     def test_specialized_negative_replay_rejects_positive_source_with_self_consistent_ref(
         self,

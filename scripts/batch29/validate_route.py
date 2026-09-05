@@ -3622,6 +3622,19 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
         ],
     }
     expected_toolchain = json.loads(json.dumps(SWIFT_ANALYZER_TOOLCHAIN))
+    expected_profile = expected_toolchain.get("profile")
+    if not isinstance(expected_profile, list) or not expected_profile:
+        raise ValueError("registered Swift toolchain profile is invalid")
+    observed_profile = toolchain.get("profile") if isinstance(toolchain, dict) else None
+    if isinstance(observed_profile, list) and any(
+        isinstance(item, str) and item.startswith("apple-host-profile=")
+        for item in observed_profile
+    ):
+        expected_toolchain["profile"] = [
+            expected_profile[0],
+            f"apple-host-profile={profile.profile_id}",
+            *expected_profile[1:],
+        ]
     expected_toolchain["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     expected_toolchain["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
     expected_toolchain["build_closure"] = closure

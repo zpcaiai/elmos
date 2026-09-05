@@ -290,6 +290,11 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Populate the exact lock-file graph while network is authorized;
+          # analyzer execution later verifies and restores from this cache offline.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -407,6 +412,9 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           # The native Rust analyzer executes with --offline --locked so a
           # repository workload cannot cause an undeclared network fetch.
           # Hydrate only the checked-in Cargo.lock graph before that
@@ -533,6 +541,9 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
