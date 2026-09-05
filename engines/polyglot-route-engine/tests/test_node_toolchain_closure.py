@@ -32,14 +32,15 @@ def test_node26_profile_registry_is_complete_and_includes_the_hosted_image() -> 
         "homebrew-node26-libada-e4b04b323411-613248",
         "homebrew-node26-libada-b39ba5c76cfa-598704",
         "github-macos26-20260728-node26-b39ba5c76cfa-598704",
+        "github-macos26-20260831-node26-b39ba5c76cfa-598704",
     ]
     assert all(set(profile) == toolchains._NODE26_PROFILE_FIELDS for profile in profiles)
     hosted = profiles[-1]
     assert hosted == {
-        "profile": "github-macos26-20260728-node26-b39ba5c76cfa-598704",
-        "sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "bytes": 119_975_888,
-        "qualification_host": "github-macos-26-arm64@20260728.0273.1",
+        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
         "node_version": "v26.0.0",
         "platform": "darwin",
         "arch": "arm64",
@@ -48,7 +49,7 @@ def test_node26_profile_registry_is_complete_and_includes_the_hosted_image() -> 
         "edge_count": 49,
         "system_edge_count": 43,
         "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
-        "closure_sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "closure_sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "closure_bytes": 119_975_888,
         "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
         "node_bytes": 50_672,
@@ -177,6 +178,34 @@ def test_node_profile_selection_rejects_cross_profile_topology_mix(
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_NODE_CLOSURE_MISMATCH"):
         toolchains._verify_node_dependency_closure(mixed)
+
+
+def test_node_profile_selection_rejects_previous_manifest_with_current_identity(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    previous_hosted = toolchains._EXPECTED_NODE_CLOSURE_PROFILES[-2]
+    current_hosted = toolchains._EXPECTED_NODE_CLOSURE_PROFILES[-1]
+    previous_identity = _synthetic_profile_identity(
+        previous_hosted,
+        previous_hosted,
+        previous_hosted,
+        previous_hosted,
+    )
+    claimed_current_identity = {
+        **previous_identity,
+        "sha256": current_hosted["closure_sha256"],
+    }
+    monkeypatch.setattr(
+        toolchains,
+        "_node_closure_identity",
+        lambda _manifest: previous_identity,
+    )
+
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_NODE_CLOSURE_IDENTITY_INVALID",
+    ):
+        toolchains._verify_node_dependency_closure(claimed_current_identity)
 
 
 def test_node_dependency_closure_rejects_cached_topology_identity_mix(

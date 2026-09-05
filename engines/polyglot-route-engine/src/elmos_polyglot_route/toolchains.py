@@ -1717,10 +1717,11 @@ _NODE26_LEGACY_PROFILE_FIELDS: dict[str, str | int] = {
 }
 # Each record is a complete, coherent Node runtime identity.  The first three
 # preserve the previously qualified Homebrew closures.  The fourth is the
-# independently observed GitHub macOS 26 image 20260728.0273.1 closure.  Image
-# provenance names the host on which those bytes were measured; acceptance is
-# still based on the complete content/topology/process record below, never on
-# an environment label alone.
+# independently observed GitHub macOS 26 image closures.  Image provenance
+# names the host on which those bytes were measured; acceptance is still based
+# on the complete content/topology/process record below, never on an
+# environment label alone.  Historical profiles remain registered so an exact
+# replay does not silently reinterpret old bytes as the current hosted image.
 _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
     {
         **_NODE26_LEGACY_PROFILE_FIELDS,
@@ -1766,6 +1767,30 @@ _EXPECTED_NODE_CLOSURE_PROFILES: tuple[dict[str, str | int], ...] = (
         "system_edge_count": 43,
         "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
         "closure_sha256": "318b4e2a7f408f6e541a3ab0effe07b85df0d201999a377701cb20ba42556b65",
+        "closure_bytes": 119_975_888,
+        "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
+        "node_bytes": 50_672,
+        "libnode_sha256": "980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88",
+        "libnode_bytes": 70_661_840,
+        "libada_sha256": "b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8",
+        "libada_bytes": 598_704,
+        "process_versions": _NODE26_PROCESS_VERSIONS,
+        "process_versions_sha256": _NODE26_PROCESS_VERSIONS_SHA256,
+    },
+    {
+        "profile": "github-macos26-20260831-node26-b39ba5c76cfa-598704",
+        "sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
+        "bytes": 119_975_888,
+        "qualification_host": "github-macos-26-arm64@20260831.0337.3",
+        "node_version": "v26.0.0",
+        "platform": "darwin",
+        "arch": "arm64",
+        "topology_sha256": "4d2426eac17276f2bc4ec386d85660ecf5896cb4746fc1de87fbe4d7f2551e82",
+        "component_count": 25,
+        "edge_count": 49,
+        "system_edge_count": 43,
+        "system_edge_sha256": "495f6ba5eaf5ba5b2c1fa40a2325679d1823b279b06ed283a520706f02b28444",
+        "closure_sha256": "8dcb3a6d571df541adccec54feca18ec6a4074d232d68397ffca9bdec0b5ce07",
         "closure_bytes": 119_975_888,
         "node_sha256": "542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9",
         "node_bytes": 50_672,

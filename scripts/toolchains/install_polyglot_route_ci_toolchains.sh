@@ -59,8 +59,11 @@ case "${CI_PROFILE}" in
     fi
     case "${host_identity}" in
       "macos26|20260728.0273.1|26.5.2|25F84")
-        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71"
-        NODE_TAHOE_OPENSSL_SSL_SHA256="ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca"
+        # Homebrew's current 3.6.3 bottle rebuild is shared by both
+        # allowlisted images; bind the installed bytes, not the older image's
+        # preloaded bottle identity.
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
         ;;
       "macos26|20260831.0337.3|26.6.2|25G83")
         NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
