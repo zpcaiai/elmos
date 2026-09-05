@@ -7,8 +7,8 @@
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
   "status": "experimental",
-  "artifactDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
-  "environmentDigest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "artifactDigest": "sha256:84ab46e5055fd28443437d58427e8805aced0472205931c4028f7d509e93b5e0",
+  "environmentDigest": "sha256:cf22b8f507f36a0ecc0f33ae934e63ab0e34765e84e6f66bb1ce1f994ccc0673",
   "requiredBatches": [
     26,
     37,
@@ -18,6 +18,10 @@
   "supportMatrix": "support-matrix.json",
   "profile": "profile.json",
   "certification": "certification.json",
-  "evidenceRefs": [],
+  "evidenceRefs": [
+    "b40-dependabot-alerts",
+    "b40-dependency-inventory",
+    "b40-secret-scan"
+  ],
   "metadata": {}
 }

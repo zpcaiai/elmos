@@ -22,8 +22,8 @@
     "zero-tolerance"
   ],
   "skillCount": 24,
-  "blockingCount": 24,
-  "openCount": 27,
+  "blockingCount": 21,
+  "openCount": 22,
   "certifiable": false,
   "gaps": [
     {
@@ -40,16 +40,6 @@
       "category": "evidence",
       "severity": "blocking",
       "detail": "certification-request.sig has not been produced"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json artifactDigest is still the zero digest"
-    },
-    {
-      "category": "provenance",
-      "severity": "blocking",
-      "detail": "pack.json environmentDigest is still the zero digest"
     },
     {
       "category": "coverage",
@@ -84,11 +74,6 @@
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-dependency-sca-governance is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
       "detail": "b40-independent-security-assessment is only experimental in the support matrix"
     },
     {
@@ -115,16 +100,6 @@
       "category": "coverage",
       "severity": "open",
       "detail": "b40-sast-integration is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-sbom-component-identity is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-secret-credential-scanning is only experimental in the support matrix"
     },
     {
       "category": "coverage",
@@ -193,11 +168,6 @@
     },
     {
       "category": "metric",
-      "severity": "open",
-      "detail": "sbomCoverage is 0.9199, below the required 1.0"
-    },
-    {
-      "category": "metric",
       "severity": "blocking",
       "detail": "secureSdlcControlCoverage has not been measured (threshold 1.0)"
     },
@@ -215,11 +185,6 @@
       "category": "metric",
       "severity": "blocking",
       "detail": "vulnerabilitySlaCompliance has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "secretLeaks observed 11, must be zero"
     },
     {
       "category": "zero-tolerance",
@@ -275,11 +240,6 @@
       "category": "status",
       "severity": "open",
       "detail": "certification status is NOT_RUN"
-    },
-    {
-      "category": "evidence",
-      "severity": "open",
-      "detail": "claim b40-credential-scan-triage is INCONCLUSIVE"
     }
   ]
 }

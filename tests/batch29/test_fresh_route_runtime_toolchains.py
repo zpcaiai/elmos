@@ -264,6 +264,30 @@ def test_ci_installer_seals_the_captured_python_runtime_before_use() -> None:
     assert installer.index(directories) < installer.index(python_probe)
 
 
+def test_ci_installer_adapts_only_the_digest_bound_openssl_symlink_keyword() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert 'python3 - "${source}" "${target}" "${token}" <<\'PY\'' in installer
+    assert 'if token == "openssl@3":' in installer
+    assert 'if source.count(openssl_postinstall) != 1:' in installer
+    assert "pinned OpenSSL formula has an unexpected symlink contract" in installer
+    assert 'source.replace(openssl_postinstall, "", 1)' in installer
+
+
+def test_ci_installer_reports_every_node_closure_identity_mismatch() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert "NODE_COMPONENT_MISMATCH_COUNT=0" in installer
+    assert "NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))" in installer
+    assert "os.open(path, os.O_RDONLY | os.O_NOFOLLOW)" in installer
+    assert "metadata = os.fstat(descriptor)" in installer
+    assert "getattr(metadata, field) != getattr(final_metadata, field)" in installer
+    assert 're.fullmatch(r"[0-9a-f]{64}", sys.argv[4])' in installer
+    assert "Pinned Node closure expected identity is invalid" in installer
+    assert "f\"(observed={observed} expected={expected})\"" in installer
+    assert "Pinned Node closure has %s component identity mismatch(es)." in installer
+
+
 def test_java_python_ci_profile_materializes_the_required_typescript_closure() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
     profile_guard = (

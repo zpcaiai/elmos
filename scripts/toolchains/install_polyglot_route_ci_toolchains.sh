@@ -229,6 +229,7 @@ from pathlib import Path
 import sys
 
 source = Path(sys.argv[1]).read_text(encoding="utf-8")
+token = sys.argv[3]
 marker = "  bottle do\n"
 if source.count(marker) != 1:
     raise SystemExit("pinned Homebrew formula has an unexpected bottle contract")
@@ -245,16 +246,22 @@ if autobump_lines:
     # no_autobump! is official-tap publication metadata. Homebrew rejects it
     # in a local tap; removing it does not alter source or bottle identity.
     source = source.replace(autobump_lines[0], "", 1)
-token = sys.argv[3]
+# OpenSSL 3.6.3 uses the current Homebrew `symlink(..., overwrite: true)`
+# post-install DSL, while the rolling macOS 26 image can still carry a brew
+# version that rejects that keyword. The route closure neither owns nor uses
+# Homebrew's shared CA configuration, so omit only this digest-bound metadata
+# block instead of mutating the runner's existing certificate link. Fail if
+# the pinned formula's exact statement ever changes.
+openssl_postinstall = (
+    "  post_install_steps do\n"
+    '    symlink "{{etc}}/ca-certificates/cert.pem", '
+    '"{{pkgetc}}/cert.pem", overwrite: true\n'
+    "  end\n"
+)
 if token == "openssl@3":
-    # The pinned formula uses the newer `overwrite:` spelling, while the
-    # hosted runner's Homebrew DSL accepts the equivalent, long-supported
-    # `force:` keyword. Bind this compatibility transform to one exact token
-    # and one exact source occurrence so upstream drift still fails closed.
-    overwrite = "overwrite: true"
-    if source.count(overwrite) != 1:
+    if source.count(openssl_postinstall) != 1:
         raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
-    source = source.replace(overwrite, "force: true", 1)
+    source = source.replace(openssl_postinstall, "", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
@@ -381,26 +388,83 @@ install_pinned_ada_url() {
   fi
 }
 
+NODE_COMPONENT_MISMATCH_COUNT=0
+
 verify_pinned_node26_component() {
   local path="$1"
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
-  local observed
-  if [[ ! -f "${path}" || -L "${path}" \
-    || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
-    printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
-      "${path}" >&2
-    return 1
-  fi
-  observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
-  local observed_sha256
-  observed_sha256="$(file_sha256 "${path}")"
-  if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "${observed_sha256}" != "${expected_sha256}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (%s:%s)\n' \
-      "${path}" "${observed}" "${observed_sha256}" >&2
-    return 1
+  if ! python3 -I -B - \
+      "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
+import hashlib
+import os
+import re
+import stat
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+if (
+    re.fullmatch(r"[0-7]{3}", sys.argv[2]) is None
+    or re.fullmatch(r"[1-9][0-9]*", sys.argv[3]) is None
+    or re.fullmatch(r"[0-9a-f]{64}", sys.argv[4]) is None
+):
+    print(
+        f"Pinned Node closure expected identity is invalid: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
+try:
+    path_metadata = path.lstat()
+    realpath = path.resolve(strict=True)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        metadata = os.fstat(descriptor)
+        hasher = hashlib.sha256()
+        while chunk := os.read(descriptor, 1024 * 1024):
+            hasher.update(chunk)
+        digest = hasher.hexdigest()
+    finally:
+        os.close(descriptor)
+    final_metadata = path.lstat()
+except OSError as error:
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}: {error}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+stable_fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink", "st_size")
+if (
+    not stat.S_ISREG(path_metadata.st_mode)
+    or stat.S_ISLNK(path_metadata.st_mode)
+    or realpath != path
+    or any(
+        getattr(path_metadata, field) != getattr(metadata, field)
+        or getattr(metadata, field) != getattr(final_metadata, field)
+        for field in stable_fields
+    )
+):
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+observed = (
+    f"{stat.S_IMODE(metadata.st_mode):o}:{metadata.st_uid}:{metadata.st_gid}:"
+    f"{metadata.st_nlink}:{metadata.st_size}:{digest}"
+)
+if observed != expected:
+    print(
+        f"Pinned Node closure component identity mismatch: {path} "
+        f"(observed={observed} expected={expected})",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+PY
+  then
+    NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))
   fi
 }
 
@@ -433,6 +497,7 @@ install_pinned_sqlite() {
 install_pinned_node26_closure() {
   local profile="$1"
   local hdrhistogram_version
+  NODE_COMPONENT_MISMATCH_COUNT=0
   case "${profile}" in
     tahoe) hdrhistogram_version="0.11.10" ;;
     sequoia) hdrhistogram_version="0.11.9" ;;
@@ -592,12 +657,9 @@ node|26.0.0
 EOF
 
   if [[ "${profile}" == "tahoe" ]]; then
-    local component_failures=0
     while IFS='|' read -r path mode byte_count digest; do
-      if ! verify_pinned_node26_component \
-          "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"; then
-        component_failures=$((component_failures + 1))
-      fi
+      verify_pinned_node26_component \
+        "${HOMEBREW_CELLAR}/${path}" "${mode}" "${byte_count}" "${digest}"
     done <<'EOF'
 ada-url/3.4.4/lib/libada.3.4.4.dylib|444|598704|b39ba5c76cfa9e8d7a37b51daf937414316b671f51360daae62b9885e9d089f8
 brotli/1.2.0/lib/libbrotlicommon.1.2.0.dylib|444|150128|eb4c35c72adfea50045e0901767820b32a6b434685c0a4753ca9d3f9b389e44f
@@ -625,11 +687,11 @@ sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
-    if (( component_failures != 0 )); then
-      printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
-        "${component_failures}" >&2
-      exit 3
-    fi
+  fi
+  if [[ "${NODE_COMPONENT_MISMATCH_COUNT}" -ne 0 ]]; then
+    printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
+      "${NODE_COMPONENT_MISMATCH_COUNT}" >&2
+    exit 3
   fi
 }
 

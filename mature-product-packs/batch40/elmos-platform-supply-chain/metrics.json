@@ -58,7 +58,7 @@
       "threshold": 1.0,
       "comparator": "min",
       "measured": true,
-      "value": 0.9199,
+      "value": 1.0,
       "evidenceRefs": [
         "b40-dependency-inventory"
       ],

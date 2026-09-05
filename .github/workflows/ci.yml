@@ -290,6 +290,12 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Hydrate the exact packages.lock.json closure while network access
+          # is allowed. The analyzer snapshots verified nupkg bytes into an
+          # isolated local source and restores offline during route execution.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -407,6 +413,11 @@ jobs:
         run: |
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Hydrate the exact C# analyzer dependency closure before its
+          # fail-closed offline build phase.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           # The native Rust analyzer executes with --offline --locked so a
           # repository workload cannot cause an undeclared network fetch.
           # Hydrate only the checked-in Cargo.lock graph before that
@@ -533,6 +544,11 @@ jobs:
             >>"${GITHUB_ENV}"
           npm install --global pnpm@10.12.4
           pnpm --dir engines/frontend-client-engine install --frozen-lockfile
+          # Each shard runs on a fresh host and needs the verified C# analyzer
+          # packages hydrated before offline route execution.
+          dotnet restore \
+            engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj \
+            --locked-mode
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
@@ -688,6 +704,7 @@ jobs:
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
         run: |
+          cargo build --locked --release --manifest-path ../../native/rust-core/Cargo.toml
           uv sync --locked
           uv run pytest
           uv run ruff check src tests
@@ -835,6 +852,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22.23.1"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -915,6 +936,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+          architecture: arm64
       - name: Set up Python 3.12.10
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -971,6 +997,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1035,6 +1065,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:

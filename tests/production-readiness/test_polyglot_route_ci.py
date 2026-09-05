@@ -103,8 +103,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         )
         self.assertIn('done <<<"${installed_formula_inventory}"', installer)
         self.assertIn('if token == "openssl@3":', installer)
-        self.assertIn('if source.count(overwrite) != 1:', installer)
-        self.assertIn('source.replace(overwrite, "force: true", 1)', installer)
+        self.assertIn('if source.count(openssl_postinstall) != 1:', installer)
+        self.assertIn(
+            'source.replace(openssl_postinstall, "", 1)',
+            installer,
+        )
+        self.assertNotIn('source.replace(overwrite, "force: true", 1)', installer)
         self.assertIn(
             "libnghttp2/1.69.0/lib/libnghttp2.14.dylib|444|184240|"
             "9e14b36e03a09a83341d716f5bc38ed1be1fe5ef2ec74ba4c19fb20a5962615c",
@@ -310,6 +314,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
 
         self.assertEqual(len(verifier.FILE_PROFILES), 3)
         self.assertEqual(len(verifier.UNSEALED_FILE_PROFILES), 3)
+        self.assertEqual(len(verifier.HOST_PROFILES), 2)
         for path, profile in verifier.FILE_PROFILES.items():
             self.assertEqual((profile["uid"], profile["gid"]), (0, 0))
             self.assertEqual(
@@ -743,6 +748,14 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             all_route_jobs.count("git diff --exit-code -- Package.resolved"),
             3,
         )
+        self.assertEqual(
+            all_route_jobs.count(
+                "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+                "Elmos.Dotnet.SemanticCli.csproj"
+            ),
+            3,
+        )
+        self.assertEqual(all_route_jobs.count("--locked-mode"), 3)
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)

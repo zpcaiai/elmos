@@ -877,6 +877,8 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
             "binary": copy.deepcopy(binary),
         },
     }
+    registered = validator._registered_swift_receipt_contract(receipt)
+    receipt["toolchain"] = copy.deepcopy(registered["toolchain"])
     canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
     receipt["canonical_identity"] = {
         "sha256": validator._receipt_payload_sha256(canonical),
@@ -966,6 +968,44 @@ class ToolkitTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
                 validator._selected_swift_host_profile()
             selector.assert_called_once_with("swift")
+
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
+
+        validator = load_route_validator()
+        receipt = portable_swift_analyzer_receipt(validator)
+        profile = _APPLE_ROUTE_HOST_PROFILES[0]
+        receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+        receipt["toolchain"]["swift_driver_sha256"] = (
+            "sha256:" + profile.swiftc_sha256
+        )
+        receipt["dependency"]["mirror"]["git"]["sha256"] = (
+            "sha256:" + profile.apple_git_sha256
+        )
+        receipt["network_isolation"]["sandbox"]["sha256"] = (
+            "sha256:" + profile.sandbox_exec_sha256
+        )
+        receipt["network_isolation"]["verifier"]["sha256"] = (
+            "sha256:" + profile.codesign_sha256
+        )
+
+        contract = validator._registered_swift_receipt_contract(receipt)
+
+        self.assertEqual(
+            contract["toolchain"]["profile"],
+            [
+                "platform=Darwin/arm64",
+                f"apple-host-profile={profile.profile_id}",
+                "xcode=26.6/17F113",
+                "macosx-sdk=26.5",
+                (
+                    "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+                    "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk"
+                ),
+                "swift-language-mode=6",
+                "integer=Int64",
+            ],
+        )
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
@@ -2467,7 +2507,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 38)
+        self.assertEqual(len(swift_definition_names), 40)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
@@ -2494,6 +2534,14 @@ print('\\n'.join(failures))
             }
             self.assertEqual(
                 list(Draft202012Validator(receipt_contract).iter_errors(receipt)),
+                [],
+            )
+            hybrid = copy.deepcopy(receipt)
+            hybrid["toolchain"]["profile"][1] = (
+                "apple-host-profile=github-macos26-20260728.0273.1"
+            )
+            self.assertNotEqual(
+                list(Draft202012Validator(receipt_contract).iter_errors(hybrid)),
                 [],
             )
         mirror = receipt["dependency"]["mirror"]
@@ -4648,6 +4696,21 @@ print('\\n'.join(failures))
                 ),
                 frozenset({expected}),
             )
+        self.assertEqual(
+            runner.stable_native_route_error(
+                f"NATIVE_ANALYZER_FAILED:/opt/elmos/bin/go:{expected}",
+                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
+            ),
+            expected,
+        )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "^NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID:",
+        ):
+            runner.stable_native_route_error(
+                f"NATIVE_ANALYZER_FAILED:relative/go:{expected}",
+                invalid_code="NEGATIVE_NATIVE_ERROR_WRAPPER_INVALID",
+            )
         for source in ("java", "javascript", "typescript"):
             self.assertEqual(
                 validator.nodejs_negative_expected_reasons(
@@ -4752,7 +4815,10 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
+                side_effect=runner.RouteError(
+                    "NATIVE_ANALYZER_FAILED:/opt/elmos/bin/python3:"
+                    + runner.MISSING_SYMBOL_FAILURE
+                ),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"

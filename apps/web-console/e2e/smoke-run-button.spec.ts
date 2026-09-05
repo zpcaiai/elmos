@@ -96,7 +96,13 @@ test.describe("Batch 46 一键运行 · 真实会话", () => {
 
   test("能力接口如实报告执行位置与不可续期的免费额度", async ({ request }, testInfo) => {
     test.skip(testInfo.project.name !== "chromium", "契约请求只执行一次");
-    const response = await request.get("/api/smoke/capability", { headers: runnerHeaders });
+    const response = await request.get("/api/smoke/capability", {
+      headers: runnerHeaders,
+      // A clean Next development server can reset one idempotent GET while it
+      // compiles the API route after the preceding long-running build journeys.
+      // Retry only transport-level resets; HTTP failures remain observable.
+      maxRetries: 2,
+    });
     expect(response.status()).toBe(200);
     const capability = await response.json();
     expect(capability).toMatchObject({
