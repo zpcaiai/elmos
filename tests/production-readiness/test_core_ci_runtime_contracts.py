@@ -21,7 +21,7 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
     def test_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
         job = _job(self.workflow, "project-synthesis", "project-synthesis-acceptance")
         rust = job.index("- name: Set up Rust 1.89.0")
-        native = job.index("- name: Build native dependency solver")
+        native = job.index("- name: Build locked native dependency solver")
         tests = job.index("- name: Verify Project Synthesis")
 
         self.assertLess(rust, native)

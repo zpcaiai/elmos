@@ -32,11 +32,12 @@ def test_project_synthesis_ci_builds_and_binds_locked_native_library() -> None:
         "dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de"
     )
     assert rust_step["with"]["toolchain"] == "1.89.0"
-    assert build_step["working-directory"] == "native/rust-core"
+    assert "working-directory" not in build_step
     assert build_step["env"]["CARGO_NET_OFFLINE"] == "true"
     assert 'rustc 1.89.0 (29483883e 2025-08-04)' in build_step["run"]
     assert 'cargo 1.89.0 (c24e10642 2025-06-23)' in build_step["run"]
     assert "cargo build --locked --release --lib" in build_step["run"]
+    assert "--manifest-path native/rust-core/Cargo.toml" in build_step["run"]
     assert verify_step["env"]["ELMOS_NATIVE_LIB"].endswith(
         "/native/rust-core/target/release/libelmos_native.so"
     )
