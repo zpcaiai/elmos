@@ -5485,6 +5485,108 @@ def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str
     }
 
 
+def _go_analyzer_source_binding(helper: Path) -> tuple[int, str]:
+    try:
+        resolved = helper.resolve(strict=True)
+        if (
+            not helper.is_absolute()
+            or helper != resolved
+            or helper.is_symlink()
+            or not helper.is_file()
+        ):
+            raise OSError("unsafe Go analyzer source")
+        content = helper.read_bytes()
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE") from error
+    if not content or len(content) > 2_000_000:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE")
+    return len(content), hashlib.sha256(content).hexdigest()
+
+
+def _promote_go_domain_error(reason: str, function_name: str) -> RouteError | None:
+    expected = f"FUNCTION_NOT_FOUND:{function_name}"
+    return RouteError(expected) if reason == expected else None
+
+
+def _run_trusted_go_analyzer(
+    toolchain: ExactToolchain,
+    helper: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run the Go analyzer and promote only its exact missing-symbol result.
+
+    ``go run`` appends ``exit status 2`` after a program deliberately rejects a
+    source input. The generic process boundary must continue treating arbitrary
+    multi-line stderr as an analyzer failure, so this language-specific boundary
+    unwraps only the one reason tied to the requested function. Helper and
+    toolchain identities are rechecked before that promotion is trusted.
+    """
+
+    if (
+        len(arguments) not in {2, 3}
+        or any(
+            not isinstance(argument, str) or not argument
+            for argument in arguments
+        )
+        or any(
+            "\n" in argument or "\r" in argument or "\x00" in argument
+            for argument in arguments
+        )
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", arguments[1]) is None
+    ):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved_source = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if (
+        not source.is_absolute()
+        or source != resolved_source
+        or source.is_symlink()
+        or not source.is_file()
+    ):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+
+    expected_helper = _go_analyzer_source_binding(helper)
+    expected_reason = f"FUNCTION_NOT_FOUND:{arguments[1]}"
+    command = [toolchain.executable, "run", str(helper), "--", *arguments]
+    try:
+        value = _run(
+            command,
+            cwd=ENGINE_ROOT,
+            environment_overrides=_go_build_cache_environment(
+                helper, Path(toolchain.executable)
+            ),
+        )
+    except RouteError as error:
+        if _go_analyzer_source_binding(helper) != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+        try:
+            current_toolchain = exact_toolchain("go")
+        except RouteError as verification_error:
+            raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from verification_error
+        if current_toolchain != toolchain:
+            raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+        wrapped = str(error)
+        prefix = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{expected_reason}"
+        if wrapped in {prefix, prefix + "\nexit status 2"}:
+            promoted = _promote_go_domain_error(expected_reason, arguments[1])
+            assert promoted is not None
+            raise promoted from error
+        raise
+    if _go_analyzer_source_binding(helper) != expected_helper:
+        raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+    try:
+        current_toolchain = exact_toolchain("go")
+    except RouteError as error:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current_toolchain != toolchain:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
+    return value
+
+
 def _run(
     command: list[str],
     *,
@@ -7610,7 +7712,7 @@ def _analyze_batch(
             # Java promotes only an explicit allow-list; every other failure has
             # to stay a hard failure, which is what the forged-stack-trace tests
             # in `test_native_validation.py` exist to guarantee.
-            def promote(reason: str) -> RouteError | None:
+            def promote(reason: str, function_name: str) -> RouteError | None:
                 return RouteError(reason) if reason in _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS else None
 
         elif language == "go":
@@ -7623,12 +7725,11 @@ def _analyze_batch(
                 cwd=ENGINE_ROOT,
                 environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
             )
-            # Go has no promotion list: a rejected function fails the analyzer
-            # process, and `_run` wraps whatever it printed.  Reconstructing that
-            # exact wrapping is what keeps a batched rejection indistinguishable
-            # from the individual call it replaced.
-            def promote(reason: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+            # The individual boundary promotes only the exact missing-function
+            # verdict bound to the requested symbol; the batch path must be
+            # identical and must not interpret any other analyzer diagnostic.
+            def promote(reason: str, function_name: str) -> RouteError | None:
+                return _promote_go_domain_error(reason, function_name)
 
         elif language == "rust":
             package = ENGINE_ROOT / "native" / "rust"
@@ -7655,7 +7756,7 @@ def _analyze_batch(
                 cargo_package=package,
             )
 
-            def promote(reason: str) -> RouteError | None:
+            def promote(reason: str, function_name: str) -> RouteError | None:
                 return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
 
         else:
@@ -7692,7 +7793,7 @@ def _analyze_batch(
             # produced may be reconstructed here; anything else means the batch
             # saw a failure mode this fast path is not entitled to interpret,
             # and the whole file drops to the per-function path.
-            promoted = promote(reason)
+            promoted = promote(reason, name)
             if promoted is None:
                 return None
             results[name] = promoted
@@ -8187,11 +8288,7 @@ def analyze(
         arguments = [str(source), function_name]
         if emitted_target:
             arguments.append("--emitted-target")
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", *arguments],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, arguments)
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None

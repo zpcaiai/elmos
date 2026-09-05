@@ -114,6 +114,96 @@ def _synthetic_java_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -
     )
 
 
+def _synthetic_go_toolchain() -> ExactToolchain:
+    return ExactToolchain(
+        language="go",
+        version="go version go1.25.0 darwin/arm64",
+        executable="/fixed/go",
+        auxiliary=None,
+        profile=("test-profile",),
+        executable_sha256="c" * 64,
+        auxiliary_sha256=None,
+    )
+
+
+def _trusted_go_test_input(tmp_path: Path) -> tuple[Path, list[str]]:
+    source = tmp_path / "narrow.go"
+    source.write_text(
+        "package narrow\nfunc value(input int64) int64 { return input }\n"
+    )
+    helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    return helper, [str(source.resolve()), "__elmos_missing_function__"]
+
+
+@pytest.mark.parametrize(
+    ("reason", "function_name", "expected"),
+    [
+        ("FUNCTION_NOT_FOUND:value", "value", "FUNCTION_NOT_FOUND:value"),
+        ("FUNCTION_NOT_FOUND:other", "value", None),
+        ("GO_PARSE_FAILED", "value", None),
+    ],
+)
+def test_go_domain_error_promotion_is_bound_to_requested_function(
+    reason: str,
+    function_name: str,
+    expected: str | None,
+) -> None:
+    promoted = native._promote_go_domain_error(reason, function_name)
+    assert (str(promoted) if promoted is not None else None) == expected
+
+
+@pytest.mark.parametrize("footer", ["", "\nexit status 2"])
+def test_trusted_go_analyzer_promotes_exact_missing_symbol_with_go_run_footer(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    footer: str,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper, arguments = _trusted_go_test_input(tmp_path)
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda *args: None)
+    reason = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
+    def fail(command: list[str], **kwargs: Any) -> dict[str, Any]:
+        assert command == [toolchain.executable, "run", str(helper), "--", *arguments]
+        raise RouteError(
+            f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}{footer}"
+        )
+
+    monkeypatch.setattr(native, "_run", fail)
+    with pytest.raises(RouteError, match=f"^{reason}$"):
+        native._run_trusted_go_analyzer(toolchain, helper, arguments)
+
+
+@pytest.mark.parametrize(
+    "detail",
+    [
+        "FUNCTION_NOT_FOUND:other\nexit status 2",
+        "FUNCTION_NOT_FOUND:__elmos_missing_function__\nextra\nexit status 2",
+        "GO_PARSE_FAILED\nexit status 2",
+    ],
+)
+def test_trusted_go_analyzer_does_not_promote_unknown_or_multiline_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    detail: str,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper, arguments = _trusted_go_test_input(tmp_path)
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda *args: None)
+
+    def fail(command: list[str], **kwargs: Any) -> dict[str, Any]:
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{detail}")
+
+    monkeypatch.setattr(native, "_run", fail)
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_go_analyzer(toolchain, helper, arguments)
+    assert str(captured.value) == (
+        f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{detail}"
+    )
+
+
 def _trusted_java_test_input(tmp_path: Path) -> tuple[Path, list[str]]:
     source = tmp_path / "Narrow.java"
     source.write_text(
