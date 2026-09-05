@@ -3624,6 +3624,10 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
     expected_toolchain = json.loads(json.dumps(SWIFT_ANALYZER_TOOLCHAIN))
     expected_toolchain["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     expected_toolchain["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
+    expected_toolchain["profile"].insert(
+        1,
+        f"apple-host-profile={profile.profile_id}",
+    )
     expected_toolchain["build_closure"] = closure
     sandbox = dict(SWIFT_NETWORK_SANDBOX)
     sandbox.update(

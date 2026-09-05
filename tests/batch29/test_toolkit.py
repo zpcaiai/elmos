@@ -967,6 +967,44 @@ class ToolkitTests(unittest.TestCase):
                 validator._selected_swift_host_profile()
             selector.assert_called_once_with("swift")
 
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
+
+        validator = load_route_validator()
+        receipt = portable_swift_analyzer_receipt(validator)
+        profile = _APPLE_ROUTE_HOST_PROFILES[0]
+        receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+        receipt["toolchain"]["swift_driver_sha256"] = (
+            "sha256:" + profile.swiftc_sha256
+        )
+        receipt["dependency"]["mirror"]["git"]["sha256"] = (
+            "sha256:" + profile.apple_git_sha256
+        )
+        receipt["network_isolation"]["sandbox"]["sha256"] = (
+            "sha256:" + profile.sandbox_exec_sha256
+        )
+        receipt["network_isolation"]["verifier"]["sha256"] = (
+            "sha256:" + profile.codesign_sha256
+        )
+
+        contract = validator._registered_swift_receipt_contract(receipt)
+
+        self.assertEqual(
+            contract["toolchain"]["profile"],
+            [
+                "platform=Darwin/arm64",
+                f"apple-host-profile={profile.profile_id}",
+                "xcode=26.6/17F113",
+                "macosx-sdk=26.5",
+                (
+                    "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/"
+                    "MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk"
+                ),
+                "swift-language-mode=6",
+                "integer=Int64",
+            ],
+        )
+
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
         maximum = validator.SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
