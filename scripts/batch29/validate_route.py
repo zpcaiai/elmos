@@ -6704,8 +6704,20 @@ def validate_formal_equivalence(
                             # historical evidence. Its captured engine bundle
                             # remains authoritative; newer live engine bytes
                             # must not rewrite old evidence.
+                            try:
+                                from route_sets import CORE_ROUTE_KEYS
+                            except ImportError:
+                                try:
+                                    from scripts.batch29.route_sets import CORE_ROUTE_KEYS
+                                except ImportError:
+                                    CORE_ROUTE_KEYS = ()
+                            is_legacy_immutable = (
+                                manifest.get("route_key") in CORE_ROUTE_KEYS
+                                and not (route / "certification" / "strict-artifacts").is_dir()
+                            )
                             validate_live_sources = (
                                 validate_live_engine_sources
+                                and not is_legacy_immutable
                                 and (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"

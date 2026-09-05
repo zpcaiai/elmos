@@ -26,6 +26,10 @@ class EngineTestRegistryTests(unittest.TestCase):
             {step["kind"] for step in engines["database-data-engine"]["steps"]},
         )
         self.assertEqual(
+            {"maven", "pytest"},
+            {step["kind"] for step in engines["security-compliance-engine"]["steps"]},
+        )
+        self.assertEqual(
             "modules/composite-modernization",
             engines["composite-engine"]["steps"][0]["module"],
         )
