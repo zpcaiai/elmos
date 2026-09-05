@@ -1037,24 +1037,56 @@ final class ProductionWorkerAttemptService {
     @PreDestroy
     void close() {
         if (!closed.compareAndSet(false, true)) return;
-        heartbeatScheduler.shutdownNow();
-        reconciliationScheduler.shutdownNow();
-        heartbeatExecutor.shutdownNow();
-        providerReconciliationExecutor.shutdownNow();
-        checkpointReconciliationExecutor.shutdownNow();
-        completionReconciliationExecutor.shutdownNow();
-        executors.shutdownNow();
+        List<ExecutorService> ownedExecutors = ownedExecutors();
+        ownedExecutors.forEach(ExecutorService::shutdownNow);
+
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(30);
+        boolean interrupted = false;
+        boolean terminated = true;
+        for (ExecutorService executor : ownedExecutors) {
+            while (!executor.isTerminated()) {
+                long remaining = deadline - System.nanoTime();
+                if (remaining <= 0) {
+                    terminated = false;
+                    break;
+                }
+                try {
+                    if (!executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) {
+                        terminated = false;
+                        break;
+                    }
+                } catch (InterruptedException ex) {
+                    interrupted = true;
+                }
+            }
+        }
+        if (interrupted) Thread.currentThread().interrupt();
+        if (!terminated) {
+            throw new ProductionRuntimeException(
+                    "WORKER_SHUTDOWN_TIMEOUT",
+                    "worker executors did not terminate within the shutdown deadline");
+        }
     }
 
     boolean executorsShutdown() {
         return closed.get()
-                && heartbeatScheduler.isShutdown()
-                && reconciliationScheduler.isShutdown()
-                && heartbeatExecutor.isShutdown()
-                && providerReconciliationExecutor.isShutdown()
-                && checkpointReconciliationExecutor.isShutdown()
-                && completionReconciliationExecutor.isShutdown()
-                && executors.isShutdown();
+                && ownedExecutors().stream().allMatch(ExecutorService::isShutdown);
+    }
+
+    boolean executorsTerminated() {
+        return closed.get()
+                && ownedExecutors().stream().allMatch(ExecutorService::isTerminated);
+    }
+
+    private List<ExecutorService> ownedExecutors() {
+        return List.of(
+                heartbeatScheduler,
+                reconciliationScheduler,
+                heartbeatExecutor,
+                providerReconciliationExecutor,
+                checkpointReconciliationExecutor,
+                completionReconciliationExecutor,
+                executors);
     }
 
     boolean journalHealthy() {
