@@ -323,15 +323,17 @@ def test_java_codesign_receipt_reports_the_exact_failed_stage(
     assert "exit=1:diagnostic=strict verification failed" in str(caught.value)
 
 
+@pytest.mark.parametrize("archive_suffix", ["21.0.11-10.0", "21.0.11-10.0.LTS"])
 def test_temurin_contract_is_explicitly_selected_for_ci_home(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
+    archive_suffix: str,
 ) -> None:
     home = (
         tmp_path
         / "hostedtoolcache"
         / "Java_Temurin-Hotspot_jdk"
-        / "21.0.11-10.0"
+        / archive_suffix
         / "arm64"
         / "Contents"
         / "Home"
