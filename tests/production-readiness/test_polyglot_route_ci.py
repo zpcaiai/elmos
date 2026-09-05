@@ -748,6 +748,14 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             all_route_jobs.count("git diff --exit-code -- Package.resolved"),
             3,
         )
+        self.assertEqual(
+            all_route_jobs.count(
+                "engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/"
+                "Elmos.Dotnet.SemanticCli.csproj"
+            ),
+            3,
+        )
+        self.assertEqual(all_route_jobs.count("--locked-mode"), 3)
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)
