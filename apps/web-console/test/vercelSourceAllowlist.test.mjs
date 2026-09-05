@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { lstatSync, readFileSync } from "node:fs";
+import { existsSync, lstatSync } from "node:fs";
 import path from "node:path";
 import test from "node:test";
 
@@ -10,13 +10,8 @@ const repositoryRoot = execFileSync(
   { encoding: "utf8" },
 ).trim();
 const projectRoot = path.join(repositoryRoot, "apps", "web-console");
-const policyPath = path.join(projectRoot, ".vercelignore");
-const meaningfulRules = readFileSync(policyPath, "utf8")
-  .split(/\r?\n/u)
-  .map((line) => line.trim())
-  .filter((line) => line.length > 0 && !line.startsWith("#"));
 
-function nulGitFiles(args, cwd = projectRoot) {
+function nulGitFiles(args, cwd = repositoryRoot) {
   return execFileSync(
     "git",
     [...args, "-z"],
@@ -35,27 +30,10 @@ function listedProjectFiles() {
     "--others",
     "--exclude-standard",
     "--full-name",
-  ], repositoryRoot)
+  ])
     .filter((relative) => relative.startsWith(prefix))
-    .map((relative) => relative.slice(prefix.length));
-}
-
-function intendedProjectInput(relative) {
-  if ([
-    ".vercelignore",
-    ".npmrc",
-    "next-env.d.ts",
-    "next.config.ts",
-    "package.json",
-    "pnpm-lock.yaml",
-    "pnpm-workspace.yaml",
-    "proxy.ts",
-    "tsconfig.json",
-    "vercel.json",
-  ].includes(relative)) {
-    return true;
-  }
-  return ["app/", "lib/", "public/"].some((prefix) => relative.startsWith(prefix));
+    .map((relative) => relative.slice(prefix.length))
+    .filter((relative) => existsSync(path.join(projectRoot, relative)));
 }
 
 function assertExactRegularFile(relative) {
@@ -65,37 +43,19 @@ function assertExactRegularFile(relative) {
   assert.ok(!details.isSymbolicLink(), `symlink runtime binding: ${relative}`);
 }
 
-test("project-root Vercel upload policy is default deny and exact", () => {
-  assert.deepEqual(meaningfulRules, [
-    "/*",
-    "!app",
-    "!app/**",
-    "!lib",
-    "!lib/**",
-    "!public",
-    "!public/**",
-    "!.vercelignore",
-    "!.npmrc",
-    "!next-env.d.ts",
-    "!next.config.ts",
-    "!package.json",
-    "!pnpm-lock.yaml",
-    "!pnpm-workspace.yaml",
-    "!proxy.ts",
-    "!tsconfig.json",
-    "!vercel.json",
-    "/.next/**",
-    "/node_modules/**",
-    "/test-results/**",
-    "/playwright-report/**",
-    "/coverage/**",
-    "/.turbo/**",
-  ]);
+test("Vercel Git source tracing is not replaced by a default-deny ignore file", () => {
+  // With sourceFilesOutsideRootDirectory enabled, Vercel must trace imports from
+  // the configured monorepo project root. A repository or project-root
+  // default-deny .vercelignore can make Git deployments fail before a build
+  // exists, even when a local archive deployment succeeds.
+  assert.equal(existsSync(path.join(repositoryRoot, ".vercelignore")), false);
+  assert.equal(existsSync(path.join(projectRoot, ".vercelignore")), false);
 });
 
-test("project-root deployment manifest equals the reviewed allowlist", () => {
-  const included = listedProjectFiles().filter(intendedProjectInput).sort();
+test("tracked project inputs are bounded regular files", () => {
+  const included = listedProjectFiles().sort();
   for (const relative of [
+    ".npmrc",
     "package.json",
     "pnpm-lock.yaml",
     "next.config.ts",
@@ -108,18 +68,18 @@ test("project-root deployment manifest equals the reviewed allowlist", () => {
   ]) {
     assert.ok(included.includes(relative), `missing project input ${relative}`);
   }
-  assert.ok(included.length > 100, "manifest unexpectedly empty");
-  assert.ok(included.length < 1_000, `manifest too large: ${included.length}`);
+  assert.ok(included.length > 100, "project input unexpectedly empty");
+  assert.ok(included.length < 1_000, `project input too large: ${included.length}`);
 
   let totalBytes = 0;
   for (const relative of included) {
     const absolute = path.join(projectRoot, relative);
     const details = lstatSync(absolute);
-    assert.ok(details.isFile(), `non-regular deployment input: ${relative}`);
-    assert.ok(!details.isSymbolicLink(), `symlink deployment input: ${relative}`);
+    assert.ok(details.isFile(), `non-regular project input: ${relative}`);
+    assert.ok(!details.isSymbolicLink(), `symlink project input: ${relative}`);
     totalBytes += details.size;
   }
-  assert.ok(totalBytes < 32 * 1024 * 1024, `manifest exceeds 32 MiB: ${totalBytes}`);
+  assert.ok(totalBytes < 32 * 1024 * 1024, `project input exceeds 32 MiB: ${totalBytes}`);
 });
 
 test("source files outside the project root retain exact runtime bindings", () => {
