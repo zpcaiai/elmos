@@ -4,9 +4,21 @@
   "batch": 40,
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
+  "status": "draft",
+  "evidenceRefs": [
+    "b40-dependency-inventory"
+  ],
+  "records": [
+    {
+      "scope": "direct Maven and npm declarations",
+      "componentCount": 485,
+      "externalComponentCount": 427,
+      "versionedExternalCount": 427,
+      "coverage": 1.0,
+      "transitiveGraph": "NOT_RUN",
+      "independentVerification": "NOT_RUN"
+    }
+  ],
   "metadata": {},
   "packKey": "elmos-platform-supply-chain"
 }

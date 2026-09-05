@@ -39,11 +39,11 @@
     {
       "name": "secretLeaks",
       "evaluated": true,
-      "observed": 11,
+      "observed": 0,
       "evidenceRefs": [
         "b40-secret-scan"
       ],
-      "note": "11 actionable findings await triage across 33 scanned roots; working tree only, git history not examined"
+      "note": "0 actionable findings await triage across 32 scanned roots; working tree only, git history not examined"
     },
     {
       "name": "tamperedArtifactsAccepted",

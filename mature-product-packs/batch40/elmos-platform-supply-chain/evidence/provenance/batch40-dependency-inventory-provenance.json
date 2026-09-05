@@ -1,25 +1,35 @@
 {
   "recordType": "provenance",
+  "schemaVersion": 1,
+  "id": "b40-dependency-inventory-provenance",
   "batch": 40,
-  "check": "batch40-dependency-inventory",
-  "claimIds": [
-    "b40-declared-dependency-inventory",
-    "b40-no-credential-leak-in-working-tree"
-  ],
-  "repositoryRevision": "2c9c668fd559011da3016e939c73fa7359cec44e",
-  "artifactRootsClean": true,
-  "baselineRevision": null,
-  "replayCommand": "python3 scripts/batch40_dependency_inventory.py",
-  "toolDigest": "sha256:870db267f19dff587d0756e0ce559a91986927e47a3e07ab1b9ab3ff5d18e313",
+  "packKey": "elmos-platform-supply-chain",
+  "evidenceId": "b40-dependency-inventory",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "repositoryRevision": "c61066ddcb4869b63fa921e0b488e46a06cec5e8",
+  "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
   "runReport": {
     "path": "evidence/execution/b40-dependency-inventory.json",
-    "sha256": "sha256:a1824c40fd18515b50e9c8d7d066823e3b5dc0bbd0f95c157d1d1942d3c6d336",
-    "bytes": 272738
+    "sha256": "sha256:0eaac18fc73b77089952249ccbfe9e106ecee88a30463152f9e432324afbe24b",
+    "bytes": 287590
   },
-  "artifactCompositeDigest": "sha256:f43197d5b8cec074b11ed22700be9f715f7f80d0c388563ce0e72e4ee10d8d28",
-  "environmentDigest": "sha256:3a1a7fcc68960f6f02828af7cc161a4f3d8de224b795d143d3d5b3c915879f86",
-  "startedAt": "2026-08-06T11:03:31.884667Z",
-  "finishedAt": "2026-08-06T11:04:13.846460Z",
-  "reproducible": true,
-  "reproducibilityNote": "no tracked file under ['pom.xml', 'contracts'] differs from HEAD (untracked files were not enumerated); this run replays from the recorded revision."
+  "analyzer": {
+    "path": "scripts/batch40_dependency_inventory.py",
+    "sha256": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20",
+    "reportedDigest": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20"
+  },
+  "environment": {
+    "capturedAt": "2026-09-05T17:52:13.505821Z",
+    "pythonVersion": "3.14.6",
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "limitations": [
+    "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
+    "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
+    "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
+    "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
+  ],
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN"
 }

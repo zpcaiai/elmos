@@ -1,21 +1,684 @@
 {
-  "artifactType": "schema-surface",
-  "roots": [
-    "pom.xml",
-    "contracts"
-  ],
-  "memberCount": 2,
-  "compositeDigest": "sha256:f43197d5b8cec074b11ed22700be9f715f7f80d0c388563ce0e72e4ee10d8d28",
+  "artifactType": "declared-dependency-surface",
+  "memberCount": 90,
   "members": [
+    {
+      "path": "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/pom.xml",
+      "sha256": "sha256:5e6e93a2236279f411ea5e32483305596ccb632edc8ea1595d221f398f399e67",
+      "bytes": 816
+    },
+    {
+      "path": "apps/agent-gateway/pom.xml",
+      "sha256": "sha256:47e84a221eb6a426e4c78cf8f01e42da95c87377a3f13810532f21a779799d32",
+      "bytes": 1332
+    },
+    {
+      "path": "apps/commercial-api/pom.xml",
+      "sha256": "sha256:dce6c427d983dcd963fa50647512ec246cee6a59761e127fcad92e81119cf9ce",
+      "bytes": 1969
+    },
+    {
+      "path": "apps/control-plane/pom.xml",
+      "sha256": "sha256:c1cc95cd6b968c17f24bc2fde0c0ebc88266c7b3066e6c6a48dbc8a98b21fe51",
+      "bytes": 4866
+    },
+    {
+      "path": "apps/egress-proxy/pom.xml",
+      "sha256": "sha256:22aa8f63dcd2867c8b5c84665cf0b1cf01e3fc3ff515bb20062e42d0afa48b9c",
+      "bytes": 998
+    },
+    {
+      "path": "apps/elmosctl/pom.xml",
+      "sha256": "sha256:a3596525840211d2bee89de1954df006b7edb84cc550daae74d426ada6f215fc",
+      "bytes": 921
+    },
+    {
+      "path": "apps/enterprise-control/pom.xml",
+      "sha256": "sha256:d1f481b6b83a87a2cf83e095d113fa95e9e0169cedaa35f2f84ac91efa4f6eb9",
+      "bytes": 1338
+    },
+    {
+      "path": "apps/java-engine-transformer/pom.xml",
+      "sha256": "sha256:8b4440aacbf2e2fbbe397cf345abe97372dadcefe8961021171de27c9bbba95c",
+      "bytes": 1506
+    },
+    {
+      "path": "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+      "sha256": "sha256:1c5e430a151885e7062377ca01c9134ea809122f759c7e379d327678282254fd",
+      "bytes": 2719
+    },
+    {
+      "path": "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+      "sha256": "sha256:45172499f0a1303e8fc48f46568dd672b499d531c2a4b7f481791bfef20d1db6",
+      "bytes": 2719
+    },
+    {
+      "path": "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
+      "sha256": "sha256:a5c292da868078b5a4c0f2d560e7b44b8277646348aeeecbdabc0e3e0f3b8dd2",
+      "bytes": 2717
+    },
+    {
+      "path": "apps/java-engine-verifier/pom.xml",
+      "sha256": "sha256:b5e33ee67bb16cf3d76c5be27eefe7a6aef225a39eadab753e9e8a72506df8b6",
+      "bytes": 1253
+    },
+    {
+      "path": "apps/java-engine-worker/pom.xml",
+      "sha256": "sha256:f13f2bdbf4429dd24b81078394052ab81218177d4cfa3e0dab796b37765d76c5",
+      "bytes": 4519
+    },
+    {
+      "path": "apps/modernization-proof-worker/pom.xml",
+      "sha256": "sha256:fa3c940ee9f07fa1802574fcb1e9973ed133d8f24d664e5ae34f293bfc0c9351",
+      "bytes": 1905
+    },
+    {
+      "path": "apps/production-runtime-control-plane/pom.xml",
+      "sha256": "sha256:691101ed015394e6fa95f8a41e5a8a0d897c665b081d6dd5c15237aa175d8934",
+      "bytes": 2095
+    },
+    {
+      "path": "apps/production-runtime-worker/pom.xml",
+      "sha256": "sha256:dfa3414cc0b06ee298b5ba5255799a1fc03725cf69801e762ba204bfc713ac31",
+      "bytes": 1459
+    },
+    {
+      "path": "apps/workspace-service/pom.xml",
+      "sha256": "sha256:d75befcd499f098a04797598b27ef63e546bed6dabfc2f9d647565142d831e08",
+      "bytes": 2824
+    },
     {
       "path": "contracts/engine-api/pom.xml",
       "sha256": "sha256:41c3418656a1b2a302ffe84d266aa4a2d811fc31872db24be381434cf0a89ca9",
       "bytes": 835
     },
     {
-      "path": "contracts/engine-api/target/surefire-reports/TEST-io.elmos.engine.api.EngineApiContractTest.xml",
-      "sha256": "sha256:aef0f8de2ad21b9e3f4d6506e472aaa40bd8ffcecc7317c277333a5a66895194",
-      "bytes": 9176
+      "path": "engines/ai-platform-engine/pom.xml",
+      "sha256": "sha256:e07e17d6e6391c74982829c40128c6afcc7f10ada97213adc8d63eed161ac45c",
+      "bytes": 1569
+    },
+    {
+      "path": "engines/component-dialect-engine/package-lock.json",
+      "sha256": "sha256:6f0a29a7b33b6d03b169313614e15cafbac7bec137acd40e3b53a9a485e8e487",
+      "bytes": 155795
+    },
+    {
+      "path": "engines/database-data-engine/pom.xml",
+      "sha256": "sha256:fa5f6c27569f6236f250873e18c2b35a64d79ede6ff64c7e3b92456eede8d288",
+      "bytes": 1415
+    },
+    {
+      "path": "engines/edge-iot-industrial-engine/pom.xml",
+      "sha256": "sha256:200064821a1f9c9df8441a546b204ccee42b869d5e3f2419f399b2f557662d2a",
+      "bytes": 1577
+    },
+    {
+      "path": "engines/enterprise-architecture-engine/pom.xml",
+      "sha256": "sha256:cd0ea85c15656980faa0f9947573b9b3fdcbe8b4f711f779724019a6bcd66a8d",
+      "bytes": 1581
+    },
+    {
+      "path": "engines/enterprise-integration-engine/pom.xml",
+      "sha256": "sha256:358e51357b4e07a378101f80ed5457a8399cb2f6570ebfd30ebb46d9913c065a",
+      "bytes": 1369
+    },
+    {
+      "path": "engines/enterprise-suite-engine/pom.xml",
+      "sha256": "sha256:19fc66cc97b5a7534e818f134a1fc43d14f187eb2e0f3466262ca9a7410c80db",
+      "bytes": 1363
+    },
+    {
+      "path": "engines/infrastructure-engine/pom.xml",
+      "sha256": "sha256:1eca17b0c2c01fda9cc8e1a55cc4e5fd6f2b757f83bca624e384c59edccca717",
+      "bytes": 1416
+    },
+    {
+      "path": "engines/mainframe-engine/pom.xml",
+      "sha256": "sha256:d92f5deae274521604c8a1736c1dfa5e32d2e854dfc2b2288e8a802f6842b765",
+      "bytes": 1356
+    },
+    {
+      "path": "engines/operations-sre-itsm-engine/pom.xml",
+      "sha256": "sha256:a70403a209611b0b8a201fb18ee6ce0ad692697cd5d147d7b971640dcd1133f8",
+      "bytes": 1577
+    },
+    {
+      "path": "engines/security-compliance-engine/pom.xml",
+      "sha256": "sha256:cbf0b42873fc8209d36f4a2f07c918b2673ccdc7b74a1e173653ad04f9abdae8",
+      "bytes": 1402
+    },
+    {
+      "path": "engines/software-delivery-platform-engine/pom.xml",
+      "sha256": "sha256:6b3c319d7dc6613bbe5b2218fa61c914f316f5e7f96cd9c1b937658a03f3ab21",
+      "bytes": 1584
+    },
+    {
+      "path": "engines/test-quality-engine/pom.xml",
+      "sha256": "sha256:397d01566065a54a45d6c1d44c69adbc8fa4990396c9535b983c1c857a0fc81a",
+      "bytes": 1395
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/legacy-orders/pom.xml",
+      "sha256": "sha256:dfcee31410c2b9ceb0719f68f16dd301b15e7ba7b4ad631daea9b66358a40912",
+      "bytes": 1487
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/pom.xml",
+      "sha256": "sha256:168e4cc0f6e1239b3fa3c6323e80417c88e6191c8abe961a5b26ab58a09e3ab8",
+      "bytes": 1799
+    },
+    {
+      "path": "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source/pom.xml",
+      "sha256": "sha256:3109207b53612874a2d3a3ead38e82eff8df6d2dad9243fe8b6fe9e1d5050dbc",
+      "bytes": 1800
+    },
+    {
+      "path": "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml",
+      "sha256": "sha256:8b0286828fdc9ade9f55a71e4a6865ae777ad127ad72fd100bce5d3f99c27da9",
+      "bytes": 3817
+    },
+    {
+      "path": "modules/advanced-verification/pom.xml",
+      "sha256": "sha256:2ef8822e422e2f732a4642bcc07568fd3c3ce67f55e6baf767f4c36a078fe898",
+      "bytes": 651
+    },
+    {
+      "path": "modules/application/pom.xml",
+      "sha256": "sha256:88a841e2309f380c396e993fb4c87f434a3c032988b2009640cdd18f17e993ee",
+      "bytes": 867
+    },
+    {
+      "path": "modules/architecture-tests/pom.xml",
+      "sha256": "sha256:7b0863e5f767349ab45e0371dbd01d67b2d9ba0d3fa92bedb4dcec0fd1a6ebf1",
+      "bytes": 7198
+    },
+    {
+      "path": "modules/behavior-equivalence/pom.xml",
+      "sha256": "sha256:0af4de711ec65294f789f4544a966a33275709e2c9fae47b87546fdb02c5ad6b",
+      "bytes": 980
+    },
+    {
+      "path": "modules/cas/pom.xml",
+      "sha256": "sha256:83c49cfcee65a0c18266a6a5cb5f18ff8452b38b3ac820f36944f03fc308caf0",
+      "bytes": 898
+    },
+    {
+      "path": "modules/commercial-loop/pom.xml",
+      "sha256": "sha256:3c066bfb76920439b5d6f3141260b405fe419e8d68348497126e30883617a8b9",
+      "bytes": 1002
+    },
+    {
+      "path": "modules/commercial-operations/pom.xml",
+      "sha256": "sha256:4f48a0cef959685a64302e21db8d7d191a3aad13a7614139c20dafa68df29647",
+      "bytes": 1119
+    },
+    {
+      "path": "modules/company-series/pom.xml",
+      "sha256": "sha256:9ea0b9c4e20cfdf74f30de161e867805ebabbea4d46b7da4e26899ebb346ba20",
+      "bytes": 747
+    },
+    {
+      "path": "modules/composite-modernization/pom.xml",
+      "sha256": "sha256:9b45ed15001ee3364038d28793c6c3b846e255a255494628d4180ed552988ce3",
+      "bytes": 513
+    },
+    {
+      "path": "modules/continuous-authorization/pom.xml",
+      "sha256": "sha256:00d89c45d49956427a7b9aa3e42b340cb6f1646687495201e80d75a845edc8be",
+      "bytes": 506
+    },
+    {
+      "path": "modules/delivery/pom.xml",
+      "sha256": "sha256:7d284d4b332d598d6f2fcfead5c49c2ef84892e55932552c640ca9bb6456f6e0",
+      "bytes": 1082
+    },
+    {
+      "path": "modules/dependency-migration/pom.xml",
+      "sha256": "sha256:829cf13a69ffbbaca6c92a707835e3d2ae6fa81e125c98415c74dbeda326c952",
+      "bytes": 886
+    },
+    {
+      "path": "modules/developer-workflow/pom.xml",
+      "sha256": "sha256:763879873e80ac5b0aebb65742c8a33189c4925fe223110add749cd146ad2cc5",
+      "bytes": 548
+    },
+    {
+      "path": "modules/domain/pom.xml",
+      "sha256": "sha256:1c8b9c29d14f6095bd07e531595a2419d7eaaa4f263976392dd47b259ea938b2",
+      "bytes": 478
+    },
+    {
+      "path": "modules/ecosystem-growth/pom.xml",
+      "sha256": "sha256:9bf36a5f1fddb1956c9c70d450ac7b68dc74b4a00d582990055ad85e0cf17948",
+      "bytes": 1003
+    },
+    {
+      "path": "modules/enterprise-governance/pom.xml",
+      "sha256": "sha256:2aea2bbfef00bc32e26bef940d70981b35e49e87bdeebed1ab8f01c7bf2ade77",
+      "bytes": 511
+    },
+    {
+      "path": "modules/enterprise-platform/pom.xml",
+      "sha256": "sha256:fe3ea7d915d5f67b2e60f4460c2d09275535507ce9da065aa69aeb2ebca88d8b",
+      "bytes": 992
+    },
+    {
+      "path": "modules/evidence-assurance-fabric/pom.xml",
+      "sha256": "sha256:3da0bcf7f336c1827c78434fce95cf5c9bede278ac4aa618eae67fed783cf6c3",
+      "bytes": 507
+    },
+    {
+      "path": "modules/evidence-bound-engine/pom.xml",
+      "sha256": "sha256:a099a24cd40e1782f2ca54bdb81cb3b004c90cdaafedd3f981d407be9b289e64",
+      "bytes": 646
+    },
+    {
+      "path": "modules/evidence/pom.xml",
+      "sha256": "sha256:7a52569eca8d6bb31cbf19ed688703bd9e1b43849df9a32521f31ec8b8be8c28",
+      "bytes": 606
+    },
+    {
+      "path": "modules/extension-marketplace/pom.xml",
+      "sha256": "sha256:293c19ce61599df0bb08128730d6d213dc0303849be7b57de5c4cbe1e4102c9d",
+      "bytes": 554
+    },
+    {
+      "path": "modules/framework-migration/pom.xml",
+      "sha256": "sha256:cb9e14a84d326741b845042108379dcd209c7f4b192de6363363110027cf63ac",
+      "bytes": 995
+    },
+    {
+      "path": "modules/health-check/pom.xml",
+      "sha256": "sha256:2c9666c3a3b87a7ae51668494378c7a07a991a6decea327b2eb3327c321ed575",
+      "bytes": 502
+    },
+    {
+      "path": "modules/identity/pom.xml",
+      "sha256": "sha256:13e130caf074eabb051af90d1c0a418c7c9de3cc3f1e605da3daa57501386655",
+      "bytes": 1148
+    },
+    {
+      "path": "modules/intake/pom.xml",
+      "sha256": "sha256:0ed845a06e88fefd3b47d5a70f4c81f37b56cf24e975350118df9ba077e70bb6",
+      "bytes": 956
+    },
+    {
+      "path": "modules/integrations/pom.xml",
+      "sha256": "sha256:527d79743f66684e7a5fed075943b7841015e4e1d05e5f5008003a61a8259e24",
+      "bytes": 1959
+    },
+    {
+      "path": "modules/lowering/pom.xml",
+      "sha256": "sha256:975b8f4ce3698c3a91dab97f00bd780132e2f55e026f75a2a52725ed214f85bd",
+      "bytes": 1020
+    },
+    {
+      "path": "modules/migration-pack-certification/pom.xml",
+      "sha256": "sha256:154ad10f94f32f95ff96651bd8a4d6ecaeae5658066570620207daf598016d5d",
+      "bytes": 518
+    },
+    {
+      "path": "modules/modernization-proof-loop/pom.xml",
+      "sha256": "sha256:a0e83e6c747b73dd2f87c2def51f1f44b3afbb276211897dbd35c1f412d6b0cf",
+      "bytes": 1062
+    },
+    {
+      "path": "modules/network-policy/pom.xml",
+      "sha256": "sha256:5a549caca76cf9e2db8549d2d7af5d100a752300df0f97c3fd3ab8542845f2bb",
+      "bytes": 496
+    },
+    {
+      "path": "modules/object-storage/pom.xml",
+      "sha256": "sha256:c2736c31e39d5edf13fb92acbaaa57e1ab8c9c13295c66527fa84e86e852369a",
+      "bytes": 1497
+    },
+    {
+      "path": "modules/persistence/pom.xml",
+      "sha256": "sha256:4fb379ac4cb2e934ee61a1ae7bca85151db4892f89a130ce4160d6fdd814db06",
+      "bytes": 5660
+    },
+    {
+      "path": "modules/planning/pom.xml",
+      "sha256": "sha256:78431ac21c3cfaa8d4cd96f91c74b0a453c01ee79bdaedc8cc8a958059932194",
+      "bytes": 635
+    },
+    {
+      "path": "modules/portfolio-scale/pom.xml",
+      "sha256": "sha256:4e08b06775562265b21db1c49398a5e1d23a09ca5d3030b5d9c92eb02b06065f",
+      "bytes": 633
+    },
+    {
+      "path": "modules/product-roadmap-governance/pom.xml",
+      "sha256": "sha256:d42f7e99b9f60e810291415b19cde2c6bd94ae3676d648f7720d5b2cca43920f",
+      "bytes": 516
+    },
+    {
+      "path": "modules/production-cutover/pom.xml",
+      "sha256": "sha256:820668ecfea295bbd2ad31fbdb760c53731dcca125764ef3447cbed3705b63fd",
+      "bytes": 978
+    },
+    {
+      "path": "modules/production-hardening/pom.xml",
+      "sha256": "sha256:2b6a91e7211f412ca3e3cf786786a3f863c98ebb46fa98fb79139afff3b64353",
+      "bytes": 980
+    },
+    {
+      "path": "modules/production-runtime/pom.xml",
+      "sha256": "sha256:e789bcfa04366166386e8604560326767b7c1f51b4f5893f22adf53f67da9a06",
+      "bytes": 2150
+    },
+    {
+      "path": "modules/recipe-governance/pom.xml",
+      "sha256": "sha256:f35737027107a2198ba2cf20e85512709a014668743d1934be640edaad002ea0",
+      "bytes": 623
+    },
+    {
+      "path": "modules/repair-orchestration/pom.xml",
+      "sha256": "sha256:72ed5c5a9adf8fe785ba8eea857801401a55293f7f0b9a5bcc73d4ba44a5c99d",
+      "bytes": 980
+    },
+    {
+      "path": "modules/scm/pom.xml",
+      "sha256": "sha256:473aad0be05ca831e1a14c5b7fb930d3eb31a4bc1b8536d883f5fed6fc8f94b6",
+      "bytes": 609
+    },
+    {
+      "path": "modules/secret/pom.xml",
+      "sha256": "sha256:9307288cca281ea7799dfbd86ea8c478c4bda101389296821dc8fe45fd5b60da",
+      "bytes": 488
+    },
+    {
+      "path": "modules/secure-execution-plane/pom.xml",
+      "sha256": "sha256:8cf1e6fb95286f2e49bce061b2b994a44357d1ee52a9cb396427ae42216b5a50",
+      "bytes": 504
+    },
+    {
+      "path": "modules/security/pom.xml",
+      "sha256": "sha256:76cbdd32e718259304c5ffefeb90cab26bcb4170459fe1a9dc8d57d6000c4937",
+      "bytes": 478
+    },
+    {
+      "path": "modules/semantic/pom.xml",
+      "sha256": "sha256:4abc0c3be5799b0e60e1d7ae69e8c3dcc51852f63b0a10fef6c535aee03e0531",
+      "bytes": 1065
+    },
+    {
+      "path": "modules/skeleton/pom.xml",
+      "sha256": "sha256:6223d5790157b271495027b853b846e51b6212c14cabb76f928ae23c24d5f13a",
+      "bytes": 869
+    },
+    {
+      "path": "modules/snapshot/pom.xml",
+      "sha256": "sha256:7867794328456e03c1ffc70331bf8758567a63c92affb1f9807505ac05f3211b",
+      "bytes": 948
+    },
+    {
+      "path": "modules/source-control-workspace-governance/pom.xml",
+      "sha256": "sha256:3800f530a2aa086f91cb84b70c843317c760a81bc3d56143ea6ac4248ed038ed",
+      "bytes": 517
+    },
+    {
+      "path": "modules/uir/pom.xml",
+      "sha256": "sha256:a2208f1c0d0fe370ab935a86b445074da6d8637e5793d127af447ade58d2a235",
+      "bytes": 1062
+    },
+    {
+      "path": "modules/validation/pom.xml",
+      "sha256": "sha256:11532597cb755801fe708d1bfdb6e482312890ae7885a2855d5f5186b3851c18",
+      "bytes": 500
+    },
+    {
+      "path": "modules/workflow/pom.xml",
+      "sha256": "sha256:e7e5d204907bfe18621b219ac109e144bc27f171e9b802dd3e3cbbe2422d821e",
+      "bytes": 737
+    },
+    {
+      "path": "modules/workspace/pom.xml",
+      "sha256": "sha256:d49866eb0ea92489b79368ac3e7c08ed0886c5725a809e7669424909d36ca735",
+      "bytes": 491
+    },
+    {
+      "path": "recipes/elmos-java-recipes/pom.xml",
+      "sha256": "sha256:22775dc1c4ceebb891eccd4f6c10f8e4e4f63c1ccdf7a909935b81df7b9f311a",
+      "bytes": 751
+    },
+    {
+      "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json",
+      "sha256": "sha256:114a16ec2b425e49e3aba42e14ff34f5a73912402888fa9b96e740e35287ab50",
+      "bytes": 35193
+    },
+    {
+      "path": "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/engines/java-engine/engine-cli/pom.xml",
+      "sha256": "sha256:9fe8867687e26922657db8a387eaf5547d5b7853b7ccd8555ed0d62b469e3c38",
+      "bytes": 1714
     }
-  ]
+  ],
+  "mavenBoms": [
+    {
+      "coordinate": "com.fasterxml.jackson:jackson-bom:2.19.1",
+      "path": "com/fasterxml/jackson/jackson-bom/2.19.1/jackson-bom-2.19.1.pom",
+      "sha256": "sha256:ba6d68eeab3a1cc13a77a8ade2197ff9a32aa1cffeac72847d49badd82e1b9ce"
+    },
+    {
+      "coordinate": "com.querydsl:querydsl-bom:5.1.0",
+      "path": "com/querydsl/querydsl-bom/5.1.0/querydsl-bom-5.1.0.pom",
+      "sha256": "sha256:8853dce132c9ece4c295c7f4d4f3c2832eee0d7d44930870c0666fa72043ca56"
+    },
+    {
+      "coordinate": "io.micrometer:micrometer-bom:1.15.1",
+      "path": "io/micrometer/micrometer-bom/1.15.1/micrometer-bom-1.15.1.pom",
+      "sha256": "sha256:cf202cd895fd7b4137f095c0da23bdf25242caff9e94e14fe99f724d6938f8d4"
+    },
+    {
+      "coordinate": "io.micrometer:micrometer-tracing-bom:1.5.1",
+      "path": "io/micrometer/micrometer-tracing-bom/1.5.1/micrometer-tracing-bom-1.5.1.pom",
+      "sha256": "sha256:b97da593df449382a2ce24e3cb177d8949e9d17ddf1a8135e5f478e85f448a6b"
+    },
+    {
+      "coordinate": "io.netty:netty-bom:4.1.122.Final",
+      "path": "io/netty/netty-bom/4.1.122.Final/netty-bom-4.1.122.Final.pom",
+      "sha256": "sha256:f5d5a034bce286160057ee62a78488d13f11beed6cf2c3a42790b8c974c339f3"
+    },
+    {
+      "coordinate": "io.opentelemetry:opentelemetry-bom:1.49.0",
+      "path": "io/opentelemetry/opentelemetry-bom/1.49.0/opentelemetry-bom-1.49.0.pom",
+      "sha256": "sha256:44fcba73912b950d3ec88129e38e03c181b975f5b5ee73d7bab7866a4b376c50"
+    },
+    {
+      "coordinate": "io.projectreactor:reactor-bom:2024.0.7",
+      "path": "io/projectreactor/reactor-bom/2024.0.7/reactor-bom-2024.0.7.pom",
+      "sha256": "sha256:1239caa2d5e4db0b930721a58fc9cbcd13e528ab33efd229915f23bea1d1d266"
+    },
+    {
+      "coordinate": "io.prometheus:prometheus-metrics-bom:1.3.8",
+      "path": "io/prometheus/prometheus-metrics-bom/1.3.8/prometheus-metrics-bom-1.3.8.pom",
+      "sha256": "sha256:a2ff1fd1c0c6918de1d3a54852f333c5ce5ec0f0faca34f357d0a017114c75d4"
+    },
+    {
+      "coordinate": "io.prometheus:simpleclient_bom:0.16.0",
+      "path": "io/prometheus/simpleclient_bom/0.16.0/simpleclient_bom-0.16.0.pom",
+      "sha256": "sha256:af441d3295de11a70e35febeb3d919ba2ed17552753163325b954d53594d55c3"
+    },
+    {
+      "coordinate": "io.rest-assured:rest-assured-bom:5.5.5",
+      "path": "io/rest-assured/rest-assured-bom/5.5.5/rest-assured-bom-5.5.5.pom",
+      "sha256": "sha256:7e19994b43a84ed7ff80d81cf61a477aa0262847ede9737b8582678cd4fdec86"
+    },
+    {
+      "coordinate": "io.rsocket:rsocket-bom:1.1.5",
+      "path": "io/rsocket/rsocket-bom/1.1.5/rsocket-bom-1.1.5.pom",
+      "sha256": "sha256:0a4e1375cc8c14ecfe31221940681798ef8a7b8af6e8968e363f15c0ed478c3f"
+    },
+    {
+      "coordinate": "io.zipkin.brave:brave-bom:6.1.0",
+      "path": "io/zipkin/brave/brave-bom/6.1.0/brave-bom-6.1.0.pom",
+      "sha256": "sha256:894726669a6f000aad5b5fcff7baec3f8d9cf7001a83d0f48054b12f16e16e93"
+    },
+    {
+      "coordinate": "io.zipkin.reporter2:zipkin-reporter-bom:3.5.1",
+      "path": "io/zipkin/reporter2/zipkin-reporter-bom/3.5.1/zipkin-reporter-bom-3.5.1.pom",
+      "sha256": "sha256:8f9ff76823286c7d5eb3f061b053bea5fd829d255cddda849b831f41166a7d90"
+    },
+    {
+      "coordinate": "org.apache.activemq:activemq-bom:6.1.6",
+      "path": "org/apache/activemq/activemq-bom/6.1.6/activemq-bom-6.1.6.pom",
+      "sha256": "sha256:15c2d69f357213d6e3b0712af87df571f0d8db5984d114b0a220ff2e749dc544"
+    },
+    {
+      "coordinate": "org.apache.activemq:artemis-bom:2.40.0",
+      "path": "org/apache/activemq/artemis-bom/2.40.0/artemis-bom-2.40.0.pom",
+      "sha256": "sha256:158b29acf6770fd74cb21460d80edb3a7f65a448ee9e61484b87ba8575e26418"
+    },
+    {
+      "coordinate": "org.apache.cassandra:java-driver-bom:4.19.0",
+      "path": "org/apache/cassandra/java-driver-bom/4.19.0/java-driver-bom-4.19.0.pom",
+      "sha256": "sha256:d5c7f700d265e447de3b1d2596d050e0d67e2a59e1de2fba9622092d29e8170a"
+    },
+    {
+      "coordinate": "org.apache.groovy:groovy-bom:4.0.27",
+      "path": "org/apache/groovy/groovy-bom/4.0.27/groovy-bom-4.0.27.pom",
+      "sha256": "sha256:aa44eb52bfdfe61d27b3e450d2b348d88deaa3437ab4d9d49a84095348f9f6fb"
+    },
+    {
+      "coordinate": "org.apache.logging.log4j:log4j-bom:2.24.3",
+      "path": "org/apache/logging/log4j/log4j-bom/2.24.3/log4j-bom-2.24.3.pom",
+      "sha256": "sha256:b17ab7f328f4586b7e71f8c94fc35a5da2bce80705a5d63004022c1928833558"
+    },
+    {
+      "coordinate": "org.apache.pulsar:pulsar-bom:4.0.5",
+      "path": "org/apache/pulsar/pulsar-bom/4.0.5/pulsar-bom-4.0.5.pom",
+      "sha256": "sha256:afb0a09a46e0ebb0d6d9b6d2e2fe1f24bc4c79fece559e1b30b01284604b8f00"
+    },
+    {
+      "coordinate": "org.apache.pulsar:pulsar-client-reactive-bom:0.6.0",
+      "path": "org/apache/pulsar/pulsar-client-reactive-bom/0.6.0/pulsar-client-reactive-bom-0.6.0.pom",
+      "sha256": "sha256:3f230bd54d000d24b98f12004951746b1eee9e846a69360694c191e70953c9a4"
+    },
+    {
+      "coordinate": "org.assertj:assertj-bom:3.27.3",
+      "path": "org/assertj/assertj-bom/3.27.3/assertj-bom-3.27.3.pom",
+      "sha256": "sha256:408f9e3816661817b1479bde3b2fc9dd95161562ccfa79778920e62b7f2451be"
+    },
+    {
+      "coordinate": "org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.22",
+      "path": "org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.22/jetty-ee10-bom-12.0.22.pom",
+      "sha256": "sha256:6f144c299aa59bda2d52c90a728710a8eba66934d80d9b7a3d8ef53b7b81a9ba"
+    },
+    {
+      "coordinate": "org.eclipse.jetty:jetty-bom:12.0.22",
+      "path": "org/eclipse/jetty/jetty-bom/12.0.22/jetty-bom-12.0.22.pom",
+      "sha256": "sha256:a8e20f602cebb79550fcd6f2a484fdbbd82fc1e89e37a19143e9ede1a25743cb"
+    },
+    {
+      "coordinate": "org.glassfish.jaxb:jaxb-bom:4.0.5",
+      "path": "org/glassfish/jaxb/jaxb-bom/4.0.5/jaxb-bom-4.0.5.pom",
+      "sha256": "sha256:ec97ec42d937d3c89519797e44246f80de0850819ac7a7ae675c4497b7075c39"
+    },
+    {
+      "coordinate": "org.glassfish.jersey:jersey-bom:3.1.10",
+      "path": "org/glassfish/jersey/jersey-bom/3.1.10/jersey-bom-3.1.10.pom",
+      "sha256": "sha256:298974f48b5f9b6de622f2450292dec4db99b39be3245f5656a6c9a44b5debb4"
+    },
+    {
+      "coordinate": "org.infinispan:infinispan-bom:15.2.4.Final",
+      "path": "org/infinispan/infinispan-bom/15.2.4.Final/infinispan-bom-15.2.4.Final.pom",
+      "sha256": "sha256:e38960772accd5093a8783eab3551b6976790b7a21156e22a0da596d560ba6d2"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlin:kotlin-bom:1.9.25",
+      "path": "org/jetbrains/kotlin/kotlin-bom/1.9.25/kotlin-bom-1.9.25.pom",
+      "sha256": "sha256:199ae7a589eba1681846a9549a695cf3b0a42c1d92119a50a830ff12babba023"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.1",
+      "path": "org/jetbrains/kotlinx/kotlinx-coroutines-bom/1.8.1/kotlinx-coroutines-bom-1.8.1.pom",
+      "sha256": "sha256:563e4aa29fa8fe09a6e1746d0a5b51308f7c7dedc468dc5a0ca810a485877030"
+    },
+    {
+      "coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-bom:1.6.3",
+      "path": "org/jetbrains/kotlinx/kotlinx-serialization-bom/1.6.3/kotlinx-serialization-bom-1.6.3.pom",
+      "sha256": "sha256:29d69842bb7d449be2aa4ade6a4a7ce6aa55827d0ab13d168745fe6d95739332"
+    },
+    {
+      "coordinate": "org.junit:junit-bom:5.12.2",
+      "path": "org/junit/junit-bom/5.12.2/junit-bom-5.12.2.pom",
+      "sha256": "sha256:cef80fec86454f6806bfb0df24669b5c6f32e2cb728539ea859f47dfdc9bbc17"
+    },
+    {
+      "coordinate": "org.mockito:mockito-bom:5.17.0",
+      "path": "org/mockito/mockito-bom/5.17.0/mockito-bom-5.17.0.pom",
+      "sha256": "sha256:18d279b034d532c63f54ceb61867a68dd590f2ba15ba3f0d649030f7f20927fb"
+    },
+    {
+      "coordinate": "org.mongodb:mongodb-driver-bom:5.5.1",
+      "path": "org/mongodb/mongodb-driver-bom/5.5.1/mongodb-driver-bom-5.5.1.pom",
+      "sha256": "sha256:2e68b431dd6ba0b52b07832f91540598381abe9ce2b87952720e1bf48a70361c"
+    },
+    {
+      "coordinate": "org.seleniumhq.selenium:selenium-bom:4.31.0",
+      "path": "org/seleniumhq/selenium/selenium-bom/4.31.0/selenium-bom-4.31.0.pom",
+      "sha256": "sha256:8fa11de77df0e28cc230ee2cfd3f87775bc8e425c12ac03a3d875a1bef25f6b8"
+    },
+    {
+      "coordinate": "org.springframework.amqp:spring-amqp-bom:3.2.5",
+      "path": "org/springframework/amqp/spring-amqp-bom/3.2.5/spring-amqp-bom-3.2.5.pom",
+      "sha256": "sha256:0464d155b9ef120154004102dbfb6e6173df75fd2677c75bf0d11235453e36a9"
+    },
+    {
+      "coordinate": "org.springframework.batch:spring-batch-bom:5.2.2",
+      "path": "org/springframework/batch/spring-batch-bom/5.2.2/spring-batch-bom-5.2.2.pom",
+      "sha256": "sha256:489b3650d8e884b08f824e6963b4fd33f188ae04dec1d00820fe00a7ddfd9ec1"
+    },
+    {
+      "coordinate": "org.springframework.boot:spring-boot-dependencies:3.5.3",
+      "path": "org/springframework/boot/spring-boot-dependencies/3.5.3/spring-boot-dependencies-3.5.3.pom",
+      "sha256": "sha256:05acb8bac4231d0373fbd7d6b85fe3def982ef4f0298d067ad382db7da779dd2"
+    },
+    {
+      "coordinate": "org.springframework.data:spring-data-bom:2025.0.1",
+      "path": "org/springframework/data/spring-data-bom/2025.0.1/spring-data-bom-2025.0.1.pom",
+      "sha256": "sha256:cf3e9a054b3c7a07dde0eea2441bd1ca99c74e451fea10e30ce3f607b7cde6ce"
+    },
+    {
+      "coordinate": "org.springframework.integration:spring-integration-bom:6.5.0",
+      "path": "org/springframework/integration/spring-integration-bom/6.5.0/spring-integration-bom-6.5.0.pom",
+      "sha256": "sha256:9f5b4ab831bcea8bfaea18a4eca4174ff813341950f059f5284c3682f878a4d9"
+    },
+    {
+      "coordinate": "org.springframework.pulsar:spring-pulsar-bom:1.2.7",
+      "path": "org/springframework/pulsar/spring-pulsar-bom/1.2.7/spring-pulsar-bom-1.2.7.pom",
+      "sha256": "sha256:6f7490afd0be78be0f657fbd70712e11ff073bfb0cb85468d097708fbef5b03b"
+    },
+    {
+      "coordinate": "org.springframework.restdocs:spring-restdocs-bom:3.0.4",
+      "path": "org/springframework/restdocs/spring-restdocs-bom/3.0.4/spring-restdocs-bom-3.0.4.pom",
+      "sha256": "sha256:b7935382920ebba0b97e16ac54be074954d5f2c2799684c048fde325ba651fe5"
+    },
+    {
+      "coordinate": "org.springframework.security:spring-security-bom:6.5.1",
+      "path": "org/springframework/security/spring-security-bom/6.5.1/spring-security-bom-6.5.1.pom",
+      "sha256": "sha256:0716942b5f031c9b4ba84c9b77455c05630c3771a3d19c26f346bc6d147589df"
+    },
+    {
+      "coordinate": "org.springframework.session:spring-session-bom:3.5.1",
+      "path": "org/springframework/session/spring-session-bom/3.5.1/spring-session-bom-3.5.1.pom",
+      "sha256": "sha256:50bd35990c459996a0d3103c419c837a7ce06b75035003233ce7f1619a9d7561"
+    },
+    {
+      "coordinate": "org.springframework.ws:spring-ws-bom:4.1.0",
+      "path": "org/springframework/ws/spring-ws-bom/4.1.0/spring-ws-bom-4.1.0.pom",
+      "sha256": "sha256:22be080770edcc1210043fedc13ab29066edb3a665f7cc382203c5b4b0457d5a"
+    },
+    {
+      "coordinate": "org.springframework:spring-framework-bom:6.2.8",
+      "path": "org/springframework/spring-framework-bom/6.2.8/spring-framework-bom-6.2.8.pom",
+      "sha256": "sha256:fbaf21b4a7678f516cc5567d784cb8ab21bb2426e3f4d7cec7e26ab4cab21b66"
+    },
+    {
+      "coordinate": "org.testcontainers:testcontainers-bom:1.21.2",
+      "path": "org/testcontainers/testcontainers-bom/1.21.2/testcontainers-bom-1.21.2.pom",
+      "sha256": "sha256:d716ca54691a4daeedb44194235dfd69746c241398088ee50fb9b31f0b955b44"
+    }
+  ],
+  "compositeDigest": "sha256:312775039275b97d67ed883a4d54a8b970dc89eabe2ab4ff2c4571c4303b892e"
 }

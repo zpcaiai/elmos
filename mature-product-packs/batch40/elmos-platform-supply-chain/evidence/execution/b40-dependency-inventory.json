@@ -1,35 +1,264 @@
 {
   "check": "batch40-dependency-inventory",
   "batch": 40,
-  "startedAt": "2026-08-06T11:03:31.884667Z",
-  "finishedAt": "2026-08-06T11:04:13.846460Z",
-  "replayCommand": "python3 scripts/batch40_dependency_inventory.py",
-  "toolDigest": "sha256:870db267f19dff587d0756e0ce559a91986927e47a3e07ab1b9ab3ff5d18e313",
-  "pythonVersion": "3.10.12",
+  "startedAt": "2026-09-05T17:48:14.032343Z",
+  "finishedAt": "2026-09-05T17:50:04.258026Z",
+  "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
+  "toolDigest": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20",
+  "pythonVersion": "3.14.6",
   "sources": {
-    "mavenPomCount": 86,
+    "mavenPomCount": 95,
     "npmLockCount": 3,
-    "sharedPropertyCount": 15
+    "sharedPropertyCount": 23,
+    "managedCoordinateCount": 1409,
+    "mavenBomCount": 45,
+    "mavenBoms": [
+      {
+        "coordinate": "com.fasterxml.jackson:jackson-bom:2.19.1",
+        "path": "com/fasterxml/jackson/jackson-bom/2.19.1/jackson-bom-2.19.1.pom",
+        "sha256": "sha256:ba6d68eeab3a1cc13a77a8ade2197ff9a32aa1cffeac72847d49badd82e1b9ce"
+      },
+      {
+        "coordinate": "com.querydsl:querydsl-bom:5.1.0",
+        "path": "com/querydsl/querydsl-bom/5.1.0/querydsl-bom-5.1.0.pom",
+        "sha256": "sha256:8853dce132c9ece4c295c7f4d4f3c2832eee0d7d44930870c0666fa72043ca56"
+      },
+      {
+        "coordinate": "io.micrometer:micrometer-bom:1.15.1",
+        "path": "io/micrometer/micrometer-bom/1.15.1/micrometer-bom-1.15.1.pom",
+        "sha256": "sha256:cf202cd895fd7b4137f095c0da23bdf25242caff9e94e14fe99f724d6938f8d4"
+      },
+      {
+        "coordinate": "io.micrometer:micrometer-tracing-bom:1.5.1",
+        "path": "io/micrometer/micrometer-tracing-bom/1.5.1/micrometer-tracing-bom-1.5.1.pom",
+        "sha256": "sha256:b97da593df449382a2ce24e3cb177d8949e9d17ddf1a8135e5f478e85f448a6b"
+      },
+      {
+        "coordinate": "io.netty:netty-bom:4.1.122.Final",
+        "path": "io/netty/netty-bom/4.1.122.Final/netty-bom-4.1.122.Final.pom",
+        "sha256": "sha256:f5d5a034bce286160057ee62a78488d13f11beed6cf2c3a42790b8c974c339f3"
+      },
+      {
+        "coordinate": "io.opentelemetry:opentelemetry-bom:1.49.0",
+        "path": "io/opentelemetry/opentelemetry-bom/1.49.0/opentelemetry-bom-1.49.0.pom",
+        "sha256": "sha256:44fcba73912b950d3ec88129e38e03c181b975f5b5ee73d7bab7866a4b376c50"
+      },
+      {
+        "coordinate": "io.projectreactor:reactor-bom:2024.0.7",
+        "path": "io/projectreactor/reactor-bom/2024.0.7/reactor-bom-2024.0.7.pom",
+        "sha256": "sha256:1239caa2d5e4db0b930721a58fc9cbcd13e528ab33efd229915f23bea1d1d266"
+      },
+      {
+        "coordinate": "io.prometheus:prometheus-metrics-bom:1.3.8",
+        "path": "io/prometheus/prometheus-metrics-bom/1.3.8/prometheus-metrics-bom-1.3.8.pom",
+        "sha256": "sha256:a2ff1fd1c0c6918de1d3a54852f333c5ce5ec0f0faca34f357d0a017114c75d4"
+      },
+      {
+        "coordinate": "io.prometheus:simpleclient_bom:0.16.0",
+        "path": "io/prometheus/simpleclient_bom/0.16.0/simpleclient_bom-0.16.0.pom",
+        "sha256": "sha256:af441d3295de11a70e35febeb3d919ba2ed17552753163325b954d53594d55c3"
+      },
+      {
+        "coordinate": "io.rest-assured:rest-assured-bom:5.5.5",
+        "path": "io/rest-assured/rest-assured-bom/5.5.5/rest-assured-bom-5.5.5.pom",
+        "sha256": "sha256:7e19994b43a84ed7ff80d81cf61a477aa0262847ede9737b8582678cd4fdec86"
+      },
+      {
+        "coordinate": "io.rsocket:rsocket-bom:1.1.5",
+        "path": "io/rsocket/rsocket-bom/1.1.5/rsocket-bom-1.1.5.pom",
+        "sha256": "sha256:0a4e1375cc8c14ecfe31221940681798ef8a7b8af6e8968e363f15c0ed478c3f"
+      },
+      {
+        "coordinate": "io.zipkin.brave:brave-bom:6.1.0",
+        "path": "io/zipkin/brave/brave-bom/6.1.0/brave-bom-6.1.0.pom",
+        "sha256": "sha256:894726669a6f000aad5b5fcff7baec3f8d9cf7001a83d0f48054b12f16e16e93"
+      },
+      {
+        "coordinate": "io.zipkin.reporter2:zipkin-reporter-bom:3.5.1",
+        "path": "io/zipkin/reporter2/zipkin-reporter-bom/3.5.1/zipkin-reporter-bom-3.5.1.pom",
+        "sha256": "sha256:8f9ff76823286c7d5eb3f061b053bea5fd829d255cddda849b831f41166a7d90"
+      },
+      {
+        "coordinate": "org.apache.activemq:activemq-bom:6.1.6",
+        "path": "org/apache/activemq/activemq-bom/6.1.6/activemq-bom-6.1.6.pom",
+        "sha256": "sha256:15c2d69f357213d6e3b0712af87df571f0d8db5984d114b0a220ff2e749dc544"
+      },
+      {
+        "coordinate": "org.apache.activemq:artemis-bom:2.40.0",
+        "path": "org/apache/activemq/artemis-bom/2.40.0/artemis-bom-2.40.0.pom",
+        "sha256": "sha256:158b29acf6770fd74cb21460d80edb3a7f65a448ee9e61484b87ba8575e26418"
+      },
+      {
+        "coordinate": "org.apache.cassandra:java-driver-bom:4.19.0",
+        "path": "org/apache/cassandra/java-driver-bom/4.19.0/java-driver-bom-4.19.0.pom",
+        "sha256": "sha256:d5c7f700d265e447de3b1d2596d050e0d67e2a59e1de2fba9622092d29e8170a"
+      },
+      {
+        "coordinate": "org.apache.groovy:groovy-bom:4.0.27",
+        "path": "org/apache/groovy/groovy-bom/4.0.27/groovy-bom-4.0.27.pom",
+        "sha256": "sha256:aa44eb52bfdfe61d27b3e450d2b348d88deaa3437ab4d9d49a84095348f9f6fb"
+      },
+      {
+        "coordinate": "org.apache.logging.log4j:log4j-bom:2.24.3",
+        "path": "org/apache/logging/log4j/log4j-bom/2.24.3/log4j-bom-2.24.3.pom",
+        "sha256": "sha256:b17ab7f328f4586b7e71f8c94fc35a5da2bce80705a5d63004022c1928833558"
+      },
+      {
+        "coordinate": "org.apache.pulsar:pulsar-bom:4.0.5",
+        "path": "org/apache/pulsar/pulsar-bom/4.0.5/pulsar-bom-4.0.5.pom",
+        "sha256": "sha256:afb0a09a46e0ebb0d6d9b6d2e2fe1f24bc4c79fece559e1b30b01284604b8f00"
+      },
+      {
+        "coordinate": "org.apache.pulsar:pulsar-client-reactive-bom:0.6.0",
+        "path": "org/apache/pulsar/pulsar-client-reactive-bom/0.6.0/pulsar-client-reactive-bom-0.6.0.pom",
+        "sha256": "sha256:3f230bd54d000d24b98f12004951746b1eee9e846a69360694c191e70953c9a4"
+      },
+      {
+        "coordinate": "org.assertj:assertj-bom:3.27.3",
+        "path": "org/assertj/assertj-bom/3.27.3/assertj-bom-3.27.3.pom",
+        "sha256": "sha256:408f9e3816661817b1479bde3b2fc9dd95161562ccfa79778920e62b7f2451be"
+      },
+      {
+        "coordinate": "org.eclipse.jetty.ee10:jetty-ee10-bom:12.0.22",
+        "path": "org/eclipse/jetty/ee10/jetty-ee10-bom/12.0.22/jetty-ee10-bom-12.0.22.pom",
+        "sha256": "sha256:6f144c299aa59bda2d52c90a728710a8eba66934d80d9b7a3d8ef53b7b81a9ba"
+      },
+      {
+        "coordinate": "org.eclipse.jetty:jetty-bom:12.0.22",
+        "path": "org/eclipse/jetty/jetty-bom/12.0.22/jetty-bom-12.0.22.pom",
+        "sha256": "sha256:a8e20f602cebb79550fcd6f2a484fdbbd82fc1e89e37a19143e9ede1a25743cb"
+      },
+      {
+        "coordinate": "org.glassfish.jaxb:jaxb-bom:4.0.5",
+        "path": "org/glassfish/jaxb/jaxb-bom/4.0.5/jaxb-bom-4.0.5.pom",
+        "sha256": "sha256:ec97ec42d937d3c89519797e44246f80de0850819ac7a7ae675c4497b7075c39"
+      },
+      {
+        "coordinate": "org.glassfish.jersey:jersey-bom:3.1.10",
+        "path": "org/glassfish/jersey/jersey-bom/3.1.10/jersey-bom-3.1.10.pom",
+        "sha256": "sha256:298974f48b5f9b6de622f2450292dec4db99b39be3245f5656a6c9a44b5debb4"
+      },
+      {
+        "coordinate": "org.infinispan:infinispan-bom:15.2.4.Final",
+        "path": "org/infinispan/infinispan-bom/15.2.4.Final/infinispan-bom-15.2.4.Final.pom",
+        "sha256": "sha256:e38960772accd5093a8783eab3551b6976790b7a21156e22a0da596d560ba6d2"
+      },
+      {
+        "coordinate": "org.jetbrains.kotlin:kotlin-bom:1.9.25",
+        "path": "org/jetbrains/kotlin/kotlin-bom/1.9.25/kotlin-bom-1.9.25.pom",
+        "sha256": "sha256:199ae7a589eba1681846a9549a695cf3b0a42c1d92119a50a830ff12babba023"
+      },
+      {
+        "coordinate": "org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.1",
+        "path": "org/jetbrains/kotlinx/kotlinx-coroutines-bom/1.8.1/kotlinx-coroutines-bom-1.8.1.pom",
+        "sha256": "sha256:563e4aa29fa8fe09a6e1746d0a5b51308f7c7dedc468dc5a0ca810a485877030"
+      },
+      {
+        "coordinate": "org.jetbrains.kotlinx:kotlinx-serialization-bom:1.6.3",
+        "path": "org/jetbrains/kotlinx/kotlinx-serialization-bom/1.6.3/kotlinx-serialization-bom-1.6.3.pom",
+        "sha256": "sha256:29d69842bb7d449be2aa4ade6a4a7ce6aa55827d0ab13d168745fe6d95739332"
+      },
+      {
+        "coordinate": "org.junit:junit-bom:5.12.2",
+        "path": "org/junit/junit-bom/5.12.2/junit-bom-5.12.2.pom",
+        "sha256": "sha256:cef80fec86454f6806bfb0df24669b5c6f32e2cb728539ea859f47dfdc9bbc17"
+      },
+      {
+        "coordinate": "org.mockito:mockito-bom:5.17.0",
+        "path": "org/mockito/mockito-bom/5.17.0/mockito-bom-5.17.0.pom",
+        "sha256": "sha256:18d279b034d532c63f54ceb61867a68dd590f2ba15ba3f0d649030f7f20927fb"
+      },
+      {
+        "coordinate": "org.mongodb:mongodb-driver-bom:5.5.1",
+        "path": "org/mongodb/mongodb-driver-bom/5.5.1/mongodb-driver-bom-5.5.1.pom",
+        "sha256": "sha256:2e68b431dd6ba0b52b07832f91540598381abe9ce2b87952720e1bf48a70361c"
+      },
+      {
+        "coordinate": "org.seleniumhq.selenium:selenium-bom:4.31.0",
+        "path": "org/seleniumhq/selenium/selenium-bom/4.31.0/selenium-bom-4.31.0.pom",
+        "sha256": "sha256:8fa11de77df0e28cc230ee2cfd3f87775bc8e425c12ac03a3d875a1bef25f6b8"
+      },
+      {
+        "coordinate": "org.springframework.amqp:spring-amqp-bom:3.2.5",
+        "path": "org/springframework/amqp/spring-amqp-bom/3.2.5/spring-amqp-bom-3.2.5.pom",
+        "sha256": "sha256:0464d155b9ef120154004102dbfb6e6173df75fd2677c75bf0d11235453e36a9"
+      },
+      {
+        "coordinate": "org.springframework.batch:spring-batch-bom:5.2.2",
+        "path": "org/springframework/batch/spring-batch-bom/5.2.2/spring-batch-bom-5.2.2.pom",
+        "sha256": "sha256:489b3650d8e884b08f824e6963b4fd33f188ae04dec1d00820fe00a7ddfd9ec1"
+      },
+      {
+        "coordinate": "org.springframework.boot:spring-boot-dependencies:3.5.3",
+        "path": "org/springframework/boot/spring-boot-dependencies/3.5.3/spring-boot-dependencies-3.5.3.pom",
+        "sha256": "sha256:05acb8bac4231d0373fbd7d6b85fe3def982ef4f0298d067ad382db7da779dd2"
+      },
+      {
+        "coordinate": "org.springframework.data:spring-data-bom:2025.0.1",
+        "path": "org/springframework/data/spring-data-bom/2025.0.1/spring-data-bom-2025.0.1.pom",
+        "sha256": "sha256:cf3e9a054b3c7a07dde0eea2441bd1ca99c74e451fea10e30ce3f607b7cde6ce"
+      },
+      {
+        "coordinate": "org.springframework.integration:spring-integration-bom:6.5.0",
+        "path": "org/springframework/integration/spring-integration-bom/6.5.0/spring-integration-bom-6.5.0.pom",
+        "sha256": "sha256:9f5b4ab831bcea8bfaea18a4eca4174ff813341950f059f5284c3682f878a4d9"
+      },
+      {
+        "coordinate": "org.springframework.pulsar:spring-pulsar-bom:1.2.7",
+        "path": "org/springframework/pulsar/spring-pulsar-bom/1.2.7/spring-pulsar-bom-1.2.7.pom",
+        "sha256": "sha256:6f7490afd0be78be0f657fbd70712e11ff073bfb0cb85468d097708fbef5b03b"
+      },
+      {
+        "coordinate": "org.springframework.restdocs:spring-restdocs-bom:3.0.4",
+        "path": "org/springframework/restdocs/spring-restdocs-bom/3.0.4/spring-restdocs-bom-3.0.4.pom",
+        "sha256": "sha256:b7935382920ebba0b97e16ac54be074954d5f2c2799684c048fde325ba651fe5"
+      },
+      {
+        "coordinate": "org.springframework.security:spring-security-bom:6.5.1",
+        "path": "org/springframework/security/spring-security-bom/6.5.1/spring-security-bom-6.5.1.pom",
+        "sha256": "sha256:0716942b5f031c9b4ba84c9b77455c05630c3771a3d19c26f346bc6d147589df"
+      },
+      {
+        "coordinate": "org.springframework.session:spring-session-bom:3.5.1",
+        "path": "org/springframework/session/spring-session-bom/3.5.1/spring-session-bom-3.5.1.pom",
+        "sha256": "sha256:50bd35990c459996a0d3103c419c837a7ce06b75035003233ce7f1619a9d7561"
+      },
+      {
+        "coordinate": "org.springframework.ws:spring-ws-bom:4.1.0",
+        "path": "org/springframework/ws/spring-ws-bom/4.1.0/spring-ws-bom-4.1.0.pom",
+        "sha256": "sha256:22be080770edcc1210043fedc13ab29066edb3a665f7cc382203c5b4b0457d5a"
+      },
+      {
+        "coordinate": "org.springframework:spring-framework-bom:6.2.8",
+        "path": "org/springframework/spring-framework-bom/6.2.8/spring-framework-bom-6.2.8.pom",
+        "sha256": "sha256:fbaf21b4a7678f516cc5567d784cb8ab21bb2426e3f4d7cec7e26ab4cab21b66"
+      },
+      {
+        "coordinate": "org.testcontainers:testcontainers-bom:1.21.2",
+        "path": "org/testcontainers/testcontainers-bom/1.21.2/testcontainers-bom-1.21.2.pom",
+        "sha256": "sha256:d716ca54691a4daeedb44194235dfd69746c241398088ee50fb9b31f0b955b44"
+      }
+    ]
   },
   "totals": {
-    "componentCount": 493,
-    "externalComponentCount": 437,
-    "internalComponentCount": 56,
-    "versionedExternalCount": 402
+    "componentCount": 485,
+    "externalComponentCount": 427,
+    "internalComponentCount": 58,
+    "versionedExternalCount": 427
   },
   "versionResolution": {
-    "literal": 7,
-    "lockfile": 384,
-    "managed-by-bom": 34,
-    "project-version": 57,
-    "property": 11
+    "dependency-management": 40,
+    "literal": 2,
+    "lockfile": 372,
+    "project-version": 59,
+    "property": 12
   },
   "metrics": {
-    "sbomCoverage": 0.9199
+    "sbomCoverage": 1.0
   },
   "limitations": [
     "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
-    "Versions supplied by an imported BOM are recorded as managed-by-bom, not resolved; running Maven is required to pin them.",
+    "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
     "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
     "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
   ],
@@ -38,10 +267,10 @@
       "ecosystem": "maven",
       "group": "com.acme.migration",
       "name": "java-engine-api",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/com.acme.migration/java-engine-api",
+      "purl": "pkg:maven/com.acme.migration/java-engine-api@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -54,10 +283,10 @@
       "ecosystem": "maven",
       "group": "com.fasterxml.jackson.core",
       "name": "jackson-annotations",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "2.19.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.1",
       "scopes": [
         "compile"
       ],
@@ -69,32 +298,16 @@
     {
       "ecosystem": "maven",
       "group": "com.fasterxml.jackson.core",
-      "name": "jackson-annotations",
-      "version": "2.19.1",
-      "versionResolution": "literal",
-      "declaredVersion": "2.19.1",
-      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.19.1",
+      "name": "jackson-databind",
+      "version": "2.17.2",
+      "versionResolution": "property",
+      "declaredVersion": "${jackson.version}",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.17.2",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "com.fasterxml.jackson.core",
-      "name": "jackson-core",
-      "version": "2.19.1",
-      "versionResolution": "literal",
-      "declaredVersion": "2.19.1",
-      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.19.1",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "modules/persistence/pom.xml"
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
       ],
       "internal": false
     },
@@ -102,10 +315,10 @@
       "ecosystem": "maven",
       "group": "com.fasterxml.jackson.core",
       "name": "jackson-databind",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "2.19.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind",
+      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.1",
       "scopes": [
         "compile",
         "test"
@@ -129,6 +342,7 @@
         "modules/persistence/pom.xml",
         "modules/production-cutover/pom.xml",
         "modules/production-hardening/pom.xml",
+        "modules/production-runtime/pom.xml",
         "modules/recipe-governance/pom.xml",
         "modules/repair-orchestration/pom.xml",
         "modules/scm/pom.xml",
@@ -141,44 +355,12 @@
     },
     {
       "ecosystem": "maven",
-      "group": "com.fasterxml.jackson.core",
-      "name": "jackson-databind",
-      "version": "2.19.1",
-      "versionResolution": "literal",
-      "declaredVersion": "2.19.1",
-      "purl": "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.19.1",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "modules/persistence/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "com.fasterxml.jackson.dataformat",
-      "name": "jackson-dataformat-toml",
-      "version": "2.19.1",
-      "versionResolution": "literal",
-      "declaredVersion": "2.19.1",
-      "purl": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-toml@2.19.1",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "modules/persistence/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
       "group": "com.fasterxml.jackson.dataformat",
       "name": "jackson-dataformat-yaml",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "2.19.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml",
+      "purl": "pkg:maven/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml@2.19.1",
       "scopes": [
         "compile"
       ],
@@ -198,10 +380,10 @@
       "ecosystem": "maven",
       "group": "com.fasterxml.jackson.datatype",
       "name": "jackson-datatype-jsr310",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "2.19.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310",
+      "purl": "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.19.1",
       "scopes": [
         "compile"
       ],
@@ -231,42 +413,10 @@
       "ecosystem": "maven",
       "group": "com.github.docker-java",
       "name": "docker-java-core",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.7.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.github.docker-java/docker-java-core",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "apps/workspace-service/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "com.github.docker-java",
-      "name": "docker-java-core",
-      "version": "3.4.2",
-      "versionResolution": "property",
-      "declaredVersion": "${docker-java.version}",
-      "purl": "pkg:maven/com.github.docker-java/docker-java-core@3.4.2",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "com.github.docker-java",
-      "name": "docker-java-transport-httpclient5",
-      "version": null,
-      "versionResolution": "managed-by-bom",
-      "declaredVersion": null,
-      "purl": "pkg:maven/com.github.docker-java/docker-java-transport-httpclient5",
+      "purl": "pkg:maven/com.github.docker-java/docker-java-core@3.7.1",
       "scopes": [
         "compile"
       ],
@@ -279,15 +429,15 @@
       "ecosystem": "maven",
       "group": "com.github.docker-java",
       "name": "docker-java-transport-httpclient5",
-      "version": "3.4.2",
-      "versionResolution": "property",
-      "declaredVersion": "${docker-java.version}",
-      "purl": "pkg:maven/com.github.docker-java/docker-java-transport-httpclient5@3.4.2",
+      "version": "3.7.1",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/com.github.docker-java/docker-java-transport-httpclient5@3.7.1",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "pom.xml"
+        "apps/workspace-service/pom.xml"
       ],
       "internal": false
     },
@@ -295,17 +445,19 @@
       "ecosystem": "maven",
       "group": "com.github.luben",
       "name": "zstd-jni",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "1.5.7-11",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.github.luben/zstd-jni",
+      "purl": "pkg:maven/com.github.luben/zstd-jni@1.5.7-11",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
         "apps/workspace-service/pom.xml",
         "modules/behavior-equivalence/pom.xml",
+        "modules/commercial-loop/pom.xml",
         "modules/delivery/pom.xml",
+        "modules/ecosystem-growth/pom.xml",
         "modules/enterprise-platform/pom.xml",
         "modules/framework-migration/pom.xml",
         "modules/production-cutover/pom.xml",
@@ -319,34 +471,35 @@
     },
     {
       "ecosystem": "maven",
-      "group": "com.github.luben",
-      "name": "zstd-jni",
-      "version": "1.5.7-3",
-      "versionResolution": "property",
-      "declaredVersion": "${zstd-jni.version}",
-      "purl": "pkg:maven/com.github.luben/zstd-jni@1.5.7-3",
+      "group": "com.h2database",
+      "name": "h2",
+      "version": "2.3.232",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/com.h2database/h2@2.3.232",
       "scopes": [
-        "compile"
+        "test"
       ],
       "declaredIn": [
-        "pom.xml"
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml"
       ],
       "internal": false
     },
     {
       "ecosystem": "maven",
-      "group": "com.github.luben",
-      "name": "zstd-jni",
-      "version": "1.5.7-4",
-      "versionResolution": "literal",
-      "declaredVersion": "1.5.7-4",
-      "purl": "pkg:maven/com.github.luben/zstd-jni@1.5.7-4",
+      "group": "com.jayway.jsonpath",
+      "name": "json-path",
+      "version": "2.7.0",
+      "versionResolution": "property",
+      "declaredVersion": "${json-path.version}",
+      "purl": "pkg:maven/com.jayway.jsonpath/json-path@2.7.0",
       "scopes": [
-        "compile"
+        "test"
       ],
       "declaredIn": [
-        "modules/commercial-loop/pom.xml",
-        "modules/ecosystem-growth/pom.xml"
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
       ],
       "internal": false
     },
@@ -370,10 +523,10 @@
       "ecosystem": "maven",
       "group": "com.zaxxer",
       "name": "HikariCP",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "6.3.0",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/com.zaxxer/HikariCP",
+      "purl": "pkg:maven/com.zaxxer/HikariCP@6.3.0",
       "scopes": [
         "compile"
       ],
@@ -386,10 +539,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-agent-gateway",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-agent-gateway",
+      "purl": "pkg:maven/io.elmos/elmos-agent-gateway@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -402,10 +555,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-ai-platform-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-ai-platform-engine",
+      "purl": "pkg:maven/io.elmos/elmos-ai-platform-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -418,10 +571,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-application",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-application",
+      "purl": "pkg:maven/io.elmos/elmos-application@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -438,11 +591,31 @@
     {
       "ecosystem": "maven",
       "group": "io.elmos",
-      "name": "elmos-commercial-api",
-      "version": null,
+      "name": "elmos-cas",
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-commercial-api",
+      "purl": "pkg:maven/io.elmos/elmos-cas@0.1.0-SNAPSHOT",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "apps/control-plane/pom.xml",
+        "apps/workspace-service/pom.xml",
+        "modules/integrations/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/portfolio-scale/pom.xml"
+      ],
+      "internal": true
+    },
+    {
+      "ecosystem": "maven",
+      "group": "io.elmos",
+      "name": "elmos-commercial-api",
+      "version": "0.1.0-SNAPSHOT",
+      "versionResolution": "project-version",
+      "declaredVersion": "${project.version}",
+      "purl": "pkg:maven/io.elmos/elmos-commercial-api@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -455,10 +628,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-commercial-operations",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-commercial-operations",
+      "purl": "pkg:maven/io.elmos/elmos-commercial-operations@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -475,10 +648,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-composite-modernization",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-composite-modernization",
+      "purl": "pkg:maven/io.elmos/elmos-composite-modernization@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -493,10 +666,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-continuous-authorization",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-continuous-authorization",
+      "purl": "pkg:maven/io.elmos/elmos-continuous-authorization@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -509,10 +682,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-control-plane",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-control-plane",
+      "purl": "pkg:maven/io.elmos/elmos-control-plane@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -525,10 +698,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-database-data-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-database-data-engine",
+      "purl": "pkg:maven/io.elmos/elmos-database-data-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -541,10 +714,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-delivery",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-delivery",
+      "purl": "pkg:maven/io.elmos/elmos-delivery@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -559,10 +732,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-dependency-migration",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-dependency-migration",
+      "purl": "pkg:maven/io.elmos/elmos-dependency-migration@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -577,10 +750,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-domain",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-domain",
+      "purl": "pkg:maven/io.elmos/elmos-domain@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -597,10 +770,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-edge-iot-industrial-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-edge-iot-industrial-engine",
+      "purl": "pkg:maven/io.elmos/elmos-edge-iot-industrial-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -613,10 +786,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-egress-proxy",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-egress-proxy",
+      "purl": "pkg:maven/io.elmos/elmos-egress-proxy@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -629,10 +802,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-elmosctl",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-elmosctl",
+      "purl": "pkg:maven/io.elmos/elmos-elmosctl@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -645,10 +818,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-engine-api",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-engine-api",
+      "purl": "pkg:maven/io.elmos/elmos-engine-api@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -676,10 +849,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-enterprise-architecture-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-enterprise-architecture-engine",
+      "purl": "pkg:maven/io.elmos/elmos-enterprise-architecture-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -692,10 +865,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-enterprise-control",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-enterprise-control",
+      "purl": "pkg:maven/io.elmos/elmos-enterprise-control@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -708,10 +881,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-enterprise-governance",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-enterprise-governance",
+      "purl": "pkg:maven/io.elmos/elmos-enterprise-governance@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -730,10 +903,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-enterprise-integration-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-enterprise-integration-engine",
+      "purl": "pkg:maven/io.elmos/elmos-enterprise-integration-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -746,10 +919,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-enterprise-suite-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-enterprise-suite-engine",
+      "purl": "pkg:maven/io.elmos/elmos-enterprise-suite-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -762,10 +935,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-evidence",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-evidence",
+      "purl": "pkg:maven/io.elmos/elmos-evidence@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -779,10 +952,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-evidence-assurance-fabric",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-evidence-assurance-fabric",
+      "purl": "pkg:maven/io.elmos/elmos-evidence-assurance-fabric@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -795,10 +968,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-evidence-bound-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-evidence-bound-engine",
+      "purl": "pkg:maven/io.elmos/elmos-evidence-bound-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -817,10 +990,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-framework-migration",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-framework-migration",
+      "purl": "pkg:maven/io.elmos/elmos-framework-migration@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -833,10 +1006,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-health-check",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-health-check",
+      "purl": "pkg:maven/io.elmos/elmos-health-check@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -854,10 +1027,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-identity",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-identity",
+      "purl": "pkg:maven/io.elmos/elmos-identity@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -870,10 +1043,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-intake",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-intake",
+      "purl": "pkg:maven/io.elmos/elmos-intake@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -888,10 +1061,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-integrations",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-integrations",
+      "purl": "pkg:maven/io.elmos/elmos-integrations@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -899,6 +1072,7 @@
       "declaredIn": [
         "apps/control-plane/pom.xml",
         "apps/java-engine-worker/pom.xml",
+        "apps/workspace-service/pom.xml",
         "modules/architecture-tests/pom.xml"
       ],
       "internal": true
@@ -907,10 +1081,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-java-engine-worker",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-java-engine-worker",
+      "purl": "pkg:maven/io.elmos/elmos-java-engine-worker@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -925,10 +1099,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-lowering",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-lowering",
+      "purl": "pkg:maven/io.elmos/elmos-lowering@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -943,10 +1117,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-migration-pack-certification",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-migration-pack-certification",
+      "purl": "pkg:maven/io.elmos/elmos-migration-pack-certification@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -959,10 +1133,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-modernization-proof-loop",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-modernization-proof-loop",
+      "purl": "pkg:maven/io.elmos/elmos-modernization-proof-loop@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -976,10 +1150,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-network-policy",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-network-policy",
+      "purl": "pkg:maven/io.elmos/elmos-network-policy@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -996,16 +1170,18 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-object-storage",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-object-storage",
+      "purl": "pkg:maven/io.elmos/elmos-object-storage@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
         "apps/control-plane/pom.xml",
-        "modules/persistence/pom.xml"
+        "modules/cas/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": true
     },
@@ -1013,10 +1189,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-operations-sre-itsm-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-operations-sre-itsm-engine",
+      "purl": "pkg:maven/io.elmos/elmos-operations-sre-itsm-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -1029,10 +1205,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-persistence",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-persistence",
+      "purl": "pkg:maven/io.elmos/elmos-persistence@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1047,10 +1223,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-planning",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-planning",
+      "purl": "pkg:maven/io.elmos/elmos-planning@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1066,10 +1242,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-portfolio-scale",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-portfolio-scale",
+      "purl": "pkg:maven/io.elmos/elmos-portfolio-scale@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1082,10 +1258,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-product-roadmap-governance",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-product-roadmap-governance",
+      "purl": "pkg:maven/io.elmos/elmos-product-roadmap-governance@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1097,11 +1273,28 @@
     {
       "ecosystem": "maven",
       "group": "io.elmos",
-      "name": "elmos-recipe-governance",
-      "version": null,
+      "name": "elmos-production-runtime",
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-recipe-governance",
+      "purl": "pkg:maven/io.elmos/elmos-production-runtime@0.1.0-SNAPSHOT",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml"
+      ],
+      "internal": true
+    },
+    {
+      "ecosystem": "maven",
+      "group": "io.elmos",
+      "name": "elmos-recipe-governance",
+      "version": "0.1.0-SNAPSHOT",
+      "versionResolution": "project-version",
+      "declaredVersion": "${project.version}",
+      "purl": "pkg:maven/io.elmos/elmos-recipe-governance@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1116,10 +1309,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-repair-orchestration",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-repair-orchestration",
+      "purl": "pkg:maven/io.elmos/elmos-repair-orchestration@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1134,10 +1327,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-scm",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-scm",
+      "purl": "pkg:maven/io.elmos/elmos-scm@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1155,10 +1348,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-secret",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-secret",
+      "purl": "pkg:maven/io.elmos/elmos-secret@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1174,10 +1367,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-secure-execution-plane",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-secure-execution-plane",
+      "purl": "pkg:maven/io.elmos/elmos-secure-execution-plane@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1190,15 +1383,19 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-security",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-security",
+      "purl": "pkg:maven/io.elmos/elmos-security@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "apps/control-plane/pom.xml"
+        "apps/control-plane/pom.xml",
+        "apps/java-engine-transformer/pom.xml",
+        "apps/java-engine-verifier/pom.xml",
+        "apps/java-engine-worker/pom.xml",
+        "apps/workspace-service/pom.xml"
       ],
       "internal": true
     },
@@ -1206,10 +1403,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-semantic",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-semantic",
+      "purl": "pkg:maven/io.elmos/elmos-semantic@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1224,10 +1421,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-skeleton",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-skeleton",
+      "purl": "pkg:maven/io.elmos/elmos-skeleton@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1242,10 +1439,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-snapshot",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-snapshot",
+      "purl": "pkg:maven/io.elmos/elmos-snapshot@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1261,10 +1458,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-software-delivery-platform-engine",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-software-delivery-platform-engine",
+      "purl": "pkg:maven/io.elmos/elmos-software-delivery-platform-engine@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -1277,10 +1474,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-source-control-workspace-governance",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-source-control-workspace-governance",
+      "purl": "pkg:maven/io.elmos/elmos-source-control-workspace-governance@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1293,10 +1490,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-uir",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-uir",
+      "purl": "pkg:maven/io.elmos/elmos-uir@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1311,10 +1508,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-validation",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-validation",
+      "purl": "pkg:maven/io.elmos/elmos-validation@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1330,10 +1527,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-workflow",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-workflow",
+      "purl": "pkg:maven/io.elmos/elmos-workflow@0.1.0-SNAPSHOT",
       "scopes": [
         "compile"
       ],
@@ -1347,10 +1544,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-workspace",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-workspace",
+      "purl": "pkg:maven/io.elmos/elmos-workspace@0.1.0-SNAPSHOT",
       "scopes": [
         "compile",
         "test"
@@ -1358,6 +1555,7 @@
       "declaredIn": [
         "apps/workspace-service/pom.xml",
         "modules/architecture-tests/pom.xml",
+        "modules/integrations/pom.xml",
         "modules/persistence/pom.xml"
       ],
       "internal": true
@@ -1366,10 +1564,10 @@
       "ecosystem": "maven",
       "group": "io.elmos",
       "name": "elmos-workspace-service",
-      "version": null,
+      "version": "0.1.0-SNAPSHOT",
       "versionResolution": "project-version",
       "declaredVersion": "${project.version}",
-      "purl": "pkg:maven/io.elmos/elmos-workspace-service",
+      "purl": "pkg:maven/io.elmos/elmos-workspace-service@0.1.0-SNAPSHOT",
       "scopes": [
         "test"
       ],
@@ -1380,12 +1578,30 @@
     },
     {
       "ecosystem": "maven",
+      "group": "io.micrometer",
+      "name": "micrometer-registry-prometheus",
+      "version": "1.15.1",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/io.micrometer/micrometer-registry-prometheus@1.15.1",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "apps/java-engine-worker/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
       "group": "jakarta.validation",
       "name": "jakarta.validation-api",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.0.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/jakarta.validation/jakarta.validation-api",
+      "purl": "pkg:maven/jakarta.validation/jakarta.validation-api@3.0.2",
       "scopes": [
         "compile"
       ],
@@ -1396,12 +1612,44 @@
     },
     {
       "ecosystem": "maven",
+      "group": "javax.servlet",
+      "name": "javax.servlet-api",
+      "version": "4.0.1",
+      "versionResolution": "property",
+      "declaredVersion": "${servlet-api.version}",
+      "purl": "pkg:maven/javax.servlet/javax.servlet-api@4.0.1",
+      "scopes": [
+        "provided"
+      ],
+      "declaredIn": [
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "javax.validation",
+      "name": "validation-api",
+      "version": "2.0.1.Final",
+      "versionResolution": "property",
+      "declaredVersion": "${validation-api.version}",
+      "purl": "pkg:maven/javax.validation/validation-api@2.0.1.Final",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
       "group": "org.apache.commons",
       "name": "commons-compress",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "1.27.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.apache.commons/commons-compress",
+      "purl": "pkg:maven/org.apache.commons/commons-compress@1.27.1",
       "scopes": [
         "compile"
       ],
@@ -1414,28 +1662,12 @@
     },
     {
       "ecosystem": "maven",
-      "group": "org.apache.commons",
-      "name": "commons-compress",
-      "version": "1.27.1",
-      "versionResolution": "property",
-      "declaredVersion": "${commons-compress.version}",
-      "purl": "pkg:maven/org.apache.commons/commons-compress@1.27.1",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
       "group": "org.eclipse.jgit",
       "name": "org.eclipse.jgit",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "7.7.0.202606012155-r",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.eclipse.jgit/org.eclipse.jgit",
+      "purl": "pkg:maven/org.eclipse.jgit/org.eclipse.jgit@7.7.0.202606012155-r",
       "scopes": [
         "compile"
       ],
@@ -1447,16 +1679,16 @@
     {
       "ecosystem": "maven",
       "group": "org.eclipse.jgit",
-      "name": "org.eclipse.jgit",
+      "name": "org.eclipse.jgit.http.apache",
       "version": "7.7.0.202606012155-r",
       "versionResolution": "property",
       "declaredVersion": "${jgit.version}",
-      "purl": "pkg:maven/org.eclipse.jgit/org.eclipse.jgit@7.7.0.202606012155-r",
+      "purl": "pkg:maven/org.eclipse.jgit/org.eclipse.jgit.http.apache@7.7.0.202606012155-r",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "pom.xml"
+        "modules/integrations/pom.xml"
       ],
       "internal": false
     },
@@ -1464,31 +1696,18 @@
       "ecosystem": "maven",
       "group": "org.flywaydb",
       "name": "flyway-core",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "11.7.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.flywaydb/flyway-core",
+      "purl": "pkg:maven/org.flywaydb/flyway-core@11.7.2",
       "scopes": [
-        "compile"
+        "compile",
+        "test"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "org.flywaydb",
-      "name": "flyway-database-postgresql",
-      "version": null,
-      "versionResolution": "managed-by-bom",
-      "declaredVersion": null,
-      "purl": "pkg:maven/org.flywaydb/flyway-database-postgresql",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "modules/persistence/pom.xml"
+        "apps/production-runtime-control-plane/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1497,14 +1716,65 @@
       "group": "org.flywaydb",
       "name": "flyway-database-postgresql",
       "version": "11.7.2",
-      "versionResolution": "literal",
-      "declaredVersion": "11.7.2",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
       "purl": "pkg:maven/org.flywaydb/flyway-database-postgresql@11.7.2",
+      "scopes": [
+        "compile",
+        "test"
+      ],
+      "declaredIn": [
+        "apps/production-runtime-control-plane/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.glassfish",
+      "name": "javax.el",
+      "version": "3.0.1-b12",
+      "versionResolution": "literal",
+      "declaredVersion": "3.0.1-b12",
+      "purl": "pkg:maven/org.glassfish/javax.el@3.0.1-b12",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.hamcrest",
+      "name": "hamcrest",
+      "version": "2.2",
+      "versionResolution": "property",
+      "declaredVersion": "${hamcrest.version}",
+      "purl": "pkg:maven/org.hamcrest/hamcrest@2.2",
+      "scopes": [
+        "test"
+      ],
+      "declaredIn": [
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.hibernate.validator",
+      "name": "hibernate-validator",
+      "version": "6.2.5.Final",
+      "versionResolution": "property",
+      "declaredVersion": "${hibernate-validator.version}",
+      "purl": "pkg:maven/org.hibernate.validator/hibernate-validator@6.2.5.Final",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
       ],
       "internal": false
     },
@@ -1512,10 +1782,26 @@
       "ecosystem": "maven",
       "group": "org.junit.jupiter",
       "name": "junit-jupiter",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "5.10.3",
+      "versionResolution": "property",
+      "declaredVersion": "${junit.version}",
+      "purl": "pkg:maven/org.junit.jupiter/junit-jupiter@5.10.3",
+      "scopes": [
+        "test"
+      ],
+      "declaredIn": [
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.junit.jupiter",
+      "name": "junit-jupiter",
+      "version": "5.12.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.junit.jupiter/junit-jupiter",
+      "purl": "pkg:maven/org.junit.jupiter/junit-jupiter@5.12.2",
       "scopes": [
         "test"
       ],
@@ -1529,6 +1815,7 @@
         "modules/application/pom.xml",
         "modules/architecture-tests/pom.xml",
         "modules/behavior-equivalence/pom.xml",
+        "modules/cas/pom.xml",
         "modules/commercial-loop/pom.xml",
         "modules/commercial-operations/pom.xml",
         "modules/company-series/pom.xml",
@@ -1561,6 +1848,7 @@
         "modules/product-roadmap-governance/pom.xml",
         "modules/production-cutover/pom.xml",
         "modules/production-hardening/pom.xml",
+        "modules/production-runtime/pom.xml",
         "modules/recipe-governance/pom.xml",
         "modules/repair-orchestration/pom.xml",
         "modules/scm/pom.xml",
@@ -1583,15 +1871,31 @@
       "ecosystem": "maven",
       "group": "org.junit.jupiter",
       "name": "junit-jupiter-params",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "5.12.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.junit.jupiter/junit-jupiter-params",
+      "purl": "pkg:maven/org.junit.jupiter/junit-jupiter-params@5.12.2",
       "scopes": [
         "test"
       ],
       "declaredIn": [
         "modules/integrations/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.openrewrite",
+      "name": "rewrite-java",
+      "version": "8.87.0",
+      "versionResolution": "literal",
+      "declaredVersion": "8.87.0",
+      "purl": "pkg:maven/org.openrewrite/rewrite-java@8.87.0",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "recipes/elmos-java-recipes/pom.xml"
       ],
       "internal": false
     },
@@ -1615,31 +1919,16 @@
       "ecosystem": "maven",
       "group": "org.postgresql",
       "name": "postgresql",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "42.7.7",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.postgresql/postgresql",
+      "purl": "pkg:maven/org.postgresql/postgresql@42.7.7",
       "scopes": [
         "runtime"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
-      "group": "org.postgresql",
-      "name": "postgresql",
-      "version": "42.7.7",
-      "versionResolution": "literal",
-      "declaredVersion": "42.7.7",
-      "purl": "pkg:maven/org.postgresql/postgresql@42.7.7",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "modules/persistence/pom.xml"
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1647,15 +1936,16 @@
       "ecosystem": "maven",
       "group": "org.slf4j",
       "name": "slf4j-simple",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "2.0.17",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.slf4j/slf4j-simple",
+      "purl": "pkg:maven/org.slf4j/slf4j-simple@2.0.17",
       "scopes": [
         "test"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1663,15 +1953,16 @@
       "ecosystem": "maven",
       "group": "org.springframework",
       "name": "spring-context",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "6.2.8",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework/spring-context",
+      "purl": "pkg:maven/org.springframework/spring-context@6.2.8",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1679,15 +1970,16 @@
       "ecosystem": "maven",
       "group": "org.springframework",
       "name": "spring-jdbc",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "6.2.8",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework/spring-jdbc",
+      "purl": "pkg:maven/org.springframework/spring-jdbc@6.2.8",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1695,15 +1987,32 @@
       "ecosystem": "maven",
       "group": "org.springframework",
       "name": "spring-test",
-      "version": null,
-      "versionResolution": "managed-by-bom",
-      "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework/spring-test",
+      "version": "5.3.39",
+      "versionResolution": "property",
+      "declaredVersion": "${spring-framework.version}",
+      "purl": "pkg:maven/org.springframework/spring-test@5.3.39",
       "scopes": [
         "test"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.springframework",
+      "name": "spring-test",
+      "version": "6.2.8",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/org.springframework/spring-test@6.2.8",
+      "scopes": [
+        "test"
+      ],
+      "declaredIn": [
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1711,10 +2020,10 @@
       "ecosystem": "maven",
       "group": "org.springframework",
       "name": "spring-web",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "6.2.8",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework/spring-web",
+      "purl": "pkg:maven/org.springframework/spring-web@6.2.8",
       "scopes": [
         "compile"
       ],
@@ -1725,17 +2034,33 @@
     },
     {
       "ecosystem": "maven",
-      "group": "org.springframework.boot",
-      "name": "spring-boot-dependencies",
-      "version": "3.5.3",
+      "group": "org.springframework",
+      "name": "spring-webmvc",
+      "version": "5.3.39",
       "versionResolution": "property",
-      "declaredVersion": "${spring-boot.version}",
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-dependencies@3.5.3",
+      "declaredVersion": "${spring-framework.version}",
+      "purl": "pkg:maven/org.springframework/spring-webmvc@5.3.39",
       "scopes": [
-        "import"
+        "compile"
       ],
       "declaredIn": [
-        "pom.xml"
+        "framework-packs/spring-framework-5-3-mvc-to-spring-boot-3-5-3/corpus/development/legacy-spring-mvc/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.springframework.boot",
+      "name": "spring-boot-autoconfigure",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.5.3",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1743,10 +2068,10 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-actuator",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-actuator",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-actuator@3.5.3",
       "scopes": [
         "compile"
       ],
@@ -1756,8 +2081,13 @@
         "apps/control-plane/pom.xml",
         "apps/enterprise-control/pom.xml",
         "apps/java-engine-transformer/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
         "apps/java-engine-verifier/pom.xml",
         "apps/java-engine-worker/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml",
         "apps/workspace-service/pom.xml",
         "engines/ai-platform-engine/pom.xml",
         "engines/database-data-engine/pom.xml",
@@ -1781,15 +2111,18 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-data-jpa",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-data-jpa",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-data-jpa@3.5.3",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/pom.xml"
+        "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml"
       ],
       "internal": false
     },
@@ -1797,15 +2130,16 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-jdbc",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-jdbc",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-jdbc@3.5.3",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
         "apps/control-plane/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
         "apps/workspace-service/pom.xml"
       ],
       "internal": false
@@ -1814,10 +2148,10 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-oauth2-resource-server",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-oauth2-resource-server@3.5.3",
       "scopes": [
         "compile"
       ],
@@ -1831,15 +2165,21 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-security",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-security",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-security@3.5.3",
       "scopes": [
         "compile"
       ],
       "declaredIn": [
-        "apps/commercial-api/pom.xml"
+        "apps/commercial-api/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
+        "apps/workspace-service/pom.xml",
+        "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/pom.xml",
+        "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source/pom.xml"
       ],
       "internal": false
     },
@@ -1847,10 +2187,10 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-test",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-test",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-test@3.5.3",
       "scopes": [
         "test"
       ],
@@ -1860,8 +2200,13 @@
         "apps/control-plane/pom.xml",
         "apps/enterprise-control/pom.xml",
         "apps/java-engine-transformer/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
         "apps/java-engine-verifier/pom.xml",
         "apps/java-engine-worker/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml",
         "apps/workspace-service/pom.xml",
         "engines/ai-platform-engine/pom.xml",
         "engines/database-data-engine/pom.xml",
@@ -1885,10 +2230,10 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-validation",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-validation",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-validation@3.5.3",
       "scopes": [
         "compile"
       ],
@@ -1897,7 +2242,12 @@
         "apps/commercial-api/pom.xml",
         "apps/control-plane/pom.xml",
         "apps/enterprise-control/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
         "apps/java-engine-worker/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml",
         "apps/workspace-service/pom.xml",
         "engines/ai-platform-engine/pom.xml",
         "engines/database-data-engine/pom.xml",
@@ -1921,10 +2271,10 @@
       "ecosystem": "maven",
       "group": "org.springframework.boot",
       "name": "spring-boot-starter-web",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.5.3",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-web",
+      "purl": "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.5.3",
       "scopes": [
         "compile"
       ],
@@ -1935,8 +2285,13 @@
         "apps/control-plane/pom.xml",
         "apps/enterprise-control/pom.xml",
         "apps/java-engine-transformer/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml",
         "apps/java-engine-verifier/pom.xml",
         "apps/java-engine-worker/pom.xml",
+        "apps/production-runtime-control-plane/pom.xml",
+        "apps/production-runtime-worker/pom.xml",
         "apps/workspace-service/pom.xml",
         "engines/ai-platform-engine/pom.xml",
         "engines/database-data-engine/pom.xml",
@@ -1958,17 +2313,54 @@
     },
     {
       "ecosystem": "maven",
+      "group": "org.springframework.kafka",
+      "name": "spring-kafka",
+      "version": "3.3.7",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/org.springframework.kafka/spring-kafka@3.3.7",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "apps/java-engine-verifier/cache-seeds/spring-boot-2.7.18-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.2.12-java-17/pom.xml",
+        "apps/java-engine-verifier/cache-seeds/spring-boot-3.5.3-java-21/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
+      "group": "org.springframework.security",
+      "name": "spring-security-core",
+      "version": "6.5.1",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/org.springframework.security/spring-security-core@6.5.1",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "apps/production-runtime-control-plane/pom.xml"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "maven",
       "group": "org.springframework.security",
       "name": "spring-security-test",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "6.5.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.springframework.security/spring-security-test",
+      "purl": "pkg:maven/org.springframework.security/spring-security-test@6.5.1",
       "scopes": [
         "test"
       ],
       "declaredIn": [
-        "apps/commercial-api/pom.xml"
+        "apps/commercial-api/pom.xml",
+        "apps/control-plane/pom.xml",
+        "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/migrated/pom.xml",
+        "framework-packs/spring-boot-2-7-18-to-3-5-3/corpus/development/source/pom.xml"
       ],
       "internal": false
     },
@@ -1976,15 +2368,17 @@
       "ecosystem": "maven",
       "group": "org.testcontainers",
       "name": "junit-jupiter",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "1.21.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.testcontainers/junit-jupiter",
+      "purl": "pkg:maven/org.testcontainers/junit-jupiter@1.21.2",
       "scopes": [
         "test"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "apps/control-plane/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -1992,31 +2386,33 @@
       "ecosystem": "maven",
       "group": "org.testcontainers",
       "name": "postgresql",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "1.21.2",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.testcontainers/postgresql",
+      "purl": "pkg:maven/org.testcontainers/postgresql@1.21.2",
       "scopes": [
         "test"
       ],
       "declaredIn": [
-        "modules/persistence/pom.xml"
+        "apps/control-plane/pom.xml",
+        "modules/persistence/pom.xml",
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
     {
       "ecosystem": "maven",
       "group": "org.testcontainers",
-      "name": "testcontainers-bom",
+      "name": "testcontainers",
       "version": "1.21.2",
-      "versionResolution": "property",
-      "declaredVersion": "${testcontainers.version}",
-      "purl": "pkg:maven/org.testcontainers/testcontainers-bom@1.21.2",
+      "versionResolution": "dependency-management",
+      "declaredVersion": null,
+      "purl": "pkg:maven/org.testcontainers/testcontainers@1.21.2",
       "scopes": [
-        "import"
+        "test"
       ],
       "declaredIn": [
-        "pom.xml"
+        "modules/production-runtime/pom.xml"
       ],
       "internal": false
     },
@@ -2024,10 +2420,10 @@
       "ecosystem": "maven",
       "group": "org.tomlj",
       "name": "tomlj",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "1.1.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.tomlj/tomlj",
+      "purl": "pkg:maven/org.tomlj/tomlj@1.1.1",
       "scopes": [
         "compile"
       ],
@@ -2038,28 +2434,12 @@
     },
     {
       "ecosystem": "maven",
-      "group": "org.tomlj",
-      "name": "tomlj",
-      "version": "1.1.1",
-      "versionResolution": "property",
-      "declaredVersion": "${tomlj.version}",
-      "purl": "pkg:maven/org.tomlj/tomlj@1.1.1",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "maven",
       "group": "org.xerial",
       "name": "sqlite-jdbc",
-      "version": null,
-      "versionResolution": "managed-by-bom",
+      "version": "3.53.2.1",
+      "versionResolution": "dependency-management",
       "declaredVersion": null,
-      "purl": "pkg:maven/org.xerial/sqlite-jdbc",
+      "purl": "pkg:maven/org.xerial/sqlite-jdbc@3.53.2.1",
       "scopes": [
         "compile"
       ],
@@ -2070,48 +2450,14 @@
       "internal": false
     },
     {
-      "ecosystem": "maven",
-      "group": "org.xerial",
-      "name": "sqlite-jdbc",
-      "version": "3.50.3.0",
-      "versionResolution": "property",
-      "declaredVersion": "${sqlite-jdbc.version}",
-      "purl": "pkg:maven/org.xerial/sqlite-jdbc@3.50.3.0",
-      "scopes": [
-        "compile"
-      ],
-      "declaredIn": [
-        "pom.xml"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "@ampproject/remapping",
-      "version": "2.3.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "2.3.0",
-      "purl": "pkg:npm/@ampproject/remapping@2.3.0",
-      "integrity": "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw==",
-      "license": "Apache-2.0",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
       "ecosystem": "npm",
       "group": null,
       "name": "@angular/compiler",
-      "version": "18.2.13",
+      "version": "22.1.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "18.2.13",
-      "purl": "pkg:npm/@angular/compiler@18.2.13",
-      "integrity": "sha512-TzWcrkopyjFF+WeDr2cRe8CcHjU72KfYV3Sm2TkBkcXrkYX5sDjGWrBGrG3hRB4e4okqchrOCvm1MiTdy2vKMA==",
+      "declaredVersion": "22.1.4",
+      "purl": "pkg:npm/@angular/compiler@22.1.4",
+      "integrity": "sha512-o+W0shjR5KmPPWchFmqN9bLINYAy14zIW//g9T5WqKDMOqjt4IbeY6AKOoE1db/dXffprLEH9nyPOmi19iKNxg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -2359,11 +2705,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@babel/parser",
-      "version": "7.29.7",
+      "version": "7.29.8",
       "versionResolution": "lockfile",
-      "declaredVersion": "7.29.7",
-      "purl": "pkg:npm/@babel/parser@7.29.7",
-      "integrity": "sha512-hnORnjP/1P/zFEndoeX+n+t1RwWRJiJpM/jO7FW32Kn9r5+sJB2JWOdYo4L6k78j15eCwY3Gm/7364B1EMwtNg==",
+      "declaredVersion": "7.29.8",
+      "purl": "pkg:npm/@babel/parser@7.29.8",
+      "integrity": "sha512-E8lTAYNB1KW+FH+VGJuZM1ioAx2E6oVlvQFRrf5P8ZZmsiJXYAD9vTFV7yyEURNzgh1dFqMZuO6tUwcARbqFCA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -2719,11 +3065,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@babel/types",
-      "version": "7.29.7",
+      "version": "7.29.8",
       "versionResolution": "lockfile",
-      "declaredVersion": "7.29.7",
-      "purl": "pkg:npm/@babel/types@7.29.7",
-      "integrity": "sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==",
+      "declaredVersion": "7.29.8",
+      "purl": "pkg:npm/@babel/types@7.29.8",
+      "integrity": "sha512-Vj1jF3cPfxg7OAfoI7QnVKLoILlm2JF9pnVHrX8qx7AHMiYWT+NDAA7jChlNgRS4WTLc/fD1lXLmPixluj+3Gg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -2755,11 +3101,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@emnapi/runtime",
-      "version": "1.11.2",
+      "version": "1.11.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.11.2",
-      "purl": "pkg:npm/@emnapi/runtime@1.11.2",
-      "integrity": "sha512-kyOl3X0DuTiT1h2ft8r2fYO8JYtU9a9Xis/zBSiGArNaagCOWx90N1k2wxp18czFDH+OgcWGb5ZP/XMt3dcyPA==",
+      "declaredVersion": "1.11.3",
+      "purl": "pkg:npm/@emnapi/runtime@1.11.3",
+      "integrity": "sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -2791,11 +3137,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-darwin-arm64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-darwin-arm64@0.34.5",
-      "integrity": "sha512-imtQ3WMJXbMY4fxb/Ndp6HBTNVtWCUI0WdobyheGf5+ad6xX8VIDO8u2xE4qc/fr08CKG/7dDseFtn6M6g/r3w==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-darwin-arm64@0.35.4",
+      "integrity": "sha512-Uhfl4V4lhP2nbUVF9+hyH1+luj86f1gUFeo8ALYxFoULoU+G87D43BfeMP8XHsk9boxAnCY/bf2EHwhA7MuGsA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -2809,11 +3155,29 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-darwin-x64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-darwin-x64@0.34.5",
-      "integrity": "sha512-YNEFAF/4KQ/PeW0N+r+aVVsoIY0/qxxikF2SWdp+NRkmMB7y9LBZAVqQ4yhGCm/H3H270OSykqmQMKLBhBJDEw==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-darwin-x64@0.35.4",
+      "integrity": "sha512-hWniXY3bG5qKpkKrAwPe4y+VTPmf086YQAnkxWh7uA1YrlRouWGa0M0Mxj3ZjnXFkv7/TD1bTy9lGUK26vRvWw==",
+      "license": "Apache-2.0",
+      "scopes": [
+        "runtime"
+      ],
+      "declaredIn": [
+        "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
+      "name": "@img/sharp-freebsd-wasm32",
+      "version": "0.35.4",
+      "versionResolution": "lockfile",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-freebsd-wasm32@0.35.4",
+      "integrity": "sha512-lIsKw/BU+kjB4eZjxrYrZmwOJYi3Ajrv66iAlBmUPyKc3HpnloevB1g3wxGD9P/5BbQ1brBGl65VRRrCvQDEqA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -2827,11 +3191,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-darwin-arm64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-darwin-arm64@1.2.4",
-      "integrity": "sha512-zqjjo7RatFfFoP0MkQ51jfuFZBnVE2pRiaydKJ1G/rHZvnsrHAOcQALIi9sA5co5xenQdTugCvtb1cuf78Vf4g==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-darwin-arm64@1.3.3",
+      "integrity": "sha512-suTBPTDGrI9WodccaDdwZItTSaBYASlBk1NSfElSHrUfzu3szG6lvIF58+WiFvnfzuK8ZBFS5zE00PxqxnRiPg==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2845,11 +3209,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-darwin-x64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-darwin-x64@1.2.4",
-      "integrity": "sha512-1IOd5xfVhlGwX+zXv2N93k0yMONvUlANylbJw1eTah8K/Jtpi15KC+WSiaX/nBmbm2HxRM1gZ0nSdjSsrZbGKg==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-darwin-x64@1.3.3",
+      "integrity": "sha512-FVJZ5mITMobmXIz/hPDTw0EintTW5H3WfrxwLqEqjiIihlu+hVRyGrFQ60xl0Lxn7Bt3zdpevPaQi0HEzqz9fw==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2863,11 +3227,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-arm",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-arm@1.2.4",
-      "integrity": "sha512-bFI7xcKFELdiNCVov8e44Ia4u2byA+l3XtsAj+Q8tfCwO6BQ8iDojYdvoPMqsKDkuoOo+X6HZA0s0q11ANMQ8A==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-arm@1.3.3",
+      "integrity": "sha512-3rbU4vqXXc3hY/OiXdl52xZvT0F1yEngWfvqudtPJg/KkyiaQw2DRsFrNzpmLvfavbwOq3qXn36GP8obHRULQA==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2881,11 +3245,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-arm64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-arm64@1.2.4",
-      "integrity": "sha512-excjX8DfsIcJ10x1Kzr4RcWe1edC9PquDRRPx3YVCvQv+U5p7Yin2s32ftzikXojb1PIFc/9Mt28/y+iRklkrw==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-arm64@1.3.3",
+      "integrity": "sha512-0DaL0A6Xu6sQSQFwe4iVCrKWU2cCTItnRsYsCdxAMm9NF6twAA9BKnoqy4hqz4+azQ0JHuA26qiUKsf1XJ/v5A==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2899,11 +3263,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-ppc64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-ppc64@1.2.4",
-      "integrity": "sha512-FMuvGijLDYG6lW+b/UvyilUWu5Ayu+3r2d1S8notiGCIyYU/76eig1UfMmkZ7vwgOrzKzlQbFSuQfgm7GYUPpA==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-ppc64@1.3.3",
+      "integrity": "sha512-cdn1OvUBwsXhbC0zSzJnNzf5MZ/mTrobawDvNXBTxe8VtqKAm0sRuEY2Evzovb/w9JMk4TvRxqt1mekSuJz64w==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2917,11 +3281,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-riscv64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-riscv64@1.2.4",
-      "integrity": "sha512-oVDbcR4zUC0ce82teubSm+x6ETixtKZBh/qbREIOcI3cULzDyb18Sr/Wcyx7NRQeQzOiHTNbZFF1UwPS2scyGA==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-riscv64@1.3.3",
+      "integrity": "sha512-HjPVx7yKz+0lqdhDlTw1tt90wamBoxhiXpvl1XZpJLiHH4RCJ5yDTqH+VlYPv2fwFs89JFw4c1IexYOcQUi4IQ==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2935,11 +3299,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-s390x",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-s390x@1.2.4",
-      "integrity": "sha512-qmp9VrzgPgMoGZyPvrQHqk02uyjA0/QrTO26Tqk6l4ZV0MPWIW6LTkqOIov+J1yEu7MbFQaDpwdwJKhbJvuRxQ==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-s390x@1.3.3",
+      "integrity": "sha512-neWLh+3yCNThxnfy3c4BbVBeGgt9aftno+XbT56iK28RgeDs3UOFWviLWlUu0bArYVYJaFDK+RRohbicUNCm8Q==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2953,11 +3317,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linux-x64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linux-x64@1.2.4",
-      "integrity": "sha512-tJxiiLsmHc9Ax1bz3oaOYBURTXGIRDODBqhveVHonrHJ9/+k89qbLl0bcJns+e4t4rvaNBxaEZsFtSfAdquPrw==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linux-x64@1.3.3",
+      "integrity": "sha512-4vKmvAst9nrowcqquKFAyZJUDolUaIp8uRiN0mWFguJ1IplC9/pitXtlnnlU4aa/eJw3J7i67V+pwUL+wZGdsA==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2971,11 +3335,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linuxmusl-arm64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linuxmusl-arm64@1.2.4",
-      "integrity": "sha512-FVQHuwx1IIuNow9QAbYUzJ+En8KcVm9Lk5+uGUQJHaZmMECZmOlix9HnH7n1TRkXMS0pGxIJokIVB9SuqZGGXw==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linuxmusl-arm64@1.3.3",
+      "integrity": "sha512-Y9kQaLMuNoB0bPYOOdcZMaseNrFpPodIWWMrx+CZyydf2xn68j9WYc6sWWRrDwNkzCQjKYfc68L7jKjGlHMibw==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -2989,11 +3353,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-libvips-linuxmusl-x64",
-      "version": "1.2.4",
+      "version": "1.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.2.4",
-      "purl": "pkg:npm/@img/sharp-libvips-linuxmusl-x64@1.2.4",
-      "integrity": "sha512-+LpyBk7L44ZIXwz/VYfglaX/okxezESc6UxDSoyo2Ks6Jxc4Y7sGjpgU9s4PMgqgjj1gZCylTieNamqA1MF7Dg==",
+      "declaredVersion": "1.3.3",
+      "purl": "pkg:npm/@img/sharp-libvips-linuxmusl-x64@1.3.3",
+      "integrity": "sha512-fj8Mv0HHfD1Rr+4I68+3agJynxDWtBFgicTbSOb9Bke6pIwzGcJ+RX/yHjmiEGFMCavY/dxvem7MyNaJF+wDiw==",
       "license": "LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -3007,11 +3371,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-arm",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-arm@0.34.5",
-      "integrity": "sha512-9dLqsvwtg1uuXBGZKsxem9595+ujv0sJ6Vi8wcTANSFpwV/GONat5eCkzQo/1O6zRIkh0m/8+5BjrRr7jDUSZw==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-arm@0.35.4",
+      "integrity": "sha512-7OAS8gI0EReKGVN2HssHlM6umJgxF5VI3xN0p9FA91p/YO+ou5hiNghLdZ5BEHztwaaK5+bLKRf8x/o2L2nk9A==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3025,11 +3389,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-arm64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-arm64@0.34.5",
-      "integrity": "sha512-bKQzaJRY/bkPOXyKx5EVup7qkaojECG6NLYswgktOZjaXecSAeCWiZwwiFf3/Y+O1HrauiE3FVsGxFg8c24rZg==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-arm64@0.35.4",
+      "integrity": "sha512-De4jpEnAU8Hd5oT0j1G3uL4ZvTuipVMn7YC6vPaJhy6/7EwEae0SVAoBrUMYQbkLGDm85taVWwuPc1a44LTzCQ==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3043,11 +3407,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-ppc64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-ppc64@0.34.5",
-      "integrity": "sha512-7zznwNaqW6YtsfrGGDA6BRkISKAAE1Jo0QdpNYXNMHu2+0dTrPflTLNkpc8l7MUP5M16ZJcUvysVWWrMefZquA==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-ppc64@0.35.4",
+      "integrity": "sha512-2oYZJeIl4kCcMGk4ouZVjnkCtFrpQFlNEtJ6GbxzhHQchwH0NH/qEb9ykmOl29dqwMq+JhFdZn+1ak2FKhI9fQ==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3061,11 +3425,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-riscv64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-riscv64@0.34.5",
-      "integrity": "sha512-51gJuLPTKa7piYPaVs8GmByo7/U7/7TZOq+cnXJIHZKavIRHAP77e3N2HEl3dgiqdD/w0yUfiJnII77PuDDFdw==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-riscv64@0.35.4",
+      "integrity": "sha512-cPbNChoRURAWdebDIHSenxRpgEdy7JkPydSnUxRm9VvKD7m0/xVaR/8Fzlu81pk5nHEvHH87UZUA7cTtwnbJSA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3079,11 +3443,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-s390x",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-s390x@0.34.5",
-      "integrity": "sha512-nQtCk0PdKfho3eC5MrbQoigJ2gd1CgddUMkabUj+rBevs8tZ2cULOx46E7oyX+04WGfABgIwmMC0VqieTiR4jg==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-s390x@0.35.4",
+      "integrity": "sha512-RY0JFY8Fd6RonCBtHz+DvadaPkXDSI1AUn6yWL9TipqkZ1vY8w8evqdgyDFnkm4/K1ve1TvZiaePP5oSd4+WVQ==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3097,11 +3461,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linux-x64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linux-x64@0.34.5",
-      "integrity": "sha512-MEzd8HPKxVxVenwAa+JRPwEC7QFjoPWuS5NZnBt6B3pu7EG2Ge0id1oLHZpPJdn3OQK+BQDiw9zStiHBTJQQQQ==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linux-x64@0.35.4",
+      "integrity": "sha512-9qvvEAuk8k89TfWUoX2htWjbAMX8p+NxCppjpcg5k6xMsjhBQPTsoIh36h9Qde4WRuGpJeYnOjdosDn/cnv+OA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3115,11 +3479,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linuxmusl-arm64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linuxmusl-arm64@0.34.5",
-      "integrity": "sha512-fprJR6GtRsMt6Kyfq44IsChVZeGN97gTD331weR1ex1c1rypDEABN6Tm2xa1wE6lYb5DdEnk03NZPqA7Id21yg==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linuxmusl-arm64@0.35.4",
+      "integrity": "sha512-KB5jxpfWQTr0nc3xdHtWChdbifHrBGsd2SM62Eyxrl8afikm+f5qGBU75SJIZBT/S1MC8XyacdlXBMSWq6OURA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3133,11 +3497,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-linuxmusl-x64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-linuxmusl-x64@0.34.5",
-      "integrity": "sha512-Jg8wNT1MUzIvhBFxViqrEhWDGzqymo3sV7z7ZsaWbZNDLXRJZoRGrjulp60YYtV4wfY8VIKcWidjojlLcWrd8Q==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-linuxmusl-x64@0.35.4",
+      "integrity": "sha512-f+eZJZIQNEEd26RPSW+76chwOf1XtA2Y/O+5ocVyLliHkeih3e+jhLVBdNTd2rS3IbNXK8+ug93Vf5ZXtF5Lxg==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -3151,11 +3515,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-wasm32",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-wasm32@0.34.5",
-      "integrity": "sha512-OdWTEiVkY2PHwqkbBI8frFxQQFekHaSSkUIJkwzclWZe64O1X4UlUjqqqLaPbUpMOQk6FBu/HtlGXNblIs0huw==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-wasm32@0.35.4",
+      "integrity": "sha512-zQnl4Kwp7Q6NHsENtU2T/00Zi+w3AQNwz3+UaTyVBy2FpXrzXzGjndpK61onhZjRtRpQXxCTeqw19bVyXOh7jA==",
       "license": "Apache-2.0 AND LGPL-3.0-or-later AND MIT",
       "scopes": [
         "runtime"
@@ -3168,12 +3532,30 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "@img/sharp-win32-arm64",
-      "version": "0.34.5",
+      "name": "@img/sharp-webcontainers-wasm32",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-win32-arm64@0.34.5",
-      "integrity": "sha512-WQ3AgWCWYSb2yt+IG8mnC6Jdk9Whs7O0gxphblsLvdhSpSTtmu69ZG1Gkb6NuvxsNACwiPV6cNSZNzt0KPsw7g==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-webcontainers-wasm32@0.35.4",
+      "integrity": "sha512-ESfNkywmCfPNyaZjxooddJQiQ+l/nTpGEOGthxiLnIHXC/CmcBixnfwUleX9mCz9ovrUUvKMap/pm8RYbzfwaA==",
+      "license": "Apache-2.0",
+      "scopes": [
+        "runtime"
+      ],
+      "declaredIn": [
+        "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
+      "name": "@img/sharp-win32-arm64",
+      "version": "0.35.4",
+      "versionResolution": "lockfile",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-win32-arm64@0.35.4",
+      "integrity": "sha512-iNdlBX9gLVvqe2I3uIJSIKTq6wckP/DYxZtcqxm09x5Gi24DnFBmPAWZmr60ZyYMG0xlzo6goG3670ar+RXvRw==",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -3187,11 +3569,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-win32-ia32",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-win32-ia32@0.34.5",
-      "integrity": "sha512-FV9m/7NmeCmSHDD5j4+4pNI8Cp3aW+JvLoXcTUo0IqyjSfAZJ8dIUmijx1qaJsIiU+Hosw6xM5KijAWRJCSgNg==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-win32-ia32@0.35.4",
+      "integrity": "sha512-kqRsbaa5CS6KHlpxnN7WhE6vAAugXyZButpRdvDWetlv6Qv4N9WTcrWzF7tXfB9T7MsoadqdI8hmwLq6UlLvtw==",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -3205,11 +3587,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@img/sharp-win32-x64",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/@img/sharp-win32-x64@0.34.5",
-      "integrity": "sha512-+29YMsqY2/9eFEiW93eqWnuLcWcufowXewwSNIT6UwZdUUCrM3oFjMWH/Z6/TMmb4hlFenmfAVbpWeup2jryCw==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/@img/sharp-win32-x64@0.35.4",
+      "integrity": "sha512-XtmnYhBcrORsJ4XJngyzr/EWP0hRZLAZRFaApdKuviyqF78+ylxh2y06ZmtULAMOnObJ3ucpN0AcwSWnMowTRg==",
       "license": "Apache-2.0 AND LGPL-3.0-or-later",
       "scopes": [
         "runtime"
@@ -3536,7 +3918,7 @@
       "integrity": "sha512-LI9u/+laYG4Ds1TDKSJW2YPrIlcVYOwi2fUC6xB43lueCjgxV4lffOCZCtYFiH6TNOX+tQKXx97T4IKHbhyHEQ==",
       "license": "MIT",
       "scopes": [
-        "dev"
+        "runtime"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -3601,11 +3983,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/env",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/env@16.2.10",
-      "integrity": "sha512-zLPxg9M0MEHmygpj5OuxjQ+vHMiy/K7cSp74G8ecYolmgUWw0RwN02tF56npup/+qaI8JB97hQgS/r2Hb6QwVA==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/env@16.3.3",
+      "integrity": "sha512-U2eYQRwXj+dsqxV79zFqExDdatnNY/ZWc2nsJU1p/OgT7fd3dXwlF6OjYaFQCfMoeTA19PWq+wVmYgimVA+V+g==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3619,11 +4001,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-darwin-arm64",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-darwin-arm64@16.2.10",
-      "integrity": "sha512-v9IdJCa0H0mbo+8z5zwUpOk1Vj7RjkcI5uNYf5Ws1y6szf/p3Mzl9hLaST8SCt6L9h8NGnruZcd2+o0NTNwDhA==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-darwin-arm64@16.3.3",
+      "integrity": "sha512-8Hiv32QJPwdV6KYJ8meR9SBA061tQqnIKTJDocvOXlEQqib0xMFpzArosuffFUUc0sslbh7QQ8a3Yey1QV8EIw==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3637,11 +4019,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-darwin-x64",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-darwin-x64@16.2.10",
-      "integrity": "sha512-17IS0jJRViROGmA9uGdNR8VPJpfbnaVG7E9qhso5jDLkmyd0lSDORWxbcKINzcFqzZqGwGtMSnrFRxBpuUYjLQ==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-darwin-x64@16.3.3",
+      "integrity": "sha512-A1lgKgwVchRYmSe467zdwhxT9040dd8lH+o65sL5Jet8fjB4kegw/rDyPIpYVRb6jAqwXFOJpjIXJLxQKLiE3A==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3655,11 +4037,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-linux-arm64-gnu",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-linux-arm64-gnu@16.2.10",
-      "integrity": "sha512-GRQRsRtuciNJvB54AvvuQTiq0oZtFwa1owQqtZD8wwnGpM2L39MV22kpI72YSXLKIyY40LC66EiLFv4PiicXxg==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-linux-arm64-gnu@16.3.3",
+      "integrity": "sha512-bf0FIssMFueU2dm7vQEWWxk0c8UjKTdW0yzuh0sQsD8pf1+KCLDdaqhYZNMYGmXwEOiHAUzgBKudovIlcvvBjg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3673,11 +4055,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-linux-arm64-musl",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-linux-arm64-musl@16.2.10",
-      "integrity": "sha512-zkN9MQYS7UQBro+FnISUq1itaQjXI9xqISzuQ+2bc921NcJ1x4yPCqrn77tVN6/dOOXaaWVX3k6/bR07pPwK+A==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-linux-arm64-musl@16.3.3",
+      "integrity": "sha512-W7viwCk9JY/cAkdz/A273rd5bb3RgT/IHwR7Upv90tunjBWNtAAhGhoecHh+teRNRSinuAFmE+l7fwZ4YKkrXg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3691,11 +4073,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-linux-x64-gnu",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-linux-x64-gnu@16.2.10",
-      "integrity": "sha512-iCVJnwvrPYECvA6WM/7+oo+OiTvedIKLxtCLAZP4xZR3nXa1zmzZyLPbYCmWvpd4CvMYF1EMTafd0ii3DygLvA==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-linux-x64-gnu@16.3.3",
+      "integrity": "sha512-0W46zw1N3ODpI6n0GeivHvvob1pooozgZVqy65k0mh4/7vr+FbY9+WpHzNVXjHipJf/A3FDheBG19H1s5A25rA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3709,11 +4091,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-linux-x64-musl",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-linux-x64-musl@16.2.10",
-      "integrity": "sha512-ov2g4H0dHY9bPoOU83m91hWT7Iq5qy13bUnyyshLU3HGR1Ownn0X9QpmDPc5iIUaahTp7f7LeGAhV4DSFtackw==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-linux-x64-musl@16.3.3",
+      "integrity": "sha512-H4mBso8ZTMBPtdT0PN0pBx2ayTvQuTuvS6qT13d77yVFJXAPCxkyIhLTmdMaGTJs0krQYI/qpzdHijCeihXhbg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3727,11 +4109,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-win32-arm64-msvc",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-win32-arm64-msvc@16.2.10",
-      "integrity": "sha512-DwAnhLX76HQiFFQNgWlcK+JzlnD1rZ+UK/WY0ZMI/deXpvgnesjNYrqcfo1JzBuz4Kf7o3brIBL0glI1junatA==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-win32-arm64-msvc@16.3.3",
+      "integrity": "sha512-cTMUJpcEGmeywofCUfhR+rSsoE33+rVPnPEYNTNdLNlsOeEg/vktOsKUSTb28vUGqD2jkm4Zaskcwn7OCI6FQg==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3745,11 +4127,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@next/swc-win32-x64-msvc",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/@next/swc-win32-x64-msvc@16.2.10",
-      "integrity": "sha512-0JXq3b85Jk9Jg4ntLUbXSPvoDw3gpZou7twuKdoFG2jOw635v7+IiXfTaa0TxVMyx78pUjnrVYwLgjKfX4e6/A==",
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/@next/swc-win32-x64-msvc@16.3.3",
+      "integrity": "sha512-2VR4cTBzHXaBjnGsuH6GyJjENzQOmHeAh11uY1iUhjm3j5dEUrVJuUj+VL78jaGi/Dik8xS76zEj18BsFhlVZQ==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -3816,12 +4198,30 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "@swc/helpers",
-      "version": "0.5.15",
+      "name": "@sveltejs/acorn-typescript",
+      "version": "1.0.13",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.5.15",
-      "purl": "pkg:npm/@swc/helpers@0.5.15",
-      "integrity": "sha512-JQ5TuMi45Owi4/BIMAJBoSQoOJu12oOk/gADqlcUL9JEdHB8vyjUSsxqeNXnmXHjYKMi2WcYtezGEEhqUI/E2g==",
+      "declaredVersion": "1.0.13",
+      "purl": "pkg:npm/@sveltejs/acorn-typescript@1.0.13",
+      "integrity": "sha512-wgKggnhZVL9Bfx1OaKKTrYY9BFRk6C8UAkQNUcIv1+llzYrIqy+RZm5HPKzn0NpEBvTVhTqB4kQyllZywsRBRQ==",
+      "license": "MIT",
+      "scopes": [
+        "runtime"
+      ],
+      "declaredIn": [
+        "engines/component-dialect-engine/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
+      "name": "@swc/helpers",
+      "version": "0.5.23",
+      "versionResolution": "lockfile",
+      "declaredVersion": "0.5.23",
+      "purl": "pkg:npm/@swc/helpers@0.5.23",
+      "integrity": "sha512-5lSsMOTXURePglDfvuAQUqkGek9Hg2kksOYay2m0+XR++b2NWYL/4sWyuvVBIs8oKnJaxkdi9whaL/sqN13afw==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -4158,6 +4558,24 @@
     {
       "ecosystem": "npm",
       "group": null,
+      "name": "@types/trusted-types",
+      "version": "2.0.7",
+      "versionResolution": "lockfile",
+      "declaredVersion": "2.0.7",
+      "purl": "pkg:npm/@types/trusted-types@2.0.7",
+      "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
+      "license": "MIT",
+      "scopes": [
+        "runtime"
+      ],
+      "declaredIn": [
+        "engines/component-dialect-engine/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
       "name": "@types/yargs",
       "version": "17.0.35",
       "versionResolution": "lockfile",
@@ -4195,11 +4613,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/compiler-core",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/compiler-core@3.5.13",
-      "integrity": "sha512-oOdAkwqUfW1WqpwSYJce06wvt6HljgY3fGeM9NcVA1HaYOij3mZG9Rkysn0OHuyUAGMbEbARIpsG+LPVlBJ5/Q==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/compiler-core@3.5.42",
+      "integrity": "sha512-2Ye1ilMtKXxl8qZUrQ5j0CdgenFp/HFQmta6rfRyfEsTG69L6Wk+tWuNoHYHMx9E8tF2Slvdg1FuwDvAXdy1LQ==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4213,11 +4631,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/compiler-dom",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/compiler-dom@3.5.13",
-      "integrity": "sha512-ZOJ46sMOKUjO3e94wPdCzQ6P1Lx/vhp2RSvfaab88Ajexs0AHeV0uasYhi99WPaogmBlRHNRuly8xV75cNTMDA==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/compiler-dom@3.5.42",
+      "integrity": "sha512-qbhQZEFmycr+ni/qyuccS4sucNN7VAbDfbkvNxWOX2VfgFm90MNs3/UhRNKoPMEIVn0F8gdlYjLPvqxHwHeQOA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4231,29 +4649,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/compiler-sfc",
-      "version": "2.7.16",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "2.7.16",
-      "purl": "pkg:npm/@vue/compiler-sfc@2.7.16",
-      "integrity": "sha512-KWhJ9k5nXuNtygPU7+t1rX6baZeqOYLEforUPjgNDBnLicfHCoi48H87Q8XyLZOrNNsmhuwKqtpDQWjEFe6Ekg==",
-      "license": null,
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "@vue/compiler-sfc",
-      "version": "3.5.13",
-      "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/compiler-sfc@3.5.13",
-      "integrity": "sha512-6VdaljMpD82w6c2749Zhf5T9u5uLBWKnVue6XWxprDobftnletJ8+oel7sexFfM3qIxNmVE7LSFGTpv6obNyaQ==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/compiler-sfc@3.5.42",
+      "integrity": "sha512-fkCAFB4okcAANGMThboWnScp/gzWjU0ZSkVnjTIiplmMDq2uq0tIB3j+xVu4rhv5rvOgBySCysudmbMd6xRRqw==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4267,11 +4667,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/compiler-ssr",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/compiler-ssr@3.5.13",
-      "integrity": "sha512-wMH6vrYHxQl/IybKJagqbquvxpWCuVYpoUJfCqFZwa/JY1GdATAQ+TgVtgrwwMZ0D07QhA99rs/EAAWfvG6KpA==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/compiler-ssr@3.5.42",
+      "integrity": "sha512-xmLk3wLkbizPAiLyomjgFFosf2ys9b5Ghb+oh/k2tnvipNz8OFrQOiTcWCzyK7MpBp9KkyGtfvgfLUivbmuGYA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4285,11 +4685,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/reactivity",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/reactivity@3.5.13",
-      "integrity": "sha512-NaCwtw8o48B9I6L1zl2p41OHo/2Z4wqYGGIK1Khu5T7yxrn+ATOixn/Udn2m+6kZKB/J7cuT9DbWWhRxqixACg==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/reactivity@3.5.42",
+      "integrity": "sha512-TzNNfKpb7hDxbQltwAut8VDQA5YP+BuRlxntHUuRjyKwlMvmAPbs3unhCvieijifY6vFfVBwsS7wG/C7uq+bEQ==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4303,11 +4703,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/runtime-core",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/runtime-core@3.5.13",
-      "integrity": "sha512-Fj4YRQ3Az0WTZw1sFe+QDb0aXCerigEpw418pw1HBUKFtnQHWzwojaukAs2X/c9DQz4MQ4bsXTGlcpGxU/RCIw==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/runtime-core@3.5.42",
+      "integrity": "sha512-9uACtuHs7vJGkm5Bp3xu4xRDLFTIYy5DgxpToVjqGIAhAEKwQfsaLvKINhM6nFVp6bZPRFGdDqd1g52MqKsotA==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4321,11 +4721,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/runtime-dom",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/runtime-dom@3.5.13",
-      "integrity": "sha512-dLaj94s93NYLqjLiyFzVs9X6dWhTdAlEAciC3Moq7gzAc13VJUdCnjjRurNM6uTLFATRHexHCTu/Xp3eW6yoog==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/runtime-dom@3.5.42",
+      "integrity": "sha512-rsCmhiWLaRxGltLwhlCWyYkFn7WAbKRh0q17eZ1A6Dq6eqc2ACQ61IIryxz0LrsvCzHSilLA9JHovVwM8CNE2g==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4339,11 +4739,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/server-renderer",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/server-renderer@3.5.13",
-      "integrity": "sha512-wAi4IRJV/2SAW3htkTlB+dHeRmpTiVIK1OGLWV1yeStVSebSQQOwGwIq0D3ZIoBj2C2qpgz5+vX9iEBkTdk5YA==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/server-renderer@3.5.42",
+      "integrity": "sha512-2++5dUyYS4gvo7xQXSECUDhB7TS0aOl5SeVfC5qSq1Jgfhjvegw1zqhwTIR3imZ+QYPJQw9gfcFvXGAjGZ7ajQ==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4357,11 +4757,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "@vue/shared",
-      "version": "3.5.13",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/@vue/shared@3.5.13",
-      "integrity": "sha512-/hnE/qP5ZoGpol0a5mDi45bOd7t3tjYJBjsgCsivow7D48cJeV5l05RD82lPqi7gRiphZM37rnhW1l6ZoCNNnQ==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/@vue/shared@3.5.42",
+      "integrity": "sha512-2rPxex1jQf4jvl9MOHl6YaXCPcrNqz/FstMOEh3QWY+/OME9nQTvl9WYeCwhW7AFjaR0SnngZGlp/wkR6rkI6g==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4398,24 +4798,6 @@
       "declaredVersion": "8.18.0",
       "purl": "pkg:npm/acorn@8.18.0",
       "integrity": "sha512-lGq+9yr1/GuAWaVYIHRjvvySG5/4VfKIvC8EWxStPdcDh/Ka7FG3twP6v4d5BkravUilhIAsG4Qj83t02LWUPQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "acorn-typescript",
-      "version": "1.4.13",
-      "versionResolution": "lockfile",
-      "declaredVersion": "1.4.13",
-      "purl": "pkg:npm/acorn-typescript@1.4.13",
-      "integrity": "sha512-xsc9Xv0xlVfwp2o7sQ+GCQ1PgbkdcpWdTzrwXxO3xDMTAywVS3oXVOcOHuRjAPkS4P9b+yc/qNF15460v+jp4Q==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -4472,7 +4854,7 @@
       "integrity": "sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -4537,11 +4919,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "aria-query",
-      "version": "5.3.2",
+      "version": "5.3.1",
       "versionResolution": "lockfile",
-      "declaredVersion": "5.3.2",
-      "purl": "pkg:npm/aria-query@5.3.2",
-      "integrity": "sha512-COROpnaoap1E2F000S62r6A60uHZnmlvomhfyT2DlTcrY1OrBKn2UhH7qn5wTC9zMvD0AY7csdPSNwKP+7WiQw==",
+      "declaredVersion": "5.3.1",
+      "purl": "pkg:npm/aria-query@5.3.1",
+      "integrity": "sha512-Z/ZeOgVl7bcSYZ/u/rh0fOpvEpq//LZmdbkXyc7syVzjPAhfOa9ebsdTSjEBDU4vs5nC98Kfduj1uFo0qyET3g==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -4735,11 +5117,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "brace-expansion",
-      "version": "1.1.16",
+      "version": "1.1.18",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.1.16",
-      "purl": "pkg:npm/brace-expansion@1.1.16",
-      "integrity": "sha512-IDw48K2/2kRkg9LdJxurvq3lV3aBgq0REY89duEqFRthjlPdXHKMj7EnQOXVckxzgisinf3nHfrcE2FufFLXMw==",
+      "declaredVersion": "1.1.18",
+      "purl": "pkg:npm/brace-expansion@1.1.18",
+      "integrity": "sha512-Edep/X9fGqVNmzKBVsDYIOtD+z1tuezV70LBjdCst9Tqu76lsnvRiZ6oTic1n+/BIwX6QDGAO94PN4N2SADvtw==",
       "license": "MIT",
       "scopes": [
         "dev"
@@ -4753,11 +5135,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "brace-expansion",
-      "version": "2.1.3",
+      "version": "2.1.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "2.1.3",
-      "purl": "pkg:npm/brace-expansion@2.1.3",
-      "integrity": "sha512-DRdx5neNsG/QXbniLFWi2YmC/68oeOOmKz6zOjVk6ZS1ZLXgLIKqVEc6hWsmkjBbgii0SwaBTcJ5XKj5gzY/4A==",
+      "declaredVersion": "2.1.4",
+      "purl": "pkg:npm/brace-expansion@2.1.4",
+      "integrity": "sha512-hGfVzPxthbf3+2yjg/RBs60cB0FhqBS/zvdV/4wn4/BmN0bNMMHPc4V/BbFieqf1TKAGGAHnY4eSjajCl0f2Xg==",
       "license": "MIT",
       "scopes": [
         "dev"
@@ -4941,7 +5323,7 @@
       "integrity": "sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5041,6 +5423,24 @@
     {
       "ecosystem": "npm",
       "group": null,
+      "name": "clsx",
+      "version": "2.1.1",
+      "versionResolution": "lockfile",
+      "declaredVersion": "2.1.1",
+      "purl": "pkg:npm/clsx@2.1.1",
+      "integrity": "sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==",
+      "license": "MIT",
+      "scopes": [
+        "runtime"
+      ],
+      "declaredIn": [
+        "engines/component-dialect-engine/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
       "name": "co",
       "version": "4.6.0",
       "versionResolution": "lockfile",
@@ -5085,7 +5485,7 @@
       "integrity": "sha512-RRECPsj7iu/xb5oKYcsFHSppFNnsj/52OVTRKb4zP5onXwVF3zVmmToNcOfGC+CRDpfK/U584fMg38ZHCaElKQ==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5103,7 +5503,7 @@
       "integrity": "sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5204,24 +5604,6 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "de-indent",
-      "version": "1.0.2",
-      "versionResolution": "lockfile",
-      "declaredVersion": "1.0.2",
-      "purl": "pkg:npm/de-indent@1.0.2",
-      "integrity": "sha512-e/1zu3xH5MQryN2zdVaF0OrdNLUbvWxzMbi+iNA6Bky7l1RoP8a2fIbRocyHclXt/arDrrR6lL3TqFD9pMQTsg==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
       "name": "debug",
       "version": "4.4.3",
       "versionResolution": "lockfile",
@@ -5303,6 +5685,24 @@
       "license": "MIT",
       "scopes": [
         "dev"
+      ],
+      "declaredIn": [
+        "engines/component-dialect-engine/package-lock.json"
+      ],
+      "internal": false
+    },
+    {
+      "ecosystem": "npm",
+      "group": null,
+      "name": "devalue",
+      "version": "5.9.2",
+      "versionResolution": "lockfile",
+      "declaredVersion": "5.9.2",
+      "purl": "pkg:npm/devalue@5.9.2",
+      "integrity": "sha512-po4PAY5c53tw5XMocSnf8A/5OHhbbUftpr93aEN6BBoAdntUmK7vu7wOATqvt7cXO7m1Cl4gMVn6p7n6n4mj0w==",
+      "license": "MIT",
+      "scopes": [
+        "runtime"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5403,11 +5803,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "entities",
-      "version": "4.5.0",
+      "version": "7.0.1",
       "versionResolution": "lockfile",
-      "declaredVersion": "4.5.0",
-      "purl": "pkg:npm/entities@4.5.0",
-      "integrity": "sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==",
+      "declaredVersion": "7.0.1",
+      "purl": "pkg:npm/entities@7.0.1",
+      "integrity": "sha512-TWrgLOFUQTH994YUyl1yT4uyavY5nNB5muff+RtWaqNVCAK408b5ZnnbNAUEWLTCpum9w6arT70i1XdQ4UeOPA==",
       "license": "BSD-2-Clause",
       "scopes": [
         "runtime"
@@ -5446,7 +5846,7 @@
       "integrity": "sha512-Zf5H2Kxt2xjTvbJvP2ZWLEICxA6j+hAmMzIlypy4xcBg1vKVnx89Wy0GbS+kf5cwCVFFzdCFh2XSCFNULS6csw==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5529,11 +5929,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "esrap",
-      "version": "1.4.9",
+      "version": "2.3.6",
       "versionResolution": "lockfile",
-      "declaredVersion": "1.4.9",
-      "purl": "pkg:npm/esrap@1.4.9",
-      "integrity": "sha512-3OMlcd0a03UGuZpPeUC1HxR3nA23l+HEyCiZw3b3FumJIN9KphoGzDJKMXI1S72jVS1dsenDyQC0kJlO1U9E1g==",
+      "declaredVersion": "2.3.6",
+      "purl": "pkg:npm/esrap@2.3.6",
+      "integrity": "sha512-yc0OC12UjPqLoc+fe+v5GNs4TOjAigUw3sTikfC+xeBPGUw7gDRz3DtYaqEhxyMVJojcSWJw7jT0QWR+CbuE/A==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -5752,7 +6152,7 @@
       "integrity": "sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5878,25 +6278,7 @@
       "integrity": "sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==",
       "license": "MIT",
       "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "hash-sum",
-      "version": "2.0.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "2.0.0",
-      "purl": "pkg:npm/hash-sum@2.0.0",
-      "integrity": "sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -5914,25 +6296,7 @@
       "integrity": "sha512-T2UbfbBEF32wiepXIsMlTW9+dDYC6wMh/t/vYA4tuOMKqWz/n3vr1NFSxQiyP+zk2mXsoMA/i/7qV6LKut1t1A==",
       "license": "MIT",
       "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "he",
-      "version": "1.2.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "1.2.0",
-      "purl": "pkg:npm/he@1.2.0",
-      "integrity": "sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -6076,7 +6440,7 @@
       "integrity": "sha512-evOr8xfXKxE6qSR0hSXL2r3sd7ALj8+7jQEUvPYcm5sgZFdJ+AYzT6yNmJenvIYQBgIGwfwz08sL8zoL7yq2BA==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -6807,11 +7171,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "js-yaml",
-      "version": "3.15.0",
+      "version": "3.15.1",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.15.0",
-      "purl": "pkg:npm/js-yaml@3.15.0",
-      "integrity": "sha512-ttBQIIQPDeLjpPOohtUdXuXUVoA2uIB6fEH9HyJ7234s5mBJ5wTx20njxplLZQgLaOfpmPQA7X2t5AX6tIPbog==",
+      "declaredVersion": "3.15.1",
+      "purl": "pkg:npm/js-yaml@3.15.1",
+      "integrity": "sha512-S99WuO3HlhO3XN41EtYUNl9zzXjoJx7QvmipxsJVxtCBT0YHEFy+iOJhjSvrmV12nYhWpZaM8lPHkJm0yUMbag==",
       "license": "MIT",
       "scopes": [
         "dev"
@@ -6968,24 +7332,6 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "lodash._reinterpolate",
-      "version": "3.0.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "3.0.0",
-      "purl": "pkg:npm/lodash._reinterpolate@3.0.0",
-      "integrity": "sha512-xYHt68QRoYGjeeM/XOE1uJtvXQAgvszfBhjV4yvsQH0u2i9I6cI6c6/eG4Hh3UAOVn0y/xAXwmTzEay49Q//HA==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
       "name": "lodash.memoize",
       "version": "4.1.2",
       "versionResolution": "lockfile",
@@ -6995,60 +7341,6 @@
       "license": "MIT",
       "scopes": [
         "dev"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "lodash.template",
-      "version": "4.18.1",
-      "versionResolution": "lockfile",
-      "declaredVersion": "4.18.1",
-      "purl": "pkg:npm/lodash.template@4.18.1",
-      "integrity": "sha512-5urZrLnV/VD6zHK5KsVtZgt7H19v51mIzoS0aBNH8yp3I8tbswrEjOABOPY8m8uB7NuibubLrMX+Y0PXsU9X+w==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "lodash.templatesettings",
-      "version": "4.2.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "4.2.0",
-      "purl": "pkg:npm/lodash.templatesettings@4.2.0",
-      "integrity": "sha512-stgLz+i3Aa9mZgnjr/O+v9ruKZsPsndy7qPZOchbqk2cnTU1ZaldKK+v7m54WoKIyxiuMZTKT2H81F8BeAc3ZQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "lodash.uniq",
-      "version": "4.5.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "4.5.0",
-      "purl": "pkg:npm/lodash.uniq@4.5.0",
-      "integrity": "sha512-xfBaXQd9ryd9dlSDvnvI0lvxfLJlYAZzXomUYzLKtUeOQvOP5piqAWuGtrhWeqaXK9hhoM/iyJc5AV+XfsX3HQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -7275,11 +7567,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "nanoid",
-      "version": "3.3.16",
+      "version": "3.3.18",
       "versionResolution": "lockfile",
-      "declaredVersion": "3.3.16",
-      "purl": "pkg:npm/nanoid@3.3.16",
-      "integrity": "sha512-bzlKTyNJ7+LdGIIwy8ijFpIqEQIvafahV7eYykJ8Cvh42EdJeODoJ6gUJXpQJvej1BddH8OqTXZNE/KfbWAu8Q==",
+      "declaredVersion": "3.3.18",
+      "purl": "pkg:npm/nanoid@3.3.18",
+      "integrity": "sha512-DTg4MJbGMWkfi6VZFdNt2/caMbQy4Ou+Op/hJQvGEWcnVfoA1QA+xzRKAzw9jD6+GVOOeYr/mIcuDSdug6F6+w==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -7312,12 +7604,12 @@
       "ecosystem": "npm",
       "group": null,
       "name": "next",
-      "version": "16.2.10",
+      "version": "16.3.3",
       "versionResolution": "lockfile",
-      "declaredVersion": "16.2.10",
-      "purl": "pkg:npm/next@16.2.10",
-      "integrity": "sha512-2som5AVXb3kE6Yjine3/mNbBayYF58eguBWIVVUdr1y/L426xyVEgYxgBG+1QC34P2x5E+tcDup6XkuOAX3dCA==",
-      "license": null,
+      "declaredVersion": "16.3.3",
+      "purl": "pkg:npm/next@16.3.3",
+      "integrity": "sha512-tuRTx1nQ/yVw83cwJBo9F+njGUgMn3UHQycreWHB8XsStvvAh1AthbI8/4IpKnFaF58F+iSiHejYOlMQ/eq83g==",
+      "license": "MIT",
       "scopes": [
         "runtime"
       ],
@@ -7589,7 +7881,7 @@
       "integrity": "sha512-LDJzPVEEEPR+y48z93A0Ed0yXb8pAByGWo/k5YYdYgpY2/2EsOsksJrq7lOHxryrVOn1ejG6oAp8ahvOIQD8sw==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -7673,24 +7965,6 @@
       "ecosystem": "npm",
       "group": null,
       "name": "postcss",
-      "version": "8.5.10",
-      "versionResolution": "lockfile",
-      "declaredVersion": "8.5.10",
-      "purl": "pkg:npm/postcss@8.5.10",
-      "integrity": "sha512-pMMHxBOZKFU6HgAZ4eyGnwXF/EvPGGqUr0MnZ5+99485wwW41kW91A4LOGxSHhgugZmSChL5AlElNdwlNgcnLQ==",
-      "license": null,
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "postcss",
       "version": "8.5.24",
       "versionResolution": "lockfile",
       "declaredVersion": "8.5.24",
@@ -7708,18 +7982,18 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "prettier",
-      "version": "2.8.8",
+      "name": "postcss",
+      "version": "8.5.26",
       "versionResolution": "lockfile",
-      "declaredVersion": "2.8.8",
-      "purl": "pkg:npm/prettier@2.8.8",
-      "integrity": "sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==",
+      "declaredVersion": "8.5.26",
+      "purl": "pkg:npm/postcss@8.5.26",
+      "integrity": "sha512-u82N74LFzG8ca+dD8puPnplTXoGH4fTPpVGuIbt36G3qvNlkvfD0lEAZSxaly3KX8TS/L1A1gsCEmvKmBcVbkQ==",
       "license": "MIT",
       "scopes": [
         "runtime"
       ],
       "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
+        "skills/migration-platform-batch20-b29-b45-mature-complete-strict-tests/apps/console/package-lock.json"
       ],
       "internal": false
     },
@@ -7771,24 +8045,6 @@
       "license": "MIT",
       "scopes": [
         "dev"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "randombytes",
-      "version": "2.1.0",
-      "versionResolution": "lockfile",
-      "declaredVersion": "2.1.0",
-      "purl": "pkg:npm/randombytes@2.1.0",
-      "integrity": "sha512-vYl3iOX+4CKUWuxGi9Ukhie6fsqXqS9FE2Zaic4tNFD2N2QQaXOMFbuKK4QmDHC0JO6B1Zp41J0LpT0oR68amQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -7914,7 +8170,7 @@
       "integrity": "sha512-TyeJ1zif53BPfHootBGwPRYT1RUt6oGWsaQr8UyZW/eAm9bKoijtvruSDEmZHm92CwS9nj7/fWttqPCgzep8CA==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -7969,24 +8225,6 @@
       "license": "MIT",
       "scopes": [
         "dev"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "safe-buffer",
-      "version": "5.2.1",
-      "versionResolution": "lockfile",
-      "declaredVersion": "5.2.1",
-      "purl": "pkg:npm/safe-buffer@5.2.1",
-      "integrity": "sha512-rp3So07KcdmmKbGvgaNxQSJr7bGVSVk5S9Eq1F+ppbRo70+YeaDxkw5Dd8NPN+GD6bjnYm2VuPuCXmpuYvmCXQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -8069,30 +8307,12 @@
     {
       "ecosystem": "npm",
       "group": null,
-      "name": "serialize-javascript",
-      "version": "6.0.2",
-      "versionResolution": "lockfile",
-      "declaredVersion": "6.0.2",
-      "purl": "pkg:npm/serialize-javascript@6.0.2",
-      "integrity": "sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==",
-      "license": "BSD-3-Clause",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
       "name": "sharp",
-      "version": "0.34.5",
+      "version": "0.35.4",
       "versionResolution": "lockfile",
-      "declaredVersion": "0.34.5",
-      "purl": "pkg:npm/sharp@0.34.5",
-      "integrity": "sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==",
+      "declaredVersion": "0.35.4",
+      "purl": "pkg:npm/sharp@0.35.4",
+      "integrity": "sha512-n++8XWcj+jCOr2IOl7h8LbKnGBDY4aPbmprMONBNFdn0ImXqpGVv5zliDs0V9HbmbCQLpbuo2ej9rAoOQTvMDA==",
       "license": "Apache-2.0",
       "scopes": [
         "runtime"
@@ -8196,24 +8416,6 @@
       "ecosystem": "npm",
       "group": null,
       "name": "source-map",
-      "version": "0.5.6",
-      "versionResolution": "lockfile",
-      "declaredVersion": "0.5.6",
-      "purl": "pkg:npm/source-map@0.5.6",
-      "integrity": "sha512-MjZkVp0NHr5+TPihLcadqnlVoGIoWo4IBHptutGh9wI3ttUYvCG26HkSuDi+K6lsZ25syXJXcctwgyVCt//xqA==",
-      "license": "BSD-3-Clause",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "source-map",
       "version": "0.6.1",
       "versionResolution": "lockfile",
       "declaredVersion": "0.6.1",
@@ -8221,7 +8423,7 @@
       "integrity": "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g==",
       "license": "BSD-3-Clause",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -8438,7 +8640,7 @@
       "integrity": "sha512-qpCAvRl9stuOHveKsn7HncJRvv501qIacKzQlO/+Lwxc9+0q2wLyv4Dfvt80/DPn2pqOBsJdDiogXGR9+OvwRw==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -8474,7 +8676,7 @@
       "integrity": "sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==",
       "license": "MIT",
       "scopes": [
-        "runtime"
+        "dev"
       ],
       "declaredIn": [
         "engines/component-dialect-engine/package-lock.json"
@@ -8485,11 +8687,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "svelte",
-      "version": "5.14.5",
+      "version": "5.56.10",
       "versionResolution": "lockfile",
-      "declaredVersion": "5.14.5",
-      "purl": "pkg:npm/svelte@5.14.5",
-      "integrity": "sha512-Qk4LbKHo8K6RtdSuiwI7w66Q+Ypab0V8E7WSZHEKKym4em8n+a0rl3VyRBpGV+/MnNmoi7xlGEjS2omwe0RzhA==",
+      "declaredVersion": "5.56.10",
+      "purl": "pkg:npm/svelte@5.56.10",
+      "integrity": "sha512-Lcxbj8I/KAbpY+VjtY4ENQBV0dDCipfGAhqb51XQZ67CIQqXgsv/8dPkbILaj4Fb6/b6JAEM/PIVbILXgDQy2g==",
       "license": "MIT",
       "scopes": [
         "runtime"
@@ -8738,65 +8940,11 @@
       "ecosystem": "npm",
       "group": null,
       "name": "vue",
-      "version": "2.7.16",
+      "version": "3.5.42",
       "versionResolution": "lockfile",
-      "declaredVersion": "2.7.16",
-      "purl": "pkg:npm/vue@2.7.16",
-      "integrity": "sha512-4gCtFXaAA3zYZdTp5s4Hl2sozuySsgz4jy1EnpBHNfpMa9dK1ZCG7viqBPCwXtmgc8nHqUsAu3G4gtmXkkY3Sw==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "vue",
-      "version": "3.5.13",
-      "versionResolution": "lockfile",
-      "declaredVersion": "3.5.13",
-      "purl": "pkg:npm/vue@3.5.13",
-      "integrity": "sha512-wmeiSMxkZCSc+PM2w2VRsOYAZC8GdipNFRTsLSfodVqI9mbejKeXEGr8SckuLnrQPGe3oJN5c3K0vpoU9q/wCQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "vue-server-renderer",
-      "version": "2.7.16",
-      "versionResolution": "lockfile",
-      "declaredVersion": "2.7.16",
-      "purl": "pkg:npm/vue-server-renderer@2.7.16",
-      "integrity": "sha512-U7GgR4rYmHmbs3Z2gqsasfk7JNuTsy/xrR5EMMGRLkjN8+ryDlqQq6Uu3DcmbCATAei814YOxyl0eq2HNqgXyQ==",
-      "license": "MIT",
-      "scopes": [
-        "runtime"
-      ],
-      "declaredIn": [
-        "engines/component-dialect-engine/package-lock.json"
-      ],
-      "internal": false
-    },
-    {
-      "ecosystem": "npm",
-      "group": null,
-      "name": "vue-template-compiler",
-      "version": "2.7.16",
-      "versionResolution": "lockfile",
-      "declaredVersion": "2.7.16",
-      "purl": "pkg:npm/vue-template-compiler@2.7.16",
-      "integrity": "sha512-AYbUWAJHLGGQM7+cNTELw+KsOG9nl2CnSv467WobS5Cv9uk3wFcnr1Etsz2sEIHEZvw1U+o9mRlEO6QbZvUPGQ==",
+      "declaredVersion": "3.5.42",
+      "purl": "pkg:npm/vue@3.5.42",
+      "integrity": "sha512-4RyHQTbQvOPs3MfvUO1Sg0YRrKNnA0mAVtvpd12Tg1fKDN7OHBUl1IqSn8zGJjK9nI3NkNp8cgTpVrSZC5TTcA==",
       "license": "MIT",
       "scopes": [
         "runtime"
