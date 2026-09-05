@@ -486,8 +486,8 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="4f843fe1f832caa829272aa0aa6505d306d729fb84d70a3daad93b9eea559624",
-    php_tree_bytes=129_952_809,
+    php_tree_sha256="6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942",
+    php_tree_bytes=129_952_823,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -955,7 +955,7 @@ def _qualified_tree_manifest(
     if portable_owner_identity:
         # Ownership and link count remain mandatory safety checks above. They
         # are host installation metadata, however, and are not part of the
-        # immutable Rust distribution bytes shared by isolated runners.
+        # immutable toolchain distribution bytes shared by isolated runners.
         digest_records = [
             {
                 key: value
@@ -5242,7 +5242,7 @@ _EXPECTED_FLUTTER_DART_VERSION = (
 _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA = "v1"
 _EXPECTED_FLUTTER_DART_SDK_ROOT = _EXPECTED_FLUTTER_ROOT / "bin" / "cache" / "dart-sdk"
 _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256 = (
-    "37a612c64172042f2386954429584d6c75edacff3097443d5b372ac5c9870f0e"
+    "04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50"
 )
 _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT = 1124
 _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT = 1012
@@ -5282,6 +5282,7 @@ def _flutter_build_tree_identities() -> dict[str, dict[str, object]]:
         _EXPECTED_FLUTTER_DART_SDK_ROOT,
         _EXPECTED_FLUTTER_ROOT,
         "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_UNSAFE",
+        portable_owner_identity=True,
     )
     _verify_qualified_tree_manifest(
         dart_sdk,
