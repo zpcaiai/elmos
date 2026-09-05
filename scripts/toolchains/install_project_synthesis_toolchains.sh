@@ -298,11 +298,15 @@ install_rust() {
     RUSTUP_HOME="${stage}/rustup" CARGO_HOME="${stage}/cargo" \
       "${stage}/cargo/bin/rustup" component add \
       --toolchain "${RUST_VERSION}" clippy rustfmt
-    write_rust_wrapper "${stage}" "rustc"
-    write_rust_wrapper "${stage}" "cargo"
-    write_rust_wrapper "${stage}" "rustup"
     mv "${stage}" "${target}"
   fi
+  # Wrapper semantics are part of the qualified route-toolchain identity. A
+  # cached Rust payload can remain byte-identical while an older installer has
+  # left stale wrappers behind, so refresh the three repository-owned launchers
+  # on every successful install/reuse path before publishing public links.
+  write_rust_wrapper "${target}" "rustc"
+  write_rust_wrapper "${target}" "cargo"
+  write_rust_wrapper "${target}" "rustup"
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"

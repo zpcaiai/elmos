@@ -86,6 +86,19 @@ def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
     assert linked.stdout.strip() == expected
 
 
+def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("install_rust() {")
+    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function = installer[function_start:function_end]
+    reuse_branch_end = function.index("\n  fi\n")
+
+    for command_name in ("rustc", "cargo", "rustup"):
+        wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
+        assert function.count(wrapper_call) == 1
+        assert function.index(wrapper_call) > reuse_branch_end
+
+
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
 def test_real_fixed_user_toolchains_work_without_ambient_path(
     language: str,
