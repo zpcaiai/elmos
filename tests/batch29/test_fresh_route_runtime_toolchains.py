@@ -742,6 +742,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         assert environment["ELMOS_HOMEBREW_ROUTE_PROFILE_ID"] == (
             "github-macos26-20260831.0337.3"
         )
+        assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "full"
         assert environment["CI"] == "true"
         assert "JAVA_HOME" not in environment
         assert "_JAVA_OPTIONS" not in environment
@@ -762,6 +763,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         "ELMOS_HOMEBREW_ROUTE_PROFILE_ID",
         "github-macos26-20260831.0337.3",
     )
+    monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "full")
     monkeypatch.setenv("CI", "true")
     monkeypatch.setenv("JAVA_HOME", "/hostile/java")
     monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
