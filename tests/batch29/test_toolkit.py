@@ -877,6 +877,7 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
             "binary": copy.deepcopy(binary),
         },
     }
+    bind_swift_receipt_to_selected_host_profile(validator, receipt)
     canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
     receipt["canonical_identity"] = {
         "sha256": validator._receipt_payload_sha256(canonical),
@@ -888,10 +889,11 @@ def portable_swift_analyzer_receipt(validator: object) -> dict[str, object]:
 def bind_swift_receipt_to_selected_host_profile(
     validator: object,
     receipt: dict[str, object],
+    profile: object | None = None,
 ) -> None:
     """Bind every host-owned receipt identity to one registered profile."""
 
-    profile = validator._selected_swift_host_profile()
+    profile = profile or validator._selected_swift_host_profile()
     if profile is None:
         raise AssertionError("Swift receipt fixture requires a selected Apple profile")
     receipt["toolchain"]["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
@@ -966,6 +968,42 @@ class ToolkitTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "partial Apple host claim"):
                 validator._selected_swift_host_profile()
             selector.assert_called_once_with("swift")
+
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
+        from elmos_polyglot_route.toolchains import _APPLE_ROUTE_HOST_PROFILES
+
+        for profile in _APPLE_ROUTE_HOST_PROFILES:
+            with self.subTest(profile=profile.profile_id):
+                receipt = portable_swift_analyzer_receipt(validator)
+                bind_swift_receipt_to_selected_host_profile(
+                    validator,
+                    receipt,
+                    profile,
+                )
+                self.assertEqual(
+                    receipt["toolchain"]["profile"][1],
+                    f"apple-host-profile={profile.profile_id}",
+                )
+                contract = validator._registered_swift_receipt_contract(receipt)
+                self.assertEqual(contract["profile"], profile)
+                self.assertEqual(contract["toolchain"], receipt["toolchain"])
+
+                forged = copy.deepcopy(receipt)
+                forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+                failures: list[str] = []
+                validator._validate_swift_analyzer_receipt_document(
+                    forged,
+                    label="forged Swift analyzer receipt",
+                    failures=failures,
+                )
+                self.assertTrue(
+                    any(
+                        "toolchain exact identity is invalid" in failure
+                        for failure in failures
+                    ),
+                    failures,
+                )
 
     def test_swift_build_closure_component_limit_covers_hosted_clang_and_fails_closed(self):
         validator = load_route_validator()
