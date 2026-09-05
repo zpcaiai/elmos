@@ -8,7 +8,7 @@ version = "1.0.0"
 description = "Production execution and evidence runtime for the ELMOS Formal Assurance Kernel"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = ["cryptography>=46.0.3,<47"]
+dependencies = ["cryptography>=50.0.0,<51"]
 
 [dependency-groups]
 dev = [
