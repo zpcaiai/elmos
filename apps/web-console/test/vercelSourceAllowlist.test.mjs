@@ -100,6 +100,13 @@ test("Vercel upload policy is default deny and preserves exact runtime inputs", 
   assert.equal(meaningfulRules[0], "*");
   for (const requiredRule of [
     "!.vercelignore",
+    "!/app/**",
+    "!/lib/**",
+    "!/public/**",
+    "!/package.json",
+    "!/pnpm-lock.yaml",
+    "!/next.config.ts",
+    "!/vercel.json",
     "!apps/web-console/**",
     "!contracts/pricing-catalog-schema/elmos-cny-self-serve-v1.json",
     "!routes/inventory.json",
@@ -119,6 +126,12 @@ test("Vercel upload policy is default deny and preserves exact runtime inputs", 
     "apps/web-console/playwright-report/**",
     "apps/web-console/coverage/**",
     "apps/web-console/.turbo/**",
+    ".next/**",
+    "node_modules/**",
+    "test-results/**",
+    "playwright-report/**",
+    "coverage/**",
+    ".turbo/**",
   ]) {
     assert.ok(meaningfulRules.includes(excluded), `missing ${excluded}`);
   }
