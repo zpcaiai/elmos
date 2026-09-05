@@ -22,6 +22,32 @@ test("deployed console renders its critical public routes", async ({ page }, tes
   await expect(page.getByRole("heading", { name: "四类核心工作空间，一套可验证的交付闭环。" })).toBeVisible();
   await expect(page.getByRole("link", { name: "功能能力中心" })).toBeVisible();
 
+  const compatibilityResponse = await page.goto("/capabilities/", {
+    waitUntil: "domcontentloaded",
+  });
+  expect(compatibilityResponse?.status()).toBe(200);
+  expect(compatibilityResponse?.headers()["content-type"] ?? "").toContain("text/html");
+  expect(new URL(page.url()).pathname).toBe("/capabilities");
+  await expect(page.getByRole("heading", { name: "功能能力中心" })).toBeVisible();
+
+  const generationCapability = await page.request.get("/api/capabilities/generation");
+  expect(generationCapability.status()).toBe(200);
+  expect(generationCapability.headers()["content-type"] ?? "").toContain("application/json");
+  const generationPayload = await generationCapability.json() as {
+    generationStatus?: unknown;
+    operationalReadiness?: {
+      externalRuntimeAcceptance?: unknown;
+      productionCertification?: unknown;
+      productionSubstrate?: { boundary?: unknown };
+    };
+  };
+  expect(generationPayload.generationStatus).toBe("READY");
+  expect(generationPayload.operationalReadiness?.externalRuntimeAcceptance).toBe("NOT_RUN");
+  expect(generationPayload.operationalReadiness?.productionCertification).toBe("NOT_CERTIFIED");
+  expect(generationPayload.operationalReadiness?.productionSubstrate?.boundary).toBe(
+    "CONFIGURATION_PRESENCE_ONLY",
+  );
+
   const reportPath = testInfo.outputPath("deployment-surface.json");
   await writeFile(reportPath, `${JSON.stringify({
     schemaVersion: "1.0",
@@ -37,15 +63,23 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
   const response = await page.goto("/api/health", { waitUntil: "domcontentloaded" });
   expect(response, "health must return an HTTP response").not.toBeNull();
   const httpStatus = response?.status() ?? 0;
-  expect([200, 503], "health must use an explicit readiness status").toContain(httpStatus);
+  expect(httpStatus, "release smoke requires a ready deployment, not surface reachability").toBe(200);
   const payload = JSON.parse(await page.locator("body").innerText()) as {
     status?: unknown;
     dependencies?: unknown;
     localRunner?: unknown;
+    generation?: { status?: unknown };
+    deployment?: { provider?: unknown; commitSha?: unknown; identityStatus?: unknown };
   };
-  expect(["UP", "READY", "BLOCKED", "DEGRADED", "NOT_CONFIGURED"], "unknown health states are rejected").toContain(payload.status);
+  expect(payload.status).toBe("UP");
   expect(payload.dependencies).toBeDefined();
   expect(payload.localRunner).toBeDefined();
+  expect(payload.generation?.status).toBe("READY");
+  expect(payload.deployment).toEqual({
+    provider: "VERCEL",
+    commitSha: process.env.ELMOS_VERCEL_EXPECTED_COMMIT_SHA?.trim().toLowerCase(),
+    identityStatus: "SHA_BOUND",
+  });
 
   const reportPath = testInfo.outputPath("health.json");
   await writeFile(reportPath, `${JSON.stringify({
@@ -53,15 +87,11 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
     kind: "VERCEL_DEPLOYMENT_HEALTH_OBSERVATION",
     httpStatus,
     payload,
-    boundary: "HEALTH_OBSERVATION_ONLY_NOT_PRODUCTION_CERTIFICATION",
+    boundary: "CURRENT_SHA_READY_RELEASE_GATE_NOT_PRODUCTION_CERTIFICATION",
     productionQualification: "NOT_RUN",
     certification: "NOT_CERTIFIED",
     releaseStatus: "NOT_GA",
   }, null, 2)}\n`, "utf8");
   await testInfo.attach("health-observation", { path: reportPath, contentType: "application/json" });
 
-  if (process.env.ELMOS_VERCEL_REQUIRE_HEALTHY === "true") {
-    expect(httpStatus).toBe(200);
-    expect(["UP", "READY"]).toContain(payload.status);
-  }
 });

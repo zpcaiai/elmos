@@ -1,18 +1,67 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "engine": "elmos.project-synthesis",
-  "engine_contract_version": "1.2.0",
+  "engine_contract_version": "1.4.0",
   "scope": "bundled-api-emitter",
+  "p0_launch_scope": "docs/project-synthesis/p0-launch-scope-v1.json",
   "local_execution_status": "PASSED_LOCAL",
   "local_evidence": "docs/project-synthesis/local-production-profile-matrix.json",
   "independent_verification_status": "NOT_RUN",
   "claim_ceiling": "limited",
+  "multi_entity": {
+    "emitter_support": [
+      "java",
+      "python",
+      "csharp",
+      "typescript",
+      "go",
+      "kotlin",
+      "php",
+      "rust"
+    ],
+    "committed_local_matrix_coverage": {
+      "multi_entity": [
+        "java",
+        "python"
+      ],
+      "single_entity_only_in_that_receipt": [
+        "csharp",
+        "typescript",
+        "go",
+        "kotlin",
+        "php",
+        "rust"
+      ],
+      "fresh_current_sha_evidence_status": "NOT_RUN"
+    }
+  },
+  "supply_chain": {
+    "generation_sbom_format": "CycloneDX 1.6",
+    "transitive_inventory_policy": "REQUIRED_COMPLETE_FOR_RELEASE",
+    "artifact_integrity_policy": "REQUIRED_COMPLETE_OR_NOT_APPLICABLE_FOR_RELEASE",
+    "dependency_graph_status": "INCOMPLETE_FLATTENED",
+    "native_artifact_hash_collector": ".elmos/dependencies/artifact-hashes.json",
+    "release_manifest": "REQUIRED",
+    "release_signature": "REQUIRED_TRUSTED_ED25519",
+    "current_sha_evidence_status": "NOT_RUN"
+  },
+  "managed_provider_observation": {
+    "path": "docs/project-synthesis/provider-observation-2026-09-04.json",
+    "evidence_class": "OPERATOR_REPORTED_READ_ONLY",
+    "raw_provider_receipt_status": "NOT_PROVIDED",
+    "database_server_version": "17.11",
+    "database_migration_write_status": "NOT_RUN",
+    "oidc_required_algorithm": "RS256",
+    "oidc_observed_algorithm": "EdDSA",
+    "oidc_compatibility": "ALGORITHM_MISMATCH",
+    "oidc_launch_gate": "BLOCKED"
+  },
   "profiles": [
     {
       "language": "java",
       "framework": "spring-boot",
       "runtime": "21",
-      "toolchain": "Java 21 / Maven 3.9.10",
+      "toolchain": "OpenJDK 21.0.11 / Maven 3.9.10",
       "source_skill": "PG077-PG088",
       "maturity": "limited",
       "required_evidence": [
@@ -27,7 +76,7 @@
       "language": "python",
       "framework": "fastapi",
       "runtime": "3.12",
-      "toolchain": "Python 3.12 / uv 0.11.16",
+      "toolchain": "CPython 3.12.12 / uv 0.11.16",
       "source_skill": "PG089-PG100",
       "maturity": "limited",
       "required_evidence": [
@@ -60,7 +109,7 @@
       "language": "typescript",
       "framework": "nestjs-fastify",
       "runtime": "26.0.0",
-      "toolchain": "Node 26.0.0 / pnpm 10.12.4",
+      "toolchain": "Node.js 26.0.0 / pnpm 10.12.4",
       "source_skill": "PG226",
       "maturity": "limited",
       "required_evidence": [
@@ -94,7 +143,7 @@
       "language": "kotlin",
       "framework": "ktor",
       "runtime": "2.2.20",
-      "toolchain": "Kotlin 2.2.20 / Java 21 / Gradle 8.14.3",
+      "toolchain": "Kotlin 2.2.20 / OpenJDK 21.0.11 / Gradle 8.14.3",
       "source_skill": "PG250",
       "maturity": "limited",
       "required_evidence": [
@@ -125,7 +174,7 @@
       "language": "rust",
       "framework": "axum",
       "runtime": "1.89.0",
-      "toolchain": "Rust 1.89.0 / Cargo 1.89.0",
+      "toolchain": "rustc 1.89.0 / cargo 1.89.0",
       "source_skill": "PG287",
       "maturity": "limited",
       "required_evidence": [

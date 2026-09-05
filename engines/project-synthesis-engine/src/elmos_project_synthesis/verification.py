@@ -33,6 +33,7 @@ from .production_contract import (
     LOCAL_ISSUER,
 )
 from .project_graphs import validate_workspace_graphs
+from .supply_chain import build_workspace_sbom, canonical_json, sbom_status, sha256_bytes
 
 LOCAL_TOOLCHAIN_ROOT = Path(
     os.getenv(
@@ -53,8 +54,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "uv",
             "arguments": ["run", "--python", "3.12", "python", "--version"],
-            "expected": "Python 3.12",
-            "pattern": r"^Python 3\.12(?:\.|$)",
+            "expected": "Python 3.12.12",
+            "pattern": r"^Python 3\.12\.12$",
             "fallback": "/opt/homebrew/bin/uv",
         },
     ],
@@ -62,8 +63,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "java",
             "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
+            "expected": "OpenJDK 21.0.11",
+            "pattern": r'(?:openjdk|java) version "21\.0\.11(?:[+"]|$)',
             "fallback": "/opt/homebrew/opt/openjdk@21/bin/java",
         },
         {
@@ -100,8 +101,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "java",
             "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
+            "expected": "OpenJDK 21.0.11",
+            "pattern": r'(?:openjdk|java) version "21\.0\.11(?:[+"]|$)',
             "fallback": "/opt/homebrew/opt/openjdk@21/bin/java",
         },
         {
@@ -1290,6 +1291,8 @@ def verify_workspace(
     # Validate all digest-bound generated structure contracts before resolving
     # or executing any native toolchain command.
     validate_workspace_graphs(root)
+    generation_manifest_bytes = (root / ".elmos" / "generation-manifest.json").read_bytes()
+    generation_manifest = json.loads(generation_manifest_bytes)
     applications = _blueprint(root).get("applications", [])
     selected: set[str] = set()
     for item in applications:
@@ -1500,10 +1503,30 @@ def verify_workspace(
         name: (_resolve_tool(name) is not None)
         for name in ("java", "mvn", "uv", "dotnet", "node", "pnpm", "go", "gradle", "php", "cargo")
     }
+    dependency_sbom = build_workspace_sbom(root)
     evidence: dict[str, Any] = {
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "status": status,
         "workspace": str(root),
+        "request_sha256": generation_manifest["request_sha256"],
+        "approved_payload_sha256": generation_manifest["approved_payload_sha256"],
+        "generation_manifest_sha256": sha256_bytes(generation_manifest_bytes),
+        "supply_chain": {
+            "sbom_format": "CycloneDX",
+            "sbom_spec_version": dependency_sbom["specVersion"],
+            "sbom_sha256": sha256_bytes(canonical_json(dependency_sbom)),
+            "transitive_inventory_status": sbom_status(
+                dependency_sbom, "elmos:transitive-inventory-status"
+            ),
+            "artifact_integrity_status": sbom_status(
+                dependency_sbom, "elmos:artifact-integrity-status"
+            ),
+            "dependency_graph_status": sbom_status(
+                dependency_sbom, "elmos:dependency-graph-status"
+            ),
+            "release_signature_status": "NOT_RUN",
+            "trusted_root_status": "NOT_RUN",
+        },
         "environment": {
             "platform": platform.platform(),
             "python": sys.version.split()[0],

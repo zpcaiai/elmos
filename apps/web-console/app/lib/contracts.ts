@@ -319,7 +319,7 @@ export type GenerationCapabilityResponse = {
   projectSkillCount: 417;
   targets: GenerationTarget[];
   stages: GenerationStage[];
-  generationStatus: "NOT_RUN";
+  generationStatus: "READY" | "DEGRADED" | "BLOCKED" | "NOT_CONFIGURED";
   externalExecutionEvidence: "NOT_RUN";
   productionDeliveryStatus: "NOT_RUN";
   certificationStatus: "NOT_CERTIFIED";
@@ -330,6 +330,7 @@ export type GenerationCapabilityResponse = {
     isolation: "ROOTLESS_CONTAINER" | "HOST_DEVELOPMENT" | "NOT_CONFIGURED";
     recovery: "PERSISTENT_RECONCILIATION";
   };
+  operationalReadiness: import("./server/generationReadiness").GenerationOperationalReadiness;
   deploymentGuidance: DeploymentGuidance;
   note: string;
 };
