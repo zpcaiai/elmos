@@ -1621,7 +1621,11 @@ def _statements(
             var_name = _variable(language, statement.name)
             start = _expression(context, statement.start, environment, top_level=True)
             end = _expression(context, statement.end, environment, top_level=True)
-            step = _expression(context, statement.step, environment, top_level=True) if statement.step is not None else None
+            step = (
+                _expression(context, statement.step, environment, top_level=True)
+                if statement.step is not None
+                else None
+            )
             loop_env = dict(environment)
             loop_env[statement.name] = "integer"
             inc = f"{var_name}++" if step is None else f"{var_name} += {step}"
@@ -1689,7 +1693,9 @@ def _signature(language: Language, function: Function, records: dict[str, Record
         return f"export function {function.name}({parameters}): {return_type} {{"
     if language == "javascript":
         documentation = ["/**"]
-        documentation.extend(f" * @param {{{_type(language, item.type, records)}}} {item.name}" for item in function.parameters)
+        documentation.extend(
+            f" * @param {{{_type(language, item.type, records)}}} {item.name}" for item in function.parameters
+        )
         documentation.extend((f" * @returns {{{return_type}}}", " */"))
         parameters = ", ".join(item.name for item in function.parameters)
         return "\n".join([*documentation, f"export function {function.name}({parameters}) {{"])
@@ -1717,7 +1723,9 @@ def _signature(language: Language, function: Function, records: dict[str, Record
         return f"func {function.name}({parameters}) -> {return_type} {{"
     parameters = ", ".join(
         # `NSString *name`, not `NSString * name`.
-        f"{_type(language, item.type, records)}{'' if _type(language, item.type, records).endswith('*') else ' '}{item.name}"
+        f"{_type(language, item.type, records)}"
+        f"{'' if _type(language, item.type, records).endswith('*') else ' '}"
+        f"{item.name}"
         for item in function.parameters
     )
     if language in _WRAPPED_IN_TYPE:

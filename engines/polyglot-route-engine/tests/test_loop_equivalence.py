@@ -12,6 +12,7 @@ Verifies that:
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -407,7 +408,7 @@ def test_loop_differential_runtime_execution(tmp_path: Path) -> None:
         # 1. Run Python
         py_script = f"{emitted_py}\nprint(subject({val}))\n"
         py_res = subprocess.run(
-            ["python3", "-c", py_script],
+            [sys.executable, "-c", py_script],
             capture_output=True,
             text=True,
             check=True,
@@ -458,7 +459,11 @@ def test_loop_roundtrip_reanalysis(tmp_path: Path) -> None:
     ir_original = analyze(py_src, "python", "subject")
 
     # For each target, plan identifiers, emit, and relift via analyze(..., emitted_target=True)
-    for lang, filename in [("go", "subject.go"), ("java", "Migrated.java"), ("typescript", "subject.ts")]:
+    for lang, filename in [
+        ("go", "subject.go"),
+        ("java", "Migrated.java"),
+        ("typescript", "subject.ts"),
+    ]:
         plan = plan_identifiers(ir_original, lang)
         em = emit(ir_original, lang, identifier_plan=plan)
         target_fn = target_ir_view(ir_original, plan).functions[0]
@@ -467,4 +472,7 @@ def test_loop_roundtrip_reanalysis(tmp_path: Path) -> None:
         relifted = analyze(target_path, lang, target_fn.name, emitted_target=True)
 
         assert relifted.functions[0].semantic_mapping() == target_fn.semantic_mapping()
-        assert _normalize_ir_for_comparison(relifted)["functions"][0]["body"] == _normalize_ir_for_comparison(ir_original)["functions"][0]["body"]
+        assert (
+            _normalize_ir_for_comparison(relifted)["functions"][0]["body"]
+            == _normalize_ir_for_comparison(ir_original)["functions"][0]["body"]
+        )

@@ -221,15 +221,36 @@ def _check_statements(
         if statement.kind == "if" and statement.condition is not None:
             if infer(statement.condition, environment, records_env, functions_env) != "boolean":
                 raise RouteError("CONDITION_MUST_BE_BOOLEAN")
-            _check_statements(statement.then_body, dict(environment), return_type, records_env=records_env, functions_env=functions_env, in_loop=in_loop)
-            _check_statements(statement.else_body, dict(environment), return_type, records_env=records_env, functions_env=functions_env, in_loop=in_loop)
+            _check_statements(
+                statement.then_body,
+                dict(environment),
+                return_type,
+                records_env=records_env,
+                functions_env=functions_env,
+                in_loop=in_loop,
+            )
+            _check_statements(
+                statement.else_body,
+                dict(environment),
+                return_type,
+                records_env=records_env,
+                functions_env=functions_env,
+                in_loop=in_loop,
+            )
             continue
         if statement.kind == "while":
             if statement.condition is None:
                 raise RouteError("INVALID_WHILE_STATEMENT")
             if infer(statement.condition, environment, records_env, functions_env) != "boolean":
                 raise RouteError("CONDITION_MUST_BE_BOOLEAN")
-            _check_statements(statement.body, dict(environment), return_type, records_env=records_env, functions_env=functions_env, in_loop=True)
+            _check_statements(
+                statement.body,
+                dict(environment),
+                return_type,
+                records_env=records_env,
+                functions_env=functions_env,
+                in_loop=True,
+            )
             continue
         if statement.kind == "for":
             if statement.name is None or statement.start is None or statement.end is None:
@@ -250,7 +271,14 @@ def _check_statements(
                     raise RouteError(f"LOOP_BOUND_TYPE_MISMATCH:step:integer:{step_type}")
             loop_env = dict(environment)
             loop_env[statement.name] = "integer"
-            _check_statements(statement.body, loop_env, return_type, records_env=records_env, functions_env=functions_env, in_loop=True)
+            _check_statements(
+                statement.body,
+                loop_env,
+                return_type,
+                records_env=records_env,
+                functions_env=functions_env,
+                in_loop=True,
+            )
             continue
         if statement.kind == "break":
             if not in_loop:
