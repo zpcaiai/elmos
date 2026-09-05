@@ -57,6 +57,31 @@ def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]
 
 
 class PolyglotRouteCiReadinessTests(unittest.TestCase):
+    def test_precision_migration_provisions_exact_chinadb_python(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        precision_job = workflow.split("  precision-migration-b01-44:", 1)[1].split(
+            "  web-console-generation:", 1
+        )[0]
+
+        route_sync = precision_job.index(
+            "uv --directory engines/polyglot-route-engine sync --locked --no-dev"
+        )
+        chinadb_setup = precision_job.index("- name: Set up exact ChinaDB preflight runtime")
+        chinadb_verify = precision_job.index(
+            "- name: Verify exact ChinaDB preflight runtime"
+        )
+        complete_check = precision_job.index("make precision-migration-b01-44-check")
+        self.assertLess(route_sync, chinadb_setup)
+        self.assertLess(chinadb_setup, chinadb_verify)
+        self.assertLess(chinadb_verify, complete_check)
+        for exact_value in (
+            'python-version: "3.14.6"',
+            "architecture: arm64",
+            '"uv 0.11.16"',
+            "engines/database-data-engine/sql-transpiler",
+        ):
+            self.assertIn(exact_value, precision_job)
+
     def test_route_host_shells_do_not_mask_command_substitution_failures(self) -> None:
         for relative in (
             "scripts/toolchains/prepare_apple_route_ci_host.sh",

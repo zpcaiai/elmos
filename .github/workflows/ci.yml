@@ -905,6 +905,16 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked --no-dev
           npm install --global pnpm@10.12.4
           pnpm --dir apps/web-console install --frozen-lockfile
+      - name: Set up exact ChinaDB preflight runtime
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
+          architecture: arm64
+      - name: Verify exact ChinaDB preflight runtime
+        run: |
+          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
+          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Verify immutable package, adapters, evidence trust, coverage, and Batch 35 boundary
         run: make precision-migration-b01-44-check
       - name: Type-check and build the job API and Skills workspace
