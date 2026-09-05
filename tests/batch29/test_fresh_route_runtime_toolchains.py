@@ -269,9 +269,9 @@ def test_ci_installer_adapts_only_the_digest_bound_openssl_symlink_keyword() -> 
 
     assert 'python3 - "${source}" "${target}" "${token}" <<\'PY\'' in installer
     assert 'if token == "openssl@3":' in installer
-    assert 'if source.count(openssl_overwrite) != 1:' in installer
+    assert 'if source.count(openssl_postinstall) != 1:' in installer
     assert "pinned OpenSSL formula has an unexpected symlink contract" in installer
-    assert 'openssl_overwrite.replace(", overwrite: true", "")' in installer
+    assert 'source.replace(openssl_postinstall, "", 1)' in installer
 
 
 def test_java_python_ci_profile_materializes_the_required_typescript_closure() -> None:

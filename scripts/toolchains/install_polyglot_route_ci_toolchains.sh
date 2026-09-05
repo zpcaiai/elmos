@@ -248,17 +248,20 @@ if autobump_lines:
     source = source.replace(autobump_lines[0], "", 1)
 # OpenSSL 3.6.3 uses the current Homebrew `symlink(..., overwrite: true)`
 # post-install DSL, while the rolling macOS 26 image can still carry a brew
-# version that rejects that keyword. A fresh, force-bottle install has no
-# destination to overwrite, so remove only this digest-bound compatibility
-# keyword and fail if the pinned formula's exact statement ever changes.
-openssl_overwrite = (
+# version that rejects that keyword. The route closure neither owns nor uses
+# Homebrew's shared CA configuration, so omit only this digest-bound metadata
+# block instead of mutating the runner's existing certificate link. Fail if
+# the pinned formula's exact statement ever changes.
+openssl_postinstall = (
+    "  post_install_steps do\n"
     '    symlink "{{etc}}/ca-certificates/cert.pem", '
     '"{{pkgetc}}/cert.pem", overwrite: true\n'
+    "  end\n"
 )
 if token == "openssl@3":
-    if source.count(openssl_overwrite) != 1:
+    if source.count(openssl_postinstall) != 1:
         raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
-    source = source.replace(openssl_overwrite, openssl_overwrite.replace(", overwrite: true", ""), 1)
+    source = source.replace(openssl_postinstall, "", 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
