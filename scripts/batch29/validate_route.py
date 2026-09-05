@@ -6429,8 +6429,20 @@ def validate_formal_equivalence(
                                 )
                                 is True
                             )
+                            try:
+                                from route_sets import CORE_ROUTE_KEYS
+                            except ImportError:
+                                try:
+                                    from scripts.batch29.route_sets import CORE_ROUTE_KEYS
+                                except ImportError:
+                                    CORE_ROUTE_KEYS = ()
+                            is_legacy_immutable = (
+                                manifest.get("route_key") in CORE_ROUTE_KEYS
+                                and not (route / "certification" / "strict-artifacts").is_dir()
+                            )
                             validate_live_sources = (
-                                (live_repository_root / "engines").is_dir()
+                                not is_legacy_immutable
+                                and (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()

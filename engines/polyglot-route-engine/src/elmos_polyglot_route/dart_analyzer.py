@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 import stat
 import subprocess
 import tempfile
@@ -361,12 +362,15 @@ def _environment(home: Path, scratch: Path, dart: Path) -> dict[str, str]:
     return value
 
 
+_DART_ANALYZER_TIMEOUT_SECONDS = int(os.environ.get("ELMOS_DART_ANALYZER_TIMEOUT_SECONDS", "360"))
+
+
 def _run(
     command: list[str],
     *,
     cwd: Path,
     environment: dict[str, str],
-    timeout: int = 180,
+    timeout: int = _DART_ANALYZER_TIMEOUT_SECONDS,
 ) -> subprocess.CompletedProcess[str]:
     try:
         completed = subprocess.run(

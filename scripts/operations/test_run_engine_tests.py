@@ -20,10 +20,14 @@ class EngineTestRegistryTests(unittest.TestCase):
         engines = subject.load_registry()
 
         self.assertEqual(42, len(engines))
-        self.assertEqual(43, sum(len(value["steps"]) for value in engines.values()))
+        self.assertEqual(44, sum(len(value["steps"]) for value in engines.values()))
         self.assertEqual(
             {"maven", "pytest"},
             {step["kind"] for step in engines["database-data-engine"]["steps"]},
+        )
+        self.assertEqual(
+            {"maven", "pytest"},
+            {step["kind"] for step in engines["security-compliance-engine"]["steps"]},
         )
         self.assertEqual(
             "modules/composite-modernization",

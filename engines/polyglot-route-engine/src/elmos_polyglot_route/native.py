@@ -2928,8 +2928,9 @@ def _run_swift_build_step(
         )
     except OSError as error:
         raise RouteError(failure + ":process") from error
+    effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
     try:
-        stdout, stderr = process.communicate(input=input_text, timeout=timeout)
+        stdout, stderr = process.communicate(input=input_text, timeout=effective_timeout)
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:

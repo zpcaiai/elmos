@@ -180,7 +180,7 @@ def test_the_go_frontend_no_longer_rejects_an_else_if_chain() -> None:
 
     assert "GO_ELSE_IF_OUTSIDE_CERTIFIED_SUBSET" not in source
     assert "func ifStatement(" in source
-    assert "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records)}" in source
+    assert "elseBody = []map[string]any{ifStatement(alternative, emittedTarget, records, functionNames)}" in source
     # The init-statement boundary is unchanged and must stay unchanged: hoisting
     # it needs a local-declaration IR kind that no target emitter has.
     assert "GO_IF_INIT_OUTSIDE_CERTIFIED_SUBSET" in source
