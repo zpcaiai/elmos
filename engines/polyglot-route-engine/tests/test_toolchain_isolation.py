@@ -523,6 +523,51 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         )
 
 
+def test_homebrew_hosted_profile_survives_an_isolated_runtime(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
+    monkeypatch.setattr(
+        toolchains,
+        "_output",
+        lambda command, **_kwargs: (
+            profile.product_version if "-productVersion" in command else profile.build_version
+        ),
+    )
+    monkeypatch.delenv("ImageVersion", raising=False)
+    monkeypatch.setenv(toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV, profile.profile_id)
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    monkeypatch.setenv("RUNNER_ENVIRONMENT", "github-hosted")
+    monkeypatch.setenv("ImageOS", "macos26")
+    toolchains.homebrew_route_bundle_profile.cache_clear()
+    try:
+        assert toolchains.homebrew_route_bundle_profile() == profile
+    finally:
+        toolchains.homebrew_route_bundle_profile.cache_clear()
+
+
+def test_homebrew_hosted_profile_id_mismatch_fails_closed(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(toolchains.platform, "system", lambda: "Darwin")
+    monkeypatch.setattr(toolchains.platform, "machine", lambda: "arm64")
+    monkeypatch.setenv(
+        toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV,
+        "github-macos26-unrecognized",
+    )
+    toolchains.homebrew_route_bundle_profile.cache_clear()
+    try:
+        with pytest.raises(
+            RouteError,
+            match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH",
+        ):
+            toolchains.homebrew_route_bundle_profile()
+    finally:
+        toolchains.homebrew_route_bundle_profile.cache_clear()
+
+
 def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
     selected = toolchains.exact_toolchain("php")
     bundle_profile = toolchains.homebrew_route_bundle_profile()
@@ -643,8 +688,11 @@ def test_swift_analyzer_is_fresh_built_outside_repository_build_cache() -> None:
     assert dependency_cache["sha256"] == "sha256:" + native._SWIFT_SYNTAX_TREE_SHA256
     assert dependency_cache["file_count"] == native._SWIFT_SYNTAX_TREE_FILE_COUNT
     assert dependency_cache["bytes"] == native._SWIFT_SYNTAX_TREE_BYTES
-    assert receipt["toolchain"]["swiftc_sha256"] == "sha256:" + toolchains._EXPECTED_SWIFTC_SHA256
-    assert receipt["toolchain"]["swift_driver_sha256"] == "sha256:" + toolchains._EXPECTED_SWIFTC_SHA256
+    selected_host = toolchains.apple_route_host_profile("swift")
+    assert receipt["toolchain"]["swiftc_sha256"] == "sha256:" + selected_host.swiftc_sha256
+    assert receipt["toolchain"]["swift_driver_sha256"] == (
+        "sha256:" + selected_host.swiftc_sha256
+    )
     assert receipt["binary"]["sha256"] == "sha256:" + hashlib.sha256(binary.read_bytes()).hexdigest()
     assert receipt["binary"]["bytes"] == binary.stat().st_size
     assert set(receipt) == {

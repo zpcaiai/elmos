@@ -457,8 +457,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="8c4459ea3d6603c87b85ca6c07fac8d255180f4404b59c3b778230edacd7fb0f",
-    php_tree_bytes=129_952_837,
+    php_tree_sha256="fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
+    php_tree_bytes=129_952_851,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -494,6 +494,7 @@ _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
 )
+_HOMEBREW_ROUTE_PROFILE_ID_ENV = "ELMOS_HOMEBREW_ROUTE_PROFILE_ID"
 
 
 def _select_homebrew_route_bundle_profile(
@@ -524,7 +525,29 @@ def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
             f"observed={platform.system()}/{platform.machine()}"
         )
     image_version = os.environ.get("ImageVersion", "").strip()
-    if image_version:
+    declared_profile_id = os.environ.get(_HOMEBREW_ROUTE_PROFILE_ID_ENV, "").strip()
+    declared_profile: HomebrewRouteBundleProfile | None = None
+    if declared_profile_id:
+        declared_matches = tuple(
+            profile
+            for profile in _HOMEBREW_ROUTE_HOST_PROFILES
+            if profile.profile_id == declared_profile_id and profile.image_version
+        )
+        if len(declared_matches) != 1:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+                + declared_profile_id
+            )
+        declared_profile = declared_matches[0]
+        if image_version and image_version != declared_profile.image_version:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+                + declared_profile_id
+                + "/"
+                + image_version
+            )
+        image_version = declared_profile.image_version
+    if image_version or declared_profile is not None:
         required_environment = {
             "GITHUB_ACTIONS": "true",
             "RUNNER_ENVIRONMENT": "github-hosted",
@@ -540,11 +563,17 @@ def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
                 "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:"
                 + ",".join(drift)
             )
-    return _select_homebrew_route_bundle_profile(
+    selected = _select_homebrew_route_bundle_profile(
         image_version=image_version,
         product_version=_output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False),
         build_version=_output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False),
     )
+    if declared_profile is not None and selected.profile_id != declared_profile.profile_id:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_ID_MISMATCH:observed="
+            + declared_profile_id
+        )
+    return selected
 
 
 def _dotnet_directory_chain(directory: Path, failure: str) -> tuple[tuple[object, ...], ...]:
@@ -865,7 +894,13 @@ def _qualified_file_record(path: Path, root: Path, failure: str) -> dict[str, st
     }
 
 
-def _qualified_tree_manifest(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def _qualified_tree_manifest(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    portable_owner_identity: bool = False,
+) -> dict[str, object]:
     """Return a complete immutable manifest for a symlink-free toolchain tree."""
 
     root_chain = _qualified_directory_chain(root, anchor, failure)
@@ -916,8 +951,21 @@ def _qualified_tree_manifest(root: Path, anchor: Path, failure: str) -> dict[str
         str(item["path"]) for item in records
     ] or _qualified_directory_chain(root, anchor, failure) != root_chain:
         raise RouteError(failure + ":TREE_CHANGED")
+    digest_records = records
+    if portable_owner_identity:
+        # Ownership and link count remain mandatory safety checks above. They
+        # are host installation metadata, however, and are not part of the
+        # immutable Rust distribution bytes shared by isolated runners.
+        digest_records = [
+            {
+                key: value
+                for key, value in record.items()
+                if key not in {"uid", "gid", "nlink"}
+            }
+            for record in records
+        ]
     encoded = json.dumps(
-        {"records": records},
+        {"records": digest_records},
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
@@ -3709,7 +3757,7 @@ _EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT = 0
 _EXPECTED_RUST_WRAPPER_TREE_BYTES = 1_963
-_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "cb6193d1c822b49b839033b69a850b049ecf525feac88bfe0d08829f0aea268b"
+_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "fd9d219f8755f252cb05a242d57addbe8c090b17a855ad367434c4de8467ce31"
 _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT = 157
 _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT = 135
 _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT = 22
@@ -3826,6 +3874,7 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         _EXPECTED_RUST_SYSROOT,
         _EXPECTED_USER_LOCAL,
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
+        portable_owner_identity=True,
     )
     _verify_qualified_tree_manifest(
         sysroot,
@@ -4501,12 +4550,17 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
                 receipt = json.loads(path.read_text(encoding="utf-8"))
             except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
                 raise RouteError(failure) from error
-            if not isinstance(receipt, dict) or type(receipt.get("time")) is not int:
+            if (
+                not isinstance(receipt, dict)
+                or type(receipt.get("time")) is not int
+                or type(receipt.get("source_modified_time")) is not int
+            ):
                 raise RouteError(failure)
             # These fields identify the disposable installer invocation, not
             # the immutable bottle. Every bottle/source/dependency, target,
             # architecture, build-host and option field remains hash-bound.
             receipt["time"] = "<installation-time>"
+            receipt["source_modified_time"] = "<source-modified-time>"
             receipt["homebrew_version"] = "<homebrew-client-version>"
             normalized = json.dumps(
                 receipt, sort_keys=True, separators=(",", ":")

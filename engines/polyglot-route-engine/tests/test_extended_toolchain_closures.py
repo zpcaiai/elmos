@@ -149,6 +149,47 @@ def test_go_tree_verifier_rejects_same_version_content_drift(
         toolchains._go_tree_identity()
 
 
+def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir()
+    compiler = root / "rustc"
+    compiler.write_bytes(b"immutable-rust-bytes")
+    compiler.chmod(0o755)
+
+    local = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    original = toolchains._qualified_file_record
+
+    def alternate_owner_record(*args: object, **kwargs: object) -> dict[str, object]:
+        record = dict(original(*args, **kwargs))
+        record.update(
+            {
+                "uid": int(record["uid"]) + 10_000,
+                "gid": int(record["gid"]) + 10_000,
+            }
+        )
+        return record
+
+    monkeypatch.setattr(toolchains, "_qualified_file_record", alternate_owner_record)
+    alternate = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    strict = toolchains._qualified_tree_manifest(root, tmp_path, "TEST_UNSAFE")
+
+    assert alternate["sha256"] == local["sha256"]
+    assert strict["sha256"] != local["sha256"]
+
+
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])
 def test_rust_rejects_wrapper_or_sysroot_tree_drift(
     drift: str,
