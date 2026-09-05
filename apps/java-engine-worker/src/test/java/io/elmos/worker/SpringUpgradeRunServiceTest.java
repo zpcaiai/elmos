@@ -136,26 +136,41 @@ class SpringUpgradeRunServiceTest {
         assertEquals("PENDING_ROUTE_SELECTION", normalized.path("pack_key").asText());
     }
 
-    @Test void conflictingIdempotencyInputAndNonTerminalRetryAreRejected() {
+    @Test void conflictingIdempotencyInputAndNonTerminalRetryAreRejected() throws Exception {
+        CountDownLatch executionEntered = new CountDownLatch(1);
+        CountDownLatch executionReleased = new CountDownLatch(1);
         SpringUpgradeExecutionPort delayed = new SuccessfulTransformer() {
             @Override public ExecutionResult execute(StartRequest request, Path runRoot, Control control) {
+                executionEntered.countDown();
                 try {
-                    Thread.sleep(250);
+                    if (!executionReleased.await(
+                            ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS)) {
+                        throw new IllegalStateException("test execution release timed out");
+                    }
                 } catch (InterruptedException error) {
                     Thread.currentThread().interrupt();
+                    throw new IllegalStateException("test execution was interrupted", error);
                 }
                 return super.execute(request, runRoot, control);
             }
         };
         service = service(delayed, new PassingVerifier());
         RunView first = service.create("org-a", request("conflict-key"));
+        assertTrue(executionEntered.await(
+                ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
         StartRequest changed = new StartRequest("org-a", SourceMode.PUBLIC_GIT,
                 "https://github.com/example/other.git", "main", null, null, null,
                 false, "conflict-key");
-        assertThrows(SpringUpgradeRunService.IdempotencyConflict.class,
-                () -> service.create("org-a", changed));
-        assertThrows(SpringUpgradeRunService.Conflict.class,
-                () -> service.retry("org-a", first.runId(), "retry-key"));
+        try {
+            assertThrows(SpringUpgradeRunService.IdempotencyConflict.class,
+                    () -> service.create("org-a", changed));
+            assertThrows(SpringUpgradeRunService.Conflict.class,
+                    () -> service.retry("org-a", first.runId(), "retry-key"));
+        } finally {
+            executionReleased.countDown();
+        }
+        assertEquals(RunStatus.SUCCEEDED,
+                awaitTerminal(first.runId(), "org-a").status());
     }
 
     @Test void terminalFailureCanBeRetriedAsANewTraceableAttempt() {
