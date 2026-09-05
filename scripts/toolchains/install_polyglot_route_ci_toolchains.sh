@@ -58,13 +58,21 @@ case "${CI_PROFILE}" in
       exit 2
     fi
     case "${host_identity}" in
-      "macos26|20260728.0273.1|26.5.2|25F84"|\
-      "macos26|20260831.0337.3|26.6.2|25G83") ;;
+      "macos26|20260728.0273.1|26.5.2|25F84")
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca"
+        ;;
+      "macos26|20260831.0337.3|26.6.2|25G83")
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
+        ;;
       *)
         printf 'The full pinned Node closure requires an allowlisted exact GitHub macos26 image.\n' >&2
         exit 2
         ;;
     esac
+    readonly NODE_TAHOE_OPENSSL_CRYPTO_SHA256
+    readonly NODE_TAHOE_OPENSSL_SSL_SHA256
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -405,8 +413,9 @@ verify_pinned_node26_component() {
   fi
   observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
   observed_sha256="$(file_sha256 "${path}")"
-  if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "${observed_sha256}" != "${expected_sha256}" ]]; then
+  local observed_identity="${observed}:${observed_sha256}"
+  local expected_identity="${expected_mode}:501:80:1:${expected_bytes}:${expected_sha256}"
+  if [[ "${observed_identity}" != "${expected_identity}" ]]; then
     printf 'Pinned Node closure component identity mismatch: %s (observed=%s:%s expected=%s:501:80:1:%s:%s)\n' \
       "${path}" "${observed}" "${observed_sha256}" \
       "${expected_mode}" "${expected_bytes}" "${expected_sha256}" >&2
@@ -625,14 +634,18 @@ merve/1.2.2_1/lib/libmerve.1.2.2.dylib|444|77776|cda7651d81af902d5964705451e7bcb
 nbytes/0.1.4/lib/libnbytes.dylib|444|35136|b063a6b50d0982379e5a78fa22904e9299ac0048d82cae4f90bd4ad11fa40f65
 node/26.0.0/bin/node|555|50672|542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9
 node/26.0.0/lib/libnode.147.dylib|444|70661840|980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88
-openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71
-openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca
 simdjson/4.6.4/lib/libsimdjson.33.0.0.dylib|444|95296|031cfb565154f822e33b9227ef392c257260c5ebb8fbfc9f317c56be82bfa16a
 simdutf/9.0.0/lib/libsimdutf.34.0.0.dylib|444|222064|2abb9e7c8fb437094c5488f74408f7dd0a7b20a16e5c871a877d60e14f53ee36
 sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21d3f929bc7c3565f2edf3079ce54f978b44cb7f
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
+    verify_pinned_node26_component \
+      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libcrypto.3.dylib" \
+      "444" "4856256" "${NODE_TAHOE_OPENSSL_CRYPTO_SHA256}"
+    verify_pinned_node26_component \
+      "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libssl.3.dylib" \
+      "444" "872080" "${NODE_TAHOE_OPENSSL_SSL_SHA256}"
   fi
   if [[ "${NODE_COMPONENT_MISMATCH_COUNT}" -ne 0 ]]; then
     printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
