@@ -1,5 +1,27 @@
 import { expect, test } from "@playwright/test";
 
+test("anonymous user login entries perform a document navigation", async ({ page }) => {
+  await page.goto("/");
+
+  const topLogin = page.locator("header").getByRole("link", {
+    name: "用户登录",
+    exact: true,
+  });
+  await expect(topLogin).toHaveAttribute("href", "/login?returnTo=%2F");
+  await topLogin.click();
+  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+
+  await page.goto("/");
+  const sidebarLogin = page.locator("aside").getByRole("link", {
+    name: /用户登录/,
+  });
+  await expect(sidebarLogin).toHaveAttribute("href", "/login?returnTo=%2F");
+  await sidebarLogin.click();
+  await expect(page).toHaveURL(/\/login\?returnTo=%2F$/);
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+});
+
 test("account session discovery represents anonymous state without a console-level 401", async ({
   request,
   page,
