@@ -53,11 +53,11 @@ esac
 case "${CI_PROFILE}" in
   full)
     if [[ "${ImageOS:-}" != "macos26" \
-      || "${ImageVersion:-}" != "20260831.0337.3" \
-      || "$(sw_vers -productVersion)" != "26.6.2" \
-      || "$(sw_vers -buildVersion)" != "25G83" \
+      || "${ImageVersion:-}" != "20260728.0273.1" \
+      || "$(sw_vers -productVersion)" != "26.5.2" \
+      || "$(sw_vers -buildVersion)" != "25F84" \
       || "$(uname -m)" != "arm64" ]]; then
-      printf 'The full pinned Node closure requires GitHub macos26 image 20260831.0337.3.\n' >&2
+      printf 'The full pinned Node closure requires GitHub macos26 image 20260728.0273.1.\n' >&2
       exit 2
     fi
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
@@ -747,7 +747,7 @@ if [[ "${CI_PROFILE}" == "full" || "${CI_PROFILE}" == "java-python" ]]; then
   : "${JAVA_HOME:?JAVA_HOME must be provided by actions/setup-java}"
   TEMURIN_JAVA_HOME="$(cd "${JAVA_HOME}" && pwd -P)"
   readonly TEMURIN_JAVA_HOME
-  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"
+  readonly TEMURIN_JAVA_HOME_SUFFIX="Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
   if [[ "${TEMURIN_JAVA_HOME}" != */${TEMURIN_JAVA_HOME_SUFFIX} ]]; then
     printf 'setup-java did not provide the pinned Temurin home: %s\n' "${TEMURIN_JAVA_HOME}" >&2
     exit 3

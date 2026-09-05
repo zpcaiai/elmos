@@ -662,10 +662,10 @@ def test_ci_installer_pins_every_node_formula_for_each_host_profile() -> None:
     assert observed == expected
     assert "HOMEBREW_NO_INSTALL_UPGRADE=1" in installer
     assert "brew install \\\n    brotli" not in closure_body
-    assert '"${ImageVersion:-}" != "20260831.0337.3"' in installer
+    assert '"${ImageVersion:-}" != "20260728.0273.1"' in installer
     assert '"${ImageVersion:-}" != "20260829.0321.1"' in installer
-    assert '"$(sw_vers -productVersion)" != "26.6.2"' in installer
-    assert '"$(sw_vers -buildVersion)" != "25G83"' in installer
+    assert '"$(sw_vers -productVersion)" != "26.5.2"' in installer
+    assert '"$(sw_vers -buildVersion)" != "25F84"' in installer
 
     frontend = installer.split('if [[ "${CI_PROFILE}" == "frontend-formal" ]]', 1)[
         1

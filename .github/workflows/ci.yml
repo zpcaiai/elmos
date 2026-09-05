@@ -175,6 +175,17 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Inventory exact OpenSSL 3 runtime
+        run: |
+          for component in \
+            /opt/homebrew/Cellar/openssl@3/3.6.3/bin/openssl \
+            /opt/homebrew/Cellar/openssl@3/3.6.3/lib/libssl.3.dylib \
+            /opt/homebrew/Cellar/openssl@3/3.6.3/lib/libcrypto.3.dylib
+          do
+            /usr/bin/stat -f '%N %z %Sp %u %g' "${component}"
+            /usr/bin/shasum -a 256 "${component}"
+            /usr/bin/codesign -dvvv "${component}" 2>&1
+          done
       - name: Root-seal OpenSSL 3 Ed25519 runtime
         run: |
           # Run before repository code. stdin prevents sudo from reopening a

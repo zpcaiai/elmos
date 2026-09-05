@@ -355,7 +355,7 @@ _EXPECTED_JAVAC_VERSION = "javac 21.0.11"
 # differ.  Keeping both contracts explicit prevents CI from silently accepting
 # an arbitrary JAVA_HOME merely because it prints the right version.
 _TEMURIN_JAVA_HOME_SUFFIX = (
-    "Java_Temurin-Hotspot_jdk/21.0.11-10.0.LTS/arm64/Contents/Home"
+    "Java_Temurin-Hotspot_jdk/21.0.11-10.0/arm64/Contents/Home"
 )
 _TEMURIN_JAVA_SHA256 = "afb8ed976e06d85c89192312923301959535169abe087d70166cd00fb96de2e5"
 _TEMURIN_JAVAC_SHA256 = "56d42d414a2dfb4ca26a67074ebc7c64271fcf37e5ca6f2d6db2f6c292b5daf1"

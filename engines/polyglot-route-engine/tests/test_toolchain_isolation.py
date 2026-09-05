@@ -331,7 +331,7 @@ def test_temurin_contract_is_explicitly_selected_for_ci_home(
         tmp_path
         / "hostedtoolcache"
         / "Java_Temurin-Hotspot_jdk"
-        / "21.0.11-10.0.LTS"
+        / "21.0.11-10.0"
         / "arm64"
         / "Contents"
         / "Home"

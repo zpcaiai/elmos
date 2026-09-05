@@ -605,9 +605,9 @@ class AppleRouteDiagnosticTests(unittest.TestCase):
         self.assertNotIn("SWIFT_NETWORK_PROBE_BINARY_SHA256 ==", source)
         for exact_host_value in (
             "macos26",
-            "20260831.0337.3",
-            "26.6.2",
-            "25G83",
+            "20260728.0273.1",
+            "26.5.2",
+            "25F84",
             "Xcode 26.6",
             "17F113",
             "/Applications/Xcode_26.6.app",
