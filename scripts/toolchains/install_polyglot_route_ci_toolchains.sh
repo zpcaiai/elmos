@@ -403,22 +403,64 @@ verify_pinned_node26_component() {
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
-  local observed
-  local observed_sha256
-  if [[ ! -f "${path}" || -L "${path}" \
-    || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
-    printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
-      "${path}" >&2
-    exit 3
-  fi
-  observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
-  observed_sha256="$(file_sha256 "${path}")"
-  local observed_identity="${observed}:${observed_sha256}"
-  local expected_identity="${expected_mode}:501:80:1:${expected_bytes}:${expected_sha256}"
-  if [[ "${observed_identity}" != "${expected_identity}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (observed=%s:%s expected=%s:501:80:1:%s:%s)\n' \
-      "${path}" "${observed}" "${observed_sha256}" \
-      "${expected_mode}" "${expected_bytes}" "${expected_sha256}" >&2
+  if ! python3 -I -B - \
+      "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
+import hashlib
+import os
+import stat
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
+try:
+    path_metadata = path.lstat()
+    realpath = path.resolve(strict=True)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        metadata = os.fstat(descriptor)
+        hasher = hashlib.sha256()
+        while chunk := os.read(descriptor, 1024 * 1024):
+            hasher.update(chunk)
+        digest = hasher.hexdigest()
+    finally:
+        os.close(descriptor)
+    final_metadata = path.lstat()
+except OSError as error:
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}: {error}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+stable_fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink", "st_size")
+if (
+    not stat.S_ISREG(path_metadata.st_mode)
+    or stat.S_ISLNK(path_metadata.st_mode)
+    or realpath != path
+    or any(
+        getattr(path_metadata, field) != getattr(metadata, field)
+        or getattr(metadata, field) != getattr(final_metadata, field)
+        for field in stable_fields
+    )
+):
+    print(
+        f"Pinned Node closure component is unavailable or unsafe: {path}",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+observed = (
+    f"{stat.S_IMODE(metadata.st_mode):o}:{metadata.st_uid}:{metadata.st_gid}:"
+    f"{metadata.st_nlink}:{metadata.st_size}:{digest}"
+)
+if observed != expected:
+    print(
+        f"Pinned Node closure component identity mismatch: {path} "
+        f"(observed={observed} expected={expected})",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+PY
+  then
     NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))
   fi
 }
