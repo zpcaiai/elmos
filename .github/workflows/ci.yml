@@ -293,6 +293,14 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          # Hydrate only the revision pinned by Package.resolved while network
+          # access is still allowed. Swift analyzer execution later consumes
+          # this verified seed offline and fails closed on any tree drift.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Run complete Batch 29 and route-pack contracts
         run: |
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
@@ -303,9 +311,35 @@ jobs:
           uv --directory engines/polyglot-route-engine sync --locked
           make b29-skills-test
           python scripts/operations/validate_translation_route_matrix.py
-          for route in routes/*/; do
-            python scripts/batch29/run_route_gate.py "$route"
-          done
+          # Execute every active LIMITED route with its native source and target
+          # toolchains. The immutable legacy 30 are verified read-only by the
+          # runner; the 66 V3 research routes remain explicit NOT_RUN.
+          python scripts/batch29/run_polyglot_routes.py \
+            --route-set nine-language-complete-72
+          python scripts/batch29/run_polyglot_routes.py \
+            --route-set php-php85-active-completion-18
+          # Run the authoritative fail-closed gate for the exact active 156.
+          # Deprecated route directories are historical data and are validated
+          # by their frozen read-only set, never admitted as active routes.
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          sys.path.insert(0, str(Path("scripts/batch29").resolve()))
+          from route_sets import EVIDENCED_ROUTE_KEYS
+
+          gate = Path("scripts/batch29/run_route_gate.py")
+          for route_key in EVIDENCED_ROUTE_KEYS:
+              subprocess.run(
+                  [sys.executable, str(gate), str(Path("routes") / route_key)],
+                  check=True,
+              )
+          PY
+          python scripts/batch29/run_polyglot_routes.py \
+            --verify-route-set thirteen-language-complete-156
+          python scripts/batch29/run_polyglot_routes.py \
+            --verify-route-set eleven-language-complete-110
 
   polyglot-route-engine-core:
     name: Directed route engine core qualification
@@ -379,6 +413,13 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          # Resolve the exact Package.resolved graph before the offline native
+          # analyzer phase. Any lockfile rewrite is an immediate gate failure.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,
@@ -490,6 +531,13 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          # Each matrix shard runs on a fresh host and therefore needs its own
+          # exact Swift dependency seed before offline analyzer execution.
+          (
+            cd engines/polyglot-route-engine/native/swift
+            swift package resolve
+            git diff --exit-code -- Package.resolved
+          )
       - name: Verify exact source-language matrix shard
         env:
           ELMOS_ROUTE_SOURCE_LANGUAGE: ${{ matrix.source_language }}

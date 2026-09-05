@@ -701,13 +701,37 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         matrix = route_pack_job.index(
             "python scripts/operations/validate_translation_route_matrix.py"
         )
-        route_gates = route_pack_job.index(
-            'python scripts/batch29/run_route_gate.py "$route"'
+        active_route_execution = route_pack_job.index(
+            "--route-set nine-language-complete-72"
+        )
+        php_route_execution = route_pack_job.index(
+            "--route-set php-php85-active-completion-18"
+        )
+        route_gates = route_pack_job.index("from route_sets import EVIDENCED_ROUTE_KEYS")
+        active_route_set = route_pack_job.index(
+            "--verify-route-set thirteen-language-complete-156"
+        )
+        historical_route_set = route_pack_job.index(
+            "--verify-route-set eleven-language-complete-110"
         )
         self.assertIn("timeout-minutes: 360", route_pack_job)
         self.assertLess(route_pack_sync, batch29)
         self.assertLess(batch29, matrix)
-        self.assertLess(matrix, route_gates)
+        self.assertLess(matrix, active_route_execution)
+        self.assertLess(active_route_execution, php_route_execution)
+        self.assertLess(php_route_execution, route_gates)
+        self.assertLess(route_gates, active_route_set)
+        self.assertLess(active_route_set, historical_route_set)
+        self.assertIn(
+            '[sys.executable, str(gate), str(Path("routes") / route_key)]',
+            route_pack_job,
+        )
+        self.assertNotIn("for route in routes/*/", route_pack_job)
+        self.assertEqual(all_route_jobs.count("swift package resolve"), 3)
+        self.assertEqual(
+            all_route_jobs.count("git diff --exit-code -- Package.resolved"),
+            3,
+        )
         self.assertNotIn("make b29-skills-test", route_engine_job)
         self.assertIn("cargo fetch \\", route_engine_job)
         self.assertIn("--locked \\", route_engine_job)

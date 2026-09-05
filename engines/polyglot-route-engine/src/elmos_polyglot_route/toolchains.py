@@ -7,7 +7,7 @@ import platform
 import stat
 import subprocess
 import tempfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -410,6 +410,141 @@ _EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES = 11_573_800
 _EXPECTED_DOTNET_APPHOST_PACK_TREE_FILE_COUNT = 7
 _EXPECTED_DOTNET_HOSTFXR_SHA256 = "9387e328807ac3d29fb0f203bbefdf07d10d4e2200e307515ac16273657267a2"
 _EXPECTED_DOTNET_HOSTPOLICY_SHA256 = "145952fb2f06831089127216152a3e4c47ab7ffb74ddaaf4cd06410314de57ff"
+
+
+@dataclass(frozen=True)
+class HomebrewRouteBundleProfile:
+    """One exact Homebrew bundle closure for one authenticated host image."""
+
+    profile_id: str
+    image_version: str
+    product_version: str
+    build_version: str
+    dotnet_muxer_sha256: str
+    dotnet_muxer_bytes: int
+    dotnet_sdk_tree_sha256: str
+    dotnet_sdk_tree_bytes: int
+    dotnet_hostfxr_tree_sha256: str
+    dotnet_hostfxr_tree_bytes: int
+    dotnet_runtime_tree_sha256: str
+    dotnet_runtime_tree_bytes: int
+    dotnet_reference_pack_tree_sha256: str
+    dotnet_reference_pack_tree_bytes: int
+    dotnet_apphost_pack_tree_sha256: str
+    dotnet_apphost_pack_tree_bytes: int
+    dotnet_hostfxr_sha256: str
+    dotnet_hostpolicy_sha256: str
+    php_tree_sha256: str
+    php_tree_bytes: int
+
+
+_HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
+    profile_id="local-macos26-20260904",
+    image_version="",
+    product_version="26.6.2",
+    build_version="25G83",
+    dotnet_muxer_sha256=_EXPECTED_DOTNET_MUXER_SHA256,
+    dotnet_muxer_bytes=_EXPECTED_DOTNET_MUXER_BYTES,
+    dotnet_sdk_tree_sha256=_EXPECTED_DOTNET_SDK_TREE_SHA256,
+    dotnet_sdk_tree_bytes=_EXPECTED_DOTNET_SDK_TREE_BYTES,
+    dotnet_hostfxr_tree_sha256=_EXPECTED_DOTNET_HOSTFXR_TREE_SHA256,
+    dotnet_hostfxr_tree_bytes=_EXPECTED_DOTNET_HOSTFXR_TREE_BYTES,
+    dotnet_runtime_tree_sha256=_EXPECTED_DOTNET_RUNTIME_TREE_SHA256,
+    dotnet_runtime_tree_bytes=_EXPECTED_DOTNET_RUNTIME_TREE_BYTES,
+    dotnet_reference_pack_tree_sha256=_EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256,
+    dotnet_reference_pack_tree_bytes=_EXPECTED_DOTNET_REFERENCE_PACK_TREE_BYTES,
+    dotnet_apphost_pack_tree_sha256=_EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256,
+    dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
+    dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
+    dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
+    php_tree_sha256="8c4459ea3d6603c87b85ca6c07fac8d255180f4404b59c3b778230edacd7fb0f",
+    php_tree_bytes=129_952_837,
+)
+_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_LOCAL_PROFILE,
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
+)
+_HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
+    profile_id="github-macos26-20260831.0337.3",
+    image_version="20260831.0337.3",
+    product_version="26.6.2",
+    build_version="25G83",
+    dotnet_muxer_sha256="09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4",
+    dotnet_muxer_bytes=141_184,
+    dotnet_sdk_tree_sha256="705c14f47e293f8bed4e9924ef978d6f8108f33a457714eb2984aed55a910bde",
+    dotnet_sdk_tree_bytes=360_223_456,
+    dotnet_hostfxr_tree_sha256="faf0f7a009c3591536e82382b0e8fbe528fa383c2534f007f92430b4493d68af",
+    dotnet_hostfxr_tree_bytes=419_312,
+    dotnet_runtime_tree_sha256="c44bc66af88be13dd791a9880ee2984689f03e3b49a1b6a89408c1aab72300f0",
+    dotnet_runtime_tree_bytes=81_268_495,
+    dotnet_reference_pack_tree_sha256="08036f3b9c582ad2d33227b968439da208796f403efb0b2a157c5969fa8816d6",
+    dotnet_reference_pack_tree_bytes=40_730_732,
+    dotnet_apphost_pack_tree_sha256="9bd82f2a3648305e3d5f025f0b9e2501a63249b899471c8b474969465f1e26d9",
+    dotnet_apphost_pack_tree_bytes=11_486_272,
+    dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
+    dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
+    php_tree_sha256="4f843fe1f832caa829272aa0aa6505d306d729fb84d70a3daad93b9eea559624",
+    php_tree_bytes=129_952_809,
+)
+_HOMEBREW_ROUTE_HOST_PROFILES = (
+    _HOMEBREW_ROUTE_LOCAL_PROFILE,
+    _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE,
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+)
+
+
+def _select_homebrew_route_bundle_profile(
+    *, image_version: str, product_version: str, build_version: str
+) -> HomebrewRouteBundleProfile:
+    matches = tuple(
+        profile
+        for profile in _HOMEBREW_ROUTE_HOST_PROFILES
+        if profile.image_version == image_version
+        and profile.product_version == product_version
+        and profile.build_version == build_version
+    )
+    if len(matches) != 1:
+        observed = "/".join((image_version or "local", product_version, build_version))
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH:observed={observed}"
+        )
+    return matches[0]
+
+
+@cache
+def homebrew_route_bundle_profile() -> HomebrewRouteBundleProfile:
+    """Bind .NET and PHP bytes to one local or authenticated hosted image."""
+
+    if platform.system() != "Darwin" or platform.machine() != "arm64":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_HOMEBREW_HOST_PLATFORM_MISMATCH:expected=Darwin/arm64:"
+            f"observed={platform.system()}/{platform.machine()}"
+        )
+    image_version = os.environ.get("ImageVersion", "").strip()
+    if image_version:
+        required_environment = {
+            "GITHUB_ACTIONS": "true",
+            "RUNNER_ENVIRONMENT": "github-hosted",
+            "ImageOS": "macos26",
+        }
+        drift = tuple(
+            key
+            for key, expected in required_environment.items()
+            if os.environ.get(key, "").strip() != expected
+        )
+        if drift:
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:"
+                + ",".join(drift)
+            )
+    return _select_homebrew_route_bundle_profile(
+        image_version=image_version,
+        product_version=_output(["/usr/bin/sw_vers", "-productVersion"], include_stderr=False),
+        build_version=_output(["/usr/bin/sw_vers", "-buildVersion"], include_stderr=False),
+    )
 
 
 def _dotnet_directory_chain(directory: Path, failure: str) -> tuple[tuple[object, ...], ...]:
@@ -882,6 +1017,7 @@ def _dotnet_bundle_identity() -> dict[str, object]:
             "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:csharp:expected=Darwin/arm64:"
             f"observed={platform.system()}/{platform.machine()}"
         )
+    bundle_profile = homebrew_route_bundle_profile()
     wrapper = _dotnet_file_binding(
         _EXPECTED_DOTNET_WRAPPER,
         _EXPECTED_DOTNET_CELLAR,
@@ -927,38 +1063,38 @@ def _dotnet_bundle_identity() -> dict[str, object]:
         },
         "muxer": {
             "path": str(_EXPECTED_DOTNET_MUXER),
-            "bytes": _EXPECTED_DOTNET_MUXER_BYTES,
-            "sha256": _EXPECTED_DOTNET_MUXER_SHA256,
+            "bytes": bundle_profile.dotnet_muxer_bytes,
+            "sha256": bundle_profile.dotnet_muxer_sha256,
         },
         "sdk": {
             "path": str(_EXPECTED_DOTNET_SDK),
-            "bytes": _EXPECTED_DOTNET_SDK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_sdk_tree_bytes,
             "file_count": _EXPECTED_DOTNET_SDK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_SDK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_sdk_tree_sha256,
         },
         "hostfxr": {
             "path": str(_EXPECTED_DOTNET_HOSTFXR),
-            "bytes": _EXPECTED_DOTNET_HOSTFXR_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_hostfxr_tree_bytes,
             "file_count": _EXPECTED_DOTNET_HOSTFXR_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_HOSTFXR_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_hostfxr_tree_sha256,
         },
         "runtime": {
             "path": str(_EXPECTED_DOTNET_RUNTIME),
-            "bytes": _EXPECTED_DOTNET_RUNTIME_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_runtime_tree_bytes,
             "file_count": _EXPECTED_DOTNET_RUNTIME_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_RUNTIME_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_runtime_tree_sha256,
         },
         "reference_pack": {
             "path": str(_EXPECTED_DOTNET_REFERENCE_PACK),
-            "bytes": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_reference_pack_tree_bytes,
             "file_count": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_reference_pack_tree_sha256,
         },
         "apphost_pack": {
             "path": str(_EXPECTED_DOTNET_APPHOST_PACK),
-            "bytes": _EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
+            "bytes": bundle_profile.dotnet_apphost_pack_tree_bytes,
             "file_count": _EXPECTED_DOTNET_APPHOST_PACK_TREE_FILE_COUNT,
-            "sha256": _EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256,
+            "sha256": bundle_profile.dotnet_apphost_pack_tree_sha256,
         },
     }
     observed = {
@@ -972,8 +1108,8 @@ def _dotnet_bundle_identity() -> dict[str, object]:
     }
     if (
         observed != expected
-        or hostfxr_binary["sha256"] != _EXPECTED_DOTNET_HOSTFXR_SHA256
-        or hostpolicy_binary["sha256"] != _EXPECTED_DOTNET_HOSTPOLICY_SHA256
+        or hostfxr_binary["sha256"] != bundle_profile.dotnet_hostfxr_sha256
+        or hostpolicy_binary["sha256"] != bundle_profile.dotnet_hostpolicy_sha256
     ):
         diagnostic = {
             "bundle": observed,
@@ -988,6 +1124,7 @@ def _dotnet_bundle_identity() -> dict[str, object]:
         )
     return {
         **observed,
+        "homebrew_bundle_profile_id": bundle_profile.profile_id,
         "hostfxr_binary": hostfxr_binary,
         "hostpolicy_binary": hostpolicy_binary,
     }
@@ -1007,6 +1144,7 @@ def _dotnet_profile(identity: dict[str, object]) -> tuple[str, ...]:
         "dotnet-profile-schema=v1",
         "platform=Darwin/arm64",
         "distribution=Homebrew-dotnet",
+        f"homebrew-bundle-profile={identity['homebrew_bundle_profile_id']}",
         f"dotnet-root={_EXPECTED_DOTNET_ROOT}",
         f"sdk-version={_EXPECTED_DOTNET_VERSION}",
         f"hostfxr-version={_EXPECTED_DOTNET_RUNTIME_VERSION}",
@@ -4409,6 +4547,7 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
 
 
 def _php_tree_identity() -> dict[str, object]:
+    bundle_profile = homebrew_route_bundle_profile()
     identity = php_tree_identity(
         _EXPECTED_PHP_ROOT,
         _EXPECTED_PHP_ANCHOR,
@@ -4416,11 +4555,11 @@ def _php_tree_identity() -> dict[str, object]:
     )
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
-        "sha256": _EXPECTED_PHP_TREE_SHA256,
+        "sha256": bundle_profile.php_tree_sha256,
         "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
         "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
         "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
-        "bytes": _EXPECTED_PHP_TREE_BYTES,
+        "bytes": bundle_profile.php_tree_bytes,
         "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
@@ -4431,7 +4570,10 @@ def _php_tree_identity() -> dict[str, object]:
             + ":observed="
             + json.dumps(identity, sort_keys=True, separators=(",", ":"))
         )
-    return identity
+    return {
+        **identity,
+        "homebrew_bundle_profile_id": bundle_profile.profile_id,
+    }
 
 
 def _php_runtime_identity() -> dict[str, object]:
@@ -4588,6 +4730,7 @@ def _php() -> ExactToolchain:
         profile=(
             "php-toolchain-closure-schema=v1",
             "platform=Darwin/arm64",
+            f"homebrew-bundle-profile={tree_after['homebrew_bundle_profile_id']}",
             f"php-root={_EXPECTED_PHP_ROOT}",
             f"php-tree-sha256={tree_after['sha256']}",
             f"php-tree-record-count={tree_after['record_count']}",

@@ -197,6 +197,41 @@ def main() -> int:
     ):
         print("GATE FAIL: route source/target tuple does not match route_key", file=sys.stderr)
         return 2
+    if v3:
+        try:
+            evidence = load(route / "certification" / "evidence.json")
+            certification = load(route / "certification" / "certification.json")
+            support = load(route / "support-matrix.json")
+        except Exception as exc:
+            print(f"GATE FAIL: V3 research contract is unreadable: {exc}", file=sys.stderr)
+            return 2
+        failures: list[str] = []
+        validate_v3_research_route_contract(
+            manifest,
+            support,
+            evidence,
+            certification,
+            failures,
+        )
+        status = str(manifest.get("status", "")).lower()
+        if str(certification.get("status", "")).lower() != status:
+            failures.append("route and certification statuses must match")
+        if not manifest.get("maintenance_owner"):
+            failures.append("maintenance owner is missing")
+        if not manifest.get("review_date"):
+            failures.append("review date is missing")
+        if failures:
+            print(
+                "\n".join(f"GATE FAIL: {failure}" for failure in failures),
+                file=sys.stderr,
+            )
+            print(f"GATE WALL: {time.monotonic() - started:.3f}s", file=sys.stderr)
+            return 2
+        print(
+            f"GATE PASS: {route_key} status={status} "
+            f"decision=NOT_CERTIFIED wall_seconds={time.monotonic() - started:.3f}"
+        )
+        return 0
     validator = Path(__file__).with_name("validate_route.py")
     original_argv = sys.argv[:]
     try:
@@ -214,15 +249,6 @@ def main() -> int:
     status = str(manifest.get("status", "")).lower()
     certification_status = str(certification.get("status", "")).lower()
     failures: list[str] = []
-
-    if v3:
-        validate_v3_research_route_contract(
-            manifest,
-            support,
-            evidence,
-            certification,
-            failures,
-        )
 
     if specialized:
         profiles = manifest.get("profiles", {})

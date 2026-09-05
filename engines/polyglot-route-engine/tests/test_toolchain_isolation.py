@@ -486,6 +486,52 @@ def test_csharp_toolchain_binds_full_console_build_and_runtime_bundle() -> None:
         toolchains.verify_csharp_toolchain(tampered)
 
 
+def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
+    local = toolchains._select_homebrew_route_bundle_profile(
+        image_version="",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+    legacy_hosted = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260728.0273.1",
+        product_version="26.5.2",
+        build_version="25F84",
+    )
+    current_hosted = toolchains._select_homebrew_route_bundle_profile(
+        image_version="20260831.0337.3",
+        product_version="26.6.2",
+        build_version="25G83",
+    )
+
+    assert local.profile_id == "local-macos26-20260904"
+    assert legacy_hosted.dotnet_muxer_sha256 == local.dotnet_muxer_sha256
+    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert current_hosted.dotnet_muxer_sha256 == (
+        "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
+    )
+    assert current_hosted.php_tree_sha256 == (
+        "4f843fe1f832caa829272aa0aa6505d306d729fb84d70a3daad93b9eea559624"
+    )
+    assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
+    assert current_hosted.php_tree_bytes != local.php_tree_bytes
+
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
+        toolchains._select_homebrew_route_bundle_profile(
+            image_version="20990101.0000.0",
+            product_version="26.6.2",
+            build_version="25G83",
+        )
+
+
+def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
+    selected = toolchains.exact_toolchain("php")
+    bundle_profile = toolchains.homebrew_route_bundle_profile()
+
+    assert f"homebrew-bundle-profile={bundle_profile.profile_id}" in selected.profile
+    assert f"php-tree-sha256={bundle_profile.php_tree_sha256}" in selected.profile
+    assert f"php-tree-bytes={bundle_profile.php_tree_bytes}" in selected.profile
+
+
 def test_dotnet_tree_rejects_parent_symlink_escape(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
