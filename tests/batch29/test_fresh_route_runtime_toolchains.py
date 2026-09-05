@@ -726,6 +726,9 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
         assert environment["PATH"] == "/fixed/bin:/bin:/usr/bin"
         assert environment["ELMOS_JAVA21_HOME"] == "/fixed/java/Contents/Home"
         assert environment["ELMOS_JAVA21_DISTRIBUTION"] == "temurin"
+        assert environment["CI"] == "true"
+        assert environment["GITHUB_ACTIONS"] == "true"
+        assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "java-python"
         assert "JAVA_HOME" not in environment
         assert "_JAVA_OPTIONS" not in environment
         assert command[command.index("run") + 1] == "--no-dev"
@@ -741,6 +744,9 @@ def test_fresh_runtime_forwards_only_explicit_archive_input(
     monkeypatch.setenv("ELMOS_BATCH29_PYTHON_ARCHIVE", "/private/tmp/ambient")
     monkeypatch.setenv("ELMOS_JAVA21_HOME", "/fixed/java/Contents/Home")
     monkeypatch.setenv("ELMOS_JAVA21_DISTRIBUTION", "temurin")
+    monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "java-python")
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("JAVA_HOME", "/hostile/java")
     monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
