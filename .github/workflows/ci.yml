@@ -181,8 +181,8 @@ jobs:
           # runner-writable checkout path, and /usr/bin/python3 is root-owned.
           test -x /usr/bin/python3
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           /usr/bin/sudo -- /usr/bin/python3 -I -B - \
             --seal --image-os "${ImageOS}" --image-version "${ImageVersion}" \
             <scripts/toolchains/verify_openssl3_ci_runtime.py
@@ -214,8 +214,8 @@ jobs:
           openssl_opt_bin="/opt/homebrew/opt/openssl@3/bin/openssl"
           openssl_receipt="/opt/homebrew/Cellar/openssl@3/3.6.3/INSTALL_RECEIPT.json"
           test "$(/usr/bin/uname -m)" = "arm64"
-          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"
-          test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"
+          test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"
+          test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"
           test -f "${openssl_bin}"
           test -x "${openssl_bin}"
           test -f "${openssl_receipt}"
@@ -613,6 +613,8 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
+      - name: Set up Rust 1.89.0
+        uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
       - name: Verify installed Project Synthesis distribution boundary
@@ -624,6 +626,7 @@ jobs:
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
         run: |
+          cargo build --locked --release --manifest-path ../../native/rust-core/Cargo.toml
           uv sync --locked
           uv run pytest
           uv run ruff check src tests
@@ -771,6 +774,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22.23.1"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -884,6 +891,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -939,6 +950,10 @@ jobs:
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "22"
+      - name: Install exact SQL Runner Python 3.14.6
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.14.6"
       - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
@@ -1068,6 +1083,11 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # Batch 30 validates a receipt that is deliberately bound to an
+          # earlier repository head. Preserve that object instead of weakening
+          # the receipt check on the default shallow checkout.
+          fetch-depth: 0
       - name: Set up Python 3.14.6
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:

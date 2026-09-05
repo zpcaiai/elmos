@@ -71,7 +71,8 @@ class BatchOneToThirteenAssuranceTest {
 
     @Test
     void skillPacksAndVerificationReportsCoverAllBatches() throws IOException {
-        assertEquals(37, countSkills(root.resolve("agent-skills/build")));
+        assertFalse(Files.exists(root.resolve("agent-skills/build")),
+                "retired duplicate build Skill root must not be restored");
         assertTrue(countSkills(root.resolve("agent-skills/runtime")) >= 1647,
                 "runtime Skill count must not fall below the 1,647-Skill baseline; additive Skills are allowed");
         assertEquals(32, countSkills(root.resolve("agent-skills/build-test-feedback")));
@@ -105,7 +106,7 @@ class BatchOneToThirteenAssuranceTest {
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/IMPORT_AUDIT.md")));
         assertTrue(Files.isRegularFile(root.resolve("docs/test-suite/VALIDATION.md")));
         int[] matureSkillCounts = {20, 20, 22, 20, 20, 22, 22, 18, 36, 22, 22, 24, 20, 22, 20, 20, 22};
-        int[] matureSchemaCounts = {11, 11, 19, 20, 8, 10, 26, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
+        int[] matureSchemaCounts = {11, 15, 19, 20, 8, 10, 26, 12, 25, 16, 16, 17, 16, 17, 17, 18, 18};
         for (int offset = 0; offset < matureSkillCounts.length; offset++) {
             int batch = 29 + offset;
             assertEquals(matureSkillCounts[offset], countSkillsWithPrefix(

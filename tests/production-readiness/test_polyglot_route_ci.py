@@ -227,9 +227,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('source.get("spec") == "stable"', frontend_job)
         self.assertIn("packages.arm64_sequoia.jws.json", frontend_job)
         for pinned_value in (
-            "20260727.0256.1",
-            "15.7.7",
-            "24G720",
+            "20260829.0321.1",
+            "15.7.9",
+            "24G830",
             "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
             "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
             "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
@@ -282,11 +282,11 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertIn('test "$(command -v openssl)" = "${openssl_bin}"', frontend_job)
         for step in (root_seal_step, bind_step):
             self.assertIn(
-                'test "$(/usr/bin/sw_vers -productVersion)" = "15.7.7"',
+                'test "$(/usr/bin/sw_vers -productVersion)" = "15.7.9"',
                 step,
             )
             self.assertIn(
-                'test "$(/usr/bin/sw_vers -buildVersion)" = "24G720"',
+                'test "$(/usr/bin/sw_vers -buildVersion)" = "24G830"',
                 step,
             )
 
@@ -347,12 +347,12 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
                 "--image-os",
                 "macos15",
                 "--image-version",
-                "20260727.0256.1",
+                "20260829.0321.1",
             ]
         )
         self.assertTrue(arguments.seal)
         self.assertEqual(arguments.image_os, "macos15")
-        self.assertEqual(arguments.image_version, "20260727.0256.1")
+        self.assertEqual(arguments.image_version, "20260829.0321.1")
 
     def test_openssl_host_contract_pins_product_and_build(self) -> None:
         verifier_path = ROOT / "scripts/toolchains/verify_openssl3_ci_runtime.py"
@@ -366,13 +366,13 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         product = subprocess.CompletedProcess(
             args=["/usr/bin/sw_vers", "-productVersion"],
             returncode=0,
-            stdout="15.7.7\n",
+            stdout="15.7.9\n",
             stderr="",
         )
         build = subprocess.CompletedProcess(
             args=["/usr/bin/sw_vers", "-buildVersion"],
             returncode=0,
-            stdout="24G720\n",
+            stdout="24G830\n",
             stderr="",
         )
 
@@ -385,7 +385,7 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             ),
             mock.patch.object(verifier, "_run", side_effect=(product, build)) as run_mock,
         ):
-            verifier._verify_host("macos15", "20260727.0256.1")
+            verifier._verify_host("macos15", "20260829.0321.1")
 
         self.assertEqual(run_mock.call_count, 2)
         with (
