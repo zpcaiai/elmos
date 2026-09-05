@@ -2507,7 +2507,7 @@ print('\\n'.join(failures))
         swift_definition_names = {
             name for name in schemas[0]["$defs"] if name.startswith("swift_")
         }
-        self.assertEqual(len(swift_definition_names), 38)
+        self.assertEqual(len(swift_definition_names), 40)
         self.assertEqual(
             swift_definition_names,
             {name for name in schemas[1]["$defs"] if name.startswith("swift_")},
@@ -2534,6 +2534,14 @@ print('\\n'.join(failures))
             }
             self.assertEqual(
                 list(Draft202012Validator(receipt_contract).iter_errors(receipt)),
+                [],
+            )
+            hybrid = copy.deepcopy(receipt)
+            hybrid["toolchain"]["profile"][1] = (
+                "apple-host-profile=github-macos26-20260728.0273.1"
+            )
+            self.assertNotEqual(
+                list(Draft202012Validator(receipt_contract).iter_errors(hybrid)),
                 [],
             )
         mirror = receipt["dependency"]["mirror"]
