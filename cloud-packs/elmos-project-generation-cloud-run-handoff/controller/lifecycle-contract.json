@@ -1,0 +1,185 @@
+{
+  "schema_version": "elmos.cloud-run-lifecycle-contract.v1",
+  "pack_key": "elmos-project-generation-cloud-run-handoff",
+  "exact_target": {
+    "provider": "google-cloud",
+    "api": "cloud-run-v2",
+    "region": "asia-east1",
+    "ingress": "internal",
+    "allow_unauthenticated": false,
+    "image": "artifact-registry-regional-digest-only",
+    "runtime_identity": "dedicated-service-account",
+    "secret_versions": "immutable-numeric-only-required-but-not-implemented",
+    "control_plane_network_bridge": "required-but-not-implemented"
+  },
+  "lifecycle": {
+    "initial_state": "PLANNED",
+    "terminal_states": [
+      "PROMOTED",
+      "ABORTED",
+      "ROLLED_BACK",
+      "DESTROYED",
+      "BLOCKED_RECONCILIATION_REQUIRED"
+    ],
+    "actions": [
+      {
+        "name": "plan",
+        "mutating": false,
+        "requires": [],
+        "success_state": "PLANNED",
+        "required_observations": [
+          "exact_target_tuple",
+          "immutable_image_digest",
+          "dedicated_runtime_identity",
+          "private_ingress",
+          "immutable_secret_versions",
+          "budget_and_owner",
+          "no_unapproved_replacement_or_deletion"
+        ]
+      },
+      {
+        "name": "canary",
+        "mutating": true,
+        "requires": ["plan:PASSED", "authorization:canary"],
+        "success_state": "CANARY_HEALTHY_ZERO_TRAFFIC",
+        "required_observations": [
+          "candidate_revision_exact",
+          "candidate_image_digest_exact",
+          "traffic_percent_zero",
+          "authenticated_private_health_passed"
+        ]
+      },
+      {
+        "name": "promote",
+        "mutating": true,
+        "requires": ["canary:PASSED", "authorization:promote"],
+        "success_state": "PROMOTED",
+        "required_observations": [
+          "candidate_revision_traffic_100",
+          "post_promotion_private_health_passed"
+        ]
+      },
+      {
+        "name": "abort",
+        "mutating": true,
+        "requires": ["canary:PASSED", "authorization:abort"],
+        "success_state": "ABORTED",
+        "required_observations": [
+          "candidate_receives_zero_traffic",
+          "candidate_revision_deleted_or_retained_by_approved_policy",
+          "previous_revision_traffic_unchanged"
+        ]
+      },
+      {
+        "name": "rollback",
+        "mutating": true,
+        "requires": ["promote:PASSED", "authorization:rollback"],
+        "success_state": "ROLLED_BACK",
+        "required_observations": [
+          "previous_revision_traffic_100",
+          "post_rollback_private_health_passed"
+        ]
+      },
+      {
+        "name": "destroy",
+        "mutating": true,
+        "requires": ["authorization:destroy"],
+        "success_state": "DESTROYED",
+        "required_observations": [
+          "service_absent",
+          "owned_resource_inventory_bound"
+        ]
+      },
+      {
+        "name": "orphan",
+        "mutating": false,
+        "requires": ["destroy:PASSED"],
+        "success_state": "NO_ORPHANS",
+        "required_observations": [
+          "unknown_resource_count_zero",
+          "orphan_resource_count_zero",
+          "billable_orphan_count_zero"
+        ]
+      },
+      {
+        "name": "drift",
+        "mutating": false,
+        "requires": ["plan:PASSED"],
+        "success_state": "NO_UNKNOWN_DRIFT",
+        "required_observations": [
+          "desired_config_digest_exact",
+          "unknown_drift_count_zero",
+          "protected_replacement_count_zero",
+          "protected_deletion_count_zero"
+        ]
+      },
+      {
+        "name": "cost",
+        "mutating": false,
+        "requires": ["plan:PASSED"],
+        "success_state": "WITHIN_BUDGET",
+        "required_observations": [
+          "currency_usd",
+          "forecast_within_monthly_limit",
+          "test_spend_within_limit",
+          "all_material_categories_included"
+        ]
+      }
+    ]
+  },
+  "authorization": {
+    "separate_actions": ["canary", "promote", "abort", "rollback", "destroy"],
+    "maximum_lifetime_seconds": 86400,
+    "config_digest_bound": true,
+    "project_region_service_bound": true,
+    "executor_approver_separation": true,
+    "reuse_across_actions_forbidden": true
+  },
+  "evidence": {
+    "schema_version": "elmos.cloud-run-lifecycle-evidence.v1",
+    "required_action_records": [
+      "plan",
+      "canary",
+      "promote",
+      "abort",
+      "rollback",
+      "destroy",
+      "orphan",
+      "drift",
+      "cost"
+    ],
+    "required_artifact_roles": [
+      "provider-plan",
+      "canary-describe",
+      "canary-health",
+      "promotion-traffic",
+      "abort-drill",
+      "rollback-drill",
+      "destroy-observation",
+      "orphan-inventory",
+      "drift-inventory",
+      "cost-observation"
+    ],
+    "independent_verifier_required": true,
+    "synthetic_external_evidence_forbidden": true,
+    "unknown_provider_outcome": "BLOCKED_RECONCILIATION_REQUIRED",
+    "local_controller_maximum_decision": "LOCAL_CONTRACT_VALID",
+    "external_provider_evidence": "REJECTED_REQUIRES_BATCH33_GATE",
+    "certification_effect": "NONE_REQUIRES_BATCH33_GATE"
+  },
+  "current_external_status": {
+    "plan": "NOT_RUN",
+    "canary": "NOT_RUN",
+    "promote": "NOT_RUN",
+    "abort": "NOT_RUN",
+    "rollback": "NOT_RUN",
+    "destroy": "NOT_RUN",
+    "orphan": "NOT_RUN",
+    "drift": "NOT_RUN",
+    "cost": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "immutable_secret_version_refs": "BLOCKED_NOT_IMPLEMENTED",
+    "vercel_to_internal_cloud_run_network_bridge": "BLOCKED_NOT_IMPLEMENTED"
+  }
+}
