@@ -4752,12 +4752,17 @@ print('\\n'.join(failures))
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError("FUNCTION_NOT_FOUND"),
+                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
             ):
                 reference = runner.execute_negative(
                     route, fixtures, "python", "typescript"
                 )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
+            evidence = json.loads((route / reference).read_text())
+            self.assertEqual(
+                evidence["observed_reason"],
+                runner.MISSING_SYMBOL_FAILURE,
+            )
             self.assertTrue((route / "certification" / "gate-report.md").is_file())
             self.assertTrue((route / "README.md").is_file())
             self.assertIn(
