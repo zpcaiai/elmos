@@ -1,23 +1,13 @@
 {
-  "cases": [
-    {
-      "case_id": "missing-symbol-fails-closed",
-      "expected_result": "BLOCKED",
-      "observed_reason": null,
-      "status": "NOT_RUN"
-    },
-    {
-      "case_id": "undeclared-directed-route-fails-closed",
-      "expected_result": "BLOCKED",
-      "observed_reason": null,
-      "status": "NOT_RUN"
-    }
-  ],
+  "case": "missing-function-fails-closed",
   "expected_result": "BLOCKED",
   "external_certification": "NOT_RUN",
   "independent_verifier": "NOT_RUN",
+  "observed_reason": "FUNCTION_NOT_FOUND:__elmos_missing_function__",
   "route": "cpp-to-csharp",
   "schema_version": 1,
-  "status": "NOT_RUN",
+  "source_native_analyzer": "EXECUTED",
+  "status": "PASSED",
+  "target_execution": "NOT_REACHED_BY_DESIGN",
   "test_integrity": "PRESERVED"
 }

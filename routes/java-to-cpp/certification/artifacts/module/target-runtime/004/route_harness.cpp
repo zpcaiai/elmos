@@ -39,19 +39,19 @@
 }
 
 int main() {
-    const auto actual_0 = difference(9, 4);
+    const auto actual_0 = elmos_fn_a83e40c09f4bf5d9(9, 4);
     const auto expected_0 = 5;
     if (actual_0 != expected_0) return 1;
     std::cout << "ELMOS_OBSERVATION\t0\ti64-dec\t" << std::to_string(actual_0) << "\n";
-    const auto actual_1 = difference(4, 9);
+    const auto actual_1 = elmos_fn_a83e40c09f4bf5d9(4, 9);
     const auto expected_1 = -5;
     if (actual_1 != expected_1) return 2;
     std::cout << "ELMOS_OBSERVATION\t1\ti64-dec\t" << std::to_string(actual_1) << "\n";
-    const auto actual_2 = difference(0, 0);
+    const auto actual_2 = elmos_fn_a83e40c09f4bf5d9(0, 0);
     const auto expected_2 = 0;
     if (actual_2 != expected_2) return 3;
     std::cout << "ELMOS_OBSERVATION\t2\ti64-dec\t" << std::to_string(actual_2) << "\n";
-    const auto actual_3 = difference(-7, -10);
+    const auto actual_3 = elmos_fn_a83e40c09f4bf5d9(-7, -10);
     const auto expected_3 = 3;
     if (actual_3 != expected_3) return 4;
     std::cout << "ELMOS_OBSERVATION\t3\ti64-dec\t" << std::to_string(actual_3) << "\n";

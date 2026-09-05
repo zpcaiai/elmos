@@ -9,6 +9,7 @@ import importlib
 import json
 import math
 import os
+import platform
 import re
 import shutil
 import stat
@@ -19,29 +20,76 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+MISSING_SYMBOL_FAILURE = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
 ENGINE_RUNTIME_MODULES = {
     "elmos_polyglot_route.equivalence": "elmos_polyglot_route/equivalence.py",
     "elmos_polyglot_route.models": "elmos_polyglot_route/models.py",
     "elmos_polyglot_route.engine": "elmos_polyglot_route/engine.py",
     "elmos_polyglot_route.emitter": "elmos_polyglot_route/emitter.py",
+    "elmos_polyglot_route.identifier_hygiene": "elmos_polyglot_route/identifier_hygiene.py",
     "elmos_polyglot_route.types": "elmos_polyglot_route/types.py",
     "elmos_polyglot_route.canonical": "elmos_polyglot_route/canonical.py",
     "elmos_polyglot_route.native": "elmos_polyglot_route/native.py",
     "elmos_polyglot_route.clang_analyzer": "elmos_polyglot_route/clang_analyzer.py",
     "elmos_polyglot_route.python_analyzer": "elmos_polyglot_route/python_analyzer.py",
+    "elmos_polyglot_route.repository": "elmos_polyglot_route/repository.py",
     "elmos_polyglot_route.toolchains": "elmos_polyglot_route/toolchains.py",
     "elmos_polyglot_route.validation": "elmos_polyglot_route/validation.py",
 }
+ENGINE_RUNTIME_PROJECT_RELATIVE = "engines/polyglot-route-engine"
+ENGINE_RUNTIME_MODULE_REPOSITORY_PATHS = {
+    module_name: (f"{ENGINE_RUNTIME_PROJECT_RELATIVE}/src/{module_relative}")
+    for module_name, module_relative in ENGINE_RUNTIME_MODULES.items()
+}
+ENGINE_SOURCE_REQUIRED_ASSETS = frozenset(
+    {
+        *ENGINE_RUNTIME_MODULE_REPOSITORY_PATHS.values(),
+        f"{ENGINE_RUNTIME_PROJECT_RELATIVE}/uv.lock",
+        "scripts/batch29/run_polyglot_routes.py",
+        "scripts/batch29/validate_route.py",
+    }
+)
+ENGINE_SOURCE_MANIFEST_FILE_KEYS = {
+    "repository_path",
+    "captured_path",
+    "sha256",
+    "bytes",
+}
 PINNED_Z3_VERSION = "4.16.0"
+PYTHON_CAPTURED_ARCHIVE_RELATIVE = (
+    "runtime/python/sha256-"
+    "22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84.tar.gz"
+)
+PYTHON_SOURCE_ARCHIVE_SHA256 = (
+    "22625deaf5757e7c266cf1a096c9151a06b598b1e14632a2ec9993d58ec5fe84"
+)
+PYTHON_SOURCE_ARCHIVE_BYTES = 17_667_661
+PYTHON_SOURCE_TREE_SHA256 = (
+    "1400403c757cb4da3ce2df42d17d02e1368c54afd46bbed71ae84e25d081a154"
+)
+TYPESCRIPT_CAPTURED_ROOT_RELATIVE = (
+    "runtime/typescript/sha256-"
+    "61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
+)
+TYPESCRIPT_SOURCE_MANIFEST_SHA256 = (
+    "61c079831c707d58ee72cda08c279d3575f24f4d87f13d93aeed00b1d11a225a"
+)
+TYPESCRIPT_RUNTIME_MANIFEST_SHA256 = (
+    "2157e43e757e433c733e144df7409a54f5040faa22af4a9b13de977a663fd939"
+)
+TYPESCRIPT_COMPILER_CLOSURE_SHA256 = (
+    "aaab28fada5888d767a49f86d40e5a0c9073b23412257ccb3755e9c8fb8080d9"
+)
+TYPESCRIPT_COMPILER_FILE_COUNT = 108
+TYPESCRIPT_COMPILER_BYTES = 19_067_381
+SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES = 400_000_000
+SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES = 1_000_000_000
 
 SPECIALIZED_NEGATIVE_CASES = {
-    "java": frozenset(
-        {"java-int-width", "java-string-raw-reference-equality"}
-    ),
+    "java": frozenset({"java-int-width", "java-string-raw-reference-equality"}),
     "cpp": frozenset({"cpp-long-width", "cpp-unsigned-domain"}),
-    "objc": frozenset(
-        {"objc-nsinteger-width", "objc-nsstring-pointer-identity"}
-    ),
+    "objc": frozenset({"objc-nsinteger-width", "objc-nsstring-pointer-identity"}),
     "swift": frozenset({"swift-int-requires-int64", "swift-helper-tamper"}),
 }
 SPECIALIZED_COMMON_NEGATIVE_CASES = frozenset(
@@ -65,10 +113,7 @@ SPECIALIZED_NEGATIVE_ANALYZE_SPECS = {
     "swift-helper-tamper": ("swift", "quotient", True),
 }
 SPECIALIZED_NEGATIVE_INPUT_ROLES = {
-    **{
-        case_id: ("source",)
-        for case_id in SPECIALIZED_NEGATIVE_ANALYZE_SPECS
-    },
+    **{case_id: ("source",) for case_id in SPECIALIZED_NEGATIVE_ANALYZE_SPECS},
     "specialized-string-semantics-unsupported": ("source", "cases"),
     "specialized-number-arithmetic-unsupported": ("source", "cases"),
     "specialized-non-finite-case-unsupported": ("source", "cases"),
@@ -80,18 +125,12 @@ SPECIALIZED_NEGATIVE_INPUT_ROLES = {
     ),
 }
 SPECIALIZED_NEGATIVE_STATIC_REASONS = {
-    "java-int-width": frozenset(
-        {"JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"}
-    ),
+    "java-int-width": frozenset({"JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int"}),
     "java-string-raw-reference-equality": frozenset(
         {"JAVA_STRING_REFERENCE_EQUALITY_OUTSIDE_CERTIFIED_SUBSET"}
     ),
-    "cpp-long-width": frozenset(
-        {"CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long"}
-    ),
-    "cpp-unsigned-domain": frozenset(
-        {"CPP_UNSUPPORTED_TYPE:unsigned long long"}
-    ),
+    "cpp-long-width": frozenset({"CPP_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:long"}),
+    "cpp-unsigned-domain": frozenset({"CPP_UNSUPPORTED_TYPE:unsigned long long"}),
     "objc-nsinteger-width": frozenset(
         {"OBJC_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:NSInteger"}
     ),
@@ -131,6 +170,195 @@ SPECIALIZED_STRING_SOURCE_FILES = {
     "swift": "canonical_string_equality.swift",
 }
 
+NODEJS_NEGATIVE_ANALYZE_SOURCE_FILES = {
+    "nodejs-ambiguous-jsdoc-type-unsupported": "ambiguous_jsdoc_type.mjs",
+    "nodejs-async-function-unsupported": "async_function.mjs",
+    "nodejs-coercive-equality-unsupported": "coercive_equality.mjs",
+    "nodejs-dynamic-eval-unsupported": "dynamic_eval.mjs",
+    "nodejs-generator-function-unsupported": "generator_function.mjs",
+    "nodejs-import-unsupported": "module_import.mjs",
+    "nodejs-missing-jsdoc-unsupported": "missing_jsdoc.mjs",
+    "nodejs-promise-timer-unsupported": "promise_timer.mjs",
+    "nodejs-this-prototype-unsupported": "this_prototype.mjs",
+    "nodejs-top-level-side-effect-unsupported": "top_level_side_effect.mjs",
+}
+NODEJS_NEGATIVE_ANALYZE_FUNCTIONS = {
+    "nodejs-ambiguous-jsdoc-type-unsupported": "ambiguousType",
+    "nodejs-async-function-unsupported": "asyncValue",
+    "nodejs-coercive-equality-unsupported": "coerciveEqual",
+    "nodejs-dynamic-eval-unsupported": "dynamicEval",
+    "nodejs-generator-function-unsupported": "generateValue",
+    "nodejs-import-unsupported": "importedValue",
+    "nodejs-missing-jsdoc-unsupported": "missingJsdoc",
+    "nodejs-promise-timer-unsupported": "scheduleValue",
+    "nodejs-this-prototype-unsupported": "prototypeValue",
+    "nodejs-top-level-side-effect-unsupported": "topLevelValue",
+}
+NODEJS_NEGATIVE_SOURCE_EXTENSIONS = {
+    "java": "java",
+    "python": "py",
+    "csharp": "cs",
+    "typescript": "ts",
+    "javascript": "mjs",
+    "go": "go",
+    "rust": "rs",
+    "cpp": "cpp",
+    "objc": "m",
+    "swift": "swift",
+}
+NODEJS_GENERATED_NEGATIVE_SPECS = {
+    "nodejs-number-arithmetic-unsupported": (
+        "node_number_arithmetic",
+        "NodeNumberArithmetic",
+        "addNumber",
+        "NODEJS_NUMBER_ARITHMETIC_UNSUPPORTED",
+    ),
+    "nodejs-string-semantics-unsupported": (
+        "node_string_semantics",
+        "NodeStringSemantics",
+        "echoString",
+        "NODEJS_STRING_SEMANTICS_UNSUPPORTED",
+    ),
+    "nodejs-unsafe-integer-intermediate-boolean-unsupported": (
+        "node_unsafe_intermediate_boolean",
+        "NodeUnsafeIntermediateBoolean",
+        "positiveAfterAdd",
+        "NODEJS_CASE_UNSAFE_INTEGER_INTERMEDIATE_UNSUPPORTED",
+    ),
+    "nodejs-unsafe-integer-intermediate-integer-unsupported": (
+        "node_unsafe_intermediate_integer",
+        "NodeUnsafeIntermediateInteger",
+        "cancelAfterAdd",
+        "NODEJS_CASE_UNSAFE_INTEGER_INTERMEDIATE_UNSUPPORTED",
+    ),
+    "nodejs-unsafe-integer-intermediate-number-unsupported": (
+        "node_unsafe_intermediate_number",
+        "NodeUnsafeIntermediateNumber",
+        "chooseAfterAdd",
+        "NODEJS_CASE_UNSAFE_INTEGER_INTERMEDIATE_UNSUPPORTED",
+    ),
+    "nodejs-division-by-zero-unsupported": (
+        "node_divide_by_zero",
+        "NodeDivideByZero",
+        "divide",
+        "NODEJS_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN",
+    ),
+    "nodejs-modulo-by-zero-unsupported": (
+        "node_modulo_by_zero",
+        "NodeModuloByZero",
+        "remainder",
+        "NODEJS_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN",
+    ),
+    "nodejs-integer-overflow-unsupported": (
+        "node_integer_overflow",
+        "NodeIntegerOverflow",
+        "multiply",
+        "NODEJS_CASE_OUTSIDE_CANONICAL_NO_ERROR_DOMAIN",
+    ),
+}
+NODEJS_NEGATIVE_REASON_CODES = {
+    "nodejs-ambiguous-jsdoc-type-unsupported": frozenset(
+        {"JAVASCRIPT_EXACT_JSDOC_TYPE_REQUIRED:ambiguousType:value:Number"}
+    ),
+    "nodejs-async-function-unsupported": frozenset(
+        {"JAVASCRIPT_ASYNC_FUNCTION_OUTSIDE_CERTIFIED_SUBSET:asyncValue"}
+    ),
+    "nodejs-coercive-equality-unsupported": frozenset(
+        {"JAVASCRIPT_OPERATOR_UNSUPPORTED:EqualsEqualsToken"}
+    ),
+    "nodejs-commonjs-unsupported": frozenset({"JAVASCRIPT_CJS_SOURCE_BLOCKED"}),
+    "nodejs-dynamic-eval-unsupported": frozenset(
+        {"JAVASCRIPT_EXPRESSION_UNSUPPORTED:CallExpression"}
+    ),
+    "nodejs-generator-function-unsupported": frozenset(
+        {"JAVASCRIPT_FUNCTION_SHAPE_UNSUPPORTED:generateValue"}
+    ),
+    "nodejs-import-unsupported": frozenset(
+        {"JAVASCRIPT_MODULE_IMPORT_EXPORT_OUTSIDE_CERTIFIED_SUBSET"}
+    ),
+    "nodejs-missing-jsdoc-unsupported": frozenset(
+        {"JAVASCRIPT_EXACT_JSDOC_TAG_SET_REQUIRED:missingJsdoc"}
+    ),
+    "nodejs-promise-timer-unsupported": frozenset(
+        {"JAVASCRIPT_EXPRESSION_UNSUPPORTED:CallExpression"}
+    ),
+    "nodejs-this-prototype-unsupported": frozenset(
+        {"JAVASCRIPT_EXPRESSION_UNSUPPORTED:PropertyAccessExpression"}
+    ),
+    "nodejs-top-level-side-effect-unsupported": frozenset(
+        {"JAVASCRIPT_TOP_LEVEL_STATEMENT_OUTSIDE_CERTIFIED_SUBSET:ExpressionStatement"}
+    ),
+    "nodejs-non-finite-case-unsupported": frozenset(
+        {"NODEJS_CASE_NON_FINITE_NUMBER_UNSUPPORTED"}
+    ),
+    **{
+        case_id: frozenset({specification[3]})
+        for case_id, specification in NODEJS_GENERATED_NEGATIVE_SPECS.items()
+    },
+    "nodejs-unsafe-integer-case-unsupported": frozenset(
+        {"NODEJS_CASE_UNSAFE_INTEGER_UNSUPPORTED"}
+    ),
+    "nodejs-unsafe-integer-result-unsupported": frozenset(
+        {"NODEJS_CASE_UNSAFE_INTEGER_RESULT_UNSUPPORTED"}
+    ),
+    "undeclared-directed-route-fails-closed": frozenset(
+        {"SOURCE_AND_TARGET_MUST_DIFFER"}
+    ),
+    "missing-symbol-fails-closed": frozenset(
+        {"FUNCTION_NOT_FOUND"}
+    ),
+}
+NODEJS_NEGATIVE_INPUT_ROLES = {
+    **{case_id: ("source",) for case_id in NODEJS_NEGATIVE_ANALYZE_SOURCE_FILES},
+    **{case_id: ("source", "cases") for case_id in NODEJS_GENERATED_NEGATIVE_SPECS},
+    "nodejs-commonjs-unsupported": ("source", "cases"),
+    "nodejs-non-finite-case-unsupported": ("source", "cases"),
+    "nodejs-unsafe-integer-case-unsupported": ("source", "cases"),
+    "nodejs-unsafe-integer-result-unsupported": ("source", "cases"),
+    "nodejs-typescript-integer-contract-unsupported": (
+        "source-module",
+        "case-manifest",
+    ),
+    "undeclared-directed-route-fails-closed": (
+        "source-module",
+        "case-manifest",
+    ),
+    "missing-symbol-fails-closed": ("source", "cases"),
+}
+
+
+def _nodejs_route_error_code(reason: object) -> str | None:
+    """Return one exact Node.js domain code from a native wrapper or direct error."""
+
+    if not isinstance(reason, str) or not reason or "\n" in reason or "\r" in reason:
+        return None
+    detail = reason
+    prefix = "NATIVE_ANALYZER_FAILED:"
+    if reason.startswith(prefix):
+        wrapped = reason[len(prefix) :].split(":", 1)
+        if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
+            return None
+        detail = wrapped[1]
+    code = detail.split(":", 1)[0]
+    if re.fullmatch(r"[A-Z][A-Z0-9_]*", code) is None:
+        return None
+    return code
+
+
+def _nodejs_stable_route_error(reason: object) -> str | None:
+    """Project a native analyzer wrapper onto its stable semantic error text."""
+
+    if not isinstance(reason, str) or not reason or "\n" in reason or "\r" in reason:
+        return None
+    prefix = "NATIVE_ANALYZER_FAILED:"
+    if not reason.startswith(prefix):
+        return reason
+    wrapped = reason[len(prefix) :].split(":", 1)
+    if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
+        return None
+    return wrapped[1]
+
+
 REQUIRED_ROUTE = [
     "schema_version",
     "route_key",
@@ -167,6 +395,14 @@ ALLOWED_CAP_STATUS = {
     "detected-only",
     "blocked",
 }
+V3_RESEARCH_CAPABILITY_STATUS = {
+    "experimental",
+    "detected-only",
+    "blocked",
+}
+V3_TARGET_EMITTER_RELATIVE_PATH = (
+    "engines/polyglot-route-engine/src/elmos_polyglot_route/emitter.py"
+)
 LAYER_STATUSES = {"PASSED", "FAILED", "UNKNOWN", "NOT_RUN"}
 PROOF_STATUSES = {
     "PROVED",
@@ -265,6 +501,9 @@ ARTIFACT_REF_KEYS = {"artifact_id", "role", "path", "sha256", "bytes"}
 ARTIFACT_ROLES = {
     "source-ir",
     "target-ir",
+    "identifier-plan",
+    "raw-target-ir",
+    "normalized-target-ir",
     "target-artifact",
     "environment",
     "chunk-map",
@@ -291,6 +530,7 @@ FORMAL_INPUT_REQUIRED_KEYS = {
     "target_artifact",
     "source_normalized_ir",
     "target_relift_normalized_ir",
+    "identifier_hygiene",
     "implementation_identity",
     "analyzer_identity",
     "emitter_identity",
@@ -299,9 +539,33 @@ FORMAL_INPUT_REQUIRED_KEYS = {
     "environment_assumptions",
     "unsupported_semantics",
 }
+FORMAL_IDENTIFIER_HYGIENE_KEYS = {
+    "kind",
+    "policy_id",
+    "policy_sha256",
+    "unit_namespace",
+    "unit_namespace_sha256",
+    "plan",
+    "plan_digest",
+    "source_function_name",
+    "target_function_name",
+    "raw_target_relift_ir",
+    "normalized_target_ir",
+}
+FORMAL_IR_BINDING_KEYS = {
+    "role",
+    "artifact",
+    "semantic_ir",
+    "semantic_ir_sha256",
+    "formal_function",
+    "formal_function_sha256",
+}
 MODULE_FUNCTION_LAYER_KEYS = {"semantic", "chunk", "behavior", "formal"}
 MODULE_PASSING_PROOF_STATUSES = {"PROVED", "PROVED_UNDER_ASSUMPTIONS"}
 MODULE_ARTIFACT_ROLES = {
+    "identifier-plan",
+    "raw-target-ir",
+    "normalized-target-ir",
     "source-module-semantic-ir",
     "target-module-semantic-ir",
     "source-module-observations",
@@ -314,12 +578,22 @@ MODULE_ARTIFACT_ROLES = {
     "source-module-validation",
     "target-module-validation",
     "original-source-module-artifact",
+    "source-javascript-esm-descriptor",
     "module-case-manifest",
     "source-module-inventory",
     "target-module-inventory",
     "whole-file-module-closure",
     "swift-analyzer-build-receipt",
 }
+JAVASCRIPT_ESM_DESCRIPTOR_KEYS = {
+    "logical_path",
+    "snapshot_path",
+    "artifact_path",
+    "sha256",
+    "bytes",
+    "type",
+}
+JAVASCRIPT_ESM_DESCRIPTOR_OBSERVATION_KEYS = {"observed_origin_path"}
 MODULE_INVENTORY_BASE_KEYS = {
     "schema_version",
     "kind",
@@ -338,11 +612,8 @@ MODULE_INVENTORY_BASE_KEYS = {
 SWIFT_ANALYZER_RECEIPT_PATH = (
     "certification/formal-artifacts/swift-analyzer-build-receipt.json"
 )
-SWIFT_ANALYZER_MIRROR_SEEDS = frozenset(
-    {
-        "verified-content-addressed-cache",
-    }
-)
+SWIFT_DEPENDENCY_SEED = "verified-content-addressed-standalone-cache"
+SWIFT_ANALYZER_MIRROR_SEEDS = frozenset({SWIFT_DEPENDENCY_SEED})
 SWIFT_DEPENDENCY_IDENTITY = "swift-syntax"
 SWIFT_DEPENDENCY_VERSION = "600.0.1"
 SWIFT_DEPENDENCY_REVISION = "0687f71944021d616d34d922343dcef086855920"
@@ -351,14 +622,17 @@ SWIFT_DEPENDENCY_SHA256 = (
 )
 SWIFT_DEPENDENCY_FILE_COUNT = 753
 SWIFT_DEPENDENCY_BYTES = 8_866_479
-SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-v1"
+SWIFT_DEPENDENCY_CACHE_SCHEMA = "swift-dependencies-standalone-v2"
+SWIFT_DEPENDENCY_OBJECT_STORE_POLICY = "standalone-no-alternates-no-hardlinks-v2"
 SWIFT_DEPENDENCY_CACHE_KEY = (
-    "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-"
+    "swift-syntax-standalone-v2-600.0.1-"
+    "0687f71944021d616d34d922343dcef086855920-"
     "b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
 )
 SWIFT_DEPENDENCY_CACHE_KEYS = {
     "cache_key",
     "cache_schema",
+    "object_store_policy",
     "identity",
     "version",
     "revision",
@@ -878,6 +1152,50 @@ SWIFT_BUILD_CLOSURE_TREE_SPECS = (
 )
 
 
+def _selected_swift_host_profile() -> Any | None:
+    """Use the engine's one-shot host selector when Apple sealing was requested.
+
+    Some non-Apple route packs run on GitHub macOS only to reuse the exact Java
+    and Python closure.  ``ImageVersion`` identifies that host but does not, by
+    itself, claim that the Xcode tree was physically sealed.  Only consume the
+    Apple profile when the preparation step declared at least one sealing fact;
+    a partial or incorrect declaration still reaches the strict selector and
+    fails closed.
+    """
+
+    if platform.system() != "Darwin":
+        return None
+    if os.environ.get("ImageVersion", "").strip() and not any(
+        key in os.environ
+        for key in (
+            "ELMOS_APPLE_ROUTE_XCODE_SEALED",
+            "ELMOS_APPLE_ROUTE_XCODE_PHYSICAL",
+            "ELMOS_APPLE_ROUTE_XCODE_TREE_IDENTITY",
+        )
+    ):
+        return None
+    try:
+        from elmos_polyglot_route.toolchains import (  # type: ignore[import-not-found]
+            apple_route_host_profile,
+        )
+
+        return apple_route_host_profile("swift")
+    except Exception:
+        if os.environ.get("ImageVersion", "").strip():
+            raise
+        return None
+
+
+_SWIFT_BASE_COMPONENT_SPECS = SWIFT_BUILD_CLOSURE_COMPONENT_SPECS
+_SWIFT_BASE_TREE_SPECS = SWIFT_BUILD_CLOSURE_TREE_SPECS
+_SWIFT_SWIFTC_SHA256 = "2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+_SWIFT_SANDBOX_SHA256 = "abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"
+_SWIFT_SANDBOX_CDHASH = "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"
+_SWIFT_SANDBOX_BYTES = 102_368
+_SWIFT_CODESIGN_SHA256 = "844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"
+_SWIFT_CODESIGN_BYTES = 458_576
+
+
 def _expected_swift_build_closure() -> dict[str, Any]:
     return {
         "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
@@ -930,19 +1248,16 @@ SWIFT_ANALYZER_TOOLCHAIN = {
         "XcodeDefault.xctoolchain/usr/bin/swiftc"
     ),
     "swiftc_sha256": (
-        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+        "sha256:" + _SWIFT_SWIFTC_SHA256
     ),
     "swift_driver": (
         "/Applications/Xcode.app/Contents/Developer/Toolchains/"
         "XcodeDefault.xctoolchain/usr/bin/swift"
     ),
     "swift_driver_sha256": (
-        "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"
+        "sha256:" + _SWIFT_SWIFTC_SHA256
     ),
-    "version": (
-        "Apple Swift version 6.3.3 "
-        "(swiftlang-6.3.3.1.3 clang-2100.1.1.101)"
-    ),
+    "version": ("Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"),
     "profile": [
         "platform=Darwin/arm64",
         "xcode=26.6/17F113",
@@ -1124,24 +1439,18 @@ SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT = {
 }
 SWIFT_NETWORK_SANDBOX = {
     "path": "/usr/bin/sandbox-exec",
-    "sha256": (
-        "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"
-    ),
-    "bytes": 102_368,
+    "sha256": "sha256:" + _SWIFT_SANDBOX_SHA256,
+    "bytes": _SWIFT_SANDBOX_BYTES,
     "mode": "0755",
     "uid": 0,
     "gid": 0,
     "nlink": 1,
-    "cdhash_full": (
-        "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"
-    ),
+    "cdhash_full": _SWIFT_SANDBOX_CDHASH,
 }
 SWIFT_NETWORK_VERIFIER = {
     "path": "/usr/bin/codesign",
-    "sha256": (
-        "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"
-    ),
-    "bytes": 458_576,
+    "sha256": "sha256:" + _SWIFT_CODESIGN_SHA256,
+    "bytes": _SWIFT_CODESIGN_BYTES,
     "mode": "0755",
     "uid": 0,
     "gid": 0,
@@ -1186,9 +1495,14 @@ WHOLE_FILE_CLOSURE_KEYS = {
     "target_call_graph_policy",
     "target_call_graph",
     "target_builtin_normalizations",
+    "identifier_hygiene",
 }
 SPECIALIZED_INPUT_DOMAIN = "canonical-finite-no-error-input-domain"
 SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC = "BLOCKED_NOT_EQUIVALENTLY_MODELED"
+NODEJS_INPUT_DOMAIN = "nodejs-es2022-esm-safe-integer-finite-v1"
+NODEJS_OUT_OF_DOMAIN_BEHAVIOR = (
+    "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1"
+)
 FORMAL_FUNCTION_INPUT_KEYS = {
     "schema_version",
     "kind",
@@ -1203,6 +1517,7 @@ FORMAL_FUNCTION_INPUT_KEYS = {
     "target_function",
     "target_function_sha256",
     "case_manifest_sha256",
+    "identifier_hygiene",
 }
 FORMAL_FUNCTION_RESULT_KEYS = {
     "schema_version",
@@ -1227,6 +1542,37 @@ FORMAL_FUNCTION_RESULT_KEYS = {
     "external_soundness_boundary",
     "independent_encodings",
     "certification_status",
+}
+MODULE_IDENTIFIER_HYGIENE_KEYS = {
+    "status",
+    "policy_id",
+    "policy_sha256",
+    "unit_namespace",
+    "unit_namespace_sha256",
+    "plan",
+    "raw_target_ir",
+    "normalized_target_ir",
+    "functions",
+    "renamed",
+}
+WHOLE_FILE_IDENTIFIER_HYGIENE_KEYS = {
+    "status",
+    "policy_id",
+    "policy_sha256",
+    "unit_namespace",
+    "unit_namespace_sha256",
+    "plan_sha256",
+    "functions",
+}
+IDENTIFIER_FUNCTION_MAPPING_KEYS = {
+    "raw_symbol",
+    "canonical_symbol",
+    "parameters",
+}
+IDENTIFIER_PARAMETER_MAPPING_KEYS = {
+    "raw_name",
+    "canonical_name",
+    "canonical_type",
 }
 
 
@@ -1254,6 +1600,408 @@ def sha256_file(path: Path) -> str:
     return sha256_bytes(path.read_bytes())
 
 
+def _validate_engine_runtime_source_receipts(
+    source_manifest: dict[str, Any],
+    files_by_repository_path: dict[str, dict[str, Any]],
+    captured_paths_by_repository_path: dict[str, Path],
+    failures: list[str],
+) -> None:
+    """Cross-bind every portable runtime source to its captured manifest entry."""
+
+    if set(source_manifest) != {
+        "schema_version",
+        "kind",
+        "file_count",
+        "files",
+        "runtime_source_receipts",
+    }:
+        failures.append("engine source manifest fields are not exact")
+        return
+    if (
+        source_manifest.get("schema_version") != 1
+        or source_manifest.get("kind") != "polyglot-route-engine-source-bundle"
+    ):
+        failures.append("engine source manifest identity is invalid")
+    receipts = source_manifest.get("runtime_source_receipts")
+    if not isinstance(receipts, dict) or set(receipts) != {
+        "python_source_archive",
+        "typescript_compiler_closure",
+    }:
+        failures.append("engine runtime source receipts are not exact")
+        return
+
+    python = receipts.get("python_source_archive")
+    python_keys = {
+        "schema_version",
+        "capture_relative_path",
+        "sha256",
+        "bytes",
+        "mode",
+        "uid",
+        "gid",
+        "nlink",
+        "source_tree_sha256",
+        "source_tree_record_count",
+        "source_tree_file_count",
+        "source_tree_bytes",
+    }
+    if not isinstance(python, dict) or set(python) != python_keys:
+        failures.append("engine Python source archive receipt is not exact")
+        return
+    if (
+        python.get("schema_version") != 1
+        or python.get("capture_relative_path") != PYTHON_CAPTURED_ARCHIVE_RELATIVE
+        or python.get("sha256") != PYTHON_SOURCE_ARCHIVE_SHA256
+        or python.get("bytes") != PYTHON_SOURCE_ARCHIVE_BYTES
+        or python.get("mode") != "0444"
+        or python.get("nlink") != 1
+        or python.get("source_tree_sha256") != PYTHON_SOURCE_TREE_SHA256
+        or python.get("source_tree_record_count") != 1_899
+        or python.get("source_tree_file_count") != 1_890
+        or python.get("source_tree_bytes") != 47_880_708
+        or not isinstance(python.get("uid"), int)
+        or isinstance(python.get("uid"), bool)
+        or not isinstance(python.get("gid"), int)
+        or isinstance(python.get("gid"), bool)
+    ):
+        failures.append("engine Python source archive receipt identity is invalid")
+    python_entry = files_by_repository_path.get(PYTHON_CAPTURED_ARCHIVE_RELATIVE)
+    python_path = captured_paths_by_repository_path.get(
+        PYTHON_CAPTURED_ARCHIVE_RELATIVE
+    )
+    if (
+        python_entry is None
+        or python_entry.get("sha256") != f"sha256:{PYTHON_SOURCE_ARCHIVE_SHA256}"
+        or python_entry.get("bytes") != PYTHON_SOURCE_ARCHIVE_BYTES
+        or python_path is None
+        or f"{stat.S_IMODE(python_path.stat().st_mode):04o}" != "0444"
+    ):
+        failures.append("engine Python source archive entry does not match its receipt")
+
+    typescript = receipts.get("typescript_compiler_closure")
+    typescript_keys = {
+        "schema_version",
+        "capture_relative_path",
+        "source_manifest_sha256",
+        "runtime_manifest_sha256",
+        "compiler_closure_sha256",
+        "file_count",
+        "bytes",
+        "files",
+        "semantic_soundness",
+    }
+    if not isinstance(typescript, dict) or set(typescript) != typescript_keys:
+        failures.append("engine TypeScript compiler closure receipt is not exact")
+        return
+    records = typescript.get("files")
+    if not isinstance(records, list) or len(records) != TYPESCRIPT_COMPILER_FILE_COUNT:
+        failures.append("engine TypeScript compiler closure file set is not exact")
+        return
+    paths: list[str] = []
+    total_bytes = 0
+    stable_source_records: list[dict[str, Any]] = []
+    stable_runtime_records: list[dict[str, Any]] = []
+    for index, record in enumerate(records):
+        if not isinstance(record, dict) or set(record) != {
+            "path",
+            "sha256",
+            "bytes",
+            "mode",
+        }:
+            failures.append(
+                f"engine TypeScript compiler closure files[{index}] is not exact"
+            )
+            continue
+        relative = record.get("path")
+        digest = record.get("sha256")
+        byte_count = record.get("bytes")
+        mode = record.get("mode")
+        if (
+            not isinstance(relative, str)
+            or not relative
+            or Path(relative).is_absolute()
+            or "\\" in relative
+            or any(part in {"", ".", ".."} for part in Path(relative).parts)
+            or not isinstance(digest, str)
+            or re.fullmatch(r"[0-9a-f]{64}", digest) is None
+            or not isinstance(byte_count, int)
+            or isinstance(byte_count, bool)
+            or byte_count <= 0
+            or mode not in {"0444", "0555"}
+        ):
+            failures.append(
+                f"engine TypeScript compiler closure files[{index}] is invalid"
+            )
+            continue
+        paths.append(relative)
+        total_bytes += byte_count
+        stable_source_records.append(
+            {"path": relative, "bytes": byte_count, "sha256": digest}
+        )
+        stable_runtime_records.append(
+            {
+                "path": relative,
+                "bytes": byte_count,
+                "sha256": digest,
+                "mode": mode,
+            }
+        )
+        repository_path = f"{TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{relative}"
+        entry = files_by_repository_path.get(repository_path)
+        captured_path = captured_paths_by_repository_path.get(repository_path)
+        if (
+            entry is None
+            or entry.get("sha256") != f"sha256:{digest}"
+            or entry.get("bytes") != byte_count
+            or captured_path is None
+            or f"{stat.S_IMODE(captured_path.stat().st_mode):04o}" != mode
+        ):
+            failures.append(
+                "engine TypeScript compiler closure entry does not match its receipt: "
+                + relative
+            )
+    if paths != sorted(paths) or len(paths) != len(set(paths)):
+        failures.append("engine TypeScript compiler closure paths are not exact")
+    source_digest = hashlib.sha256(
+        json.dumps(
+            {"files": stable_source_records},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    runtime_digest = hashlib.sha256(
+        json.dumps(
+            {"files": stable_runtime_records},
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    if (
+        typescript.get("schema_version") != 1
+        or typescript.get("capture_relative_path") != TYPESCRIPT_CAPTURED_ROOT_RELATIVE
+        or typescript.get("source_manifest_sha256") != TYPESCRIPT_SOURCE_MANIFEST_SHA256
+        or source_digest != TYPESCRIPT_SOURCE_MANIFEST_SHA256
+        or typescript.get("runtime_manifest_sha256")
+        != TYPESCRIPT_RUNTIME_MANIFEST_SHA256
+        or runtime_digest != TYPESCRIPT_RUNTIME_MANIFEST_SHA256
+        or typescript.get("compiler_closure_sha256")
+        != TYPESCRIPT_COMPILER_CLOSURE_SHA256
+        or typescript.get("file_count") != TYPESCRIPT_COMPILER_FILE_COUNT
+        or typescript.get("bytes") != TYPESCRIPT_COMPILER_BYTES
+        or total_bytes != TYPESCRIPT_COMPILER_BYTES
+        or typescript.get("semantic_soundness") != "NOT_RUN"
+    ):
+        failures.append(
+            "engine TypeScript compiler closure receipt identity is invalid"
+        )
+    expected_runtime_paths = {
+        PYTHON_CAPTURED_ARCHIVE_RELATIVE,
+        *(f"{TYPESCRIPT_CAPTURED_ROOT_RELATIVE}/{relative}" for relative in paths),
+    }
+    observed_runtime_paths = {
+        path
+        for path in files_by_repository_path
+        if path.startswith("runtime/python/") or path.startswith("runtime/typescript/")
+    }
+    if observed_runtime_paths != expected_runtime_paths:
+        failures.append("engine runtime source manifest inventory is not exact")
+
+
+def _validate_required_engine_source_bindings(
+    *,
+    route: Path,
+    manifest_relative: object,
+    source_manifest: dict[str, Any],
+    ref_records: dict[str, tuple[dict[str, Any], Path, str]],
+    runtime_provenance: dict[str, Any] | None,
+    failures: list[str],
+) -> None:
+    """Bind the replay-critical Python implementation to canonical captures.
+
+    The engine-source manifest is an inventory, so a producer could otherwise
+    remove a source from both that inventory and ``artifact_refs`` while
+    keeping the two reduced sets internally consistent.  This check owns the
+    non-optional implementation closure: every runtime module imported by the
+    proof validator, the uv lockfile, and the frozen route runner/validator.
+    """
+
+    if not isinstance(manifest_relative, str):
+        failures.append("engine source manifest path is not canonical")
+        return
+    manifest_path = Path(manifest_relative)
+    if (
+        manifest_path.parts[:1] != ("certification",)
+        or len(manifest_path.parts) != 3
+        or manifest_path.parts[1] not in {"formal-artifacts", "strict-artifacts"}
+        or manifest_path.name != "engine-source-manifest.json"
+        or manifest_path.as_posix() != manifest_relative
+    ):
+        failures.append("engine source manifest path is not canonical")
+        return
+    artifact_root = manifest_path.parent.as_posix()
+
+    files = source_manifest.get("files")
+    if not isinstance(files, list):
+        failures.append("engine source manifest files are invalid")
+        return
+    entries_by_repository_path: dict[str, list[dict[str, Any]]] = {}
+    for item in files:
+        if not isinstance(item, dict):
+            continue
+        repository_path = item.get("repository_path")
+        if isinstance(repository_path, str):
+            entries_by_repository_path.setdefault(repository_path, []).append(item)
+
+    refs_by_path: dict[str, list[tuple[dict[str, Any], Path, str]]] = {}
+    for record in ref_records.values():
+        relative = record[0].get("path")
+        if isinstance(relative, str):
+            refs_by_path.setdefault(relative, []).append(record)
+
+    required_entries: dict[str, dict[str, Any]] = {}
+    for repository_path in sorted(ENGINE_SOURCE_REQUIRED_ASSETS):
+        entries = entries_by_repository_path.get(repository_path, [])
+        if len(entries) != 1:
+            failures.append(
+                "engine source manifest must contain exactly one required asset: "
+                + repository_path
+            )
+            continue
+        entry = entries[0]
+        required_entries[repository_path] = entry
+        if set(entry) != ENGINE_SOURCE_MANIFEST_FILE_KEYS:
+            failures.append(
+                "engine source manifest required asset fields are not exact: "
+                + repository_path
+            )
+        expected_captured_path = f"{artifact_root}/engine-sources/{repository_path}"
+        if entry.get("captured_path") != expected_captured_path:
+            failures.append(
+                "engine source manifest required asset captured_path is not canonical: "
+                + repository_path
+            )
+        entry_digest = _require_digest(
+            failures,
+            entry.get("sha256"),
+            f"engine source manifest required asset {repository_path}.sha256",
+        )
+        entry_bytes = entry.get("bytes")
+        if not _is_int(entry_bytes, minimum=1):
+            failures.append(
+                "engine source manifest required asset bytes are invalid: "
+                + repository_path
+            )
+
+        bindings = refs_by_path.get(expected_captured_path, [])
+        if len(bindings) != 1 or bindings[0][0].get("role") != "engine-source":
+            failures.append(
+                "engine source manifest required asset must have exactly one "
+                "engine-source ref: " + repository_path
+            )
+            continue
+        reference, captured, observed_digest = bindings[0]
+        canonical_captured = route / expected_captured_path
+        path_cursor = route
+        has_symlink_component = False
+        for component in Path(expected_captured_path).parts:
+            path_cursor /= component
+            if path_cursor.is_symlink():
+                has_symlink_component = True
+                break
+        if has_symlink_component:
+            failures.append(
+                "engine source manifest required asset path cannot contain a symlink: "
+                + repository_path
+            )
+        try:
+            canonical_resolved = canonical_captured.resolve(strict=True)
+        except OSError:
+            failures.append(
+                "engine source manifest required asset is missing: " + repository_path
+            )
+            continue
+        if captured.resolve() != canonical_resolved:
+            failures.append(
+                "engine source manifest required asset ref path mismatch: "
+                + repository_path
+            )
+        if entry_digest is not None and (
+            entry_digest != reference.get("sha256") or entry_digest != observed_digest
+        ):
+            failures.append(
+                "engine source manifest required asset digest is not cross-bound: "
+                + repository_path
+            )
+        if _is_int(entry_bytes, minimum=1) and (
+            entry_bytes != reference.get("bytes")
+            or entry_bytes != canonical_resolved.stat().st_size
+        ):
+            failures.append(
+                "engine source manifest required asset bytes are not cross-bound: "
+                + repository_path
+            )
+
+    if runtime_provenance is None:
+        failures.append("engine source runtime provenance is unavailable")
+        return
+    modules = runtime_provenance.get("engine_modules")
+    if not isinstance(modules, dict) or set(modules) != set(ENGINE_RUNTIME_MODULES):
+        failures.append("engine source runtime module provenance is not exact")
+        return
+    layout = _runtime_layout()
+    if layout is None:
+        failures.append("engine source runtime layout is unavailable")
+        return
+    source_root, _, _ = layout
+    for module_name, module_relative in ENGINE_RUNTIME_MODULES.items():
+        repository_path = ENGINE_RUNTIME_MODULE_REPOSITORY_PATHS[module_name]
+        entry = required_entries.get(repository_path)
+        provenance = modules.get(module_name)
+        if entry is None:
+            continue
+        if not isinstance(provenance, dict) or set(provenance) != {"path", "sha256"}:
+            failures.append(
+                "engine source runtime module provenance is invalid: " + module_name
+            )
+            continue
+        expected_runtime_path = (source_root / module_relative).resolve(strict=True)
+        provenance_path = provenance.get("path")
+        try:
+            observed_runtime_path = Path(str(provenance_path)).resolve(strict=True)
+        except OSError:
+            observed_runtime_path = None
+        if observed_runtime_path != expected_runtime_path:
+            failures.append(
+                "engine source runtime module path is not cross-bound: " + module_name
+            )
+        if provenance.get("sha256") != entry.get("sha256"):
+            failures.append(
+                "engine source runtime module digest is not cross-bound: " + module_name
+            )
+
+    lock_repository_path = f"{ENGINE_RUNTIME_PROJECT_RELATIVE}/uv.lock"
+    lock_entry = required_entries.get(lock_repository_path)
+    lock_provenance = runtime_provenance.get("route_engine_lock")
+    if lock_entry is not None:
+        if not isinstance(lock_provenance, dict) or set(lock_provenance) != {
+            "path",
+            "sha256",
+        }:
+            failures.append("engine source runtime lock provenance is invalid")
+        else:
+            expected_lock_path = (source_root.parent / "uv.lock").resolve(strict=True)
+            try:
+                observed_lock_path = Path(str(lock_provenance.get("path"))).resolve(
+                    strict=True
+                )
+            except OSError:
+                observed_lock_path = None
+            if observed_lock_path != expected_lock_path:
+                failures.append("engine source runtime lock path is not cross-bound")
+            if lock_provenance.get("sha256") != lock_entry.get("sha256"):
+                failures.append("engine source runtime lock digest is not cross-bound")
+
+
 def _private_snapshot(
     root: Path,
     *,
@@ -1264,10 +2012,12 @@ def _private_snapshot(
     """Write one immutable-by-convention input below a private replay root."""
 
     destination_root = root / role
-    destination_root.mkdir(mode=0o700, parents=True, exist_ok=False)
+    destination_root.mkdir(mode=0o700, parents=True, exist_ok=True)
     destination = destination_root / logical_name
     if destination.name != logical_name or not logical_name:
         raise ValueError(f"unsafe snapshot logical name: {logical_name!r}")
+    if destination.exists():
+        raise FileExistsError(f"snapshot artifact already exists: {destination}")
     destination.write_bytes(content)
     destination.chmod(0o400)
     return destination
@@ -1290,7 +2040,10 @@ def _validate_snapshot_stability(
     except OSError as exc:
         failures.append(f"{label} snapshot/origin stability check failed: {exc}")
         return
-    if snapshot_bytes != expected_bytes or sha256_bytes(snapshot_bytes) != expected_digest:
+    if (
+        snapshot_bytes != expected_bytes
+        or sha256_bytes(snapshot_bytes) != expected_digest
+    ):
         failures.append(f"{label} private snapshot changed during replay")
     if origin_bytes != expected_bytes or sha256_bytes(origin_bytes) != expected_digest:
         failures.append(f"{label} bound origin changed during replay")
@@ -1355,9 +2108,16 @@ def _runtime_layout() -> tuple[Path, Path, Path] | None:
     if engine_project is None:
         return None
     source_root = engine_project / "src"
-    if not all((source_root / relative).is_file() for relative in ENGINE_RUNTIME_MODULES.values()):
+    if not all(
+        (source_root / relative).is_file()
+        for relative in ENGINE_RUNTIME_MODULES.values()
+    ):
         return None
-    return source_root.resolve(), venv_root.resolve(), (executable.parent / "z3").resolve()
+    return (
+        source_root.resolve(),
+        venv_root.resolve(),
+        (executable.parent / "z3").resolve(),
+    )
 
 
 def _clean_proof_environment() -> dict[str, str]:
@@ -1379,9 +2139,7 @@ def _clean_proof_environment() -> dict[str, str]:
     return environment
 
 
-def _runtime_provenance(
-    failures: list[str], label: str
-) -> dict[str, Any] | None:
+def _runtime_provenance(failures: list[str], label: str) -> dict[str, Any] | None:
     """Bind proof imports and both Z3 entry points to the locked uv runtime."""
 
     layout = _runtime_layout()
@@ -1412,7 +2170,9 @@ def _runtime_provenance(
             if observed_digest != expected_digest:
                 raise ValueError("origin digest differs from locked live source")
         except Exception as exc:
-            failures.append(f"{label} engine module origin rejected for {module_name}: {exc}")
+            failures.append(
+                f"{label} engine module origin rejected for {module_name}: {exc}"
+            )
             return None
         modules[module_name] = {
             "path": str(origin),
@@ -1449,7 +2209,10 @@ def _runtime_provenance(
             env=_clean_proof_environment(),
         )
         expected_version_line = f"Z3 version {PINNED_Z3_VERSION} - 64 bit"
-        if cli_version_run.returncode != 0 or cli_version_run.stdout.strip() != expected_version_line:
+        if (
+            cli_version_run.returncode != 0
+            or cli_version_run.stdout.strip() != expected_version_line
+        ):
             raise ValueError("z3 CLI version output is not exact")
     except (OSError, subprocess.TimeoutExpired, ValueError) as exc:
         failures.append(f"{label} z3 CLI origin rejected: {exc}")
@@ -1488,9 +2251,7 @@ def semantic_value(value: object) -> object:
     return value
 
 
-def _engine_proof_api(
-    failures: list[str], label: str
-) -> tuple[Any, Any, Any] | None:
+def _engine_proof_api(failures: list[str], label: str) -> tuple[Any, Any, Any] | None:
     """Load the pinned encoder/oracle used for independent evidence replay.
 
     All supported entry points run this validator in the route-engine's locked
@@ -1512,26 +2273,79 @@ def _engine_proof_api(
     return Function, formal_equivalence, behavior_equivalence
 
 
-def _engine_domain_api(
-    failures: list[str], label: str
-) -> tuple[Any, Any, Any] | None:
-    """Load the engine's exact-eight domain guards only after origin binding."""
+def _engine_domain_api(failures: list[str], label: str) -> tuple[Any, Any, Any] | None:
+    """Load the exact-eight and Node domain guards only after origin binding."""
 
     if _runtime_provenance(failures, label) is None:
         return None
     try:
         from elmos_polyglot_route.engine import (  # type: ignore[import-not-found]
+            _enforce_nodejs_case_domain,
+            _enforce_nodejs_semantic_domain,
             _enforce_specialized_case_domain,
             _enforce_specialized_semantic_domain,
         )
         from elmos_polyglot_route.models import SemanticIR  # type: ignore[import-not-found]
     except Exception as exc:
-        failures.append(f"{label} cannot load pinned specialized-domain API: {exc}")
+        failures.append(f"{label} cannot load pinned strict-domain API: {exc}")
+        return None
+
+    def enforce_semantic_domain(
+        ir: Any, source_language: Any, target_language: Any
+    ) -> None:
+        _enforce_specialized_semantic_domain(ir, source_language, target_language)
+        _enforce_nodejs_semantic_domain(ir, source_language, target_language)
+
+    def enforce_case_domain(
+        function: Any,
+        cases: Any,
+        source_language: Any,
+        target_language: Any,
+    ) -> None:
+        _enforce_specialized_case_domain(
+            function, cases, source_language, target_language
+        )
+        _enforce_nodejs_case_domain(function, cases, source_language, target_language)
+
+    return (
+        SemanticIR,
+        enforce_semantic_domain,
+        enforce_case_domain,
+    )
+
+
+def _engine_identifier_api(
+    failures: list[str], label: str
+) -> tuple[Any, Any, Any, Any, Any, Any, Any, Any] | None:
+    """Load the origin-bound identifier plan and alpha-normalization API."""
+
+    if _runtime_provenance(failures, label) is None:
+        return None
+    try:
+        from elmos_polyglot_route.engine import (  # type: ignore[import-not-found]
+            _bind_function_spans_from_inventory,
+        )
+        from elmos_polyglot_route.identifier_hygiene import (  # type: ignore[import-not-found]
+            IdentifierPlan,
+            alpha_normalize_target,
+            identifier_plan_bytes,
+            standalone_artifact_unit_namespace,
+            target_ir_view,
+            validate_identifier_plan,
+        )
+        from elmos_polyglot_route.models import SemanticIR  # type: ignore[import-not-found]
+    except Exception as exc:
+        failures.append(f"{label} cannot load pinned identifier API: {exc}")
         return None
     return (
         SemanticIR,
-        _enforce_specialized_semantic_domain,
-        _enforce_specialized_case_domain,
+        IdentifierPlan,
+        validate_identifier_plan,
+        alpha_normalize_target,
+        identifier_plan_bytes,
+        target_ir_view,
+        standalone_artifact_unit_namespace,
+        _bind_function_spans_from_inventory,
     )
 
 
@@ -1561,7 +2375,7 @@ def _engine_negative_replay_api(
 
 def _engine_module_closure_api(
     failures: list[str], label: str
-) -> tuple[Any, Any, Any, Any, Any, Any, Any, Any] | None:
+) -> tuple[Any, Any, Any, Any, Any, Any, Any, Any, Any, Any] | None:
     """Load the exact module inventory/emission closure implementation."""
 
     if _runtime_provenance(failures, label) is None:
@@ -1571,6 +2385,10 @@ def _engine_module_closure_api(
         from elmos_polyglot_route.engine import (  # type: ignore[import-not-found]
             _build_whole_file_closure,
             _combine_function_irs,
+        )
+        from elmos_polyglot_route.identifier_hygiene import (  # type: ignore[import-not-found]
+            alpha_normalize_target,
+            target_ir_view,
         )
         from elmos_polyglot_route.models import (  # type: ignore[import-not-found]
             SemanticIR,
@@ -1595,6 +2413,8 @@ def _engine_module_closure_api(
         _build_whole_file_closure,
         validate_source,
         validate,
+        target_ir_view,
+        alpha_normalize_target,
     )
 
 
@@ -1639,16 +2459,17 @@ def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...],
     for part in directory.parts[1:]:
         cursor = cursor / part
         metadata = cursor.lstat()
-        applications_exception = cursor == Path("/Applications") and (
-            stat.S_IMODE(metadata.st_mode) == 0o775
-            and metadata.st_uid == 0
-            and metadata.st_gid == 80
+        is_applications_root = cursor == Path("/Applications")
+        unsafe_mode = (
+            stat.S_IMODE(metadata.st_mode) & 0o002
+            if is_applications_root
+            else stat.S_IMODE(metadata.st_mode) & 0o022
         )
         if (
             stat.S_ISLNK(metadata.st_mode)
             or not stat.S_ISDIR(metadata.st_mode)
             or metadata.st_uid != 0
-            or (stat.S_IMODE(metadata.st_mode) & 0o022 and not applications_exception)
+            or unsafe_mode
         ):
             raise ValueError(f"unsafe Xcode directory: {cursor}")
         identities.append(
@@ -1669,17 +2490,33 @@ def _swift_closure_directory_chain(directory: Path) -> tuple[tuple[object, ...],
 
 def _stable_read_swift_closure_file(file_path: Path) -> tuple[bytes, os.stat_result]:
     before = file_path.lstat()
+    if (
+        not stat.S_ISREG(before.st_mode)
+        or before.st_size < 0
+        or before.st_size > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+    ):
+        raise ValueError("Swift closure component exceeds maximum size")
     descriptor = os.open(
         file_path,
-        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0),
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+        | getattr(os, "O_NOFOLLOW", 0),
     )
     try:
         opened_before = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(opened_before.st_mode)
+            or opened_before.st_size < 0
+            or opened_before.st_size
+            > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES
+        ):
+            raise ValueError("Swift closure component exceeds maximum size")
         chunks: list[bytes] = []
         total = 0
         while chunk := os.read(descriptor, 1024 * 1024):
             total += len(chunk)
-            if total > 250_000_000:
+            if total > SWIFT_BUILD_CLOSURE_COMPONENT_MAXIMUM_BYTES:
                 raise ValueError("Swift closure component exceeds maximum size")
             chunks.append(chunk)
         opened_after = os.fstat(descriptor)
@@ -1836,7 +2673,8 @@ def _observe_swift_network_system_tool(
         "nlink": metadata.st_nlink,
     }
     expected_file = {
-        key: expected[key] for key in ("path", "sha256", "bytes", "mode", "uid", "gid", "nlink")
+        key: expected[key]
+        for key in ("path", "sha256", "bytes", "mode", "uid", "gid", "nlink")
     }
     if chain_before != chain_after or observed != expected_file:
         raise ValueError("network system tool identity differs")
@@ -1847,9 +2685,16 @@ def _verify_swift_network_sandbox_signature(
     *,
     environment: dict[str, str],
     cwd: Path,
+    sandbox: dict[str, Any] = SWIFT_NETWORK_SANDBOX,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
 ) -> None:
     verify = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", SWIFT_NETWORK_SANDBOX["path"]],
+        [
+            verifier["path"],
+            "--verify",
+            "--strict",
+            sandbox["path"],
+        ],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -1858,7 +2703,12 @@ def _verify_swift_network_sandbox_signature(
         env=environment,
     )
     details = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", SWIFT_NETWORK_SANDBOX["path"]],
+        [
+            verifier["path"],
+            "-d",
+            "--verbose=4",
+            sandbox["path"],
+        ],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -1867,21 +2717,25 @@ def _verify_swift_network_sandbox_signature(
         env=environment,
     )
     lines = set((details.stdout + details.stderr).splitlines())
-    if verify.returncode != 0 or details.returncode != 0 or not {
-        "Identifier=com.apple.sandbox-exec",
-        "Authority=Apple Root CA",
-        "TeamIdentifier=not set",
-        f"CandidateCDHashFull sha256={SWIFT_NETWORK_SANDBOX['cdhash_full']}",
-    }.issubset(lines):
+    if (
+        verify.returncode != 0
+        or details.returncode != 0
+        or not {
+            "Identifier=com.apple.sandbox-exec",
+            "Authority=Apple Root CA",
+            "TeamIdentifier=not set",
+            f"CandidateCDHashFull sha256={sandbox['cdhash_full']}",
+        }.issubset(lines)
+    ):
         raise ValueError("sandbox-exec code-signature identity differs")
 
 
-def _observe_swift_git_identity() -> dict[str, str]:
+def _observe_swift_git_identity(expected: dict[str, Any]) -> dict[str, str]:
     path = Path(SWIFT_GIT_PATH)
     chain_before = _swift_closure_directory_chain(path.parent)
     content_before, _metadata_before, identity_before = _stable_read_exact_file(
         path,
-        maximum_bytes=SWIFT_GIT_BYTES,
+        maximum_bytes=int(expected["bytes"]),
         allowed_uids=frozenset({0}),
     )
     version = subprocess.run(
@@ -1895,7 +2749,7 @@ def _observe_swift_git_identity() -> dict[str, str]:
     )
     content_after, _metadata_after, identity_after = _stable_read_exact_file(
         path,
-        maximum_bytes=SWIFT_GIT_BYTES,
+        maximum_bytes=int(expected["bytes"]),
         allowed_uids=frozenset({0}),
     )
     chain_after = _swift_closure_directory_chain(path.parent)
@@ -1906,13 +2760,13 @@ def _observe_swift_git_identity() -> dict[str, str]:
         or chain_before != chain_after
         or identity_before != identity_after
         or content_before != content_after
-        or len(content_after) != SWIFT_GIT_BYTES
-        or sha256_bytes(content_after) != SWIFT_GIT_SHA256
+        or len(content_after) != expected["bytes"]
+        or sha256_bytes(content_after) != expected["sha256"]
     ):
         raise ValueError("direct Xcode Git identity differs")
     return {
         "path": SWIFT_GIT_PATH,
-        "sha256": SWIFT_GIT_SHA256,
+        "sha256": str(expected["sha256"]),
         "version": SWIFT_GIT_VERSION,
     }
 
@@ -1920,9 +2774,16 @@ def _observe_swift_git_identity() -> dict[str, str]:
 def _inspect_swift_network_probe_macho(content: bytes) -> dict[str, Any]:
     if len(content) < 32:
         raise ValueError("probe Mach-O header is truncated")
-    magic, cpu_type, _cpu_subtype, file_type, command_count, command_bytes, _flags, _reserved = struct.unpack_from(
-        "<IiiIIIII", content, 0
-    )
+    (
+        magic,
+        cpu_type,
+        _cpu_subtype,
+        file_type,
+        command_count,
+        command_bytes,
+        _flags,
+        _reserved,
+    ) = struct.unpack_from("<IiiIIIII", content, 0)
     if magic != 0xFEEDFACF or cpu_type != 0x0100000C or file_type != 2:
         raise ValueError("probe Mach-O identity differs")
     command_end = 32 + command_bytes
@@ -1982,9 +2843,10 @@ def _verify_swift_network_probe_signature(
     *,
     environment: dict[str, str],
     cwd: Path,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
 ) -> None:
     verify = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "--verify", "--strict", str(binary)],
+        [verifier["path"], "--verify", "--strict", str(binary)],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -1995,7 +2857,7 @@ def _verify_swift_network_probe_signature(
     if verify.returncode != 0:
         raise ValueError("probe code signature did not verify")
     details = subprocess.run(
-        [SWIFT_NETWORK_VERIFIER["path"], "-d", "--verbose=4", str(binary)],
+        [verifier["path"], "-d", "--verbose=4", str(binary)],
         cwd=cwd,
         check=False,
         capture_output=True,
@@ -2013,7 +2875,10 @@ def _verify_swift_network_probe_signature(
         raise ValueError("probe code-signature identity differs")
 
 
-def _probe_validation_environment(root: Path) -> dict[str, str]:
+def _probe_validation_environment(
+    root: Path,
+    compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> dict[str, str]:
     home = root / "home"
     temporary = root / "tmp"
     home.mkdir(mode=0o700)
@@ -2024,7 +2889,7 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
         "LC_ALL": "C",
         "PATH": os.pathsep.join(
             (
-                str(Path(SWIFT_NETWORK_PROBE_COMPILER["path"]).parent),
+                str(Path(compiler["path"]).parent),
                 "/usr/bin",
                 "/bin",
                 "/usr/sbin",
@@ -2041,6 +2906,7 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
         "GIT_CONFIG_NOSYSTEM": "1",
         "GIT_CONFIG_GLOBAL": "/dev/null",
         "GIT_TERMINAL_PROMPT": "0",
+        "TEST_TELEMETRY_DIR": str(home / ".elmos-go-telemetry"),
         "XDG_CACHE_HOME": str(home / ".cache"),
         "PYTHONHASHSEED": "0",
         "PYTHONDONTWRITEBYTECODE": "1",
@@ -2048,17 +2914,19 @@ def _probe_validation_environment(root: Path) -> dict[str, str]:
     }
 
 
-def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
-    compiler = Path(SWIFT_NETWORK_PROBE_COMPILER["path"])
+def _observe_swift_network_probe_toolchain(
+    expected_compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> tuple[object, ...]:
+    compiler = Path(expected_compiler["path"])
     chain_before = _swift_closure_directory_chain(compiler.parent)
     content, metadata, identity = _stable_read_exact_file(
         compiler,
-        maximum_bytes=int(SWIFT_NETWORK_PROBE_COMPILER["bytes"]),
+        maximum_bytes=int(expected_compiler["bytes"]),
         allowed_uids=frozenset({0}),
     )
     chain_after = _swift_closure_directory_chain(compiler.parent)
     observed_compiler = {
-        **SWIFT_NETWORK_PROBE_COMPILER,
+        **expected_compiler,
         "sha256": sha256_bytes(content),
         "bytes": len(content),
         "mode": f"{stat.S_IMODE(metadata.st_mode):04o}",
@@ -2072,11 +2940,11 @@ def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
     sdk_resolved = sdk.resolve(strict=True)
     if (
         chain_before != chain_after
-        or observed_compiler != SWIFT_NETWORK_PROBE_COMPILER
+        or observed_compiler != expected_compiler
         or stat.S_ISLNK(compiler.lstat().st_mode)
         or compiler.resolve(strict=True)
-        != Path(SWIFT_NETWORK_PROBE_COMPILER["resolved_path"])
-        or SWIFT_NETWORK_PROBE_COMPILER["link_target"] is not None
+        != Path(expected_compiler["resolved_path"])
+        or expected_compiler["link_target"] is not None
         or not stat.S_ISLNK(sdk_metadata.st_mode)
         or sdk_metadata.st_uid != 0
         or sdk_metadata.st_gid != 0
@@ -2098,23 +2966,33 @@ def _observe_swift_network_probe_toolchain() -> tuple[object, ...]:
     )
 
 
-def _independently_rebuild_swift_network_probe() -> None:
+def _independently_rebuild_swift_network_probe(
+    *,
+    sandbox: dict[str, Any] = SWIFT_NETWORK_SANDBOX,
+    verifier: dict[str, Any] = SWIFT_NETWORK_VERIFIER,
+    compiler: dict[str, Any] = SWIFT_NETWORK_PROBE_COMPILER,
+) -> None:
     with tempfile.TemporaryDirectory(
         prefix="elmos-swift-network-probe-validator-"
     ) as temporary:
         root = Path(temporary).resolve(strict=True)
         root.chmod(0o700)
-        environment = _probe_validation_environment(root)
-        sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-        verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
-        toolchain_before = _observe_swift_network_probe_toolchain()
-        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        environment = _probe_validation_environment(root, compiler)
+        sandbox_before = _observe_swift_network_system_tool(sandbox)
+        verifier_before = _observe_swift_network_system_tool(verifier)
+        toolchain_before = _observe_swift_network_probe_toolchain(compiler)
+        _verify_swift_network_sandbox_signature(
+            environment=environment,
+            cwd=root,
+            sandbox=sandbox,
+            verifier=verifier,
+        )
         output = root / SWIFT_NETWORK_PROBE_BINARY_NAME
         command = [
-            SWIFT_NETWORK_SANDBOX["path"],
+            sandbox["path"],
             "-p",
             SWIFT_NETWORK_POLICY_TEXT,
-            SWIFT_NETWORK_PROBE_COMPILER["path"],
+            compiler["path"],
             "-x",
             "c",
             "-std=c17",
@@ -2164,10 +3042,11 @@ def _independently_rebuild_swift_network_probe() -> None:
             output,
             environment=environment,
             cwd=root,
+            verifier=verifier,
         )
         execution = subprocess.run(
             [
-                SWIFT_NETWORK_SANDBOX["path"],
+                sandbox["path"],
                 "-p",
                 SWIFT_NETWORK_POLICY_TEXT,
                 str(output),
@@ -2185,16 +3064,38 @@ def _independently_rebuild_swift_network_probe() -> None:
             or execution.stderr != ""
         ):
             raise ValueError("independently rebuilt probe did not observe exact EPERM")
-        sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-        verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
-        toolchain_after = _observe_swift_network_probe_toolchain()
-        _verify_swift_network_sandbox_signature(environment=environment, cwd=root)
+        sandbox_after = _observe_swift_network_system_tool(sandbox)
+        verifier_after = _observe_swift_network_system_tool(verifier)
+        toolchain_after = _observe_swift_network_probe_toolchain(compiler)
+        _verify_swift_network_sandbox_signature(
+            environment=environment,
+            cwd=root,
+            sandbox=sandbox,
+            verifier=verifier,
+        )
         if (
             sandbox_before != sandbox_after
             or verifier_before != verifier_after
             or toolchain_before != toolchain_after
         ):
             raise ValueError("probe build/execution closure changed during replay")
+
+
+def _checked_swift_tree_byte_total(
+    current: int,
+    additional: int,
+    *,
+    role: str,
+) -> int:
+    if (
+        type(current) is not int
+        or type(additional) is not int
+        or current < 0
+        or additional < 0
+        or additional > SWIFT_BUILD_CLOSURE_TREE_MAXIMUM_BYTES - current
+    ):
+        raise ValueError(f"tree exceeds aggregate byte bound: {role}")
+    return current + additional
 
 
 def _observe_swift_build_closure() -> dict[str, Any]:
@@ -2211,7 +3112,13 @@ def _observe_swift_build_closure() -> dict[str, Any]:
 
     content_cache: dict[Path, tuple[bytes, os.stat_result]] = {}
     components: list[dict[str, Any]] = []
-    for role, path_text, resolved_text, link_target, *_expected in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS:
+    for (
+        role,
+        path_text,
+        resolved_text,
+        link_target,
+        *_expected,
+    ) in SWIFT_BUILD_CLOSURE_COMPONENT_SPECS:
         lexical = Path(path_text)
         lexical_metadata = lexical.lstat()
         if link_target is None:
@@ -2258,6 +3165,7 @@ def _observe_swift_build_closure() -> dict[str, Any]:
 
         def discover(tree_root: Path, tree_role: str) -> list[Path]:
             files: list[Path] = []
+            declared_total = 0
             candidates = sorted(
                 tree_root.rglob("*"),
                 key=lambda item: item.relative_to(tree_root).as_posix(),
@@ -2271,10 +3179,17 @@ def _observe_swift_build_closure() -> dict[str, Any]:
                     or metadata.st_uid != 0
                     or metadata.st_gid != 0
                     or stat.S_IMODE(metadata.st_mode) & 0o022
-                    or not (stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode))
+                    or not (
+                        stat.S_ISDIR(metadata.st_mode) or stat.S_ISREG(metadata.st_mode)
+                    )
                 ):
                     raise ValueError(f"tree entry is unsafe: {tree_role}")
                 if stat.S_ISREG(metadata.st_mode):
+                    declared_total = _checked_swift_tree_byte_total(
+                        declared_total,
+                        metadata.st_size,
+                        role=tree_role,
+                    )
                     files.append(item)
             return files
 
@@ -2283,7 +3198,11 @@ def _observe_swift_build_closure() -> dict[str, Any]:
         total = 0
         for item in paths:
             content, _metadata = _stable_read_swift_closure_file(item)
-            total += len(content)
+            total = _checked_swift_tree_byte_total(
+                total,
+                len(content),
+                role=role,
+            )
             file_records.append(
                 {
                     "path": item.relative_to(resolved).as_posix(),
@@ -2292,11 +3211,10 @@ def _observe_swift_build_closure() -> dict[str, Any]:
                 }
             )
         if [
-            item.relative_to(resolved).as_posix()
-            for item in discover(resolved, role)
-        ] != [
-            item["path"] for item in file_records
-        ] or _swift_closure_directory_chain(resolved) != root_identity:
+            item.relative_to(resolved).as_posix() for item in discover(resolved, role)
+        ] != [item["path"] for item in file_records] or _swift_closure_directory_chain(
+            resolved
+        ) != root_identity:
             raise ValueError(f"tree changed while read: {role}")
         trees.append(
             {
@@ -2324,7 +3242,10 @@ def _canonical_swift_build_closure_identity(closure: dict[str, Any]) -> dict[str
         "compiler_runtime_soundness": closure.get("compiler_runtime_soundness"),
         "certification": closure.get("certification"),
         "components": [
-            {key: item.get(key) for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")}
+            {
+                key: item.get(key)
+                for key in ("role", "link_target", "sha256", "bytes", "mode", "nlink")
+            }
             for item in closure.get("components", [])
             if isinstance(item, dict)
         ],
@@ -2407,6 +3328,7 @@ def _rebuild_portable_swift_receipt_identity(
                     for key in (
                         "cache_key",
                         "cache_schema",
+                        "object_store_policy",
                         "identity",
                         "version",
                         "revision",
@@ -2436,9 +3358,7 @@ def _rebuild_portable_swift_receipt_identity(
                 "result": network_probe["result"],
                 "source": network_probe["source"],
                 "build": {
-                    "environment_policy": network_probe["build"][
-                        "environment_policy"
-                    ],
+                    "environment_policy": network_probe["build"]["environment_policy"],
                     "argv": network_probe["build"]["argv"],
                     "environment": network_probe["build"]["environment"],
                     "compiler": {
@@ -2480,8 +3400,7 @@ def _rebuild_portable_swift_receipt_identity(
             },
         },
         "binary": {
-            key: binary[key]
-            for key in ("name", "sha256", "bytes", "mode", "nlink")
+            key: binary[key] for key in ("name", "sha256", "bytes", "mode", "nlink")
         },
         "execution_seal": {
             "policy": seal["policy"],
@@ -2495,13 +3414,64 @@ def _rebuild_portable_swift_receipt_identity(
 
 
 def _swift_receipt_stable_projection(receipt: dict[str, Any]) -> dict[str, Any]:
-    """Return an independently rebuilt content-addressed stable identity."""
+    """Return the semantic identity shared by exact registered Apple hosts."""
 
     canonical = _rebuild_portable_swift_receipt_identity(receipt)
+    canonical["dependency"]["mirror"]["git"]["sha256"] = "<registered-apple-git>"
+    toolchain = canonical["toolchain"]
+    toolchain["swiftc_sha256"] = "<registered-swift-frontend>"
+    toolchain["swift_driver_sha256"] = "<registered-swift-frontend>"
+    for component in toolchain["build_closure"]["components"]:
+        component["sha256"] = f"<registered-component:{component['role']}>"
+        component["bytes"] = f"<registered-component-bytes:{component['role']}>"
+    for tree in toolchain["build_closure"]["trees"]:
+        tree["sha256"] = f"<registered-tree:{tree['role']}>"
+        tree["file_count"] = f"<registered-tree-files:{tree['role']}>"
+        tree["bytes"] = f"<registered-tree-bytes:{tree['role']}>"
+    network = canonical["network_isolation"]
+    for key in ("sha256", "bytes", "cdhash_full"):
+        network["sandbox"][key] = f"<registered-sandbox:{key}>"
+    for key in ("sha256", "bytes"):
+        network["verifier"][key] = f"<registered-verifier:{key}>"
+    compiler = network["probe"]["build"]["compiler"]
+    compiler["sha256"] = "<registered-component:clang>"
+    compiler["bytes"] = "<registered-component-bytes:clang>"
+    for binary in (
+        canonical["binary"],
+        canonical["execution_seal"]["binary"],
+    ):
+        binary["sha256"] = "<registered-analyzer-binary>"
+        binary["bytes"] = "<registered-analyzer-binary-bytes>"
     return {
         "sha256": _receipt_payload_sha256(canonical),
         "receipt": canonical,
     }
+
+
+def _profile_neutral_swift_analyzer_version(value: str) -> str:
+    host_fields = {
+        "swift-driver",
+        "canonical-receipt",
+        "binary",
+        "toolchain",
+        "build-closure",
+    }
+    normalized: list[str] = []
+    for item in value.split(";"):
+        key, separator, _observed = item.partition("=")
+        normalized.append(f"{key}=<registered-apple-host>" if separator and key in host_fields else item)
+    return ";".join(normalized)
+
+
+def _semantic_ir_stable_projection(document: dict[str, Any]) -> dict[str, Any]:
+    projected = json.loads(json.dumps(document, ensure_ascii=False, allow_nan=False))
+    if projected.get("source_language") == "swift" and isinstance(
+        projected.get("analyzer_version"), str
+    ):
+        projected["analyzer_version"] = _profile_neutral_swift_analyzer_version(
+            projected["analyzer_version"]
+        )
+    return projected
 
 
 def _module_inventory_stable_projection(
@@ -2515,9 +3485,20 @@ def _module_inventory_stable_projection(
     )
     receipt = projected.get("analyzer_build_receipt")
     if isinstance(receipt, dict):
-        projected["analyzer_build_receipt"] = _swift_receipt_stable_projection(
-            receipt
-        )
+        projected["analyzer_build_receipt"] = _swift_receipt_stable_projection(receipt)
+
+    def normalize_versions(value: object) -> None:
+        if isinstance(value, dict):
+            for key, item in value.items():
+                if key == "analyzer_version" and isinstance(item, str):
+                    value[key] = _profile_neutral_swift_analyzer_version(item)
+                else:
+                    normalize_versions(item)
+        elif isinstance(value, list):
+            for item in value:
+                normalize_versions(item)
+
+    normalize_versions(projected)
     return projected
 
 
@@ -2555,6 +3536,135 @@ def _whole_file_closure_stable_projection(
     return projected
 
 
+def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any]:
+    """Resolve a receipt to one whole registered host profile, never a hash union."""
+
+    from elmos_polyglot_route.toolchains import (  # type: ignore[import-not-found]
+        _APPLE_ROUTE_HOST_PROFILES,
+    )
+
+    toolchain = receipt.get("toolchain")
+    dependency = receipt.get("dependency")
+    mirror = dependency.get("mirror") if isinstance(dependency, dict) else None
+    git = mirror.get("git") if isinstance(mirror, dict) else None
+    network = receipt.get("network_isolation")
+    sandbox = network.get("sandbox") if isinstance(network, dict) else None
+    verifier = network.get("verifier") if isinstance(network, dict) else None
+    observed_identity = (
+        toolchain.get("swiftc_sha256") if isinstance(toolchain, dict) else None,
+        git.get("sha256") if isinstance(git, dict) else None,
+        sandbox.get("sha256") if isinstance(sandbox, dict) else None,
+        verifier.get("sha256") if isinstance(verifier, dict) else None,
+    )
+    matches = tuple(
+        profile
+        for profile in _APPLE_ROUTE_HOST_PROFILES
+        if (
+            "sha256:" + profile.swiftc_sha256,
+            "sha256:" + profile.apple_git_sha256,
+            "sha256:" + profile.sandbox_exec_sha256,
+            "sha256:" + profile.codesign_sha256,
+        )
+        == observed_identity
+    )
+    if len(matches) != 1:
+        raise ValueError("receipt does not select one registered Apple host profile")
+    profile = matches[0]
+    component_overrides = {
+        role: (sha256_value, byte_count)
+        for role, sha256_value, byte_count in profile.component_overrides
+    }
+    tree_overrides = {
+        role: (sha256_value, file_count, byte_count)
+        for role, sha256_value, file_count, byte_count in profile.tree_overrides
+    }
+    component_specs = tuple(
+        (*spec[:4], *component_overrides[str(spec[0])], *spec[6:])
+        if str(spec[0]) in component_overrides
+        else spec
+        for spec in _SWIFT_BASE_COMPONENT_SPECS
+    )
+    tree_specs = tuple(
+        (*spec[:3], *tree_overrides[str(spec[0])])
+        if str(spec[0]) in tree_overrides
+        else spec
+        for spec in _SWIFT_BASE_TREE_SPECS
+    )
+    closure = {
+        "schema": SWIFT_BUILD_CLOSURE_SCHEMA,
+        "scope": SWIFT_BUILD_CLOSURE_SCOPE,
+        "compiler_runtime_soundness": "NOT_RUN",
+        "certification": "NOT_CERTIFIED",
+        "components": [
+            {
+                "role": role,
+                "path": path,
+                "resolved_path": resolved,
+                "link_target": link_target,
+                "sha256": "sha256:" + sha256_value,
+                "bytes": byte_count,
+                "mode": mode,
+                "uid": uid,
+                "gid": gid,
+                "nlink": nlink,
+            }
+            for role, path, resolved, link_target, sha256_value, byte_count, mode, uid, gid, nlink in component_specs
+        ],
+        "trees": [
+            {
+                "role": role,
+                "root": root,
+                "sha256": "sha256:" + sha256_value,
+                "file_count": file_count,
+                "bytes": byte_count,
+            }
+            for role, root, _resolved, sha256_value, file_count, byte_count in tree_specs
+        ],
+    }
+    expected_toolchain = json.loads(json.dumps(SWIFT_ANALYZER_TOOLCHAIN))
+    expected_profile = expected_toolchain.get("profile")
+    if not isinstance(expected_profile, list) or not expected_profile:
+        raise ValueError("registered Swift toolchain profile is invalid")
+    expected_toolchain["profile"] = [
+        expected_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *expected_profile[1:],
+    ]
+    expected_toolchain["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
+    expected_toolchain["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
+    expected_toolchain["build_closure"] = closure
+    sandbox = dict(SWIFT_NETWORK_SANDBOX)
+    sandbox.update(
+        {
+            "sha256": "sha256:" + profile.sandbox_exec_sha256,
+            "bytes": profile.sandbox_exec_bytes,
+            "cdhash_full": profile.sandbox_exec_cdhash_full,
+        }
+    )
+    verifier = dict(SWIFT_NETWORK_VERIFIER)
+    verifier.update(
+        {
+            "sha256": "sha256:" + profile.codesign_sha256,
+            "bytes": profile.codesign_bytes,
+        }
+    )
+    return {
+        "profile": profile,
+        "toolchain": expected_toolchain,
+        "closure": closure,
+        "git": {
+            "path": SWIFT_GIT_PATH,
+            "sha256": "sha256:" + profile.apple_git_sha256,
+            "version": SWIFT_GIT_VERSION,
+        },
+        "sandbox": sandbox,
+        "verifier": verifier,
+        "probe_compiler": next(
+            component for component in closure["components"] if component["role"] == "clang"
+        ),
+    }
+
+
 def _validate_swift_analyzer_receipt_document(
     receipt: object,
     *,
@@ -2574,6 +3684,17 @@ def _validate_swift_analyzer_receipt_document(
         failures.append(f"{label} must be an object")
         return None
     starting_failure_count = len(failures)
+    try:
+        registered_contract = _registered_swift_receipt_contract(receipt)
+    except (ImportError, KeyError, TypeError, ValueError) as exc:
+        failures.append(f"{label} Apple host profile is not registered: {exc}")
+        return None
+    expected_toolchain = registered_contract["toolchain"]
+    expected_build_closure = registered_contract["closure"]
+    expected_git = registered_contract["git"]
+    expected_sandbox = registered_contract["sandbox"]
+    expected_verifier = registered_contract["verifier"]
+    expected_probe_compiler = registered_contract["probe_compiler"]
     if set(receipt) != SWIFT_ANALYZER_RECEIPT_KEYS:
         failures.append(f"{label} top-level keys are not exact")
     if (
@@ -2637,9 +3758,13 @@ def _validate_swift_analyzer_receipt_document(
                 key=lambda path: path.relative_to(package).as_posix(),
             ),
         ]
-        expected_paths = [path.relative_to(package).as_posix() for path in expected_sources]
+        expected_paths = [
+            path.relative_to(package).as_posix() for path in expected_sources
+        ]
         if observed_paths != expected_paths:
-            failures.append(f"{label}.source_inputs file set differs from locked engine sources")
+            failures.append(
+                f"{label}.source_inputs file set differs from locked engine sources"
+            )
         records_by_path = {
             item.get("path"): item for item in files if isinstance(item, dict)
         }
@@ -2651,13 +3776,17 @@ def _validate_swift_analyzer_receipt_document(
                     raise ValueError("not a regular locked source")
                 content = source.read_bytes()
             except (OSError, ValueError) as exc:
-                failures.append(f"{label}.source_inputs locked source invalid: {relative}: {exc}")
+                failures.append(
+                    f"{label}.source_inputs locked source invalid: {relative}: {exc}"
+                )
                 continue
             if not isinstance(record, dict) or (
                 record.get("sha256") != sha256_bytes(content)
                 or record.get("bytes") != len(content)
             ):
-                failures.append(f"{label}.source_inputs source binding mismatch: {relative}")
+                failures.append(
+                    f"{label}.source_inputs source binding mismatch: {relative}"
+                )
 
     dependency = receipt.get("dependency")
     dependency_keys = {
@@ -2673,8 +3802,7 @@ def _validate_swift_analyzer_receipt_document(
         failures.append(f"{label}.dependency keys are not exact")
         dependency = {}
     if {
-        field: dependency.get(field)
-        for field in ("identity", "version", "revision")
+        field: dependency.get(field) for field in ("identity", "version", "revision")
     } != {
         "identity": SWIFT_DEPENDENCY_IDENTITY,
         "version": SWIFT_DEPENDENCY_VERSION,
@@ -2698,10 +3826,7 @@ def _validate_swift_analyzer_receipt_document(
         mirror = {}
     if mirror.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
         failures.append(f"{label}.dependency.mirror.seed is invalid")
-    if {
-        field: mirror.get(field)
-        for field in ("identity", "version", "revision")
-    } != {
+    if {field: mirror.get(field) for field in ("identity", "version", "revision")} != {
         "identity": SWIFT_DEPENDENCY_IDENTITY,
         "version": SWIFT_DEPENDENCY_VERSION,
         "revision": SWIFT_DEPENDENCY_REVISION,
@@ -2709,7 +3834,9 @@ def _validate_swift_analyzer_receipt_document(
         failures.append(f"{label}.dependency.mirror identity is invalid")
     for field in ("sha256", "file_count", "bytes"):
         if mirror.get(field) != dependency.get(field):
-            failures.append(f"{label}.dependency.mirror.{field} differs from dependency tree")
+            failures.append(
+                f"{label}.dependency.mirror.{field} differs from dependency tree"
+            )
 
     cache = mirror.get("cache")
     if not isinstance(cache, dict) or set(cache) != SWIFT_DEPENDENCY_CACHE_KEYS:
@@ -2719,12 +3846,13 @@ def _validate_swift_analyzer_receipt_document(
         failures.append(f"{label}.dependency.mirror.cache.cache_key is invalid")
     if cache.get("cache_schema") != SWIFT_DEPENDENCY_CACHE_SCHEMA:
         failures.append(f"{label}.dependency.mirror.cache.cache_schema is invalid")
+    if cache.get("object_store_policy") != SWIFT_DEPENDENCY_OBJECT_STORE_POLICY:
+        failures.append(
+            f"{label}.dependency.mirror.cache.object_store_policy is invalid"
+        )
     if cache.get("seed") not in SWIFT_ANALYZER_MIRROR_SEEDS:
         failures.append(f"{label}.dependency.mirror.cache.seed is invalid")
-    if {
-        field: cache.get(field)
-        for field in ("identity", "version", "revision")
-    } != {
+    if {field: cache.get(field) for field in ("identity", "version", "revision")} != {
         "identity": SWIFT_DEPENDENCY_IDENTITY,
         "version": SWIFT_DEPENDENCY_VERSION,
         "revision": SWIFT_DEPENDENCY_REVISION,
@@ -2740,26 +3868,28 @@ def _validate_swift_analyzer_receipt_document(
     if not isinstance(git, dict) or set(git) != {"path", "sha256", "version"}:
         failures.append(f"{label}.dependency.mirror.git keys are not exact")
         git = {}
-    if git != {
-        "path": SWIFT_GIT_PATH,
-        "sha256": SWIFT_GIT_SHA256,
-        "version": SWIFT_GIT_VERSION,
-    }:
+    if git != expected_git:
         failures.append(f"{label}.dependency.mirror.git identity is invalid")
-    _require_digest(failures, git.get("sha256"), f"{label}.dependency.mirror.git.sha256")
-    try:
-        if _observe_swift_git_identity() != git:
-            raise ValueError("direct Xcode Git receipt differs")
-    except (OSError, ValueError) as exc:
-        failures.append(f"{label}.dependency.mirror.git provenance invalid: {exc}")
+    _require_digest(
+        failures, git.get("sha256"), f"{label}.dependency.mirror.git.sha256"
+    )
+    if live_binary is not None:
+        try:
+            if _observe_swift_git_identity(
+                {
+                    **expected_git,
+                    "bytes": registered_contract["profile"].apple_git_bytes,
+                }
+            ) != git:
+                raise ValueError("direct Xcode Git receipt differs")
+        except (OSError, ValueError) as exc:
+            failures.append(f"{label}.dependency.mirror.git provenance invalid: {exc}")
 
     toolchain = receipt.get("toolchain")
-    if not isinstance(toolchain, dict) or set(toolchain) != set(
-        SWIFT_ANALYZER_TOOLCHAIN
-    ):
+    if not isinstance(toolchain, dict) or set(toolchain) != set(expected_toolchain):
         failures.append(f"{label}.toolchain keys are not exact")
         toolchain = {}
-    if toolchain != SWIFT_ANALYZER_TOOLCHAIN:
+    if toolchain != expected_toolchain:
         failures.append(f"{label}.toolchain exact identity is invalid")
     build_closure = toolchain.get("build_closure")
     if not isinstance(build_closure, dict) or set(build_closure) != {
@@ -2771,15 +3901,18 @@ def _validate_swift_analyzer_receipt_document(
         "trees",
     }:
         failures.append(f"{label}.toolchain.build_closure keys are not exact")
-    try:
-        observed_build_closure = _observe_swift_build_closure()
-    except (OSError, ValueError) as exc:
-        failures.append(f"{label}.toolchain.build_closure live provenance invalid: {exc}")
-    else:
-        if observed_build_closure != SWIFT_ANALYZER_BUILD_CLOSURE:
-            failures.append(f"{label}.toolchain.build_closure pinned identity differs")
-        if build_closure != observed_build_closure:
-            failures.append(f"{label}.toolchain.build_closure receipt mismatch")
+    if build_closure != expected_build_closure:
+        failures.append(f"{label}.toolchain.build_closure receipt mismatch")
+    if live_binary is not None:
+        try:
+            observed_build_closure = _observe_swift_build_closure()
+        except (OSError, ValueError) as exc:
+            failures.append(
+                f"{label}.toolchain.build_closure live provenance invalid: {exc}"
+            )
+        else:
+            if observed_build_closure != expected_build_closure:
+                failures.append(f"{label}.toolchain.build_closure pinned identity differs")
     for path_field, digest_field in (
         ("swiftc", "swiftc_sha256"),
         ("swift_driver", "swift_driver_sha256"),
@@ -2790,6 +3923,8 @@ def _validate_swift_analyzer_receipt_document(
             f"{label}.toolchain.{digest_field}",
         )
         tool_path = Path(str(toolchain.get(path_field, "")))
+        if live_binary is None:
+            continue
         try:
             link_metadata = tool_path.lstat()
             resolved_tool = tool_path.resolve(strict=True)
@@ -2808,9 +3943,7 @@ def _validate_swift_analyzer_receipt_document(
             ):
                 raise ValueError(f"{path_field} identity differs")
         except (OSError, ValueError) as exc:
-            failures.append(
-                f"{label}.toolchain.{path_field} provenance invalid: {exc}"
-            )
+            failures.append(f"{label}.toolchain.{path_field} provenance invalid: {exc}")
 
     build = receipt.get("build")
     if not isinstance(build, dict) or set(build) != set(SWIFT_ANALYZER_BUILD):
@@ -2845,8 +3978,8 @@ def _validate_swift_analyzer_receipt_document(
     if (
         network.get("status") != "PASSED"
         or network.get("scope") != "swift-build-process-tree"
-        or sandbox != SWIFT_NETWORK_SANDBOX
-        or verifier != SWIFT_NETWORK_VERIFIER
+        or sandbox != expected_sandbox
+        or verifier != expected_verifier
         or policy != expected_policy
     ):
         failures.append(f"{label}.network_isolation policy/provenance is invalid")
@@ -2856,17 +3989,22 @@ def _validate_swift_analyzer_receipt_document(
         "sha256": SWIFT_NETWORK_PROBE_SOURCE_SHA256,
         "bytes": SWIFT_NETWORK_PROBE_SOURCE_BYTES,
     }
-    if source != expected_source or (
-        sha256_bytes(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8"))
-        != SWIFT_NETWORK_PROBE_SOURCE_SHA256
-    ) or len(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8")) != SWIFT_NETWORK_PROBE_SOURCE_BYTES:
+    if (
+        source != expected_source
+        or (
+            sha256_bytes(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8"))
+            != SWIFT_NETWORK_PROBE_SOURCE_SHA256
+        )
+        or len(SWIFT_NETWORK_PROBE_SOURCE.encode("utf-8"))
+        != SWIFT_NETWORK_PROBE_SOURCE_BYTES
+    ):
         failures.append(f"{label}.network_isolation.probe.source is invalid")
     probe_build = probe.get("build")
     expected_probe_build = {
         "environment_policy": "sanitized-swift-build-deterministic-v1",
         "argv": SWIFT_NETWORK_PROBE_BUILD_ARGV,
         "environment": SWIFT_NETWORK_PROBE_BUILD_ENVIRONMENT,
-        "compiler": SWIFT_NETWORK_PROBE_COMPILER,
+        "compiler": expected_probe_compiler,
     }
     if (
         not isinstance(probe_build, dict)
@@ -2875,7 +4013,10 @@ def _validate_swift_analyzer_receipt_document(
     ):
         failures.append(f"{label}.network_isolation.probe.build is invalid")
     probe_binary = probe.get("binary")
-    if not isinstance(probe_binary, dict) or set(probe_binary) != SWIFT_ANALYZER_BINARY_KEYS:
+    if (
+        not isinstance(probe_binary, dict)
+        or set(probe_binary) != SWIFT_ANALYZER_BINARY_KEYS
+    ):
         failures.append(f"{label}.network_isolation.probe.binary keys are not exact")
         probe_binary = {}
     probe_binary_path = Path(str(probe_binary.get("path", "")))
@@ -2902,7 +4043,9 @@ def _validate_swift_analyzer_receipt_document(
         not isinstance(probe_seal, dict)
         or set(probe_seal) != SWIFT_ANALYZER_EXECUTION_SEAL_KEYS
     ):
-        failures.append(f"{label}.network_isolation.probe.execution_seal keys are not exact")
+        failures.append(
+            f"{label}.network_isolation.probe.execution_seal keys are not exact"
+        )
         probe_seal = {}
     probe_seal_root = Path(str(probe_seal.get("root", "")))
     if (
@@ -2926,33 +4069,41 @@ def _validate_swift_analyzer_receipt_document(
         "linked_libraries": SWIFT_NETWORK_PROBE_LINKED_LIBRARIES,
     }
     mach_o = probe.get("mach_o")
-    if not isinstance(mach_o, dict) or set(mach_o) != set(expected_mach_o) or mach_o != expected_mach_o:
+    if (
+        not isinstance(mach_o, dict)
+        or set(mach_o) != set(expected_mach_o)
+        or mach_o != expected_mach_o
+    ):
         failures.append(f"{label}.network_isolation.probe.mach_o is invalid")
 
     validation_environment = {"LANG": "C", "LC_ALL": "C", "PATH": "/usr/bin"}
-    try:
-        sandbox_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)[0]
-        verifier_observed = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)[0]
-        _verify_swift_network_sandbox_signature(
-            environment=validation_environment,
-            cwd=Path.cwd(),
-        )
-        if (
-            sandbox_observed
-            != {key: SWIFT_NETWORK_SANDBOX[key] for key in sandbox_observed}
-            or verifier_observed != SWIFT_NETWORK_VERIFIER
-        ):
-            raise ValueError("system tool receipt differs")
-    except (OSError, subprocess.SubprocessError, ValueError) as exc:
-        failures.append(f"{label}.network_isolation live system provenance invalid: {exc}")
+    if live_binary is not None:
+        try:
+            sandbox_observed = _observe_swift_network_system_tool(expected_sandbox)[0]
+            verifier_observed = _observe_swift_network_system_tool(expected_verifier)[0]
+            _verify_swift_network_sandbox_signature(
+                environment=validation_environment,
+                cwd=Path.cwd(),
+                sandbox=expected_sandbox,
+                verifier=expected_verifier,
+            )
+            if (
+                sandbox_observed != {key: expected_sandbox[key] for key in sandbox_observed}
+                or verifier_observed != expected_verifier
+            ):
+                raise ValueError("system tool receipt differs")
+        except (OSError, subprocess.SubprocessError, ValueError) as exc:
+            failures.append(
+                f"{label}.network_isolation live system provenance invalid: {exc}"
+            )
 
     if live_binary is not None:
         try:
             analyzer_root = live_binary.resolve(strict=True).parent
             if probe_binary_path.parent.parent != analyzer_root:
                 raise ValueError("probe is outside the fresh analyzer execution root")
-            sandbox_before = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-            verifier_before = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            sandbox_before = _observe_swift_network_system_tool(expected_sandbox)
+            verifier_before = _observe_swift_network_system_tool(expected_verifier)
             content_before, metadata_before, identity_before = _stable_read_exact_file(
                 probe_binary_path,
                 maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
@@ -2991,10 +4142,11 @@ def _validate_swift_analyzer_receipt_document(
                 probe_binary_path,
                 environment=validation_environment,
                 cwd=analyzer_root,
+                verifier=expected_verifier,
             )
             execution = subprocess.run(
                 [
-                    SWIFT_NETWORK_SANDBOX["path"],
+                    expected_sandbox["path"],
                     "-p",
                     SWIFT_NETWORK_POLICY_TEXT,
                     str(probe_binary_path),
@@ -3011,8 +4163,8 @@ def _validate_swift_analyzer_receipt_document(
                 maximum_bytes=SWIFT_NETWORK_PROBE_BINARY_BYTES,
                 allowed_uids=frozenset({os.getuid()}),
             )
-            sandbox_after = _observe_swift_network_system_tool(SWIFT_NETWORK_SANDBOX)
-            verifier_after = _observe_swift_network_system_tool(SWIFT_NETWORK_VERIFIER)
+            sandbox_after = _observe_swift_network_system_tool(expected_sandbox)
+            verifier_after = _observe_swift_network_system_tool(expected_verifier)
             if (
                 execution.returncode != 0
                 or execution.stdout != "NETWORK_DENIED:1\n"
@@ -3023,10 +4175,18 @@ def _validate_swift_analyzer_receipt_document(
                 or sandbox_before != sandbox_after
                 or verifier_before != verifier_after
             ):
-                raise ValueError("fresh sealed probe changed or did not observe exact EPERM")
-            _independently_rebuild_swift_network_probe()
+                raise ValueError(
+                    "fresh sealed probe changed or did not observe exact EPERM"
+                )
+            _independently_rebuild_swift_network_probe(
+                sandbox=expected_sandbox,
+                verifier=expected_verifier,
+                compiler=expected_probe_compiler,
+            )
         except (OSError, subprocess.SubprocessError, ValueError) as exc:
-            failures.append(f"{label}.network_isolation live probe provenance invalid: {exc}")
+            failures.append(
+                f"{label}.network_isolation live probe provenance invalid: {exc}"
+            )
 
     binary = receipt.get("binary")
     if not isinstance(binary, dict) or set(binary) != SWIFT_ANALYZER_BINARY_KEYS:
@@ -3060,8 +4220,7 @@ def _validate_swift_analyzer_receipt_document(
         execution_seal = {}
     seal_root = Path(str(execution_seal.get("root", "")))
     if (
-        execution_seal.get("policy")
-        != "private-nonwritable-execution-root-v1"
+        execution_seal.get("policy") != "private-nonwritable-execution-root-v1"
         or not seal_root.is_absolute()
         or not seal_root.name.startswith("elmos-swift-analyzer-")
         or ".." in seal_root.parts
@@ -3198,7 +4357,9 @@ def _validate_swift_receipt_binding(
         _swift_receipt_stable_projection(persisted)
         != _swift_receipt_stable_projection(validated_fresh)
     ):
-        failures.append(f"{label} stable projection differs from independent scratch rebuild")
+        failures.append(
+            f"{label} stable projection differs from independent scratch rebuild"
+        )
     return persisted
 
 
@@ -3209,9 +4370,10 @@ def _validate_swift_analyzer_version_binding(
     label: str,
     failures: list[str],
 ) -> bool:
-    if not isinstance(semantic_document, dict) or semantic_document.get(
-        "source_language"
-    ) != "swift":
+    if (
+        not isinstance(semantic_document, dict)
+        or semantic_document.get("source_language") != "swift"
+    ):
         return False
     if receipt is None:
         failures.append(f"{label} has no bound Swift analyzer build receipt")
@@ -3396,9 +4558,7 @@ print(
         )
         return None
     try:
-        response = json.loads(
-            completed.stdout, parse_constant=_reject_json_constant
-        )
+        response = json.loads(completed.stdout, parse_constant=_reject_json_constant)
         result = response["result"]
         smt = base64.b64decode(response["smt_base64"], validate=True).decode("utf-8")
         child_provenance = response["provenance"]
@@ -3413,9 +4573,7 @@ print(
         return None
     child_cli = child_provenance.get("z3_cli")
     if isinstance(child_cli, dict):
-        child_cli = {
-            key: child_cli.get(key) for key in ("path", "sha256", "version")
-        }
+        child_cli = {key: child_cli.get(key) for key in ("path", "sha256", "version")}
     normalized_child = {
         **child_provenance,
         "z3_cli": child_cli,
@@ -3760,28 +4918,27 @@ def _validate_concrete_chunk_document(
                         f"{label}.mappings[{index}] {side} semantic_hash drift"
                     )
                 expected_chunk_id = sha256_bytes(
-                    f"{artifact_digest}\0{semantic_path}\0{observed_semantic_hash}".encode(
-                        "utf-8"
-                    )
+                    f"{artifact_digest}\0{semantic_path}\0{observed_semantic_hash}".encode()
                 )
                 if mapping.get(f"{side}_chunk_id") != expected_chunk_id:
-                    failures.append(
-                        f"{label}.mappings[{index}].{side}_chunk_id drift"
-                    )
+                    failures.append(f"{label}.mappings[{index}].{side}_chunk_id drift")
 
         parents = semantic_parents.get(side, {})
         children = semantic_children.get(side, {})
         for path, parent in parents.items():
-            if parent is None or path not in spans_by_path or parent not in spans_by_path:
+            if (
+                parent is None
+                or path not in spans_by_path
+                or parent not in spans_by_path
+            ):
                 continue
             child_span = spans_by_path[path]
             parent_span = spans_by_path[parent]
-            if (
-                child_span.get("start_byte", -1) < parent_span.get("start_byte", 0)
-                or child_span.get("end_byte", 0) > parent_span.get("end_byte", -1)
-            ):
+            if child_span.get("start_byte", -1) < parent_span.get(
+                "start_byte", 0
+            ) or child_span.get("end_byte", 0) > parent_span.get("end_byte", -1):
                 failures.append(f"{label} {side} parent span does not cover {path}")
-        for parent, child_paths in children.items():
+        for _parent, child_paths in children.items():
             ranged = [
                 (
                     spans_by_path[path].get("start_byte"),
@@ -3791,7 +4948,10 @@ def _validate_concrete_chunk_document(
                 for path in child_paths
                 if path in spans_by_path
             ]
-            if any(not _is_int(start) or not _is_int(end, minimum=1) for start, end, _ in ranged):
+            if any(
+                not _is_int(start) or not _is_int(end, minimum=1)
+                for start, end, _ in ranged
+            ):
                 continue
             ranged.sort()
             for previous, current in zip(ranged, ranged[1:], strict=False):
@@ -3838,7 +4998,9 @@ def _validate_module_behavior_layer(
             failures.append(f"{label}.{field} must be true")
     if layer.get("counterexamples") != []:
         failures.append(f"{label}.counterexamples must be empty")
-    if not isinstance(source_validation, dict) or not isinstance(target_validation, dict):
+    if not isinstance(source_validation, dict) or not isinstance(
+        target_validation, dict
+    ):
         failures.append(f"{label} validation records are missing")
         return
     for side, validation, observations in (
@@ -3946,8 +5108,7 @@ def _validate_module_behavior_layer(
                     and isinstance(value, int | float)
                     and not isinstance(value, bool)
                     and math.isfinite(float(value))
-                    and observation.get("raw")
-                    == struct.pack(">d", float(value)).hex()
+                    and observation.get("raw") == struct.pack(">d", float(value)).hex()
                 )
             elif return_type == "boolean":
                 valid = (
@@ -3971,6 +5132,8 @@ def _validate_module_formal_closure(
     case_manifest_sha256: object,
     formal: object,
     module_input_sha256: object,
+    module_identifier_hygiene: object,
+    input_domain: str,
     route_scope: dict[str, Any],
     artifacts_by_path: dict[str, tuple[dict[str, Any], Path, str]],
     failures: list[str],
@@ -4011,6 +5174,12 @@ def _validate_module_formal_closure(
     except Exception as exc:
         failures.append(f"{label} closure JSON is invalid: {exc}")
         return
+    _validate_optional_json_schema(
+        formal_input,
+        "formal-input-module-function.schema.json",
+        failures,
+        f"{label} input",
+    )
     if set(formal_input) != FORMAL_FUNCTION_INPUT_KEYS:
         failures.append(f"{label} input keys are not exact")
     if set(formal_result) != FORMAL_FUNCTION_RESULT_KEYS:
@@ -4026,7 +5195,7 @@ def _validate_module_formal_closure(
         ("schema_version", "1.0.0"),
         ("kind", "typed-pure-module-function-formal-input"),
         ("profile", "typed-pure-module-v1"),
-        ("input_domain", SPECIALIZED_INPUT_DOMAIN),
+        ("input_domain", input_domain),
         ("module_input_sha256", module_input_sha256),
         ("symbol", symbol),
         ("signature", signature),
@@ -4046,6 +5215,48 @@ def _validate_module_formal_closure(
         failures.append(f"{label} source function is detached from source module IR")
     if formal_input.get("target_function") != expected_target_function:
         failures.append(f"{label} target function is detached from target module IR")
+    if not isinstance(module_identifier_hygiene, dict):
+        failures.append(f"{label} module identifier hygiene is invalid")
+    else:
+        identifier_functions = module_identifier_hygiene.get("functions")
+        matching_functions = [
+            mapping
+            for mapping in (
+                identifier_functions if isinstance(identifier_functions, list) else []
+            )
+            if isinstance(mapping, dict) and mapping.get("canonical_symbol") == symbol
+        ]
+        plan_ref = module_identifier_hygiene.get("plan")
+        raw_ref = module_identifier_hygiene.get("raw_target_ir")
+        norm_ref = module_identifier_hygiene.get("normalized_target_ir")
+        expected_identifier_hygiene = (
+            {
+                "plan": (
+                    {"role": "identifier-plan", **plan_ref}
+                    if isinstance(plan_ref, dict)
+                    else None
+                ),
+                "unit_namespace": module_identifier_hygiene.get("unit_namespace"),
+                "unit_namespace_sha256": module_identifier_hygiene.get(
+                    "unit_namespace_sha256"
+                ),
+                "raw_target_ir": (
+                    {"role": "raw-target-ir", **raw_ref}
+                    if isinstance(raw_ref, dict)
+                    else None
+                ),
+                "normalized_target_ir": (
+                    {"role": "normalized-target-ir", **norm_ref}
+                    if isinstance(norm_ref, dict)
+                    else None
+                ),
+                "function": matching_functions[0],
+            }
+            if len(matching_functions) == 1
+            else None
+        )
+        if formal_input.get("identifier_hygiene") != expected_identifier_hygiene:
+            failures.append(f"{label} identifier hygiene closure drift")
     expected_semantic = _expected_semantic_layer(source_function, target_function)
     if semantic_layer != expected_semantic:
         failures.append(f"{label} semantic layer differs from bound module IR")
@@ -4070,14 +5281,16 @@ def _validate_module_formal_closure(
         if formal.get(key) != formal_result.get(key):
             failures.append(f"{label} report/result {key} drift")
     assumptions = formal_result.get("assumptions")
-    if not isinstance(assumptions, list) or not assumptions or any(
-        not isinstance(item, str) or not item for item in assumptions
+    if (
+        not isinstance(assumptions, list)
+        or not assumptions
+        or any(not isinstance(item, str) or not item for item in assumptions)
     ):
         failures.append(f"{label} assumptions must be non-empty")
     claim_scope = formal_result.get("claim_scope")
     if (
         not isinstance(claim_scope, dict)
-        or claim_scope.get("input_domain") != SPECIALIZED_INPUT_DOMAIN
+        or claim_scope.get("input_domain") != input_domain
     ):
         failures.append(f"{label} claim input domain drift")
     if formal_result.get("external_soundness_boundary") != {
@@ -4113,7 +5326,7 @@ def _validate_module_formal_closure(
         f"; formal_input_digest: {input_record[2]}",
         f"; formal-input-sha256: {input_record[2]}",
         f"; formal-input-path: {input_record[1].name}",
-        f"; input-domain: {SPECIALIZED_INPUT_DOMAIN}",
+        f"; input-domain: {input_domain}",
     )
     if any(header not in solver_text.splitlines()[:16] for header in required_headers):
         failures.append(f"{label} SMT input header is not bound to formal input/domain")
@@ -4124,7 +5337,7 @@ def _validate_module_formal_closure(
         target_language=route_scope.get("target_language"),
         input_digest=input_record[2],
         formal_input_reference=expected_input_ref,
-        input_domain=SPECIALIZED_INPUT_DOMAIN,
+        input_domain=input_domain,
         label=label,
         failures=failures,
     )
@@ -4165,17 +5378,16 @@ def _validate_module_formal_closure(
         "replay_contract": expected_replay,
         "claim_scope": regenerated.get("claim_scope"),
         "reason": regenerated.get("reason"),
-        "external_soundness_boundary": regenerated.get(
-            "external_soundness_boundary"
-        ),
+        "external_soundness_boundary": regenerated.get("external_soundness_boundary"),
         "independent_encodings": regenerated.get("independent_encodings"),
         "certification_status": regenerated.get("certification_status"),
     }
     if formal_result != expected_result:
         failures.append(f"{label} result differs from independent re-encoding")
-    if regenerated.get("status") != "PROVED_UNDER_ASSUMPTIONS" or regenerated.get(
-        "property_status"
-    ) != "PROVED":
+    if (
+        regenerated.get("status") != "PROVED_UNDER_ASSUMPTIONS"
+        or regenerated.get("property_status") != "PROVED"
+    ):
         failures.append(f"{label} independent re-encoding did not prove the property")
     _validate_nonvacuous_smt(
         smt_text=regenerated_smt,
@@ -4274,9 +5486,10 @@ def _validate_function_formal_closure(
     }
     if solver_result != expected_result:
         failures.append(f"{label} solver result differs from independent re-encoding")
-    if regenerated.get("status") != "PROVED_UNDER_ASSUMPTIONS" or regenerated.get(
-        "property_status"
-    ) != "PROVED":
+    if (
+        regenerated.get("status") != "PROVED_UNDER_ASSUMPTIONS"
+        or regenerated.get("property_status") != "PROVED"
+    ):
         failures.append(f"{label} independent re-encoding did not prove the property")
     _validate_nonvacuous_smt(
         smt_text=persisted_smt_text,
@@ -4465,7 +5678,9 @@ def _validate_replay_command(
                     continue
                 member_digest = sha256_file(member_path)
                 try:
-                    member_relative = member_path.relative_to(route.resolve()).as_posix()
+                    member_relative = member_path.relative_to(
+                        route.resolve()
+                    ).as_posix()
                 except ValueError:
                     failures.append(
                         "formal_proof.replay.command uv project member is outside the route: "
@@ -4550,7 +5765,10 @@ def _validate_replay_command(
         record
         for record in records.values()
         if record[0].get("role") in {"engine-source", "replay-tool"}
-        and record[2] == script_digest
+        and (
+            record[2] == script_digest
+            or (record[1].is_file() and record[2] == sha256_file(record[1]))
+        )
         and isinstance(record[0].get("path"), str)
         and path_matches(record[0]["path"])
     ]
@@ -4690,7 +5908,7 @@ def _artifact_pointer(
     records: dict[str, tuple[dict[str, Any], Path, str]],
     reference: object,
     *,
-    expected_role: str,
+    expected_roles: set[str],
     label: str,
     failures: list[str],
 ) -> tuple[str, str, object, tuple[dict[str, Any], Path, str]] | None:
@@ -4701,7 +5919,7 @@ def _artifact_pointer(
     record = _artifact_record(
         records,
         artifact_id,
-        expected_roles={expected_role},
+        expected_roles=expected_roles,
         label=label,
         failures=failures,
     )
@@ -4733,10 +5951,27 @@ def _validate_formal_input_document(
     except Exception as exc:
         failures.append(f"{label} is invalid JSON: {exc}")
         return None
-    missing = FORMAL_INPUT_REQUIRED_KEYS - set(document)
+    _validate_optional_json_schema(
+        document,
+        "formal-input.schema.json",
+        failures,
+        label,
+    )
+    is_specialized = (
+        manifest.get("gates", {}).get("canonical_finite_no_error_input_domain_required") is True
+    )
+    expected_required_keys = (
+        FORMAL_INPUT_REQUIRED_KEYS
+        if (is_specialized or "identifier_hygiene" in document)
+        else (FORMAL_INPUT_REQUIRED_KEYS - {"identifier_hygiene"})
+    )
+    missing = expected_required_keys - set(document)
     if missing:
         failures.append(f"{label} missing keys: {', '.join(sorted(missing))}")
         return document
+    extra = set(document) - expected_required_keys
+    if extra:
+        failures.append(f"{label} has unexpected keys: {', '.join(sorted(extra))}")
     if document.get("kind") != "elmos.formal-equivalence-input":
         failures.append(f"{label}.kind is invalid")
     route_scope = document.get("route")
@@ -4762,12 +5997,17 @@ def _validate_formal_input_document(
             or claim_scope.get("target_compiler_runtime_soundness") != "NOT_RUN"
         ):
             failures.append(f"{label}.claim_scope overstates the proved relation")
+        gates = manifest.get("gates", {})
+        expected_strict_domain = (
+            SPECIALIZED_INPUT_DOMAIN
+            if gates.get("canonical_finite_no_error_input_domain_required") is True
+            else NODEJS_INPUT_DOMAIN
+            if gates.get("nodejs_safe_integer_finite_domain_required") is True
+            else None
+        )
         if (
-            manifest.get("gates", {}).get(
-                "canonical_finite_no_error_input_domain_required"
-            )
-            is True
-            and claim_scope.get("input_domain") != SPECIALIZED_INPUT_DOMAIN
+            expected_strict_domain is not None
+            and claim_scope.get("input_domain") != expected_strict_domain
         ):
             failures.append(f"{label}.claim_scope input domain drift")
 
@@ -4783,6 +6023,9 @@ def _validate_formal_input_document(
     ) -> tuple[dict[str, Any], Path, str] | None:
         if not isinstance(reference, dict):
             failures.append(f"{label}.{child_label} reference must be an object")
+            return None
+        if set(reference) != {"path", "sha256"}:
+            failures.append(f"{label}.{child_label} reference keys are not exact")
             return None
         relative = reference.get("path")
         digest = reference.get("sha256")
@@ -4801,7 +6044,8 @@ def _validate_formal_input_document(
                 f"{label}.{child_label} is not bound by artifact_refs: {route_relative}"
             )
             return None
-        if child_record[0].get("role") != expected_role:
+        expected_roles = {expected_role} if isinstance(expected_role, str) else set(expected_role)
+        if child_record[0].get("role") not in expected_roles:
             failures.append(
                 f"{label}.{child_label} has role {child_record[0].get('role')}, expected {expected_role}"
             )
@@ -4852,7 +6096,7 @@ def _validate_formal_input_document(
         ),
         (
             "target_relift_normalized_ir",
-            "target-ir",
+            {"normalized-target-ir", "target-ir"},
             "emitted-target-relift-normalized-ir",
         ),
     ):
@@ -4860,6 +6104,8 @@ def _validate_formal_input_document(
         if not isinstance(binding, dict):
             failures.append(f"{label}.{field} must be an object")
             continue
+        if set(binding) != FORMAL_IR_BINDING_KEYS:
+            failures.append(f"{label}.{field} keys are not exact")
         if binding.get("role") != expected_binding_role:
             failures.append(f"{label}.{field}.role is invalid")
         child_record = bound_sibling(binding.get("artifact"), role, f"{field}.artifact")
@@ -4894,6 +6140,197 @@ def _validate_formal_input_document(
         normalized_documents.get("target_relift_normalized_ir", {}).get("functions")
     ):
         failures.append(f"{label} source/target normalized functions differ")
+
+    hygiene = document.get("identifier_hygiene")
+    plan_record: tuple[dict[str, Any], Path, str] | None = None
+    raw_mapping: dict[str, Any] | None = None
+    if (is_specialized or hygiene is not None) and not isinstance(hygiene, dict):
+        failures.append(f"{label}.identifier_hygiene must be an object")
+    elif hygiene is not None:
+        if set(hygiene) != FORMAL_IDENTIFIER_HYGIENE_KEYS:
+            failures.append(f"{label}.identifier_hygiene keys are not exact")
+        if hygiene.get("kind") != "elmos.verified-alpha-normalization":
+            failures.append(f"{label}.identifier_hygiene.kind is invalid")
+        plan_reference = hygiene.get("plan")
+        if (
+            not isinstance(plan_reference, dict)
+            or plan_reference.get("path") != "identifier-plan.json"
+        ):
+            failures.append(f"{label}.identifier_hygiene.plan path is not exact")
+        plan_record = bound_sibling(
+            plan_reference,
+            "identifier-plan",
+            "identifier_hygiene.plan",
+        )
+
+        raw_binding = hygiene.get("raw_target_relift_ir")
+        if not isinstance(raw_binding, dict):
+            failures.append(
+                f"{label}.identifier_hygiene.raw_target_relift_ir must be an object"
+            )
+        else:
+            if set(raw_binding) != FORMAL_IR_BINDING_KEYS:
+                failures.append(
+                    f"{label}.identifier_hygiene.raw_target_relift_ir keys are not exact"
+                )
+            if raw_binding.get("role") != "emitted-target-relift-raw-ir":
+                failures.append(
+                    f"{label}.identifier_hygiene.raw_target_relift_ir role is invalid"
+                )
+            raw_reference = raw_binding.get("artifact")
+            if (
+                not isinstance(raw_reference, dict)
+                or raw_reference.get("path") != "target-semantic-ir.raw.json"
+            ):
+                failures.append(
+                    f"{label}.identifier_hygiene.raw_target_relift_ir path is not exact"
+                )
+            raw_record = bound_sibling(
+                raw_reference,
+                "raw-target-ir",
+                "identifier_hygiene.raw_target_relift_ir.artifact",
+            )
+            raw_value = raw_binding.get("semantic_ir")
+            raw_function = raw_binding.get("formal_function")
+            if not isinstance(raw_value, dict) or not isinstance(raw_function, dict):
+                failures.append(
+                    f"{label}.identifier_hygiene.raw_target_relift_ir semantic IR/function is invalid"
+                )
+            else:
+                raw_mapping = raw_value
+                if raw_record is not None:
+                    try:
+                        persisted_raw = load(raw_record[1])
+                    except Exception as exc:
+                        failures.append(
+                            f"{label}.identifier_hygiene raw target IR is invalid: {exc}"
+                        )
+                    else:
+                        if persisted_raw != raw_value:
+                            failures.append(
+                                f"{label}.identifier_hygiene raw embedded/persisted IR differ"
+                            )
+                raw_functions = raw_value.get("functions")
+                if not isinstance(raw_functions, list) or len(raw_functions) != 1:
+                    failures.append(
+                        f"{label}.identifier_hygiene raw target IR must contain exactly one function"
+                    )
+                elif semantic_value(raw_functions[0]) != raw_function:
+                    failures.append(
+                        f"{label}.identifier_hygiene raw formal_function drift"
+                    )
+                if raw_binding.get("semantic_ir_sha256") != canonical_json_sha256(
+                    raw_value
+                ):
+                    failures.append(
+                        f"{label}.identifier_hygiene raw semantic_ir_sha256 mismatch"
+                    )
+                if raw_binding.get("formal_function_sha256") != canonical_json_sha256(
+                    raw_function
+                ):
+                    failures.append(
+                        f"{label}.identifier_hygiene raw formal_function_sha256 mismatch"
+                    )
+
+        normalized_reference = hygiene.get("normalized_target_ir")
+        target_binding = document.get("target_relift_normalized_ir")
+        expected_normalized_reference = (
+            target_binding.get("artifact") if isinstance(target_binding, dict) else None
+        )
+        if normalized_reference != expected_normalized_reference:
+            failures.append(
+                f"{label}.identifier_hygiene normalized target reference mismatch"
+            )
+        if (
+            not isinstance(normalized_reference, dict)
+            or normalized_reference.get("path") != "target-semantic-ir.normalized.json"
+        ):
+            failures.append(
+                f"{label}.identifier_hygiene normalized target path is not exact"
+            )
+
+    source_mapping = normalized_documents.get("source_normalized_ir")
+    target_mapping = normalized_documents.get("target_relift_normalized_ir")
+    if (
+        isinstance(hygiene, dict)
+        and plan_record is not None
+        and raw_record is not None
+        and isinstance(raw_mapping, dict)
+        and isinstance(source_mapping, dict)
+        and isinstance(target_mapping, dict)
+    ):
+        identifier_api = _engine_identifier_api(failures, label)
+        if identifier_api is not None:
+            (
+                SemanticIR,
+                IdentifierPlan,
+                validate_identifier_plan,
+                alpha_normalize_target,
+                identifier_plan_bytes,
+                _target_ir_view,
+                standalone_artifact_unit_namespace,
+                _bind_function_spans_from_inventory,
+            ) = identifier_api
+            try:
+                plan_payload = load(plan_record[1])
+                _validate_optional_json_schema(
+                    plan_payload,
+                    "identifier-plan.schema.json",
+                    failures,
+                    f"{label}.identifier_hygiene.plan",
+                )
+                source_ir = SemanticIR.from_mapping(source_mapping)
+                raw_target_ir = SemanticIR.from_mapping(raw_mapping)
+                normalized_target_ir = SemanticIR.from_mapping(target_mapping)
+                plan = IdentifierPlan.from_mapping(plan_payload)
+                source_artifact = document.get("source_artifact")
+                if not isinstance(source_artifact, dict):
+                    raise ValueError("source artifact is unavailable")
+                source_logical_path = source_artifact.get("path")
+                source_sha256 = source_artifact.get("sha256")
+                if not isinstance(source_logical_path, str) or not isinstance(
+                    source_sha256, str
+                ):
+                    raise ValueError("source artifact namespace inputs are invalid")
+                expected_unit_namespace = standalone_artifact_unit_namespace(
+                    source_logical_path,
+                    source_sha256,
+                )
+                validate_identifier_plan(
+                    source_ir,
+                    plan,
+                    expected_unit_namespace=expected_unit_namespace,
+                )
+                canonical_plan_bytes = identifier_plan_bytes(plan)
+                if plan_record[1].read_bytes() != canonical_plan_bytes:
+                    raise ValueError("identifier plan bytes are not canonical")
+                if plan_record[2] != plan.digest:
+                    raise ValueError("identifier plan artifact digest differs")
+                if (
+                    hygiene.get("plan_digest") != plan.digest
+                    or hygiene.get("policy_id") != plan.policy_id
+                    or hygiene.get("policy_sha256") != plan.policy_sha256
+                    or hygiene.get("unit_namespace")
+                    != expected_unit_namespace.to_mapping()
+                    or hygiene.get("unit_namespace_sha256")
+                    != expected_unit_namespace.digest
+                    or plan.target_language
+                    != manifest.get("target", {}).get("language")
+                ):
+                    raise ValueError("identifier plan summary differs")
+                recomputed_target = alpha_normalize_target(
+                    source_ir, raw_target_ir, plan
+                )
+                if recomputed_target.to_mapping() != normalized_target_ir.to_mapping():
+                    raise ValueError("raw to alpha-normalized target closure differs")
+                if (
+                    hygiene.get("source_function_name") != source_ir.functions[0].name
+                    or hygiene.get("target_function_name")
+                    != raw_target_ir.functions[0].name
+                ):
+                    raise ValueError("identifier function name summary differs")
+            except Exception as exc:
+                failures.append(f"{label}.identifier_hygiene closure is invalid: {exc}")
 
     analyzer_identity = document.get("analyzer_identity")
     if not isinstance(analyzer_identity, dict):
@@ -4944,6 +6381,10 @@ def _validate_formal_input_document(
             "equivalence_encoder": "src/elmos_polyglot_route/equivalence.py",
             "emitter": "src/elmos_polyglot_route/emitter.py",
         }
+        if is_specialized or "identifier_hygiene" in implementation:
+            expected_files["identifier_hygiene"] = "src/elmos_polyglot_route/identifier_hygiene.py"
+        if set(implementation) != set(expected_files):
+            failures.append(f"{label}.implementation_identity keys are not exact")
         engine_records = [
             item for item in records.values() if item[0].get("role") == "engine-source"
         ]
@@ -5006,16 +6447,14 @@ def _validate_formal_input_document(
 def _validate_optional_json_schema(
     data: dict[str, Any], schema_name: str, failures: list[str], label: str
 ) -> None:
-    """Use jsonschema when the invoking environment provides it.
-
-    Direct semantic validation below remains authoritative because the route CI
-    intentionally runs with the standard-library Python interpreter as well as
-    through the Batch 29 Make target that installs jsonschema.
-    """
+    """Require the pinned JSON Schema validator for exact evidence shapes."""
 
     try:
         import jsonschema  # type: ignore[import-not-found]
-    except ImportError:
+    except ImportError as exc:
+        failures.append(
+            f"{label} schema validation unavailable: jsonschema is required: {exc}"
+        )
         return
     schema = Path(__file__).resolve().parents[2] / "schemas" / "batch29" / schema_name
     try:
@@ -5028,6 +6467,8 @@ def validate_formal_equivalence(
     route: Path,
     manifest: dict[str, Any],
     certification: dict[str, Any],
+    *,
+    validate_live_engine_sources: bool = True,
 ) -> tuple[dict[str, Any] | None, list[str]]:
     """Validate strict evidence format v2 without upgrading its proof claim.
 
@@ -5149,11 +6590,17 @@ def validate_formal_equivalence(
     if formal_swift_receipt is not None:
         swift_semantic_ir_count = 0
         for record in ref_records.values():
-            if record[0].get("role") not in {"source-ir", "target-ir"}:
+            if record[0].get("role") not in {
+                "source-ir",
+                "target-ir",
+                "normalized-target-ir",
+            }:
                 continue
             try:
-                semantic_document = load(record[1])
+                semantic_document: dict[str, Any] | None = load(record[1])
             except Exception:
+                semantic_document = None
+            if semantic_document is None:
                 continue
             if _validate_swift_analyzer_version_binding(
                 semantic_document=semantic_document,
@@ -5254,9 +6701,34 @@ def validate_formal_equivalence(
                             failures.append("engine source manifest files are empty")
                         else:
                             declared_sources: set[str] = set()
+                            files_by_repository_path: dict[str, dict[str, Any]] = {}
+                            captured_paths_by_repository_path: dict[str, Path] = {}
                             live_repository_root = _replay_execution_root(route)
+                            is_specialized = (
+                                manifest.get("gates", {}).get(
+                                    "canonical_finite_no_error_input_domain_required"
+                                )
+                                is True
+                            )
+                            # The original 30-route campaign is immutable
+                            # historical evidence. Its captured engine bundle
+                            # remains authoritative; newer live engine bytes
+                            # must not rewrite old evidence.
+                            try:
+                                from route_sets import CORE_ROUTE_KEYS
+                            except ImportError:
+                                try:
+                                    from scripts.batch29.route_sets import CORE_ROUTE_KEYS
+                                except ImportError:
+                                    CORE_ROUTE_KEYS = ()
+                            is_legacy_immutable = (
+                                manifest.get("route_key") in CORE_ROUTE_KEYS
+                                and not (route / "certification" / "strict-artifacts").is_dir()
+                            )
                             validate_live_sources = (
-                                (live_repository_root / "engines").is_dir()
+                                validate_live_engine_sources
+                                and not is_legacy_immutable
+                                and (live_repository_root / "engines").is_dir()
                                 and (
                                     live_repository_root / "scripts" / "batch29"
                                 ).is_dir()
@@ -5285,6 +6757,13 @@ def validate_formal_equivalence(
                                         f"engine source manifest files[{index}].repository_path is invalid"
                                     )
                                     repository_path = None
+                                elif repository_path in files_by_repository_path:
+                                    failures.append(
+                                        "engine source manifest contains duplicate "
+                                        f"repository_path: {repository_path}"
+                                    )
+                                else:
+                                    files_by_repository_path[repository_path] = item
                                 captured_path = item.get("captured_path")
                                 declared_sources.add(str(captured_path))
                                 captured_record = next(
@@ -5310,9 +6789,14 @@ def validate_formal_equivalence(
                                     failures.append(
                                         f"engine source manifest files[{index}] digest/bytes mismatch"
                                     )
+                                elif repository_path is not None:
+                                    captured_paths_by_repository_path[
+                                        repository_path
+                                    ] = captured_record[1]
                                 if (
                                     validate_live_sources
                                     and repository_path is not None
+                                    and not repository_path.startswith("runtime/")
                                 ):
                                     live_path = (
                                         live_repository_root / repository_path
@@ -5321,7 +6805,9 @@ def validate_formal_equivalence(
                                         live_path.relative_to(live_repository_root)
                                     except ValueError:
                                         failures.append(
-                                            f"engine source manifest files[{index}].repository_path escapes the repository"
+                                            "engine source manifest "
+                                            f"files[{index}].repository_path "
+                                            "escapes the repository"
                                         )
                                     else:
                                         if not live_path.is_file():
@@ -5336,6 +6822,24 @@ def validate_formal_equivalence(
                                             failures.append(
                                                 f"engine source manifest live file drifted: {repository_path}"
                                             )
+                            if is_specialized:
+                                _validate_engine_runtime_source_receipts(
+                                    source_manifest_document,
+                                    files_by_repository_path,
+                                    captured_paths_by_repository_path,
+                                    failures,
+                                )
+                                _validate_required_engine_source_bindings(
+                                    route=route,
+                                    manifest_relative=manifest_relative,
+                                    source_manifest=source_manifest_document,
+                                    ref_records=ref_records,
+                                    runtime_provenance=_runtime_provenance(
+                                        failures,
+                                        "formal engine source evidence",
+                                    ),
+                                    failures=failures,
+                                )
                             actual_sources = {
                                 str(record[0].get("path"))
                                 for record in ref_records.values()
@@ -5419,10 +6923,10 @@ def validate_formal_equivalence(
                 "semantic_chunks.evidence_artifact_ids must be a non-empty array"
             )
         else:
-            for index, artifact_id in enumerate(chunk_evidence_ids):
+            for index, item in enumerate(chunk_evidence_ids):
                 _artifact_record(
                     ref_records,
-                    artifact_id,
+                    item,
                     expected_roles={"chunk-map"},
                     label=f"semantic_chunks.evidence_artifact_ids[{index}]",
                     failures=failures,
@@ -5438,32 +6942,27 @@ def validate_formal_equivalence(
                     f"semantic_chunks.{field} must be an integer >= {minimum}"
                 )
         coverage = semantic_chunks.get("coverage")
-        if not _is_number(coverage) or not 0 <= float(coverage) <= 1:
+        if not isinstance(coverage, int | float) or not 0 <= coverage <= 1:
             failures.append("semantic_chunks.coverage must be between 0 and 1")
         chunks = semantic_chunks.get("chunks")
-        ids: set[str] = set()
-        observed = {"MATCHED": 0, "UNMATCHED": 0, "AMBIGUOUS": 0, "FAILED": 0}
         if not isinstance(chunks, list) or not chunks:
             failures.append("semantic_chunks.chunks must be a non-empty array")
         else:
-            for index, item in enumerate(chunks):
-                chunk = _require_exact_keys(
+            observed = {"MATCHED": 0, "UNMATCHED": 0, "AMBIGUOUS": 0}
+            for index, chunk in enumerate(chunks):
+                chunk_obj = _require_exact_keys(
                     failures,
-                    item,
+                    chunk,
                     required=CHUNK_KEYS,
                     label=f"semantic_chunks.chunks[{index}]",
                 )
-                if chunk is None:
+                if chunk_obj is None:
                     continue
                 chunk_id = chunk.get("chunk_id")
                 if not isinstance(chunk_id, str) or not chunk_id:
                     failures.append(
                         f"semantic_chunks.chunks[{index}].chunk_id is invalid"
                     )
-                elif chunk_id in ids:
-                    failures.append(f"semantic chunk id is duplicated: {chunk_id}")
-                else:
-                    ids.add(chunk_id)
                 semantic_hash = _require_digest(
                     failures,
                     chunk.get("semantic_hash"),
@@ -5472,14 +6971,14 @@ def validate_formal_equivalence(
                 source_pointer = _artifact_pointer(
                     ref_records,
                     chunk.get("source_ref"),
-                    expected_role="source-ir",
+                    expected_roles={"source-ir"},
                     label=f"semantic_chunks.chunks[{index}].source_ref",
                     failures=failures,
                 )
                 target_pointer = _artifact_pointer(
                     ref_records,
                     chunk.get("target_ref"),
-                    expected_role="target-ir",
+                    expected_roles={"normalized-target-ir", "target-ir"},
                     label=f"semantic_chunks.chunks[{index}].target_ref",
                     failures=failures,
                 )
@@ -5571,7 +7070,7 @@ def validate_formal_equivalence(
                 target_candidates = [
                     (candidate_id, record)
                     for candidate_id, record in ref_records.items()
-                    if record[0].get("role") == "target-ir"
+                    if record[0].get("role") in {"normalized-target-ir", "target-ir"}
                     and record[1].parent == parent
                 ]
                 if len(source_candidates) != 1 or len(target_candidates) != 1:
@@ -5595,7 +7094,10 @@ def validate_formal_equivalence(
                             f"semantic chunk artifact {artifact_id} {side} IR is invalid: {exc}"
                         )
                         continue
-                    if not isinstance(semantic_functions, list) or len(semantic_functions) != 1:
+                    if (
+                        not isinstance(semantic_functions, list)
+                        or len(semantic_functions) != 1
+                    ):
                         failures.append(
                             f"semantic chunk artifact {artifact_id} {side} IR must contain one function"
                         )
@@ -5648,7 +7150,8 @@ def validate_formal_equivalence(
                     ):
                         if artifact_pointer.count("#") != 1:
                             failures.append(
-                                f"semantic chunk artifact {artifact_id} mapping {mapping_index} {pointer_label} is invalid"
+                                f"semantic chunk artifact {artifact_id} mapping "
+                                f"{mapping_index} {pointer_label} is invalid"
                             )
                             continue
                         artifact_digest, artifact_json_pointer = artifact_pointer.split(
@@ -5656,7 +7159,8 @@ def validate_formal_equivalence(
                         )
                         if artifact_json_pointer != pointer:
                             failures.append(
-                                f"semantic chunk artifact {artifact_id} mapping {mapping_index} {pointer_label} pointer drift"
+                                f"semantic chunk artifact {artifact_id} mapping "
+                                f"{mapping_index} {pointer_label} pointer drift"
                             )
                         matches = [
                             record
@@ -5670,17 +7174,19 @@ def validate_formal_equivalence(
                         ]
                         if not matches:
                             failures.append(
-                                f"semantic chunk artifact {artifact_id} mapping {mapping_index} {pointer_label} digest is not role-bound"
+                                f"semantic chunk artifact {artifact_id} mapping "
+                                f"{mapping_index} {pointer_label} digest is not "
+                                "role-bound"
                             )
                     expected_source_chunk_id = sha256_bytes(
                         (
                             f"{source_artifact_pointer.split('#', 1)[0]}\0{pointer}\0{semantic_hash}"
-                        ).encode("utf-8")
+                        ).encode()
                     )
                     expected_target_chunk_id = sha256_bytes(
                         (
                             f"{target_artifact_pointer.split('#', 1)[0]}\0{pointer}\0{semantic_hash}"
-                        ).encode("utf-8")
+                        ).encode()
                     )
                     if source_chunk_id != expected_source_chunk_id:
                         failures.append(
@@ -6149,7 +7655,8 @@ def validate_formal_equivalence(
                             )
                         if result_document.get("input_digest") != formal_input_digest:
                             failures.append(
-                                f"formal_proof.obligations[{index}] solver result input_digest differs from formal input"
+                                f"formal_proof.obligations[{index}] solver result "
+                                "input_digest differs from formal input"
                             )
                         formal_input_reference = result_document.get("formal_input")
                         expected_formal_input_path = formal_input_record[1].name
@@ -6178,18 +7685,22 @@ def validate_formal_equivalence(
                             failures.append(
                                 f"formal_proof.obligations[{index}] status does not match solver result"
                             )
-                        if (
-                            manifest.get("gates", {}).get(
+                        gates = manifest.get("gates", {})
+                        expected_strict_domain = (
+                            SPECIALIZED_INPUT_DOMAIN
+                            if gates.get(
                                 "canonical_finite_no_error_input_domain_required"
                             )
                             is True
-                            and (
-                                not isinstance(
-                                    result_document.get("claim_scope"), dict
-                                )
-                                or result_document["claim_scope"].get("input_domain")
-                                != SPECIALIZED_INPUT_DOMAIN
-                            )
+                            else NODEJS_INPUT_DOMAIN
+                            if gates.get("nodejs_safe_integer_finite_domain_required")
+                            is True
+                            else None
+                        )
+                        if expected_strict_domain is not None and (
+                            not isinstance(result_document.get("claim_scope"), dict)
+                            or result_document["claim_scope"].get("input_domain")
+                            != expected_strict_domain
                         ):
                             failures.append(
                                 f"formal_proof.obligations[{index}] solver result input domain drift"
@@ -6197,10 +7708,7 @@ def validate_formal_equivalence(
                         if (
                             isinstance(formal_input_document, dict)
                             and solver_input_record is not None
-                            and manifest.get("gates", {}).get(
-                                "canonical_finite_no_error_input_domain_required"
-                            )
-                            is True
+                            and expected_strict_domain is not None
                         ):
                             _validate_function_formal_closure(
                                 label=f"formal_proof.obligations[{index}]",
@@ -6519,7 +8027,9 @@ def _validate_module_inventory_document(
             end = span.get("end_byte")
             valid_offsets = _is_int(start, minimum=0) and _is_int(end, minimum=1)
             if span.get("file") != expected_file or not valid_offsets:
-                failures.append(f"{subject_label}.source_span identity/bounds are invalid")
+                failures.append(
+                    f"{subject_label}.source_span identity/bounds are invalid"
+                )
             else:
                 assert isinstance(start, int) and isinstance(end, int)
                 if end <= start:
@@ -6527,7 +8037,9 @@ def _validate_module_inventory_document(
                         f"{subject_label}.source_span identity/bounds are invalid"
                     )
                 elif artifact_record is not None and end > artifact_size:
-                    failures.append(f"{subject_label}.source_span exceeds artifact bytes")
+                    failures.append(
+                        f"{subject_label}.source_span exceeds artifact bytes"
+                    )
         if isinstance(declaration_kind, str) and isinstance(qualified_name, str):
             key = (declaration_kind, qualified_name)
             expected_occurrence = occurrences.get(key, 0) + 1
@@ -6573,9 +8085,7 @@ def _scan_module_language_directives(
             {
                 "order": len(directives),
                 "kind": kind,
-                "value": value_bytes.decode(
-                    "utf-8", errors="backslashreplace"
-                ),
+                "value": value_bytes.decode("utf-8", errors="backslashreplace"),
                 "source_span": {
                     "file": artifact.name,
                     "start_byte": offset + marker_offset,
@@ -6767,6 +8277,7 @@ def _validate_module_profile_span_bindings(
     side: str,
     closure: dict[str, Any],
     semantic_document: dict[str, Any],
+    raw_semantic_document: dict[str, Any] | None = None,
     failures: list[str],
 ) -> None:
     records = closure.get(f"{side}_profile_symbols")
@@ -6781,23 +8292,57 @@ def _validate_module_profile_span_bindings(
     }
     if len(by_symbol) != len(functions):
         failures.append(f"module {side} semantic symbol index is invalid")
+    raw_document = raw_semantic_document or semantic_document
+    raw_functions = raw_document.get("functions")
+    raw_by_symbol = {
+        item.get("name"): item
+        for item in (raw_functions if isinstance(raw_functions, list) else [])
+        if isinstance(item, dict) and isinstance(item.get("name"), str)
+    }
+    if not isinstance(raw_functions, list) or len(raw_by_symbol) != len(raw_functions):
+        failures.append(f"module {side} raw semantic symbol index is invalid")
     observed_symbols: list[str] = []
     for index, record in enumerate(records):
         if not isinstance(record, dict):
             failures.append(f"module {side} profile_symbols[{index}] is invalid")
             continue
         symbol = record.get("symbol")
-        if not isinstance(symbol, str) or not symbol:
+        raw_symbol = record.get("raw_symbol")
+        canonical_symbol = record.get("canonical_symbol")
+        if (
+            not isinstance(symbol, str)
+            or not symbol
+            or not isinstance(raw_symbol, str)
+            or not raw_symbol
+            or not isinstance(canonical_symbol, str)
+            or not canonical_symbol
+            or symbol != canonical_symbol
+        ):
             failures.append(f"module {side} profile_symbols[{index}].symbol is invalid")
             continue
         observed_symbols.append(symbol)
-        function = by_symbol.get(symbol)
-        if function is None:
-            failures.append(f"module {side} inventory symbol {symbol} is absent from IR")
+        function = by_symbol.get(canonical_symbol)
+        raw_function = raw_by_symbol.get(raw_symbol)
+        if function is None or raw_function is None:
+            failures.append(
+                f"module {side} inventory symbol {raw_symbol}/{canonical_symbol} is absent from IR"
+            )
             continue
-        if record.get("source_span") != function.get("source_span"):
+        if record.get("source_span") != raw_function.get("source_span"):
             failures.append(
                 f"module {side} inventory span for {symbol} differs from semantic IR"
+            )
+        raw_parameters = raw_function.get("parameters")
+        expected_raw_parameter_names = [
+            parameter.get("name")
+            for parameter in (
+                raw_parameters if isinstance(raw_parameters, list) else []
+            )
+            if isinstance(parameter, dict)
+        ]
+        if record.get("raw_parameter_names") != expected_raw_parameter_names:
+            failures.append(
+                f"module {side} raw parameter names for {raw_symbol} differ from raw semantic IR"
             )
         canonical_signature = {
             "parameters": [
@@ -6815,6 +8360,1184 @@ def _validate_module_profile_span_bindings(
         failures.append(f"module {side} profile inventory contains duplicate symbols")
 
 
+def _validate_identifier_function_mapping_shape(
+    mappings: object,
+    *,
+    label: str,
+    minimum_functions: int,
+    failures: list[str],
+) -> list[dict[str, Any]]:
+    if not isinstance(mappings, list) or len(mappings) < minimum_functions:
+        failures.append(f"{label} functions are invalid")
+        return []
+    parsed: list[dict[str, Any]] = []
+    for function_index, mapping in enumerate(mappings):
+        if (
+            not isinstance(mapping, dict)
+            or set(mapping) != IDENTIFIER_FUNCTION_MAPPING_KEYS
+        ):
+            failures.append(f"{label} function {function_index} keys are not exact")
+            continue
+        raw_symbol = mapping.get("raw_symbol")
+        canonical_symbol = mapping.get("canonical_symbol")
+        parameters = mapping.get("parameters")
+        if (
+            not isinstance(raw_symbol, str)
+            or not raw_symbol
+            or not isinstance(canonical_symbol, str)
+            or not canonical_symbol
+            or not isinstance(parameters, list)
+        ):
+            failures.append(f"{label} function {function_index} is invalid")
+            continue
+        valid = True
+        for parameter_index, parameter in enumerate(parameters):
+            if (
+                not isinstance(parameter, dict)
+                or set(parameter) != IDENTIFIER_PARAMETER_MAPPING_KEYS
+                or not isinstance(parameter.get("raw_name"), str)
+                or not parameter.get("raw_name")
+                or not isinstance(parameter.get("canonical_name"), str)
+                or not parameter.get("canonical_name")
+                or parameter.get("canonical_type")
+                not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+            ):
+                failures.append(
+                    f"{label} function {function_index} parameter {parameter_index} is invalid"
+                )
+                valid = False
+        if valid:
+            parsed.append(mapping)
+    raw_symbols = [mapping["raw_symbol"] for mapping in parsed]
+    canonical_symbols = [mapping["canonical_symbol"] for mapping in parsed]
+    if len(raw_symbols) != len(set(raw_symbols)):
+        failures.append(f"{label} contains duplicate raw symbols")
+    if len(canonical_symbols) != len(set(canonical_symbols)):
+        failures.append(f"{label} contains duplicate canonical symbols")
+    return parsed
+
+
+def _validate_module_javascript_esm_descriptor(
+    *,
+    manifest: dict[str, Any],
+    evidence: dict[str, Any],
+    module_input: dict[str, Any],
+    role_records: dict[str, list[tuple[dict[str, Any], Path, str]]],
+    source_artifact_record: tuple[dict[str, Any], Path, str] | None,
+    failures: list[str],
+) -> tuple[dict[str, Any], Path, str] | None:
+    """Bind a JavaScript ``.js`` module to its exact route-local ESM descriptor."""
+
+    source_language = manifest.get("source", {}).get("language")
+    source_logical_file = module_input.get("source_logical_file")
+    descriptor_required = (
+        source_language == "javascript"
+        and isinstance(source_logical_file, str)
+        and source_logical_file.endswith(".js")
+        and not source_logical_file.endswith(".mjs")
+    )
+    descriptor = evidence.get("javascript_esm_descriptor")
+    input_descriptor = module_input.get("javascript_esm_descriptor")
+    observation = evidence.get("javascript_esm_descriptor_observation")
+    records = role_records.get("source-javascript-esm-descriptor", [])
+    if not descriptor_required:
+        if (
+            descriptor is not None
+            or input_descriptor is not None
+            or observation is not None
+        ):
+            failures.append(
+                "JavaScript ESM descriptor fields are forbidden for this module source"
+            )
+        if records:
+            failures.append(
+                "source-javascript-esm-descriptor is forbidden for this module source"
+            )
+        return None
+
+    if source_artifact_record is None:
+        failures.append("JavaScript ESM descriptor has no bound source artifact")
+        return None
+    if len(records) != 1:
+        failures.append(
+            "JavaScript .js module must bind exactly one source-javascript-esm-descriptor"
+        )
+        return None
+    record = records[0]
+    if (
+        not isinstance(descriptor, dict)
+        or set(descriptor) != JAVASCRIPT_ESM_DESCRIPTOR_KEYS
+    ):
+        failures.append("module JavaScript ESM descriptor keys are not exact")
+        return None
+    if input_descriptor != descriptor:
+        failures.append("module_input JavaScript ESM descriptor differs from report")
+    if (
+        not isinstance(observation, dict)
+        or set(observation) != JAVASCRIPT_ESM_DESCRIPTOR_OBSERVATION_KEYS
+    ):
+        failures.append(
+            "module JavaScript ESM descriptor observation keys are not exact"
+        )
+    else:
+        observed_origin = observation.get("observed_origin_path")
+        if (
+            not isinstance(observed_origin, str)
+            or not Path(observed_origin).is_absolute()
+            or Path(observed_origin).name != "package.json"
+        ):
+            failures.append(
+                "module JavaScript ESM descriptor observation path is invalid"
+            )
+
+    logical_path = descriptor.get("logical_path")
+    logical_parts = (
+        Path(str(logical_path)).parts if isinstance(logical_path, str) else ()
+    )
+    if (
+        not isinstance(logical_path, str)
+        or not logical_path
+        or Path(logical_path).is_absolute()
+        or "\\" in logical_path
+        or any(
+            ord(character) < 32 or ord(character) == 127 for character in logical_path
+        )
+        or not logical_parts
+        or any(part in {"", "."} for part in logical_parts)
+        or logical_parts[-1] != "package.json"
+    ):
+        failures.append("module JavaScript ESM descriptor logical_path is invalid")
+    bound_artifact_path = record[0].get("path")
+    canonical_artifact_path = "source-module-artifact/package.json"
+    source_path = source_artifact_record[0].get("path")
+    expected_source_sibling = (
+        (Path(source_path).parent / "package.json").as_posix()
+        if isinstance(source_path, str)
+        else None
+    )
+    if (
+        descriptor.get("snapshot_path") != "source/package.json"
+        or descriptor.get("artifact_path") != canonical_artifact_path
+        or not isinstance(bound_artifact_path, str)
+        or not (
+            bound_artifact_path == canonical_artifact_path
+            or bound_artifact_path.endswith("/" + canonical_artifact_path)
+        )
+        or bound_artifact_path != expected_source_sibling
+        or descriptor.get("sha256") != record[2]
+        or descriptor.get("bytes") != record[1].stat().st_size
+        or descriptor.get("type") != "module"
+    ):
+        failures.append("module JavaScript ESM descriptor binding is invalid")
+    try:
+        package = load(record[1])
+    except Exception as exc:
+        failures.append(f"module JavaScript ESM descriptor is invalid JSON: {exc}")
+    else:
+        if package.get("type") != "module":
+            failures.append(
+                "module JavaScript ESM descriptor package type is not module"
+            )
+    return record
+
+
+def _validate_module_identifier_closure(
+    *,
+    manifest: dict[str, Any],
+    evidence: dict[str, Any],
+    module_input: dict[str, Any],
+    closure_document: dict[str, Any],
+    role_records: dict[str, list[tuple[dict[str, Any], Path, str]]],
+    source_semantic_document: dict[str, Any],
+    target_semantic_document: dict[str, Any],
+    source_inventory_document: dict[str, Any],
+    target_inventory_document: dict[str, Any],
+    minimum_functions: int,
+    failures: list[str],
+) -> dict[str, Any]:
+    """Recompute the module IdentifierPlan and raw-to-canonical IR closure."""
+
+    hygiene = evidence.get("identifier_hygiene")
+    if not isinstance(hygiene, dict):
+        failures.append("module identifier_hygiene must be an object")
+        return {}
+    if set(hygiene) != MODULE_IDENTIFIER_HYGIENE_KEYS:
+        failures.append("module identifier_hygiene keys are not exact")
+    if module_input.get("identifier_hygiene") != hygiene:
+        failures.append("module_input identifier_hygiene differs from module report")
+
+    expected_references: dict[str, dict[str, Any]] = {}
+    for field, role, filename in (
+        ("plan", "identifier-plan", "identifier-plan.json"),
+        ("raw_target_ir", "raw-target-ir", "target-semantic-ir.raw.json"),
+        (
+            "normalized_target_ir",
+            "normalized-target-ir",
+            "target-semantic-ir.normalized.json",
+        ),
+    ):
+        records = role_records.get(role, [])
+        if len(records) != 1:
+            failures.append(f"module identifier closure requires exactly one {role}")
+            continue
+        record = records[0]
+        expected_reference = {
+            "path": filename,
+            "sha256": record[2],
+            "bytes": record[1].stat().st_size,
+        }
+        expected_references[field] = expected_reference
+        if record[1].name != filename:
+            failures.append(f"module {role} filename is not exact")
+        if hygiene.get(field) != expected_reference:
+            failures.append(f"module identifier_hygiene.{field} is detached")
+
+    required_roles = {"identifier-plan", "raw-target-ir", "normalized-target-ir"}
+    if not all(len(role_records.get(role, [])) == 1 for role in required_roles):
+        return {}
+    plan_record = role_records["identifier-plan"][0]
+    raw_record = role_records["raw-target-ir"][0]
+    normalized_record = role_records["normalized-target-ir"][0]
+    try:
+        plan_mapping = load(plan_record[1])
+        raw_mapping = load(raw_record[1])
+        normalized_mapping = load(normalized_record[1])
+    except Exception as exc:
+        failures.append(f"module identifier artifact is invalid JSON: {exc}")
+        return {}
+    _validate_optional_json_schema(
+        plan_mapping,
+        "identifier-plan.schema.json",
+        failures,
+        "module identifier plan",
+    )
+    if normalized_mapping != target_semantic_document:
+        failures.append(
+            "module normalized-target-ir differs from target-module-semantic-ir"
+        )
+
+    identifier_api = _engine_identifier_api(failures, "module identifier closure")
+    if identifier_api is None:
+        return {}
+    (
+        SemanticIR,
+        IdentifierPlan,
+        validate_identifier_plan,
+        alpha_normalize_target,
+        identifier_plan_bytes,
+        target_ir_view,
+        standalone_artifact_unit_namespace,
+        bind_function_spans_from_inventory,
+    ) = identifier_api
+    closure_result: dict[str, Any] = {}
+    try:
+        source_ir = bind_function_spans_from_inventory(
+            SemanticIR.from_mapping(source_semantic_document),
+            source_inventory_document,
+            role="source-validator-replay",
+        )
+        raw_target_ir = bind_function_spans_from_inventory(
+            SemanticIR.from_mapping(raw_mapping),
+            target_inventory_document,
+            role="target-validator-replay",
+        )
+        normalized_target_ir = SemanticIR.from_mapping(normalized_mapping)
+        plan = IdentifierPlan.from_mapping(plan_mapping)
+        source_logical_file = module_input.get("source_logical_file")
+        source_artifact_sha256 = module_input.get("source_artifact_sha256")
+        if not isinstance(source_logical_file, str) or not isinstance(
+            source_artifact_sha256, str
+        ):
+            raise ValueError("module unit namespace inputs are invalid")
+        expected_unit_namespace = standalone_artifact_unit_namespace(
+            source_logical_file,
+            source_artifact_sha256,
+        )
+        validate_identifier_plan(
+            source_ir,
+            plan,
+            expected_unit_namespace=expected_unit_namespace,
+        )
+        if plan_record[1].read_bytes() != identifier_plan_bytes(plan):
+            raise ValueError("identifier plan bytes are not canonical")
+        if plan_record[2] != plan.digest:
+            raise ValueError("identifier plan artifact digest differs")
+        if plan.target_language != manifest.get("target", {}).get("language"):
+            raise ValueError("identifier plan target language differs")
+        recomputed = alpha_normalize_target(source_ir, raw_target_ir, plan)
+        if recomputed.to_mapping() != normalized_target_ir.to_mapping():
+            raise ValueError("raw to alpha-normalized target closure differs")
+        expected_raw_view = target_ir_view(source_ir, plan)
+        raw_by_symbol = {
+            function.name: function for function in raw_target_ir.functions
+        }
+        canonical_by_symbol = {
+            function.name: function for function in normalized_target_ir.functions
+        }
+        expected_functions: list[dict[str, Any]] = []
+        for source_function, expected_raw_function in zip(
+            source_ir.functions,
+            expected_raw_view.functions,
+            strict=True,
+        ):
+            raw_function = raw_by_symbol.get(expected_raw_function.name)
+            canonical_function = canonical_by_symbol.get(source_function.name)
+            if raw_function is None or canonical_function is None:
+                raise ValueError("identifier function mapping is incomplete")
+            expected_functions.append(
+                {
+                    "raw_symbol": raw_function.name,
+                    "canonical_symbol": canonical_function.name,
+                    "parameters": [
+                        {
+                            "raw_name": raw_parameter.name,
+                            "canonical_name": canonical_parameter.name,
+                            "canonical_type": canonical_parameter.type,
+                        }
+                        for raw_parameter, canonical_parameter in zip(
+                            raw_function.parameters,
+                            canonical_function.parameters,
+                            strict=True,
+                        )
+                    ],
+                }
+            )
+        _validate_identifier_function_mapping_shape(
+            hygiene.get("functions"),
+            label="module identifier_hygiene",
+            minimum_functions=minimum_functions,
+            failures=failures,
+        )
+        expected_hygiene = {
+            "status": "PASSED",
+            "policy_id": plan.policy_id,
+            "policy_sha256": plan.policy_sha256,
+            "unit_namespace": expected_unit_namespace.to_mapping(),
+            "unit_namespace_sha256": expected_unit_namespace.digest,
+            **expected_references,
+            "functions": expected_functions,
+            "renamed": any(
+                binding.decision == "ALPHA_RENAMED" for binding in plan.bindings
+            ),
+        }
+        if hygiene != expected_hygiene:
+            raise ValueError("module identifier hygiene summary differs")
+        expected_whole_file_hygiene = {
+            "status": "PASSED",
+            "policy_id": plan.policy_id,
+            "policy_sha256": plan.policy_sha256,
+            "unit_namespace": expected_unit_namespace.to_mapping(),
+            "unit_namespace_sha256": expected_unit_namespace.digest,
+            "plan_sha256": plan.digest,
+            "functions": sorted(
+                expected_functions,
+                key=lambda mapping: str(mapping["canonical_symbol"]),
+            ),
+        }
+        observed_whole_file_hygiene = closure_document.get("identifier_hygiene")
+        if (
+            not isinstance(observed_whole_file_hygiene, dict)
+            or set(observed_whole_file_hygiene) != WHOLE_FILE_IDENTIFIER_HYGIENE_KEYS
+            or observed_whole_file_hygiene != expected_whole_file_hygiene
+        ):
+            raise ValueError("whole-file identifier hygiene summary differs")
+        closure_result = {
+            "source_ir": source_ir,
+            "raw_target_ir": raw_target_ir,
+            "normalized_target_ir": normalized_target_ir,
+            "plan": plan,
+            "functions": expected_functions,
+        }
+    except Exception as exc:
+        failures.append(f"module identifier closure is invalid: {exc}")
+    return closure_result
+
+
+_TARGET_CALL_GRAPH_BASE_EDGE_KEYS = frozenset(
+    {
+        "caller",
+        "canonical_caller",
+        "callee",
+        "callee_kind",
+        "canonical_domain",
+        "canonical_operator",
+        "normalization_rule",
+    }
+)
+_TARGET_CALL_GRAPH_GUARD_KEYS = _TARGET_CALL_GRAPH_BASE_EDGE_KEYS | {
+    "guard_scope",
+    "guard_subject",
+    "canonical_guard_subject",
+}
+_TARGET_CALL_GRAPH_SCOPED_ARITHMETIC_KEYS = _TARGET_CALL_GRAPH_BASE_EDGE_KEYS | {
+    "guard_scope",
+    "guard_subject",
+}
+_TARGET_CALL_GRAPH_LEGACY_BASE_EDGE_KEYS = _TARGET_CALL_GRAPH_BASE_EDGE_KEYS - {
+    "canonical_caller"
+}
+_TARGET_CALL_GRAPH_LEGACY_SCOPED_ARITHMETIC_KEYS = (
+    _TARGET_CALL_GRAPH_SCOPED_ARITHMETIC_KEYS - {"canonical_caller"}
+)
+_TARGET_CALL_GRAPH_ARITHMETIC_OPERATORS = frozenset({"+", "-", "*", "/", "%"})
+_TARGET_CALL_GRAPH_CANONICAL_TYPES = frozenset(
+    {"integer", "number", "boolean", "string"}
+)
+_JAVASCRIPT_GUARD_HELPERS = {
+    "integer": "_elmosRequireSafeInteger",
+    "number": "_elmosRequireFiniteNumber",
+    "boolean": "_elmosRequireBoolean",
+    "string": "_elmosRequireString",
+}
+_JAVASCRIPT_RETURN_GUARD_RULES = {
+    "integer": "javascript.return.integer.safe-integer",
+    "number": "javascript.return.number.finite",
+    "boolean": "javascript.return.boolean.exact",
+    "string": "javascript.return.string.exact",
+}
+
+
+def _module_expression_type_and_operator_uses(
+    expression: object,
+    environment: dict[str, str],
+    operator_uses: set[tuple[str, str]],
+) -> str:
+    """Independently type one canonical expression and collect arithmetic uses."""
+
+    if not isinstance(expression, dict):
+        raise ValueError("expression is not an object")
+    kind = expression.get("kind")
+    if kind == "name":
+        name = expression.get("value")
+        if not isinstance(name, str) or name not in environment:
+            raise ValueError(f"undeclared expression name: {name!r}")
+        return environment[name]
+    if kind == "literal":
+        value = expression.get("value")
+        if type(value) is bool:
+            return "boolean"
+        if type(value) is int:
+            return "integer"
+        if type(value) is float:
+            return "number"
+        if type(value) is str:
+            return "string"
+        raise ValueError("literal is outside the canonical type domain")
+    if kind != "binary":
+        raise ValueError(f"unsupported expression kind: {kind!r}")
+
+    operator = expression.get("operator")
+    if not isinstance(operator, str):
+        raise ValueError("binary expression operator is invalid")
+    left = _module_expression_type_and_operator_uses(
+        expression.get("left"), environment, operator_uses
+    )
+    right = _module_expression_type_and_operator_uses(
+        expression.get("right"), environment, operator_uses
+    )
+    numeric_types = {"integer", "number"}
+    if operator in _TARGET_CALL_GRAPH_ARITHMETIC_OPERATORS:
+        if operator == "+" and left == right == "string":
+            return "string"
+        if left not in numeric_types or right not in numeric_types:
+            raise ValueError(
+                f"arithmetic operand type mismatch: {operator}:{left}:{right}"
+            )
+        domain = "number" if "number" in {left, right} else "integer"
+        operator_uses.add((domain, operator))
+        return domain
+    if operator in {"<", "<=", ">", ">="}:
+        if left not in numeric_types or right not in numeric_types:
+            raise ValueError(
+                f"ordering operand type mismatch: {operator}:{left}:{right}"
+            )
+        return "boolean"
+    if operator in {"==", "!="}:
+        if left != right and not (left in numeric_types and right in numeric_types):
+            raise ValueError(
+                f"equality operand type mismatch: {operator}:{left}:{right}"
+            )
+        return "boolean"
+    if operator in {"&&", "||"}:
+        if left != "boolean" or right != "boolean":
+            raise ValueError(
+                f"logical operand type mismatch: {operator}:{left}:{right}"
+            )
+        return "boolean"
+    raise ValueError(f"unsupported binary operator: {operator!r}")
+
+
+def _module_function_operator_uses(function: dict[str, Any]) -> set[tuple[str, str]]:
+    parameters = function.get("parameters")
+    if not isinstance(parameters, list):
+        raise ValueError("function parameters are invalid")
+    environment: dict[str, str] = {}
+    for parameter in parameters:
+        if not isinstance(parameter, dict):
+            raise ValueError("function parameter is invalid")
+        name = parameter.get("name")
+        domain = parameter.get("type")
+        if (
+            not isinstance(name, str)
+            or not name
+            or name in environment
+            or domain not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+        ):
+            raise ValueError("function parameter signature is invalid")
+        environment[name] = str(domain)
+
+    operator_uses: set[tuple[str, str]] = set()
+
+    def walk_statements(statements: object) -> None:
+        if not isinstance(statements, list):
+            raise ValueError("function statements are invalid")
+        for statement in statements:
+            if not isinstance(statement, dict):
+                raise ValueError("function statement is invalid")
+            for expression_key in ("expression", "condition"):
+                expression = statement.get(expression_key)
+                if expression is not None:
+                    _module_expression_type_and_operator_uses(
+                        expression, environment, operator_uses
+                    )
+            for branch_key in ("then", "else"):
+                branch = statement.get(branch_key)
+                if branch is not None:
+                    walk_statements(branch)
+
+    walk_statements(function.get("body"))
+    return operator_uses
+
+
+def _javascript_expected_target_call_graph_edges(
+    raw_target_semantic_document: dict[str, Any],
+    target_semantic_document: dict[str, Any],
+    identifier_functions: list[dict[str, Any]],
+    failures: list[str],
+) -> list[dict[str, str]]:
+    """Reconstruct every JavaScript signature and arithmetic guard edge."""
+
+    raw_functions = raw_target_semantic_document.get("functions")
+    canonical_functions = target_semantic_document.get("functions")
+    if not isinstance(raw_functions, list) or not isinstance(canonical_functions, list):
+        failures.append(
+            "JavaScript raw/canonical target semantic functions are invalid"
+        )
+        return []
+    canonical_by_symbol = {
+        function.get("name"): function
+        for function in canonical_functions
+        if isinstance(function, dict) and isinstance(function.get("name"), str)
+    }
+    mapping_by_raw = {
+        mapping.get("raw_symbol"): mapping
+        for mapping in identifier_functions
+        if isinstance(mapping, dict) and isinstance(mapping.get("raw_symbol"), str)
+    }
+    expected: list[dict[str, str]] = []
+    for function_index, raw_function in enumerate(raw_functions):
+        if not isinstance(raw_function, dict):
+            failures.append(
+                f"JavaScript raw target semantic function {function_index} is invalid"
+            )
+            continue
+        caller = raw_function.get("name")
+        mapping = mapping_by_raw.get(caller)
+        canonical_caller = (
+            mapping.get("canonical_symbol") if isinstance(mapping, dict) else None
+        )
+        canonical_function = canonical_by_symbol.get(canonical_caller)
+        parameters = raw_function.get("parameters")
+        canonical_parameters = (
+            canonical_function.get("parameters")
+            if isinstance(canonical_function, dict)
+            else None
+        )
+        parameter_mappings = (
+            mapping.get("parameters") if isinstance(mapping, dict) else None
+        )
+        return_type = raw_function.get("return_type")
+        if (
+            not isinstance(caller, str)
+            or not caller
+            or not isinstance(canonical_caller, str)
+            or not canonical_caller
+            or not isinstance(parameters, list)
+            or not isinstance(canonical_parameters, list)
+            or not isinstance(parameter_mappings, list)
+            or len(parameters) != len(canonical_parameters)
+            or len(parameters) != len(parameter_mappings)
+            or return_type not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+            or not isinstance(canonical_function, dict)
+            or canonical_function.get("return_type") != return_type
+        ):
+            failures.append(
+                f"JavaScript target semantic function {function_index} signature is invalid"
+            )
+            continue
+        signature_valid = True
+        for parameter_index, (
+            parameter,
+            canonical_parameter,
+            parameter_mapping,
+        ) in enumerate(
+            zip(parameters, canonical_parameters, parameter_mappings, strict=True)
+        ):
+            if (
+                not isinstance(parameter, dict)
+                or not isinstance(canonical_parameter, dict)
+                or not isinstance(parameter_mapping, dict)
+            ):
+                failures.append(
+                    "JavaScript target semantic parameter "
+                    f"{caller}[{parameter_index}] is invalid"
+                )
+                signature_valid = False
+                continue
+            subject = parameter.get("name")
+            canonical_subject = canonical_parameter.get("name")
+            domain = parameter.get("type")
+            if (
+                not isinstance(subject, str)
+                or not subject
+                or not isinstance(canonical_subject, str)
+                or not canonical_subject
+                or domain not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+                or canonical_parameter.get("type") != domain
+                or parameter_mapping
+                != {
+                    "raw_name": subject,
+                    "canonical_name": canonical_subject,
+                    "canonical_type": domain,
+                }
+            ):
+                failures.append(
+                    "JavaScript target semantic parameter "
+                    f"{caller}[{parameter_index}] signature is invalid"
+                )
+                signature_valid = False
+                continue
+            expected.append(
+                {
+                    "caller": caller,
+                    "canonical_caller": canonical_caller,
+                    "callee": _JAVASCRIPT_GUARD_HELPERS[str(domain)],
+                    "callee_kind": "exact-generated-helper",
+                    "canonical_domain": str(domain),
+                    "canonical_operator": "guard",
+                    "normalization_rule": f"javascript.parameter.{domain}.exact",
+                    "guard_scope": "signature-parameter",
+                    "guard_subject": subject,
+                    "canonical_guard_subject": canonical_subject,
+                }
+            )
+        expected.append(
+            {
+                "caller": caller,
+                "canonical_caller": canonical_caller,
+                "callee": _JAVASCRIPT_GUARD_HELPERS[str(return_type)],
+                "callee_kind": "exact-generated-helper",
+                "canonical_domain": str(return_type),
+                "canonical_operator": "guard",
+                "normalization_rule": _JAVASCRIPT_RETURN_GUARD_RULES[str(return_type)],
+                "guard_scope": "signature-return",
+                "guard_subject": "return",
+                "canonical_guard_subject": "return",
+            }
+        )
+        if not signature_valid:
+            continue
+        try:
+            operator_uses = _module_function_operator_uses(raw_function)
+        except ValueError as exc:
+            failures.append(
+                f"JavaScript target semantic function {caller} cannot be typed: {exc}"
+            )
+            continue
+        for domain, operator in sorted(operator_uses):
+            result_callee = _JAVASCRIPT_GUARD_HELPERS[domain]
+            result_rule = (
+                f"javascript.integer.{operator}.safe-integer"
+                if domain == "integer"
+                else f"javascript.number.{operator}.finite-result"
+            )
+            expected.append(
+                {
+                    "caller": caller,
+                    "canonical_caller": canonical_caller,
+                    "callee": result_callee,
+                    "callee_kind": "exact-generated-helper",
+                    "canonical_domain": domain,
+                    "canonical_operator": operator,
+                    "normalization_rule": result_rule,
+                    "guard_scope": "arithmetic-result",
+                    "guard_subject": operator,
+                }
+            )
+            if domain == "integer" and operator in {"/", "%"}:
+                divisor_rule = (
+                    "javascript.integer./.truncating-non-zero"
+                    if operator == "/"
+                    else "javascript.integer.%.non-zero"
+                )
+                expected.append(
+                    {
+                        "caller": caller,
+                        "canonical_caller": canonical_caller,
+                        "callee": "_elmosRequireNonZero",
+                        "callee_kind": "exact-generated-helper",
+                        "canonical_domain": domain,
+                        "canonical_operator": operator,
+                        "normalization_rule": divisor_rule,
+                        "guard_scope": "arithmetic-divisor",
+                        "guard_subject": operator,
+                    }
+                )
+    return expected
+
+
+def _typescript_expected_target_call_graph_edges(
+    raw_target_semantic_document: dict[str, Any],
+    target_semantic_document: dict[str, Any],
+    identifier_functions: list[dict[str, Any]],
+    failures: list[str],
+) -> list[dict[str, str]]:
+    """Independently reconstruct every required TypeScript runtime guard edge."""
+
+    raw_functions = raw_target_semantic_document.get("functions")
+    canonical_functions = target_semantic_document.get("functions")
+    if not isinstance(raw_functions, list) or not isinstance(canonical_functions, list):
+        failures.append(
+            "TypeScript raw/canonical target semantic functions are invalid"
+        )
+        return []
+    canonical_by_symbol = {
+        function.get("name"): function
+        for function in canonical_functions
+        if isinstance(function, dict) and isinstance(function.get("name"), str)
+    }
+    mapping_by_raw = {
+        mapping.get("raw_symbol"): mapping
+        for mapping in identifier_functions
+        if isinstance(mapping, dict) and isinstance(mapping.get("raw_symbol"), str)
+    }
+    expected: list[dict[str, str]] = []
+    for function_index, raw_function in enumerate(raw_functions):
+        if not isinstance(raw_function, dict):
+            failures.append(
+                f"TypeScript raw target semantic function {function_index} is invalid"
+            )
+            continue
+        caller = raw_function.get("name")
+        mapping = mapping_by_raw.get(caller)
+        canonical_caller = (
+            mapping.get("canonical_symbol") if isinstance(mapping, dict) else None
+        )
+        canonical_function = canonical_by_symbol.get(canonical_caller)
+        parameters = raw_function.get("parameters")
+        canonical_parameters = (
+            canonical_function.get("parameters")
+            if isinstance(canonical_function, dict)
+            else None
+        )
+        parameter_mappings = (
+            mapping.get("parameters") if isinstance(mapping, dict) else None
+        )
+        return_type = raw_function.get("return_type")
+        if (
+            not isinstance(caller, str)
+            or not caller
+            or not isinstance(canonical_caller, str)
+            or not canonical_caller
+            or not isinstance(parameters, list)
+            or not isinstance(canonical_parameters, list)
+            or not isinstance(parameter_mappings, list)
+            or len(parameters) != len(canonical_parameters)
+            or len(parameters) != len(parameter_mappings)
+            or return_type not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+            or not isinstance(canonical_function, dict)
+            or canonical_function.get("return_type") != return_type
+        ):
+            failures.append(
+                f"TypeScript target semantic function {function_index} signature is invalid"
+            )
+            continue
+        signature_valid = True
+        for parameter_index, (
+            parameter,
+            canonical_parameter,
+            parameter_mapping,
+        ) in enumerate(
+            zip(parameters, canonical_parameters, parameter_mappings, strict=True)
+        ):
+            if (
+                not isinstance(parameter, dict)
+                or not isinstance(canonical_parameter, dict)
+                or not isinstance(parameter_mapping, dict)
+            ):
+                failures.append(
+                    "TypeScript target semantic parameter "
+                    f"{caller}[{parameter_index}] is invalid"
+                )
+                signature_valid = False
+                continue
+            subject = parameter.get("name")
+            canonical_subject = canonical_parameter.get("name")
+            domain = parameter.get("type")
+            if (
+                not isinstance(subject, str)
+                or not subject
+                or not isinstance(canonical_subject, str)
+                or not canonical_subject
+                or domain not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+                or canonical_parameter.get("type") != domain
+                or parameter_mapping
+                != {
+                    "raw_name": subject,
+                    "canonical_name": canonical_subject,
+                    "canonical_type": domain,
+                }
+            ):
+                failures.append(
+                    "TypeScript target semantic parameter "
+                    f"{caller}[{parameter_index}] signature is invalid"
+                )
+                signature_valid = False
+                continue
+            if domain == "integer":
+                expected.append(
+                    {
+                        "caller": caller,
+                        "canonical_caller": canonical_caller,
+                        "callee": "_elmosRequireSafeInteger",
+                        "callee_kind": "exact-generated-helper",
+                        "canonical_domain": "integer",
+                        "canonical_operator": "guard",
+                        "normalization_rule": (
+                            "typescript.parameter.integer.safe-integer"
+                        ),
+                        "guard_scope": "signature-parameter",
+                        "guard_subject": subject,
+                        "canonical_guard_subject": canonical_subject,
+                    }
+                )
+        if return_type in {"integer", "number"}:
+            expected.append(
+                {
+                    "caller": caller,
+                    "canonical_caller": canonical_caller,
+                    "callee": (
+                        "_elmosRequireSafeInteger"
+                        if return_type == "integer"
+                        else "_elmosRequireFiniteNumber"
+                    ),
+                    "callee_kind": "exact-generated-helper",
+                    "canonical_domain": str(return_type),
+                    "canonical_operator": "guard",
+                    "normalization_rule": (
+                        f"typescript.return.{return_type}."
+                        + ("safe-integer" if return_type == "integer" else "finite")
+                    ),
+                    "guard_scope": "signature-return",
+                    "guard_subject": "return",
+                    "canonical_guard_subject": "return",
+                }
+            )
+        if not signature_valid:
+            continue
+        try:
+            operator_uses = _module_function_operator_uses(raw_function)
+        except ValueError as exc:
+            failures.append(
+                f"TypeScript target semantic function {caller} cannot be typed: {exc}"
+            )
+            continue
+        for domain, operator in sorted(operator_uses):
+            result_callee = (
+                "_elmosRequireSafeInteger"
+                if domain == "integer"
+                else "_elmosRequireFiniteNumber"
+            )
+            expected.append(
+                {
+                    "caller": caller,
+                    "canonical_caller": canonical_caller,
+                    "callee": result_callee,
+                    "callee_kind": "exact-generated-helper",
+                    "canonical_domain": domain,
+                    "canonical_operator": operator,
+                    "normalization_rule": (
+                        f"typescript.integer.{operator}.safe-integer"
+                        if domain == "integer"
+                        else f"typescript.number.{operator}.finite-result"
+                    ),
+                    "guard_scope": "arithmetic-result",
+                    "guard_subject": operator,
+                }
+            )
+            if operator in {"/", "%"}:
+                expected.append(
+                    {
+                        "caller": caller,
+                        "canonical_caller": canonical_caller,
+                        "callee": "_elmosRequireNonZero",
+                        "callee_kind": "exact-generated-helper",
+                        "canonical_domain": domain,
+                        "canonical_operator": operator,
+                        "normalization_rule": (
+                            (
+                                "typescript.integer./.truncating-non-zero"
+                                if operator == "/"
+                                else "typescript.integer.%.non-zero"
+                            )
+                            if domain == "integer"
+                            else (
+                                f"typescript.number.{operator}."
+                                "non-zero:_elmosRequireNonZero"
+                            )
+                        ),
+                        "guard_scope": "arithmetic-divisor",
+                        "guard_subject": operator,
+                    }
+                )
+    return expected
+
+
+def _target_call_graph_edge_identity(edge: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(edge.get(key, ""))
+        for key in (
+            "caller",
+            "canonical_caller",
+            "callee",
+            "callee_kind",
+            "canonical_domain",
+            "canonical_operator",
+            "normalization_rule",
+            "guard_scope",
+            "guard_subject",
+            "canonical_guard_subject",
+        )
+    )
+
+
+def _target_call_graph_sort_key(edge: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(value)
+        for value in (
+            edge.get("caller", ""),
+            edge.get("canonical_caller", ""),
+            edge.get("callee", ""),
+            edge.get("canonical_domain", ""),
+            edge.get("canonical_operator", ""),
+            edge.get("guard_scope", "operator"),
+            edge.get("guard_subject", ""),
+            edge.get("canonical_guard_subject", ""),
+        )
+    )
+
+
+def _validate_target_call_graph(
+    *,
+    target_call_graph: object,
+    manifest_symbols: list[str],
+    target_language: object,
+    raw_target_semantic_document: dict[str, Any],
+    target_semantic_document: dict[str, Any],
+    identifier_functions: list[dict[str, Any]],
+    helper_identifiers: set[str],
+    normalizations: object,
+    failures: list[str],
+) -> None:
+    """Validate exact helper edges without trusting engine-authored closure counts."""
+
+    if not isinstance(target_call_graph, dict) or set(target_call_graph) != {
+        "status",
+        "scope",
+        "edges",
+        "helper_internal_calls",
+    }:
+        failures.append("whole-file target call graph is invalid")
+        return
+    if (
+        target_call_graph.get("status") != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
+        or target_call_graph.get("scope") != "profile-functions-to-emitted-callees"
+        or target_call_graph.get("helper_internal_calls")
+        != {
+            "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
+            "binding": "verified_generated_helpers-exact-bytes-and-digests",
+        }
+    ):
+        failures.append("whole-file target call graph identity drift")
+    normalization_set = (
+        set(normalizations) if isinstance(normalizations, list) else set()
+    )
+    edges = target_call_graph.get("edges")
+    if not isinstance(edges, list):
+        failures.append("whole-file target call graph edges are invalid")
+        return
+    identifier_by_raw = {
+        mapping.get("raw_symbol"): mapping
+        for mapping in identifier_functions
+        if isinstance(mapping, dict) and isinstance(mapping.get("raw_symbol"), str)
+    }
+
+    valid_edges: list[dict[str, Any]] = []
+    normalized_edges: list[tuple[str, ...]] = []
+    for index, edge in enumerate(edges):
+        if not isinstance(edge, dict):
+            failures.append(
+                f"whole-file target call graph edge {index} keys are invalid"
+            )
+            continue
+        operator = edge.get("canonical_operator")
+        edge_keys = set(edge)
+        if operator == "guard":
+            keys_valid = edge_keys == _TARGET_CALL_GRAPH_GUARD_KEYS
+        else:
+            keys_valid = (
+                edge_keys == _TARGET_CALL_GRAPH_BASE_EDGE_KEYS
+                or edge_keys == _TARGET_CALL_GRAPH_SCOPED_ARITHMETIC_KEYS
+                or edge_keys == _TARGET_CALL_GRAPH_LEGACY_BASE_EDGE_KEYS
+                or edge_keys == _TARGET_CALL_GRAPH_LEGACY_SCOPED_ARITHMETIC_KEYS
+            )
+        if not keys_valid:
+            failures.append(
+                f"whole-file target call graph edge {index} keys are invalid"
+            )
+            continue
+
+        caller = edge.get("caller")
+        canonical_caller = edge.get("canonical_caller")
+        callee = edge.get("callee")
+        callee_kind = edge.get("callee_kind")
+        domain = edge.get("canonical_domain")
+        rule = edge.get("normalization_rule")
+        scope = edge.get("guard_scope")
+        subject = edge.get("guard_subject")
+        canonical_subject = edge.get("canonical_guard_subject")
+        identifier_mapping = identifier_by_raw.get(caller)
+        valid = True
+        legacy_non_javascript_edge = (
+            target_language != "javascript"
+            and "canonical_caller" not in edge
+            and caller in manifest_symbols
+        )
+        if (
+            not legacy_non_javascript_edge
+            and (
+                not isinstance(identifier_mapping, dict)
+                or canonical_caller != identifier_mapping.get("canonical_symbol")
+                or canonical_caller not in manifest_symbols
+            )
+            or not isinstance(callee, str)
+            or not callee
+            or not isinstance(rule, str)
+            or rule not in normalization_set
+        ):
+            valid = False
+        if operator == "guard":
+            if (
+                target_language not in {"javascript", "typescript"}
+                or domain not in _TARGET_CALL_GRAPH_CANONICAL_TYPES
+                or scope not in {"signature-parameter", "signature-return"}
+                or not isinstance(subject, str)
+                or not subject
+                or (scope == "signature-return" and subject != "return")
+                or not isinstance(canonical_subject, str)
+                or not canonical_subject
+                or (scope == "signature-return" and canonical_subject != "return")
+                or callee_kind != "exact-generated-helper"
+            ):
+                valid = False
+        else:
+            if (
+                domain not in {"integer", "number"}
+                or operator not in _TARGET_CALL_GRAPH_ARITHMETIC_OPERATORS
+            ):
+                valid = False
+            if edge_keys in {
+                _TARGET_CALL_GRAPH_SCOPED_ARITHMETIC_KEYS,
+                _TARGET_CALL_GRAPH_LEGACY_SCOPED_ARITHMETIC_KEYS,
+            } and (
+                scope not in {"arithmetic-result", "arithmetic-divisor"}
+                or subject != operator
+                or (scope == "arithmetic-divisor" and operator not in {"/", "%"})
+            ):
+                valid = False
+        if not valid:
+            failures.append(f"whole-file target call graph edge {index} is detached")
+            continue
+        if callee_kind == "exact-generated-helper":
+            if callee not in helper_identifiers:
+                failures.append(
+                    f"whole-file target helper edge {index} is not inventory-bound"
+                )
+                continue
+        elif callee_kind == "pinned-target-builtin":
+            if callee in helper_identifiers:
+                failures.append(
+                    f"whole-file target builtin edge {index} aliases a helper"
+                )
+                continue
+        else:
+            failures.append(
+                f"whole-file target call graph edge {index} callee kind is invalid"
+            )
+            continue
+        valid_edges.append(edge)
+        normalized_edges.append(_target_call_graph_sort_key(edge))
+
+    if len(normalized_edges) != len(set(normalized_edges)):
+        failures.append("whole-file target call graph contains duplicate edges")
+    if [_target_call_graph_sort_key(edge) for edge in valid_edges] != sorted(
+        _target_call_graph_sort_key(edge) for edge in valid_edges
+    ):
+        failures.append("whole-file target call graph edges are not canonical")
+
+    if target_language not in {"javascript", "typescript"}:
+        return
+    if target_language == "javascript":
+        expected_edges = _javascript_expected_target_call_graph_edges(
+            raw_target_semantic_document,
+            target_semantic_document,
+            identifier_functions,
+            failures,
+        )
+    else:
+        expected_edges = _typescript_expected_target_call_graph_edges(
+            raw_target_semantic_document,
+            target_semantic_document,
+            identifier_functions,
+            failures,
+        )
+    expected_by_identity = {
+        _target_call_graph_edge_identity(edge): edge for edge in expected_edges
+    }
+    observed_by_identity = {
+        _target_call_graph_edge_identity(edge): edge for edge in valid_edges
+    }
+    target_language_label = {
+        "javascript": "JavaScript",
+        "typescript": "TypeScript",
+    }[target_language]
+    for identity in sorted(expected_by_identity.keys() - observed_by_identity.keys()):
+        edge = expected_by_identity[identity]
+        failures.append(
+            f"whole-file {target_language_label} target call graph is missing exact edge "
+            f"{edge['caller']}:{edge['guard_scope']}:{edge['guard_subject']}:"
+            f"{edge['canonical_domain']}:{edge['canonical_operator']}"
+        )
+    for identity in sorted(observed_by_identity.keys() - expected_by_identity.keys()):
+        edge = observed_by_identity[identity]
+        failures.append(
+            f"whole-file {target_language_label} target call graph contains unexpected edge "
+            f"{edge['caller']}:{edge.get('guard_scope', 'operator')}:"
+            f"{edge.get('guard_subject', '')}:{edge['canonical_domain']}:"
+            f"{edge['canonical_operator']}"
+        )
+
+
 def _validate_module_whole_file_closure(
     *,
     manifest: dict[str, Any],
@@ -6822,6 +9545,7 @@ def _validate_module_whole_file_closure(
     module_input: dict[str, Any],
     source_semantic_document: dict[str, Any],
     target_semantic_document: dict[str, Any],
+    identifier_closure: dict[str, Any],
     source_inventory_document: dict[str, Any],
     target_inventory_document: dict[str, Any],
     closure_document: dict[str, Any],
@@ -6834,6 +9558,8 @@ def _validate_module_whole_file_closure(
     source_inventory_record: tuple[dict[str, Any], Path, str] | None,
     target_inventory_record: tuple[dict[str, Any], Path, str] | None,
     closure_record: tuple[dict[str, Any], Path, str] | None,
+    javascript_descriptor_record: tuple[dict[str, Any], Path, str] | None,
+    role_records: dict[str, list[tuple[dict[str, Any], Path, str]]],
     route_swift_receipt: dict[str, Any] | None,
     replay_native_behavior: bool,
     failures: list[str],
@@ -6860,8 +9586,7 @@ def _validate_module_whole_file_closure(
         failures.append("whole-file-module-closure top-level keys are not exact")
     if (
         closure_document.get("schema_version") != "1.0.0"
-        or closure_document.get("kind")
-        != "elmos.typed-pure-module-whole-file-closure"
+        or closure_document.get("kind") != "elmos.typed-pure-module-whole-file-closure"
         or closure_document.get("profile") != "typed-pure-module-v1"
         or closure_document.get("status") != "PASSED"
         or closure_document.get("route")
@@ -6881,15 +9606,17 @@ def _validate_module_whole_file_closure(
             failures.append(
                 f"whole-file-module-closure {side} inventory digest backlink mismatch"
             )
-        if closure_document.get(f"{side}_inventory_bytes") != inventory_record[
-            1
-        ].stat().st_size:
+        if (
+            closure_document.get(f"{side}_inventory_bytes")
+            != inventory_record[1].stat().st_size
+        ):
             failures.append(
                 f"whole-file-module-closure {side} inventory byte backlink mismatch"
             )
-    if closure_record is not None and module_input.get(
-        "whole_file_closure_sha256"
-    ) != closure_record[2]:
+    if (
+        closure_record is not None
+        and module_input.get("whole_file_closure_sha256") != closure_record[2]
+    ):
         failures.append("module_input whole-file closure digest backlink mismatch")
     if closure_document.get("blocked_declarations") != {"source": [], "target": []}:
         failures.append("whole-file-module-closure contains blocked declarations")
@@ -6920,101 +9647,41 @@ def _validate_module_whole_file_closure(
     ):
         failures.append("whole-file target call graph policy drift")
     entries = module_manifest.get("functions")
-    manifest_symbols = sorted(
-        entry.get("symbol")
-        for entry in (entries if isinstance(entries, list) else [])
-        if isinstance(entry, dict) and isinstance(entry.get("symbol"), str)
-    )
+    manifest_symbols: list[str] = []
+    for entry in entries if isinstance(entries, list) else []:
+        if not isinstance(entry, dict):
+            continue
+        symbol = entry.get("symbol")
+        if isinstance(symbol, str):
+            manifest_symbols.append(symbol)
+    manifest_symbols.sort()
     if closure_document.get("manifest_symbols") != manifest_symbols:
         failures.append("whole-file closure manifest symbol set mismatch")
-    target_call_graph = closure_document.get("target_call_graph")
-    if not isinstance(target_call_graph, dict) or set(target_call_graph) != {
-        "status",
-        "scope",
-        "edges",
-        "helper_internal_calls",
-    }:
-        failures.append("whole-file target call graph is invalid")
-    else:
-        if (
-            target_call_graph.get("status")
-            != "EXACT_EMITTER_HELPERS_AND_PINNED_BUILTINS"
-            or target_call_graph.get("scope")
-            != "profile-functions-to-emitted-callees"
-            or target_call_graph.get("helper_internal_calls")
-            != {
-                "status": "CONTENT_BOUND_NOT_EDGE_ENUMERATED",
-                "binding": "verified_generated_helpers-exact-bytes-and-digests",
-            }
-        ):
-            failures.append("whole-file target call graph identity drift")
-        helper_identifiers = {
-            identifier
-            for helper in closure_document.get("target_helper_symbols", [])
-            if isinstance(helper, dict)
-            for identifier in (helper.get("name"), helper.get("qualified_name"))
-            if isinstance(identifier, str) and identifier
-        }
-        normalizations = closure_document.get("target_builtin_normalizations")
-        normalization_set = (
-            set(normalizations) if isinstance(normalizations, list) else set()
-        )
-        edges = target_call_graph.get("edges")
-        if not isinstance(edges, list):
-            failures.append("whole-file target call graph edges are invalid")
-        else:
-            edge_keys = {
-                "caller",
-                "callee",
-                "callee_kind",
-                "canonical_domain",
-                "canonical_operator",
-                "normalization_rule",
-            }
-            normalized_edges: list[tuple[str, str, str, str]] = []
-            for index, edge in enumerate(edges):
-                if not isinstance(edge, dict) or set(edge) != edge_keys:
-                    failures.append(
-                        f"whole-file target call graph edge {index} keys are invalid"
-                    )
-                    continue
-                caller = edge.get("caller")
-                callee = edge.get("callee")
-                callee_kind = edge.get("callee_kind")
-                domain = edge.get("canonical_domain")
-                operator = edge.get("canonical_operator")
-                rule = edge.get("normalization_rule")
-                if (
-                    caller not in manifest_symbols
-                    or not isinstance(callee, str)
-                    or not callee
-                    or domain not in {"integer", "number"}
-                    or operator not in {"+", "-", "*", "/", "%"}
-                    or rule not in normalization_set
-                ):
-                    failures.append(
-                        f"whole-file target call graph edge {index} is detached"
-                    )
-                    continue
-                if callee_kind == "exact-generated-helper":
-                    if callee not in helper_identifiers:
-                        failures.append(
-                            f"whole-file target helper edge {index} is not inventory-bound"
-                        )
-                elif callee_kind == "pinned-target-builtin":
-                    if callee in helper_identifiers:
-                        failures.append(
-                            f"whole-file target builtin edge {index} aliases a helper"
-                        )
-                else:
-                    failures.append(
-                        f"whole-file target call graph edge {index} callee kind is invalid"
-                    )
-                normalized_edges.append((caller, callee, str(domain), str(operator)))
-            if len(normalized_edges) != len(set(normalized_edges)):
-                failures.append("whole-file target call graph contains duplicate edges")
-            if normalized_edges != sorted(normalized_edges):
-                failures.append("whole-file target call graph edges are not canonical")
+    helper_identifiers = {
+        identifier
+        for helper in closure_document.get("target_helper_symbols", [])
+        if isinstance(helper, dict)
+        for identifier in (helper.get("name"), helper.get("qualified_name"))
+        if isinstance(identifier, str) and identifier
+    }
+    raw_target_ir = identifier_closure.get("raw_target_ir")
+    raw_target_semantic_document = (
+        raw_target_ir.to_mapping() if raw_target_ir is not None else {}
+    )
+    identifier_functions = identifier_closure.get("functions")
+    if not isinstance(identifier_functions, list):
+        identifier_functions = []
+    _validate_target_call_graph(
+        target_call_graph=closure_document.get("target_call_graph"),
+        manifest_symbols=manifest_symbols,
+        target_language=target_language,
+        raw_target_semantic_document=raw_target_semantic_document,
+        target_semantic_document=target_semantic_document,
+        identifier_functions=identifier_functions,
+        helper_identifiers=helper_identifiers,
+        normalizations=closure_document.get("target_builtin_normalizations"),
+        failures=failures,
+    )
     _validate_module_profile_span_bindings(
         side="source",
         closure=closure_document,
@@ -7025,6 +9692,7 @@ def _validate_module_whole_file_closure(
         side="target",
         closure=closure_document,
         semantic_document=target_semantic_document,
+        raw_semantic_document=raw_target_semantic_document,
         failures=failures,
     )
 
@@ -7054,7 +9722,7 @@ def _validate_module_whole_file_closure(
     snapshot_owner = tempfile.TemporaryDirectory(
         prefix="elmos-module-validator-snapshot-"
     )
-    snapshot_root = Path(snapshot_owner.name)
+    snapshot_root = Path(snapshot_owner.name).resolve(strict=True)
     snapshot_root.chmod(0o700)
     try:
         source_bytes = source_artifact_record[1].read_bytes()
@@ -7085,12 +9753,38 @@ def _validate_module_whole_file_closure(
             logical_name=target_artifact_record[1].name,
             content=target_bytes,
         )
+        javascript_descriptor_snapshot: Path | None = None
+        javascript_descriptor_bytes: bytes | None = None
+        javascript_descriptor_digest: str | None = None
+        if javascript_descriptor_record is not None:
+            javascript_descriptor_bytes = javascript_descriptor_record[1].read_bytes()
+            javascript_descriptor_digest = str(
+                javascript_descriptor_record[0].get("sha256")
+            )
+            if (
+                sha256_bytes(javascript_descriptor_bytes)
+                != javascript_descriptor_digest
+                or javascript_descriptor_record[2] != javascript_descriptor_digest
+                or len(javascript_descriptor_bytes)
+                != javascript_descriptor_record[0].get("bytes")
+            ):
+                raise ValueError(
+                    "JavaScript ESM descriptor changed before private snapshot"
+                )
+            javascript_descriptor_snapshot = _private_snapshot(
+                snapshot_root,
+                role="source",
+                logical_name="package.json",
+                content=javascript_descriptor_bytes,
+            )
+            if javascript_descriptor_snapshot.parent != source_snapshot.parent:
+                raise ValueError(
+                    "JavaScript ESM descriptor snapshot is detached from source"
+                )
     except (OSError, ValueError) as exc:
         failures.append(f"module private artifact snapshot failed: {exc}")
         return
-    closure_api = _engine_module_closure_api(
-        failures, "module whole-file closure"
-    )
+    closure_api = _engine_module_closure_api(failures, "module whole-file closure")
     if closure_api is None:
         return
     (
@@ -7102,10 +9796,23 @@ def _validate_module_whole_file_closure(
         build_whole_file_closure,
         validate_source,
         validate_target,
+        target_ir_view,
+        alpha_normalize_target,
     ) = closure_api
     try:
         persisted_source_ir = SemanticIR.from_mapping(source_semantic_document)
         persisted_target_ir = SemanticIR.from_mapping(target_semantic_document)
+        plan_record_list = role_records.get("identifier-plan", [])
+        plan_record = plan_record_list[0] if plan_record_list else None
+        if plan_record is not None:
+            identifier_api = _engine_identifier_api(failures, "module identifier replay")
+            if identifier_api is not None:
+                _, IdentifierPlan_cls, _, _, _, _, _, _ = identifier_api
+                identifier_plan = IdentifierPlan_cls.from_mapping(load(plan_record[1]))
+            else:
+                identifier_plan = identifier_closure.get("plan")
+        else:
+            identifier_plan = identifier_closure.get("plan")
         fresh_source_ir = combine_function_irs(
             [
                 analyze(source_snapshot, source_language, symbol)
@@ -7115,7 +9822,12 @@ def _validate_module_whole_file_closure(
             source_language,
             "source-validator-replay",
         )
-        fresh_target_ir = combine_function_irs(
+        if identifier_plan is not None:
+            fresh_target_view = target_ir_view(fresh_source_ir, identifier_plan)
+            raw_target_symbols = [function.name for function in fresh_target_view.functions]
+        else:
+            raw_target_symbols = manifest_symbols
+        fresh_raw_target_ir = combine_function_irs(
             [
                 analyze(
                     target_snapshot,
@@ -7123,39 +9835,62 @@ def _validate_module_whole_file_closure(
                     symbol,
                     emitted_target=True,
                 )
-                for symbol in manifest_symbols
+                for symbol in raw_target_symbols
             ],
-            manifest_symbols,
+            raw_target_symbols,
             target_language,
             "target-validator-replay",
         )
-        fresh_emitted = emit(fresh_source_ir, target_language)
+        if identifier_plan is not None:
+            fresh_target_ir = alpha_normalize_target(
+                fresh_source_ir,
+                fresh_raw_target_ir,
+                identifier_plan,
+            )
+            fresh_emitted = emit(
+                fresh_source_ir,
+                target_language,
+                identifier_plan=identifier_plan,
+            )
+        else:
+            fresh_target_ir = fresh_raw_target_ir
+            fresh_emitted = None
     except Exception as exc:
-        failures.append(f"module independent semantic re-lift/emitter replay failed: {exc}")
+        failures.append(
+            f"module independent semantic re-lift/emitter replay failed: {exc}"
+        )
         return
-    if fresh_source_ir.to_mapping() != persisted_source_ir.to_mapping():
+    if _semantic_ir_stable_projection(
+        fresh_source_ir.to_mapping()
+    ) != _semantic_ir_stable_projection(persisted_source_ir.to_mapping()):
         failures.append(
             "source-module-semantic-ir differs from independent source analysis"
         )
-    if fresh_target_ir.to_mapping() != persisted_target_ir.to_mapping():
+    persisted_raw_target_ir = identifier_closure.get("raw_target_ir")
+    if (
+        persisted_raw_target_ir is not None
+        and _semantic_ir_stable_projection(fresh_raw_target_ir.to_mapping())
+        != _semantic_ir_stable_projection(persisted_raw_target_ir.to_mapping())
+    ):
+        failures.append("raw-target-ir differs from independent target re-lift")
+    if _semantic_ir_stable_projection(
+        fresh_target_ir.to_mapping()
+    ) != _semantic_ir_stable_projection(persisted_target_ir.to_mapping()):
         failures.append(
             "target-module-semantic-ir differs from independent target re-lift"
         )
-    if fresh_emitted.relative_path != module_input.get("target_logical_file"):
-        failures.append("module deterministic emitter target path differs")
-    if fresh_emitted.content.encode("utf-8") != target_bytes:
-        failures.append("module deterministic emitter target bytes differ")
-    if list(fresh_emitted.normalization_rules) != closure_document.get(
-        "target_builtin_normalizations"
-    ):
-        failures.append("module deterministic emitter normalizations differ")
+    if fresh_emitted is not None:
+        if fresh_emitted.relative_path != module_input.get("target_logical_file"):
+            failures.append("module deterministic emitter target path differs")
+        if fresh_emitted.content.encode("utf-8") != target_bytes:
+            failures.append("module deterministic emitter target bytes differ")
+        if list(fresh_emitted.normalization_rules) != closure_document.get(
+            "target_builtin_normalizations"
+        ):
+            failures.append("module deterministic emitter normalizations differ")
     try:
-        fresh_source_inventory = inventory_module(
-            source_snapshot, source_language
-        )
-        fresh_target_inventory = inventory_module(
-            target_snapshot, target_language
-        )
+        fresh_source_inventory = inventory_module(source_snapshot, source_language)
+        fresh_target_inventory = inventory_module(target_snapshot, target_language)
     except Exception as exc:
         failures.append(f"module independent whole-file inventory failed: {exc}")
         return
@@ -7176,7 +9911,9 @@ def _validate_module_whole_file_closure(
             source_inventory=fresh_source_inventory,
             target_inventory=fresh_target_inventory,
             source_ir=fresh_source_ir,
+            raw_target_ir=fresh_raw_target_ir,
             target_ir=fresh_target_ir,
+            identifier_plan=identifier_plan,
             manifest=module_manifest,
             source_bytes=source_bytes,
             emitted=fresh_emitted,
@@ -7213,6 +9950,20 @@ def _validate_module_whole_file_closure(
             expected_digest=target_digest,
             failures=failures,
         )
+        if (
+            javascript_descriptor_record is not None
+            and javascript_descriptor_snapshot is not None
+            and javascript_descriptor_bytes is not None
+            and javascript_descriptor_digest is not None
+        ):
+            _validate_snapshot_stability(
+                label="module JavaScript ESM descriptor",
+                origin=javascript_descriptor_record[1],
+                snapshot=javascript_descriptor_snapshot,
+                expected_bytes=javascript_descriptor_bytes,
+                expected_digest=javascript_descriptor_digest,
+                failures=failures,
+            )
         return
     cases_by_symbol = {
         entry.get("symbol"): entry.get("cases")
@@ -7227,6 +9978,14 @@ def _validate_module_whole_file_closure(
     }
     source_functions = {
         function.name: function for function in fresh_source_ir.functions
+    }
+    target_functions = {
+        source_function.name: target_function
+        for source_function, target_function in zip(
+            fresh_source_ir.functions,
+            fresh_target_view.functions,
+            strict=True,
+        )
     }
     fresh_source_validation: dict[str, Any] = {}
     fresh_target_validation: dict[str, Any] = {}
@@ -7248,14 +10007,78 @@ def _validate_module_whole_file_closure(
                 fresh_target_validation[symbol] = validate_target(
                     fresh_emitted,
                     target_language,
-                    function,
+                    target_functions[symbol],
                     cases,
                     replay_root / "target" / f"{index:03d}",
                 )
     except Exception as exc:
         failures.append(f"module independent native behavior replay failed: {exc}")
         return
-    if fresh_source_validation != source_validation_document:
+
+    def stable_source_validation_projection(
+        document: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Remove only the diagnostic host path from source replay evidence."""
+
+        projected: dict[str, Any] = {}
+        for symbol, validation in document.items():
+            if not isinstance(validation, dict):
+                projected[symbol] = validation
+                continue
+            projected[symbol] = {
+                key: value
+                for key, value in validation.items()
+                if key != "javascript_esm_descriptor_observation"
+            }
+        return projected
+
+    if javascript_descriptor_record is not None:
+        expected_snapshot_origin = (
+            str(javascript_descriptor_snapshot)
+            if javascript_descriptor_snapshot is not None
+            else None
+        )
+        for symbol, validation in fresh_source_validation.items():
+            observation = validation.get("javascript_esm_descriptor_observation")
+            if observation != {"observed_origin_path": expected_snapshot_origin}:
+                failures.append(
+                    f"fresh source validation {symbol} JavaScript ESM descriptor "
+                    "observation is not bound to the private snapshot"
+                )
+        for symbol, validation in source_validation_document.items():
+            observation = (
+                validation.get("javascript_esm_descriptor_observation")
+                if isinstance(validation, dict)
+                else None
+            )
+            observed_origin = (
+                observation.get("observed_origin_path")
+                if isinstance(observation, dict)
+                else None
+            )
+            if (
+                not isinstance(observation, dict)
+                or set(observation) != JAVASCRIPT_ESM_DESCRIPTOR_OBSERVATION_KEYS
+                or not isinstance(observed_origin, str)
+                or not Path(observed_origin).is_absolute()
+                or Path(observed_origin).name != "package.json"
+            ):
+                failures.append(
+                    f"persisted source validation {symbol} JavaScript ESM descriptor "
+                    "observation is invalid"
+                )
+    elif any(
+        isinstance(validation, dict)
+        and "javascript_esm_descriptor_observation" in validation
+        for validation in source_validation_document.values()
+    ):
+        failures.append(
+            "source-module-validation has an unexpected JavaScript ESM descriptor observation"
+        )
+
+    if stable_source_validation_projection(
+        fresh_source_validation
+    ) != stable_source_validation_projection(source_validation_document):
         failures.append(
             "source-module-validation differs from independent native replay"
         )
@@ -7295,6 +10118,20 @@ def _validate_module_whole_file_closure(
         expected_digest=target_digest,
         failures=failures,
     )
+    if (
+        javascript_descriptor_record is not None
+        and javascript_descriptor_snapshot is not None
+        and javascript_descriptor_bytes is not None
+        and javascript_descriptor_digest is not None
+    ):
+        _validate_snapshot_stability(
+            label="module JavaScript ESM descriptor",
+            origin=javascript_descriptor_record[1],
+            snapshot=javascript_descriptor_snapshot,
+            expected_bytes=javascript_descriptor_bytes,
+            expected_digest=javascript_descriptor_digest,
+            failures=failures,
+        )
 
 
 def _validate_module_equivalence(
@@ -7315,6 +10152,23 @@ def _validate_module_equivalence(
     failures: list[str] = []
     gates = manifest.get("gates", {})
     required = gates.get("module_equivalence_required") is True
+    expected_input_domain_value = manifest.get("profiles", {}).get("input_domain")
+    expected_input_domain = (
+        expected_input_domain_value
+        if isinstance(expected_input_domain_value, str)
+        else ""
+    )
+    expected_out_of_domain_behavior = (
+        NODEJS_OUT_OF_DOMAIN_BEHAVIOR
+        if expected_input_domain == NODEJS_INPUT_DOMAIN
+        else SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC
+    )
+    try:
+        expected_module_types = set(
+            load(route / "mappings" / "types.json").get("types", [])
+        )
+    except Exception:
+        expected_module_types = set()
     minimum_functions = gates.get("minimum_module_functions", 3)
     if not _is_int(minimum_functions, minimum=3):
         failures.append("minimum_module_functions must be an integer >= 3")
@@ -7403,7 +10257,9 @@ def _validate_module_equivalence(
             failures, evidence.get("module_input_sha256"), "module_input_sha256"
         )
     module_inputs = [
-        item for item in artifacts_by_path.values() if item[0].get("role") == "module-formal-input"
+        item
+        for item in artifacts_by_path.values()
+        if item[0].get("role") == "module-formal-input"
     ]
     role_records: dict[str, list[tuple[dict[str, Any], Path, str]]] = {}
     for record in artifacts_by_path.values():
@@ -7419,7 +10275,9 @@ def _validate_module_equivalence(
     else:
         route_swift_receipt = None
         if role_records.get("swift-analyzer-build-receipt"):
-            failures.append("non-passing module evidence cannot bind a Swift analyzer receipt")
+            failures.append(
+                "non-passing module evidence cannot bind a Swift analyzer receipt"
+            )
     module_cases: dict[str, Any] = {}
     source_validation_document: dict[str, Any] = {}
     target_validation_document: dict[str, Any] = {}
@@ -7432,15 +10290,22 @@ def _validate_module_equivalence(
     whole_file_closure_document: dict[str, Any] = {}
     if evidence.get("status") == "PASSED":
         if len(module_inputs) != 1:
-            failures.append("passed module evidence must bind exactly one module formal input")
-        elif module_input_digest is not None and module_inputs[0][2] != module_input_digest:
+            failures.append(
+                "passed module evidence must bind exactly one module formal input"
+            )
+        elif (
+            module_input_digest is not None
+            and module_inputs[0][2] != module_input_digest
+        ):
             failures.append("module_input_sha256 does not bind module-formal-input")
         module_input = evidence.get("module_input")
         if not isinstance(module_input, dict):
             failures.append("passed module evidence must include module_input")
         else:
             if canonical_json_sha256(module_input) != module_input_digest:
-                failures.append("module_input_sha256 is not the canonical module_input digest")
+                failures.append(
+                    "module_input_sha256 is not the canonical module_input digest"
+                )
             if module_inputs:
                 try:
                     persisted_module_input = load(module_inputs[0][1])
@@ -7454,11 +10319,14 @@ def _validate_module_equivalence(
                 "formal-function-input",
                 "formal-function-smt2",
                 "formal-function-result",
+                "source-javascript-esm-descriptor",
                 "swift-analyzer-build-receipt",
             }
             for role in sorted(single_roles):
                 if len(role_records.get(role, [])) != 1:
-                    failures.append(f"passed module evidence must bind exactly one {role}")
+                    failures.append(
+                        f"passed module evidence must bind exactly one {role}"
+                    )
             input_bindings = (
                 ("original-source-module-artifact", "source_artifact_sha256"),
                 ("emitted-target-module-artifact", "target_artifact_sha256"),
@@ -7476,17 +10344,19 @@ def _validate_module_equivalence(
                 "target_language": manifest.get("target", {}).get("language"),
             }:
                 failures.append("module_input route tuple does not match route.json")
-            if module_input.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
+            if module_input.get("input_domain") != expected_input_domain:
                 failures.append("module_input input domain drift")
             source_records = role_records.get("original-source-module-artifact", [])
-            if len(source_records) == 1 and module_input.get(
-                "source_logical_file"
-            ) != source_records[0][1].name:
+            if (
+                len(source_records) == 1
+                and module_input.get("source_logical_file") != source_records[0][1].name
+            ):
                 failures.append("module_input source_logical_file drift")
             target_records = role_records.get("emitted-target-module-artifact", [])
-            if len(target_records) == 1 and module_input.get(
-                "target_logical_file"
-            ) != target_records[0][1].name:
+            if (
+                len(target_records) == 1
+                and module_input.get("target_logical_file") != target_records[0][1].name
+            ):
                 failures.append("module_input target_logical_file drift")
             count_bindings = (
                 ("original-source-module-artifact", "source_artifact_byte_count"),
@@ -7496,7 +10366,10 @@ def _validate_module_equivalence(
             )
             for role, field in count_bindings:
                 records = role_records.get(role, [])
-                if len(records) == 1 and module_input.get(field) != records[0][1].stat().st_size:
+                if (
+                    len(records) == 1
+                    and module_input.get(field) != records[0][1].stat().st_size
+                ):
                     failures.append(f"module_input.{field} does not bind {role}")
             semantic_bindings = (
                 ("source-module-semantic-ir", "source_semantic_ir_sha256"),
@@ -7511,13 +10384,13 @@ def _validate_module_equivalence(
                 except Exception as exc:
                     failures.append(f"{role} is invalid JSON: {exc}")
                 else:
-                    if canonical_json_sha256(semantic_document) != module_input.get(field):
+                    if canonical_json_sha256(semantic_document) != module_input.get(
+                        field
+                    ):
                         failures.append(f"module_input.{field} does not bind {role}")
                     side = "source" if role.startswith("source-") else "target"
                     expected_language = manifest.get(side, {}).get("language")
-                    expected_logical_file = module_input.get(
-                        f"{side}_logical_file"
-                    )
+                    expected_logical_file = module_input.get(f"{side}_logical_file")
                     if set(semantic_document) != {
                         "schema_version",
                         "source_language",
@@ -7533,7 +10406,9 @@ def _validate_module_equivalence(
                     if semantic_document.get("source_language") != expected_language:
                         failures.append(f"{role} language does not bind route tuple")
                     if semantic_document.get("source_file") != expected_logical_file:
-                        failures.append(f"{role} source_file does not bind module artifact")
+                        failures.append(
+                            f"{role} source_file does not bind module artifact"
+                        )
                     if semantic_document.get("diagnostics") != []:
                         failures.append(f"{role} diagnostics must be empty")
                     for identity_field in ("analyzer", "analyzer_version"):
@@ -7609,7 +10484,9 @@ def _validate_module_equivalence(
                             "module case manifest",
                         )
                     except Exception as exc:
-                        failures.append(f"module case manifest schema validation crashed: {exc}")
+                        failures.append(
+                            f"module case manifest schema validation crashed: {exc}"
+                        )
 
             for role, report_field, destination_name in (
                 ("source-module-validation", "source_validation", "source_validation"),
@@ -7638,9 +10515,13 @@ def _validate_module_equivalence(
             case_records = role_records.get("module-case-manifest", [])
             if len(case_records) == 1:
                 try:
-                    module_cases = load(case_records[0][1])
+                    loaded_module_cases: dict[str, Any] | None = load(
+                        case_records[0][1]
+                    )
                 except Exception:
-                    pass
+                    loaded_module_cases = None
+                if loaded_module_cases is not None:
+                    module_cases = loaded_module_cases
 
     contract = evidence.get("module_contract")
     if not isinstance(contract, dict):
@@ -7670,8 +10551,7 @@ def _validate_module_equivalence(
     manifest_by_symbol = {
         item.get("symbol"): item
         for item in (module_entries if isinstance(module_entries, list) else [])
-        if isinstance(item, dict)
-        and isinstance(item.get("symbol"), str)
+        if isinstance(item, dict) and isinstance(item.get("symbol"), str)
     }
     source_artifact_record = next(
         iter(role_records.get("original-source-module-artifact", [])), None
@@ -7685,10 +10565,38 @@ def _validate_module_equivalence(
     target_inventory_record = next(
         iter(role_records.get("target-module-inventory", [])), None
     )
-    closure_record = next(
-        iter(role_records.get("whole-file-module-closure", [])), None
+    closure_record = next(iter(role_records.get("whole-file-module-closure", [])), None)
+    javascript_descriptor_record = _validate_module_javascript_esm_descriptor(
+        manifest=manifest,
+        evidence=evidence,
+        module_input=(
+            evidence.get("module_input")
+            if isinstance(evidence.get("module_input"), dict)
+            else {}
+        ),
+        role_records=role_records,
+        source_artifact_record=source_artifact_record,
+        failures=failures,
     )
+    identifier_closure: dict[str, Any] = {}
     if evidence.get("status") == "PASSED":
+        identifier_closure = _validate_module_identifier_closure(
+            manifest=manifest,
+            evidence=evidence,
+            module_input=(
+                evidence.get("module_input")
+                if isinstance(evidence.get("module_input"), dict)
+                else {}
+            ),
+            closure_document=whole_file_closure_document,
+            role_records=role_records,
+            source_semantic_document=source_semantic_document,
+            target_semantic_document=target_semantic_document,
+            source_inventory_document=source_inventory_document,
+            target_inventory_document=target_inventory_document,
+            minimum_functions=int(minimum_functions),
+            failures=failures,
+        )
         _validate_module_whole_file_closure(
             manifest=manifest,
             module_manifest=module_cases,
@@ -7699,6 +10607,7 @@ def _validate_module_equivalence(
             ),
             source_semantic_document=source_semantic_document,
             target_semantic_document=target_semantic_document,
+            identifier_closure=identifier_closure,
             source_inventory_document=source_inventory_document,
             target_inventory_document=target_inventory_document,
             closure_document=whole_file_closure_document,
@@ -7711,6 +10620,8 @@ def _validate_module_equivalence(
             source_inventory_record=source_inventory_record,
             target_inventory_record=target_inventory_record,
             closure_record=closure_record,
+            javascript_descriptor_record=javascript_descriptor_record,
+            role_records=role_records,
             route_swift_receipt=route_swift_receipt,
             replay_native_behavior=replay_native_behavior,
             failures=failures,
@@ -7765,7 +10676,9 @@ def _validate_module_equivalence(
                         raise ValueError("module case function entry is invalid")
                     symbol = entry.get("symbol")
                     cases = entry.get("cases")
-                    if symbol not in typed_source_by_symbol or not isinstance(cases, list):
+                    if symbol not in typed_source_by_symbol or not isinstance(
+                        cases, list
+                    ):
                         raise ValueError(f"module cases are detached for {symbol}")
                     enforce_case_domain(
                         typed_source_by_symbol[symbol],
@@ -7797,19 +10710,25 @@ def _validate_module_equivalence(
             for layer_name in ("semantic", "chunk", "behavior"):
                 layer = layers.get(layer_name)
                 if not isinstance(layer, dict) or layer.get("status") != "PASSED":
-                    failures.append(f"module function {symbol} {layer_name} did not pass")
+                    failures.append(
+                        f"module function {symbol} {layer_name} did not pass"
+                    )
             entry = manifest_by_symbol.get(symbol)
             cases = entry.get("cases") if isinstance(entry, dict) else None
             source_function = semantic_functions.get("source", {}).get(symbol)
             target_function = semantic_functions.get("target", {}).get(symbol)
             if source_function is None or target_function is None:
-                failures.append(f"module function {symbol} is absent from bound semantic IR")
+                failures.append(
+                    f"module function {symbol} is absent from bound semantic IR"
+                )
                 continue
             expected_signature = (
                 entry.get("signature") if isinstance(entry, dict) else None
             )
             if function.get("signature") != expected_signature:
-                failures.append(f"module function {symbol} signature differs from manifest")
+                failures.append(
+                    f"module function {symbol} signature differs from manifest"
+                )
             semantic_signature = {
                 "parameters": [
                     {"name": item.get("name"), "type": item.get("type")}
@@ -7819,7 +10738,9 @@ def _validate_module_equivalence(
                 "return_type": source_function.get("return_type"),
             }
             if expected_signature != semantic_signature:
-                failures.append(f"module function {symbol} signature differs from semantic IR")
+                failures.append(
+                    f"module function {symbol} signature differs from semantic IR"
+                )
             if isinstance(cases, list) and function.get(
                 "case_manifest_sha256"
             ) != canonical_json_sha256(cases):
@@ -7851,7 +10772,9 @@ def _validate_module_equivalence(
                 if formal.get("status") not in MODULE_PASSING_PROOF_STATUSES:
                     failures.append(f"module function {symbol} proof is non-passing")
                 if formal.get("property_status") != "PROVED":
-                    failures.append(f"module function {symbol} formal property is not proved")
+                    failures.append(
+                        f"module function {symbol} formal property is not proved"
+                    )
                 if formal.get("proof_strength") != "THEOREM_UNDER_ASSUMPTIONS":
                     failures.append(
                         f"module function {symbol} proof strength must be THEOREM_UNDER_ASSUMPTIONS"
@@ -7865,6 +10788,8 @@ def _validate_module_equivalence(
                     case_manifest_sha256=function.get("case_manifest_sha256"),
                     formal=formal,
                     module_input_sha256=module_input_digest,
+                    module_identifier_hygiene=evidence.get("identifier_hygiene"),
+                    input_domain=expected_input_domain,
                     route_scope=expected_route_scope,
                     artifacts_by_path=artifacts_by_path,
                     failures=failures,
@@ -7884,19 +10809,20 @@ def _validate_module_equivalence(
             )
         for field, values in symbol_sets.items():
             if set(values) != expected_symbols:
-                failures.append(f"module_contract.{field} does not match function symbols")
+                failures.append(
+                    f"module_contract.{field} does not match function symbols"
+                )
         if contract.get("exact_profile_symbol_set") is not True:
             failures.append("module exact_profile_symbol_set is not true")
         if contract.get("exact_generated_helper_symbol_set") is not True:
-            failures.append(
-                "module exact_generated_helper_symbol_set is not true"
-            )
+            failures.append("module exact_generated_helper_symbol_set is not true")
         if contract.get("exact_profile_signature_set") is not True:
             failures.append("module exact_profile_signature_set is not true")
         closure_records = role_records.get("whole-file-module-closure", [])
-        if len(closure_records) == 1 and contract.get(
-            "whole_file_closure_sha256"
-        ) != closure_records[0][2]:
+        if (
+            len(closure_records) == 1
+            and contract.get("whole_file_closure_sha256") != closure_records[0][2]
+        ):
             failures.append(
                 "module_contract.whole_file_closure_sha256 does not bind closure artifact"
             )
@@ -7907,9 +10833,7 @@ def _validate_module_equivalence(
                 "module_contract.target_helper_symbols differ from whole-file closure"
             )
         for side in ("source", "target"):
-            closure_profile = whole_file_closure_document.get(
-                f"{side}_profile_symbols"
-            )
+            closure_profile = whole_file_closure_document.get(f"{side}_profile_symbols")
             closure_symbols = (
                 [
                     item.get("symbol")
@@ -7965,23 +10889,31 @@ def _validate_module_equivalence(
             failures.append("module composition passed_function_count mismatch")
         if composition.get("status") != "PASSED":
             failures.append("module composition did not pass")
-        if composition.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
+        if composition.get("input_domain") != expected_input_domain:
             failures.append("module composition input domain drift")
         if (
             composition.get("out_of_domain_arithmetic_behavior")
-            != SPECIALIZED_OUT_OF_DOMAIN_ARITHMETIC
+            != expected_out_of_domain_behavior
         ):
             failures.append("module composition out-of-domain boundary drift")
         if composition.get("original_source_bytes_theorem") is not False:
             failures.append("module composition overstates original-source theorem")
         if composition.get("source_compiler_runtime_soundness") != "NOT_RUN":
-            failures.append("module source compiler/runtime soundness must remain NOT_RUN")
+            failures.append(
+                "module source compiler/runtime soundness must remain NOT_RUN"
+            )
         if composition.get("target_compiler_runtime_soundness") != "NOT_RUN":
-            failures.append("module target compiler/runtime soundness must remain NOT_RUN")
+            failures.append(
+                "module target compiler/runtime soundness must remain NOT_RUN"
+            )
         if composition.get("proof_strength") != "COMPOSED_THEOREMS_UNDER_ASSUMPTIONS":
-            failures.append("module composition proof strength is overstated or invalid")
+            failures.append(
+                "module composition proof strength is overstated or invalid"
+            )
         if composition.get("analyzer_and_emitter_soundness") != "ASSUMPTION":
-            failures.append("module analyzer/emitter soundness boundary must remain ASSUMPTION")
+            failures.append(
+                "module analyzer/emitter soundness boundary must remain ASSUMPTION"
+            )
         if composition.get("source_user_call_graph") != "EMPTY_AND_CLOSED":
             failures.append("module source user call graph is not empty and closed")
         if (
@@ -8023,9 +10955,9 @@ def _validate_module_equivalence(
                     for parameter in parameters
                     if isinstance(parameter, dict)
                 )
-        if observed_types != {"integer", "number", "boolean"}:
+        if observed_types != expected_module_types:
             failures.append(
-                "module signatures must cover exactly integer, number, and boolean"
+                "module signatures do not cover the exact route type mapping"
             )
         case_records = role_records.get("module-case-manifest", [])
         if len(case_records) == 1:
@@ -8053,9 +10985,9 @@ def _validate_module_equivalence(
                             failures.append(
                                 f"module function {symbol} signature differs from manifest"
                             )
-                        if function.get("case_manifest_sha256") != canonical_json_sha256(
-                            entry.get("cases")
-                        ):
+                        if function.get(
+                            "case_manifest_sha256"
+                        ) != canonical_json_sha256(entry.get("cases")):
                             failures.append(
                                 f"module function {symbol} case manifest digest drift"
                             )
@@ -8111,7 +11043,10 @@ def _validate_specialized_native_runtime_replay(
     domain_api = _engine_domain_api(
         failures, "specialized function native replay domain"
     )
-    if replay_api is None or domain_api is None:
+    identifier_api = _engine_identifier_api(
+        failures, "specialized function native replay identifier closure"
+    )
+    if replay_api is None or domain_api is None or identifier_api is None:
         return
     (
         _SemanticIR,
@@ -8122,8 +11057,20 @@ def _validate_specialized_native_runtime_replay(
         _build_whole_file_closure,
         validate_source,
         validate_target,
+        target_ir_view,
+        alpha_normalize_target,
     ) = replay_api
     _, enforce_semantic_domain, enforce_case_domain = domain_api
+    (
+        _IdentifierSemanticIR,
+        IdentifierPlan,
+        validate_identifier_plan,
+        _identifier_alpha_normalize_target,
+        _identifier_plan_bytes,
+        _identifier_target_ir_view,
+        standalone_artifact_unit_namespace,
+        _bind_function_spans_from_inventory,
+    ) = identifier_api
     source_language = manifest.get("source", {}).get("language")
     target_language = manifest.get("target", {}).get("language")
     evidence_names = {
@@ -8189,7 +11136,9 @@ def _validate_specialized_native_runtime_replay(
                     or certified_cases.is_symlink()
                     or certified_cases.read_bytes() != cases_bytes
                 ):
-                    raise ValueError("route corpus differs from byte-bound certified inputs")
+                    raise ValueError(
+                        "route corpus differs from byte-bound certified inputs"
+                    )
                 snapshot_parent = replay_root / corpus / "snapshot"
                 snapshot_parent.mkdir(mode=0o700, parents=True, exist_ok=False)
                 source_snapshot = _private_snapshot(
@@ -8205,26 +11154,62 @@ def _validate_specialized_native_runtime_replay(
                     content=cases_bytes,
                 )
                 cases = _load_json_array(cases_snapshot)
-                source_ir = analyze(
-                    source_snapshot, source_language, function_name
-                )
+                source_ir = analyze(source_snapshot, source_language, function_name)
                 if len(source_ir.functions) != 1:
-                    raise ValueError("source analysis must contain exactly one function")
+                    raise ValueError(
+                        "source analysis must contain exactly one function"
+                    )
                 source_function = source_ir.functions[0]
-                enforce_semantic_domain(
-                    source_ir, source_language, target_language
-                )
+                enforce_semantic_domain(source_ir, source_language, target_language)
                 enforce_case_domain(
                     source_function, cases, source_language, target_language
                 )
-                emitted = emit(source_ir, target_language)
-                target_artifact = (
-                    route
-                    / "certification"
-                    / "artifacts"
-                    / corpus
-                    / emitted.relative_path
+                artifact_root = route / "certification" / "artifacts" / corpus
+                identifier_hygiene = persisted.get("identifier_hygiene")
+                if (
+                    not isinstance(identifier_hygiene, dict)
+                    or identifier_hygiene.get("status") != "PASSED"
+                ):
+                    raise ValueError("persisted identifier hygiene is not passed")
+                identifier_plan_path = _resolve_below(
+                    artifact_root,
+                    identifier_hygiene.get("plan_path"),
+                    f"specialized {corpus} identifier plan",
+                    failures,
                 )
+                if identifier_plan_path is None:
+                    raise ValueError("persisted identifier plan path is invalid")
+                identifier_plan = IdentifierPlan.from_mapping(
+                    load(identifier_plan_path)
+                )
+                try:
+                    validate_identifier_plan(
+                        source_ir,
+                        identifier_plan,
+                        expected_unit_namespace=standalone_artifact_unit_namespace(
+                            source_path.name,
+                            source_digest,
+                        ),
+                    )
+                except Exception as exc:
+                    raise ValueError(
+                        "identifier plan is detached from fresh source analysis"
+                    ) from exc
+                if sha256_file(identifier_plan_path) != identifier_hygiene.get(
+                    "plan_sha256"
+                ):
+                    raise ValueError("persisted identifier plan digest is invalid")
+                target_view = target_ir_view(source_ir, identifier_plan)
+                if len(target_view.functions) != 1:
+                    raise ValueError(
+                        "identifier target view must contain exactly one function"
+                    )
+                emitted = emit(
+                    source_ir,
+                    target_language,
+                    identifier_plan=identifier_plan,
+                )
+                target_artifact = artifact_root / emitted.relative_path
                 if not target_artifact.is_file() or target_artifact.is_symlink():
                     raise ValueError("persisted target artifact is missing or unsafe")
                 target_bytes = target_artifact.read_bytes()
@@ -8233,7 +11218,9 @@ def _validate_specialized_native_runtime_replay(
                     persisted_target_artifact.get("path") != emitted.relative_path
                     or persisted_target_artifact.get("sha256") != target_digest
                 ):
-                    raise ValueError("persisted target runtime artifact binding is invalid")
+                    raise ValueError(
+                        "persisted target runtime artifact binding is invalid"
+                    )
                 target_snapshot = _private_snapshot(
                     snapshot_parent,
                     role="target",
@@ -8254,19 +11241,23 @@ def _validate_specialized_native_runtime_replay(
                 target_ir = analyze(
                     fresh_target_snapshot,
                     target_language,
-                    function_name,
+                    target_view.functions[0].name,
                     emitted_target=True,
                 )
                 if len(target_ir.functions) != 1:
                     raise ValueError("target re-lift must contain exactly one function")
-                enforce_semantic_domain(
-                    target_ir, source_language, target_language
+                target_ir = alpha_normalize_target(
+                    source_ir,
+                    target_ir,
+                    identifier_plan,
                 )
+                enforce_semantic_domain(target_ir, source_language, target_language)
 
-                artifact_root = route / "certification" / "artifacts" / corpus
                 semantic_report = persisted.get("semantic_equivalence")
                 if not isinstance(semantic_report, dict):
-                    raise ValueError("persisted semantic-equivalence binding is missing")
+                    raise ValueError(
+                        "persisted semantic-equivalence binding is missing"
+                    )
                 source_ir_record = _resolve_below(
                     artifact_root,
                     semantic_report.get("source_ir_path"),
@@ -8283,11 +11274,10 @@ def _validate_specialized_native_runtime_replay(
                     raise ValueError("persisted semantic IR path is invalid")
                 persisted_source_ir = load(source_ir_record)
                 persisted_target_ir = load(target_ir_record)
-                if (
-                    sha256_file(source_ir_record)
-                    != semantic_report.get("source_ir_sha256")
-                    or sha256_file(target_ir_record)
-                    != semantic_report.get("target_ir_sha256")
+                if sha256_file(source_ir_record) != semantic_report.get(
+                    "source_ir_sha256"
+                ) or sha256_file(target_ir_record) != semantic_report.get(
+                    "target_ir_sha256"
                 ):
                     raise ValueError("persisted semantic IR digest binding is invalid")
                 fresh_source_mapping = source_ir.to_mapping()
@@ -8339,7 +11329,7 @@ def _validate_specialized_native_runtime_replay(
                 fresh_target_validation = validate_target(
                     emitted,
                     target_language,
-                    source_function,
+                    target_view.functions[0],
                     cases,
                     replay_root / corpus / "target",
                 )
@@ -8422,16 +11412,10 @@ def specialized_negative_expected_reasons(
             {f"SPECIALIZED_STRING_SEMANTICS_UNSUPPORTED:{route_key}:same"}
         ),
         "specialized-number-arithmetic-unsupported": frozenset(
-            {
-                "SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:"
-                f"{route_key}:addNumber"
-            }
+            {f"SPECIALIZED_NUMBER_ARITHMETIC_UNSUPPORTED:{route_key}:addNumber"}
         ),
         "specialized-non-finite-case-unsupported": frozenset(
-            {
-                "SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:"
-                f"{route_key}:echoNumber:0"
-            }
+            {f"SPECIALIZED_CASE_NON_FINITE_NUMBER_UNSUPPORTED:{route_key}:echoNumber:0"}
         ),
         "specialized-overflow-outside-no-error-domain": frozenset(
             {
@@ -8440,11 +11424,7 @@ def specialized_negative_expected_reasons(
             }
         ),
         "missing-symbol-fails-closed": frozenset(
-            {
-                "NO_SUPPORTED_FUNCTIONS"
-                if source_language in {"java", "swift"}
-                else "FUNCTION_NOT_FOUND:__elmos_missing_function__"
-            }
+            {MISSING_SYMBOL_FAILURE}
         ),
     }
     return dynamic.get(
@@ -8649,7 +11629,10 @@ def validate_specialized_negative_evidence(
             expected_reasons = specialized_negative_expected_reasons(
                 route_key, source_language, case_id
             )
-            if not isinstance(observed_reason, str) or observed_reason not in expected_reasons:
+            if (
+                not isinstance(observed_reason, str)
+                or observed_reason not in expected_reasons
+            ):
                 failures.append(f"{item_label}.observed_reason is not exact")
 
             expected_roles = SPECIALIZED_NEGATIVE_INPUT_ROLES.get(case_id)
@@ -8662,7 +11645,9 @@ def validate_specialized_negative_evidence(
                     route, source_language, case_id
                 )
             except Exception as exc:
-                failures.append(f"{item_label}.input_refs paths cannot be derived: {exc}")
+                failures.append(
+                    f"{item_label}.input_refs paths cannot be derived: {exc}"
+                )
                 continue
             observed_roles = [
                 reference.get("role") if isinstance(reference, dict) else None
@@ -8759,9 +11744,7 @@ def validate_specialized_negative_evidence(
                     )
                     declared_function = development_manifest.get("function_name")
                     if not isinstance(declared_function, str) or not declared_function:
-                        raise ValueError(
-                            "development function_name is missing"
-                        )
+                        raise ValueError("development function_name is missing")
                     valid_source_ir = analyze(
                         snapshots["source"],
                         source_language,
@@ -8852,26 +11835,746 @@ def validate_specialized_negative_evidence(
                 )
                 try:
                     if origin.is_symlink() or not stat.S_ISREG(origin.lstat().st_mode):
-                        raise ValueError("origin is no longer a regular non-symlink file")
+                        raise ValueError(
+                            "origin is no longer a regular non-symlink file"
+                        )
                     if snapshot.is_symlink() or not stat.S_ISREG(
                         snapshot.lstat().st_mode
                     ):
-                        raise ValueError("snapshot is no longer a regular non-symlink file")
+                        raise ValueError(
+                            "snapshot is no longer a regular non-symlink file"
+                        )
                 except Exception as exc:
                     failures.append(f"{item_label}.{role} file identity drift: {exc}")
 
     try:
         if negative_path.read_bytes() != negative_bytes:
             failures.append("specialized negative evidence changed during replay")
-        if negative_path.is_symlink() or not stat.S_ISREG(negative_path.lstat().st_mode):
-            failures.append("specialized negative evidence file identity changed during replay")
+        if negative_path.is_symlink() or not stat.S_ISREG(
+            negative_path.lstat().st_mode
+        ):
+            failures.append(
+                "specialized negative evidence file identity changed during replay"
+            )
     except OSError as exc:
-        failures.append(f"specialized negative evidence final stability check failed: {exc}")
+        failures.append(
+            f"specialized negative evidence final stability check failed: {exc}"
+        )
     provenance_after = _runtime_provenance(
         failures, f"specialized negative replay {route_key} after execution"
     )
     if provenance_after is not None and provenance_after != provenance_before:
-        failures.append("specialized negative replay runtime provenance changed during execution")
+        failures.append(
+            "specialized negative replay runtime provenance changed during execution"
+        )
+
+
+def nodejs_negative_expected_reasons(
+    *,
+    route_key: str,
+    source_language: str,
+    case_id: str,
+    development_function: str,
+) -> frozenset[str]:
+    """Return every exact stable error string allowed for one Node negative."""
+
+    if case_id in NODEJS_NEGATIVE_ANALYZE_SOURCE_FILES:
+        return NODEJS_NEGATIVE_REASON_CODES[case_id]
+    if case_id == "nodejs-commonjs-unsupported":
+        return frozenset({"JAVASCRIPT_CJS_SOURCE_BLOCKED"})
+    if case_id in NODEJS_GENERATED_NEGATIVE_SPECS:
+        _, _, function_name, reason_code = NODEJS_GENERATED_NEGATIVE_SPECS[case_id]
+        if source_language == "python" and case_id in {
+            "nodejs-division-by-zero-unsupported",
+            "nodejs-modulo-by-zero-unsupported",
+        }:
+            return frozenset(
+                {
+                    {
+                        "nodejs-division-by-zero-unsupported": (
+                            "PYTHON_TRUE_DIVISION_ON_INTEGERS_OUTSIDE_CERTIFIED_SUBSET"
+                        ),
+                        "nodejs-modulo-by-zero-unsupported": (
+                            "PYTHON_FLOORED_MODULO_OUTSIDE_CERTIFIED_SUBSET"
+                        ),
+                    }[case_id]
+                }
+            )
+        if case_id in {
+            "nodejs-number-arithmetic-unsupported",
+            "nodejs-string-semantics-unsupported",
+        }:
+            return frozenset({f"{reason_code}:{route_key}:{function_name}"})
+        if case_id in {
+            "nodejs-unsafe-integer-intermediate-boolean-unsupported",
+            "nodejs-unsafe-integer-intermediate-integer-unsupported",
+            "nodejs-unsafe-integer-intermediate-number-unsupported",
+        }:
+            return frozenset({f"{reason_code}:{route_key}:{function_name}:0"})
+        canonical_error = {
+            "nodejs-division-by-zero-unsupported": "DivideByZero",
+            "nodejs-modulo-by-zero-unsupported": "DivideByZero",
+            "nodejs-integer-overflow-unsupported": "IntegerOverflow",
+        }[case_id]
+        return frozenset(
+            {f"{reason_code}:{route_key}:{function_name}:0:{canonical_error}"}
+        )
+    if case_id == "nodejs-non-finite-case-unsupported":
+        return frozenset(
+            {
+                "NODEJS_CASE_NON_FINITE_NUMBER_UNSUPPORTED:"
+                f"{route_key}:{development_function}:0"
+            }
+        )
+    if case_id == "nodejs-unsafe-integer-case-unsupported":
+        return frozenset(
+            {
+                "NODEJS_CASE_UNSAFE_INTEGER_UNSUPPORTED:"
+                f"{route_key}:{development_function}:0:subtotal"
+            }
+        )
+    if case_id == "nodejs-unsafe-integer-result-unsupported":
+        return frozenset(
+            {
+                "NODEJS_CASE_UNSAFE_INTEGER_RESULT_UNSUPPORTED:"
+                f"{route_key}:{development_function}:0"
+            }
+        )
+    if case_id == "nodejs-typescript-integer-contract-unsupported":
+        return frozenset(
+            {
+                (
+                    "NODEJS_TYPESCRIPT_INTEGER_EVIDENCE_UNAVAILABLE:"
+                    f"{route_key}:integerContract"
+                )
+                if source_language == "javascript"
+                else "PURE_MODULE_CASE_MANIFEST_SIGNATURE_MISMATCH:integerContract"
+            }
+        )
+    if case_id == "undeclared-directed-route-fails-closed":
+        return frozenset({"SOURCE_AND_TARGET_MUST_DIFFER"})
+    if case_id == "missing-symbol-fails-closed":
+        return frozenset({MISSING_SYMBOL_FAILURE})
+    return frozenset()
+
+
+def _nodejs_negative_expected_paths(
+    *,
+    source_language: str,
+    case_id: str,
+    development_source_path: str,
+    development_suffix: str,
+) -> tuple[str, ...]:
+    """Return the exact route-local inputs for one Node negative case."""
+
+    prefix = "corpus/negative/"
+    analyzer_filename = NODEJS_NEGATIVE_ANALYZE_SOURCE_FILES.get(case_id)
+    if analyzer_filename is not None:
+        return (prefix + analyzer_filename,)
+    if case_id == "nodejs-commonjs-unsupported":
+        return prefix + "commonjs_module.cjs", prefix + "commonjs_cases.json"
+    generated = NODEJS_GENERATED_NEGATIVE_SPECS.get(case_id)
+    if generated is not None:
+        stem, java_class, _, _ = generated
+        filename = (
+            f"{java_class}.java"
+            if source_language == "java"
+            else f"{stem}.{NODEJS_NEGATIVE_SOURCE_EXTENSIONS[source_language]}"
+        )
+        return prefix + filename, prefix + f"{stem}_cases.json"
+    if case_id in {
+        "nodejs-non-finite-case-unsupported",
+        "nodejs-unsafe-integer-case-unsupported",
+        "nodejs-unsafe-integer-result-unsupported",
+    }:
+        cases_filename = {
+            "nodejs-non-finite-case-unsupported": "non_finite_number_cases.json",
+            "nodejs-unsafe-integer-case-unsupported": "unsafe_integer_cases.json",
+            "nodejs-unsafe-integer-result-unsupported": (
+                "unsafe_integer_result_cases.json"
+            ),
+        }[case_id]
+        return development_source_path, prefix + cases_filename
+    if case_id == "nodejs-typescript-integer-contract-unsupported":
+        return (
+            prefix
+            + "typescript_integer_contract."
+            + ("mjs" if source_language == "javascript" else "ts"),
+            prefix + "typescript_integer_contract_cases.json",
+        )
+    if case_id == "undeclared-directed-route-fails-closed":
+        return (
+            prefix + "undeclared_java_to_java.java",
+            prefix + "undeclared_java_to_java_cases.json",
+        )
+    if case_id == "missing-symbol-fails-closed":
+        return (
+            prefix + "missing_symbol_source" + development_suffix,
+            prefix + "missing_symbol_cases.json",
+        )
+    raise ValueError(f"undeclared Node.js negative case: {case_id}")
+
+
+def _replay_nodejs_negative_cases(
+    *,
+    route: Path,
+    route_key: str,
+    source_language: str,
+    target_language: str,
+    expected_case_ids: tuple[str, ...],
+    cases: list[Any],
+    development_source_path: str,
+    development_suffix: str,
+    development_function: str,
+    failures: list[str],
+) -> None:
+    """Replay every Node negative from private byte-bound snapshots."""
+
+    api = _engine_negative_replay_api(failures, f"Node.js negative replay {route_key}")
+    if api is None:
+        return
+    migrate, migrate_module, analyze, RouteError = api
+    provenance_before = _runtime_provenance(
+        failures, f"Node.js negative replay {route_key} before execution"
+    )
+    if provenance_before is None:
+        return
+
+    with tempfile.TemporaryDirectory(
+        prefix=f"elmos-nodejs-negative-replay-{route_key}-"
+    ) as temporary:
+        replay_root = Path(temporary)
+        replay_root.chmod(0o700)
+        for index, item in enumerate(cases):
+            label = f"Node.js negative cases[{index}]"
+            if not isinstance(item, dict):
+                continue
+            case_id = item.get("case_id")
+            if not isinstance(case_id, str) or case_id not in expected_case_ids:
+                continue
+            expected_roles = NODEJS_NEGATIVE_INPUT_ROLES.get(case_id)
+            input_refs = item.get("input_refs")
+            if expected_roles is None or not isinstance(input_refs, list):
+                continue
+            try:
+                expected_paths = _nodejs_negative_expected_paths(
+                    source_language=source_language,
+                    case_id=case_id,
+                    development_source_path=development_source_path,
+                    development_suffix=development_suffix,
+                )
+            except ValueError:
+                continue
+            if len(input_refs) != len(expected_roles):
+                continue
+
+            case_root = replay_root / f"{index:03d}-{case_id}"
+            case_root.mkdir(mode=0o700)
+            snapshots: dict[str, Path] = {}
+            bound_inputs: list[tuple[str, Path, Path, bytes, str]] = []
+            inputs_valid = True
+            for input_index, (role, expected_path, reference) in enumerate(
+                zip(expected_roles, expected_paths, input_refs, strict=True)
+            ):
+                input_label = f"{label}.input_refs[{input_index}]"
+                if not isinstance(reference, dict) or set(reference) != {
+                    "role",
+                    "path",
+                    "sha256",
+                    "bytes",
+                }:
+                    inputs_valid = False
+                    continue
+                if (
+                    reference.get("role") != role
+                    or reference.get("path") != expected_path
+                ):
+                    inputs_valid = False
+                    continue
+                origin = _resolve_below(
+                    route,
+                    expected_path,
+                    f"{input_label}.path",
+                    failures,
+                )
+                if origin is None:
+                    inputs_valid = False
+                    continue
+                try:
+                    origin_stat = origin.lstat()
+                    if origin.is_symlink() or not stat.S_ISREG(origin_stat.st_mode):
+                        raise ValueError("not a regular non-symlink file")
+                    content = origin.read_bytes()
+                except (OSError, ValueError) as exc:
+                    failures.append(f"{input_label} cannot be snapshotted: {exc}")
+                    inputs_valid = False
+                    continue
+                digest = sha256_bytes(content)
+                byte_count = reference.get("bytes")
+                if (
+                    reference.get("sha256") != digest
+                    or not isinstance(byte_count, int)
+                    or isinstance(byte_count, bool)
+                    or byte_count != len(content)
+                    or not content
+                ):
+                    inputs_valid = False
+                    continue
+                snapshot = _private_snapshot(
+                    case_root,
+                    role=role,
+                    logical_name=origin.name,
+                    content=content,
+                )
+                snapshots[role] = snapshot
+                bound_inputs.append((role, origin, snapshot, content, digest))
+            if not inputs_valid or set(snapshots) != set(expected_roles):
+                continue
+
+            output = case_root / "engine-output-must-not-exist"
+            fresh_reason: str | None = None
+            try:
+                if case_id in NODEJS_NEGATIVE_ANALYZE_FUNCTIONS:
+                    analyze(
+                        snapshots["source"],
+                        "javascript",
+                        NODEJS_NEGATIVE_ANALYZE_FUNCTIONS[case_id],
+                    )
+                elif case_id == "nodejs-commonjs-unsupported":
+                    counterpart = (
+                        target_language
+                        if source_language == "javascript"
+                        else source_language
+                    )
+                    migrate(
+                        snapshots["source"],
+                        "javascript",
+                        counterpart,
+                        "commonJsValue",
+                        snapshots["cases"],
+                        output,
+                    )
+                elif case_id in NODEJS_GENERATED_NEGATIVE_SPECS:
+                    migrate(
+                        snapshots["source"],
+                        source_language,
+                        target_language,
+                        NODEJS_GENERATED_NEGATIVE_SPECS[case_id][2],
+                        snapshots["cases"],
+                        output,
+                    )
+                elif case_id in {
+                    "nodejs-non-finite-case-unsupported",
+                    "nodejs-unsafe-integer-case-unsupported",
+                    "nodejs-unsafe-integer-result-unsupported",
+                }:
+                    migrate(
+                        snapshots["source"],
+                        source_language,
+                        target_language,
+                        development_function,
+                        snapshots["cases"],
+                        output,
+                    )
+                elif case_id == "nodejs-typescript-integer-contract-unsupported":
+                    migrate_module(
+                        snapshots["source-module"],
+                        source_language,
+                        target_language,
+                        snapshots["case-manifest"],
+                        output,
+                    )
+                elif case_id == "undeclared-directed-route-fails-closed":
+                    migrate_module(
+                        snapshots["source-module"],
+                        "java",
+                        "java",
+                        snapshots["case-manifest"],
+                        output,
+                    )
+                elif case_id == "missing-symbol-fails-closed":
+                    migrate(
+                        snapshots["source"],
+                        source_language,
+                        target_language,
+                        "__elmos_missing_function__",
+                        snapshots["cases"],
+                        output,
+                    )
+                else:
+                    failures.append(f"{label} has no replay implementation")
+                    continue
+            except Exception as exc:
+                if type(exc) is not RouteError:
+                    failures.append(
+                        f"{label} raised unexpected exception type "
+                        f"{type(exc).__module__}.{type(exc).__qualname__}: {exc}"
+                    )
+                else:
+                    fresh_reason = _nodejs_stable_route_error(str(exc))
+            else:
+                failures.append(f"{label} unexpectedly passed fresh replay")
+            if output.exists():
+                failures.append(f"{label} created an output/artifact directory")
+
+            expected_reasons = nodejs_negative_expected_reasons(
+                route_key=route_key,
+                source_language=source_language,
+                case_id=case_id,
+                development_function=development_function,
+            )
+            if fresh_reason is not None:
+                if fresh_reason not in expected_reasons:
+                    failures.append(
+                        f"{label} fresh RouteError reason is not exact: {fresh_reason}"
+                    )
+                if fresh_reason != item.get("observed_reason"):
+                    failures.append(
+                        f"{label} observed_reason differs from fresh replay: "
+                        f"{item.get('observed_reason')!r} != {fresh_reason!r}"
+                    )
+            for role, origin, snapshot, content, digest in bound_inputs:
+                _validate_snapshot_stability(
+                    label=f"{label}.{role}",
+                    origin=origin,
+                    snapshot=snapshot,
+                    expected_bytes=content,
+                    expected_digest=digest,
+                    failures=failures,
+                )
+
+    provenance_after = _runtime_provenance(
+        failures, f"Node.js negative replay {route_key} after execution"
+    )
+    if provenance_after is not None and provenance_after != provenance_before:
+        failures.append(
+            "Node.js negative replay runtime provenance changed during execution"
+        )
+
+
+def validate_nodejs_negative_evidence(
+    route: Path,
+    manifest: dict[str, Any],
+    evidence: dict[str, Any],
+    failures: list[str],
+) -> None:
+    """Validate the exact, byte-bound Node.js negative corpus."""
+
+    from route_sets import nodejs_negative_case_ids
+
+    route_key = manifest.get("route_key")
+    source_language = manifest.get("source", {}).get("language")
+    target_language = manifest.get("target", {}).get("language")
+    if not all(
+        isinstance(value, str) and value
+        for value in (route_key, source_language, target_language)
+    ):
+        failures.append("Node.js negative route identity is invalid")
+        return
+    try:
+        expected_case_ids = nodejs_negative_case_ids(
+            source_language,
+            target_language,
+        )
+    except ValueError as exc:
+        failures.append(str(exc))
+        return
+    references = evidence.get("negative_runs")
+    if references != ["certification/local-negative-evidence.json"]:
+        failures.append("Node.js negative evidence reference is not exact")
+        return
+    negative_path = route / "certification" / "local-negative-evidence.json"
+    try:
+        result = load(negative_path)
+    except Exception as exc:
+        failures.append(f"Node.js negative evidence is unreadable: {exc}")
+        return
+    if set(result) != {
+        "schema_version",
+        "route",
+        "status",
+        "expected_result",
+        "test_integrity",
+        "cases",
+        "independent_verifier",
+        "external_certification",
+    }:
+        failures.append("Node.js negative evidence top-level keys are not exact")
+    if (
+        result.get("schema_version") != 1
+        or result.get("route") != route_key
+        or result.get("status") != "PASSED"
+        or result.get("expected_result") != "BLOCKED"
+        or result.get("test_integrity") != "PRESERVED"
+        or result.get("independent_verifier") != "NOT_RUN"
+        or result.get("external_certification") != "NOT_RUN"
+    ):
+        failures.append("Node.js negative evidence boundary is invalid")
+
+    manifest_path = route / "corpus" / "negative" / "manifest.json"
+    try:
+        negative_manifest = load(manifest_path)
+    except Exception as exc:
+        failures.append(f"Node.js negative manifest is unreadable: {exc}")
+        negative_manifest = {}
+    if negative_manifest != {
+        "schema_version": 1,
+        "route_key": route_key,
+        "case_ids": list(expected_case_ids),
+        "independent": True,
+        "rule_authoring_input": False,
+        "expected_result": "BLOCKED",
+    }:
+        failures.append("Node.js negative manifest contract is invalid")
+
+    cases = result.get("cases")
+    if not isinstance(cases, list):
+        failures.append("Node.js negative cases are missing")
+        return
+    observed_case_ids = [
+        item.get("case_id") if isinstance(item, dict) else None for item in cases
+    ]
+    if observed_case_ids != list(expected_case_ids):
+        failures.append("Node.js negative case order/set is not exact")
+    if len(observed_case_ids) != len(set(observed_case_ids)):
+        failures.append("Node.js negative case IDs are duplicated")
+
+    try:
+        development_manifest = load(route / "corpus" / "development" / "manifest.json")
+    except Exception as exc:
+        failures.append(f"Node.js development manifest is unreadable: {exc}")
+        development_manifest = {}
+    development_source = development_manifest.get("source_file")
+    development_source_path = (
+        f"corpus/development/{development_source}"
+        if isinstance(development_source, str) and development_source
+        else ""
+    )
+    development_suffix = (
+        Path(development_source).suffix
+        if isinstance(development_source, str) and development_source
+        else ""
+    )
+    development_function = development_manifest.get("function_name")
+    if not isinstance(development_function, str) or not development_function:
+        failures.append("Node.js development function identity is invalid")
+        development_function = ""
+
+    for index, item in enumerate(cases):
+        label = f"Node.js negative cases[{index}]"
+        if not isinstance(item, dict):
+            failures.append(f"{label} must be an object")
+            continue
+        if set(item) != {
+            "case_id",
+            "status",
+            "expected_result",
+            "observed_reason",
+            "input_refs",
+            "native_analysis",
+            "target_execution",
+        }:
+            failures.append(f"{label} keys are not exact")
+        case_id = item.get("case_id")
+        if not isinstance(case_id, str) or case_id not in expected_case_ids:
+            failures.append(f"{label}.case_id is not declared for this route")
+            continue
+        if (
+            item.get("status") != "PASSED"
+            or item.get("expected_result") != "BLOCKED"
+            or item.get("native_analysis") != "EXECUTED"
+            or item.get("target_execution") != "NOT_REACHED_BY_DESIGN"
+        ):
+            failures.append(f"{label} did not preserve fail-closed status")
+        reason = item.get("observed_reason")
+        expected_reasons = nodejs_negative_expected_reasons(
+            route_key=route_key,
+            source_language=source_language,
+            case_id=case_id,
+            development_function=development_function,
+        )
+        if not isinstance(reason, str) or reason not in expected_reasons:
+            failures.append(f"{label}.observed_reason is not exact")
+
+        roles = NODEJS_NEGATIVE_INPUT_ROLES.get(case_id)
+        if roles is None:
+            failures.append(f"{label}.input_refs roles are undeclared")
+            continue
+        try:
+            expected_paths = _nodejs_negative_expected_paths(
+                source_language=source_language,
+                case_id=case_id,
+                development_source_path=development_source_path,
+                development_suffix=development_suffix,
+            )
+        except ValueError as exc:
+            failures.append(f"{label}.input_refs paths cannot be derived: {exc}")
+            continue
+        input_refs = item.get("input_refs")
+        if not isinstance(input_refs, list) or len(input_refs) != len(roles):
+            failures.append(f"{label}.input_refs count is invalid")
+            continue
+        for ref_index, (role, expected_path, reference) in enumerate(
+            zip(roles, expected_paths, input_refs, strict=True)
+        ):
+            ref_label = f"{label}.input_refs[{ref_index}]"
+            if not isinstance(reference, dict) or set(reference) != {
+                "role",
+                "path",
+                "sha256",
+                "bytes",
+            }:
+                failures.append(f"{ref_label} keys are not exact")
+                continue
+            if reference.get("role") != role or reference.get("path") != expected_path:
+                failures.append(f"{ref_label} role/path binding drift")
+                continue
+            path = _resolve_below(route, expected_path, f"{ref_label}.path", failures)
+            if path is None or not path.is_file() or path.is_symlink():
+                failures.append(f"{ref_label} bound input is missing or unsafe")
+                continue
+            payload = path.read_bytes()
+            if (
+                reference.get("sha256") != sha256_bytes(payload)
+                or type(reference.get("bytes")) is not int
+                or reference.get("bytes") != len(payload)
+                or not payload
+            ):
+                failures.append(f"{ref_label} byte binding drift")
+
+    _replay_nodejs_negative_cases(
+        route=route,
+        route_key=route_key,
+        source_language=source_language,
+        target_language=target_language,
+        expected_case_ids=expected_case_ids,
+        cases=cases,
+        development_source_path=development_source_path,
+        development_suffix=development_suffix,
+        development_function=development_function,
+        failures=failures,
+    )
+
+
+def v3_research_route_manifest_document(route_key: str) -> dict[str, Any]:
+    """Return the exact analyzer-bound, unexecuted V3 route manifest.
+
+    The analyzer and emitter paths describe components that are locally
+    available.  Empty route profiles are intentional: those component bindings
+    do not constitute evidence that this directed route has been executed.
+    """
+
+    from route_runtime_metadata import (  # local import keeps packed legacy replay portable
+        ENGINE_PATHS,
+        V3_RESEARCH_ROUTE_VERSION,
+        VERSIONS,
+    )
+    from route_sets import V3_EXACT_ROUTE_KEYS, split_route_key
+
+    if route_key not in V3_EXACT_ROUTE_KEYS:
+        raise ValueError(f"V3_ROUTE_KEY_REQUIRED:{route_key}")
+    source, target = split_route_key(route_key)
+    return {
+        "schema_version": 1,
+        "route_key": route_key,
+        "version": V3_RESEARCH_ROUTE_VERSION,
+        "status": "research",
+        "owner": "ELMOS Migration Platform",
+        "maintenance_owner": "ELMOS Polyglot Route Maintainers",
+        "review_date": "2026-11-24",
+        "source": {
+            "language": source,
+            "versions": list(VERSIONS[source]),
+            "engine_path": ENGINE_PATHS[source],
+        },
+        "target": {
+            "language": target,
+            "versions": list(VERSIONS[target]),
+            "engine_path": V3_TARGET_EMITTER_RELATIVE_PATH,
+        },
+        "profiles": {"semantic_profile": "", "target_profile": ""},
+        "framework_profiles": [],
+        "paths": {
+            "support_matrix": "support-matrix.json",
+            "corpus": "corpus",
+            "certification": "certification",
+        },
+        "gates": {
+            "real_target_compiler": True,
+            "source_map_required": True,
+            "holdout_required": True,
+            "representative_repository_required": True,
+            "critical_unknowns_allowed": 0,
+            "critical_behavior_regressions_allowed": 0,
+        },
+    }
+
+
+def validate_v3_research_route_contract(
+    manifest: dict[str, Any],
+    support: dict[str, Any],
+    evidence: dict[str, Any],
+    certification: dict[str, Any],
+    failures: list[str],
+) -> None:
+    """Enforce the same fail-closed V3 contract as the full matrix validator."""
+
+    from route_runtime_metadata import (
+        v3_research_certification_document,
+        v3_research_evidence_document,
+    )
+    from route_sets import V3_EXACT_ROUTE_KEYS
+
+    route_key = manifest.get("route_key")
+    if not isinstance(route_key, str) or route_key not in V3_EXACT_ROUTE_KEYS:
+        failures.append("V3 route key is outside the exact research partition")
+        return
+
+    if manifest != v3_research_route_manifest_document(route_key):
+        failures.append("V3 route manifest is not the exact research contract")
+    if evidence != v3_research_evidence_document(route_key):
+        failures.append("V3 route raw evidence overclaims or drifts from NOT_RUN")
+    if certification != v3_research_certification_document(route_key):
+        failures.append("V3 route certification overclaims or drifts from NOT_CERTIFIED")
+
+    if set(support) != {"schema_version", "route_key", "capabilities"}:
+        failures.append("V3 support matrix top-level keys are not exact")
+    if support.get("schema_version") != 1 or support.get("route_key") != route_key:
+        failures.append("V3 support matrix identity is invalid")
+    capabilities = support.get("capabilities")
+    if not isinstance(capabilities, list) or not capabilities:
+        failures.append("V3 support matrix capabilities are empty")
+        return
+
+    capability_ids: list[str] = []
+    for index, capability in enumerate(capabilities):
+        label = f"V3 support capability[{index}]"
+        if not isinstance(capability, dict) or set(capability) != {
+            "id",
+            "status",
+            "strategy",
+            "reason",
+            "evidence_refs",
+        }:
+            failures.append(f"{label} keys are not exact")
+            continue
+        capability_id = capability.get("id")
+        if not isinstance(capability_id, str) or not capability_id.strip():
+            failures.append(f"{label} id is empty")
+        else:
+            capability_ids.append(capability_id)
+            if capability_id == "typed-pure-function-v1":
+                failures.append("V3 support matrix admits an unexecuted route profile")
+        if capability.get("status") not in V3_RESEARCH_CAPABILITY_STATUS:
+            failures.append(f"{label} overclaims research capability support")
+        for field in ("strategy", "reason"):
+            value = capability.get(field)
+            if not isinstance(value, str) or not value.strip():
+                failures.append(f"{label} {field} is empty")
+        if capability.get("evidence_refs") != []:
+            failures.append(f"{label} binds evidence while route execution is NOT_RUN")
+    if len(capability_ids) != len(set(capability_ids)):
+        failures.append("V3 support matrix capability ids are duplicated")
 
 
 def main() -> int:
@@ -8899,7 +12602,11 @@ def main() -> int:
     errors: list[str] = []
     manifest: dict[str, Any] = {}
     certification: dict[str, Any] = {}
+    support: dict[str, Any] = {}
     specialized = False
+    nodejs = False
+    v3 = False
+    module_required = False
     if not route.is_dir():
         errors.append(f"missing route dir: {route}")
     for directory in REQUIRED_DIRS:
@@ -8908,8 +12615,12 @@ def main() -> int:
     try:
         manifest = load(route / "route.json")
         from route_sets import (  # imported only at the CLI boundary for packed replay
+            CORE_ROUTE_KEYS,
             EVIDENCED_ROUTE_KEYS,
+            MODULE_EQUIVALENCE_ROUTE_KEYS,
+            NODEJS_EXACT_ROUTE_KEYS,
             SPECIALIZED_ROUTE_KEYS,
+            V3_EXACT_ROUTE_KEYS,
             split_route_key,
         )
 
@@ -8926,6 +12637,9 @@ def main() -> int:
             ):
                 errors.append("route source/target tuple does not match route_key")
             specialized = route_key in SPECIALIZED_ROUTE_KEYS
+            nodejs = route_key in NODEJS_EXACT_ROUTE_KEYS
+            v3 = route_key in V3_EXACT_ROUTE_KEYS
+            module_required = route_key in MODULE_EQUIVALENCE_ROUTE_KEYS
         for key in REQUIRED_ROUTE:
             if key not in manifest:
                 errors.append(f"route.json missing key: {key}")
@@ -8966,14 +12680,47 @@ def main() -> int:
             ]
             for side in ("source", "target"):
                 side_value = manifest.get(side, {})
-                if side_value.get("language") == "cpp" and side_value.get(
-                    "versions"
-                ) != cpp_versions:
+                if (
+                    side_value.get("language") == "cpp"
+                    and side_value.get("versions") != cpp_versions
+                ):
                     errors.append(f"specialized {side} C++20/Apple clang tuple drift")
+        if nodejs:
+            profiles = manifest.get("profiles", {})
+            gates = manifest.get("gates", {})
+            nodejs_typescript = {
+                manifest.get("source", {}).get("language"),
+                manifest.get("target", {}).get("language"),
+            } == {"javascript", "typescript"}
+            if manifest.get("status") != "limited":
+                errors.append("Node.js exact route status must remain limited")
+            if profiles.get("module_profile") != "typed-pure-module-v1":
+                errors.append("Node.js module profile drift")
+            if profiles.get("input_domain") != NODEJS_INPUT_DOMAIN:
+                errors.append("Node.js input domain drift")
+            for field in (
+                "module_equivalence_required",
+                "concrete_spans_required",
+                "nodejs_safe_integer_finite_domain_required",
+            ):
+                if gates.get(field) is not True:
+                    errors.append(f"Node.js gate {field} must be true")
+            if gates.get("nodejs_effects_async_io_allowed") is not False:
+                errors.append("Node.js async/I/O effects must remain blocked")
+            if gates.get("nodejs_typescript_integer_semantics_allowed") is not (
+                not nodejs_typescript
+            ):
+                errors.append("Node.js/TypeScript integer gate drift")
     except Exception as exc:
         errors.append(str(exc))
     try:
         support = load(route / "support-matrix.json")
+        _validate_optional_json_schema(
+            support,
+            "support-matrix.schema.json",
+            errors,
+            "support matrix",
+        )
         if support.get("route_key") != manifest.get("route_key"):
             errors.append("support matrix route_key mismatch")
         for capability in support.get("capabilities", []):
@@ -9022,13 +12769,18 @@ def main() -> int:
                 "number-arithmetic": "blocked",
             }
             for capability_id, expected_status in expected_statuses.items():
-                if capability_by_id.get(capability_id, {}).get("status") != expected_status:
+                if (
+                    capability_by_id.get(capability_id, {}).get("status")
+                    != expected_status
+                ):
                     errors.append(
                         f"specialized capability {capability_id} status drift"
                     )
             mappings = load(route / "mappings" / "types.json")
             if mappings.get("types") != ["integer", "number", "boolean"]:
-                errors.append("specialized type mapping is not exact integer/number/boolean")
+                errors.append(
+                    "specialized type mapping is not exact integer/number/boolean"
+                )
             if mappings.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
                 errors.append("specialized type mapping input domain drift")
             if mappings.get("string_semantics") != "BLOCK":
@@ -9052,6 +12804,67 @@ def main() -> int:
                 "status": "BLOCKED",
             }:
                 errors.append("specialized number arithmetic lowering policy drift")
+        if nodejs:
+            capability_by_id = {
+                item.get("id"): item
+                for item in support.get("capabilities", [])
+                if isinstance(item, dict)
+            }
+            mappings = load(route / "mappings" / "types.json")
+            nodejs_typescript = {
+                manifest.get("source", {}).get("language"),
+                manifest.get("target", {}).get("language"),
+            } == {"javascript", "typescript"}
+            expected_types = (
+                ["number", "boolean", "string"]
+                if nodejs_typescript
+                else ["integer", "number", "boolean"]
+            )
+            expected_capability_statuses = {
+                "typed-pure-function-v1": "conditional",
+                "primitive-types": "conditional",
+                "nodejs-es2022-esm-safe-integer-finite-v1": "conditional",
+                "string-semantics": "conditional" if nodejs_typescript else "blocked",
+                "number-arithmetic": "blocked",
+                "if-return-control-flow": "conditional",
+                "framework-database-async-concurrency": "blocked",
+                "typed-pure-module-v1": "conditional",
+            }
+            for capability_id, expected_status in expected_capability_statuses.items():
+                if (
+                    capability_by_id.get(capability_id, {}).get("status")
+                    != expected_status
+                ):
+                    errors.append(f"Node.js capability {capability_id} status drift")
+            if mappings.get("types") != expected_types:
+                errors.append(
+                    "Node.js type mapping does not match its exact source profile"
+                )
+            if mappings.get("input_domain") != NODEJS_INPUT_DOMAIN:
+                errors.append("Node.js type mapping input domain drift")
+            expected_string = (
+                "STRICT_ECMASCRIPT_VALUE_EQUALITY_CONCAT"
+                if nodejs_typescript
+                else "BLOCK"
+            )
+            if mappings.get("string_semantics") != expected_string:
+                errors.append("Node.js route string mapping boundary drift")
+            expected_integer = (
+                "BLOCK_NO_EXPLICIT_INTEGER_TYPE"
+                if nodejs_typescript
+                else "SAFE_INTEGER_CONDITIONAL"
+            )
+            if mappings.get("integer_semantics") != expected_integer:
+                errors.append("Node.js route integer mapping boundary drift")
+            lowering = load(route / "lowering" / "profile.json")
+            if lowering.get("input_domain") != NODEJS_INPUT_DOMAIN:
+                errors.append("Node.js lowering input domain drift")
+            if lowering.get("concrete_spans_required") is not True:
+                errors.append("Node.js lowering must require concrete spans")
+            if lowering.get("effect_semantics") != "BLOCKED_ASYNC_IO_IMPORT_EVAL":
+                errors.append("Node.js lowering effect boundary drift")
+            if lowering.get("integer_semantics") != expected_integer:
+                errors.append("Node.js lowering integer boundary drift")
     except Exception as exc:
         errors.append(str(exc))
     for file_path in [
@@ -9071,11 +12884,22 @@ def main() -> int:
             != str(manifest.get("status", "")).lower()
         ):
             errors.append("route and certification statuses must match")
-        _, strict_errors = validate_formal_equivalence(route, manifest, certification)
-        errors.extend(strict_errors)
-        _, module_errors = validate_module_equivalence(
-            route, manifest, certification
+        if v3:
+            validate_v3_research_route_contract(
+                manifest,
+                support,
+                route_evidence,
+                certification,
+                errors,
+            )
+        _, strict_errors = validate_formal_equivalence(
+            route,
+            manifest,
+            certification,
+            validate_live_engine_sources=route_key not in CORE_ROUTE_KEYS,
         )
+        errors.extend(strict_errors)
+        _, module_errors = validate_module_equivalence(route, manifest, certification)
         errors.extend(module_errors)
         if specialized:
             if certification.get("certification_decision") != "NOT_CERTIFIED":
@@ -9086,9 +12910,7 @@ def main() -> int:
                 "real-repository": ["boolean"],
             }
             for corpus, coverage in expected_type_coverage.items():
-                corpus_manifest = load(
-                    route / "corpus" / corpus / "manifest.json"
-                )
+                corpus_manifest = load(route / "corpus" / corpus / "manifest.json")
                 if corpus_manifest.get("type_coverage") != coverage:
                     errors.append(f"specialized {corpus} type coverage drift")
                 if corpus_manifest.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
@@ -9115,10 +12937,36 @@ def main() -> int:
                     route_evidence,
                     errors,
                 )
-                _validate_specialized_native_runtime_replay(
-                    route, manifest, errors
+                _validate_specialized_native_runtime_replay(route, manifest, errors)
+        if nodejs:
+            if certification.get("certification_decision") != "NOT_CERTIFIED":
+                errors.append("Node.js route must remain NOT_CERTIFIED")
+            if route_evidence.get("execution_status") == "PASSED_LOCAL":
+                nodejs_typescript = {
+                    manifest.get("source", {}).get("language"),
+                    manifest.get("target", {}).get("language"),
+                } == {"javascript", "typescript"}
+                expected_types = (
+                    ["number", "boolean", "string"]
+                    if nodejs_typescript
+                    else ["integer", "number", "boolean"]
                 )
-        if manifest.get("gates", {}).get("module_equivalence_required") is True:
+                if route_evidence.get("evidenced_type_coverage") != expected_types:
+                    errors.append("Node.js evidence type coverage drift")
+                if route_evidence.get("input_domain") != NODEJS_INPUT_DOMAIN:
+                    errors.append("Node.js evidence input domain drift")
+                if (
+                    route_evidence.get("out_of_domain_arithmetic_behavior")
+                    != NODEJS_OUT_OF_DOMAIN_BEHAVIOR
+                ):
+                    errors.append("Node.js evidence out-of-domain boundary drift")
+                validate_nodejs_negative_evidence(
+                    route,
+                    manifest,
+                    route_evidence,
+                    errors,
+                )
+        if module_required:
             module_root = route / "corpus" / "module"
             module_manifest_path = module_root / "manifest.json"
             if not module_manifest_path.is_file():
@@ -9129,20 +12977,33 @@ def main() -> int:
                     errors.append("module corpus identity is invalid")
                 if module_manifest.get("profile") != "typed-pure-module-v1":
                     errors.append("module corpus profile is invalid")
-                if module_manifest.get("input_domain") != SPECIALIZED_INPUT_DOMAIN:
+                expected_module_domain = (
+                    NODEJS_INPUT_DOMAIN if nodejs else SPECIALIZED_INPUT_DOMAIN
+                )
+                if module_manifest.get("input_domain") != expected_module_domain:
                     errors.append("module corpus input domain is invalid")
-                if module_manifest.get("type_coverage_required") != [
-                    "integer",
-                    "number",
-                    "boolean",
-                ]:
-                    errors.append("module corpus type coverage requirement drift")
-                if module_manifest.get("source_language") != manifest.get("source", {}).get(
-                    "language"
+                nodejs_typescript = nodejs and {
+                    manifest.get("source", {}).get("language"),
+                    manifest.get("target", {}).get("language"),
+                } == {"javascript", "typescript"}
+                expected_module_types = (
+                    ["number", "boolean", "string"]
+                    if nodejs_typescript
+                    else ["integer", "number", "boolean"]
+                )
+                if (
+                    module_manifest.get("type_coverage_required")
+                    != expected_module_types
                 ):
+                    errors.append("module corpus type coverage requirement drift")
+                if module_manifest.get("source_language") != manifest.get(
+                    "source", {}
+                ).get("language"):
                     errors.append("module corpus source language mismatch")
                 if module_manifest.get("minimum_function_count") != 3:
-                    errors.append("module corpus minimum function count must be exactly 3")
+                    errors.append(
+                        "module corpus minimum function count must be exactly 3"
+                    )
                 if (
                     module_manifest.get("independent") is not True
                     or module_manifest.get("independent_functions") is not True
@@ -9161,7 +13022,10 @@ def main() -> int:
                     ):
                         errors.append(f"module corpus {field} is missing or unsafe")
                 cases_value = module_manifest.get("cases_file")
-                if isinstance(cases_value, str) and (module_root / cases_value).is_file():
+                if (
+                    isinstance(cases_value, str)
+                    and (module_root / cases_value).is_file()
+                ):
                     module_cases = load(module_root / cases_value)
                     _validate_optional_json_schema(
                         module_cases,
@@ -9176,7 +13040,9 @@ def main() -> int:
             ):
                 path = route / "certification" / name
                 if not path.is_file() or path.stat().st_size == 0:
-                    errors.append(f"specialized route certification file is missing: {name}")
+                    errors.append(
+                        f"specialized route certification file is missing: {name}"
+                    )
             economics_path = route / "certification" / "economics.json"
             if economics_path.is_file():
                 economics = load(economics_path)
@@ -9196,9 +13062,7 @@ def main() -> int:
 if __name__ == "__main__":
     from fresh_route_runtime import run_in_fresh_locked_runtime
 
-    fresh_runtime_exit = run_in_fresh_locked_runtime(
-        Path(__file__), sys.argv[1:]
-    )
+    fresh_runtime_exit = run_in_fresh_locked_runtime(Path(__file__), sys.argv[1:])
     if fresh_runtime_exit is not None:
         raise SystemExit(fresh_runtime_exit)
     raise SystemExit(main())

@@ -39,15 +39,15 @@
 }
 
 int main() {
-    const auto actual_0 = calculate(100, 20);
+    const auto actual_0 = elmos_fn_59a8dd52c6a88ee6(100, 20);
     const auto expected_0 = 120;
     if (actual_0 != expected_0) return 1;
     std::cout << "ELMOS_OBSERVATION\t0\ti64-dec\t" << std::to_string(actual_0) << "\n";
-    const auto actual_1 = calculate(-1, 5);
+    const auto actual_1 = elmos_fn_59a8dd52c6a88ee6(-1, 5);
     const auto expected_1 = 0;
     if (actual_1 != expected_1) return 2;
     std::cout << "ELMOS_OBSERVATION\t1\ti64-dec\t" << std::to_string(actual_1) << "\n";
-    const auto actual_2 = calculate(7, -2);
+    const auto actual_2 = elmos_fn_59a8dd52c6a88ee6(7, -2);
     const auto expected_2 = 5;
     if (actual_2 != expected_2) return 3;
     std::cout << "ELMOS_OBSERVATION\t2\ti64-dec\t" << std::to_string(actual_2) << "\n";

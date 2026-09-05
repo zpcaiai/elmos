@@ -946,6 +946,42 @@ class ToolkitTests(unittest.TestCase):
             self.assertIsNone(validator._selected_swift_host_profile())
             selector.assert_not_called()
 
+    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+        validator = load_route_validator()
+        receipt = portable_swift_analyzer_receipt(validator)
+        bind_swift_receipt_to_selected_host_profile(validator, receipt)
+        profile = validator._selected_swift_host_profile()
+        self.assertIsNotNone(profile)
+        self.assertEqual(
+            receipt["toolchain"]["profile"][1],
+            f"apple-host-profile={profile.profile_id}",
+        )
+        canonical = validator._rebuild_portable_swift_receipt_identity(receipt)
+        receipt["canonical_identity"] = {
+            "sha256": validator._receipt_payload_sha256(canonical),
+            "receipt": canonical,
+        }
+        failures: list[str] = []
+        validator._validate_swift_analyzer_receipt_document(
+            receipt,
+            label="host-bound Swift analyzer receipt",
+            failures=failures,
+        )
+        self.assertEqual(failures, [])
+
+        forged = copy.deepcopy(receipt)
+        forged["toolchain"]["profile"][1] = "apple-host-profile=forged"
+        failures = []
+        validator._validate_swift_analyzer_receipt_document(
+            forged,
+            label="forged Swift analyzer receipt",
+            failures=failures,
+        )
+        self.assertTrue(
+            any("toolchain exact identity is invalid" in failure for failure in failures),
+            failures,
+        )
+
     def test_partial_apple_sealing_claim_still_reaches_strict_selector(self) -> None:
         validator = load_route_validator()
         with (
@@ -4768,6 +4804,21 @@ print('\\n'.join(failures))
             self.assertIn(
                 "NOT_RUN", (route / "certification" / "gate-report.md").read_text()
             )
+
+    def test_specialized_missing_symbol_oracle_tracks_native_analyzer_contract(self):
+        validator = load_route_validator()
+        self.assertEqual(
+            validator.specialized_negative_expected_reasons(
+                "java-to-cpp", "java", "missing-symbol-fails-closed"
+            ),
+            frozenset({"FUNCTION_NOT_FOUND:__elmos_missing_function__"}),
+        )
+        self.assertEqual(
+            validator.specialized_negative_expected_reasons(
+                "swift-to-cpp", "swift", "missing-symbol-fails-closed"
+            ),
+            frozenset({"FUNCTION_NOT_FOUND:__elmos_missing_function__"}),
+        )
 
 
 if __name__ == "__main__":
