@@ -507,8 +507,13 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
 
     assert local.profile_id == "local-macos26-20260904"
-    assert legacy_hosted.dotnet_muxer_sha256 == local.dotnet_muxer_sha256
-    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert legacy_hosted.dotnet_muxer_sha256 == (
+        "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
+    )
+    assert legacy_hosted.php_tree_sha256 == (
+        "ae1a5140590af62c81a45a7117c5cd42125e79b16c0b0d45e740c50e928702d1"
+    )
+    assert legacy_hosted.php_tree_bytes == 129_952_827
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
@@ -517,6 +522,7 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
     assert current_hosted.php_tree_bytes == 129_952_823
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
+    assert legacy_hosted.php_tree_sha256 != local.php_tree_sha256
     assert current_hosted.php_tree_bytes != local.php_tree_bytes
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):

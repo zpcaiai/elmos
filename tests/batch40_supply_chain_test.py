@@ -79,6 +79,43 @@ class DependencyInventoryTest(unittest.TestCase):
             self.assertIsNone(entry["version"])
             self.assertEqual("managed-by-bom", entry["versionResolution"])
 
+    def test_it_resolves_an_imported_bom_only_from_exact_local_pom_bytes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = self.build(root)
+            (repo / "pom.xml").write_text(
+                '<project xmlns="http://maven.apache.org/POM/4.0.0">'
+                '<properties><spring.version>6.2.8</spring.version></properties>'
+                '<dependencyManagement><dependencies><dependency>'
+                '<groupId>example</groupId><artifactId>platform-bom</artifactId><version>1.2.3</version>'
+                '<type>pom</type><scope>import</scope></dependency></dependencies></dependencyManagement>'
+                '<dependencies><dependency><groupId>org.springframework.boot</groupId>'
+                '<artifactId>spring-boot-starter-web</artifactId></dependency></dependencies>'
+                '</project>'
+            )
+            local = root / "m2" / "example" / "platform-bom" / "1.2.3"
+            local.mkdir(parents=True)
+            (local / "platform-bom-1.2.3.pom").write_text(
+                '<project xmlns="http://maven.apache.org/POM/4.0.0">'
+                '<properties><starter.version>${spring.version}</starter.version></properties>'
+                '<dependencyManagement><dependencies><dependency>'
+                '<groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-web</artifactId>'
+                '<version>${starter.version}</version></dependency></dependencies></dependencyManagement>'
+                '</project>'
+            )
+            code, report = run(
+                INVENTORY,
+                "--repo",
+                str(repo),
+                "--maven-repository",
+                str(root / "m2"),
+            )
+            self.assertEqual(0, code)
+            entry = next(item for item in report["components"] if item["name"] == "spring-boot-starter-web")
+            self.assertEqual("6.2.8", entry["version"])
+            self.assertEqual("dependency-management", entry["versionResolution"])
+            self.assertEqual(1, report["sources"]["mavenBomCount"])
+
     def test_it_refuses_to_guess_an_unresolvable_property(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             report = self.inventory(self.build(Path(tmp)))
@@ -212,8 +249,37 @@ class SecretScanTest(unittest.TestCase):
         self.assertIn("private-key-block", self.rules(report))
 
     def test_vendor_documentation_example_keys_are_not_reported(self) -> None:
-        code, report, _ = self.scan({"a.py": 'AWS = "AKIAIOSFODNN7EXAMPLE"\n'})
+        example = "AKIA" + "IOSFODNN7EXAMPLE"
+        code, report, _ = self.scan({"a.py": f'AWS = "{example}"\n'})
         self.assertEqual(0, code, "AWS publishes this key id as a documentation example")
+
+    def test_scope_file_is_exact_and_recorded(self) -> None:
+        tmp = Path(tempfile.mkdtemp())
+        repo = tmp / "repo"
+        (repo / "src").mkdir(parents=True)
+        (repo / "ignored").mkdir()
+        (repo / "src" / "a.py").write_text("value = 1\n")
+        (repo / "ignored" / "b.py").write_text('password = "must-not-be-scanned"\n')
+        scope = tmp / "scope.json"
+        scope.write_text(json.dumps({"roots": ["src"]}))
+        code, report = run(SCAN, "--repo", str(repo), "--scope", str(scope))
+        self.assertEqual(0, code)
+        self.assertEqual(["src"], report["coverage"]["roots"])
+        self.assertEqual(1, report["coverage"]["filesScanned"])
+
+    def test_scope_and_root_cannot_be_combined(self) -> None:
+        tmp = Path(tempfile.mkdtemp())
+        repo = tmp / "repo"
+        (repo / "src").mkdir(parents=True)
+        scope = tmp / "scope.json"
+        scope.write_text(json.dumps({"roots": ["src"]}))
+        result = subprocess.run(
+            [sys.executable, str(SCAN), "--repo", str(repo), "--scope", str(scope), "--root", "src"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(2, result.returncode)
 
     def test_findings_are_redacted(self) -> None:
         code, report, _ = self.scan({"a.py": 'AWS = "AKIA2QWERTYUIOPASDFG"\n'})

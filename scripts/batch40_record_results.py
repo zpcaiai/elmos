@@ -7,7 +7,10 @@ the Batch 40 gate.
 """
 import hashlib
 import json
+import platform
+import subprocess
 import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 P = Path(sys.argv[1] if len(sys.argv) > 1 else 'mature-product-packs/batch40/elmos-platform-supply-chain')
@@ -20,6 +23,48 @@ actionable = scan['totals']['actionableFindingCount']
 
 def sha256_file(path: Path) -> str:
     return 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def git_revision() -> str | None:
+    result = subprocess.run(
+        ['git', 'rev-parse', 'HEAD'], capture_output=True, text=True, check=False,
+    )
+    return result.stdout.strip() if result.returncode == 0 else None
+
+
+def local_provenance(report: dict, *, evidence_id: str, analyzer: str) -> dict:
+    report_path = P / f'evidence/execution/{evidence_id}.json'
+    analyzer_path = Path(analyzer)
+    return {
+        'recordType': 'provenance',
+        'schemaVersion': 1,
+        'id': f'{evidence_id}-provenance',
+        'batch': 40,
+        'packKey': 'elmos-platform-supply-chain',
+        'evidenceId': evidence_id,
+        'status': 'LOCAL_EXECUTED_SELF_ATTESTED',
+        'repositoryRevision': git_revision(),
+        'replayCommand': report.get('replayCommand'),
+        'runReport': {
+            'path': f'evidence/execution/{evidence_id}.json',
+            'sha256': sha256_file(report_path),
+            'bytes': report_path.stat().st_size,
+        },
+        'analyzer': {
+            'path': analyzer,
+            'sha256': sha256_file(analyzer_path),
+            'reportedDigest': report.get('toolDigest'),
+        },
+        'environment': {
+            'capturedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+            'pythonVersion': platform.python_version(),
+            'system': platform.system(),
+            'machine': platform.machine(),
+        },
+        'limitations': report.get('limitations', []),
+        'externalOperationExecuted': False,
+        'independentVerification': 'NOT_RUN',
+    }
 
 
 def dependabot_provenance(report: dict) -> dict:
@@ -60,12 +105,11 @@ evidence['claims'] = [
      "provenanceRefs": ["batch40-dependency-inventory-provenance"],
      "externalOperationExecuted": False, "authorizationRefs": []},
     {"claimId": "b40-credential-scan-triage",
-     # Findings exist and nobody has triaged them, so the claim is INCONCLUSIVE.
-     # Calling it PASS would require deciding on the owner's behalf that every
-     # hit is a test fixture; calling it FAIL would assert leaks that may not exist.
+     # Active findings fail closed. A zero result is still bounded to the exact
+     # detector, scope and allowlist recorded by the report.
      "status": "INCONCLUSIVE" if actionable else "PASS",
      "evidenceRefs": ["b40-secret-scan"],
-     "provenanceRefs": ["batch40-dependency-inventory-provenance"],
+     "provenanceRefs": ["b40-secret-scan-provenance"],
      "externalOperationExecuted": False, "authorizationRefs": []},
 ]
 if dependabot is not None:
@@ -100,16 +144,19 @@ claims['claims'] = [
      "statement": (f"A credential scan over {scan['coverage']['filesScanned']} files across "
                    f"{len(scan['coverage']['roots'])} declared roots produced {actionable} actionable findings "
                    f"and {scan['totals']['advisoryFindingCount']} advisory high-entropy hits. "
-                   f"The actionable findings are untriaged: none has been confirmed as a live credential "
-                   f"or dismissed as a fixture."),
+                   f"The scan suppressed {scan['allowlist']['suppressedFindings']} exact fixture matches "
+                   f"through {scan['allowlist']['activeEntries']} owned, reasoned, expiring allowlist entries."),
      "scope": {"roots": scan['coverage']['roots'],
                "filesScanned": scan['coverage']['filesScanned'],
                "bySeverity": scan['totals']['bySeverity'],
                "actionablePaths": sorted({f['path'] for f in scan['findings'] if f['severity'] != 'advisory'})},
-     "limitations": scan['limitations'] + [
-         "Triage is outstanding. Every actionable finding must be either fixed or added to "
-         "config/secret-scan-allowlist.json with a reason, an owner and an expiry before this claim can pass.",
-     ],
+     "limitations": scan['limitations'] + ([
+         "Triage remains outstanding for active findings. Every actionable finding must be fixed or "
+         "assigned an exact, owned, reasoned and expiring exception before this claim can pass.",
+     ] if actionable else [
+         "The zero actionable result is bounded to the declared working-tree scan scope and detector set; "
+         "it is not an assertion that no credential exists anywhere or in git history.",
+     ]),
      "evidenceRefs": ["b40-secret-scan"]},
 ]
 if dependabot is not None:
@@ -172,6 +219,118 @@ for entry in flags['flags']:
 if dependabot is not None:
     provenance = P / 'evidence/provenance/b40-dependabot-alerts-provenance.json'
     provenance.write_text(json.dumps(dependabot_provenance(dependabot), indent=2, ensure_ascii=False) + '\n')
+
+provenance_dir = P / 'evidence/provenance'
+provenance_dir.mkdir(parents=True, exist_ok=True)
+inventory_provenance = local_provenance(
+    inv,
+    evidence_id='b40-dependency-inventory',
+    analyzer='scripts/batch40_dependency_inventory.py',
+)
+secret_provenance = local_provenance(
+    scan,
+    evidence_id='b40-secret-scan',
+    analyzer='scripts/batch40_secret_scan.py',
+)
+(provenance_dir / 'batch40-dependency-inventory-provenance.json').write_text(
+    json.dumps(inventory_provenance, indent=2, ensure_ascii=False) + '\n'
+)
+(provenance_dir / 'b40-secret-scan-provenance.json').write_text(
+    json.dumps(secret_provenance, indent=2, ensure_ascii=False) + '\n'
+)
+
+declaration_paths = sorted({
+    declared
+    for component in inv['components']
+    for declared in component.get('declaredIn', [])
+    if Path(declared).is_file()
+})
+artifact_members = [
+    {
+        'path': path,
+        'sha256': sha256_file(Path(path)),
+        'bytes': Path(path).stat().st_size,
+    }
+    for path in declaration_paths
+]
+artifact = {
+    'artifactType': 'declared-dependency-surface',
+    'memberCount': len(artifact_members),
+    'members': artifact_members,
+    'mavenBoms': inv['sources'].get('mavenBoms', []),
+}
+artifact['compositeDigest'] = 'sha256:' + hashlib.sha256(
+    json.dumps(artifact, sort_keys=True, separators=(',', ':')).encode()
+).hexdigest()
+artifact_path = P / 'artifact/schema-surface.json'
+artifact_path.write_text(json.dumps(artifact, indent=2, ensure_ascii=False) + '\n')
+environment = {
+    'capturedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+    'os': f'{platform.system()} {platform.release()}',
+    'machine': platform.machine(),
+    'pythonVersion': platform.python_version(),
+    'pythonImplementation': platform.python_implementation(),
+    'repositoryRevision': git_revision(),
+    'evidenceBoundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
+    'independentVerification': 'NOT_RUN',
+}
+environment_path = P / 'environment/toolchain.json'
+environment_path.write_text(json.dumps(environment, indent=2, ensure_ascii=False) + '\n')
+
+pack = json.loads((P / 'pack.json').read_text())
+pack['owner'] = 'elmos-platform-maintainers'
+pack['status'] = 'experimental'
+pack['artifactDigest'] = sha256_file(artifact_path)
+pack['environmentDigest'] = sha256_file(environment_path)
+pack['evidenceRefs'] = sorted(set(pack.get('evidenceRefs', [])) | {
+    'b40-dependency-inventory', 'b40-secret-scan',
+    *(['b40-dependabot-alerts'] if dependabot is not None else []),
+})
+(P / 'pack.json').write_text(json.dumps(pack, indent=2, ensure_ascii=False) + '\n')
+
+matrix = json.loads((P / 'support-matrix.json').read_text())
+limited = {
+    'b40-dependency-sca-governance': ['b40-dependabot-alerts'] if dependabot is not None else [],
+    'b40-sbom-component-identity': ['b40-dependency-inventory'],
+    'b40-secret-credential-scanning': ['b40-secret-scan'],
+}
+for capability in matrix['capabilities']:
+    capability['owner'] = 'elmos-platform-maintainers'
+    refs = limited.get(capability['capabilityId'])
+    if refs:
+        capability['status'] = 'limited'
+        capability['evidenceRefs'] = refs
+        capability['notes'] = (
+            'Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN.'
+        )
+(P / 'support-matrix.json').write_text(json.dumps(matrix, indent=2, ensure_ascii=False) + '\n')
+
+sbom_record = json.loads((P / 'sbom-record.json').read_text())
+sbom_record.update({
+    'status': 'draft',
+    'evidenceRefs': ['b40-dependency-inventory'],
+    'records': [{
+        'scope': 'direct Maven and npm declarations',
+        'componentCount': inv['totals']['componentCount'],
+        'externalComponentCount': inv['totals']['externalComponentCount'],
+        'versionedExternalCount': inv['totals']['versionedExternalCount'],
+        'coverage': inv['metrics']['sbomCoverage'],
+        'transitiveGraph': 'NOT_RUN',
+        'independentVerification': 'NOT_RUN',
+    }],
+})
+(P / 'sbom-record.json').write_text(json.dumps(sbom_record, indent=2, ensure_ascii=False) + '\n')
+
+provenance_record = json.loads((P / 'provenance-record.json').read_text())
+provenance_record.update({
+    'status': 'draft',
+    'evidenceRefs': ['b40-dependency-inventory', 'b40-secret-scan'],
+    'records': [inventory_provenance, secret_provenance],
+})
+(P / 'provenance-record.json').write_text(
+    json.dumps(provenance_record, indent=2, ensure_ascii=False) + '\n'
+)
+if dependabot is not None:
     print(f"batch40 已记录: sbomCoverage={inv['metrics']['sbomCoverage']} "
           f"secretLeaks={actionable} dependabotOpen={dependabot['openCount']} "
           f"(advisory {scan['totals']['advisoryFindingCount']} 不计入)")

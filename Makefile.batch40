@@ -1,6 +1,8 @@
 UV ?= uv
 BATCH40_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
 .PHONY: batch40-evidence batch40-secret-scan batch40-check batch40-scaffold batch40-gate batch40-gaps batch40-score batch40-manifest batch40-request
+BATCH40_MAVEN_REPOSITORY ?= $(HOME)/.m2/repository
+BATCH40_SECRET_SCAN_SCOPE ?= config/batch40-secret-scan-scope.json
 batch40-check:
 	$(BATCH40_PYTHON) scripts/mature_product_toolkit.py validate --batch 40
 	$(BATCH40_PYTHON) -m unittest discover -s tests/batch40 -p 'test_*.py'
@@ -39,20 +41,13 @@ batch40-request:
 batch40-evidence:
 	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
 	python3 scripts/batch40_dependency_inventory.py \
+		--maven-repository "$(BATCH40_MAVEN_REPOSITORY)" \
 		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-dependency-inventory.json
 	$(MAKE) batch40-secret-scan PACK=$(PACK)
 	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
-# The tree is large enough that a single scan can outlive a session timeout, so
-# each root is scanned separately and the parts are merged into one report.
-BATCH40_SCAN_ROOTS ?= apps services engines modules packages contracts config deploy scripts tooling telemetry routes .github
 batch40-secret-scan:
 	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
-	@mkdir -p mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts
-	@for root in $(BATCH40_SCAN_ROOTS); do \
-		python3 scripts/batch40_secret_scan.py --jobs 32 --root $$root \
-			--allowlist config/secret-scan-allowlist.json \
-			--output mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts/$$(echo $$root | tr -d '.' | tr '/' '-').json || true; \
-	done
-	python3 scripts/batch40_secret_scan.py \
-		--merge mature-product-packs/batch40/$(PACK)/evidence/execution/scan-parts \
+	python3 scripts/batch40_secret_scan.py --jobs 32 \
+		--scope "$(BATCH40_SECRET_SCAN_SCOPE)" \
+		--allowlist config/secret-scan-allowlist.json \
 		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-secret-scan.json
