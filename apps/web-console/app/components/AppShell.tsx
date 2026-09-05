@@ -339,10 +339,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </>
           ) : (
             <>
-              <Link
+              <a
                 className={`profile-row profile-login-row ${pathname === "/login" ? "active" : ""}`}
                 href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
-                prefetch={false}
                 onClick={closeSidebar}
               >
                 <span className="avatar">访</span>
@@ -351,16 +350,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   <small>{english ? "Signed out · click to sign in" : "未登录 · 点击进入登录"}</small>
                 </div>
                 <Icon name="chevron" size={16} />
-              </Link>
+              </a>
               <div className="profile-guest-bar">
-                <Link
+                <a
                   className="profile-guest-admin"
                   href="/admin/login"
-                  prefetch={false}
                   onClick={closeSidebar}
                 >
                   {english ? "Administrator login →" : "管理员登录入口 →"}
-                </Link>
+                </a>
               </div>
             </>
           )}
@@ -405,20 +403,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </button>
             ) : (
               <div className="anonymous-login-actions">
-                <Link
+                <a
                   className={`top-login-link ${pathname === "/login" ? "active" : ""}`}
                   href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
-                  prefetch={false}
                 >
                   {english ? "User sign in" : "用户登录"}
-                </Link>
-                <Link
+                </a>
+                <a
                   className={`top-login-link top-admin-login-link ${pathname === "/admin/login" ? "active" : ""}`}
                   href="/admin/login"
-                  prefetch={false}
                 >
                   {english ? "Admin" : "管理员入口"}
-                </Link>
+                </a>
               </div>
             )}
           </div>
