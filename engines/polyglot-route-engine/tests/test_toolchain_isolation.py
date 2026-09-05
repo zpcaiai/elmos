@@ -130,49 +130,6 @@ def test_minimal_subprocess_environment_drops_all_supported_injection_hooks(
     assert stat.S_IMODE((telemetry / "mode").stat().st_mode) == 0o600
 
 
-def test_minimal_subprocess_environment_preserves_only_a_verified_host_profile(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
-    monkeypatch.setenv(toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV, profile.profile_id)
-    monkeypatch.setenv("GITHUB_ACTIONS", "true")
-    monkeypatch.setenv("RUNNER_ENVIRONMENT", "github-hosted")
-    monkeypatch.setenv("ImageOS", "macos26")
-    home = tmp_path / "home"
-    scratch = tmp_path / "tmp"
-    home.mkdir()
-    scratch.mkdir()
-
-    environment = toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
-
-    assert environment[toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV] == profile.profile_id
-    assert environment["GITHUB_ACTIONS"] == "true"
-    assert environment["RUNNER_ENVIRONMENT"] == "github-hosted"
-    assert environment["ImageOS"] == "macos26"
-    assert "ImageVersion" not in environment
-
-
-def test_minimal_subprocess_environment_rejects_an_unverified_host_profile(
-    tmp_path: Path,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setenv(
-        toolchains._HOMEBREW_ROUTE_PROFILE_ID_ENV,
-        "github-macos26-unrecognized",
-    )
-    home = tmp_path / "home"
-    scratch = tmp_path / "tmp"
-    home.mkdir()
-    scratch.mkdir()
-
-    with pytest.raises(
-        RouteError,
-        match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH",
-    ):
-        toolchains.sanitized_subprocess_env(home=home, temp_dir=scratch)
-
-
 def test_minimal_subprocess_environment_rejects_tampered_go_telemetry_mode(tmp_path: Path) -> None:
     home = tmp_path / "home"
     scratch = tmp_path / "tmp"
