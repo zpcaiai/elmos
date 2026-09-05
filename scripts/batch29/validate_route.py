@@ -20,6 +20,8 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+MISSING_SYMBOL_FAILURE = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
 ENGINE_RUNTIME_MODULES = {
     "elmos_polyglot_route.equivalence": "elmos_polyglot_route/equivalence.py",
     "elmos_polyglot_route.models": "elmos_polyglot_route/models.py",
@@ -303,7 +305,7 @@ NODEJS_NEGATIVE_REASON_CODES = {
         {"SOURCE_AND_TARGET_MUST_DIFFER"}
     ),
     "missing-symbol-fails-closed": frozenset(
-        {"FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS"}
+        {"FUNCTION_NOT_FOUND"}
     ),
 }
 NODEJS_NEGATIVE_INPUT_ROLES = {
@@ -11414,11 +11416,7 @@ def specialized_negative_expected_reasons(
             }
         ),
         "missing-symbol-fails-closed": frozenset(
-            {
-                "NO_SUPPORTED_FUNCTIONS"
-                if source_language in {"java", "swift"}
-                else "FUNCTION_NOT_FOUND:__elmos_missing_function__"
-            }
+            {MISSING_SYMBOL_FAILURE}
         ),
     }
     return dynamic.get(
@@ -11948,13 +11946,7 @@ def nodejs_negative_expected_reasons(
     if case_id == "undeclared-directed-route-fails-closed":
         return frozenset({"SOURCE_AND_TARGET_MUST_DIFFER"})
     if case_id == "missing-symbol-fails-closed":
-        return frozenset(
-            {
-                "NO_SUPPORTED_FUNCTIONS"
-                if source_language in {"java", "swift"}
-                else "FUNCTION_NOT_FOUND:__elmos_missing_function__"
-            }
-        )
+        return frozenset({MISSING_SYMBOL_FAILURE})
     return frozenset()
 
 
