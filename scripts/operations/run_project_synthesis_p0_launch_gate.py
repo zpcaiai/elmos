@@ -738,10 +738,10 @@ def evaluate_launch_gate(
 
     final_repository, final_repository_blockers = observe_repository(repository_path, contract)
     if (
-        final_repository_blockers
-        or final_repository.get("commit_sha") != repository.get("commit_sha")
+        final_repository.get("commit_sha") != repository.get("commit_sha")
         or final_repository.get("tree_sha") != repository.get("tree_sha")
-        or final_repository.get("worktree_clean") is not True
+        or final_repository.get("worktree_clean") != repository.get("worktree_clean")
+        or final_repository_blockers != repository_blockers
     ):
         add_blocker(repository_blockers, "SOURCE_REVISION_CHANGED_DURING_GATE_EVALUATION")
 

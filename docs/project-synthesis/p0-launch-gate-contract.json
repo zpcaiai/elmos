@@ -5,6 +5,7 @@
   "repository": {
     "exact_repository_full_name": "zpcaiai/elmos",
     "allowed_origin_urls": [
+      "https://github.com/zpcaiai/elmos",
       "https://github.com/zpcaiai/elmos.git",
       "git@github.com:zpcaiai/elmos.git"
     ],

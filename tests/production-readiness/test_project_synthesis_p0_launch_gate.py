@@ -192,6 +192,16 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
         self.assertEqual("BLOCKED", result["decision"])
         self.assertIn("repository:SOURCE_REPOSITORY_ORIGIN_NOT_ALLOWED", result["blockers"])
         self.assertTrue(any("SOURCE_MARKER_NOT_TRACKED" in blocker for blocker in result["blockers"]))
+        self.assertNotIn("repository:SOURCE_REVISION_CHANGED_DURING_GATE_EVALUATION", result["blockers"])
+
+    def test_github_actions_normalized_origin_is_accepted(self) -> None:
+        repository = self._repository()
+        self._run(["git", "remote", "set-url", "origin", "https://github.com/zpcaiai/elmos"], repository)
+        result = subject.evaluate_launch_gate(repository, self._evidence(), test_mode=True)
+        self.assertEqual("LOCAL_CONTRACT_VALID", result["decision"])
+        self.assertEqual("PASSED", result["repository"]["status"])
+        self.assertNotIn("repository:SOURCE_REPOSITORY_ORIGIN_NOT_ALLOWED", result["blockers"])
+        self.assertNotIn("repository:SOURCE_REVISION_CHANGED_DURING_GATE_EVALUATION", result["blockers"])
 
     def test_dirty_source_tree_is_rejected_from_observed_git_state(self) -> None:
         repository = self._repository()
