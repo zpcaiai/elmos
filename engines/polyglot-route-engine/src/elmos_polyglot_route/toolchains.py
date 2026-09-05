@@ -234,7 +234,7 @@ def sanitized_subprocess_env(
         Path("/sbin"),
     ]
     path = os.pathsep.join(str(item) for item in dict.fromkeys(item.resolve() for item in fixed_paths if item.is_dir()))
-    return {
+    environment = {
         "PATH": path,
         "HOME": str(home.resolve()),
         "TMPDIR": str(temp_dir.resolve()),
@@ -254,6 +254,31 @@ def sanitized_subprocess_env(
         "PYTHONDONTWRITEBYTECODE": "1",
         "PYTHONNOUSERSITE": "1",
     }
+    declared_profile_id = os.environ.get(
+        "ELMOS_HOMEBREW_ROUTE_PROFILE_ID", ""
+    ).strip()
+    if declared_profile_id:
+        declared_matches = tuple(
+            profile
+            for profile in _HOMEBREW_ROUTE_HOST_PROFILES
+            if profile.profile_id == declared_profile_id and profile.image_version
+        )
+        required_host_environment = {
+            "GITHUB_ACTIONS": "true",
+            "RUNNER_ENVIRONMENT": "github-hosted",
+            "ImageOS": "macos26",
+        }
+        if len(declared_matches) != 1 or any(
+            os.environ.get(key, "").strip() != expected
+            for key, expected in required_host_environment.items()
+        ):
+            raise RouteError(
+                "EXACT_TOOLCHAIN_HOMEBREW_HOST_PROVENANCE_MISMATCH:"
+                + declared_profile_id
+            )
+        environment.update(required_host_environment)
+        environment["ELMOS_HOMEBREW_ROUTE_PROFILE_ID"] = declared_profile_id
+    return environment
 
 
 @dataclass(frozen=True)
