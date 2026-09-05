@@ -43,8 +43,9 @@ def build() -> dict[str, Any]:
     )
     results: list[dict[str, Any]] = []
     gate_script = ROOT / "scripts" / "batch29" / "run_route_gate.py"
-    for entry in entries:
+    for i, entry in enumerate(entries):
         route_key = entry["handler_id"].split(":", 1)[1]
+        print(f"[{i+1}/{len(entries)}] qualifying {route_key}...", file=sys.stderr, flush=True)
         route = ROOT / "routes" / route_key
         evidence_path = route / "certification" / "evidence.json"
         evidence = json.loads(evidence_path.read_text(encoding="utf-8"))
