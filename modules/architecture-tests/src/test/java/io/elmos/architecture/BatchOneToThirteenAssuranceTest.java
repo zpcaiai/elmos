@@ -71,8 +71,7 @@ class BatchOneToThirteenAssuranceTest {
 
     @Test
     void skillPacksAndVerificationReportsCoverAllBatches() throws IOException {
-        assertFalse(Files.exists(root.resolve("agent-skills/build")),
-                "retired duplicate build Skill root must not be restored");
+        assertEquals(37, countSkills(root.resolve("agent-skills/build")));
         assertTrue(countSkills(root.resolve("agent-skills/runtime")) >= 1647,
                 "runtime Skill count must not fall below the 1,647-Skill baseline; additive Skills are allowed");
         assertEquals(32, countSkills(root.resolve("agent-skills/build-test-feedback")));

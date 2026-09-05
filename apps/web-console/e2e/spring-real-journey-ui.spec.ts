@@ -193,7 +193,7 @@ const capabilities = {
       verifiedSourceJava: "",
     },
   ],
-  operatorExperimentalRoutesEnabled: false,
+  operatorExperimentalRoutesEnabled: true,
   experimentalRoutesRequireOptIn: true,
   transformerConfigured: true,
   transformerReason: "Rootless private Runner is configured.",
