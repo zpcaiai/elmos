@@ -630,7 +630,11 @@ def _seal_runtime() -> dict[str, object]:
     )
     mismatches = [
         receipt
-        for path, receipt in zip(UNSEALED_FILE_PROFILES, files_before, strict=True)
+        # Root sealing deliberately uses the immutable macOS system Python,
+        # which is older than the project toolchain and does not implement
+        # zip(strict=...). Both sequences are built from the same mapping, so
+        # their cardinality is already identical by construction.
+        for path, receipt in zip(UNSEALED_FILE_PROFILES, files_before)
         if {
             key: receipt[key]
             for key in ("role", "path", "mode", "uid", "gid", "nlink", "bytes", "sha256")
