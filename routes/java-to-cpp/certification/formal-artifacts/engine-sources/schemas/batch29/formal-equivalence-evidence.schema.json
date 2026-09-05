@@ -326,14 +326,15 @@
     },
     "swift_dependency_cache_receipt": {
       "type": "object",
-      "required": ["cache_key", "cache_schema", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
+      "required": ["cache_key", "cache_schema", "object_store_policy", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
       "properties": {
-        "cache_key": {"const": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
-        "cache_schema": {"const": "swift-dependencies-v1"},
+        "cache_key": {"const": "swift-syntax-standalone-v2-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "cache_schema": {"const": "swift-dependencies-standalone-v2"},
+        "object_store_policy": {"const": "standalone-no-alternates-no-hardlinks-v2"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
         "file_count": {"const": 753},
         "bytes": {"const": 8866479}
@@ -344,7 +345,7 @@
       "type": "object",
       "required": ["seed", "cache", "git", "identity", "version", "revision", "sha256", "file_count", "bytes"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "cache": {"$ref": "#/$defs/swift_dependency_cache_receipt"},
         "git": {
           "const": {
@@ -366,7 +367,7 @@
       "type": "object",
       "required": ["seed", "identity", "version", "revision", "sha256", "file_count", "bytes", "git", "cache"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
@@ -782,13 +783,13 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "cdhash_full"],
       "properties": {
         "path": {"const": "/usr/bin/sandbox-exec"},
-        "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+        "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
         "bytes": {"const": 102368},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
         "gid": {"const": 0},
         "nlink": {"const": 1},
-        "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+        "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
       },
       "additionalProperties": false
     },
@@ -797,7 +798,7 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink"],
       "properties": {
         "path": {"const": "/usr/bin/codesign"},
-        "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+        "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
         "bytes": {"const": 458576},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
@@ -1055,11 +1056,11 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink", "cdhash_full"],
           "properties": {
-            "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+            "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
             "bytes": {"const": 102368},
             "mode": {"const": "0755"},
             "nlink": {"const": 1},
-            "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+            "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
           },
           "additionalProperties": false
         },
@@ -1067,7 +1068,7 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink"],
           "properties": {
-            "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+            "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
             "bytes": {"const": 458576},
             "mode": {"const": "0755"},
             "nlink": {"const": 1}
@@ -1219,6 +1220,9 @@
       "enum": [
         "source-ir",
         "target-ir",
+        "identifier-plan",
+        "raw-target-ir",
+        "normalized-target-ir",
         "target-artifact",
         "environment",
         "chunk-map",

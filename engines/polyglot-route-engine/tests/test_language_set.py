@@ -310,8 +310,11 @@ def test_kotlin_receipt_identity_is_portable_across_governed_install_roots(
 
     assert record["executable"].startswith("<polyglot-toolchain-root>/")
     assert str(relocated_root) not in json.dumps(record, sort_keys=True)
+    _, expected_record_sha256 = module._expected_toolchain_identity(
+        "kotlin", record["profile"]
+    )
     assert module.exact_toolchain_record_sha256(record) == (
-        module.EXACT_TOOLCHAIN_RECORD_SHA256["kotlin"]
+        expected_record_sha256
     )
 
 
