@@ -325,6 +325,7 @@ def _stable_file_receipt(
     profiles: Mapping[Path, Mapping[str, object]] = FILE_PROFILES,
     *,
     validate_parent_chain: bool = True,
+    validate_expected: bool = True,
 ) -> dict[str, object]:
     expected = profiles[path]
     if validate_parent_chain:
@@ -385,7 +386,7 @@ def _stable_file_receipt(
         "bytes": total,
         "sha256": digest.hexdigest(),
     }
-    if profile_receipt != {"path": str(path), **expected}:
+    if validate_expected and profile_receipt != {"path": str(path), **expected}:
         raise RuntimeError(
             f"OpenSSL component identity mismatch: {profile_receipt!r}"
         )
@@ -623,9 +624,21 @@ def _seal_runtime() -> dict[str, object]:
             path,
             UNSEALED_FILE_PROFILES,
             validate_parent_chain=False,
+            validate_expected=False,
         )
         for path in UNSEALED_FILE_PROFILES
     )
+    mismatches = [
+        receipt
+        for path, receipt in zip(UNSEALED_FILE_PROFILES, files_before, strict=True)
+        if {
+            key: receipt[key]
+            for key in ("role", "path", "mode", "uid", "gid", "nlink", "bytes", "sha256")
+        }
+        != {"path": str(path), **UNSEALED_FILE_PROFILES[path]}
+    ]
+    if mismatches:
+        raise RuntimeError(f"OpenSSL component identity mismatches: {mismatches!r}")
     directory_initial = {
         Path(str(receipt["path"])): receipt for receipt in directories_before
     }

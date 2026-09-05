@@ -672,6 +672,15 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
         health_route = (
             ROOT / "apps" / "web-console" / "app" / "api" / "health" / "route.ts"
         ).read_text(encoding="utf-8")
+        readiness_source = (
+            ROOT
+            / "apps"
+            / "web-console"
+            / "app"
+            / "lib"
+            / "server"
+            / "generationReadiness.ts"
+        ).read_text(encoding="utf-8")
         auth_callback = (
             ROOT
             / "apps"
@@ -707,12 +716,15 @@ class GenerationRunnerOperationsTests(unittest.TestCase):
         self.assertIn("RESTART_RECOVERY_LIMIT_EXCEEDED", runner_source)
         self.assertIn("reconcilePersistentQueue", runner_source)
         self.assertIn('probe === "liveness"', health_route)
-        self.assertIn('const blocked = runner.status === "BLOCKED"', health_route)
         self.assertIn(
-            'dependencies.some((dependency) => dependency.status === "BLOCKED")',
+            'const blocked = generation.status === "BLOCKED" || !deploymentReady',
             health_route,
         )
-        self.assertIn("const status = blocked ? 503 : 200", health_route)
+        self.assertIn(
+            'if (dependency.status === "BLOCKED")',
+            readiness_source,
+        )
+        self.assertIn("const status = ready ? 200 : 503", health_route)
         self.assertIn("trustedPublicOrigin(request)", auth_callback)
         self.assertNotIn("new URL(flow.returnTo, request.url)", auth_callback)
         self.assertNotIn('import Link from "next/link"', login_page)
