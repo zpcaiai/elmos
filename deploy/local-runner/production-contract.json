@@ -1,0 +1,152 @@
+{
+  "schema_version": "elmos.generation-runner-production.v1",
+  "owner": "elmos-project-synthesis-engineering",
+  "service_identity": {
+    "user": "elmos-runner",
+    "group": "elmos-runner",
+    "uid_environment": "ELMOS_LOCAL_RUNNER_SERVICE_UID",
+    "non_root_required": true,
+    "state_owner_only": true,
+    "token_owner_only": true,
+    "repository_read_only_to_service": true,
+    "repository_path": "/opt/elmos",
+    "state_path": "/var/lib/elmos-generation-runner"
+  },
+  "authentication": {
+    "mode": "ONE_TIME_HS256_SERVICE_CREDENTIAL",
+    "static_bearer_forbidden_in_production": true,
+    "issuer": "elmos-local-runner-controller",
+    "audience": "elmos-generation-runner",
+    "exact_bindings": ["tenant_id", "actor_id", "permission", "method", "path", "kid", "jti"],
+    "maximum_credential_seconds": 300,
+    "replay_rejected": true,
+    "signing_key_owner_only": true,
+    "signing_key_lease_maximum_hours": 24,
+    "startup_safety_margin_seconds": 300
+  },
+  "systemd": {
+    "runner_unit": "systemd/elmos-generation-runner.service",
+    "reaper_unit": "systemd/elmos-generation-runtime-reaper.service",
+    "same_identity_required": true,
+    "repository_namespace_read_only": "/opt/elmos",
+    "runner_restart": "on-failure",
+    "reaper_restart": "always",
+    "restart_burst": 5,
+    "restart_interval_seconds": 300,
+    "stop_timeout_seconds": 45,
+    "runner_limits": {
+      "cpu_quota": "200%",
+      "memory_max": "2G",
+      "tasks_max": 768
+    },
+    "reaper_limits": {
+      "cpu_quota": "25%",
+      "memory_max": "256M",
+      "tasks_max": 64
+    },
+    "runner_exec_start_pre": "/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/deploy/local-runner/validate_production_contract.py --runtime",
+    "runner_exec_start": "/usr/bin/env ${ELMOS_LOCAL_RUNNER_PNPM_PATH} --dir ${ELMOS_REPOSITORY_ROOT}/apps/web-console start --hostname 127.0.0.1 --port 3000",
+    "reaper_exec_start_pre": "/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/deploy/local-runner/validate_production_contract.py --runtime",
+    "reaper_exec_start": "/usr/bin/python3 ${ELMOS_REPOSITORY_ROOT}/scripts/operations/generation_runtime_reaper.py --root ${ELMOS_LOCAL_RUNNER_ROOT} --repository-root ${ELMOS_REPOSITORY_ROOT} --engine ${ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE} --interval-seconds 1"
+  },
+  "runtime_executables": [
+    {"path_environment": "ELMOS_UV_PATH", "sha256_environment": "ELMOS_UV_SHA256"},
+    {"path_environment": "ELMOS_LOCAL_RUNNER_PNPM_PATH", "sha256_environment": "ELMOS_LOCAL_RUNNER_PNPM_SHA256"},
+    {"path_environment": "ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE", "sha256_environment": "ELMOS_LOCAL_RUNNER_CONTAINER_ENGINE_SHA256"}
+  ],
+  "job_isolation": {
+    "executor": "ROOTLESS_CONTAINER",
+    "root_filesystem": "read-only",
+    "runtime_network": "internal-only-no-external-egress",
+    "build_network_default": "none",
+    "capabilities": "drop-all",
+    "no_new_privileges": true,
+    "non_root_uid_gid": "required",
+    "limits": {
+      "cpus": 0.5,
+      "memory": "512m",
+      "pids": 256,
+      "tmpfs": "/tmp:rw,noexec,nosuid,size=64m"
+    },
+    "required_source_fragments": [
+      "--read-only",
+      "--cap-drop",
+      "no-new-privileges",
+      "--pids-limit",
+      "--memory",
+      "--cpus",
+      "--user",
+      "internal-only-no-external-egress"
+    ]
+  },
+  "lifecycle": {
+    "recovery": {
+      "persistent_reconciliation": true,
+      "maximum_job_requeues": 2,
+      "active_container_state_from_pid_forbidden": true
+    },
+    "cancellation": {
+      "authorized_actor_required": true,
+      "process_group_sigterm": true,
+      "sigterm_grace_seconds": 5,
+      "sigkill_fallback": true,
+      "termination_must_be_observed": true
+    },
+    "timeouts": {
+      "analysis_seconds": 60,
+      "rootless_helper_max_seconds": 1200,
+      "runtime_lease_max_seconds": 600,
+      "reaper_heartbeat_max_age_seconds": 10
+    },
+    "tenant_cleanup": {
+      "tenant_path_binding": true,
+      "job_and_lease_labels_required": true,
+      "reaper_receipts_owner_only": true,
+      "maximum_tenants_per_sweep": 10000,
+      "maximum_jobs_per_tenant_per_sweep": 1000,
+      "maximum_jobs_per_sweep": 10000,
+      "expired_lease_cleanup": "verified-stop-or-missing",
+      "superseded_lease": "preserve-and-block",
+      "retained_job_gc": "offline-backup-bound"
+    }
+  },
+  "source_bindings": [
+    {
+      "path": "scripts/operations/rootless_project_runner.py",
+      "sha256": "f1f01c38cb21a0f4ea929223353cdd7c41970021c0760cf8fa22a239291e1c47"
+    },
+    {
+      "path": "scripts/operations/generation_runtime_reaper.py",
+      "sha256": "058660ffa35efeb48d94a78fe66f05c4eca1296210000599d4748d621adf6d3c"
+    },
+    {
+      "path": "deploy/local-runner/issue_service_credential.py",
+      "sha256": "a5802f808970923fb397f55e41ad4b24c118642c0820cd16553aae3a53e3096f"
+    },
+    {
+      "path": "deploy/local-runner/systemd/elmos-generation-runner.service",
+      "sha256": "1f21d577722f3f9c7f5d25418dfb47480113c027f691be3bd92d8653c0f70ca2"
+    },
+    {
+      "path": "deploy/local-runner/systemd/elmos-generation-runtime-reaper.service",
+      "sha256": "de90b8782ed5ce869075aab4e622279d381eb7239f6827925dbcbfdf009aba9f"
+    },
+    {
+      "path": "apps/web-console/app/lib/server/localRunnerServiceCredential.ts",
+      "sha256": "41f4738ace3528987493fc841dca610815b863e536a781ceafc490666b5dd7e3"
+    },
+    {
+      "path": "apps/web-console/app/lib/server/generationRunner.ts",
+      "sha256": "474dead2bd511ac08fbfa1a7af0446f6e2981d21449f18e3bedc29d0e31e3444"
+    }
+  ],
+  "evidence": {
+    "static_contract": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "linux_systemd": "NOT_RUN",
+    "rootless_engine": "NOT_RUN",
+    "cancel_timeout_restart_drill": "NOT_RUN",
+    "multi_tenant_cleanup_drill": "NOT_RUN",
+    "independent_verification": "NOT_RUN",
+    "certification": "NOT_CERTIFIED"
+  }
+}

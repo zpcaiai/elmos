@@ -664,21 +664,29 @@ jobs:
     name: Project Synthesis and operability
     runs-on: ubuntu-24.04
     timeout-minutes: 20
+    env:
+      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Set up Python 3.12
+      - name: Set up Python 3.12.12
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
-          python-version: "3.12"
+          python-version: "3.12.12"
       - name: Set up Rust 1.89.0
         uses: dtolnay/rust-toolchain@451ce45ce31d200b52705aadd15ce75018b006de # 1.89.0
+        with:
+          toolchain: "1.89.0"
       - name: Install locked uv tool
         run: python -m pip install --disable-pip-version-check uv==0.11.16
-      - name: Build native dependency solver
-        run: >-
-          cargo build --locked --release
-          --manifest-path native/rust-core/Cargo.toml
+      - name: Build locked native dependency solver
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          test "$(rustc --version)" = "rustc 1.89.0 (29483883e 2025-08-04)"
+          test "$(cargo --version)" = "cargo 1.89.0 (c24e10642 2025-06-23)"
+          cargo build --locked --release --lib \
+            --manifest-path native/rust-core/Cargo.toml
       - name: Verify installed Project Synthesis distribution boundary
         run: |
           python tooling/validate_project_synthesis_integration.py --require-packages |
@@ -687,16 +695,21 @@ jobs:
             /tmp/elmos-project-synthesis-integration.txt
       - name: Verify Project Synthesis
         working-directory: engines/project-synthesis-engine
+        env:
+          ELMOS_NATIVE_LIB: ${{ github.workspace }}/native/rust-core/target/release/libelmos_native.so
         run: |
+          test -f "${ELMOS_NATIVE_LIB}"
           uv sync --locked
-          uv run pytest
-          uv run ruff check src tests
-          uv run mypy src
+          uv run --locked pytest
+          uv run --locked ruff check src tests
+          uv run --locked mypy src
       - name: Verify service operability contracts
         run: |
           uv run --with pyyaml python tooling/validate_runtime_operability.py
           uv run --with pyyaml python -m unittest discover -s tests/production-readiness -p 'test_*.py'
           uv run --with pyyaml python -m unittest discover -s scripts/operations -p 'test_*.py'
+      - name: Verify Project Synthesis P0 launch contracts
+        run: make project-synthesis-p0-contract
       - name: Verify three-line workflow protocol pack
         run: |
           uv run --with 'jsonschema>=4.23' --with pyyaml \
@@ -768,6 +781,8 @@ jobs:
     name: Eight-language synthesis acceptance
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -828,6 +843,8 @@ jobs:
     # real web build and browser journeys on the hosted Linux runtime.
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    env:
+      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -858,7 +875,9 @@ jobs:
           python-version: "3.14.6"
       - name: Verify exact ChinaDB preflight runtime
         run: |
+          test "$(python3.12 --version)" = "Python 3.12.12"
           test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
           test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
@@ -952,11 +971,12 @@ jobs:
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.14.6"
+          architecture: arm64
       - name: Verify exact ChinaDB preflight runtime
         run: |
-          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
-          uv --directory engines/database-data-engine/sql-transpiler run --locked \
-            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
+          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build the job API and Skills workspace
         run: pnpm --dir apps/web-console check
 
@@ -964,6 +984,8 @@ jobs:
     name: Project generation browser qualification
     runs-on: ubuntu-24.04
     timeout-minutes: 35
+    env:
+      UV_PYTHON_DOWNLOADS: never
     steps:
       - name: Check out repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -989,9 +1011,10 @@ jobs:
           python-version: "3.14.6"
       - name: Verify exact ChinaDB preflight runtime
         run: |
-          python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
-          uv --directory engines/database-data-engine/sql-transpiler run --locked \
-            python -c 'import platform; assert platform.python_version() == "3.14.6", platform.python_version()'
+          test "$(python3.12 --version)" = "Python 3.12.12"
+          test "$(python -c 'import platform; print(platform.python_version())')" = "3.14.6"
+          test "$(uv --version | awk '{print $1, $2}')" = "uv 0.11.16"
+          test "$(uv --directory engines/database-data-engine/sql-transpiler run --locked python -c 'import platform; print(platform.python_version())')" = "3.14.6"
       - name: Type-check and build
         run: pnpm --dir apps/web-console check
       - name: Install exact browser engines

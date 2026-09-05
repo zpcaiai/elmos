@@ -1,0 +1,27 @@
+{
+  "assessment": {
+    "compatibility": "ALGORITHM_MISMATCH",
+    "launch_gate": "BLOCKED",
+    "required_jwk_algorithm": "RS256",
+    "required_jwk_kty": "RSA"
+  },
+  "boundaries": {
+    "certification_status": "NOT_CERTIFIED",
+    "database_migration_write_status": "NOT_RUN",
+    "evidence_class": "OPERATOR_REPORTED_READ_ONLY",
+    "raw_provider_receipt_status": "NOT_PROVIDED"
+  },
+  "kind": "elmos.project-synthesis.operator-reported-provider-observation",
+  "observation": {
+    "auth_provider": "better_auth",
+    "database_server_version": "17.11",
+    "integration": "neon-elmos",
+    "jwk_algorithm": "EdDSA",
+    "jwk_kty": "OKP",
+    "jwks_key_count": 1,
+    "jwks_reachability": "OPERATOR_REPORTED_REACHABLE",
+    "provider": "neon"
+  },
+  "schema_version": "1.0.0",
+  "scope_id": "project-synthesis-api-v1"
+}

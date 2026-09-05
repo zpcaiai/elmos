@@ -62,9 +62,13 @@ case "${CI_PROFILE}" in
     case "${HOST_PROFILE}" in
       "20260728.0273.1:26.5.2:25F84")
         HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260728.0273.1"
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="a12805a18cd5e4f733fa8727b91afa08b587f9da5a760517cd79cb508a3a3f71"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="ffd8ac6981000def0928367924b6cb1e7a98712efbc06e2a2f3f750138bd89ca"
         ;;
       "20260831.0337.3:26.6.2:25G83")
         HOMEBREW_ROUTE_PROFILE_ID="github-macos26-20260831.0337.3"
+        NODE_TAHOE_OPENSSL_CRYPTO_SHA256="43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5"
+        NODE_TAHOE_OPENSSL_SSL_SHA256="26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e"
         ;;
       *)
         printf 'The full pinned Node closure rejects macos26 host profile %s.\n' \
@@ -72,6 +76,8 @@ case "${CI_PROFILE}" in
         exit 2
         ;;
     esac
+    readonly NODE_TAHOE_OPENSSL_CRYPTO_SHA256
+    readonly NODE_TAHOE_OPENSSL_SSL_SHA256
     if [[ "${ELMOS_APPLE_ROUTE_XCODE_SEALED:-}" != "1" \
       || "${ELMOS_APPLE_ROUTE_XCODE_PHYSICAL:-}" != "/Applications/Xcode.app" \
       || -z "${TMPDIR:-}" ]]; then
@@ -386,22 +392,66 @@ verify_pinned_node26_component() {
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
-  local observed
-  if [[ ! -f "${path}" || -L "${path}" \
-    || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
-    printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
-      "${path}" >&2
-    return 1
-  fi
-  observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
-  local observed_sha256
-  observed_sha256="$(file_sha256 "${path}")"
-  if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "${observed_sha256}" != "${expected_sha256}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (%s:%s)\n' \
-      "${path}" "${observed}" "${observed_sha256}" >&2
-    return 1
-  fi
+  python3 -I -B - \
+      "${path}" "${expected_mode}" "${expected_bytes}" "${expected_sha256}" <<'PY'
+import hashlib
+import os
+import re
+import stat
+import sys
+from pathlib import Path
+
+path = Path(sys.argv[1])
+if (
+    re.fullmatch(r"[0-7]{3}", sys.argv[2]) is None
+    or re.fullmatch(r"[1-9][0-9]*", sys.argv[3]) is None
+    or re.fullmatch(r"[0-9a-f]{64}", sys.argv[4]) is None
+):
+    print(f"Pinned Node closure expected identity is invalid: {path}", file=sys.stderr)
+    raise SystemExit(1)
+expected = f"{sys.argv[2]}:501:80:1:{sys.argv[3]}:{sys.argv[4]}"
+try:
+    before = path.lstat()
+    resolved = path.resolve(strict=True)
+    descriptor = os.open(path, os.O_RDONLY | os.O_NOFOLLOW)
+    try:
+        opened_before = os.fstat(descriptor)
+        hasher = hashlib.sha256()
+        while chunk := os.read(descriptor, 1024 * 1024):
+            hasher.update(chunk)
+        opened_after = os.fstat(descriptor)
+    finally:
+        os.close(descriptor)
+    after = path.lstat()
+except OSError as error:
+    print(f"Pinned Node closure component is unavailable or unsafe: {path}: {error}", file=sys.stderr)
+    raise SystemExit(1)
+stable_fields = ("st_dev", "st_ino", "st_mode", "st_uid", "st_gid", "st_nlink", "st_size")
+if (
+    not stat.S_ISREG(before.st_mode)
+    or stat.S_ISLNK(before.st_mode)
+    or resolved != path
+    or any(
+        getattr(before, field) != getattr(opened_before, field)
+        or getattr(opened_before, field) != getattr(opened_after, field)
+        or getattr(opened_after, field) != getattr(after, field)
+        for field in stable_fields
+    )
+):
+    print(f"Pinned Node closure component is unavailable or unsafe: {path}", file=sys.stderr)
+    raise SystemExit(1)
+observed = (
+    f"{stat.S_IMODE(opened_after.st_mode):o}:{opened_after.st_uid}:{opened_after.st_gid}:"
+    f"{opened_after.st_nlink}:{opened_after.st_size}:{hasher.hexdigest()}"
+)
+if observed != expected:
+    print(
+        f"Pinned Node closure component identity mismatch: {path} "
+        f"(observed={observed} expected={expected})",
+        file=sys.stderr,
+    )
+    raise SystemExit(1)
+PY
 }
 
 verify_pinned_node26_formula() {
@@ -617,14 +667,22 @@ merve/1.2.2_1/lib/libmerve.1.2.2.dylib|444|77776|cda7651d81af902d5964705451e7bcb
 nbytes/0.1.4/lib/libnbytes.dylib|444|35136|b063a6b50d0982379e5a78fa22904e9299ac0048d82cae4f90bd4ad11fa40f65
 node/26.0.0/bin/node|555|50672|542a44a023d27e626d79fbd646f3e2b898bd291b96028b3644795f21b5a43bc9
 node/26.0.0/lib/libnode.147.dylib|444|70661840|980e876ab7f53bacc6262e77c4ac96f60ca3bac4dd241b0cc6cdc945c4ecaf88
-openssl@3/3.6.3/lib/libcrypto.3.dylib|444|4856256|43d6912451594740da0af43cdb054d5f3ef69b65c235d6b8006bb4ddcc3e33e5
-openssl@3/3.6.3/lib/libssl.3.dylib|444|872080|26508775e248ae567304c48f13062a3cf7316121b2036b5c058553eb8ce5ab9e
 simdjson/4.6.4/lib/libsimdjson.33.0.0.dylib|444|95296|031cfb565154f822e33b9227ef392c257260c5ebb8fbfc9f317c56be82bfa16a
 simdutf/9.0.0/lib/libsimdutf.34.0.0.dylib|444|222064|2abb9e7c8fb437094c5488f74408f7dd0a7b20a16e5c871a877d60e14f53ee36
 sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21d3f929bc7c3565f2edf3079ce54f978b44cb7f
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
+    if ! verify_pinned_node26_component \
+        "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libcrypto.3.dylib" \
+        "444" "4856256" "${NODE_TAHOE_OPENSSL_CRYPTO_SHA256}"; then
+      component_failures=$((component_failures + 1))
+    fi
+    if ! verify_pinned_node26_component \
+        "${HOMEBREW_CELLAR}/openssl@3/3.6.3/lib/libssl.3.dylib" \
+        "444" "872080" "${NODE_TAHOE_OPENSSL_SSL_SHA256}"; then
+      component_failures=$((component_failures + 1))
+    fi
     if (( component_failures != 0 )); then
       printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
         "${component_failures}" >&2

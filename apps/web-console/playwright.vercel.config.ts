@@ -3,11 +3,15 @@ import { existsSync } from "node:fs";
 
 const configuredBaseURL = process.env.ELMOS_E2E_BASE_URL?.trim();
 const configuredChromiumExecutable = process.env.ELMOS_E2E_CHROMIUM_EXECUTABLE?.trim();
+const expectedCommitSha = process.env.ELMOS_VERCEL_EXPECTED_COMMIT_SHA?.trim().toLowerCase();
 const hasVercelTrustedOidcToken = Boolean(
   process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim(),
 );
 if (!configuredBaseURL) {
   throw new Error("ELMOS_E2E_BASE_URL_REQUIRED");
+}
+if (!expectedCommitSha || !/^[a-f0-9]{40}$/.test(expectedCommitSha)) {
+  throw new Error("ELMOS_VERCEL_EXPECTED_COMMIT_SHA_REQUIRED");
 }
 
 let baseURL: string;

@@ -30,7 +30,7 @@ EXTERNAL_GATE_OUTPUT ?= .elmos/production-runtime/external-gate-report.json
 EXTERNAL_GATE_AUTHORIZATION ?= .elmos/production-runtime/external-gate-authorization.json
 ENGINE_TEST_OUTPUT_ROOT ?= $(HOME)/.cache/elmos-engine-tests
 
-.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
+.PHONY: verify backend-fast business-line-contracts makefile-portability-check model-catalog-check backend database-data infrastructure security-compliance test-quality mainframe enterprise-integration enterprise-suite mature-product-skills mature-product-toolchain-test mature-product-packages product-roadmap production-readiness-check precision-migration-b01-44-skills precision-migration-b01-44-check precision-migration-b01-44-qualification chinadb-commercial-migration-skills batch1-55-skills batch66-80-skills batch66-80-test-skills language-packs-batch81-95 batch81-95-test-skills batch97-104-skills product-batch56-skills product-closure-convergence-skills product-closure-gate product-convergence-gate product-batch33-38-skills product-batch33-39-skills product-batch33-55-skills product-batch40-55-skills product-batch35-38 migration-pack-admission batch27-34-skills production-runtime production-runtime-local production-runtime-external-plan production-runtime-external test-suite-validate test-suite-test test-suite-check test-suite-gate test-suite-1-55-check test-suite-1-55-gate test-suite-1-65-check test-suite-1-65-gate test-suite-66-80-check test-suite-66-80-gate test-suite-81-95-check test-suite-81-95-gate test-suite-b38-45-validate test-suite-b38-45-test test-suite-b38-45-check test-suite-b38-45-gate test-suite-local-qualification toolchains-validate toolchains-doctor toolchains-check toolchains-install toolchains-env dotnet python project-synthesis project-synthesis-p0-contract project-synthesis-p0-production-gate project-synthesis-toolchains frontend sql-transpiler sql-dialect component-dialect web up down local-commercial-up local-commercial-smoke local-commercial-status local-commercial-down operations-scripts-test test-suite-certification-rehearsal repository-autonomy-kernel openhands-absorption ai-capability-enhancement-skills functional-assurance-skills knowledge-skill-model-foundry-skills pricing-billing-skills commercial-capability-expansion-skills semantic-assurance-expansion-skills polyglot-semantic-assurance-skills
 
 .PHONY: frt-g01-g30-skills frt-g01-g30-check
 .PHONY: test-engine test-engines-check test-engines-list test-engines-all
@@ -522,6 +522,25 @@ project-synthesis:
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py
+project-synthesis-p0-contract:
+	python3 scripts/operations/validate_project_synthesis_p0_scope.py
+	python3 deploy/local-runner/validate_production_contract.py
+	python3 -m unittest discover -s deploy/local-runner/tests -p 'test_*.py'
+	python3 -m unittest discover -s tests/production-readiness -p 'test_project_synthesis_p0_launch_gate.py'
+	python3 -m unittest discover -s tests/production-readiness -p 'test_vercel_deployment_waiter.py'
+	$(UV) run --quiet --with 'jsonschema>=4.23' --with pyyaml python \
+		scripts/batch33/run_cloud_gate.py cloud-packs/elmos-project-generation-cloud-run-handoff
+	@temporary="$$(mktemp -d)"; trap 'rm -rf "$$temporary"' EXIT; \
+		mkdir "$$temporary/evidence"; \
+		python3 scripts/operations/run_project_synthesis_p0_launch_gate.py \
+			--repository . --evidence-directory "$$temporary/evidence" \
+			--output "$$temporary/result.json" --test-mode
+project-synthesis-p0-production-gate:
+	test -n "$(PROJECT_SYNTHESIS_P0_EVIDENCE_DIR)" || { echo 'Set PROJECT_SYNTHESIS_P0_EVIDENCE_DIR'; exit 2; }
+	test -n "$(PROJECT_SYNTHESIS_P0_GATE_OUTPUT)" || { echo 'Set PROJECT_SYNTHESIS_P0_GATE_OUTPUT outside the repository'; exit 2; }
+	python3 scripts/operations/run_project_synthesis_p0_launch_gate.py \
+		--repository . --evidence-directory "$(PROJECT_SYNTHESIS_P0_EVIDENCE_DIR)" \
+		--output "$(PROJECT_SYNTHESIS_P0_GATE_OUTPUT)"
 toolchains-validate:
 	python3 scripts/toolchains/runtime_environment.py validate
 toolchains-doctor: toolchains-validate

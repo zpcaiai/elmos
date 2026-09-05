@@ -52,6 +52,10 @@ import {
   unsafeCookieValue,
   type AccountPermission,
 } from "./accountSession";
+import {
+  LocalRunnerCredentialError,
+  verifyLocalRunnerServiceCredential,
+} from "./localRunnerServiceCredential";
 import type { NextRequest } from "next/server";
 import type {
   GenerationAnalysis,
@@ -634,11 +638,25 @@ export function authorize(
       throw error;
     }
   }
-  if (
-    process.env.NODE_ENV === "production"
-    || process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true"
-  ) {
+  if (process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true") {
     throw new GenerationRunnerError(401, "ACCOUNT_SESSION_REQUIRED");
+  }
+  if (process.env.NODE_ENV === "production") {
+    try {
+      return verifyLocalRunnerServiceCredential({
+        authorization: request.headers.get("authorization") ?? "",
+        tenantHeader: request.headers.get("x-elmos-tenant") ?? "",
+        actorHeader: request.headers.get("x-elmos-actor") ?? "",
+        permission,
+        method: request.method,
+        path: request.nextUrl.pathname,
+      });
+    } catch (error) {
+      if (error instanceof LocalRunnerCredentialError) {
+        throw new GenerationRunnerError(error.status, error.code);
+      }
+      throw error;
+    }
   }
   const runner = {
     token: configuredToken(),

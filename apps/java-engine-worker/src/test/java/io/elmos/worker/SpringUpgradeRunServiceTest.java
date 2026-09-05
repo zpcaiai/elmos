@@ -156,6 +156,10 @@ class SpringUpgradeRunServiceTest {
                 () -> service.create("org-a", changed));
         assertThrows(SpringUpgradeRunService.Conflict.class,
                 () -> service.retry("org-a", first.runId(), "retry-key"));
+        // This test intentionally exercises a non-terminal run. Wait for its
+        // worker before JUnit releases the owner-managed temporary directory.
+        assertEquals(RunStatus.SUCCEEDED,
+                awaitTerminal(first.runId(), "org-a").status());
     }
 
     @Test void terminalFailureCanBeRetriedAsANewTraceableAttempt() {
@@ -240,6 +244,7 @@ class SpringUpgradeRunServiceTest {
         assertEquals(1, transformer.stopCalls.get());
         assertEquals(RunStatus.CANCELLED,
                 awaitTerminal(run.runId(), "org-a").status());
+        awaitDurableReceipt(run.runId());
     }
 
     @Test void preDestroyStopsEveryRemoteHandleOnce() {
@@ -440,6 +445,22 @@ class SpringUpgradeRunServiceTest {
             }
         } while (System.nanoTime() < deadline);
         return fail("runtime did not reach " + expected);
+    }
+
+    private void awaitDurableReceipt(String runId) throws Exception {
+        Path receipts = workspace.resolve(".durable-queue/receipts/spring-upgrade");
+        String expectedName = runId + ".properties";
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
+        do {
+            if (Files.isDirectory(receipts)) {
+                try (var files = Files.walk(receipts)) {
+                    if (files.anyMatch(path -> Files.isRegularFile(path)
+                            && path.getFileName().toString().equals(expectedName))) return;
+                }
+            }
+            Thread.sleep(10);
+        } while (System.nanoTime() < deadline);
+        fail("durable cancellation receipt was not written");
     }
 
     private static StartRequest request(String key) {

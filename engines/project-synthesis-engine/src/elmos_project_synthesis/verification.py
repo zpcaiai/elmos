@@ -33,6 +33,7 @@ from .production_contract import (
     LOCAL_ISSUER,
 )
 from .project_graphs import validate_workspace_graphs
+from .supply_chain import MAVEN_TREE_PATH, build_workspace_sbom, canonical_json, sbom_status, sha256_bytes
 
 LOCAL_TOOLCHAIN_ROOT = Path(
     os.getenv(
@@ -53,8 +54,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "uv",
             "arguments": ["run", "--python", "3.12", "python", "--version"],
-            "expected": "Python 3.12",
-            "pattern": r"^Python 3\.12(?:\.|$)",
+            "expected": "Python 3.12.12",
+            "pattern": r"^Python 3\.12\.12$",
             "fallback": "/opt/homebrew/bin/uv",
         },
     ],
@@ -62,8 +63,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "java",
             "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
+            "expected": "OpenJDK 21.0.11",
+            "pattern": r'(?:openjdk|java) version "21\.0\.11(?:[+"]|$)',
             "fallback": "/opt/homebrew/opt/openjdk@21/bin/java",
         },
         {
@@ -100,8 +101,8 @@ EXACT_TOOLCHAIN_REQUIREMENTS: dict[str, list[dict[str, Any]]] = {
         {
             "tool": "java",
             "arguments": ["-version"],
-            "expected": "Java 21",
-            "pattern": r'version "21(?:[.\-"]|$)',
+            "expected": "OpenJDK 21.0.11",
+            "pattern": r'(?:openjdk|java) version "21\.0\.11(?:[+"]|$)',
             "fallback": "/opt/homebrew/opt/openjdk@21/bin/java",
         },
         {
@@ -1357,6 +1358,8 @@ def verify_workspace(
     # Validate all digest-bound generated structure contracts before resolving
     # or executing any native toolchain command.
     validate_workspace_graphs(root)
+    generation_manifest_bytes = (root / ".elmos" / "generation-manifest.json").read_bytes()
+    generation_manifest = json.loads(generation_manifest_bytes)
     applications = _blueprint(root).get("applications", [])
     selected: set[str] = set()
     for item in applications:
@@ -1381,6 +1384,29 @@ def verify_workspace(
             EXACT_TOOLCHAIN_REQUIREMENTS.get(language, []),
         )
         results.extend(checks)
+        if language == "kotlin":
+            build_script = root / "kotlin" / "build.gradle.kts"
+            plugin_declared = build_script.is_file() and (
+                'kotlin("jvm") version "2.2.20"' in build_script.read_text(encoding="utf-8")
+            )
+            results.append(
+                _result(
+                    language="kotlin",
+                    kind="toolchain",
+                    command=["gradle", "plugin", "org.jetbrains.kotlin.jvm"],
+                    status="PASSED" if plugin_declared else "FAILED",
+                    exit_code=0 if plugin_declared else 1,
+                    output=(
+                        "EXPECTED:Kotlin Gradle Plugin 2.2.20\n"
+                        + (
+                            "OBSERVED:build.gradle.kts:org.jetbrains.kotlin.jvm:2.2.20"
+                            if plugin_declared
+                            else "OBSERVED:KOTLIN_GRADLE_PLUGIN_2_2_20_NOT_DECLARED"
+                        )
+                    ),
+                )
+            )
+            exact_toolchains[language] = exact_toolchains[language] and plugin_declared
 
     if "java" in selected:
         if exact_toolchains["java"]:
@@ -1389,7 +1415,53 @@ def verify_workspace(
             result = _run([tool, "-B", "package"], root / "java", language="java")
             results.append(result)
             if result["status"] == "PASSED":
-                build_passed.add("java")
+                dependency_directory = root / ".elmos" / "dependencies"
+                dependency_directory.mkdir(parents=True, exist_ok=True)
+                descriptor, temporary_name = tempfile.mkstemp(
+                    prefix=".java-dependency-tree-",
+                    suffix=".json",
+                    dir=dependency_directory,
+                )
+                os.close(descriptor)
+                temporary_tree = Path(temporary_name)
+                temporary_tree.unlink(missing_ok=True)
+                tree_result = _run(
+                    [
+                        tool,
+                        "--offline",
+                        "--batch-mode",
+                        "--no-transfer-progress",
+                        "org.apache.maven.plugins:maven-dependency-plugin:3.8.1:tree",
+                        "-DoutputType=json",
+                        f"-DoutputFile={temporary_tree}",
+                        "-DappendOutput=false",
+                    ],
+                    root / "java",
+                    language="java",
+                )
+                if tree_result["status"] == "PASSED":
+                    try:
+                        if (
+                            temporary_tree.is_symlink()
+                            or not temporary_tree.is_file()
+                            or temporary_tree.stat().st_size > 16 * 1024 * 1024
+                        ):
+                            raise ValueError("unsafe dependency tree output")
+                        tree_document = json.loads(temporary_tree.read_text(encoding="utf-8"))
+                        if not isinstance(tree_document, dict) or not isinstance(
+                            tree_document.get("children"), list
+                        ):
+                            raise ValueError("invalid dependency tree output")
+                        temporary_tree.replace(root / MAVEN_TREE_PATH)
+                    except (OSError, ValueError, json.JSONDecodeError) as error:
+                        tree_result["status"] = "FAILED"
+                        tree_result["exit_code"] = 1
+                        tree_result["output"] += f"\nMAVEN_DEPENDENCY_TREE_INVALID:{error}"
+                    finally:
+                        temporary_tree.unlink(missing_ok=True)
+                results.append(tree_result)
+                if tree_result["status"] == "PASSED":
+                    build_passed.add("java")
 
     if "python" in selected:
         tool = _runtime_tool("python", "uv", "/opt/homebrew/bin/uv")
@@ -1567,10 +1639,30 @@ def verify_workspace(
         name: (_resolve_tool(name) is not None)
         for name in ("java", "mvn", "uv", "dotnet", "node", "pnpm", "go", "gradle", "php", "cargo")
     }
+    dependency_sbom = build_workspace_sbom(root)
     evidence: dict[str, Any] = {
-        "schema_version": "1.1.0",
+        "schema_version": "1.2.0",
         "status": status,
         "workspace": str(root),
+        "request_sha256": generation_manifest["request_sha256"],
+        "approved_payload_sha256": generation_manifest["approved_payload_sha256"],
+        "generation_manifest_sha256": sha256_bytes(generation_manifest_bytes),
+        "supply_chain": {
+            "sbom_format": "CycloneDX",
+            "sbom_spec_version": dependency_sbom["specVersion"],
+            "sbom_sha256": sha256_bytes(canonical_json(dependency_sbom)),
+            "transitive_inventory_status": sbom_status(
+                dependency_sbom, "elmos:transitive-inventory-status"
+            ),
+            "artifact_integrity_status": sbom_status(
+                dependency_sbom, "elmos:artifact-integrity-status"
+            ),
+            "dependency_graph_status": sbom_status(
+                dependency_sbom, "elmos:dependency-graph-status"
+            ),
+            "release_signature_status": "NOT_RUN",
+            "trusted_root_status": "NOT_RUN",
+        },
         "environment": {
             "platform": platform.platform(),
             "python": sys.version.split()[0],

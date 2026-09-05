@@ -104,6 +104,35 @@ SUPPORTED_PROFILE_TARGETS: dict[tuple[str, str], frozenset[str]] = {
 PLANNED_PROJECT_KINDS = ("fullstack", "worker", "cli", "modular-monolith")
 PLANNED_PERSISTENCE: tuple[str, ...] = ()
 PLANNED_AUTH_MODES: tuple[str, ...] = ()
+P0_SCOPE_ID = "project-synthesis-api-v1"
+P0_POSTGRESQL_VERSION = "17.5"
+P0_AUTH_MODES = ("jwt", "oidc")
+P0_EXACT_QUALIFICATION_TOOLCHAINS: dict[str, tuple[dict[str, str], ...]] = {
+    "java": (
+        {"component": "OpenJDK", "executable": "java", "version": "21.0.11"},
+        {"component": "Apache Maven", "executable": "mvn", "version": "3.9.10"},
+    ),
+    "python": (
+        {"component": "CPython", "executable": "python", "version": "3.12.12"},
+        {"component": "uv", "executable": "uv", "version": "0.11.16"},
+    ),
+    "csharp": ({"component": ".NET SDK", "executable": "dotnet", "version": "10.0.301"},),
+    "typescript": (
+        {"component": "Node.js", "executable": "node", "version": "26.0.0"},
+        {"component": "pnpm", "executable": "pnpm", "version": "10.12.4"},
+    ),
+    "go": ({"component": "Go", "executable": "go", "version": "1.25.0"},),
+    "kotlin": (
+        {"component": "Kotlin Gradle Plugin", "executable": "gradle", "version": "2.2.20"},
+        {"component": "OpenJDK", "executable": "java", "version": "21.0.11"},
+        {"component": "Gradle", "executable": "gradle", "version": "8.14.3"},
+    ),
+    "php": ({"component": "PHP", "executable": "php", "version": "8.4.12"},),
+    "rust": (
+        {"component": "rustc", "executable": "rustc", "version": "1.89.0"},
+        {"component": "cargo", "executable": "cargo", "version": "1.89.0"},
+    ),
+}
 SUPPORTED_RELATION_KINDS = ("one-to-one", "one-to-many", "many-to-one", "many-to-many")
 SLUG_PATTERN = re.compile(r"^[a-z][a-z0-9-]{1,62}[a-z0-9]$")
 IDENTIFIER_PATTERN = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
@@ -124,6 +153,107 @@ REQUIREMENT_SOURCE_KINDS = {
     "repository-file",
     "skill",
 }
+
+
+def p0_scope_payload() -> dict[str, Any]:
+    """Return the immutable, machine-readable first-release contract.
+
+    PostgreSQL 17.5 is the exact local qualification runtime. Managed
+    PostgreSQL providers are deliberately outside that version claim: their
+    observed server version must be captured in separate, digest-bound
+    provider evidence before a release decision can consume it.
+    """
+
+    return {
+        "schema_version": "1.0.0",
+        "kind": "elmos.project-synthesis.p0-launch-scope",
+        "scope_id": P0_SCOPE_ID,
+        "status": "FROZEN",
+        "project_kind": "api",
+        "generation_profile": STARTER_GENERATION_PROFILE,
+        "languages": [
+            {
+                "language": language,
+                "framework": TARGET_PROFILES[language]["framework"],
+                "request_runtime_selector": TARGET_PROFILES[language]["runtime"],
+                "exact_qualification_toolchain": [
+                    dict(item) for item in P0_EXACT_QUALIFICATION_TOOLCHAINS[language]
+                ],
+                "directory": TARGET_PROFILES[language]["directory"],
+                "source_skill": TARGET_PROFILES[language]["source_skill"],
+            }
+            for language in SUPPORTED_LANGUAGES
+        ],
+        "persistence": {
+            "engine": "postgresql",
+            "exact_local_runtime_version": P0_POSTGRESQL_VERSION,
+            "qualification_class": "disposable-local-container",
+            "managed_provider_version_policy": "SEPARATE_EXACT_OBSERVATION_REQUIRED",
+            "managed_provider_evidence_status": "NOT_RUN",
+        },
+        "authentication": [
+            {
+                "mode": "jwt",
+                "token_profile": "JWT",
+                "algorithm": "HS256",
+                "key_transport": "owner-only-secret-file",
+            },
+            {
+                "mode": "oidc",
+                "token_profile": "OIDC-JWT",
+                "algorithm": "RS256",
+                "key_transport": "owner-only-jwks-file",
+            },
+        ],
+        "managed_provider_contract": {
+            "database_exact_version_observation": "REQUIRED_SEPARATE_DIGEST_BOUND_EVIDENCE",
+            "oidc_required_jwk_kty": "RSA",
+            "oidc_required_jwk_algorithm": "RS256",
+            "algorithm_mismatch_policy": "BLOCKED",
+            "provider_evidence_status": "NOT_RUN",
+        },
+        "multi_entity_languages": list(SUPPORTED_LANGUAGES),
+        "release_requirements": {
+            "transitive_dependency_inventory": "REQUIRED_COMPLETE",
+            "artifact_integrity": "REQUIRED_COMPLETE_OR_NOT_APPLICABLE",
+            "dependency_graph": "EXPLICIT_INCOMPLETE_FLATTENED_ALLOWED",
+            "generation_manifest": "REQUIRED_DIGEST_BOUND",
+            "release_manifest": "REQUIRED_DIGEST_BOUND",
+            "release_signature": "REQUIRED_TRUSTED_ED25519",
+            "independent_verification": "REQUIRED_FOR_PRODUCTION",
+        },
+        "evidence_boundaries": {
+            "local_engineering": "SELF_ATTESTED",
+            "managed_provider_runtime": "NOT_RUN",
+            "production_delivery": "NOT_RUN",
+            "independent_verification": "NOT_RUN",
+            "certification": "NOT_CERTIFIED",
+        },
+    }
+
+
+def p0_request_blockers(request: SynthesisRequest) -> list[str]:
+    """Return exact P0 scope mismatches without widening the accepted profile."""
+
+    blockers: list[str] = []
+    if request.project_kind != "api":
+        blockers.append("P0_PROJECT_KIND_MISMATCH")
+    if request.generation_profile != STARTER_GENERATION_PROFILE:
+        blockers.append("P0_GENERATION_PROFILE_MISMATCH")
+    if request.persistence != "postgresql":
+        blockers.append("P0_PERSISTENCE_MISMATCH")
+    if request.auth_mode not in P0_AUTH_MODES:
+        blockers.append("P0_AUTH_MODE_MISMATCH")
+    if not request.targets:
+        blockers.append("P0_TARGETS_REQUIRED")
+    for target in request.targets:
+        profile = TARGET_PROFILES.get(target.language)
+        if profile is None or (
+            target.framework,
+            target.runtime,
+        ) != (profile["framework"], profile["runtime"]):
+            blockers.append(f"P0_TARGET_PROFILE_MISMATCH:{target.language}")
+    return sorted(set(blockers))
 
 
 class RequestValidationError(ValueError):

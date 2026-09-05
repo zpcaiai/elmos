@@ -1,0 +1,203 @@
+{
+  "schema_version": "1.0.0",
+  "kind": "elmos.project-synthesis.p0-launch-gate-contract",
+  "contract_id": "project-synthesis-p0-production-launch-v1",
+  "repository": {
+    "exact_repository_full_name": "zpcaiai/elmos",
+    "allowed_origin_urls": [
+      "https://github.com/zpcaiai/elmos",
+      "https://github.com/zpcaiai/elmos.git",
+      "git@github.com:zpcaiai/elmos.git"
+    ],
+    "required_tracked_paths": [
+      "AGENTS.md",
+      "Makefile",
+      "engines/project-synthesis-engine/pyproject.toml",
+      "docs/project-synthesis/p0-launch-scope-v1.json",
+      "docs/project-synthesis/p0-launch-gate-contract.json",
+      "scripts/operations/validate_project_synthesis_p0_scope.py",
+      "scripts/operations/run_project_synthesis_p0_launch_gate.py"
+    ],
+    "engine_project_name": "elmos-project-synthesis"
+  },
+  "scope": {
+    "path": "docs/project-synthesis/p0-launch-scope-v1.json",
+    "id": "project-synthesis-api-v1",
+    "canonical_sha256": "44f8c1595182eae98de4d2c917bde5a6cc60f2a56b5f49b67bb8cbc4801c096e",
+    "required_status": "FROZEN"
+  },
+  "evidence_policy": {
+    "directory_must_be_outside_source_repository": true,
+    "maximum_artifact_bytes": 16777216,
+    "maximum_signature_envelope_bytes": 1048576,
+    "maximum_evidence_file_bytes": 67108864,
+    "signature_algorithm": "ed25519",
+    "payload_format": "canonical-json",
+    "production_trust_policy_status": "NOT_CONFIGURED",
+    "production_trust_keys": []
+  },
+  "gates": [
+    {
+      "id": "release_bundle",
+      "artifact": "release-bundle.json",
+      "signature": "release-bundle.sig.json",
+      "kind": "elmos.project-synthesis.release-bundle-evidence",
+      "signer_role": "release-evidence-verifier",
+      "evidence_class": "CURRENT_SHA_RELEASE_EVIDENCE",
+      "required_evidence_roles": ["release_manifest", "generation_manifest", "native_verification", "sbom", "scm_attestation"],
+      "required_claims": {
+        "scope_status": "FROZEN",
+        "current_sha_status": "PASSED",
+        "release_manifest_status": "PASSED",
+        "generation_manifest_status": "PASSED",
+        "native_verification_status": "PASSED",
+        "scm_attestation_status": "PASSED"
+      }
+    },
+    {
+      "id": "production_runner",
+      "artifact": "production-runner.json",
+      "signature": "production-runner.sig.json",
+      "kind": "elmos.project-synthesis.production-runner-evidence",
+      "signer_role": "production-runtime-verifier",
+      "evidence_class": "PRODUCTION_RUNTIME_EVIDENCE",
+      "required_evidence_roles": ["deployment_receipt", "health_probe", "representative_job", "backup_restore"],
+      "required_claims": {
+        "service_status": "RUNNING",
+        "sandbox_policy_status": "PASSED",
+        "health_status": "PASSED",
+        "representative_job_status": "PASSED",
+        "backup_restore_status": "PASSED"
+      }
+    },
+    {
+      "id": "managed_postgresql",
+      "artifact": "managed-postgresql.json",
+      "signature": "managed-postgresql.sig.json",
+      "kind": "elmos.project-synthesis.managed-postgresql-evidence",
+      "signer_role": "managed-database-verifier",
+      "evidence_class": "MANAGED_PROVIDER_RUNTIME_EVIDENCE",
+      "required_evidence_roles": ["provider_receipt", "version_query", "migration_receipt", "write_read_receipt", "tenant_isolation_test", "rollback_receipt"],
+      "required_claims": {
+        "provider_status": "PASSED",
+        "version_status": "PASSED",
+        "migration_status": "PASSED",
+        "write_read_status": "PASSED",
+        "tenant_isolation_status": "PASSED",
+        "rollback_status": "PASSED",
+        "connection_security_status": "PASSED"
+      }
+    },
+    {
+      "id": "rs256_idp",
+      "artifact": "rs256-idp.json",
+      "signature": "rs256-idp.sig.json",
+      "kind": "elmos.project-synthesis.rs256-idp-evidence",
+      "signer_role": "identity-provider-verifier",
+      "evidence_class": "MANAGED_IDENTITY_RUNTIME_EVIDENCE",
+      "required_evidence_roles": ["provider_receipt", "openid_configuration", "jwks", "positive_token_test", "negative_token_test"],
+      "required_claims": {
+        "issuer_status": "PASSED",
+        "discovery_status": "PASSED",
+        "jwks_status": "PASSED",
+        "jwk_kty": "RSA",
+        "jwk_algorithm": "RS256",
+        "token_validation_status": "PASSED",
+        "negative_auth_status": "PASSED"
+      }
+    },
+    {
+      "id": "cloud_run",
+      "artifact": "cloud-run.json",
+      "signature": "cloud-run.sig.json",
+      "kind": "elmos.project-synthesis.cloud-run-evidence",
+      "signer_role": "cloud-runtime-verifier",
+      "evidence_class": "CLOUD_PROVIDER_RUNTIME_EVIDENCE",
+      "required_evidence_roles": ["provider_plan", "provider_apply", "runtime_probe", "rollback", "destroy_cleanup", "iam_assessment"],
+      "required_claims": {
+        "plan_status": "PASSED",
+        "apply_status": "PASSED",
+        "runtime_status": "PASSED",
+        "rollback_status": "PASSED",
+        "destroy_cleanup_status": "PASSED",
+        "least_privilege_status": "PASSED"
+      }
+    },
+    {
+      "id": "supply_chain_signature",
+      "artifact": "supply-chain-signature.json",
+      "signature": "supply-chain-signature.sig.json",
+      "kind": "elmos.project-synthesis.supply-chain-signature-evidence",
+      "signer_role": "supply-chain-verifier",
+      "evidence_class": "SIGNED_SUPPLY_CHAIN_EVIDENCE",
+      "required_evidence_roles": ["sbom", "provenance", "signature_verification", "vulnerability_scan"],
+      "required_claims": {
+        "sbom_status": "PASSED",
+        "artifact_integrity_status": "PASSED",
+        "provenance_status": "PASSED",
+        "release_signature_status": "PASSED",
+        "vulnerability_scan_status": "PASSED"
+      }
+    },
+    {
+      "id": "independent_uat",
+      "artifact": "independent-uat.json",
+      "signature": "independent-uat.sig.json",
+      "kind": "elmos.project-synthesis.independent-uat-evidence",
+      "signer_role": "independent-uat-verifier",
+      "evidence_class": "INDEPENDENT_ACCEPTANCE_EVIDENCE",
+      "required_evidence_roles": ["uat_execution", "independent_attestation", "acceptance_record"],
+      "required_claims": {
+        "execution_status": "PASSED",
+        "verifier_independence_status": "PASSED",
+        "representative_workload_status": "PASSED",
+        "acceptance_status": "PASSED"
+      }
+    },
+    {
+      "id": "independent_security",
+      "artifact": "independent-security.json",
+      "signature": "independent-security.sig.json",
+      "kind": "elmos.project-synthesis.independent-security-evidence",
+      "signer_role": "independent-security-verifier",
+      "evidence_class": "INDEPENDENT_SECURITY_EVIDENCE",
+      "required_evidence_roles": ["security_report", "independent_attestation", "finding_register"],
+      "required_claims": {
+        "assessment_status": "PASSED",
+        "critical_findings_status": "NONE_OPEN",
+        "high_findings_status": "NONE_OPEN",
+        "verifier_independence_status": "PASSED"
+      }
+    },
+    {
+      "id": "release_approval",
+      "artifact": "release-approval.json",
+      "signature": "release-approval.sig.json",
+      "kind": "elmos.project-synthesis.release-approval-evidence",
+      "signer_role": "release-approver",
+      "evidence_class": "GOVERNED_RELEASE_APPROVAL",
+      "required_evidence_roles": ["approval_record", "change_record", "rollback_plan"],
+      "required_claims": {
+        "approval_status": "APPROVED",
+        "separation_of_duties_status": "PASSED",
+        "change_window_status": "APPROVED",
+        "rollback_owner_status": "ASSIGNED"
+      }
+    },
+    {
+      "id": "production_certification",
+      "artifact": "production-certification.json",
+      "signature": "production-certification.sig.json",
+      "kind": "elmos.project-synthesis.production-certification-evidence",
+      "signer_role": "production-certification-verifier",
+      "evidence_class": "EXTERNAL_PRODUCTION_CERTIFICATION_EVIDENCE",
+      "required_evidence_roles": ["certification_decision", "aggregate_gate_result", "independent_attestation"],
+      "required_claims": {
+        "certification_status": "CERTIFIED",
+        "all_domain_gates_status": "PASSED",
+        "release_scope_status": "APPROVED",
+        "independent_verification_status": "PASSED"
+      }
+    }
+  ]
+}

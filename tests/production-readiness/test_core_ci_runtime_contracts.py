@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -20,13 +21,41 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
     def test_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
         job = _job(self.workflow, "project-synthesis", "project-synthesis-acceptance")
         rust = job.index("- name: Set up Rust 1.89.0")
-        native = job.index("- name: Build native dependency solver")
+        native = job.index("- name: Build locked native dependency solver")
         tests = job.index("- name: Verify Project Synthesis")
 
         self.assertLess(rust, native)
         self.assertLess(native, tests)
         self.assertIn("cargo build --locked --release", job)
         self.assertIn("--manifest-path native/rust-core/Cargo.toml", job)
+
+    def test_native_solver_locked_graph_is_fully_repository_vendored(self) -> None:
+        native_root = ROOT / "native/rust-core"
+        manifest = tomllib.loads((native_root / "Cargo.toml").read_text(encoding="utf-8"))
+        lock = tomllib.loads((native_root / "Cargo.lock").read_text(encoding="utf-8"))
+        expected = {
+            "itoa": "itoa-1.0.18",
+            "memchr": "memchr-2.8.3",
+            "proc-macro2": "proc-macro2-1.0.107",
+            "quote": "quote-1.0.47",
+            "ryu": "ryu-1.0.23",
+            "serde": "serde-1.0.219",
+            "serde_derive": "serde_derive-1.0.219",
+            "serde_json": "serde_json-1.0.143",
+            "syn": "syn-2.0.119",
+            "unicode-ident": "unicode-ident-1.0.24",
+        }
+        patches = manifest["patch"]["crates-io"]
+        locked = {package["name"]: package for package in lock["package"]}
+
+        for name, directory in expected.items():
+            with self.subTest(crate=name):
+                self.assertEqual(
+                    patches[name]["path"],
+                    f"../../engines/polyglot-route-engine/native/rust/vendor/{directory}",
+                )
+                self.assertNotIn("source", locked[name])
+                self.assertNotIn("checksum", locked[name])
 
     def test_web_console_binds_chinadb_runtime_after_python_312_consumers(self) -> None:
         job = _job(self.workflow, "web-console", "precision-migration-b01-44")

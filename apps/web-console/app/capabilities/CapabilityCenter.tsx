@@ -149,7 +149,7 @@ export function CapabilityCenter() {
         <article className="metric-card">
           <span>商业与交付内核</span>
           <strong>85 项功能</strong>
-          <small>SLSA Level 3 证据链</small>
+          <small>当前部署 SLSA / SHA 证据：NOT_RUN</small>
         </article>
       </section>
 
@@ -211,13 +211,13 @@ export function CapabilityCenter() {
           <span className="strict-icon"><Icon name="test" size={23} /></span>
           <span className="overline">交付前的验证门禁</span>
           <h2>数学证明与差分测试</h2>
-          <p>静态结构检查、Schema 规范与依赖无环性已在本地 100% 验证通过；对外交付严格绑定 SMT 证明、Fuzzing 记录与 SLSA 证据链。</p>
-          <div className="strict-meter" role="progressbar" aria-label="结构门禁执行进度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={100} aria-valuetext="100% 结构门禁通过">
-            <span style={{ width: "100%", background: "linear-gradient(90deg, #10b981, #6366f1)" }} />
+          <p>本地静态结构检查仅是自证工程结果；当前部署 SHA 尚未绑定独立 SMT、Fuzzing 或 SLSA 证据，不能据此判定上线。</p>
+          <div className="strict-meter" role="progressbar" aria-label="当前部署证据完成度" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} aria-valuetext="当前部署证据未运行">
+            <span style={{ width: "0%", background: "linear-gradient(90deg, #10b981, #6366f1)" }} />
           </div>
           <div className="strict-stats">
-            <span><small>本地门禁</small><strong>100% PASS</strong></span>
-            <span><small>形式化证明</small><strong className="text-emerald-400">SAT_PROVED</strong></span>
+            <span><small>当前部署 SHA 绑定</small><strong>NOT_RUN</strong></span>
+            <span><small>形式化证明</small><strong>NOT_RUN</strong></span>
           </div>
           <div className="gate-command">
             <span>统一执行门禁</span>
@@ -225,7 +225,7 @@ export function CapabilityCenter() {
           </div>
           <div className="strict-boundary">
             <Icon name="shield" size={16} />
-            <span><strong>验证结论：QUALIFIED</strong><small>证据链完整，具备内容寻址签名防伪。</small></span>
+            <span><strong>验证结论：NOT_CERTIFIED</strong><small>未绑定当前部署 SHA，也没有独立外部验证证据。</small></span>
           </div>
         </aside>
       </section>

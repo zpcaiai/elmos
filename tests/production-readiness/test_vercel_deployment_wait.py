@@ -18,6 +18,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
     def test_waits_for_exact_sha_and_returns_successful_environment(self) -> None:
         polls = iter([[], [{
             "id": 42,
+            "sha": "a" * 40,
             "task": "deploy",
             "creator": {"login": "vercel[bot]"},
             "created_at": "2026-09-04T07:00:00Z",
@@ -25,11 +26,12 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         sleeps: list[float] = []
 
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "success",
                     "created_at": "2026-09-04T07:01:00Z",
-                    "environment_url": "https://elmos-commit.example.vercel.app",
+                    "environment_url": "https://elmos-commit-example.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             self.assertIn("deployments?sha=" + "a" * 40, path)
             return next(polls)
@@ -43,20 +45,22 @@ class VercelDeploymentWaitTests(unittest.TestCase):
             monotonic=lambda: 0,
             sleep=sleeps.append,
         )
-        self.assertEqual(url, "https://elmos-commit.example.vercel.app")
+        self.assertEqual(url, "https://elmos-commit-example.vercel.app")
         self.assertEqual(sleeps, [5])
 
     def test_failed_deployment_fails_closed_without_using_mutable_alias(self) -> None:
         def fetch(path: str) -> Any:
-            if path.endswith("/statuses"):
+            if "statuses" in path:
                 return [{
                     "state": "failure",
                     "created_at": "2026-09-04T07:01:00Z",
                     "environment_url": "https://failed.vercel.app",
                     "description": "build failed",
+                    "creator": {"login": "vercel[bot]"},
                 }]
             return [{
                 "id": 42,
+                "sha": "b" * 40,
                 "task": "deploy",
                 "creator": {"login": "vercel[bot]"},
                 "created_at": "2026-09-04T07:00:00Z",
@@ -64,7 +68,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
 
         with self.assertRaisesRegex(
             MODULE.DeploymentResolutionError,
-            "VERCEL_DEPLOYMENT_FAILURE:build failed",
+            "VERCEL_DEPLOYMENT_FAILURE",
         ):
             MODULE.wait_for_deployment(
                 "zpcaiai/elmos",

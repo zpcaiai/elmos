@@ -97,6 +97,23 @@ def render_java(request: SynthesisRequest, port: int) -> dict[str, str]:
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-maven-plugin</artifactId>
                   </plugin>
+                  <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <executions>
+                      <execution>
+                        <id>elmos-dependency-inventory</id>
+                        <phase>package</phase>
+                        <goals><goal>tree</goal></goals>
+                        <configuration>
+                          <outputType>json</outputType>
+                          <outputFile>../.elmos/dependencies/java-dependency-tree.json</outputFile>
+                          <appendOutput>false</appendOutput>
+                        </configuration>
+                      </execution>
+                    </executions>
+                  </plugin>
                 </plugins>
               </build>
             </project>
