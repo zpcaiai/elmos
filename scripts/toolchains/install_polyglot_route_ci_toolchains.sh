@@ -224,11 +224,12 @@ install_pinned_formula() {
   local url="https://raw.githubusercontent.com/Homebrew/homebrew-core/${commit}/${source_path}"
 
   download_verified "${url}" "${source_sha256}" "${source}"
-  python3 - "${source}" "${target}" <<'PY'
+  python3 - "${source}" "${target}" "${token}" <<'PY'
 from pathlib import Path
 import sys
 
 source = Path(sys.argv[1]).read_text(encoding="utf-8")
+token = sys.argv[3]
 marker = "  bottle do\n"
 if source.count(marker) != 1:
     raise SystemExit("pinned Homebrew formula has an unexpected bottle contract")
@@ -245,6 +246,19 @@ if autobump_lines:
     # no_autobump! is official-tap publication metadata. Homebrew rejects it
     # in a local tap; removing it does not alter source or bottle identity.
     source = source.replace(autobump_lines[0], "", 1)
+# OpenSSL 3.6.3 uses the current Homebrew `symlink(..., overwrite: true)`
+# post-install DSL, while the rolling macOS 26 image can still carry a brew
+# version that rejects that keyword. A fresh, force-bottle install has no
+# destination to overwrite, so remove only this digest-bound compatibility
+# keyword and fail if the pinned formula's exact statement ever changes.
+openssl_overwrite = (
+    '    symlink "{{etc}}/ca-certificates/cert.pem", '
+    '"{{pkgetc}}/cert.pem", overwrite: true\n'
+)
+if token == "openssl@3":
+    if source.count(openssl_overwrite) != 1:
+        raise SystemExit("pinned OpenSSL formula has an unexpected symlink contract")
+    source = source.replace(openssl_overwrite, openssl_overwrite.replace(", overwrite: true", ""), 1)
 target = source.replace(
     marker,
     marker + '    root_url "https://ghcr.io/v2/homebrew/core"\n',
