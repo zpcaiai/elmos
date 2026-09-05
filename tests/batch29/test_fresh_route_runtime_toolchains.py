@@ -742,6 +742,9 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         assert environment["ELMOS_HOMEBREW_ROUTE_PROFILE_ID"] == (
             "github-macos26-20260831.0337.3"
         )
+        assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "full"
+        assert environment["CI"] == "true"
+        assert environment["GITHUB_ACTIONS"] == "true"
         assert "JAVA_HOME" not in environment
         assert "_JAVA_OPTIONS" not in environment
         assert command[command.index("run") + 1] == "--no-dev"
@@ -761,6 +764,9 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         "ELMOS_HOMEBREW_ROUTE_PROFILE_ID",
         "github-macos26-20260831.0337.3",
     )
+    monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "full")
+    monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("JAVA_HOME", "/hostile/java")
     monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
@@ -798,4 +804,18 @@ def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_p
             ["--selector-smoke"],
         )
         == 0
+    )
+
+
+def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    full_profile = installer.split('if [[ "${CI_PROFILE}" == "full" ]]; then', 1)[1]
+
+    assert (
+        'install_pinned_formula \\\n'
+        '    "cmake" "4.4.0" \\\n'
+        '    "b189098af6b85e6dcdd34d5b6b95d8c1b34adbc3" \\\n'
+        '    "Formula/c/cmake.rb" \\\n'
+        '    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"'
+        in full_profile
     )

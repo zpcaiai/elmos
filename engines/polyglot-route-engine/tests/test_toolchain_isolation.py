@@ -461,22 +461,23 @@ def test_typescript_toolchain_resolves_pinned_node_in_minimal_environment() -> N
 
 def test_csharp_toolchain_binds_full_console_build_and_runtime_bundle() -> None:
     selected = toolchains.exact_toolchain("csharp")
+    bundle_profile = toolchains.homebrew_route_bundle_profile()
 
     assert selected.executable == str(toolchains._EXPECTED_DOTNET_MUXER)
-    assert selected.executable_sha256 == toolchains._EXPECTED_DOTNET_MUXER_SHA256
+    assert selected.executable_sha256 == bundle_profile.dotnet_muxer_sha256
     expected_fields = {
         "dotnet-profile-schema=v1",
         "sdk-version=10.0.301",
         "hostfxr-version=10.0.9",
         "runtime-version=10.0.9",
         "rid=osx-arm64",
-        f"sdk-tree-sha256={toolchains._EXPECTED_DOTNET_SDK_TREE_SHA256}",
-        f"hostfxr-tree-sha256={toolchains._EXPECTED_DOTNET_HOSTFXR_TREE_SHA256}",
-        f"runtime-tree-sha256={toolchains._EXPECTED_DOTNET_RUNTIME_TREE_SHA256}",
-        f"reference-pack-tree-sha256={toolchains._EXPECTED_DOTNET_REFERENCE_PACK_TREE_SHA256}",
-        f"apphost-pack-tree-sha256={toolchains._EXPECTED_DOTNET_APPHOST_PACK_TREE_SHA256}",
-        f"hostfxr-sha256={toolchains._EXPECTED_DOTNET_HOSTFXR_SHA256}",
-        f"hostpolicy-sha256={toolchains._EXPECTED_DOTNET_HOSTPOLICY_SHA256}",
+        f"sdk-tree-sha256={bundle_profile.dotnet_sdk_tree_sha256}",
+        f"hostfxr-tree-sha256={bundle_profile.dotnet_hostfxr_tree_sha256}",
+        f"runtime-tree-sha256={bundle_profile.dotnet_runtime_tree_sha256}",
+        f"reference-pack-tree-sha256={bundle_profile.dotnet_reference_pack_tree_sha256}",
+        f"apphost-pack-tree-sha256={bundle_profile.dotnet_apphost_pack_tree_sha256}",
+        f"hostfxr-sha256={bundle_profile.dotnet_hostfxr_sha256}",
+        f"hostpolicy-sha256={bundle_profile.dotnet_hostpolicy_sha256}",
     }
     assert expected_fields <= set(selected.profile)
     assert toolchains.verify_csharp_toolchain(selected)["muxer"]
@@ -510,8 +511,9 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "4f843fe1f832caa829272aa0aa6505d306d729fb84d70a3daad93b9eea559624"
+        "6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942"
     )
+    assert current_hosted.php_tree_bytes == 129_952_823
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert current_hosted.php_tree_bytes != local.php_tree_bytes
 

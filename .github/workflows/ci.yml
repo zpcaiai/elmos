@@ -414,6 +414,10 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          cargo build \
+            --locked \
+            --release \
+            --manifest-path native/rust-core/Cargo.toml
           # Resolve the exact Package.resolved graph before the offline native
           # analyzer phase. Any lockfile rewrite is an immediate gate failure.
           (
