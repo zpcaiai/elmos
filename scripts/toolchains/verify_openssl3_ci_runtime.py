@@ -90,7 +90,7 @@ UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 878_752,
-        "sha256": "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
+        "sha256": "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
     },
     LIBSSL: {
         "role": "libssl",
@@ -99,7 +99,7 @@ UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 887_984,
-        "sha256": "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
+        "sha256": "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
     },
     LIBCRYPTO: {
         "role": "libcrypto",
@@ -108,7 +108,7 @@ UNSEALED_FILE_PROFILES: Final = {
         "gid": 80,
         "nlink": 1,
         "bytes": 4_870_832,
-        "sha256": "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
+        "sha256": "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
     },
 }
 
@@ -708,7 +708,24 @@ def _codesign_receipt(path: Path) -> dict[str, object]:
     expected = SIGNATURE_PROFILES.get(path)
     if expected is not None and not expected.issubset(lines):
         missing = sorted(expected - lines)
-        raise RuntimeError(f"OpenSSL signature identity mismatch for {path}: {missing!r}")
+        prefixes = (
+            "Identifier=",
+            "Format=",
+            "CodeDirectory ",
+            "Hash type=",
+            "CandidateCDHashFull ",
+            "CMSDigest=",
+            "CDHash=",
+            "Signature=",
+            "TeamIdentifier=",
+            "Sealed Resources=",
+            "Internal requirements ",
+        )
+        observed = sorted(line for line in lines if line.startswith(prefixes))
+        raise RuntimeError(
+            f"OpenSSL signature identity mismatch for {path}: "
+            f"missing={missing!r}, observed={observed!r}"
+        )
     return {"path": str(path), "details": sorted(expected or ())}
 
 

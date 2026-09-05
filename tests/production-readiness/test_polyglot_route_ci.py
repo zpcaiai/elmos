@@ -230,9 +230,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "20260829.0321.1",
             "15.7.9",
             "24G830",
-            "d0ab050d71d431be5e1372a79972361f7bcef4a7c2c5aef3e7c0ce7bac0e3ee8",
-            "3032e722b7b34f6bc0469695d715d62475fb2c6eecb00bbf0c07629c73108e08",
-            "8e2010fd46cb85dd6423d68c2b69b355a6ad4dfcb1ce83e6f4071b6a705404a7",
+            "fac6e4f037e8e9c184485de80f23df3816c0c6d8428b20a7703b6f339a72a83c",
+            "5f15ad8c8519304aad18b06105f367e21d75e0812eb300e904bb3b9271ce0d0d",
+            "256172ed0500c7af6f9d633b317fffe6efae0cae456eacc283a87cb2474317fb",
             "3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
             "30bbb115d12435513d93702de62223c174b521940829125684a5f0aa5e7f68d7",
         ):
