@@ -801,3 +801,17 @@ def test_fresh_child_selects_all_thirteen_active_language_ids_with_a_sanitized_p
         )
         == 0
     )
+
+
+def test_full_ci_profile_pins_the_exact_cmake_runtime() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+    full_profile = installer.split('if [[ "${CI_PROFILE}" == "full" ]]; then', 1)[1]
+
+    assert (
+        'install_pinned_formula \\\n'
+        '    "cmake" "4.4.0" \\\n'
+        '    "b189098af6b85e6dcdd34d5b6b95d8c1b34adbc3" \\\n'
+        '    "Formula/c/cmake.rb" \\\n'
+        '    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"'
+        in full_profile
+    )

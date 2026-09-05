@@ -843,6 +843,11 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # hashes every resolved component and fails closed if any formula has drifted.
   install_pinned_node26_closure tahoe
   install_pinned_formula \
+    "cmake" "4.4.0" \
+    "b189098af6b85e6dcdd34d5b6b95d8c1b34adbc3" \
+    "Formula/c/cmake.rb" \
+    "77c8c8678e3cb204f8245fb260ddd467c872cdc617a39c98e3ffe4dd6bf75758"
+  install_pinned_formula \
     "dotnet" "10.0.301" \
     "12d2ab0af5e553745d065e02d444f8985983c03a" \
     "Formula/d/dotnet.rb" \

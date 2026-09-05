@@ -318,19 +318,20 @@ jobs:
             --route-set nine-language-complete-72
           python scripts/batch29/run_polyglot_routes.py \
             --route-set php-php85-active-completion-18
-          # Run the authoritative fail-closed gate for the exact active 156.
-          # Deprecated route directories are historical data and are validated
-          # by their frozen read-only set, never admitted as active routes.
+          # The two route-set runners above already invoke the authoritative
+          # gate for all 60 admitted mutable routes. Gate the immutable legacy
+          # 30 and V3 research-only 66 here so all 156 active contracts are
+          # checked exactly once without fabricating V3 execution evidence.
           python - <<'PY'
           from pathlib import Path
           import subprocess
           import sys
 
           sys.path.insert(0, str(Path("scripts/batch29").resolve()))
-          from route_sets import EVIDENCED_ROUTE_KEYS
+          from route_sets import CORE_ROUTE_KEYS, V3_EXACT_ROUTE_KEYS
 
           gate = Path("scripts/batch29/run_route_gate.py")
-          for route_key in EVIDENCED_ROUTE_KEYS:
+          for route_key in (*CORE_ROUTE_KEYS, *V3_EXACT_ROUTE_KEYS):
               subprocess.run(
                   [sys.executable, str(gate), str(Path("routes") / route_key)],
                   check=True,
@@ -413,6 +414,10 @@ jobs:
           cargo fetch \
             --locked \
             --manifest-path engines/polyglot-route-engine/native/rust/Cargo.toml
+          cargo build \
+            --locked \
+            --release \
+            --manifest-path native/rust-core/Cargo.toml
           # Resolve the exact Package.resolved graph before the offline native
           # analyzer phase. Any lockfile rewrite is an immediate gate failure.
           (

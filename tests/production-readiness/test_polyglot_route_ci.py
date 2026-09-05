@@ -566,6 +566,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
             "  polyglot-route-engine-core:", 1
         )[0]
         cargo_fetch = route_engine_job.index("cargo fetch")
+        native_core_build = route_engine_job.index(
+            "--manifest-path native/rust-core/Cargo.toml"
+        )
         private_environment = route_engine_job.index(
             "UV_PROJECT_ENVIRONMENT=${RUNNER_TEMP}/elmos-polyglot-route-venv"
         )
@@ -593,6 +596,8 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         all_route_jobs = route_pack_job + route_workers
 
         self.assertLess(cargo_fetch, core_partition)
+        self.assertLess(cargo_fetch, native_core_build)
+        self.assertLess(native_core_build, core_partition)
         self.assertLess(private_environment, route_sync)
         self.assertLess(route_sync, closure_tests)
         self.assertLess(closure_tests, core_partition)
@@ -707,7 +712,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         php_route_execution = route_pack_job.index(
             "--route-set php-php85-active-completion-18"
         )
-        route_gates = route_pack_job.index("from route_sets import EVIDENCED_ROUTE_KEYS")
+        route_gates = route_pack_job.index(
+            "from route_sets import CORE_ROUTE_KEYS, V3_EXACT_ROUTE_KEYS"
+        )
         active_route_set = route_pack_job.index(
             "--verify-route-set thirteen-language-complete-156"
         )
@@ -724,6 +731,10 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertLess(active_route_set, historical_route_set)
         self.assertIn(
             '[sys.executable, str(gate), str(Path("routes") / route_key)]',
+            route_pack_job,
+        )
+        self.assertIn(
+            "for route_key in (*CORE_ROUTE_KEYS, *V3_EXACT_ROUTE_KEYS)",
             route_pack_job,
         )
         self.assertNotIn("for route in routes/*/", route_pack_job)
