@@ -3,6 +3,7 @@ import {
   ADMINISTRATOR_EMAIL,
   oidcConfigured,
 } from "../../lib/server/accountSession";
+import { descopeConfigured } from "../../lib/server/descopeIdentity";
 import { safeOperationsReturnTo } from "../../lib/surfaceAudience";
 
 export const metadata: Metadata = { title: "管理员登录" };
@@ -35,15 +36,23 @@ const errorMessages: Record<string, string> = {
   ADMIN_LOGIN_NOTIFICATION_REJECTED: "管理员登录安全通知被邮件服务拒绝，本次未建立管理员会话。",
   ADMIN_LOGIN_NOTIFICATION_RESPONSE_INVALID: "管理员登录安全通知未返回有效投递凭据，本次未建立管理员会话。",
   ADMIN_SESSION_REQUIRED: "请通过管理员专用入口重新登录。",
+  DESCOPE_OTP_START_REJECTED: "管理员邮箱验证码发送失败，请稍后重试。",
+  DESCOPE_OTP_CODE_INVALID: "验证码格式无效。",
+  DESCOPE_OTP_VERIFY_REJECTED: "验证码错误、已过期或尝试次数过多。",
+  DESCOPE_CHALLENGE_EXPIRED: "管理员验证码会话已过期，请重新开始。",
+  DESCOPE_EMAIL_NOT_VERIFIED: "管理员邮箱未完成本次邮箱验证码验证。",
+  DESCOPE_TOKEN_INVALID: "管理员身份提供商会话校验失败。",
+  ACCOUNT_SESSION_SECRET_NOT_CONFIGURED: "管理员会话密钥尚未配置，本次未建立会话。",
 };
 
 export default async function AdminLoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; returnTo?: string }>;
+  searchParams: Promise<{ error?: string; returnTo?: string; verify?: string }>;
 }) {
   const parameters = await searchParams;
   const configured = oidcConfigured();
+  const descopeReady = descopeConfigured();
   const error = parameters.error
     ? errorMessages[parameters.error] ?? "管理员登录未完成，未建立管理员会话。"
     : null;
@@ -71,7 +80,30 @@ export default async function AdminLoginPage({
 
         {error && <div className="auth-error" role="alert">{error}</div>}
 
-        {configured && (
+        {parameters.verify === "1" && descopeReady && (
+          <form className="auth-form admin-auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
+            <h2>验证管理员邮箱</h2>
+            <p>请输入发送到 {ADMINISTRATOR_EMAIL} 的一次性验证码。只有本次邮箱验证通过后才会计算管理员权限。</p>
+            <label><span>管理员验证码</span><input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength={4} maxLength={10} required autoFocus /></label>
+            <button className="button admin-login-primary" type="submit">验证并进入管理中心</button>
+            <a className="text-link" href="/admin/login">重新发送验证码</a>
+          </form>
+        )}
+
+        {descopeReady && parameters.verify !== "1" && (
+          <form className="auth-form admin-auth-form" method="post" action="/api/auth/descope/otp/start">
+            <h2>管理员邮箱验证码登录</h2>
+            <p>管理员入口不接受手机号、微信或普通用户会话，只允许唯一管理员邮箱完成本次验证。</p>
+            <input type="hidden" name="channel" value="EMAIL" />
+            <input type="hidden" name="intent" value="LOGIN" />
+            <input type="hidden" name="loginMode" value="ADMIN" />
+            <input type="hidden" name="returnTo" value={adminReturnTo} />
+            <label><span>管理员邮箱</span><input name="loginId" type="email" value={ADMINISTRATOR_EMAIL} readOnly aria-readonly="true" /></label>
+            <button className="button admin-login-primary" type="submit">发送管理员验证码</button>
+          </form>
+        )}
+
+        {configured && !descopeReady && (
           <a
             className="button admin-login-primary"
             href={`/api/auth/login?${new URLSearchParams({
@@ -83,7 +115,7 @@ export default async function AdminLoginPage({
           </a>
         )}
 
-        {!configured && (
+        {!descopeReady && !configured && (
           <div className="auth-not-configured" role="status">
             <strong>管理员身份提供商未配置</strong>
             <span>管理员登录失败关闭：必须先配置受信任的企业 OIDC，不提供本地密码或短期令牌降级入口。</span>

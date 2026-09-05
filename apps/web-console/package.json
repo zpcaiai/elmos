@@ -14,7 +14,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && pnpm test:account-session && pnpm test:admin-login-notification && pnpm test:auth-callback-route && pnpm test:durable-lease && pnpm test:translation-report && pnpm test:repository-translation && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && pnpm test:chinadb-sql-policy && pnpm test:chinadb-sql-local && pnpm test:multimodal-intake-runner && pnpm test:spring-engine-auth && next build",
+    "check": "tsc --noEmit && pnpm test:account-session && pnpm test:admin-login-notification && pnpm test:auth-callback-route && pnpm test:descope-auth-routes && pnpm test:durable-lease && pnpm test:translation-report && pnpm test:repository-translation && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && pnpm test:chinadb-sql-policy && pnpm test:chinadb-sql-local && pnpm test:multimodal-intake-runner && pnpm test:spring-engine-auth && next build",
     "check:evidence": "pnpm test:translation-cancellation",
     "test:chinadb-sql-policy": "node --experimental-strip-types app/lib/server/chinadbSql.verify.mjs",
     "test:chinadb-sql-local": "node --loader ./test/ts-extension-loader.mjs test/chinadbSqlLocal.test.mjs",
@@ -32,6 +32,7 @@
     "test:account-session": "node --experimental-strip-types --test test/accountSession.test.mjs",
     "test:admin-login-notification": "node --loader ./test/ts-extension-loader.mjs --test test/adminLoginNotification.test.mjs",
     "test:auth-callback-route": "node --loader ./test/ts-extension-loader.mjs --test test/authCallbackRoute.test.mjs",
+    "test:descope-auth-routes": "node --loader ./test/ts-extension-loader.mjs --test test/descopeOtpVerifyRoute.test.mjs",
     "test:translation-report": "node --experimental-strip-types --test test/translationConversionReport.test.mjs",
     "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
     "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
@@ -42,6 +43,7 @@
     "test:e2e:chromium": "playwright test --project=chromium --project=mobile-chromium"
   },
   "dependencies": {
+    "@descope/nextjs-sdk": "0.15.70",
     "fflate": "0.8.3",
     "html-to-text": "10.0.1",
     "jose": "6.2.8",

@@ -170,6 +170,23 @@ a.profile-row.active { background: rgba(255,255,255,.08); }
 .auth-not-configured span { color: var(--ink-soft); font-size: 10px; }
 .auth-success { width: 100%; padding: 12px; border: 1px solid #b9ded8; border-radius: 9px; background: var(--cyan-soft); color: var(--cyan-dark); font-size: 11px; line-height: 1.5; }
 .auth-links { width: 100%; display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 11px; }
+.auth-method-grid { width: 100%; display: grid; gap: 12px; }
+.auth-method-card { width: 100%; display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 6px 12px; padding: 16px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-soft); }
+.auth-method-card h2 { margin: 0; font-size: 15px; }
+.auth-method-card p { grid-column: 2 / -1; font-size: 10px; }
+.auth-method-card label { grid-column: 2 / -1; display: flex; flex-direction: column; gap: 6px; }
+.auth-method-card label > span { color: var(--ink-soft); font-size: 10px; font-weight: 700; }
+.auth-method-card input { width: 100%; min-height: 40px; padding: 0 10px; border: 1px solid var(--line-strong); border-radius: 8px; outline: 0; background: white; color: var(--ink); font-size: 11px; }
+.auth-method-card input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(22,123,123,.1); }
+.auth-method-card .button { grid-column: 2 / -1; justify-self: start; }
+.auth-method-icon { grid-row: 1 / span 2; width: 42px; height: 42px; display: inline-grid; place-items: center; border-radius: 12px; background: var(--cyan-soft); color: var(--cyan-dark); font-size: 18px; font-weight: 850; }
+.wechat-auth-card { border-color: #b9dcc5; background: #f4fbf6; }
+.wechat-icon { background: #dff4e5; color: #087b32; font-size: 15px; }
+.wechat-login-button { border-color: #169b49; background: #169b49; color: white; }
+.wechat-login-button:hover { background: #0d8139; }
+.auth-method-disabled { border-style: dashed; opacity: .72; }
+.auth-method-disabled .wechat-login-button { border-color: var(--line-strong); background: var(--surface-subtle); color: var(--muted); box-shadow: none; }
+.otp-verify-form { border-color: #9fd4cd; background: #f4fbfa; }
 .user-scope-notice, .admin-scope-notice { display: flex; flex-direction: column; gap: 5px; margin: 4px 0 2px; padding: 13px 15px; border: 1px solid rgba(124,205,198,.26); border-radius: 12px; background: rgba(124,205,198,.07); text-align: left; }
 .user-scope-notice strong, .admin-scope-notice strong { font-size: 12.5px; font-weight: 700; }
 .user-scope-notice span, .admin-scope-notice span { font-size: 12px; line-height: 1.6; opacity: .92; }
@@ -254,6 +271,10 @@ html[data-theme="dark"] .command-trigger:hover { background: var(--surface); }
 html[data-theme="dark"] .button-primary { background: #235f5d; color: #fff; }
 html[data-theme="dark"] .button-primary:hover { background: #194b49; }
 html[data-theme="dark"] .admin-auth-card { background: linear-gradient(180deg,#30271f 0,var(--surface) 150px); }
+html[data-theme="dark"] .auth-method-card,
+html[data-theme="dark"] .auth-method-card input,
+html[data-theme="dark"] .otp-verify-form { background: var(--surface); }
+html[data-theme="dark"] .wechat-auth-card { border-color: #315d40; background: #18281d; }
 html[data-theme="dark"] .admin-identity-notice,
 html[data-theme="dark"] .admin-entry-button { background: var(--surface); }
 html[data-theme="dark"] .admin-auth-form,
@@ -1243,6 +1264,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
   .topbar { height: 58px; gap: 8px; padding: 0 12px; }.topbar-actions { gap: 5px; }.environment-pill, .topbar-divider, .topbar-actions .icon-button { display: none; }.topbar .mobile-menu, .topbar .command-trigger { min-width: 44px; width: 44px; height: 44px; display: grid; flex: 0 0 44px; }.breadcrumb { min-width: 0; margin-left: 0; overflow: hidden; white-space: nowrap; flex: 1 1 auto; }.breadcrumb span, .breadcrumb strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }.main-content { padding: 23px 15px 40px; }.page-stack { gap: 17px; }
   .anonymous-login-actions { gap: 4px; }.anonymous-login-actions .top-login-link { min-height: 36px; padding-inline: 7px; font-size: 9px; }
   .admin-entry-callout { align-items: stretch; flex-direction: column; }.admin-entry-button { width: 100%; min-height: 44px; }
+  .auth-method-card { grid-template-columns: 38px minmax(0,1fr); }.auth-method-card .button { width: 100%; }.auth-method-icon { width: 38px; height: 38px; }
   .auth-page { padding: 10px 0; }.auth-card { padding: 25px 20px; }
   .back-to-top { width: 44px; min-height: 44px; justify-content: center; padding: 0; }.back-to-top span { display: none; }
   .welcome-card { min-height: auto; padding: 30px 24px; }.welcome-copy h1 { font-size: 32px; }.welcome-actions { flex-direction: column; align-items: stretch; }

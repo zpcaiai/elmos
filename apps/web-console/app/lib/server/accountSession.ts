@@ -24,6 +24,8 @@ export const accountCookieNames = {
   accessToken: "__Host-elmos_access_token",
   refreshToken: "__Host-elmos_refresh_token",
   authorizationFlow: "__Host-elmos_authorization_flow",
+  descopeOtpChallenge: "__Host-elmos_descope_otp_challenge",
+  descopeOauthFlow: "__Host-elmos_descope_oauth_flow",
   tenant: "__Host-elmos_tenant",
 } as const;
 
@@ -328,12 +330,45 @@ export type AccountPrincipal = {
 
 type SealedSession = {
   version: 1;
+  provider?: "OIDC" | "DESCOPE";
+  descopeAuthenticationMethod?: DescopeAuthenticationMethod;
   principal: AccountPrincipal;
   accessTokenHash: string;
   loginMode?: AccountLoginMode;
   refreshTokenHash?: string;
   refreshExpiresAt?: number;
   issuedAt: number;
+  expiresAt: number;
+};
+
+export type DescopeAuthenticationMethod = "EMAIL_OTP" | "PHONE_OTP" | "WECHAT_OAUTH";
+
+export type DescopeIdentity = {
+  userId: string;
+  displayName?: string;
+  email?: string;
+  verifiedEmail?: boolean;
+  phone?: string;
+  verifiedPhone?: boolean;
+};
+
+export type DescopeOtpChallenge = {
+  version: 1;
+  channel: "EMAIL" | "SMS";
+  intent: "LOGIN" | "REGISTER";
+  loginMode: AccountLoginMode;
+  loginId: string;
+  displayName?: string;
+  returnTo: string;
+  expiresAt: number;
+};
+
+export type DescopeOauthFlow = {
+  version: 1;
+  provider: string;
+  intent: "LOGIN" | "REGISTER";
+  loginMode: "USER";
+  returnTo: string;
   expiresAt: number;
 };
 
@@ -485,9 +520,6 @@ function isAlphaVercelEnvironment(): boolean {
 }
 
 function localCredentialsEnabled(): boolean {
-  if (isAlphaVercelEnvironment() && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS !== "false") {
-    return true;
-  }
   return process.env.NODE_ENV !== "production"
     && process.env.ELMOS_ALLOW_LOCAL_CREDENTIALS === "true";
 }
@@ -954,11 +986,14 @@ function sessionKey(): Buffer {
   if (configured && configured.length >= 32) {
     return createHash("sha256").update(configured, "utf8").digest();
   }
-  if (isAlphaVercelEnvironment() || process.env.NODE_ENV !== "production" || localCredentialsEnabled()) {
+  if (process.env.NODE_ENV !== "production") {
     return createHash("sha256").update("elmos-alpha-deterministic-local-session-secret-2026-salt-32", "utf8").digest();
   }
-  const secret = requiredEnvironment("ELMOS_SESSION_SECRET", 32);
-  return createHash("sha256").update(secret, "utf8").digest();
+  throw new AccountSessionError(
+    503,
+    "ACCOUNT_SESSION_SECRET_NOT_CONFIGURED",
+    "生产账户会话密封密钥尚未配置。",
+  );
 }
 
 function base64url(value: Buffer): string {
@@ -1002,6 +1037,137 @@ function unseal<T>(value: string, code: string): T {
     if (error instanceof AccountSessionError) throw error;
     throw new AccountSessionError(401, code, "会话签名或加密校验失败。");
   }
+}
+
+function safeUserReturnTo(value: string): string {
+  return value.startsWith("/")
+    && !value.startsWith("//")
+    && !value.startsWith("/admin")
+    && !/[\\\r\n\0]/.test(value)
+    ? value
+    : "/";
+}
+
+export function createDescopeOtpChallenge(input: {
+  channel: "EMAIL" | "SMS";
+  intent: "LOGIN" | "REGISTER";
+  loginMode: AccountLoginMode;
+  loginId: string;
+  displayName?: string;
+  returnTo: string;
+}): { challenge: DescopeOtpChallenge; sealedChallenge: string } {
+  if (
+    !["EMAIL", "SMS"].includes(input.channel)
+    || !["LOGIN", "REGISTER"].includes(input.intent)
+    || !["USER", "ADMIN"].includes(input.loginMode)
+    || input.loginId.length < 3
+    || input.loginId.length > 254
+    || /[\0\r\n]/.test(input.loginId)
+    || (input.displayName !== undefined
+      && (input.displayName.trim().length < 2 || input.displayName.trim().length > 160))
+  ) {
+    throw new AccountSessionError(400, "DESCOPE_CHALLENGE_INVALID", "登录验证请求无效。");
+  }
+  if (input.loginMode === "ADMIN") {
+    if (
+      input.channel !== "EMAIL"
+      || input.intent !== "LOGIN"
+      || normalizedEmail(input.loginId) !== ADMINISTRATOR_EMAIL
+    ) {
+      throw new AccountSessionError(
+        403,
+        "ADMIN_EMAIL_REQUIRED",
+        `管理员入口仅允许 ${ADMINISTRATOR_EMAIL} 使用邮箱验证码登录。`,
+      );
+    }
+  }
+  if (
+    input.loginMode === "USER"
+    && input.intent === "REGISTER"
+    && input.channel === "EMAIL"
+    && normalizedEmail(input.loginId) === ADMINISTRATOR_EMAIL
+  ) {
+    throw new AccountSessionError(
+      403,
+      "DESCOPE_ADMIN_EMAIL_RESERVED",
+      "管理员邮箱不能通过普通用户注册入口创建。",
+    );
+  }
+  const challenge: DescopeOtpChallenge = {
+    version: 1,
+    channel: input.channel,
+    intent: input.intent,
+    loginMode: input.loginMode,
+    loginId: input.loginId.trim(),
+    ...(input.displayName ? { displayName: input.displayName.trim() } : {}),
+    returnTo: input.loginMode === "ADMIN" ? "/admin" : safeUserReturnTo(input.returnTo),
+    expiresAt: Date.now() + 10 * 60_000,
+  };
+  return { challenge, sealedChallenge: seal(challenge) };
+}
+
+export function readDescopeOtpChallenge(sealedChallenge: string): DescopeOtpChallenge {
+  const challenge = unseal<DescopeOtpChallenge>(
+    sealedChallenge,
+    "DESCOPE_CHALLENGE_INVALID",
+  );
+  if (
+    challenge.version !== 1
+    || !["EMAIL", "SMS"].includes(challenge.channel)
+    || !["LOGIN", "REGISTER"].includes(challenge.intent)
+    || !["USER", "ADMIN"].includes(challenge.loginMode)
+    || typeof challenge.loginId !== "string"
+    || challenge.loginId.length < 3
+    || challenge.loginId.length > 254
+    || challenge.expiresAt <= Date.now()
+    || challenge.expiresAt > Date.now() + 10 * 60_000
+  ) {
+    throw new AccountSessionError(401, "DESCOPE_CHALLENGE_EXPIRED", "验证码会话已过期，请重新开始。");
+  }
+  if (
+    challenge.loginMode === "ADMIN"
+    && (challenge.channel !== "EMAIL"
+      || challenge.intent !== "LOGIN"
+      || normalizedEmail(challenge.loginId) !== ADMINISTRATOR_EMAIL)
+  ) {
+    throw new AccountSessionError(403, "ADMIN_EMAIL_REQUIRED", "管理员验证上下文无效。");
+  }
+  return challenge;
+}
+
+export function createDescopeOauthFlow(input: {
+  provider: string;
+  intent: "LOGIN" | "REGISTER";
+  returnTo: string;
+}): { flow: DescopeOauthFlow; sealedFlow: string } {
+  const provider = input.provider.trim().toLocaleLowerCase("en-US");
+  if (!/^[a-z0-9][a-z0-9_-]{1,63}$/.test(provider)) {
+    throw new AccountSessionError(503, "DESCOPE_WECHAT_NOT_CONFIGURED", "微信登录提供商未配置。");
+  }
+  const flow: DescopeOauthFlow = {
+    version: 1,
+    provider,
+    intent: input.intent,
+    loginMode: "USER",
+    returnTo: safeUserReturnTo(input.returnTo),
+    expiresAt: Date.now() + 10 * 60_000,
+  };
+  return { flow, sealedFlow: seal(flow) };
+}
+
+export function readDescopeOauthFlow(sealedFlow: string): DescopeOauthFlow {
+  const flow = unseal<DescopeOauthFlow>(sealedFlow, "DESCOPE_OAUTH_FLOW_INVALID");
+  if (
+    flow.version !== 1
+    || flow.loginMode !== "USER"
+    || !["LOGIN", "REGISTER"].includes(flow.intent)
+    || !/^[a-z0-9][a-z0-9_-]{1,63}$/.test(flow.provider)
+    || flow.expiresAt <= Date.now()
+    || flow.expiresAt > Date.now() + 10 * 60_000
+  ) {
+    throw new AccountSessionError(401, "DESCOPE_OAUTH_FLOW_EXPIRED", "微信登录会话已过期，请重新开始。");
+  }
+  return flow;
 }
 
 function hashToken(value: string): string {
@@ -1122,6 +1288,131 @@ export function accountPrincipalFromOidcClaims(claims: JWTPayload): AccountPrinc
     permissions: primary.permissions,
     memberships: [...memberships.values()],
   }, emailVerified);
+}
+
+function descopeOrganizationId(): string {
+  const configured = process.env.ELMOS_DESCOPE_DEFAULT_ORGANIZATION_ID?.trim()
+    || "elmos-public";
+  if (!organizationPattern.test(configured)) {
+    throw new AccountSessionError(
+      503,
+      "DESCOPE_CONFIGURATION_INVALID",
+      "Descope 默认组织标识无效。",
+    );
+  }
+  return configured;
+}
+
+export function accountPrincipalFromDescopeIdentity(
+  identity: DescopeIdentity,
+  authenticationMethod: DescopeAuthenticationMethod,
+): AccountPrincipal {
+  const rawUserId = identity.userId.trim();
+  const actorId = `descope:${rawUserId}`;
+  if (!identifierPattern.test(actorId) || rawUserId.length < 8) {
+    throw new AccountSessionError(
+      403,
+      "DESCOPE_SUBJECT_INVALID",
+      "Descope 身份缺少有效主体标识。",
+    );
+  }
+  const email = normalizedEmail(identity.email);
+  const emailVerified = authenticationMethod === "EMAIL_OTP"
+    && identity.verifiedEmail === true
+    && Boolean(email);
+  if (authenticationMethod === "PHONE_OTP" && identity.verifiedPhone !== true) {
+    throw new AccountSessionError(403, "DESCOPE_PHONE_NOT_VERIFIED", "手机号尚未通过验证。");
+  }
+  if (authenticationMethod === "EMAIL_OTP" && !emailVerified) {
+    throw new AccountSessionError(403, "DESCOPE_EMAIL_NOT_VERIFIED", "邮箱尚未通过验证。");
+  }
+  const organizationId = descopeOrganizationId();
+  const roles: AccountRole[] = ["DEVELOPER"];
+  const primary = membership(organizationId, roles, []);
+  const displayName = [identity.displayName, email, identity.phone, rawUserId]
+    .find((value): value is string => typeof value === "string" && value.trim().length > 0)
+    ?.trim()
+    .slice(0, 160) ?? rawUserId;
+  return applyAdministratorPolicy({
+    actorId,
+    displayName,
+    ...(email ? { email } : {}),
+    organizationId,
+    roles: primary.roles,
+    permissions: primary.permissions,
+    memberships: [primary],
+  }, emailVerified);
+}
+
+export function createDescopeAccountSession(input: {
+  identity: DescopeIdentity;
+  authenticationMethod: DescopeAuthenticationMethod;
+  loginMode: AccountLoginMode;
+  accessToken: string;
+  refreshToken: string;
+  expiresAt: number;
+  refreshExpiresAt: number;
+  expectedActorId?: string;
+  maximumRefreshExpiresAt?: number;
+}): {
+  tokens: { accessToken: string; refreshToken: string };
+  session: string;
+  expiresAt: number;
+  refreshExpiresAt: number;
+  principal: AccountPrincipal;
+} {
+  const now = Date.now();
+  if (
+    input.accessToken.length < 64
+    || input.accessToken.length > maximumCookieValueLength
+    || input.refreshToken.length < 64
+    || input.refreshToken.length > maximumCookieValueLength
+    || !Number.isFinite(input.expiresAt)
+    || input.expiresAt <= now
+    || input.expiresAt > now + 24 * 60 * 60_000
+    || !Number.isFinite(input.refreshExpiresAt)
+    || input.refreshExpiresAt <= now
+    || input.refreshExpiresAt > now + 30 * 24 * 60 * 60_000
+  ) {
+    throw new AccountSessionError(401, "DESCOPE_TOKEN_INVALID", "Descope 会话令牌无效或已过期。");
+  }
+  const principal = accountPrincipalFromDescopeIdentity(
+    input.identity,
+    input.authenticationMethod,
+  );
+  if (input.expectedActorId && !safeEqual(principal.actorId, input.expectedActorId)) {
+    throw new AccountSessionError(
+      403,
+      "DESCOPE_REFRESH_SUBJECT_CHANGED",
+      "刷新后的账户主体与当前会话不一致，请重新登录。",
+    );
+  }
+  assertLoginModeAccess(principal, input.loginMode);
+  const expiresAt = Math.min(input.expiresAt, now + 60 * 60_000);
+  const refreshExpiresAt = Math.min(
+    input.refreshExpiresAt,
+    now + oidcRefreshSessionLifetimeMs,
+    input.maximumRefreshExpiresAt ?? Number.POSITIVE_INFINITY,
+  );
+  const session = seal({
+    version: 1,
+    provider: "DESCOPE",
+    descopeAuthenticationMethod: input.authenticationMethod,
+    principal,
+    accessTokenHash: hashToken(input.accessToken),
+    refreshTokenHash: hashToken(input.refreshToken),
+    loginMode: input.loginMode,
+    refreshExpiresAt,
+    issuedAt: now,
+    expiresAt,
+  } satisfies SealedSession);
+  return {
+    tokens: { accessToken: input.accessToken, refreshToken: input.refreshToken },
+    session,
+    expiresAt,
+    refreshExpiresAt,
+    principal,
+  };
 }
 
 const globalJwks = globalThis as typeof globalThis & {
@@ -1382,6 +1673,7 @@ export async function exchangeAuthorizationCode(
   const refreshExpiresAt = refreshTokenExpiresAt(tokens);
   const session = seal({
     version: 1,
+    provider: "OIDC",
     principal,
     accessTokenHash: hashToken(tokens.accessToken),
     loginMode: flow.loginMode,
@@ -1453,6 +1745,7 @@ export async function refreshAccountSession(
     tokens: { ...tokens, refreshToken: effectiveRefreshToken },
     session: seal({
       version: 1,
+      provider: "OIDC",
       principal,
       accessTokenHash: hashToken(tokens.accessToken),
       loginMode: expected.loginMode,
@@ -1649,6 +1942,8 @@ export function assertSameOriginMutation(request: Request): void {
 export function refreshSessionFromRequest(request: Request): {
   actorId: string;
   loginMode: AccountLoginMode;
+  provider: "OIDC" | "DESCOPE";
+  descopeAuthenticationMethod?: DescopeAuthenticationMethod;
   refreshToken: string;
   refreshExpiresAt: number;
 } {
@@ -1681,6 +1976,13 @@ export function refreshSessionFromRequest(request: Request): {
     || typeof session.refreshExpiresAt !== "number"
     || typeof session.accessTokenHash !== "string"
     || typeof session.refreshTokenHash !== "string"
+    || (session.provider !== undefined
+      && session.provider !== "OIDC"
+      && session.provider !== "DESCOPE")
+    || (session.provider === "DESCOPE"
+      && session.descopeAuthenticationMethod !== "EMAIL_OTP"
+      && session.descopeAuthenticationMethod !== "PHONE_OTP"
+      && session.descopeAuthenticationMethod !== "WECHAT_OAUTH")
     || (session.loginMode !== "USER" && session.loginMode !== "ADMIN")
     || session.issuedAt > now + 60_000
     || session.expiresAt <= session.issuedAt
@@ -1710,6 +2012,10 @@ export function refreshSessionFromRequest(request: Request): {
   return {
     actorId: principal.actorId,
     loginMode: session.loginMode,
+    provider: session.provider ?? "OIDC",
+    ...(session.descopeAuthenticationMethod
+      ? { descopeAuthenticationMethod: session.descopeAuthenticationMethod }
+      : {}),
     refreshToken,
     refreshExpiresAt: session.refreshExpiresAt,
   };

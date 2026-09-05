@@ -4,11 +4,13 @@ import {
   accountCookieDeletionOptions,
   accountSessionErrorResponse,
   assertSameOriginMutation,
+  createDescopeAccountSession,
   refreshAccountSession,
   refreshSessionCookieMaxAge,
   refreshSessionFromRequest,
   sessionCookieMaxAge,
 } from "../../../lib/server/accountSession";
+import { refreshDescopeSession } from "../../../lib/server/descopeIdentity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -21,11 +23,21 @@ export async function POST(request: NextRequest) {
   }
   try {
     const current = refreshSessionFromRequest(request);
-    const result = await refreshAccountSession(current.refreshToken, {
-      actorId: current.actorId,
-      loginMode: current.loginMode,
-      refreshExpiresAt: current.refreshExpiresAt,
-    });
+    const result = current.provider === "DESCOPE"
+      ? createDescopeAccountSession({
+        ...(await refreshDescopeSession(
+          current.refreshToken,
+          current.descopeAuthenticationMethod ?? "WECHAT_OAUTH",
+        )),
+        loginMode: current.loginMode,
+        expectedActorId: current.actorId,
+        maximumRefreshExpiresAt: current.refreshExpiresAt,
+      })
+      : await refreshAccountSession(current.refreshToken, {
+        actorId: current.actorId,
+        loginMode: current.loginMode,
+        refreshExpiresAt: current.refreshExpiresAt,
+      });
     const response = NextResponse.json({
       authenticated: true,
       principal: result.principal,
