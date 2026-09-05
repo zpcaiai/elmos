@@ -109,7 +109,7 @@
         <docker.api.version>1.44</docker.api.version>
         <jgit.version>7.7.0.202606012155-r</jgit.version>
         <tomlj.version>1.1.1</tomlj.version>
-        <sqlite-jdbc.version>3.53.2.1</sqlite-jdbc.version>
+        <sqlite-jdbc.version>3.53.4.0</sqlite-jdbc.version>
     </properties>
 
     <dependencyManagement>
