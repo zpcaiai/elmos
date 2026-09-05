@@ -744,6 +744,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
         )
         assert environment["ELMOS_POLYGLOT_ROUTE_CI_PROFILE"] == "full"
         assert environment["CI"] == "true"
+        assert environment["GITHUB_ACTIONS"] == "true"
         assert "JAVA_HOME" not in environment
         assert "_JAVA_OPTIONS" not in environment
         assert command[command.index("run") + 1] == "--no-dev"
@@ -765,6 +766,7 @@ def test_fresh_runtime_forwards_only_explicit_runtime_bindings(
     )
     monkeypatch.setenv("ELMOS_POLYGLOT_ROUTE_CI_PROFILE", "full")
     monkeypatch.setenv("CI", "true")
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
     monkeypatch.setenv("JAVA_HOME", "/hostile/java")
     monkeypatch.setenv("_JAVA_OPTIONS", "-javaagent:/hostile/agent.jar")
     monkeypatch.setattr(runtime, "_pinned_uv", lambda: Path("/fixed/bin/uv"))
