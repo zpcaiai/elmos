@@ -199,8 +199,11 @@ export function verifyLocalRunnerServiceCredential(input: {
   let providedSignature: Buffer;
   try {
     providedSignature = Buffer.from(encodedSignature, "base64url");
+    if (providedSignature.toString("base64url") !== encodedSignature) {
+      throw new Error("non-canonical base64url signature");
+    }
   } catch {
-    throw new LocalRunnerCredentialError("LOCAL_RUNNER_SERVICE_CREDENTIAL_MALFORMED", 401);
+    throw new LocalRunnerCredentialError("AUTHENTICATION_REQUIRED", 401);
   }
   const expectedSignature = createHmac("sha256", key)
     .update(`${encodedHeader}.${encodedClaims}`, "utf8")

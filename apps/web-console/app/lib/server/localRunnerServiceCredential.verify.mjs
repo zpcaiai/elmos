@@ -78,8 +78,22 @@ try {
   assert.throws(() => verify(token({ tenant_id: "tenant:two" })), /TENANT_ID_NOT_BOUND_TO_CREDENTIAL/);
   assert.throws(() => verify(token({ permission: "repository:push" })), /LOCAL_RUNNER_SERVICE_CREDENTIAL_CLAIMS_INVALID/);
   assert.throws(() => verify(token({ path: "/api/generation/jobs/other" })), /LOCAL_RUNNER_SERVICE_CREDENTIAL_CLAIMS_INVALID/);
-  const tampered = `${token().slice(0, -1)}A`;
+  const signed = token();
+  const segments = signed.split(".");
+  const tamperedSignature = `${segments[2][0] === "A" ? "B" : "A"}${segments[2].slice(1)}`;
+  const tampered = `${segments[0]}.${segments[1]}.${tamperedSignature}`;
   assert.throws(() => verify(tampered), /AUTHENTICATION_REQUIRED/);
+
+  const canonical = token();
+  const canonicalSegments = canonical.split(".");
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+  const lastIndex = alphabet.indexOf(canonicalSegments[2].at(-1));
+  assert.notEqual(lastIndex, -1);
+  const nonCanonicalLast = alphabet[(lastIndex & 0b111100) | 0b000001];
+  assert.notEqual(nonCanonicalLast, canonicalSegments[2].at(-1));
+  const nonCanonical = `${canonicalSegments[0]}.${canonicalSegments[1]}.${canonicalSegments[2].slice(0, -1)}${nonCanonicalLast}`;
+  assert.deepEqual(Buffer.from(canonicalSegments[2], "base64url"), Buffer.from(`${canonicalSegments[2].slice(0, -1)}${nonCanonicalLast}`, "base64url"));
+  assert.throws(() => verify(nonCanonical), /AUTHENTICATION_REQUIRED/);
 
   const issuer = path.resolve(
     path.dirname(new URL(import.meta.url).pathname),

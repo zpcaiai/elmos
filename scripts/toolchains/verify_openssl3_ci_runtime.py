@@ -123,9 +123,9 @@ SIGNATURE_PROFILES: Final = {
         "Format=Mach-O thin (arm64)",
         "CodeDirectory v=20400 size=7073 flags=0x2(adhoc) hashes=216+2 location=embedded",
         "Hash type=sha256 size=32",
-        "CandidateCDHashFull sha256=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CMSDigest=3e4544b02a72a69188b14e6bbc0b04a2ee41649e0fc658908e20e4640cc0648a",
-        "CDHash=3e4544b02a72a69188b14e6bbc0b04a2ee41649e",
+        "CandidateCDHashFull sha256=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
+        "CMSDigest=b2920ada65fae0087ed680e1cfc58c8e21a20a9a41cfc068ef4cff31eac43bd3",
+        "CDHash=b2920ada65fae0087ed680e1cfc58c8e21a20a9a",
         "Signature=adhoc",
         "TeamIdentifier=not set",
         "Sealed Resources=none",
@@ -694,7 +694,7 @@ def _run_with_runtime_guard(
             )
 
 
-def _codesign_receipt(path: Path) -> dict[str, object]:
+def _codesign_receipt(path: Path, *, validate_expected: bool = True) -> dict[str, object]:
     environment = _clean_environment()
     _run_with_runtime_guard(
         ["/usr/bin/codesign", "--verify", "--strict", "--verbose=2", str(path)],
@@ -706,8 +706,7 @@ def _codesign_receipt(path: Path) -> dict[str, object]:
     )
     lines = set((details.stdout + details.stderr).splitlines())
     expected = SIGNATURE_PROFILES.get(path)
-    if expected is not None and not expected.issubset(lines):
-        missing = sorted(expected - lines)
+    if expected is not None:
         prefixes = (
             "Identifier=",
             "Format=",
@@ -722,11 +721,18 @@ def _codesign_receipt(path: Path) -> dict[str, object]:
             "Internal requirements ",
         )
         observed = sorted(line for line in lines if line.startswith(prefixes))
+    else:
+        observed = []
+    if validate_expected and expected is not None and not expected.issubset(lines):
+        missing = sorted(expected - lines)
         raise RuntimeError(
             f"OpenSSL signature identity mismatch for {path}: "
             f"missing={missing!r}, observed={observed!r}"
         )
-    return {"path": str(path), "details": sorted(expected or ())}
+    return {
+        "path": str(path),
+        "details": sorted(expected or ()) if validate_expected else observed,
+    }
 
 
 def _dependency_paths(path: Path) -> tuple[str, ...]:
@@ -760,7 +766,30 @@ def _dylib_id(path: Path) -> str:
 def _runtime_receipt() -> dict[str, object]:
     authority_before = _sealed_authority_receipt()
     files_before = _stable_runtime_file_receipts()
-    signatures = [_codesign_receipt(path) for path in FILE_PROFILES]
+    observed_signatures = [
+        _codesign_receipt(path, validate_expected=False) for path in FILE_PROFILES
+    ]
+    signature_mismatches = []
+    for receipt in observed_signatures:
+        path = Path(str(receipt["path"]))
+        expected = SIGNATURE_PROFILES.get(path)
+        observed = set(receipt["details"])
+        if expected is not None and not expected.issubset(observed):
+            signature_mismatches.append(
+                {
+                    "path": str(path),
+                    "missing": sorted(expected - observed),
+                    "observed": sorted(observed),
+                }
+            )
+    if signature_mismatches:
+        raise RuntimeError(
+            f"OpenSSL signature identity mismatches: {signature_mismatches!r}"
+        )
+    signatures = [
+        {"path": str(path), "details": sorted(SIGNATURE_PROFILES.get(path, ()))}
+        for path in FILE_PROFILES
+    ]
     dependencies = {
         str(path): list(_dependency_paths(path)) for path in FILE_PROFILES
     }
