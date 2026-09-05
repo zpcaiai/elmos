@@ -8145,7 +8145,7 @@ def analyze(
             ),
             receipt,
         )
-        return SemanticIR.from_mapping(value)
+        return _external_semantic_ir(value)
     if language == "java":
         helper = ENGINE_ROOT / "native" / "java" / "Analyzer.java"
         arguments = [str(source), function_name]

@@ -447,7 +447,7 @@
       "bytes": 271519,
       "path": "certification/formal-artifacts/engine-source-manifest.json",
       "role": "engine-source-manifest",
-      "sha256": "sha256:59902054041d0cea53209d2ee76e40614dc70cffe56732af5e6fa913c62ad4da"
+      "sha256": "sha256:16d6b62888c65071a5997def014ca607d279f8e01dd67e46cfff7ab8c7364ab7"
     },
     {
       "artifact_id": "artifact-1a941701c1f394b121c4d8f6f6f18fa9519cd4ad57b6ebfc985bea651c6cc7f3",
@@ -3881,10 +3881,10 @@
     },
     {
       "artifact_id": "artifact-cfca6b4bc5de6de40263acf287452c6539ee4c7b502c49cdf268461cb5f896a0",
-      "bytes": 320317,
+      "bytes": 320315,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/native.py",
       "role": "engine-source",
-      "sha256": "sha256:cee4d9e42bfac058fc8357c68321152a9248f98d0b61a7398553b5cd055311e1"
+      "sha256": "sha256:04e1eb380218071bac88794047638c528bab648579dc5a2cd80d7ec10c92b886"
     },
     {
       "artifact_id": "artifact-23ceceec93d84491068656399f92e4180894fd0de825b7b6df1cbd212e8ad61c",
@@ -3923,10 +3923,10 @@
     },
     {
       "artifact_id": "artifact-a9dd9f2c307824245d184946e4b75df2625b7f83d624795839aa3f6e78da09f0",
-      "bytes": 230997,
+      "bytes": 233145,
       "path": "certification/formal-artifacts/engine-sources/engines/polyglot-route-engine/src/elmos_polyglot_route/toolchains.py",
       "role": "engine-source",
-      "sha256": "sha256:ad0ae5edd5a57d94a7f3768d9c6d698f20da913e822ec87f10e0053bb743e0b9"
+      "sha256": "sha256:a6df3cc3307adbc8850ac842b0afbcfbff81f8ece17fefd77b1f193898c835f2"
     },
     {
       "artifact_id": "artifact-e743fda8b420c842e916b1bd356b92c9aa26b1331e67e042303d8d529520227d",
@@ -4763,10 +4763,10 @@
     },
     {
       "artifact_id": "artifact-7bfd2577620fc52ea7c0317a7e75d27c0aa94981a6a33dea656cf32306845f8d",
-      "bytes": 50396,
+      "bytes": 50447,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/fresh_route_runtime.py",
       "role": "engine-source",
-      "sha256": "sha256:d548aef9d751cbd6d3c71eecec9476b6bb05bd067b757d6558814374bca42ff6"
+      "sha256": "sha256:8acc9fb1038dbcaad0588e9c15cc6b85b68e5097871a8df8a78cc7dc2df972b4"
     },
     {
       "artifact_id": "artifact-cec9e6e0420b1a4b6da8c6ef6a5919e605d136780edfdb927caba202dc4058ef",
@@ -4777,10 +4777,10 @@
     },
     {
       "artifact_id": "artifact-bec960ebee366a74c0e6ceb09dbe3f9b04b61fc38915af7863cb2793c024baa6",
-      "bytes": 257148,
+      "bytes": 256987,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/run_polyglot_routes.py",
       "role": "engine-source",
-      "sha256": "sha256:676cf3b7560f608aaefa43fbc0b564f1d9ba9dfbef1567d53aa99be06237a658"
+      "sha256": "sha256:ced2a9fb44d083a8fd89b50e5903243bfe88143727d358d218de6b2a5fb94feb"
     },
     {
       "artifact_id": "artifact-425efbb1c7db3860d3d6d2c097217b04e3436fd393bcbdb13b55884d9f997924",
@@ -4791,10 +4791,10 @@
     },
     {
       "artifact_id": "artifact-f43d107e4f666c6dc2f8c1526eb993e502881dcb05e8c2ecac6bbf025f6e8cf6",
-      "bytes": 534478,
+      "bytes": 534200,
       "path": "certification/formal-artifacts/engine-sources/scripts/batch29/validate_route.py",
       "role": "engine-source",
-      "sha256": "sha256:e20d332e6ddb96127ee4dc7a815e49741fe7148173f03ca6a4e2b564e66f3c30"
+      "sha256": "sha256:8184fdde2e2f653391dd8b43fc9d2be256001de8db4b453177de731c69bc24ee"
     },
     {
       "artifact_id": "artifact-87818eea13b1223e5c8520a16b1741701fce9248e285442d2f792f6d49b34df3",
@@ -4808,7 +4808,7 @@
       "bytes": 953,
       "path": "certification/formal-artifacts/environment.json",
       "role": "environment",
-      "sha256": "sha256:635412dab40737dc8106a35da2f7df35deaaec77ec4452e5ea6ccd0617313924"
+      "sha256": "sha256:f11ac6c08eb603eed5f9be2c601a52815b492c255e614a72ac25acf90f425327"
     },
     {
       "artifact_id": "artifact-08f4978be25e5101ad0ce7efcd62d4a0d291aef06d76791ff70790953ea4a207",
@@ -4865,7 +4865,7 @@
     "total_cases": 12
   },
   "environment_artifact_id": "artifact-f69ab2d60e99a857ecfa95fbe2f760645c3ae30ebdcd90cb5063c943c0ac07e3",
-  "environment_sha256": "sha256:635412dab40737dc8106a35da2f7df35deaaec77ec4452e5ea6ccd0617313924",
+  "environment_sha256": "sha256:f11ac6c08eb603eed5f9be2c601a52815b492c255e614a72ac25acf90f425327",
   "formal_proof": {
     "assumptions": [
       "canonical-finite-input-domain:source:value",

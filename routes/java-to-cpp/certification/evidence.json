@@ -49,7 +49,7 @@
   "formal_equivalence": {
     "bytes": 298378,
     "path": "certification/formal-equivalence.json",
-    "sha256": "sha256:693691e5c6ef974088e2ca1bf3ffb74ebea1f5a60a75858837a11c1ad3af64c1"
+    "sha256": "sha256:88d8c8313a71ba22d189c9049a3d08094fad7f56002ed9d6fdbc132cd116bfb0"
   },
   "input_domain": "canonical-finite-no-error-input-domain",
   "metrics": {
