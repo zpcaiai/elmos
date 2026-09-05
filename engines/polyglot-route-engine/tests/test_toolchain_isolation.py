@@ -525,7 +525,18 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         getattr(legacy_hosted, field) == getattr(current_hosted, field)
         for field in dotnet_fields
     )
-    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
+    assert legacy_hosted.php_tree_sha256 == (
+        "7d3209823954caf0fdded1313dd0167f7c56b7e27f600ea0e377ecff489be1c1"
+    )
+    assert legacy_hosted.php_tree_bytes == 129_952_827
+    assert legacy_hosted.php_tree_sha256 not in {
+        local.php_tree_sha256,
+        current_hosted.php_tree_sha256,
+    }
+    assert legacy_hosted.php_tree_bytes not in {
+        local.php_tree_bytes,
+        current_hosted.php_tree_bytes,
+    }
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )

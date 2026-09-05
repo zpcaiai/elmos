@@ -488,8 +488,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     image_version="20260728.0273.1",
     product_version="26.5.2",
     build_version="25F84",
-    php_tree_sha256=_HOMEBREW_ROUTE_LOCAL_PROFILE.php_tree_sha256,
-    php_tree_bytes=_HOMEBREW_ROUTE_LOCAL_PROFILE.php_tree_bytes,
+    php_tree_sha256="7d3209823954caf0fdded1313dd0167f7c56b7e27f600ea0e377ecff489be1c1",
+    php_tree_bytes=129_952_827,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
