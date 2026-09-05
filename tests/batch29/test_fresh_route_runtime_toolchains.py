@@ -274,6 +274,15 @@ def test_ci_installer_adapts_only_the_digest_bound_openssl_symlink_keyword() -> 
     assert 'source.replace(openssl_postinstall, "", 1)' in installer
 
 
+def test_ci_installer_reports_every_node_closure_identity_mismatch() -> None:
+    installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
+
+    assert "NODE_COMPONENT_MISMATCH_COUNT=0" in installer
+    assert "NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))" in installer
+    assert "observed=%s:%s expected=%s:501:80:1:%s:%s" in installer
+    assert "Pinned Node closure has %s component identity mismatch(es)." in installer
+
+
 def test_java_python_ci_profile_materializes_the_required_typescript_closure() -> None:
     installer = CI_INSTALLER_PATH.read_text(encoding="utf-8")
     profile_guard = (

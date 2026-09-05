@@ -388,12 +388,15 @@ install_pinned_ada_url() {
   fi
 }
 
+NODE_COMPONENT_MISMATCH_COUNT=0
+
 verify_pinned_node26_component() {
   local path="$1"
   local expected_mode="$2"
   local expected_bytes="$3"
   local expected_sha256="$4"
   local observed
+  local observed_sha256
   if [[ ! -f "${path}" || -L "${path}" \
     || "$("${REALPATH_PATH}" "${path}")" != "${path}" ]]; then
     printf 'Pinned Node closure component is unavailable or unsafe: %s\n' \
@@ -401,11 +404,13 @@ verify_pinned_node26_component() {
     exit 3
   fi
   observed="$(stat -f '%Lp:%u:%g:%l:%z' "${path}")"
+  observed_sha256="$(file_sha256 "${path}")"
   if [[ "${observed}" != "${expected_mode}:501:80:1:${expected_bytes}" \
-    || "$(file_sha256 "${path}")" != "${expected_sha256}" ]]; then
-    printf 'Pinned Node closure component identity mismatch: %s (%s)\n' \
-      "${path}" "${observed}" >&2
-    exit 3
+    || "${observed_sha256}" != "${expected_sha256}" ]]; then
+    printf 'Pinned Node closure component identity mismatch: %s (observed=%s:%s expected=%s:501:80:1:%s:%s)\n' \
+      "${path}" "${observed}" "${observed_sha256}" \
+      "${expected_mode}" "${expected_bytes}" "${expected_sha256}" >&2
+    NODE_COMPONENT_MISMATCH_COUNT=$((NODE_COMPONENT_MISMATCH_COUNT + 1))
   fi
 }
 
@@ -438,6 +443,7 @@ install_pinned_sqlite() {
 install_pinned_node26_closure() {
   local profile="$1"
   local hdrhistogram_version
+  NODE_COMPONENT_MISMATCH_COUNT=0
   case "${profile}" in
     tahoe) hdrhistogram_version="0.11.10" ;;
     sequoia) hdrhistogram_version="0.11.9" ;;
@@ -627,6 +633,11 @@ sqlite/3.53.3/lib/libsqlite3.3.53.3.dylib|444|1276320|ae5d701ec1fe829883496a1c21
 uvwasi/0.0.23/lib/libuvwasi.dylib|444|65616|60a4e2eb2e2ea432d38730c41816ca032b7c45b0fb713c0649cb1fed1a8691f9
 zstd/1.5.7_1/lib/libzstd.1.5.7.dylib|444|635328|602d50cbe6fad0f0da6d1b73284ae3f75316015aea482ebd55614b6df2406b43
 EOF
+  fi
+  if [[ "${NODE_COMPONENT_MISMATCH_COUNT}" -ne 0 ]]; then
+    printf 'Pinned Node closure has %s component identity mismatch(es).\n' \
+      "${NODE_COMPONENT_MISMATCH_COUNT}" >&2
+    exit 3
   fi
 }
 
