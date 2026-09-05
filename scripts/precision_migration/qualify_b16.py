@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -79,7 +80,7 @@ def build() -> dict[str, Any]:
             capture_output=True,
             text=True,
             check=False,
-            timeout=120,
+            timeout=int(os.environ.get("ELMOS_B16_GATE_TIMEOUT_SECONDS", "300")),
         )
         if completed.returncode:
             raise ValueError(f"B16 integration gate failed: {route_key}: {(completed.stderr or completed.stdout)[-500:]}")

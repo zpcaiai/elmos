@@ -114,3 +114,4 @@ survey-engines-mac.sh
 .vercel
 .env*
 !deploy/production/.env.example
+!client-packs/**/source-snapshots/**
