@@ -101,6 +101,30 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertIn("deployments: read", workflow)
         self.assertIn("github.event.pull_request.head.sha || github.sha", workflow)
 
+    def test_workflow_uses_short_lived_oidc_for_protected_preview(self) -> None:
+        workflow = (
+            ROOT / ".github/workflows/vercel-deployment-smoke.yml"
+        ).read_text(encoding="utf-8")
+        playwright_config = (
+            ROOT / "apps/web-console/playwright.vercel.config.ts"
+        ).read_text(encoding="utf-8")
+        smoke_spec = (
+            ROOT / "apps/web-console/e2e/vercel-deployment-smoke.spec.ts"
+        ).read_text(encoding="utf-8")
+
+        self.assertIn("id-token: write", workflow)
+        self.assertRegex(
+            workflow,
+            r"actions/github-script@[0-9a-f]{40}",
+        )
+        self.assertIn("await core.getIDToken()", workflow)
+        self.assertIn("core.setSecret(token)", workflow)
+        self.assertIn("steps.vercel-trusted-source.outputs.token", workflow)
+        self.assertIn("ELMOS_VERCEL_TRUSTED_OIDC_TOKEN", workflow)
+        self.assertIn("x-vercel-trusted-oidc-idp-token", smoke_spec)
+        self.assertIn('trace: hasVercelTrustedOidcToken ? "off"', playwright_config)
+        self.assertNotIn("x-vercel-protection-bypass", workflow + smoke_spec)
+
 
 if __name__ == "__main__":
     unittest.main()
