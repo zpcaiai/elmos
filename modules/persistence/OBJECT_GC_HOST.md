@@ -8,9 +8,16 @@ the V86 lock-then-resnapshot root checks.
 
 ## Explicit deployment enablement
 
-This path is **disabled by default**. An authorized database operator must grant
-`elmos_object_gc_host` to the trusted scheduler login and explicitly enable
-`elmos.object-storage.host-gc-enabled=true`. The migration does not grant this
+The current S3 protocol is **BLOCKED_UPLOAD_FENCING**. The worker is disabled by
+default; explicitly setting `elmos.object-storage.host-gc-enabled=true` fails
+startup with `PHYSICAL_GC_BLOCKED_UPLOAD_FENCING` before any metadata read,
+prepare/mark operation, or provider call. Its host-owned provider capability
+cannot be replaced by a caller boolean, backend setting, role grant or URL TTL.
+There is no production skip/override constructor or fabricated proof.
+
+If a future exact provider protocol supplies trusted writer fencing and is
+independently validated, an authorized operator must additionally grant
+`elmos_object_gc_host` to the trusted scheduler login. The migration does not grant this
 role to `elmos_billing_runtime`, PUBLIC, or any tenant login. This NOLOGIN/NOINHERIT group
 has only EXECUTE on three exact host functions, no table privileges and no
 BYPASSRLS. Preexisting login/superuser/bypass/inheriting/member-of-other-role
@@ -24,6 +31,24 @@ reused. The host binds each DELETE to run, tenant, object id, digest, backend id
 and canonical storage key. An inactive/mismatched backend or noncanonical key
 is unknown, not permission to delete from another backend. Backend configuration
 changes and credential provisioning remain governed operator responsibilities.
+
+### Legacy signed-upload boundary (not closed by V87)
+
+The old artifact upload-ticket endpoint issues bearer PUT URLs, and its legacy
+registration path can return an existing object id. A database PURGE_PENDING or
+PURGED tombstone does **not** revoke those URLs or terminate an already accepted
+PUT: a physical key can be rewritten after DELETE while its database tombstone
+stays unchanged. URL expiry alone is not proof that an upload stopped. The new
+translation PREPARED input roots do not retroactively prove the lifetime of
+those older artifact writers.
+
+Consequently, the code rejects enabling this host worker for legacy keys without a trusted
+upload-fencing/reconciliation boundary, or a conservative retention exclusion
+for keys lacking that proof. This implementation is capability-blocked, and its
+local tests do not provide that external proof. An operator setting the enable
+flag is not itself a provider receipt. V87 closes the tenant/transaction/budget
+scheduling path; hosted physical GC remains BLOCKED_UPLOAD_FENCING, not certified
+or usable with the currently implemented S3 protocol.
 
 ## Bounded work and locking
 

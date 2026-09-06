@@ -148,6 +148,10 @@ class ObjectRetentionScheduler {
             JdbcTenantObjectRetentionStore retention,
             Clock clock
     ) {
+        // Fail during enabled-bean construction, BEFORE reading metadata,
+        // changing retention state, or invoking a provider. A caller flag,
+        // tenant role, backend row or URL timeout cannot supply this proof.
+        S3ObjectStore.hostedPhysicalGcCapability().requireWriterQuiescence();
         this.metadata = metadata;
         this.retention = retention;
         this.clock = clock;
@@ -166,13 +170,18 @@ class ObjectRetentionScheduler {
                     backend = metadata.activeBackend();
                     provider = new S3ObjectStore(backend, metadata, clock);
                 }
-                if (!purge.backendId().equals(backend.backendId())
-                        || !purge.storageKey().equals(S3ObjectStore.storageKey(
-                                purge.organizationId(), purge.contentSha256()))) {
-                    throw new S3ObjectStore.ObjectStorageException("OBJECT_GC_PROVIDER_BINDING_MISMATCH");
-                }
+                validateBinding(backend, purge);
                 provider.deleteObject(purge.organizationId(), purge.contentSha256());
             }
         });
+    }
+
+    /** Pure tuple validation only; this helper cannot authorize or perform deletion. */
+    static void validateBinding(S3ObjectStore.Backend backend, JdbcTenantObjectRetentionStore.Purge purge) {
+        if (!purge.backendId().equals(backend.backendId())
+                || !purge.storageKey().equals(S3ObjectStore.storageKey(
+                        purge.organizationId(), purge.contentSha256()))) {
+            throw new S3ObjectStore.ObjectStorageException("OBJECT_GC_PROVIDER_BINDING_MISMATCH");
+        }
     }
 }
