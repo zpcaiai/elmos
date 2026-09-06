@@ -195,6 +195,16 @@ func inferredType(_ raw: ExprSyntax, _ context: LiftContext) throws -> String {
         let callee = call.calledExpression.as(DeclReferenceExprSyntax.self)
     {
         if context.emittedTarget && callee.baseName.text == "Int64" { return "integer" }
+        if context.emittedTarget && callee.baseName.text == "Double" {
+            guard call.arguments.count == 1,
+                let argument = call.arguments.first,
+                argument.label == nil,
+                try inferredType(argument.expression, context) == "integer"
+            else {
+                throw AnalyzerError("SWIFT_EMITTED_DOUBLE_WIDENING_INVALID")
+            }
+            return "number"
+        }
         if context.emittedTarget && callee.baseName.text == "elmosNonZero" { return "number" }
     }
     if let member = expression.as(MemberAccessExprSyntax.self),
@@ -291,6 +301,17 @@ func liftExpression(_ raw: ExprSyntax, _ context: LiftContext) throws -> JSONVal
                     || argument.expression.is(PrefixOperatorExprSyntax.self)
             else {
                 throw AnalyzerError("SWIFT_EMITTED_INT64_LITERAL_INVALID")
+            }
+            return try replacingSpan(
+                try liftExpression(argument.expression, context), raw, context)
+        }
+        if callee.baseName.text == "Double" {
+            guard call.arguments.count == 1,
+                let argument = call.arguments.first,
+                argument.label == nil,
+                try inferredType(argument.expression, context) == "integer"
+            else {
+                throw AnalyzerError("SWIFT_EMITTED_DOUBLE_WIDENING_INVALID")
             }
             return try replacingSpan(
                 try liftExpression(argument.expression, context), raw, context)
