@@ -98,6 +98,10 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 VALUES (:id, :org, :sha, :size, :media, :backend, :key, 'PENDING_UPLOAD')
                 ON CONFLICT (organization_id, content_sha256) DO UPDATE
                     SET media_type = EXCLUDED.media_type
+                    WHERE content_objects.object_state IN ('PENDING_UPLOAD','AVAILABLE')
+                      AND content_objects.byte_size = EXCLUDED.byte_size
+                      AND content_objects.backend_id = EXCLUDED.backend_id
+                      AND content_objects.storage_key = EXCLUDED.storage_key
                 RETURNING content_object_id
                 """)
                 .param("id", "obj-" + UUID.randomUUID())
@@ -107,7 +111,8 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 .param("media", mediaType)
                 .param("backend", backendId)
                 .param("key", storageKey)
-                .query(String.class).single());
+                .query(String.class).optional().orElseThrow(() -> new S3ObjectStore.ObjectStorageException(
+                        "CONTENT_OBJECT_UPLOAD_STATE_OR_IDENTITY_INVALID")));
     }
 
     @Override
