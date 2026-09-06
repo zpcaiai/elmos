@@ -86,8 +86,12 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
         )
         for job in jobs:
             with self.subTest(job=job.splitlines()[1].strip()):
+                polyglot_sync = job.index(
+                    "uv --directory engines/polyglot-route-engine sync --locked --no-dev"
+                )
                 runtime = job.index("- name: Set up exact ChinaDB preflight runtime")
                 check = job.index("pnpm --dir apps/web-console check")
+                self.assertLess(polyglot_sync, check)
                 self.assertLess(runtime, check)
                 self.assertIn('python-version: "3.14.6"', job)
                 self.assertIn(

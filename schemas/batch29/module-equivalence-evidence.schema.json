@@ -635,17 +635,12 @@
         {"properties": {
           "swiftc_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
           "swift_driver_sha256": {"const": "sha256:2ed38571e92c0283091838c1649e27650ad9c99950288e883c7b2dc6c4ce89fb"},
-          "profile": {"const": ["platform=Darwin/arm64", "apple-host-profile=local-macos26-20260904", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
+          "profile": {"const": ["platform=Darwin/arm64", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
         }},
         {"properties": {
           "swiftc_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
           "swift_driver_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
-          "profile": {"const": ["platform=Darwin/arm64", "apple-host-profile=github-macos26-20260728.0273.1", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
-        }},
-        {"properties": {
-          "swiftc_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
-          "swift_driver_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
-          "profile": {"const": ["platform=Darwin/arm64", "apple-host-profile=github-macos26-20260831.0337.3", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
+          "profile": {"const": ["platform=Darwin/arm64", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
         }}
       ]
     },
