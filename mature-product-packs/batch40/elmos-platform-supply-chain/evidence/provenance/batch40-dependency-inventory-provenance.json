@@ -6,20 +6,20 @@
   "packKey": "elmos-platform-supply-chain",
   "evidenceId": "b40-dependency-inventory",
   "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "repositoryRevision": "c61066ddcb4869b63fa921e0b488e46a06cec5e8",
+  "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
   "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
   "runReport": {
     "path": "evidence/execution/b40-dependency-inventory.json",
-    "sha256": "sha256:0eaac18fc73b77089952249ccbfe9e106ecee88a30463152f9e432324afbe24b",
-    "bytes": 287590
+    "sha256": "sha256:cbdf737c52db9112793a6abd003d3e1263c7014965295dd336a898d390cc4d0c",
+    "bytes": 288154
   },
   "analyzer": {
     "path": "scripts/batch40_dependency_inventory.py",
-    "sha256": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20",
-    "reportedDigest": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20"
+    "sha256": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b",
+    "reportedDigest": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b"
   },
   "environment": {
-    "capturedAt": "2026-09-05T17:52:13.505821Z",
+    "capturedAt": "2026-09-06T19:49:22.245516Z",
     "pythonVersion": "3.14.6",
     "system": "Darwin",
     "machine": "arm64"

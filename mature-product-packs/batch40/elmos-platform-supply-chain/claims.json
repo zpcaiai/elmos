@@ -8,15 +8,15 @@
   "claims": [
     {
       "claimId": "b40-declared-dependency-inventory",
-      "statement": "The declared dependency surface is enumerated: 485 components from 95 Maven POMs and 3 npm lockfiles; 427 of 427 external components have a resolved version.",
+      "statement": "The declared dependency surface is enumerated: 486 components from 97 Maven POMs and 3 npm lockfiles; 427 of 427 external components have a resolved version.",
       "scope": {
-        "mavenPomCount": 95,
+        "mavenPomCount": 97,
         "npmLockCount": 3,
         "versionResolution": {
           "dependency-management": 40,
           "literal": 2,
           "lockfile": 372,
-          "project-version": 59,
+          "project-version": 60,
           "property": 12
         }
       },
@@ -32,7 +32,7 @@
     },
     {
       "claimId": "b40-credential-scan-triage",
-      "statement": "A credential scan over 15931 files across 32 declared roots produced 0 actionable findings and 2621 advisory high-entropy hits. The scan suppressed 63 exact fixture matches through 55 owned, reasoned, expiring allowlist entries.",
+      "statement": "A credential scan over 16641 files across 32 declared roots produced 0 actionable findings and 2743 advisory high-entropy hits. The scan suppressed 63 exact fixture matches through 55 owned, reasoned, expiring allowlist entries.",
       "scope": {
         "roots": [
           ".github",
@@ -68,9 +68,9 @@
           "telemetry",
           "tooling"
         ],
-        "filesScanned": 15931,
+        "filesScanned": 16641,
         "bySeverity": {
-          "advisory": 2621
+          "advisory": 2743
         },
         "actionablePaths": []
       },

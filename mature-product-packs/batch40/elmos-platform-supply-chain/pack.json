@@ -7,8 +7,8 @@
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
   "status": "experimental",
-  "artifactDigest": "sha256:84ab46e5055fd28443437d58427e8805aced0472205931c4028f7d509e93b5e0",
-  "environmentDigest": "sha256:cf22b8f507f36a0ecc0f33ae934e63ab0e34765e84e6f66bb1ce1f994ccc0673",
+  "artifactDigest": "sha256:2729e713184fb1ec7b8ece6ce1d6033b0944e70fb8828d04419e472fc8d9f60f",
+  "environmentDigest": "sha256:859908cabd90304e40995013d018b8c62689087647a21b22e9ed19f333beae07",
   "requiredBatches": [
     26,
     37,

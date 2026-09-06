@@ -44,6 +44,9 @@ batch40-evidence:
 		--maven-repository "$(BATCH40_MAVEN_REPOSITORY)" \
 		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-dependency-inventory.json
 	$(MAKE) batch40-secret-scan PACK=$(PACK)
+	# Refresh content-addressed dependency and secret-scan provenance before
+	# assurance checks those reports. The final pass records fresh assurance.
+	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
 	$(MAKE) batch40-local-assurance PACK=$(PACK)
 	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
 batch40-local-assurance:

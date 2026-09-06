@@ -11,7 +11,7 @@
   "records": [
     {
       "scope": "direct Maven and npm declarations",
-      "componentCount": 485,
+      "componentCount": 486,
       "externalComponentCount": 427,
       "versionedExternalCount": 427,
       "coverage": 1.0,

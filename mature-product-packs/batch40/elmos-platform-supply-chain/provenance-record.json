@@ -20,20 +20,20 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-dependency-inventory",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "c61066ddcb4869b63fa921e0b488e46a06cec5e8",
+      "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
       "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
       "runReport": {
         "path": "evidence/execution/b40-dependency-inventory.json",
-        "sha256": "sha256:0eaac18fc73b77089952249ccbfe9e106ecee88a30463152f9e432324afbe24b",
-        "bytes": 287590
+        "sha256": "sha256:cbdf737c52db9112793a6abd003d3e1263c7014965295dd336a898d390cc4d0c",
+        "bytes": 288154
       },
       "analyzer": {
         "path": "scripts/batch40_dependency_inventory.py",
-        "sha256": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20",
-        "reportedDigest": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20"
+        "sha256": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b",
+        "reportedDigest": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b"
       },
       "environment": {
-        "capturedAt": "2026-09-05T17:52:13.505821Z",
+        "capturedAt": "2026-09-06T19:49:22.245516Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"
@@ -55,20 +55,20 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-secret-scan",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "c61066ddcb4869b63fa921e0b488e46a06cec5e8",
+      "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
       "replayCommand": "python3 scripts/batch40_secret_scan.py --scope config/batch40-secret-scan-scope.json --allowlist config/secret-scan-allowlist.json",
       "runReport": {
         "path": "evidence/execution/b40-secret-scan.json",
-        "sha256": "sha256:381042ca2c79d78a10493d8be16cbfaf19835645917833098e333ce6bc288c07",
-        "bytes": 899204
+        "sha256": "sha256:bda0fd99144a4ea2ea58295f6cfbba0f7e56d1dea1c30d47843df9d586e268a8",
+        "bytes": 939048
       },
       "analyzer": {
         "path": "scripts/batch40_secret_scan.py",
-        "sha256": "sha256:afaf18f08ce32c3a0a0219dff741b9cb58bdaf24baf8b5ec26fd0a4c4029558a",
-        "reportedDigest": "sha256:afaf18f08ce32c3a0a0219dff741b9cb58bdaf24baf8b5ec26fd0a4c4029558a"
+        "sha256": "sha256:45d7e59ce22c9371c8f61153dd2241a2b14ee6fa0c38bfb515b791f5117f9182",
+        "reportedDigest": "sha256:45d7e59ce22c9371c8f61153dd2241a2b14ee6fa0c38bfb515b791f5117f9182"
       },
       "environment": {
-        "capturedAt": "2026-09-05T17:52:14.395023Z",
+        "capturedAt": "2026-09-06T19:49:22.280026Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"
@@ -128,11 +128,11 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-local-assurance",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "64e72cd8609a79bceb67e590d17e4467fd3da20c",
+      "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
       "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
       "runReport": {
         "path": "evidence/execution/b40-local-assurance.json",
-        "sha256": "sha256:d43790d440fd8004907f6ee28b0f6dfaad986394f20841866856929ec258d9e6",
+        "sha256": "sha256:a9e2229a7d5cf160efc6094d362fbc91e7661681a561efc45a9624a3721d59e0",
         "bytes": 12862
       },
       "analyzer": {
@@ -141,7 +141,7 @@
         "reportedDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7"
       },
       "environment": {
-        "capturedAt": "2026-09-06T19:02:01.006402Z",
+        "capturedAt": "2026-09-06T19:49:31.488333Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"

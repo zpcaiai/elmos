@@ -1,13 +1,14 @@
 {
   "check": "batch40-dependency-inventory",
   "batch": 40,
-  "startedAt": "2026-09-05T17:48:14.032343Z",
-  "finishedAt": "2026-09-05T17:50:04.258026Z",
+  "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
+  "startedAt": "2026-09-06T19:41:11.013380Z",
+  "finishedAt": "2026-09-06T19:43:57.124829Z",
   "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
-  "toolDigest": "sha256:be07e9dc1ec15ecdddf5964ee74a675015b386fd3b12f2e88b4a2c8ea616ac20",
+  "toolDigest": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b",
   "pythonVersion": "3.14.6",
   "sources": {
-    "mavenPomCount": 95,
+    "mavenPomCount": 97,
     "npmLockCount": 3,
     "sharedPropertyCount": 23,
     "managedCoordinateCount": 1409,
@@ -241,16 +242,16 @@
     ]
   },
   "totals": {
-    "componentCount": 485,
+    "componentCount": 486,
     "externalComponentCount": 427,
-    "internalComponentCount": 58,
+    "internalComponentCount": 59,
     "versionedExternalCount": 427
   },
   "versionResolution": {
     "dependency-management": 40,
     "literal": 2,
     "lockfile": 372,
-    "project-version": 59,
+    "project-version": 60,
     "property": 12
   },
   "metrics": {
@@ -743,6 +744,22 @@
       "declaredIn": [
         "modules/architecture-tests/pom.xml",
         "modules/framework-migration/pom.xml"
+      ],
+      "internal": true
+    },
+    {
+      "ecosystem": "maven",
+      "group": "io.elmos",
+      "name": "elmos-developer-workflow",
+      "version": "0.1.0-SNAPSHOT",
+      "versionResolution": "project-version",
+      "declaredVersion": "${project.version}",
+      "purl": "pkg:maven/io.elmos/elmos-developer-workflow@0.1.0-SNAPSHOT",
+      "scopes": [
+        "compile"
+      ],
+      "declaredIn": [
+        "modules/live-workbench/pom.xml"
       ],
       "internal": true
     },
@@ -1837,6 +1854,7 @@
         "modules/identity/pom.xml",
         "modules/intake/pom.xml",
         "modules/integrations/pom.xml",
+        "modules/live-workbench/pom.xml",
         "modules/lowering/pom.xml",
         "modules/migration-pack-certification/pom.xml",
         "modules/modernization-proof-loop/pom.xml",

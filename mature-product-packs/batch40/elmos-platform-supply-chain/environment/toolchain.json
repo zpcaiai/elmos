@@ -1,10 +1,10 @@
 {
-  "capturedAt": "2026-09-05T17:52:15.262998Z",
+  "capturedAt": "2026-09-06T19:49:31.563639Z",
   "os": "Darwin 25.6.0",
   "machine": "arm64",
   "pythonVersion": "3.14.6",
   "pythonImplementation": "CPython",
-  "repositoryRevision": "c61066ddcb4869b63fa921e0b488e46a06cec5e8",
+  "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
   "evidenceBoundary": "LOCAL_EXECUTED_SELF_ATTESTED",
   "independentVerification": "NOT_RUN"
 }

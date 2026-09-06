@@ -154,6 +154,17 @@ jobs:
         self.assertIn("B40-THREAT-MODEL-COVERAGE", report["failedControls"])
         self.assertEqual(0.0, report["metrics"]["threatModelCoverage"])
 
+    def test_evidence_target_refreshes_provenance_before_assurance(self) -> None:
+        makefile = (ROOT / "Makefile.batch40").read_text(encoding="utf-8")
+        target = makefile.split("batch40-evidence:", 1)[1].split(
+            "batch40-local-assurance:", 1
+        )[0]
+        record = "python3 scripts/batch40_record_results.py"
+        assurance = "$(MAKE) batch40-local-assurance PACK=$(PACK)"
+        self.assertEqual(2, target.count(record))
+        self.assertLess(target.index(record), target.index(assurance))
+        self.assertLess(target.index(assurance), target.rindex(record))
+
 
 if __name__ == "__main__":
     unittest.main()

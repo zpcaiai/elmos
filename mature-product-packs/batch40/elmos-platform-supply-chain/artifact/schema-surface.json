@@ -1,6 +1,6 @@
 {
   "artifactType": "declared-dependency-surface",
-  "memberCount": 90,
+  "memberCount": 91,
   "members": [
     {
       "path": "agent-skills/runtime/java-modernization-runtime/evals/files/legacy-shop/pom.xml",
@@ -306,6 +306,11 @@
       "path": "modules/integrations/pom.xml",
       "sha256": "sha256:527d79743f66684e7a5fed075943b7841015e4e1d05e5f5008003a61a8259e24",
       "bytes": 1959
+    },
+    {
+      "path": "modules/live-workbench/pom.xml",
+      "sha256": "sha256:537e0ac2b570478a3657718b8221591ac8af402a9ed7383cb1247706020b236a",
+      "bytes": 683
     },
     {
       "path": "modules/lowering/pom.xml",
@@ -680,5 +685,5 @@
       "sha256": "sha256:d716ca54691a4daeedb44194235dfd69746c241398088ee50fb9b31f0b955b44"
     }
   ],
-  "compositeDigest": "sha256:312775039275b97d67ed883a4d54a8b970dc89eabe2ab4ff2c4571c4303b892e"
+  "compositeDigest": "sha256:7ab50aebbf30137cba705e40898b4623a892b58cb9fc4c09566e94a2ad92dff2"
 }
