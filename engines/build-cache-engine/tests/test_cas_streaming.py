@@ -84,6 +84,37 @@ def test_native_file_io_is_an_explicit_measured_choice(tmp_path, monkeypatch):
     assert store.put_file(source) == sha256_bytes(b"bounded python default")
 
 
+def test_native_bytes_is_independent_opt_in_without_python_prehash(tmp_path, monkeypatch):
+    import elmos_build_cache.cas as cas_module
+    payload = b"explicit measured bytes kernel"
+    digest = sha256_bytes(payload)
+    calls = []
+    def native(root, data, expected, kind):
+        calls.append((root, data, expected, kind))
+        return digest
+    monkeypatch.setattr(native_cas_bridge, "native_put_bytes", native)
+    default = ContentAddressableStore(tmp_path / "default", native_file_io=True)
+    assert default.put_bytes(payload) == digest
+    assert calls == []
+    monkeypatch.setattr(cas_module, "sha256_bytes", lambda *_: pytest.fail("duplicate Python hash"))
+    selected = ContentAddressableStore(tmp_path / "native", native_bytes_io=True)
+    assert selected.put_bytes(payload, expected_digest=digest) == digest
+    assert calls == [(selected.root, payload, digest, "blob")]
+
+
+def test_unavailable_selected_bytes_kernel_falls_back_but_errors_do_not(tmp_path, monkeypatch):
+    from elmos_build_cache.errors import DigestMismatch
+    store = ContentAddressableStore(tmp_path / "store", native_bytes_io=True)
+    monkeypatch.setattr(native_cas_bridge, "native_put_bytes", lambda *_: None)
+    assert store.put_bytes(b"fallback") == sha256_bytes(b"fallback")
+    def reject(*_):
+        raise DigestMismatch("native rejected bytes")
+    monkeypatch.setattr(native_cas_bridge, "native_put_bytes", reject)
+    with pytest.raises(DigestMismatch):
+        store.put_bytes(b"must not publish")
+    assert not store.contains(sha256_bytes(b"must not publish"))
+
+
 def test_native_file_writer_preserves_existing_compressed_winner(tmp_path):
     if not native_cas_bridge.is_native_available():
         pytest.skip("native library not configured")

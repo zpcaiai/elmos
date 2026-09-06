@@ -2169,7 +2169,7 @@ def materialize_project_graph(
         )
 
     for path, inventory in sorted(semantic_inventories.items()):
-        semantic_file = next((item for item in scanned if item.path == path), None)
+        semantic_file = scanned_by_path.get(path)
         if semantic_file is None or semantic_file.language is None:
             raise ProjectGraphError("SEMANTIC_DISCOVERY_INVENTORY_INVALID")
         subject_nodes, subject_edges, subject_diagnostics = _inventory_subject_nodes(
