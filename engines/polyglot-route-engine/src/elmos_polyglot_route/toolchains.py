@@ -4464,30 +4464,16 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     allowed_version_fields = {
         "stable",
         "head",
-        "bottle",
         "version_scheme",
         "compatibility_version",
     }
-    head_version = versions.get("head")
-    head_version_is_safe = head_version is None or head_version == "HEAD"
-    if isinstance(head_version, str) and head_version.startswith("HEAD-"):
-        head_revision = head_version.removeprefix("HEAD-")
-        head_version_is_safe = (
-            7 <= len(head_revision) <= 40
-            and all(character in "0123456789abcdef" for character in head_revision)
-        )
     if (
         not set(versions).issubset(allowed_version_fields)
         # Homebrew's API receipt records a missing HEAD version as null, while
         # loading the same pinned formula from the repository-owned tap records
-        # the formula's git source as "HEAD" or the normalized
-        # "HEAD-<hex-revision>" form. Neither changes the selected stable 8.5.9
-        # bottle, but branch names and every other value remain unsafe.
-        or ("head" in versions and not head_version_is_safe)
-        # Homebrew receipt generations that serialize Formula#versions retain
-        # the formula's bottle declaration here. This exact closure is poured
-        # from the pinned bottle, so only the literal boolean true is valid.
-        or ("bottle" in versions and versions["bottle"] is not True)
+        # the formula's git source as the sentinel "HEAD". Neither changes the
+        # selected stable 8.5.9 bottle, but every other value remains unsafe.
+        or ("head" in versions and versions["head"] not in {None, "HEAD"})
         or (
             "version_scheme" in versions
             and (
@@ -4497,6 +4483,7 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         )
         or (
             "compatibility_version" in versions
+            and versions["compatibility_version"] is not None
             and (
                 type(versions["compatibility_version"]) is not int
                 or versions["compatibility_version"] != 1

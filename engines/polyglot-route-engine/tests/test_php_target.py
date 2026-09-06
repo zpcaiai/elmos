@@ -551,15 +551,11 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline
 
-    document["source"]["versions"]["head"] = "HEAD-0123abc"
+    document["source"]["versions"]["head"] = None
+    document["source"]["versions"]["compatibility_version"] = None
     receipt.write_text(json.dumps(document), encoding="utf-8")
-    normalized_head_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
-    assert normalized_head_drift == baseline
-
-    document["source"]["versions"]["bottle"] = True
-    receipt.write_text(json.dumps(document), encoding="utf-8")
-    legacy_bottle_receipt = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
-    assert legacy_bottle_receipt == baseline
+    legacy_formula_metadata = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert legacy_formula_metadata == baseline
 
     document["arch"] = "x86_64"
     receipt.write_text(json.dumps(document), encoding="utf-8")
@@ -573,15 +569,13 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
     document["aliases"] = ["php@8.5"]
-    document["source"]["versions"].pop("bottle")
-    for invalid_head in ("main", "HEAD-123456", "HEAD-0123xyz", "HEAD-" + "a" * 41):
-        document["source"]["versions"]["head"] = invalid_head
-        receipt.write_text(json.dumps(document), encoding="utf-8")
-        with pytest.raises(RouteError, match="TEST_UNSAFE"):
-            php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    document["source"]["versions"]["head"] = "main"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
-    document["source"]["versions"]["head"] = "HEAD"
-    document["source"]["versions"]["bottle"] = False
+    document["source"]["versions"]["head"] = None
+    document["source"]["versions"]["compatibility_version"] = 0
     receipt.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
