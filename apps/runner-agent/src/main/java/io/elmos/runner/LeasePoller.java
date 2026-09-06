@@ -67,6 +67,9 @@ public final class LeasePoller implements AutoCloseable {
     }
 
     void pollOnce() throws InterruptedException {
+        // A daemon outcome requiring reconciliation is a node admission fault,
+        // not a reason to claim and fail an unbounded sequence of customer jobs.
+        if (!executor.canAcceptLease()) requestDrain();
         // Node heartbeat first: it is also how the control plane asks us to drain.
         try {
             if (client.nodeHeartbeat()) {
@@ -93,6 +96,7 @@ public final class LeasePoller implements AutoCloseable {
         }
 
         try {
+            if (!executor.canAcceptLease()) requestDrain();
             if (draining.get() || stopped.get()) return;
             List<ControlPlaneClient.Lease> leases = client.claim(reserved);
             errorBackoff.reset();
@@ -105,6 +109,7 @@ public final class LeasePoller implements AutoCloseable {
             }
             idleBackoff.reset();
             for (ControlPlaneClient.Lease lease : leases) {
+                if (!executor.canAcceptLease()) requestDrain();
                 if (reserved == 0 || draining.get() || stopped.get()) {
                     metrics.increment(AgentMetrics.JOBS_ABANDONED);
                     continue;

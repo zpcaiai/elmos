@@ -58,13 +58,35 @@ final class TranslationExecutionSelfTest {
             var client=new ControlPlaneClient(config);var metrics=new AgentMetrics();
             var phases=new java.util.ArrayList<String>();
             ProcessRunner processes=new ProcessRunner() {
+                private final Map<String,Map<String,Object>> containers=new LinkedHashMap<>();
                 public Result run(List<String> command,Path cwd,Map<String,String> env,long timeout) {
-                    // This phase fixture has no real containers. Resource identity
-                    // and immutable-ID cleanup have a separate stateful fixture.
-                    return new Result(command.contains("inspect") ? 1 : 0,"","",false);
+                    String operation=command.get(1),target=command.get(command.size()-1);
+                    if(operation.equals("inspect")) {
+                        var container=containers.get(target);
+                        return container==null ? new Result(1,"","missing",false)
+                                : new Result(0,Json.write(List.of(container)),"",false);
+                    }
+                    if(operation.equals("kill"))return new Result(0,"","",false);
+                    if(operation.equals("rm")) {
+                        containers.entrySet().removeIf(entry->target.equals(entry.getValue().get("Id")));
+                        return new Result(0,"","",false);
+                    }
+                    if(operation.equals("ps")) {
+                        String id=command.get(command.indexOf("--filter")+1).substring(3);
+                        boolean found=containers.values().stream().anyMatch(value->id.equals(value.get("Id")));
+                        return new Result(0,found?id:"","",false);
+                    }
+                    throw new AssertionError("unexpected fixture engine operation: "+command);
                 }
                 public Handle start(List<String> command,Path cwd,Map<String,String> env,java.util.function.Consumer<String> log) {
                     try {
+                        String name=command.get(command.indexOf("--name")+1);
+                        var labels=new LinkedHashMap<String,String>();
+                        for(String item:command)if(item.startsWith("--label=")) {
+                            String[] pair=item.substring(8).split("=",2);labels.put(pair[0],pair[1]);
+                        }
+                        containers.put(name,Map.of("Id",JobWorkspace.identityHash(name),"Name","/"+name,
+                                "Config",Map.of("Labels",labels)));
                         String phase=command.stream().filter(arg->arg.startsWith("--env=ELMOS_JOB_KIND=")).findFirst().orElseThrow().substring("--env=ELMOS_JOB_KIND=".length());
                         phases.add(phase);
                         String mount=command.stream().filter(arg->arg.endsWith(":/elmos/out:rw")).findFirst().orElseThrow();
