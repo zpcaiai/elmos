@@ -78,6 +78,23 @@ class GitRepositoryWorkspaceServiceTest {
                 }, executor);
     }
 
+    @Test
+    void persistentRetirementBacklogCannotBypassActiveWorkspaceCapacity() throws Exception {
+        var source = repository(false,false,false);
+        var root = temporary.resolve("backlog-workspaces");
+        var pending = new java.util.ArrayList<Runnable>();
+        var service = cleanupService(root,pending::add);
+        var active = service.create(request(source,source.branch()),"unused",Optional.empty());
+        expire(root,active.workspaceId());
+        for (int i=0;i<128;i++) Files.createDirectories(root.resolve(".retired").resolve("unrecognized-"+i));
+        var failure = assertThrows(IllegalStateException.class, () -> service.create(
+                request(source,source.branch()),"unused",Optional.empty()));
+        assertEquals("GIT_WORKSPACE_CAPACITY_EXCEEDED",failure.getMessage());
+        assertTrue(Files.exists(root.resolve(active.workspaceId())));
+        assertTrue(pending.isEmpty());
+        try (var backlog = Files.list(root.resolve(".retired"))) { assertEquals(128,backlog.count()); }
+    }
+
     private static void expire(Path root, String workspaceId) throws IOException {
         var file = root.resolve(workspaceId).resolve("workspace.properties");
         var properties = new java.util.Properties();

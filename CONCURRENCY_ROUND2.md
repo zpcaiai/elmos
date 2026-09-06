@@ -47,17 +47,20 @@ actual code plus negative/concurrency regression evidence before closure.
   JVM cleanup queue (32 outstanding), restart/rejection replay tickets and
   no-follow confined deletion. Discovery is single-flight outside admission;
   expired reads also retire without recursive deletion on the request thread.
-  Targeted Java 21 tests: 16 passed, 0 failed/skipped (Git workspace 12,
+  Targeted Java 21 tests: 17 passed, 0 failed/skipped (Git workspace 13,
   cleanup 3, lock reclamation 1). Replay:
   `JAVA_HOME=/opt/homebrew/opt/openjdk@21 mvn -q -o -f tools/performance/pom.xml -Dtest=GitRepositoryWorkspaceServiceTest,WorkspaceLocksTest,WorkspaceCleanupTest -Dsurefire.failIfNoSpecifiedTests=false test`.
   Coordination remains JVM-local, as before; this is not a shared-filesystem
   multi-host scheduler. Retirement tickets cover process restart/retry, not a
   claim of filesystem power-loss durability on every platform.
+  Persistent retirement backlog is separately capped at 128 entries; unknown
+  entries consume that budget and are not automatically deleted. A full or
+  failed cleanup backlog cannot bypass active workspace capacity indefinitely.
 
 - Q4/Q5/Q11: integration replay of the first request/process/log checkpoint:
   13/13 Node tests passed; subsequent tiny-chunk and async abort edge cases are
-  included in the final replay list. The process bulkhead is JVM-independent,
-  Node-instance local (not a distributed capacity guarantee), and retains slots
+  included in the final replay list. The process bulkhead is Node-instance local
+  (not a distributed capacity guarantee), and retains slots
   until actual child close, including after HTTP timeout.
 - Q6 Web: `npm run test:translation-report` passed 29/29 tests on the integrated
   tree, including the real Python report producer, corrupt/duplicate/reordered

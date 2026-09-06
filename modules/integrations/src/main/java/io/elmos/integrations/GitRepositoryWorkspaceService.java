@@ -1511,8 +1511,8 @@ public final class GitRepositoryWorkspaceService {
                     if (!Files.isRegularFile(manifest, LinkOption.NOFOLLOW_LINKS)
                             || Files.size(manifest) > 64 * 1024) continue;
                     Properties properties = new Properties();
-                    try (var input = Files.newInputStream(manifest)) {
-                        properties.load(input);
+                    try {
+                        try (var input = Files.newInputStream(manifest)) { properties.load(input); }
                         Instant createdAt = Instant.parse(properties.getProperty("createdAt"));
                         if (directory.getFileName().toString().equals(properties.getProperty("workspaceId"))
                                 && !createdAt.isAfter(cutoff)) {
@@ -1529,8 +1529,20 @@ public final class GitRepositoryWorkspaceService {
     }
 
     private boolean retireWorkspace(Path source) throws IOException {
+        // A failed cleanup must not turn an active-count limit into unbounded
+        // retained disk usage. Serialize this small backlog reservation separately
+        // from active admission; recursive removal never holds either lock.
+        try (var guard = WorkspaceLocks.acquire(coordinationRoot.resolve(".retirement-admission"))) {
+            return retireWorkspaceWithBacklogReservation(source);
+        }
+    }
+
+    private boolean retireWorkspaceWithBacklogReservation(Path source) throws IOException {
         String workspaceId = source.getFileName().toString();
         Path retiredRoot = retirementRoot();
+        try (var backlog = Files.list(retiredRoot)) {
+            if (backlog.limit(128).count() >= 128) return false;
+        }
         Path retirement = retiredRoot.resolve(workspaceId);
         try (var reservation = WorkspaceCleanup.reserve(
                 coordinationRoot.resolve(".retired").resolve(workspaceId))) {
