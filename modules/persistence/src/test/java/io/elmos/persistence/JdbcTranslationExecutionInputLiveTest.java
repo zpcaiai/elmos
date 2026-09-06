@@ -62,7 +62,7 @@ class JdbcTranslationExecutionInputLiveTest {
               jsonb_build_object('input',jsonb_build_object('bindingId',CAST(:binding AS text),'objectId',CAST(:object AS text),
                 'sha256',CAST(:sha AS text),'byteSize',CAST(100 AS bigint))))
             """).param("job", job).param("org", org).param("binding", binding).param("object", object).param("sha", digest(4)).update();
-        assertTrue(transactions.execute(status -> {
+        assertEquals(Boolean.TRUE, transactions.execute(status -> {
             bind(org);
             return jdbc.sql("SELECT elmos_attach_execution_input(:org,:job,:binding)")
                     .param("org",org).param("job",job).param("binding",binding).query(Boolean.class).single();
