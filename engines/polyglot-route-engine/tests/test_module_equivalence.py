@@ -5,6 +5,7 @@ import os
 from collections.abc import Callable
 from dataclasses import replace
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -654,6 +655,52 @@ def test_swift_inventory_rejects_dependency_mirror_tuple_mismatch() -> None:
             logical_file="module.swift",
             artifact_bytes=artifact,
         )
+
+
+def test_swift_inventory_uses_the_selected_apple_host_receipt(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    artifact = b"func identity(_ value: Int64) -> Int64 { value }\n"
+    inventory = _synthetic_swift_inventory(artifact)
+    previous_canonical_digest = str(
+        inventory["analyzer_build_receipt"]["canonical_identity"]["sha256"]  # type: ignore[index]
+    )
+    hosted_git = "e68bc9395203d8e1be47b98c374df67ccb45732379a9fdba94b56d861e5f648f"
+    inventory["analyzer_build_receipt"]["dependency"]["mirror"]["git"][  # type: ignore[index]
+        "sha256"
+    ] = "sha256:" + hosted_git
+    local = route_engine.apple_route_host_profile("swift")
+    monkeypatch.setattr(
+        route_engine,
+        "apple_route_host_profile",
+        lambda _language: SimpleNamespace(
+            apple_git_sha256=hosted_git,
+            sandbox_exec_sha256=local.sandbox_exec_sha256,
+            sandbox_exec_bytes=local.sandbox_exec_bytes,
+            sandbox_exec_cdhash_full=local.sandbox_exec_cdhash_full,
+            codesign_sha256=local.codesign_sha256,
+            codesign_bytes=local.codesign_bytes,
+        ),
+    )
+    receipt = inventory["analyzer_build_receipt"]  # type: ignore[index]
+    receipt["canonical_identity"] = {  # type: ignore[index]
+        "receipt": route_engine._canonical_swift_analyzer_receipt(receipt),
+        "sha256": route_engine._canonical_digest(
+            route_engine._canonical_swift_analyzer_receipt(receipt)
+        ),
+    }
+    inventory["analyzer_version"] = inventory["analyzer_version"].replace(  # type: ignore[union-attr]
+        "canonical-receipt=" + previous_canonical_digest,
+        "canonical-receipt=" + receipt["canonical_identity"]["sha256"],  # type: ignore[index]
+    )
+
+    _verify_inventory_artifact(
+        inventory,
+        role="source",
+        language="swift",
+        logical_file="module.swift",
+        artifact_bytes=artifact,
+    )
 
 
 def test_swift_inventory_rejects_unknown_dependency_seed() -> None:

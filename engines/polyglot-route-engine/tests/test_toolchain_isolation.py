@@ -511,16 +511,16 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert legacy_hosted.php_tree_sha256 == (
-        "741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947"
+        "22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d"
     )
-    assert legacy_hosted.php_tree_bytes == 129_949_464
+    assert legacy_hosted.php_tree_bytes == 129_949_439
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947"
+        "22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d"
     )
-    assert current_hosted.php_tree_bytes == 129_949_464
+    assert current_hosted.php_tree_bytes == 129_949_439
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
     assert current_hosted.php_tree_bytes == local.php_tree_bytes

@@ -524,7 +524,14 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         "installed_on_request": False,
     })
     document["source"].update(
-        {"tap": "elmos/pinned-route-ci", "tap_git_head": "b" * 40}
+        {
+            "tap": "elmos/pinned-route-ci",
+            "tap_git_head": "b" * 40,
+            "path": (
+                "/opt/homebrew/Library/Taps/elmos/"
+                "homebrew-pinned-route-ci/Formula/php.rb"
+            ),
+        }
     )
     document["runtime_dependencies"].reverse()
     document["runtime_dependencies"][0].update(
@@ -538,6 +545,37 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     receipt.write_text(json.dumps(document), encoding="utf-8")
     semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert semantic_drift["sha256"] != baseline["sha256"]
+
+    document["arch"] = "arm64"
+    document["source"]["path"] = (
+        "/opt/homebrew/Library/Taps/evil/untrusted/Formula/php.rb"
+    )
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["source"].update(
+        {
+            "tap": "homebrew/core",
+            "path": (
+                "/opt/homebrew/Library/Taps/elmos/"
+                "homebrew-pinned-route-ci/Formula/php.rb"
+            ),
+        }
+    )
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["source"].update(
+        {
+            "tap": "elmos/pinned-route-ci",
+            "path": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+        }
+    )
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
 
 def test_php_tree_diagnostic_separates_payload_from_install_receipt(tmp_path) -> None:

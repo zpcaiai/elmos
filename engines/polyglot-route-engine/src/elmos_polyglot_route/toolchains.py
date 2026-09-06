@@ -457,8 +457,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
-    php_tree_bytes=129_949_464,
+    php_tree_sha256="22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d",
+    php_tree_bytes=129_949_439,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260728.0273.1",
@@ -479,8 +479,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
-    php_tree_bytes=129_949_464,
+    php_tree_sha256="22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d",
+    php_tree_bytes=129_949_439,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -501,8 +501,8 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
-    php_tree_bytes=129_949_464,
+    php_tree_sha256="22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d",
+    php_tree_bytes=129_949_439,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -4393,11 +4393,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947'
+_EXPECTED_PHP_TREE_SHA256 = '22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129949464
+_EXPECTED_PHP_TREE_BYTES = 129949439
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4471,10 +4471,14 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     ):
         raise RouteError(failure)
     source_path = source.get("path")
-    if source_path is not None and (
-        not isinstance(source_path, str)
-        or not source_path.endswith("/php/manifests/8.5.9")
-    ):
+    expected_source_paths = {
+        "homebrew/core": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+        "elmos/pinned-route-ci": str(
+            _EXPECTED_HOMEBREW_PREFIX
+            / "Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb"
+        ),
+    }
+    if source_path != expected_source_paths[source["tap"]]:
         raise RouteError(failure)
 
     for key in ("used_options", "unused_options", "changed_files", "aliases"):
@@ -4530,6 +4534,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
         f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
     )
+    # The official bottle records its registry manifest while the CI installer
+    # records the digest-bound local Formula path used to install that same
+    # bottle.  Both were validated exactly above; persist their shared formula
+    # identity so installer location does not alter the PHP payload identity.
+    source["path"] = "<pinned-php-formula-source>"
     if "tap_git_head" in source:
         source["tap_git_head"] = "<installer-local-tap-head>"
     return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(

@@ -91,7 +91,7 @@ from .native import (
 )
 from .repository import javascript_esm_descriptor
 from .source_analyzer import analyze, inventory_module
-from .toolchains import exact_toolchain
+from .toolchains import apple_route_host_profile, exact_toolchain
 from .validation import safe_output, validate, validate_source
 
 
@@ -1512,6 +1512,7 @@ def _verify_inventory_analyzer_build_receipt(
     _require_sha256(str(mirror.get("sha256")), f"{role}_swift_analyzer_mirror")
     git = mirror.get("git")
     cache = mirror.get("cache")
+    apple_host = apple_route_host_profile("swift")
     if (
         mirror.get("seed") != "verified-content-addressed-standalone-cache"
         or mirror.get("identity") != dependency.get("identity")
@@ -1523,7 +1524,7 @@ def _verify_inventory_analyzer_build_receipt(
         or not isinstance(git, dict)
         or set(git) != {"path", "sha256", "version"}
         or git.get("path") != "/Applications/Xcode.app/Contents/Developer/usr/bin/git"
-        or git.get("sha256") != "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9"
+        or git.get("sha256") != "sha256:" + apple_host.apple_git_sha256
         or git.get("version") != "git version 2.50.1 (Apple Git-155)"
         or not isinstance(cache, dict)
         or set(cache)
@@ -1658,18 +1659,18 @@ def _verify_inventory_analyzer_build_receipt(
         "scope": "swift-build-process-tree",
         "sandbox": {
             "path": "/usr/bin/sandbox-exec",
-            "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
-            "bytes": 102_368,
+            "sha256": "sha256:" + apple_host.sandbox_exec_sha256,
+            "bytes": apple_host.sandbox_exec_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
             "nlink": 1,
-            "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+            "cdhash_full": apple_host.sandbox_exec_cdhash_full,
         },
         "verifier": {
             "path": "/usr/bin/codesign",
-            "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
-            "bytes": 458_576,
+            "sha256": "sha256:" + apple_host.codesign_sha256,
+            "bytes": apple_host.codesign_bytes,
             "mode": "0755",
             "uid": 0,
             "gid": 0,
