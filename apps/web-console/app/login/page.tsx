@@ -4,6 +4,10 @@ import {
   localRegistrationConfigured,
   oidcConfigured,
 } from "../lib/server/accountSession";
+import {
+  descopeConfigured,
+  descopeWechatConfigured,
+} from "../lib/server/descopeIdentity";
 
 export const metadata: Metadata = { title: "用户登录" };
 export const dynamic = "force-dynamic";
@@ -26,15 +30,29 @@ const errorMessages: Record<string, string> = {
   EMAIL_CREDENTIALS_INVALID: "邮箱或密码错误。",
   LOGIN_MODE_INVALID: "登录入口无效，请从当前页面重新开始。",
   ADMIN_LOGIN_ENTRY_REQUIRED: "管理员账户必须从独立的管理员入口登录。",
+  DESCOPE_EMAIL_INVALID: "请输入有效邮箱地址。",
+  DESCOPE_PHONE_INVALID: "手机号需包含国家区号，例如 +8613812345678。",
+  DESCOPE_OTP_START_REJECTED: "验证码发送失败；账户不存在、方式未启用或请求过于频繁。",
+  DESCOPE_OTP_CODE_INVALID: "验证码格式无效。",
+  DESCOPE_OTP_VERIFY_REJECTED: "验证码错误、已过期或尝试次数过多。",
+  DESCOPE_CHALLENGE_EXPIRED: "验证码会话已过期，请重新开始。",
+  DESCOPE_TOKEN_INVALID: "身份提供商会话校验失败，未建立账户会话。",
+  DESCOPE_WECHAT_NOT_CONFIGURED: "微信开放平台登录尚未配置。",
+  DESCOPE_WECHAT_START_REJECTED: "微信登录启动失败，请稍后重试。",
+  DESCOPE_WECHAT_AUTHORIZATION_REJECTED: "微信授权被取消或拒绝。",
+  DESCOPE_WECHAT_EXCHANGE_REJECTED: "微信登录校验失败，请重新扫码。",
+  ACCOUNT_SESSION_SECRET_NOT_CONFIGURED: "账户会话密钥尚未配置，未建立会话。",
 };
 
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ error?: string; registered?: string; returnTo?: string }>;
+  searchParams: Promise<{ error?: string; registered?: string; returnTo?: string; verify?: string }>;
 }) {
   const parameters = await searchParams;
   const configured = oidcConfigured();
+  const descopeReady = descopeConfigured();
+  const wechatReady = descopeWechatConfigured();
   const localConfigured = localCredentialsConfigured();
   const registrationConfigured = localRegistrationConfigured();
   const returnTo = parameters.returnTo?.startsWith("/") && !parameters.returnTo.startsWith("//")
@@ -57,7 +75,53 @@ export default async function LoginPage({
         {parameters.registered === "1" && (
           <div className="auth-success" role="status">账户已创建，请使用新账户登录。</div>
         )}
-        {configured && (
+        {parameters.verify === "1" && descopeReady && (
+          <form className="auth-form otp-verify-form" method="post" action="/api/auth/descope/otp/verify">
+            <h2>输入一次性验证码</h2>
+            <p>验证码已发送到刚才验证的邮箱或手机。验证码和登录标识由加密的 HttpOnly 会话绑定。</p>
+            <label>
+              <span>验证码</span>
+              <input name="code" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{4,10}" minLength={4} maxLength={10} required autoFocus />
+            </label>
+            <button className="button button-primary" type="submit">验证并进入用户中心</button>
+            <a className="text-link" href={`/login?${new URLSearchParams({ returnTo })}`}>重新选择登录方式</a>
+          </form>
+        )}
+        {descopeReady && parameters.verify !== "1" && (
+          <div className="auth-method-grid" aria-label="用户登录方式">
+            <form className="auth-method-card" method="post" action="/api/auth/descope/otp/start">
+              <span className="auth-method-icon" aria-hidden="true">@</span>
+              <h2>邮箱验证码登录</h2>
+              <p>无需密码，验证码发送到已注册邮箱。</p>
+              <input type="hidden" name="channel" value="EMAIL" />
+              <input type="hidden" name="intent" value="LOGIN" />
+              <input type="hidden" name="loginMode" value="USER" />
+              <input type="hidden" name="returnTo" value={returnTo} />
+              <label><span>邮箱</span><input name="loginId" type="email" autoComplete="email" maxLength={254} required /></label>
+              <button className="button button-primary" type="submit">发送邮箱验证码</button>
+            </form>
+            <form className="auth-method-card" method="post" action="/api/auth/descope/otp/start">
+              <span className="auth-method-icon" aria-hidden="true">☎</span>
+              <h2>手机号验证码登录</h2>
+              <p>使用含国家区号的手机号接收短信验证码。</p>
+              <input type="hidden" name="channel" value="SMS" />
+              <input type="hidden" name="intent" value="LOGIN" />
+              <input type="hidden" name="loginMode" value="USER" />
+              <input type="hidden" name="returnTo" value={returnTo} />
+              <label><span>手机号</span><input name="loginId" type="tel" inputMode="tel" autoComplete="tel" placeholder="+8613812345678" maxLength={18} required /></label>
+              <button className="button button-secondary" type="submit">发送短信验证码</button>
+            </form>
+            <form className={`auth-method-card wechat-auth-card${wechatReady ? "" : " auth-method-disabled"}`} method="post" action="/api/auth/descope/wechat/start">
+              <span className="auth-method-icon wechat-icon" aria-hidden="true">微</span>
+              <h2>微信扫码登录</h2>
+              <p>{wechatReady ? "跳转到微信开放平台二维码，扫码确认后返回 ELMOS。" : "代码已接入；配置微信开放平台 AppID 与密钥后启用真实二维码。"}</p>
+              <input type="hidden" name="intent" value="LOGIN" />
+              <input type="hidden" name="returnTo" value={returnTo} />
+              <button className="button wechat-login-button" type="submit" disabled={!wechatReady}>{wechatReady ? "打开微信登录二维码" : "微信凭据待配置"}</button>
+            </form>
+          </div>
+        )}
+        {configured && !descopeReady && (
           <a
             className="button button-primary"
             href={`/api/auth/login?${new URLSearchParams({ mode: "USER", returnTo })}`}
@@ -89,10 +153,10 @@ export default async function LoginPage({
             <button className="button button-primary" type="submit">使用邮箱登录</button>
           </form>
         )}
-        {registrationConfigured && (
+        {(descopeReady || registrationConfigured) && (
           <div className="auth-links">
-            <span>还没有本地账户？</span>
-            <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>注册本地账户</a>
+            <span>还没有账户？</span>
+            <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
           </div>
         )}
         <div className="admin-entry-callout" aria-label="管理员专用入口">
@@ -102,7 +166,7 @@ export default async function LoginPage({
           </div>
           <a className="button admin-entry-button" href="/admin/login">进入管理员登录</a>
         </div>
-        {!configured && !localConfigured && (
+        {!descopeReady && !configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>
             <span>需要设置精确的 issuer、授权端点、令牌端点、JWKS、client 和回调地址。</span>
