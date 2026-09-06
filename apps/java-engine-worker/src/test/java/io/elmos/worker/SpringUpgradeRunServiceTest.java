@@ -243,8 +243,17 @@ class SpringUpgradeRunServiceTest {
         assertTrue(transformer.stopped.await(
                 ASYNC_STATE_TIMEOUT.toSeconds(), TimeUnit.SECONDS));
         assertEquals(1, transformer.stopCalls.get());
+        // The remote STOP acknowledgement precedes the worker's durable
+        // STOPPED transition. Wait for that state write before JUnit releases
+        // the owner-managed @TempDir.
+        assertEquals(RuntimeStatus.STOPPED,
+                awaitRuntime(run.runId(), RuntimeStatus.STOPPED).runtimeStatus());
         assertEquals(RunStatus.CANCELLED,
                 awaitTerminal(run.runId(), "org-a").status());
+        // Cancellation is intentionally asynchronous. Drain the execution
+        // task through its durable lease receipt before TempDir cleanup; the
+        // @AfterEach invocation remains an idempotency check for close().
+        service.close();
     }
 
     @Test void preDestroyStopsEveryRemoteHandleOnce() {
