@@ -205,6 +205,11 @@ test.describe("Batch 46 一键运行 · 真实会话", () => {
       return readiness?.status ?? "PENDING";
     }, { timeout: 90_000, intervals: [1_000] }).toBe("PASS");
 
+    // Readiness evidence is persisted before the lease state advances out of STARTING.
+    // Wait for the lifecycle transition as a separate contract instead of racing it.
+    await expect.poll(async () => (await readSession()).state,
+      { timeout: 90_000, intervals: [1_000] }).toMatch(/^(READY|HOLDING)$/);
+
     const live = await readSession();
     expect(["READY", "HOLDING"]).toContain(live.state);
     expect(live.url).toMatch(/^http:\/\/127\.0\.0\.1:\d+$/);
