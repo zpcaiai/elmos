@@ -654,6 +654,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         route_sync = route_engine_job.index(
             "uv --directory engines/polyglot-route-engine sync --locked"
         )
+        php_identity_preflight = route_engine_job.index(
+            "from elmos_polyglot_route.toolchains import _php_tree_identity"
+        )
         closure_tests = route_engine_job.index(
             '"$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"'
         )
@@ -678,6 +681,16 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertLess(cargo_fetch, native_core_build)
         self.assertLess(native_core_build, core_partition)
         self.assertLess(private_environment, route_sync)
+        self.assertLess(route_sync, php_identity_preflight)
+        self.assertLess(php_identity_preflight, closure_tests)
+        self.assertEqual(route_engine_job.count("_php_tree_identity()"), 1)
+        self.assertEqual(
+            route_engine_job.count(
+                "uv --directory engines/polyglot-route-engine run --locked "
+                "python -I -B - <<'PY'"
+            ),
+            1,
+        )
         self.assertLess(route_sync, closure_tests)
         self.assertLess(closure_tests, core_partition)
         self.assertLess(host_preparation, apple_diagnostic)

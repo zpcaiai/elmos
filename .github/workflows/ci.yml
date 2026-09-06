@@ -449,6 +449,14 @@ jobs:
           test "${UV_PROJECT_ENVIRONMENT}" = \
             "${RUNNER_TEMP}/elmos-polyglot-route-venv"
           uv --directory engines/polyglot-route-engine sync --locked
+          # Fail before the multi-hour pytest partition when a hosted PHP tree
+          # has not yet been bound to this exact runner image. The preflight
+          # emits the observed identity through the fail-closed RouteError.
+          uv --directory engines/polyglot-route-engine run --locked python -I -B - <<'PY'
+          from elmos_polyglot_route.toolchains import _php_tree_identity
+
+          _php_tree_identity()
+          PY
           uv --directory engines/polyglot-route-engine run --locked pytest \
             "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
           uv --directory engines/polyglot-route-engine run --locked python - <<'PY'
