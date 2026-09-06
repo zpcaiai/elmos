@@ -4464,7 +4464,13 @@ _PHP_RUNTIME_IDENTITY_SCRIPT = (
 )
 
 
-def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def php_tree_identity(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    include_diagnostics: bool = False,
+) -> dict[str, object]:
     """Content identity of one PHP install tree, symlinks included.
 
     Deliberately *not* `_qualified_tree_manifest`, which requires a symlink-free
@@ -4603,7 +4609,7 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
     digest = hashlib.sha256(
         json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
-    return {
+    identity: dict[str, object] = {
         "root": str(root),
         "sha256": digest,
         "record_count": len(records),
@@ -4613,6 +4619,24 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
         "symlinks": symlinks,
         "unbound_symlinks": unbound,
     }
+    if include_diagnostics:
+        payload_records = [
+            record for record in records if record.get("path") != "INSTALL_RECEIPT.json"
+        ]
+        receipt_records = [
+            record for record in records if record.get("path") == "INSTALL_RECEIPT.json"
+        ]
+        if len(receipt_records) != 1:
+            raise RouteError(failure + ":INSTALL_RECEIPT_REQUIRED")
+        identity["payload_sha256"] = hashlib.sha256(
+            json.dumps(
+                payload_records,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        identity["install_receipt_sha256"] = receipt_records[0]["sha256"]
+    return identity
 
 
 def _php_tree_identity() -> dict[str, object]:
@@ -4633,11 +4657,19 @@ def _php_tree_identity() -> dict[str, object]:
         "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
     if identity != expected:
+        diagnostic = php_tree_identity(
+            _EXPECTED_PHP_ROOT,
+            _EXPECTED_PHP_ANCHOR,
+            "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
+            include_diagnostics=True,
+        )
+        if {key: diagnostic[key] for key in identity} != identity:
+            raise RouteError("EXACT_TOOLCHAIN_PHP_TREE_UNSAFE:TREE_CHANGED")
         raise RouteError(
             "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected="
             + json.dumps(expected, sort_keys=True, separators=(",", ":"))
             + ":observed="
-            + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+            + json.dumps(diagnostic, sort_keys=True, separators=(",", ":"))
         )
     return {
         **identity,

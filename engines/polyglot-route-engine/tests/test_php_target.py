@@ -506,6 +506,42 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     assert semantic_drift["sha256"] != baseline["sha256"]
 
 
+def test_php_tree_diagnostic_separates_payload_from_install_receipt(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    (root / "payload").write_bytes(b"fixed bottle payload")
+    receipt = root / "INSTALL_RECEIPT.json"
+    document = {
+        "homebrew_version": "6.0.1",
+        "time": 1,
+        "source_modified_time": 100,
+        "arch": "arm64",
+        "runtime_dependencies": [{"full_name": "openssl@3", "version": "3.6.3"}],
+    }
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        include_diagnostics=True,
+    )
+
+    document["runtime_dependencies"][0]["version"] = "3.6.4"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    receipt_drift = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        include_diagnostics=True,
+    )
+
+    assert receipt_drift["payload_sha256"] == baseline["payload_sha256"]
+    assert receipt_drift["install_receipt_sha256"] != baseline["install_receipt_sha256"]
+    assert receipt_drift["sha256"] != baseline["sha256"]
+
+
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:
     """Recording an unbound name is acceptable for an installer script. It is not
     acceptable for anything the interpreter could dlopen: that has to live inside
