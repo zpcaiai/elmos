@@ -1,0 +1,23 @@
+{
+  "skill_id": "LW-19",
+  "cases": [
+    {
+      "id": "LW-19-AC-01",
+      "expectation": "执行前预测不会被旁边自动讲解提前泄露。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-19-AC-02",
+      "expectation": "当前运行版本与课程版本不匹配时阻止错误评分。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-19-AC-03",
+      "expectation": "任务完成由真实predicate事件触发，而不是点击“我懂了”。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    }
+  ]
+}

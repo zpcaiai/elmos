@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "android-native",
+  "language": "Kotlin/Java/Dart",
+  "framework": "Android/Flutter Android",
+  "runtime": "Android ART",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "Android/device gateway",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "native-stream",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "emulator/virtualization and SDK must be qualified",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}

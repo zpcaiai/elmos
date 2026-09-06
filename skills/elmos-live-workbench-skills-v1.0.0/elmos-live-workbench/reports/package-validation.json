@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "internal_workflows": 28,
+  "workflow_acceptance_cases": 84,
+  "json_schemas": 12,
+  "runtime_candidates": 12,
+  "examples": 10,
+  "dependency_dag": "acyclic",
+  "batch_dependencies": "valid",
+  "scope": "static-package-validation-only"
+}

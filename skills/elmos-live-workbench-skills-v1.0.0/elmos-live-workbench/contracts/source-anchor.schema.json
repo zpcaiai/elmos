@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/source-anchor.schema.json",
+  "title": "source-anchor",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "path": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.{1,2}(?:/|$))(?!.*[\\x00-\\x1f\\x7f]).+$"
+    },
+    "blob_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "byte_start": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "byte_end": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "coordinate_system": {
+      "const": "utf8-byte-half-open"
+    },
+    "symbol_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "path",
+    "blob_digest",
+    "byte_start",
+    "byte_end",
+    "coordinate_system",
+    "symbol_id"
+  ],
+  "additionalProperties": false
+}

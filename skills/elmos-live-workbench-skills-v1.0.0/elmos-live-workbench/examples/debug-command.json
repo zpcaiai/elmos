@@ -1,0 +1,17 @@
+{
+  "schema_version": "lw.v1",
+  "tenant_id": "local-fixture",
+  "repository_id": "original-cart-python",
+  "snapshot_id": "sha256:94af3d9e3a526baad253ef5e44ecfea249286645d8823664ad334cdf7a431d0f",
+  "session_id": "illustrative-session",
+  "command_id": "c1",
+  "idempotency_key": "k1",
+  "generation": 1,
+  "stop_epoch": 1,
+  "control_lease_id": "controller-1",
+  "command": "next",
+  "arguments_digest": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "required_capability": "control",
+  "authorization_ref": "EXAMPLE-ONLY-NOT-AN-AUTHORIZATION",
+  "deadline": 700
+}

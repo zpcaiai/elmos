@@ -1,0 +1,12 @@
+{
+  "schema_version": "lw.v1",
+  "tenant_id": "local-fixture",
+  "repository_id": "original-cart-python",
+  "snapshot_id": "sha256:94af3d9e3a526baad253ef5e44ecfea249286645d8823664ad334cdf7a431d0f",
+  "path": "quote.py",
+  "blob_digest": "sha256:02938bed775408cf5b641db21c0edad0a1e2894cb4a9df9a0e2649c6c343c409",
+  "byte_start": 298,
+  "byte_end": 437,
+  "coordinate_system": "utf8-byte-half-open",
+  "symbol_id": "quote"
+}
