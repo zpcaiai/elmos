@@ -8,6 +8,11 @@ import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.BufferedOutputStream;
+import java.io.FilterOutputStream;
+import java.io.UncheckedIOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SeekableByteChannel;
 import java.nio.charset.StandardCharsets;
@@ -99,6 +104,35 @@ public final class DeterministicSnapshotArchiver {
         @Override public byte[] manifest() { return manifest.clone(); }
     }
 
+    public record ArchiveMetadata(String archiveSha256, long archiveSize, byte[] manifest,
+                                  String manifestSha256, long sourceBytes, int sourceFiles,
+                                  SourceAssurance sourceAssurance) {
+        public ArchiveMetadata { manifest = manifest.clone(); }
+        @Override public byte[] manifest() { return manifest.clone(); }
+    }
+
+    /** Owned, private spool. Publication must finish before close deletes the staged bytes. */
+    public static final class SnapshotSpool implements AutoCloseable {
+        private final Path path;
+        private final ArchiveMetadata metadata;
+        private boolean closed;
+        private SnapshotSpool(Path path, ArchiveMetadata metadata) {
+            this.path = path;
+            this.metadata = metadata;
+        }
+        public ArchiveMetadata metadata() { return metadata; }
+        public InputStream openStream() throws IOException {
+            if (closed) throw new IllegalStateException("snapshot spool is closed");
+            return Files.newInputStream(path, LinkOption.NOFOLLOW_LINKS);
+        }
+        @Override public void close() {
+            try {
+                Files.deleteIfExists(path);
+                closed = true;
+            } catch (IOException error) { throw new UncheckedIOException(error); }
+        }
+    }
+
     private static final Set<String> EXCLUDED_NAMES = Set.of(".git", ".elmos", ".env", "id_rsa", "id_ed25519");
     private static final int READ_BUFFER_BYTES = 64 * 1024;
     private static final int MAX_ENTRIES = 100_000;
@@ -188,6 +222,46 @@ public final class DeterministicSnapshotArchiver {
             SourceLease sourceLease,
             boolean requireAuthoritativeLease
     ) {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ArchiveMetadata metadata = archiveTo(sourceRoot, context, sourceLease,
+                requireAuthoritativeLease, output);
+        return new SnapshotArchive(output.toByteArray(), metadata.archiveSha256(), metadata.manifest(),
+                metadata.manifestSha256(), metadata.sourceBytes(), metadata.sourceFiles(),
+                metadata.sourceAssurance());
+    }
+
+    public SnapshotSpool spool(Path sourceRoot, SnapshotContext context) {
+        return spool(sourceRoot, context, localSelfAttestedLease(), false);
+    }
+
+    public SnapshotSpool spool(Path sourceRoot, SnapshotContext context, SourceLease lease) {
+        return spool(sourceRoot, context, Objects.requireNonNull(lease), true);
+    }
+
+    private SnapshotSpool spool(Path sourceRoot, SnapshotContext context, SourceLease lease,
+                                boolean authoritative) {
+        Path temporary = null;
+        try {
+            // A sibling, never inside the captured tree; createTempFile is owner-only.
+            Path parent = sourceRoot.toRealPath(LinkOption.NOFOLLOW_LINKS).getParent();
+            if (parent == null) throw new SecurityException("filesystem root cannot be snapshotted");
+            temporary = Files.createTempFile(parent, ".elmos-snapshot-spool-", ".tar.zst");
+            try (var output = new BufferedOutputStream(Files.newOutputStream(temporary), READ_BUFFER_BYTES)) {
+                ArchiveMetadata metadata = archiveTo(sourceRoot, context, lease, authoritative, output);
+                return new SnapshotSpool(temporary, metadata);
+            }
+        } catch (IOException | RuntimeException failure) {
+            if (temporary != null) {
+                try { Files.deleteIfExists(temporary); }
+                catch (IOException cleanup) { failure.addSuppressed(cleanup); }
+            }
+            if (failure instanceof RuntimeException runtime) throw runtime;
+            throw new UncheckedIOException((IOException) failure);
+        }
+    }
+
+    private ArchiveMetadata archiveTo(Path sourceRoot, SnapshotContext context, SourceLease sourceLease,
+                                      boolean requireAuthoritativeLease, OutputStream output) {
         try {
             Path root = sourceRoot.toRealPath(LinkOption.NOFOLLOW_LINKS);
             if (!Files.isDirectory(root, LinkOption.NOFOLLOW_LINKS)) throw new IllegalArgumentException("snapshot source must be a directory");
@@ -202,7 +276,7 @@ public final class DeterministicSnapshotArchiver {
                     MAX_TAR_METADATA_BYTES);
             List<ManifestEntry> entries = new ArrayList<>();
             List<String> lfsPointers = new ArrayList<>();
-            ByteArrayOutputStream archiveBytes = new ByteArrayOutputStream();
+            DigestingOutput archiveBytes = new DigestingOutput(output);
             try (SourceAnchors anchors = SourceAnchors.create(root);
                  ZstdOutputStream zstd = new ZstdOutputStream(archiveBytes, 9);
                  TarArchiveOutputStream tar = new TarArchiveOutputStream(zstd, StandardCharsets.UTF_8.name())) {
@@ -232,7 +306,7 @@ public final class DeterministicSnapshotArchiver {
                 throw new SecurityException(
                         "snapshot source lease changed during archive");
             }
-            String archiveDigest = digest(archiveBytes.toByteArray());
+            String archiveDigest = HexFormat.of().formatHex(archiveBytes.digest.digest());
             List<String> symlinks = entries.stream().filter(entry -> entry.type().equals("symlink")).map(ManifestEntry::path).toList();
             List<String> submodules = entries.stream().anyMatch(
                     entry -> entry.path().equals(".gitmodules"))
@@ -248,10 +322,26 @@ public final class DeterministicSnapshotArchiver {
             }
             long sourceBytes = sourceBudget.sourceBytes;
             int sourceFiles = sourceBudget.sourceFiles;
-            return new SnapshotArchive(archiveBytes.toByteArray(), archiveDigest, manifest,
+            return new ArchiveMetadata(archiveDigest, archiveBytes.size, manifest,
                     digest(manifest), sourceBytes, sourceFiles, initialLease.assurance());
         } catch (IOException exception) {
             throw new IllegalStateException("unable to create deterministic snapshot", exception);
+        }
+    }
+
+    private static final class DigestingOutput extends FilterOutputStream {
+        private final MessageDigest digest = sha256Digest();
+        private long size;
+        DigestingOutput(OutputStream output) { super(output); }
+        @Override public void write(int value) throws IOException {
+            out.write(value);
+            digest.update((byte) value);
+            size++;
+        }
+        @Override public void write(byte[] bytes, int offset, int length) throws IOException {
+            out.write(bytes, offset, length);
+            digest.update(bytes, offset, length);
+            size += length;
         }
     }
 
@@ -338,7 +428,6 @@ public final class DeterministicSnapshotArchiver {
         if (attributes.isOther()) throw new SecurityException("unsupported special file: " + name);
         TarArchiveEntry entry;
         String type; String fileDigest = null; String target = null; long size = 0; int mode;
-        byte[] content = null;
         if (attributes.isSymbolicLink()) {
             VerifiedSymbolicLink verified = readVerifiedSymbolicLink(
                     root, path, name, attributes, anchors);
@@ -353,22 +442,20 @@ public final class DeterministicSnapshotArchiver {
             type = "directory";
             mode = CANONICAL_DIRECTORY_MODE;
         } else if (attributes.isRegularFile()) {
+            metadataBudget.reserve(name, null);
             VerifiedRegularFile verified = readVerifiedRegularFile(
-                    path, name, attributes, anchors, sourceBudget);
-            content = verified.content();
-            size = content.length;
-            fileDigest = verified.sha256();
-            entry = new TarArchiveEntry(name);
-            type = "file";
+                    path, name, attributes, anchors, sourceBudget, tar);
             mode = verified.executable()
                     ? CANONICAL_EXECUTABLE_MODE : CANONICAL_FILE_MODE;
             if (verified.lfsPointer()) {
                 lfsPointers.add(name);
             }
+            manifest.add(new ManifestEntry(name, "file", verified.size(), mode, verified.sha256(), null));
+            return;
         } else throw new SecurityException("unsupported entry: " + name);
         metadataBudget.reserve(type.equals("directory") ? name + "/" : name, target);
         applyCanonicalHeader(entry, type, mode, size);
-        tar.putArchiveEntry(entry); if (content != null) tar.write(content); tar.closeArchiveEntry();
+        tar.putArchiveEntry(entry); tar.closeArchiveEntry();
         manifest.add(new ManifestEntry(name, type, size, mode, fileDigest, target));
     }
 
@@ -377,7 +464,8 @@ public final class DeterministicSnapshotArchiver {
             String name,
             BasicFileAttributes discovered,
             SourceAnchors anchors,
-            SourceBudget sourceBudget
+            SourceBudget sourceBudget,
+            TarArchiveOutputStream tar
     ) throws IOException {
         BasicFileAttributes before = Files.readAttributes(
                 path, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
@@ -388,8 +476,11 @@ public final class DeterministicSnapshotArchiver {
         sourceBudget.reserve(before.size());
         try (AnchoredNode anchored = anchors.anchor(path, name, before)) {
             boolean executable = Files.isExecutable(anchored.path());
-            int initialCapacity = (int) Math.min(before.size(), READ_BUFFER_BYTES);
-            ByteArrayOutputStream content = new ByteArrayOutputStream(initialCapacity);
+            ByteArrayOutputStream pointer = new ByteArrayOutputStream(1024);
+            TarArchiveEntry entry = new TarArchiveEntry(name);
+            applyCanonicalHeader(entry, "file", executable ? CANONICAL_EXECUTABLE_MODE : CANONICAL_FILE_MODE,
+                    before.size());
+            tar.putArchiveEntry(entry);
             MessageDigest contentDigest = sha256Digest();
             long readBytes = 0;
             Set<OpenOption> options = Set.of(StandardOpenOption.READ, LinkOption.NOFOLLOW_LINKS);
@@ -410,7 +501,8 @@ public final class DeterministicSnapshotArchiver {
                     if (readBytes > before.size() - count) {
                         throw new SecurityException("snapshot file grew while reading: " + name);
                     }
-                    content.write(buffer.array(), 0, count);
+                    tar.write(buffer.array(), 0, count);
+                    if (before.size() <= 1024) pointer.write(buffer.array(), 0, count);
                     contentDigest.update(buffer.array(), 0, count);
                     readBytes += count;
                     buffer.clear();
@@ -439,10 +531,10 @@ public final class DeterministicSnapshotArchiver {
                             "snapshot file metadata changed while reading: " + name);
                 }
             }
-            byte[] verifiedContent = content.toByteArray();
-            return new VerifiedRegularFile(verifiedContent,
+            tar.closeArchiveEntry();
+            return new VerifiedRegularFile(readBytes,
                     HexFormat.of().formatHex(contentDigest.digest()),
-                    isLfsPointer(verifiedContent), executable);
+                    before.size() <= 1024 && isLfsPointer(pointer.toByteArray()), executable);
         }
     }
 
@@ -579,7 +671,7 @@ public final class DeterministicSnapshotArchiver {
     }
 
     private record VerifiedRegularFile(
-            byte[] content, String sha256, boolean lfsPointer, boolean executable
+            long size, String sha256, boolean lfsPointer, boolean executable
     ) {
     }
 

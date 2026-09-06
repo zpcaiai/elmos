@@ -111,6 +111,27 @@ public interface CasStore {
         put(expected, content);
     }
 
+    /** Stream entry point; legacy adapters keep their bounded byte-array implementation.
+     * Override for large-object backends. Caller retains ownership of the input.
+     */
+    default void putDurable(CasDigest expected, java.io.InputStream content) {
+        if (expected.sizeBytes() > Integer.MAX_VALUE - 8) {
+            throw new IllegalArgumentException("CAS adapter requires a streaming implementation for this size");
+        }
+        try {
+            byte[] bytes = content.readNBytes((int) expected.sizeBytes());
+            if (content.read() != -1 || bytes.length != expected.sizeBytes()) {
+                throw new IllegalArgumentException("CAS stream size mismatch");
+            }
+            putDurable(expected, bytes);
+        } catch (java.io.IOException error) { throw new java.io.UncheckedIOException(error); }
+    }
+
+    /** Fully verifies before exposing bytes; close releases any owned staging resources. */
+    default java.io.InputStream openVerified(CasDigest digest) {
+        return new java.io.ByteArrayInputStream(get(digest));
+    }
+
     /**
      * @throws CasExceptions.CasNotFoundException   if absent
      * @throws CasExceptions.CasCorruptionException if present but poisoned

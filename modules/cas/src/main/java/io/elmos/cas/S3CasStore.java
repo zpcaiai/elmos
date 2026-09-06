@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -185,6 +184,71 @@ public final class S3CasStore implements CasStore {
     }
 
     @Override
+    public void putDurable(CasDigest expected, java.io.InputStream input) {
+        try (var content = CasContent.capture(expected, input)) {
+            if (contains(expected)) {
+                try (var verified = openVerified(expected)) { return; }
+            }
+            if (expected.sizeBytes() >= config.multipartThresholdBytes()) {
+                try (var stream = content.openStream()) { multipartUpload(expected, stream); }
+                return;
+            }
+            for (int attempt = 1; attempt <= config.maximumAttempts(); attempt++) {
+                var publisher = expected.sizeBytes() == 0 ? HttpRequest.BodyPublishers.noBody()
+                        : HttpRequest.BodyPublishers.fromPublisher(
+                                HttpRequest.BodyPublishers.ofInputStream(content::openStream), expected.sizeBytes());
+                try {
+                    var response = http.send(signedRequest("PUT", objectKey(expected), Map.of(),
+                            Map.of("content-type", "application/octet-stream"), publisher, expected.hex()),
+                            HttpResponse.BodyHandlers.ofByteArray());
+                    if (response.statusCode() >= 500 && attempt < config.maximumAttempts()) continue;
+                    requireSuccess(response, "PUT " + objectKey(expected));
+                    return;
+                } catch (java.io.IOException failure) {
+                    if (attempt == config.maximumAttempts()) throw failure;
+                }
+            }
+        } catch (java.io.IOException error) { throw new java.io.UncheckedIOException(error); }
+        catch (InterruptedException error) {
+            Thread.currentThread().interrupt();
+            throw new IllegalStateException("interrupted while uploading CAS stream", error);
+        }
+    }
+
+    @Override
+    public java.io.InputStream openVerified(CasDigest digest) {
+        for (int attempt = 1; attempt <= config.maximumAttempts(); attempt++) {
+            try {
+                var response = http.send(signedRequest("GET", objectKey(digest), Map.of(), Map.of(),
+                        HttpRequest.BodyPublishers.noBody(), SigV4Presigner.EMPTY_PAYLOAD_SHA256),
+                        HttpResponse.BodyHandlers.ofInputStream());
+                try (var body = response.body()) {
+                    if (response.statusCode() == 404) throw new CasExceptions.CasNotFoundException(digest);
+                    if (response.statusCode() == 401 || response.statusCode() == 403) {
+                        throw new CasExceptions.CasAccessDeniedException("OBJECT_STORE_REJECTED_CREDENTIALS",
+                                "GET rejected by object store");
+                    }
+                    if (response.statusCode() >= 500 && attempt < config.maximumAttempts()) continue;
+                    if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                        throw new IllegalStateException("S3 GET failed with " + response.statusCode());
+                    }
+                    try { return CasContent.capture(digest, body).ownedStream(); }
+                    catch (IllegalArgumentException sizeMismatch) {
+                        throw new CasExceptions.CasCorruptionException(name, digest,
+                                "download length differs from declared size");
+                    }
+                }
+            } catch (java.io.IOException failure) {
+                if (attempt == config.maximumAttempts()) throw new java.io.UncheckedIOException(failure);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                throw new IllegalStateException("interrupted while downloading CAS stream", interrupted);
+            }
+        }
+        throw new IllegalStateException("CAS download attempts exhausted");
+    }
+
+    @Override
     public byte[] readRange(CasDigest digest, long offset, int length) {
         if (offset < 0) {
             throw new IllegalArgumentException("range offset must not be negative: " + offset);
@@ -253,6 +317,13 @@ public final class S3CasStore implements CasStore {
 
     /** ELMOS-CAS-007. Multipart upload for large blobs, with a per-part digest on the wire. */
     void multipartUpload(CasDigest digest, byte[] content) {
+        multipartUpload(digest, new java.io.ByteArrayInputStream(content));
+    }
+
+    private void multipartUpload(CasDigest digest, java.io.InputStream content) {
+        if (config.partSizeBytes() > 64L * 1024 * 1024) {
+            throw new IllegalArgumentException("CAS streaming part exceeds 64 MiB memory policy");
+        }
         String key = objectKey(digest);
         HttpResponse<byte[]> created = send("POST", key, Map.of("uploads", ""),
                 Map.of("content-type", "application/octet-stream"), new byte[0]);
@@ -267,8 +338,8 @@ public final class S3CasStore implements CasStore {
         try {
             int partSize = (int) config.partSizeBytes();
             int partNumber = 1;
-            for (int offset = 0; offset < content.length; offset += partSize) {
-                byte[] part = Arrays.copyOfRange(content, offset, Math.min(content.length, offset + partSize));
+            for (long offset = 0; offset < digest.sizeBytes(); offset += partSize) {
+                byte[] part = content.readNBytes((int) Math.min(partSize, digest.sizeBytes() - offset));
                 HttpResponse<byte[]> uploaded = send("PUT", key,
                         Map.of("partNumber", Integer.toString(partNumber), "uploadId", uploadId),
                         Map.of(), part);
@@ -287,11 +358,13 @@ public final class S3CasStore implements CasStore {
                     Map.of("content-type", "application/xml"),
                     completion.toString().getBytes(StandardCharsets.UTF_8));
             requireSuccess(completed, "CompleteMultipartUpload " + key);
-        } catch (RuntimeException failure) {
+        } catch (RuntimeException | java.io.IOException failure) {
             // An abandoned multipart upload is billed storage that no listing shows. Abort on the
             // way out; the reconciler's incomplete-session scan is the backstop, not the plan.
-            send("DELETE", key, Map.of("uploadId", uploadId), Map.of(), new byte[0]);
-            throw failure;
+            try { send("DELETE", key, Map.of("uploadId", uploadId), Map.of(), new byte[0]); }
+            catch (RuntimeException cleanup) { failure.addSuppressed(cleanup); }
+            if (failure instanceof RuntimeException runtime) throw runtime;
+            throw new java.io.UncheckedIOException((java.io.IOException) failure);
         }
     }
 
@@ -319,14 +392,22 @@ public final class S3CasStore implements CasStore {
     private HttpResponse<byte[]> sendOnce(String method, String key, Map<String, String> query,
                                           Map<String, String> extraHeaders, byte[] payload)
             throws java.io.IOException, InterruptedException {
+        String payloadHash = payload.length == 0 ? SigV4Presigner.EMPTY_PAYLOAD_SHA256
+                : SigV4Presigner.sha256Hex(payload);
+        return http.send(signedRequest(method, key, query, extraHeaders,
+                        payload.length == 0 ? HttpRequest.BodyPublishers.noBody()
+                                : HttpRequest.BodyPublishers.ofByteArray(payload), payloadHash),
+                HttpResponse.BodyHandlers.ofByteArray());
+    }
+
+    private HttpRequest signedRequest(String method, String key, Map<String, String> query,
+                                      Map<String, String> extraHeaders,
+                                      HttpRequest.BodyPublisher publisher, String payloadHash) {
         Instant now = clock.get();
         String path = config.pathStyleAccess()
                 ? "/" + config.bucket() + (key.isEmpty() ? "" : "/" + key)
                 : (key.isEmpty() ? "/" : "/" + key);
         String canonicalQuery = SigV4Presigner.canonicalQuery(query);
-        String payloadHash = payload.length == 0
-                ? SigV4Presigner.EMPTY_PAYLOAD_SHA256
-                : SigV4Presigner.sha256Hex(payload);
 
         Map<String, String> headers = new LinkedHashMap<>(extraHeaders);
         String host = config.endpoint().getHost()
@@ -344,16 +425,14 @@ public final class S3CasStore implements CasStore {
                 + (canonicalQuery.isEmpty() ? "" : "?" + canonicalQuery));
         HttpRequest.Builder request = HttpRequest.newBuilder(uri)
                 .timeout(config.requestTimeout())
-                .method(method, payload.length == 0
-                        ? HttpRequest.BodyPublishers.noBody()
-                        : HttpRequest.BodyPublishers.ofByteArray(payload));
+                .method(method, publisher);
         headers.forEach((headerName, value) -> {
             if (!headerName.equals("host")) {
                 request.header(headerName, value);
             }
         });
         request.header("authorization", authorization);
-        return http.send(request.build(), HttpResponse.BodyHandlers.ofByteArray());
+        return request.build();
     }
 
     private void requireSuccess(HttpResponse<byte[]> response, String what) {
