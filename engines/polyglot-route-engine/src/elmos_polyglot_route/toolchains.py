@@ -436,6 +436,7 @@ class HomebrewRouteBundleProfile:
     dotnet_hostpolicy_sha256: str
     php_tree_sha256: str
     php_tree_bytes: int
+    php_tree_alternates: tuple[tuple[str, int], ...] = ()
 
 
 _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
@@ -503,6 +504,17 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
     php_tree_sha256="abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23",
     php_tree_bytes=129_949_421,
+    # The route-pack job installs the same digest-bound PHP 8.5.9 formula
+    # after the Apple host preparation step.  On this exact hosted image that
+    # produces a second, observed bottle payload identity with the same
+    # inventory and byte count.  Keep it as an exact alternative rather than
+    # weakening the tree check or pretending it is the workstation payload.
+    php_tree_alternates=(
+        (
+            "5ab2daeb1d2a29341e9bafa68401c3df9ef54dc379d0a904f5e95d1c8ff74df9",
+            129_949_421,
+        ),
+    ),
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -4742,17 +4754,24 @@ def _php_tree_identity() -> dict[str, object]:
         _EXPECTED_PHP_ANCHOR,
         "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
     )
-    expected = {
-        "root": str(_EXPECTED_PHP_ROOT),
-        "sha256": bundle_profile.php_tree_sha256,
-        "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
-        "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
-        "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
-        "bytes": bundle_profile.php_tree_bytes,
-        "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
-        "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
-    }
-    if identity != expected:
+    expected_identities = (
+        (bundle_profile.php_tree_sha256, bundle_profile.php_tree_bytes),
+        *bundle_profile.php_tree_alternates,
+    )
+    expected_variants = tuple(
+        {
+            "root": str(_EXPECTED_PHP_ROOT),
+            "sha256": sha256,
+            "record_count": _EXPECTED_PHP_TREE_RECORD_COUNT,
+            "file_count": _EXPECTED_PHP_TREE_FILE_COUNT,
+            "directory_count": _EXPECTED_PHP_TREE_DIRECTORY_COUNT,
+            "bytes": byte_count,
+            "symlinks": _EXPECTED_PHP_TREE_SYMLINKS,
+            "unbound_symlinks": _EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
+        }
+        for sha256, byte_count in expected_identities
+    )
+    if identity not in expected_variants:
         diagnostic = php_tree_identity(
             _EXPECTED_PHP_ROOT,
             _EXPECTED_PHP_ANCHOR,
@@ -4762,8 +4781,8 @@ def _php_tree_identity() -> dict[str, object]:
         if {key: diagnostic[key] for key in identity} != identity:
             raise RouteError("EXACT_TOOLCHAIN_PHP_TREE_UNSAFE:TREE_CHANGED")
         raise RouteError(
-            "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected="
-            + json.dumps(expected, sort_keys=True, separators=(",", ":"))
+            "EXACT_TOOLCHAIN_PHP_TREE_MISMATCH:expected_variants="
+            + json.dumps(expected_variants, sort_keys=True, separators=(",", ":"))
             + ":observed="
             + json.dumps(diagnostic, sort_keys=True, separators=(",", ":"))
         )

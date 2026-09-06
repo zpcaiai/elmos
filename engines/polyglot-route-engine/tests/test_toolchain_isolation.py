@@ -521,6 +521,12 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23"
     )
     assert current_hosted.php_tree_bytes == 129_949_421
+    assert current_hosted.php_tree_alternates == (
+        (
+            "5ab2daeb1d2a29341e9bafa68401c3df9ef54dc379d0a904f5e95d1c8ff74df9",
+            129_949_421,
+        ),
+    )
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 != local.php_tree_sha256
     assert current_hosted.php_tree_bytes != local.php_tree_bytes
@@ -585,6 +591,30 @@ def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
     assert f"homebrew-bundle-profile={bundle_profile.profile_id}" in selected.profile
     assert f"php-tree-sha256={bundle_profile.php_tree_sha256}" in selected.profile
     assert f"php-tree-bytes={bundle_profile.php_tree_bytes}" in selected.profile
+
+
+def test_php_tree_accepts_only_an_exact_registered_hosted_variant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    observed = {
+        "root": str(toolchains._EXPECTED_PHP_ROOT),
+        "sha256": profile.php_tree_alternates[0][0],
+        "record_count": toolchains._EXPECTED_PHP_TREE_RECORD_COUNT,
+        "file_count": toolchains._EXPECTED_PHP_TREE_FILE_COUNT,
+        "directory_count": toolchains._EXPECTED_PHP_TREE_DIRECTORY_COUNT,
+        "bytes": profile.php_tree_alternates[0][1],
+        "symlinks": toolchains._EXPECTED_PHP_TREE_SYMLINKS,
+        "unbound_symlinks": toolchains._EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
+    }
+    monkeypatch.setattr(toolchains, "homebrew_route_bundle_profile", lambda: profile)
+    monkeypatch.setattr(toolchains, "php_tree_identity", lambda *_args, **_kwargs: observed)
+
+    assert toolchains._php_tree_identity()["sha256"] == observed["sha256"]
+
+    observed["sha256"] = "0" * 64
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_PHP_TREE_MISMATCH"):
+        toolchains._php_tree_identity()
 
 
 def test_dotnet_tree_rejects_parent_symlink_escape(
