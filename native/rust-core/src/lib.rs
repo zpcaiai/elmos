@@ -234,6 +234,34 @@ pub unsafe extern "C" fn elmos_free_bytes(ptr: *mut u8, len: usize) {
 // -------------------------------------------------------------
 // P1+: Content Addressable Storage (CAS)
 // -------------------------------------------------------------
+/// Bounded descriptor input; returns JSON and never takes ownership of the caller's fd.
+#[cfg(unix)]
+#[no_mangle]
+pub unsafe extern "C" fn elmos_cas_put_fd(
+    root_ptr: *const c_char, fd: i32, max_bytes: u64,
+    expected_ptr: *const c_char, kind_ptr: *const c_char,
+) -> *mut c_char {
+    use std::os::fd::BorrowedFd;
+    let result = catch_unwind(|| -> Result<String, String> {
+        if root_ptr.is_null() || kind_ptr.is_null() || fd < 0 { return Err("invalid argument".into()); }
+        let root = CStr::from_ptr(root_ptr).to_str().map_err(|e| e.to_string())?;
+        let kind = CStr::from_ptr(kind_ptr).to_str().map_err(|e| e.to_string())?;
+        let expected = if expected_ptr.is_null() { None }
+            else { Some(CStr::from_ptr(expected_ptr).to_str().map_err(|e| e.to_string())?) };
+        let owned = BorrowedFd::borrow_raw(fd).try_clone_to_owned().map_err(|e| e.to_string())?;
+        let source = std::fs::File::from(owned);
+        let cas = elmos_cas_core::ContentAddressableStore::new(root, None, Some(max_bytes))
+            .map_err(|e| e.to_string())?;
+        cas.put_file(&source, max_bytes, expected, kind).map_err(|e| e.to_string())
+    });
+    let envelope = match result {
+        Ok(Ok(digest)) => serde_json::json!({"digest": digest}),
+        Ok(Err(error)) => serde_json::json!({"error": error}),
+        Err(_) => serde_json::json!({"error": "native CAS panic"}),
+    };
+    CString::new(envelope.to_string()).unwrap().into_raw()
+}
+
 #[no_mangle]
 pub unsafe extern "C" fn elmos_cas_put_bytes(
     root_ptr: *const c_char,
@@ -1091,4 +1119,3 @@ pub unsafe extern "C" fn elmos_industrial_decode_registers(
         Err(_) => std::ptr::null_mut(),
     }
 }
-

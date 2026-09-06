@@ -39,19 +39,19 @@
 }
 
 int main() {
-    const auto actual_0 = decision(true, true, false);
+    const auto actual_0 = elmos_fn_629d47168e547410(true, true, false);
     const auto expected_0 = true;
     if (actual_0 != expected_0) return 1;
     std::cout << "ELMOS_OBSERVATION\t0\tbool\t" << (actual_0 ? std::string("true") : std::string("false")) << "\n";
-    const auto actual_1 = decision(true, false, false);
+    const auto actual_1 = elmos_fn_629d47168e547410(true, false, false);
     const auto expected_1 = false;
     if (actual_1 != expected_1) return 2;
     std::cout << "ELMOS_OBSERVATION\t1\tbool\t" << (actual_1 ? std::string("true") : std::string("false")) << "\n";
-    const auto actual_2 = decision(false, false, true);
+    const auto actual_2 = elmos_fn_629d47168e547410(false, false, true);
     const auto expected_2 = true;
     if (actual_2 != expected_2) return 3;
     std::cout << "ELMOS_OBSERVATION\t2\tbool\t" << (actual_2 ? std::string("true") : std::string("false")) << "\n";
-    const auto actual_3 = decision(false, false, false);
+    const auto actual_3 = elmos_fn_629d47168e547410(false, false, false);
     const auto expected_3 = false;
     if (actual_3 != expected_3) return 4;
     std::cout << "ELMOS_OBSERVATION\t3\tbool\t" << (actual_3 ? std::string("true") : std::string("false")) << "\n";

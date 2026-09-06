@@ -136,7 +136,10 @@ _SWIFT_BUILD_FINAL_SIGNAL_RESERVE_SECONDS = 0.25
 _SWIFT_BUILD_FINAL_VERIFICATION_RESERVE_SECONDS = 0.5
 _SWIFT_BUILD_SESSION_POLL_SECONDS = 0.05
 _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
-_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 2.0
+# Normal completion still requires three consecutive empty session snapshots.
+# Keep enough bounded wall-clock budget for every identity scan plus scheduler
+# contention on production developer hosts; exhaustion remains fail-closed.
+_SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
 _SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS = 3
@@ -3975,7 +3978,12 @@ def _canonical_swift_toolchain_identity(toolchain: dict[str, Any]) -> dict[str, 
         "swiftc_sha256": toolchain.get("swiftc_sha256"),
         "swift_driver_sha256": toolchain.get("swift_driver_sha256"),
         "version": toolchain.get("version"),
-        "profile": [item for item in profile_items if isinstance(item, str) and not item.startswith("sdk-path=")],
+        "profile": [
+            item
+            for item in profile_items
+            if isinstance(item, str)
+            and not item.startswith(("sdk-path=", "apple-host-profile="))
+        ],
         "build_closure": _canonical_swift_build_closure_identity(build_closure),
     }
 

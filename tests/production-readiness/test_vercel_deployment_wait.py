@@ -74,6 +74,61 @@ class VercelDeploymentWaitTests(unittest.TestCase):
                 poll_seconds=5,
             )
 
+    def test_successful_production_deployment_uses_public_production_domain(self) -> None:
+        def fetch(path: str) -> Any:
+            if path.endswith("/statuses"):
+                return [{
+                    "state": "success",
+                    "created_at": "2026-09-06T10:48:56Z",
+                    "environment_url": "https://elmos-commit.vercel.app",
+                }]
+            return [{
+                "id": 84,
+                "task": "deploy",
+                "environment": "Production",
+                "creator": {"login": "vercel[bot]"},
+                "created_at": "2026-09-06T10:48:56Z",
+            }]
+
+        url = MODULE.wait_for_deployment(
+            "zpcaiai/elmos",
+            "c" * 40,
+            fetch_json=fetch,
+            timeout_seconds=60,
+            poll_seconds=5,
+            production_url="https://elmos-alpha.vercel.app",
+        )
+        self.assertEqual(url, "https://elmos-alpha.vercel.app")
+
+    def test_production_domain_is_validated_only_after_exact_deployment_succeeds(self) -> None:
+        def fetch(path: str) -> Any:
+            if path.endswith("/statuses"):
+                return [{
+                    "state": "success",
+                    "created_at": "2026-09-06T10:48:56Z",
+                    "environment_url": "https://elmos-commit.vercel.app",
+                }]
+            return [{
+                "id": 84,
+                "task": "deploy",
+                "environment": "Production",
+                "creator": {"login": "vercel[bot]"},
+                "created_at": "2026-09-06T10:48:56Z",
+            }]
+
+        with self.assertRaisesRegex(
+            MODULE.DeploymentResolutionError,
+            "VERCEL_DEPLOYMENT_URL_UNTRUSTED",
+        ):
+            MODULE.wait_for_deployment(
+                "zpcaiai/elmos",
+                "d" * 40,
+                fetch_json=fetch,
+                timeout_seconds=60,
+                poll_seconds=5,
+                production_url="https://example.com",
+            )
+
     def test_rejects_non_vercel_or_credentialed_urls(self) -> None:
         for url in (
             "http://elmos.vercel.app",
@@ -100,6 +155,7 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertLess(install, smoke)
         self.assertIn("deployments: read", workflow)
         self.assertIn("github.event.pull_request.head.sha || github.sha", workflow)
+        self.assertIn('--production-url "${ELMOS_PRODUCTION_SMOKE_URL}"', workflow)
 
     def test_workflow_uses_short_lived_oidc_for_protected_preview(self) -> None:
         workflow = (

@@ -3,14 +3,12 @@ package io.elmos.integrations;
 import io.elmos.cas.CasAccessPolicy;
 import io.elmos.cas.CasCatalog;
 import io.elmos.cas.CasDigest;
-import io.elmos.cas.CasExceptions;
 import io.elmos.cas.CasGarbageCollector;
 import io.elmos.cas.CasObjectModel;
 import io.elmos.cas.CasStore;
 import io.elmos.cas.TenantCasStore;
 import io.elmos.snapshot.SnapshotPorts;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -86,74 +84,51 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         }
         Objects.requireNonNull(content, "content");
         CasCatalog.ResourceLifecycle lifecycle = catalog.ensureActiveResource(
-                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
-                resource.repositoryId());
+                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY, resource.repositoryId());
         CasStore store = tenantStore.forTenant(resource.organizationId());
         CasDigest declared = new CasDigest(CasDigest.ALGORITHM, sha256, size);
         CasCatalog.CatalogEntry intended = entry(resource, declared, mediaType);
         Optional<CasCatalog.CatalogEntry> bound = catalog.findBound(
                 resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                 resource.repositoryId(), declared);
+        bound.ifPresent(value -> requireWriteCompatible(intended, value));
+        catalog.find(resource.organizationId(), declared)
+                .ifPresent(value -> requireWriteCompatible(intended, value));
 
-        if (bound.isPresent()) {
-            requireWriteCompatible(intended, bound.orElseThrow());
-            byte[] verified;
+        // Only an existing exact resource binding can reuse bytes without producer proof.
+        try (var staged = bound.isPresent() && store.contains(declared)
+                ? stageStored(store, declared)
+                : io.elmos.cas.CasContent.capture(declared, content)) {
             if (store.contains(declared)) {
-                // contains() is only a cheap size probe. Verify the already-published bytes before
-                // trusting the catalogue binding and promoting them to the authoritative tier.
-                verified = store.get(declared);
-            } else {
-                verified = readAndVerify(content, declared);
+                try (var verified = store.openVerified(declared)) { /* Reject a poisoned winner. */ }
             }
             CasCatalog.ResourceBinding binding = new CasCatalog.ResourceBinding(
                     resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                     resource.repositoryId(), declared, clock.getAsLong());
-            byte[] durableBytes = verified;
-            // Revalidate the exact resource incarnation around the durable callback.  A
-            // repository retirement that linearized after findBound must win here.
-            catalog.recordAndBindDurableResource(
-                    intended, binding, lifecycle,
-                    () -> store.putDurable(declared, durableBytes));
+            catalog.recordAndBindDurableResource(intended, binding, lifecycle,
+                    () -> persistStaged(store, declared, staged));
             CasCatalog.CatalogEntry recorded = catalog.findBound(
                             resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                             resource.repositoryId(), declared)
                     .orElseThrow(() -> new IllegalStateException(
-                            "CAS catalogue lost an existing artifact resource binding"));
+                            "CAS catalogue did not persist the artifact resource binding"));
             requireWriteCompatible(intended, recorded);
             requireSnapshotRetention(recorded);
             return reference(declared);
-        }
+        } catch (IOException error) { throw new UncheckedIOException(error); }
+    }
 
-        Optional<CasCatalog.CatalogEntry> existing =
-                catalog.find(resource.organizationId(), declared);
-        existing.ifPresent(entry -> requireWriteCompatible(intended, entry));
+    private static io.elmos.cas.CasContent stageStored(CasStore store, CasDigest digest) {
+        try (var input = store.openVerified(digest)) {
+            return io.elmos.cas.CasContent.capture(digest, input);
+        } catch (IOException error) { throw new UncheckedIOException(error); }
+    }
 
-        // A global blob or tenant object may already exist because another tenant or repository
-        // wrote identical bytes. A digest alone is not proof that this repository produced those
-        // bytes: require and verify the complete content before minting its resource binding.
-        byte[] bytes = readAndVerify(content, declared);
-        byte[] verified = bytes;
-        if (store.contains(declared)) {
-            verified = store.get(declared);
-        }
-        CasCatalog.ResourceBinding binding = new CasCatalog.ResourceBinding(
-                resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
-                resource.repositoryId(), declared, clock.getAsLong());
-        // A durable binding must never name bytes that exist only in a write-back L1. The
-        // tombstone-aware catalogue boundary also makes a retry repairable if a collector raced
-        // this first publication after the caller's initial content verification.
-        byte[] durableBytes = verified;
-        catalog.recordAndBindDurableResource(
-                intended, binding, lifecycle,
-                () -> store.putDurable(declared, durableBytes));
-        CasCatalog.CatalogEntry recorded = catalog.findBound(
-                        resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
-                        resource.repositoryId(), declared)
-                .orElseThrow(() -> new IllegalStateException(
-                        "CAS catalogue did not persist the artifact resource binding"));
-        requireWriteCompatible(intended, recorded);
-        requireSnapshotRetention(recorded);
-        return reference(declared);
+    private static void persistStaged(CasStore store, CasDigest digest, io.elmos.cas.CasContent staged) {
+        try (var input = staged.openStream()) {
+            store.putDurable(digest, input);
+            try (var verified = store.openVerified(digest)) { /* Verify before catalog publication. */ }
+        } catch (IOException error) { throw new UncheckedIOException(error); }
     }
 
     @Override
@@ -166,9 +141,8 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                         resource.repositoryId(), digest)
                 .orElseThrow(CasBackedArtifactStore::unavailable);
         authorizeRead(resource, digest, entry);
-        // get() verifies; a poisoned artifact throws here rather than being unpacked into a
-        // workspace and compiled.
-        return new ByteArrayInputStream(store.get(digest));
+        // Verify before exposing any byte, while keeping archive-sized buffers off heap.
+        return store.openVerified(digest);
     }
 
     @Override
@@ -202,15 +176,14 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 .distinct()
                 .toList();
         CasStore store = tenantStore.forTenant(resource.organizationId());
-        Map<CasDigest, byte[]> verifiedBytes = new java.util.LinkedHashMap<>();
+        try (var staged = new StagedContents()) {
         for (CasDigest digest : digests) {
             CasCatalog.CatalogEntry entry = catalog.findBound(
                             resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                             resource.repositoryId(), digest)
                     .orElseThrow(CasBackedArtifactStore::unavailable);
             authorizeRead(resource, digest, entry);
-            byte[] verified = store.get(digest);
-            verifiedBytes.put(digest, verified);
+            staged.contents.put(digest, stageStored(store, digest));
         }
 
         long retainedAt = clock.getAsLong();
@@ -225,7 +198,7 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 .toList();
         long authoritativeGeneration = catalog.publishDurableResourceReferenceRoots(
                 lifecycle, requestedRoots,
-                () -> verifiedBytes.forEach(store::putDurable));
+                () -> staged.contents.forEach((digest, content) -> persistStaged(store, digest, content)));
 
         List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
                 resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT, rootOwner);
@@ -243,6 +216,21 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         return new SnapshotPorts.ArtifactRetention(
                 snapshotId, Map.of(ROOT_GENERATION,
                 authoritativeGeneration));
+        }
+    }
+
+    private static final class StagedContents implements AutoCloseable {
+        private final Map<CasDigest, io.elmos.cas.CasContent> contents = new java.util.LinkedHashMap<>();
+        @Override public void close() {
+            RuntimeException failure = null;
+            for (var content : contents.values()) {
+                try { content.close(); }
+                catch (RuntimeException error) {
+                    if (failure == null) failure = error; else failure.addSuppressed(error);
+                }
+            }
+            if (failure != null) throw failure;
+        }
     }
 
     /**
@@ -410,16 +398,6 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         }
     }
 
-    private byte[] readAndVerify(InputStream content, CasDigest declared) {
-        byte[] bytes = readAtMost(content, declared.sizeBytes());
-        CasDigest actual = CasDigest.of(bytes);
-        if (!actual.equals(declared)) {
-            throw new CasExceptions.CasCorruptionException(
-                    "snapshot-artifact-store", declared, actual);
-        }
-        return bytes;
-    }
-
     private static SecurityException unavailable() {
         return new SecurityException("snapshot artifact is unavailable for resource context");
     }
@@ -428,26 +406,6 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
         Objects.requireNonNull(lifecycle, "lifecycle");
         if (lifecycle.resourceKind() != CasCatalog.ResourceKind.REPOSITORY) {
             throw new IllegalArgumentException("snapshot artifact lifecycle must be REPOSITORY");
-        }
-    }
-
-    /**
-     * Reads at most {@code size} bytes and refuses a stream that has more. A declared size that
-     * undercounts is how a hostile or broken producer turns a bounded read into an unbounded one.
-     */
-    private byte[] readAtMost(InputStream content, long size) {
-        try {
-            byte[] bytes = content.readNBytes((int) Math.min(size, maximumArtifactBytes));
-            if (bytes.length != size) {
-                throw new IllegalArgumentException("artifact stream ended after " + bytes.length
-                        + " bytes but declared " + size);
-            }
-            if (content.read() != -1) {
-                throw new IllegalArgumentException("artifact stream is longer than its declared size");
-            }
-            return bytes;
-        } catch (IOException error) {
-            throw new UncheckedIOException("cannot read artifact content", error);
         }
     }
 

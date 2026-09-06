@@ -39,6 +39,7 @@ public final class FakeControlPlane implements AutoCloseable {
     public final AtomicInteger heartbeatCount = new AtomicInteger();
     public final AtomicInteger claimCount = new AtomicInteger();
     public final AtomicInteger registrationCount = new AtomicInteger();
+    public volatile Runnable beforeClaimResponse = () -> {};
 
     public final AtomicBoolean cancelRequested = new AtomicBoolean(false);
     public final AtomicBoolean drainRequested = new AtomicBoolean(false);
@@ -73,6 +74,7 @@ public final class FakeControlPlane implements AutoCloseable {
         server.createContext("/runner/v1/leases/claim", exchange -> {
             readBody(exchange);
             claimCount.incrementAndGet();
+            beforeClaimResponse.run();
             List<Map<String, Object>> batch = new ArrayList<>(pendingLeases);
             pendingLeases.clear();
             respond(exchange, 200, Map.of("leases", batch));

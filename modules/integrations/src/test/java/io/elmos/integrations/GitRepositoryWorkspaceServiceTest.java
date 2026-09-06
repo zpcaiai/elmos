@@ -25,6 +25,67 @@ class GitRepositoryWorkspaceServiceTest {
     @TempDir Path temporary;
 
     @Test
+    void independentWorkspaceProgressesWhileSameWorkspaceWaitsAcrossServiceInstances() throws Exception {
+        var source = repository(false, false, false);
+        var firstService = service();
+        var secondService = service();
+        var first = firstService.create(request(source, source.branch()), "unused", Optional.empty());
+        var second = firstService.create(request(source, source.branch()), "unused", Optional.empty());
+        try (var executor = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+            java.util.concurrent.Future<GitRepositoryWorkspaceService.Workspace> waiting;
+            try (var guard = WorkspaceLocks.acquire(temporary.resolve("workspaces").toRealPath()
+                    .resolve(first.workspaceId()))) {
+                var started = new java.util.concurrent.CountDownLatch(1);
+                waiting = executor.submit(() -> {
+                    started.countDown();
+                    return secondService.inspect("tenant-a", "actor-a", first.workspaceId());
+                });
+                assertTrue(started.await(2, java.util.concurrent.TimeUnit.SECONDS));
+                assertThrows(java.util.concurrent.TimeoutException.class,
+                        () -> waiting.get(100, java.util.concurrent.TimeUnit.MILLISECONDS));
+                assertEquals(second.workspaceId(), executor.submit(() -> firstService.inspect(
+                        "tenant-a", "actor-a", second.workspaceId()))
+                        .get(3, java.util.concurrent.TimeUnit.SECONDS).workspaceId());
+            }
+            assertEquals(first.workspaceId(), waiting.get(3, java.util.concurrent.TimeUnit.SECONDS).workspaceId());
+        }
+    }
+
+    @Test
+    void concurrentCreatesAcrossInstancesCannotExceedCapacity() throws Exception {
+        var source = repository(false, false, false);
+        var root = temporary.resolve("workspaces");
+        var first = new GitRepositoryWorkspaceService(root, 1000, 64L * 1024 * 1024,
+                true, Set.of(), 3, Duration.ofDays(1));
+        var second = new GitRepositoryWorkspaceService(root, 1000, 64L * 1024 * 1024,
+                true, Set.of(), 3, Duration.ofDays(1));
+        try (var executor = java.util.concurrent.Executors.newFixedThreadPool(8)) {
+            var start = new java.util.concurrent.CountDownLatch(1);
+            var futures = new java.util.ArrayList<java.util.concurrent.Future<Boolean>>();
+            for (int index = 0; index < 16; index++) {
+                var selected = index % 2 == 0 ? first : second;
+                futures.add(executor.submit(() -> {
+                    start.await();
+                    try {
+                        selected.create(request(source, source.branch()), "unused", Optional.empty());
+                        return true;
+                    } catch (IllegalStateException failure) {
+                        assertEquals("GIT_WORKSPACE_CAPACITY_EXCEEDED", failure.getMessage());
+                        return false;
+                    }
+                }));
+            }
+            start.countDown();
+            int admitted = 0;
+            for (var future : futures) if (future.get(20, java.util.concurrent.TimeUnit.SECONDS)) admitted++;
+            assertEquals(3, admitted);
+            try (var directories = Files.list(root)) {
+                assertEquals(3, directories.count());
+            }
+        }
+    }
+
+    @Test
     void createsExactCommitInventoryAndAppliesOnlyApprovedLocalTextChanges() throws Exception {
         RepositoryFixture source = repository(false, false, false);
         GitRepositoryWorkspaceService service = service();

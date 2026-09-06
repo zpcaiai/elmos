@@ -6,6 +6,7 @@ import type {
 } from "../contracts";
 import { GenerationRunnerError } from "./generationRunner";
 import { configuredControlPlaneBaseUrl } from "./trustedUpstream";
+import { hostedExecutionRequired } from "./executionQueuePolicy";
 
 type AuthorizedContext = {
   tenantId: string;
@@ -136,7 +137,7 @@ function validateHostedArtifactTicket(value: unknown): HostedArtifactTicket {
 }
 
 export function hostedExecutionEnabled(): boolean {
-  return process.env.ELMOS_HOSTED_EXECUTION_ENABLED === "true";
+  return hostedExecutionRequired();
 }
 
 function baseUrl(): string {

@@ -665,6 +665,7 @@
         "profile": {
           "const": [
             "platform=Darwin/arm64",
+            "apple-host-profile=local-macos26-20260904",
             "xcode=26.6/17F113",
             "macosx-sdk=26.5",
             "sdk-path=/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.5.sdk",

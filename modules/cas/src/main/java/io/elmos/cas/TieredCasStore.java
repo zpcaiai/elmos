@@ -73,11 +73,10 @@ public final class TieredCasStore implements CasStore {
     private final Object stateLock = new Object();
 
     /**
-     * Serializes operations that change the authoritative tier. Remote I/O is deliberately not
-     * performed while {@link #stateLock} is held; the lock order, whenever both are needed, is
-     * durabilityLock then stateLock.
+     * Coordinates each digest independently. Remote I/O never holds stateLock;
+     * lock order is object guard then stateLock. Unrelated remote misses progress concurrently.
      */
-    private final Object durabilityLock = new Object();
+    private final CasObjectLocks objectLocks = new CasObjectLocks();
 
     /** Access-ordered, so the head is the least recently used object. */
     private final LinkedHashMap<CasDigest, Long> localAccess = new LinkedHashMap<>(16, 0.75f, true);
@@ -132,7 +131,7 @@ public final class TieredCasStore implements CasStore {
         // An object that cannot enter L1 has nowhere from which a later write-back could read it.
         // Its best-effort write therefore becomes synchronous and must cross every nested tier.
         if (expected.sizeBytes() > policy.maxLocalObjectBytes()) {
-            synchronized (durabilityLock) {
+            try (var ignored = objectLocks.acquire(expected)) {
                 putSharedDurableAndVerify(expected, content);
                 synchronized (stateLock) {
                     clearPendingLocked(expected);
@@ -142,7 +141,7 @@ public final class TieredCasStore implements CasStore {
             return;
         }
 
-        synchronized (durabilityLock) {
+        try (var ignored = objectLocks.acquire(expected)) {
             synchronized (stateLock) {
                 boolean newlyPending = pendingDurability.add(expected);
                 if (newlyPending) {
@@ -203,7 +202,7 @@ public final class TieredCasStore implements CasStore {
     public void putDurable(CasDigest expected, byte[] content) {
         telemetry.histogram("cas.transfer.bytes", "By", content.length,
                 java.util.Map.of("direction", "upload"));
-        synchronized (durabilityLock) {
+        try (var ignored = objectLocks.acquire(expected)) {
             // putDurable, rather than put, is what makes composition safe when L2 is itself a
             // write-back TieredCasStore.
             putSharedDurableAndVerify(expected, content);
@@ -233,6 +232,43 @@ public final class TieredCasStore implements CasStore {
         }
     }
 
+    @Override
+    public void putDurable(CasDigest expected, java.io.InputStream content) {
+        try (var guard = objectLocks.acquire(expected)) {
+            shared.putDurable(expected, content);
+            try (var verified = shared.openVerified(expected)) {
+                synchronized (stateLock) {
+                    clearPendingLocked(expected);
+                    if (expected.sizeBytes() <= policy.maxLocalObjectBytes()) {
+                        local.putDurable(expected, verified);
+                        touchLocked(expected);
+                        reclaimLocked();
+                    } else {
+                        recordEvictionLocked(expected, EvictionReason.OVERSIZED_FOR_LOCAL_TIER);
+                    }
+                }
+            } catch (java.io.IOException error) { throw new java.io.UncheckedIOException(error); }
+        }
+    }
+
+    @Override
+    public java.io.InputStream openVerified(CasDigest digest) {
+        try (var guard = objectLocks.acquire(digest)) {
+            synchronized (stateLock) {
+                if (local.contains(digest)) {
+                    try {
+                        var stream = local.openVerified(digest);
+                        touchLocked(digest);
+                        return stream;
+                    } catch (CasExceptions.CasCorruptionException corruption) {
+                        dropPoisonedLocalLocked(digest);
+                    }
+                }
+            }
+            return shared.openVerified(digest);
+        }
+    }
+
     private TierRead read(CasDigest digest) {
         CasExceptions.CasCorruptionException poisoned = null;
         synchronized (stateLock) {
@@ -248,9 +284,9 @@ public final class TieredCasStore implements CasStore {
             }
         }
 
-        // A second local check closes the miss/admission race, while durabilityLock prevents a
+        // A second local check closes the miss/admission race, while the object guard prevents a
         // concurrent delete from removing L2 after this read but before the read-through admit.
-        synchronized (durabilityLock) {
+        try (var ignored = objectLocks.acquire(digest)) {
             synchronized (stateLock) {
                 if (local.contains(digest)) {
                     try {
@@ -292,7 +328,7 @@ public final class TieredCasStore implements CasStore {
                 }
             }
         }
-        synchronized (durabilityLock) {
+        try (var ignored = objectLocks.acquire(digest)) {
             try {
                 return shared.readRange(digest, offset, length);
             } catch (CasExceptions.CasNotFoundException notFound) {
@@ -306,7 +342,7 @@ public final class TieredCasStore implements CasStore {
 
     @Override
     public boolean delete(CasDigest digest) {
-        synchronized (durabilityLock) {
+        try (var ignored = objectLocks.acquire(digest)) {
             boolean removedShared = shared.delete(digest);
             synchronized (stateLock) {
                 boolean removedLocal = local.delete(digest);
@@ -339,18 +375,14 @@ public final class TieredCasStore implements CasStore {
      * @return digests that reached the shared tier in this drain
      */
     public List<CasDigest> flushWriteBack() {
-        synchronized (durabilityLock) {
-            List<CasDigest> flushed = new ArrayList<>();
-            while (true) {
-                CasDigest digest;
+        List<CasDigest> batch;
+        synchronized (stateLock) { batch = List.copyOf(writeBackQueue); }
+        List<CasDigest> flushed = new ArrayList<>();
+        for (CasDigest digest : batch) {
+            try (var ignored = objectLocks.acquire(digest)) {
                 byte[] content;
                 synchronized (stateLock) {
-                    digest = writeBackQueue.peekFirst();
-                    if (digest == null) {
-                        return List.copyOf(flushed);
-                    }
                     if (!pendingDurability.contains(digest)) {
-                        writeBackQueue.removeFirst();
                         continue;
                     }
                     if (!local.contains(digest)) {
@@ -378,6 +410,7 @@ public final class TieredCasStore implements CasStore {
                 }
             }
         }
+        return List.copyOf(flushed);
     }
 
     public Set<CasDigest> pendingDurability() {

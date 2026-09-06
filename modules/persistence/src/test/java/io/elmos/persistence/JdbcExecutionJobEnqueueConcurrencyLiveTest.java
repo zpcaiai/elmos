@@ -35,7 +35,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class JdbcExecutionJobEnqueueConcurrencyLiveTest {
 
-    private static final String APP_USER = "elmos_execution_enqueue_live";
+    private static final String APP_USER = "elmos_enqueue_live_"
+            + java.util.UUID.randomUUID().toString().replace("-", "").substring(0, 12);
     private static final String APP_PASSWORD = "execution-enqueue-live-only";
     private static final String IMAGE = "registry.example.test/elmos/runner@sha256:" + "a".repeat(64);
     private static final int FREE_TRIAL_QUEUE_LIMIT = 10;
@@ -44,6 +45,7 @@ class JdbcExecutionJobEnqueueConcurrencyLiveTest {
     private static JdbcClient adminJdbc;
     private static JdbcClient runtimeJdbc;
     private static JdbcExecutionJobStore jobs;
+    private static DriverManagerDataSource adminConnections;
 
     @BeforeAll
     static void migrateDisposablePostgresAndCreateRuntimeRole() {
@@ -56,6 +58,7 @@ class JdbcExecutionJobEnqueueConcurrencyLiveTest {
 
         var adminDataSource = new DriverManagerDataSource(
                 target.jdbcUrl(), target.user(), target.password());
+        adminConnections = adminDataSource;
         adminJdbc = JdbcClient.create(adminDataSource);
         adminJdbc.sql("CREATE ROLE " + APP_USER
                         + " LOGIN PASSWORD '" + APP_PASSWORD
@@ -67,6 +70,12 @@ class JdbcExecutionJobEnqueueConcurrencyLiveTest {
                         + "varchar,varchar,varchar,varchar,varchar,varchar,varchar,jsonb,"
                         + "varchar,varchar,smallint,integer,smallint) TO " + APP_USER)
                 .update();
+        adminJdbc.sql("GRANT EXECUTE ON FUNCTION elmos_claim_execution_jobs("
+                + "varchar,text[],integer,integer,text[],text[]) TO " + APP_USER).update();
+        adminJdbc.sql("GRANT EXECUTE ON FUNCTION elmos_heartbeat_execution_lease("
+                + "varchar,varchar,varchar,varchar,smallint,jsonb,integer) TO " + APP_USER).update();
+        adminJdbc.sql("GRANT EXECUTE ON FUNCTION elmos_complete_execution_job("
+                + "varchar,varchar,varchar,varchar,varchar,varchar) TO " + APP_USER).update();
 
         var runtimeDataSource = new DriverManagerDataSource(
                 target.jdbcUrl(), APP_USER, APP_PASSWORD);
@@ -182,6 +191,114 @@ class JdbcExecutionJobEnqueueConcurrencyLiveTest {
         assertEquals(0L, runtimeJdbc.sql("SELECT count(*) FROM execution_jobs")
                 .query(Long.class).single(),
                 "the constrained role must see no tenant rows outside a bound transaction");
+    }
+
+    @Test
+    void simultaneousRunnersRespectTenantCapacityAndLeaseCredentials() throws Exception {
+        String suffix = java.util.UUID.randomUUID().toString().substring(0, 8);
+        String organization = "org-v82-claims-" + suffix;
+        seedTrial(organization);
+        String capability = "fixture:" + organization;
+        for (int i = 0; i < 8; i++) {
+            jobs.enqueue(new ExecutionJobPort.EnqueueCommand("job-v82-" + suffix + "-" + i, organization,
+                    "actor-v82", ExecutionJobPort.BusinessLine.TRANSLATION, "translate",
+                    "idem-v82-" + i, String.format("%064x", i + 32), java.util.Map.of(),
+                    capability, IMAGE, (short) 100, 120, (short) 1));
+            seedRunner(organization, "runner-v82-" + suffix + "-" + i, capability);
+        }
+        var grants = new ArrayList<ExecutionJobPort.LeaseGrant>();
+        var start = new CountDownLatch(1);
+        try (var pool = Executors.newFixedThreadPool(8)) {
+            var futures = new ArrayList<Future<List<ExecutionJobPort.LeaseGrant>>>();
+            for (int i = 0; i < 8; i++) {
+                String runner = "runner-v82-" + suffix + "-" + i;
+                futures.add(pool.submit(() -> {
+                    start.await();
+                    return jobs.claim(runner, List.of(capability), 4, 120);
+                }));
+            }
+            start.countDown();
+            for (var future : futures) grants.addAll(future.get(20, TimeUnit.SECONDS));
+        }
+        assertEquals(1, grants.size(), "trial plan permits only one lease across all runners");
+        var grant = grants.getFirst();
+        assertEquals(1L, adminJdbc.sql("SELECT leased_count FROM execution_dispatch_org_counters "
+                + "WHERE organization_id = :org").param("org", organization).query(Long.class).single());
+        String runner = adminJdbc.sql("SELECT runner_node_ref FROM execution_job_dispatch WHERE job_id = :job")
+                .param("job", grant.jobId()).query(String.class).single();
+        var bad = org.junit.jupiter.api.Assertions.assertThrows(ExecutionJobPort.ExecutionStateException.class,
+                () -> jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(), runner,
+                        "wrong-token", "running", (short) 1, java.util.Map.of(), 120)));
+        assertEquals("ELMOS_LEASE_CREDENTIAL_MISMATCH", bad.code());
+        jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(), runner,
+                grant.leaseToken(), "running", (short) 1, java.util.Map.of(), 120));
+        adminJdbc.sql("UPDATE runner_job_leases SET issued_at = now() - interval '5 seconds', "
+                + "last_heartbeat_at = now() - interval '2 seconds', expires_at = now() - interval '1 second' "
+                + "WHERE runner_job_lease_id = :lease").param("lease", grant.leaseId()).update();
+        var expired = org.junit.jupiter.api.Assertions.assertThrows(ExecutionJobPort.ExecutionStateException.class,
+                () -> jobs.complete(new ExecutionJobPort.CompletionCommand(grant.leaseId(), runner,
+                        grant.leaseToken(), ExecutionJobPort.Status.SUCCEEDED,
+                        ExecutionJobPort.ResultStatus.PASSED, null)));
+        assertEquals("ELMOS_LEASE_EXPIRED", expired.code());
+        assertEquals(ExecutionJobPort.Status.RUNNING, jobs.find(organization, grant.jobId()).orElseThrow().status());
+    }
+
+    @Test
+    void busyTenantCounterDoesNotBlockAClaimAndRollbackRestoresAdmission() throws Exception {
+        String suffix = java.util.UUID.randomUUID().toString().substring(0, 8);
+        String organization = "org-v82-lock-" + suffix;
+        String runner = "runner-lock-" + suffix;
+        String capability = "fixture:lock:" + suffix;
+        seedTrial(organization);
+        seedRunner(organization, runner, capability);
+        jobs.enqueue(new ExecutionJobPort.EnqueueCommand("job-lock-" + suffix, organization,
+                "actor-v82", ExecutionJobPort.BusinessLine.TRANSLATION, "translate",
+                "idem-lock", "b".repeat(64), java.util.Map.of(), capability, IMAGE,
+                (short) 100, 120, (short) 1));
+        try (var connection = adminConnections.getConnection()) {
+            connection.setAutoCommit(false);
+            try (var lock = connection.prepareStatement("SELECT leased_count FROM "
+                    + "execution_dispatch_org_counters WHERE organization_id = ? FOR UPDATE")) {
+                lock.setString(1, organization);
+                try (var result = lock.executeQuery()) { assertTrue(result.next()); }
+            }
+            var worker = Executors.newSingleThreadExecutor();
+            try {
+                assertTrue(worker.submit(() -> jobs.claim(runner, List.of(capability), 1, 120))
+                        .get(5, TimeUnit.SECONDS).isEmpty());
+            } finally {
+                connection.rollback();
+                worker.shutdownNow();
+                assertTrue(worker.awaitTermination(5, TimeUnit.SECONDS));
+            }
+        }
+        assertEquals(1, jobs.claim(runner, List.of(capability), 1, 120).size());
+    }
+
+    private static void seedRunner(String organization, String runner, String capability) {
+        adminJdbc.sql("INSERT INTO runner_pools (runner_pool_id, organization_id) VALUES (:pool,:org)")
+                .param("pool", "pool-" + runner).param("org", organization).update();
+        adminJdbc.sql("""
+                INSERT INTO runner_nodes (runner_node_id, organization_id, runner_pool_ref,
+                    agent_version, fleet_status, capabilities, max_concurrency,
+                    rootless_attested, readonly_root_attested, capability_drop_attested,
+                    network_default_deny_attested, attestation_verified_at,
+                    attestation_verifier_actor_id, image_allowlist_version, last_heartbeat_at)
+                VALUES (:runner,:org,:pool,'fixture','READY',ARRAY[:capability],4,
+                    true,true,true,true,now(),'fixture-verifier','fixture',now())
+                """).param("runner", runner).param("org", organization)
+                .param("pool", "pool-" + runner).param("capability", capability).update();
+        adminJdbc.sql("""
+                INSERT INTO runner_enrollment_credentials (enrollment_credential_id, organization_id,
+                    runner_pool_id, token_sha256, expires_at, issued_by_actor_id)
+                VALUES (:credential,:org,:pool,md5(:runner) || md5(:runner),now()+interval '1 hour','fixture')
+                """).param("credential", "cred-" + runner).param("org", organization)
+                .param("pool", "pool-" + runner).param("runner", runner).update();
+        adminJdbc.sql("""
+                INSERT INTO runner_node_authentication (runner_node_id, organization_id,
+                    runner_pool_id, enrollment_credential_id) VALUES (:runner,:org,:pool,:credential)
+                """).param("runner", runner).param("org", organization)
+                .param("pool", "pool-" + runner).param("credential", "cred-" + runner).update();
     }
 
     private static DatabaseTarget databaseTarget() {
