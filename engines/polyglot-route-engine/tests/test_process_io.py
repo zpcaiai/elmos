@@ -13,6 +13,30 @@ import pytest
 from elmos_polyglot_route.process_io import ProcessOutputLimitError, run_bounded
 
 
+@pytest.mark.parametrize("budget", [
+    {"timeout": 0}, {"timeout": -1}, {"timeout": float("nan")},
+    {"timeout": float("inf")}, {"timeout": float("-inf")},
+    {"timeout": True}, {"timeout": "1"}, {"timeout": None}, {"timeout": 10 ** 400},
+    {"max_stream_bytes": 0}, {"max_stream_bytes": -1},
+    {"max_stream_bytes": float("nan")}, {"max_stream_bytes": float("inf")},
+    {"max_stream_bytes": float("-inf")}, {"max_stream_bytes": True},
+    {"max_stream_bytes": 1.0}, {"max_stream_bytes": "1"},
+    {"max_stream_bytes": None}, {"max_stream_bytes": 64 * 1024 * 1024 + 1},
+])
+def test_invalid_budgets_fail_before_spawn_or_pipe_access(monkeypatch, budget) -> None:
+    from elmos_polyglot_route.process_io import bounded_communicate
+    monkeypatch.setattr(subprocess, "Popen", lambda *args, **kwargs: pytest.fail("invalid budget spawned process"))
+    with pytest.raises(ValueError, match="BUDGET_INVALID"):
+        run_bounded([sys.executable, "-c", "pass"], **budget)
+    with pytest.raises(ValueError, match="BUDGET_INVALID"):
+        bounded_communicate(None, **({"timeout": 1} | budget))
+
+
+def test_ast_budget_upper_bound_remains_supported() -> None:
+    result = run_bounded([sys.executable, "-c", "print('ok')"], max_stream_bytes=64 * 1024 * 1024)
+    assert result.stdout == "ok\n"
+
+
 def test_exact_output_and_input_are_preserved() -> None:
     result = run_bounded(
         [sys.executable, "-c", "import sys; print(sys.stdin.read()); sys.stderr.write('err\\r\\n')"],

@@ -13,6 +13,9 @@ bounded submission, cancellation/cleanup, and exact protocol preservation.
   64 MiB. Exceeding a limit fails instead of accepting truncated JSON. Optional
   host-owned binary log handles receive/flushed chunks within the same cap;
   there is no global/raw tenant-source log sink.
+  Timeouts must be finite positive int/float values (not bool); stream caps
+  must be exact positive integers no larger than 64 MiB. Both adapters reject
+  malformed budgets, and the facade rejects them before spawning any child.
 * The common POSIX runner creates an isolated process group, waits for exit
   without reaping the leader, and cleans the group before releasing its PID.
   Darwin uses kqueue; Linux uses WNOWAIT. No drainage helper threads exist.
@@ -56,22 +59,31 @@ by this worktree. Counts below are separate selections, not additive coverage.
 
 | Selection | Result |
 | --- | --- |
-| `tests/test_process_io.py` | 12 passed, including real processes, byte caps, live logs, repeated cleanup |
+| `tests/test_process_io.py` | 32 passed, including invalid-budget no-spawn, real processes, byte caps, live logs, repeated cleanup |
 | `tests/test_cas.py tests/test_cas_streaming.py` with native dylib configured | 23 passed, including backend-identical digest/dedup/quota ordering |
 | project graph + snapshot focused selection | 26 passed |
 | archive streaming + existing archived assembly evidence closure selection | 44 passed |
 | resource budget + TypeScript batch + initial transport selection | 21 passed |
 | final transport/resource/archive/preflight/assembly selected negatives | 28 passed |
 | final TypeScript batch differential (`tests/test_typescript_batch.py`) | 5 passed, official Node/TypeScript toolchain |
-| native cache/vendor/Swift/detached analyzer selection | 97 passed, 1 failed before fixture readiness; see below |
+| native cache/vendor/Swift/detached analyzer selection after readiness fix | 98 passed; earlier fixture failures retained below |
 
 The existing Swift test
 `test_swift_build_step_timeout_reaps_same_session_moved_process_group[exited-leader-held-pipes]`
 failed twice at reading `parent.json`: its one-second timeout elapsed before
 the two Python child processes established the target fixture state on this
 heavily loaded host. That does **not** establish the exited-leader/held-pipe
-semantic case passed. No assertions or timeout values were weakened. Parent
-integration owns a separate readiness-barrier review and re-run for this case.
+semantic case passed. Parent integration's `2e8cb1713` adds a fixture-readiness
+barrier inside the cleanup-protected test wrapper, preserving the formal 1/2 s
+transport timeouts and all cleanup/assertions. Its fixture-only startup budget
+is separate from the tested timeout. Cherry-picked as `22cdc6e9a`, the entire
+98-case selection then passed on this worktree. No assertions were weakened.
+
+Exact 98-case replay selection:
+
+```sh
+PYTHONPATH=src /path/to/project/.venv/bin/python -m pytest tests/test_csharp_analyzer_cache.py tests/test_rust_vendor_closure.py tests/test_swift_analyzer_cache.py tests/test_typescript_detached_analyzer.py -k 'cache or vendor or build_step or exact_private_snapshot or fails_closed_on_snapshot' -q
+```
 
 Replay the new tests (from `engines/polyglot-route-engine`):
 
