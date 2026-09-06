@@ -609,6 +609,7 @@ def test_swift_emitted_target_relifts_exact_integer_to_double_widening(
         "func f(_ value: Double) -> Double { return Double(value) }",
         "func f(_ value: Int64) -> Double { return Double(value, value) }",
         "func f(_ value: Int64) -> Double { return Double(exactly: value) }",
+        "func f() -> Double { return Double(1.5) }",
     ],
 )
 def test_swift_emitted_target_rejects_noncanonical_double_calls(

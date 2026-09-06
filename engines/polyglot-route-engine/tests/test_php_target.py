@@ -506,6 +506,48 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     assert semantic_drift["sha256"] != baseline["sha256"]
 
 
+def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    receipt = root / "INSTALL_RECEIPT.json"
+    document = {
+        "homebrew_version": "6.0.1",
+        "time": 1,
+        "source_modified_time": 100,
+        "runtime_dependencies": [
+            {"full_name": "alpha", "version": "1"},
+            {"full_name": "beta", "version": "2"},
+        ],
+    }
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    first: dict[str, dict[str, object]] = {}
+    first_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        receipt_field_digests=first,
+    )
+
+    document["runtime_dependencies"].reverse()
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    second: dict[str, dict[str, object]] = {}
+    second_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        receipt_field_digests=second,
+    )
+
+    assert first_identity["sha256"] != second_identity["sha256"]
+    assert first["runtime_dependencies"]["sha256"] != second["runtime_dependencies"]["sha256"]
+    assert first["runtime_dependencies"]["sorted_sha256"] == second[
+        "runtime_dependencies"
+    ]["sorted_sha256"]
+    assert first["runtime_dependencies"]["unique_count"] == 2
+
+
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:
     """Recording an unbound name is acceptable for an installer script. It is not
     acceptable for anything the interpreter could dlopen: that has to live inside

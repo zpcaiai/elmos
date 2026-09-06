@@ -479,7 +479,7 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="5797e935847178f4ee4bf7bbc7f7cc8c26b5199afb20999f65dd33854a7d2c57",
+    php_tree_sha256="6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942",
     php_tree_bytes=129_952_823,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
@@ -4451,7 +4451,45 @@ _PHP_RUNTIME_IDENTITY_SCRIPT = (
 )
 
 
-def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def _php_install_receipt_field_digests(
+    receipt: dict[str, object],
+) -> dict[str, dict[str, object]]:
+    diagnostics: dict[str, dict[str, object]] = {}
+    for key, value in sorted(receipt.items()):
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+        field: dict[str, object] = {
+            "bytes": len(canonical),
+            "sha256": hashlib.sha256(canonical).hexdigest(),
+            "type": type(value).__name__,
+        }
+        if isinstance(value, list):
+            elements = [
+                json.dumps(item, sort_keys=True, separators=(",", ":"))
+                for item in value
+            ]
+            sorted_canonical = json.dumps(
+                sorted(elements), separators=(",", ":")
+            ).encode("utf-8")
+            field.update(
+                {
+                    "count": len(elements),
+                    "sorted_sha256": hashlib.sha256(sorted_canonical).hexdigest(),
+                    "unique_count": len(set(elements)),
+                }
+            )
+        diagnostics[key] = field
+    return diagnostics
+
+
+def php_tree_identity(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    receipt_field_digests: dict[str, dict[str, object]] | None = None,
+) -> dict[str, object]:
     """Content identity of one PHP install tree, symlinks included.
 
     Deliberately *not* `_qualified_tree_manifest`, which requires a symlink-free
@@ -4564,6 +4602,10 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
             receipt["time"] = "<installation-time>"
             receipt["source_modified_time"] = "<source-modified-time>"
             receipt["homebrew_version"] = "<homebrew-client-version>"
+            if receipt_field_digests is not None:
+                receipt_field_digests.update(
+                    _php_install_receipt_field_digests(receipt)
+                )
             normalized = json.dumps(
                 receipt, sort_keys=True, separators=(",", ":")
             ).encode("utf-8")
@@ -4604,10 +4646,12 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
 
 def _php_tree_identity() -> dict[str, object]:
     bundle_profile = homebrew_route_bundle_profile()
+    receipt_field_digests: dict[str, dict[str, object]] = {}
     identity = php_tree_identity(
         _EXPECTED_PHP_ROOT,
         _EXPECTED_PHP_ANCHOR,
         "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
+        receipt_field_digests=receipt_field_digests,
     )
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
@@ -4625,6 +4669,12 @@ def _php_tree_identity() -> dict[str, object]:
             + json.dumps(expected, sort_keys=True, separators=(",", ":"))
             + ":observed="
             + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+            + ":install-receipt-fields="
+            + json.dumps(
+                receipt_field_digests,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
         )
     return {
         **identity,
