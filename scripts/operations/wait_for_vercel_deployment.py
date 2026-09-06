@@ -2,8 +2,11 @@
 """Wait for the exact commit's successful Vercel deployment.
 
 The deployment smoke must never probe a mutable production alias while the
-commit under test is still building. GitHub's deployment record binds the
-probe to the Vercel URL that actually corresponds to the requested SHA.
+commit under test is still building. GitHub's deployment record first binds
+the probe to the requested SHA. Once that exact production deployment is
+successful, the smoke uses the public production domain because Vercel's
+generated production deployment URL remains protected under Standard
+Protection.
 """
 
 from __future__ import annotations
@@ -70,6 +73,7 @@ def wait_for_deployment(
     fetch_json: Callable[[str], Any],
     timeout_seconds: float,
     poll_seconds: float,
+    production_url: str | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
 ) -> str:
@@ -104,7 +108,10 @@ def wait_for_deployment(
                 continue
             state = status.get("state")
             if state == "success":
-                return _deployment_url(status.get("environment_url"))
+                exact_url = _deployment_url(status.get("environment_url"))
+                if deployment.get("environment") == "Production" and production_url:
+                    return _deployment_url(production_url)
+                return exact_url
             if state in TERMINAL_FAILURES:
                 description = (
                     str(status.get("description", "deployment failed"))
@@ -143,6 +150,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--github-env", type=Path, required=True)
     parser.add_argument("--timeout-seconds", type=float, default=900)
     parser.add_argument("--poll-seconds", type=float, default=10)
+    parser.add_argument("--production-url")
     return parser.parse_args()
 
 
@@ -164,6 +172,7 @@ def main() -> int:
         fetch_json=_github_fetcher(token),
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
+        production_url=args.production_url,
     )
     with args.github_env.open("a", encoding="utf-8") as output:
         output.write(f"ELMOS_E2E_BASE_URL={url}\n")
