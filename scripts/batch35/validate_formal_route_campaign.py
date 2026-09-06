@@ -66,9 +66,9 @@ PACKED_RUNTIME_EVIDENCE_ROLE = "packed-replay-runtime"
 PACKED_RUNTIME_MANIFEST = "runtime/packed-replay-runtime.json"
 PACKED_RUNTIME_LOCK = "runtime/uv.lock"
 PRODUCTION_LOCK_SHA256 = (
-    "sha256:59b8aa440f92f865671ddcdd0badc75ac55c9e86c6ef1ac92449f99cfbd87497"
+    "sha256:9c061fb975a379ba550b66dc3dba089cf8f7d2fec8acc064f1590e3869cbda8d"
 )
-PRODUCTION_LOCK_BYTES = 26_669
+PRODUCTION_LOCK_BYTES = 26_750
 PYTHON_ARCHIVE_NAME = (
     "cpython-3.12.12+20260211-aarch64-apple-darwin-install_only_stripped.tar.gz"
 )
