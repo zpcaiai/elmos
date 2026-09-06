@@ -34,6 +34,7 @@
     "test:auth-callback-route": "node --loader ./test/ts-extension-loader.mjs --test test/authCallbackRoute.test.mjs",
     "test:api-route-dispatch": "node --experimental-strip-types --test test/apiRouteMatcher.test.mjs",
     "test:translation-report": "node --loader ./test/ts-extension-loader.mjs --test test/translationConversionReport.test.mjs test/asynchronousZipInflate.test.mjs",
+    "test:execution-concurrency": "node --loader ./test/ts-extension-loader.mjs --test test/boundedRequestBody.test.mjs test/coalescingFlush.test.mjs test/localProcessCapacity.test.mjs test/localStorageScanSchedule.test.mjs test/hostedExecutionSelection.test.mjs test/hostedTranslationClient.test.mjs",
     "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
     "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
     "test:e2e": "playwright test",

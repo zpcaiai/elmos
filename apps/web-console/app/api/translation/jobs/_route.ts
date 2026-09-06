@@ -4,6 +4,8 @@ import {
   createTranslationJob,
 } from "../../../lib/server/translationRunner";
 import { GenerationRunnerError } from "../../../lib/server/generationRunner";
+import { hostedExecutionEnabled } from "../../../lib/server/hostedExecutionClient";
+import { createHostedTranslationJob } from "../../../lib/server/hostedTranslationClient";
 import { withBusinessAudit } from "../../../lib/server/operationsProxy";
 import {
   readBoundedTranslationRequest,
@@ -42,7 +44,7 @@ async function create(request: NextRequest) {
     const body = JSON.parse(raw);
     rejectDuplicateTopLevelJsonFields(raw);
     return NextResponse.json(
-      await createTranslationJob(context, body),
+      await (hostedExecutionEnabled() ? createHostedTranslationJob(context, body, request.headers.get("Idempotency-Key")) : createTranslationJob(context, body)),
       { status: 202, headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (error) {

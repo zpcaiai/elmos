@@ -8,7 +8,7 @@ export class RequestBodyError extends Error {
 
 /** Enforce the byte budget while reading; Content-Length is only an early check. */
 export async function readBoundedRequestBody(
-  request: Request,
+  request: Pick<Request, "headers" | "signal" | "body">,
   maximumBytes: number,
   timeoutMs = 10_000,
 ): Promise<string> {
