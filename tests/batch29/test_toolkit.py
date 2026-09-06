@@ -948,7 +948,7 @@ class ToolkitTests(unittest.TestCase):
             self.assertIsNone(validator._selected_swift_host_profile())
             selector.assert_not_called()
 
-    def test_registered_swift_receipt_contract_binds_exact_host_profile(self) -> None:
+    def test_selected_swift_receipt_contract_binds_exact_host_profile(self) -> None:
         validator = load_route_validator()
         receipt = portable_swift_analyzer_receipt(validator)
         bind_swift_receipt_to_selected_host_profile(validator, receipt)
@@ -2553,6 +2553,19 @@ print('\\n'.join(failures))
                 schemas[0]["$defs"][definition_name],
                 schemas[1]["$defs"][definition_name],
             )
+        portable_host_variants = schemas[0]["$defs"][
+            "swift_portable_toolchain_host_identity"
+        ]["oneOf"]
+        self.assertEqual(len(portable_host_variants), 2)
+        self.assertEqual(
+            len(
+                {
+                    json.dumps(variant, sort_keys=True)
+                    for variant in portable_host_variants
+                }
+            ),
+            len(portable_host_variants),
+        )
         cache_contracts = [
             schema["$defs"]["swift_dependency_cache_receipt"] for schema in schemas
         ]
@@ -2562,6 +2575,36 @@ print('\\n'.join(failures))
         self.assertEqual(cache_contracts[0], cache_contracts[1])
         self.assertEqual(mirror_contracts[0], mirror_contracts[1])
         receipt = portable_swift_analyzer_receipt(validator)
+        portable_toolchain_contract = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": schemas[0]["$defs"],
+            "$ref": "#/$defs/swift_portable_toolchain_receipt",
+        }
+        portable_toolchain = receipt["canonical_identity"]["receipt"]["toolchain"]
+        for variant in portable_host_variants:
+            candidate = copy.deepcopy(portable_toolchain)
+            for field, field_contract in variant["properties"].items():
+                candidate[field] = field_contract["const"]
+            self.assertEqual(
+                list(
+                    Draft202012Validator(portable_toolchain_contract).iter_errors(
+                        candidate
+                    )
+                ),
+                [],
+            )
+        host_leaking_portable_toolchain = copy.deepcopy(portable_toolchain)
+        host_leaking_portable_toolchain["profile"].insert(
+            1, "apple-host-profile=local-macos26-20260904"
+        )
+        self.assertNotEqual(
+            list(
+                Draft202012Validator(portable_toolchain_contract).iter_errors(
+                    host_leaking_portable_toolchain
+                )
+            ),
+            [],
+        )
         for schema in schemas:
             receipt_contract = {
                 "$schema": "https://json-schema.org/draft/2020-12/schema",

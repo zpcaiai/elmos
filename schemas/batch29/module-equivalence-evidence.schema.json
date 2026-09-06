@@ -641,11 +641,6 @@
           "swiftc_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
           "swift_driver_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
           "profile": {"const": ["platform=Darwin/arm64", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
-        }},
-        {"properties": {
-          "swiftc_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
-          "swift_driver_sha256": {"const": "sha256:8a63cc031d970b57f03741ae83becbfb26f2b913565ac212b81b80bdcb35600f"},
-          "profile": {"const": ["platform=Darwin/arm64", "xcode=26.6/17F113", "macosx-sdk=26.5", "swift-language-mode=6", "integer=Int64"]}
         }}
       ]
     },
