@@ -83,6 +83,7 @@ class ContentAddressableStore:
         max_bytes: int | None = None,
         restore_bytes_per_ms: float = 200_000.0,
         native_file_io: bool = False,
+        native_bytes_io: bool = False,
     ) -> None:
         self.root = Path(root)
         self.objects_root = self.root / "cas"
@@ -92,6 +93,7 @@ class ContentAddressableStore:
         self.restore_bytes_per_ms = restore_bytes_per_ms
         # Opt-in until representative profiles justify replacing hashlib's native backend.
         self.native_file_io = native_file_io
+        self.native_bytes_io = native_bytes_io
         for directory in (self.objects_root, self.quarantine_root):
             directory.mkdir(parents=True, exist_ok=True)
 
@@ -152,6 +154,15 @@ class ContentAddressableStore:
 
     # -- writes -----------------------------------------------------------
     def put_bytes(self, data: bytes, expected_digest: str | None = None, artifact_kind: str = "blob") -> str:
+        if expected_digest is not None:
+            require_digest(expected_digest)
+        # Bytes and file-descriptor kernels have separate measured opt-ins.
+        # A selected native kernel owns the hash; do not hash twice across FFI.
+        if self.compression == "none" and self.native_bytes_io:
+            self._check_quota(len(data))
+            native = native_cas_bridge.native_put_bytes(self.root, data, expected_digest, artifact_kind)
+            if native is not None:
+                return native
         digest = sha256_bytes(data)
         if expected_digest is not None and require_digest(expected_digest) != digest:
             raise DigestMismatch(
@@ -160,10 +171,6 @@ class ContentAddressableStore:
         if self.contains(digest):
             return digest
         self._check_quota(len(data))
-        if self.compression == "none" and native_cas_bridge.is_native_available():
-            res = native_cas_bridge.native_put_bytes(self.root, data, expected_digest, artifact_kind)
-            if res:
-                return res
         destination = self.path_for(digest)
         destination.parent.mkdir(parents=True, exist_ok=True)
         payload, compression = self._maybe_compress(data)
