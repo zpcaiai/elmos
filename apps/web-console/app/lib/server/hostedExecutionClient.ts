@@ -21,7 +21,7 @@ type ArtifactSummary = {
   byteSize: number;
 };
 
-type ControlPlaneJob = {
+export type ControlPlaneJob = {
   jobId: string;
   organizationId: string;
   actorId: string;
@@ -82,7 +82,7 @@ async function boundedResponseText(response: Response): Promise<string> {
   }
 }
 
-function validateHostedArtifactTicket(value: unknown): HostedArtifactTicket {
+export function validateHostedArtifactTicket(value: unknown): HostedArtifactTicket {
   if (!value || typeof value !== "object") {
     throw new GenerationRunnerError(502, "HOSTED_ARTIFACT_TICKET_INVALID");
   }
@@ -158,7 +158,7 @@ function idempotencyKey(context: AuthorizedContext, analysisDigest: string): str
     .slice(0, 48);
 }
 
-async function call<T>(
+export async function call<T>(
   context: AuthorizedContext,
   path: string,
   method: "GET" | "POST" | "DELETE",

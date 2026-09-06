@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent } from "react";
 import { Icon } from "../components/Icon";
 import { TranslationEvidenceCharts } from "../components/ProjectEvidenceCharts";
 import { StatusChip } from "../components/StatusChip";
@@ -136,13 +136,25 @@ async function verifiedDownloadBlob(
   maximumBytes: number,
   errorCode: string,
 ): Promise<Blob> {
+  const hosted = response.headers.get("X-Elmos-Artifact-Ticket") === "1";
+  if (hosted) {
+    const ticket = await response.json() as { downloadUrl?: unknown; contentSha256?: unknown; byteSize?: unknown };
+    if (typeof ticket.downloadUrl !== "string" || ticket.downloadUrl.length > 4096
+      || ticket.contentSha256 !== expectedSha256 || ticket.byteSize !== expectedBytes) throw new Error(errorCode);
+    const url = new URL(ticket.downloadUrl);
+    if (url.username || url.password || url.hash || (url.protocol !== "https:"
+      && !(process.env.NODE_ENV !== "production" && url.protocol === "http:" && ["localhost","127.0.0.1"].includes(url.hostname)))) throw new Error(errorCode);
+    // Signed object URL receives no account/runner token or browser credentials.
+    response = await fetch(url, { cache:"no-store",credentials:"omit",redirect:"error",signal:AbortSignal.timeout(60_000) });
+    if (!response.ok) throw new Error(errorCode);
+  }
   if (
     !response.body
     || !Number.isSafeInteger(expectedBytes)
     || expectedBytes < 1
     || expectedBytes > maximumBytes
     || response.headers.get("content-length") !== String(expectedBytes)
-    || response.headers.get("x-content-sha256") !== expectedSha256
+    || (!hosted && response.headers.get("x-content-sha256") !== expectedSha256)
   ) throw new Error(errorCode);
   const reader = response.body.getReader();
   const digest = new Sha256Accumulator();
@@ -199,6 +211,7 @@ export function TranslationStudio() {
   const [runnerHealth, setRunnerHealth] = useState<TranslationRunnerHealth | null>(null);
   const [job, setJob] = useState<TranslationJob | null>(null);
   const [jobBusy, setJobBusy] = useState(false);
+  const submissionIntent=useRef<{body:string;key:string}|null>(null);
   const accountRunner = account.status === "authenticated"
     && account.principal?.permissions.includes("translation:execute") === true;
 
@@ -272,18 +285,26 @@ export function TranslationStudio() {
         reason: "TRANSLATION_RUNNER_HEALTH_UNAVAILABLE",
       }));
     const latest = window.sessionStorage.getItem(JOB_STORAGE_KEY);
-    if (latest && /^[0-9a-f-]{36}$/.test(latest)) setRecoveryJobId(latest);
+    if (latest && /^(?:job-)?[0-9a-f-]{36}$/.test(latest)) setRecoveryJobId(latest);
   }, []);
 
   useEffect(() => {
     if (!job || !["QUEUED", "PRECHECK", "RUNNING"].includes(job.status)) return;
-    const timer = window.setInterval(() => {
-      void runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}`)
-        .then(setJob)
-        .catch((error: Error) => setFeedback(`任务刷新失败：${error.message}`));
-    }, 1_500);
-    return () => window.clearInterval(timer);
-  }, [job, tenantId, actorId, runnerToken, accountRunner]);
+    let stopped=false,delay=1_500,timer:number;
+    const lifecycle=new AbortController();
+    const refresh=async()=>{
+      try {
+        const next=await runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}`,
+          {signal:AbortSignal.any([lifecycle.signal,AbortSignal.timeout(10_000)])});
+        if(!stopped)setJob(next);delay=1_500;
+      } catch(error) {
+        if(!stopped)setFeedback(`任务刷新失败：${error instanceof Error ? error.message : "UNKNOWN"}`);
+        delay=Math.min(30_000,delay*2);
+      } finally {if(!stopped)timer=window.setTimeout(refresh,delay);}
+    };
+    timer=window.setTimeout(refresh,delay);
+    return ()=>{stopped=true;window.clearTimeout(timer);lifecycle.abort();};
+  }, [job?.id, job?.status, tenantId, actorId, runnerToken, accountRunner]);
 
   useEffect(() => {
     if (!feedback) return;
@@ -549,23 +570,24 @@ export function TranslationStudio() {
     }
     setJobBusy(true);
     try {
+      const body=JSON.stringify({workspaceId:repositoryWorkspaceId.trim()?undefined:workspaceId.trim(),
+        repositoryWorkspaceId:repositoryWorkspaceId.trim()||undefined,casesBundleId:casesBundleId.trim(),sourceLanguage,targetLanguage});
+      if(submissionIntent.current?.body!==body)submissionIntent.current={body,key:crypto.randomUUID()};
       const next = await runnerRequest<TranslationJob>("/api/translation/jobs", {
         method: "POST",
-        body: JSON.stringify({
-          workspaceId: repositoryWorkspaceId.trim() ? undefined : workspaceId.trim(),
-          repositoryWorkspaceId: repositoryWorkspaceId.trim() || undefined,
-          casesBundleId: casesBundleId.trim(),
-          sourceLanguage,
-          targetLanguage,
-        }),
+        headers: { "Idempotency-Key": submissionIntent.current.key },
+        body,
       });
+      submissionIntent.current=null;
       setJob(next);
       setRecoveryJobId(next.id);
       window.sessionStorage.setItem(JOB_STORAGE_KEY, next.id);
       setFeedback("整库预检已进入持久队列；此时尚未接受转换或计费。预检通过后页面才会显示真实编译、回放、装配与构建状态。");
     } catch (error) {
       const reason = error instanceof Error ? error.message : "TRANSLATION_RUNNER_ERROR";
-      setFeedback(`整库执行被阻断：${translationRunnerFailureMessage(reason)}`);
+      setFeedback(reason.includes("TIMEOUT") || reason.includes("UNRECONCILED")
+        ? "提交结果尚未确认；请保留当前页面，重试将使用同一提交标识查询已有任务，不会盲目创建第二个上传。"
+        : `整库执行被阻断：${translationRunnerFailureMessage(reason)}`);
     } finally {
       setJobBusy(false);
     }
@@ -591,10 +613,12 @@ export function TranslationStudio() {
     if (!job) return;
     setJobBusy(true);
     try {
-      setJob(await runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}/cancel`, {
+      const next=await runnerRequest<TranslationJob>(`/api/translation/jobs/${job.id}/cancel`, {
         method: "POST",
-      }));
-      setFeedback("任务已取消；已经写入的检查点保留为审计事实。");
+      });
+      setJob(next);
+      setFeedback(next.status==="CANCELLED" ? "任务已取消；已经写入的检查点保留为审计事实。"
+        : "取消请求已提交，等待执行器确认停止；请求受理不等于进程已结束。");
     } catch (error) {
       setFeedback(`取消失败：${error instanceof Error ? error.message : "TRANSLATION_CANCEL_FAILED"}`);
     } finally {
@@ -932,7 +956,7 @@ export function TranslationStudio() {
           </div>
           <label className="spring-field-wide">
             <span>恢复任务 UUID</span>
-            <input value={recoveryJobId} onChange={(event) => setRecoveryJobId(event.target.value.toLowerCase())} pattern="[0-9a-f-]{36}" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+            <input value={recoveryJobId} onChange={(event) => setRecoveryJobId(event.target.value.toLowerCase())} pattern="(job-)?[0-9a-f-]{36}" placeholder="job-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
           </label>
         </div>
         <div className="business-actions">
@@ -950,7 +974,7 @@ export function TranslationStudio() {
           <button
             type="button"
             className="button button-secondary"
-            disabled={jobBusy || !/^[0-9a-f-]{36}$/.test(recoveryJobId)}
+            disabled={jobBusy || !/^(?:job-)?[0-9a-f-]{36}$/.test(recoveryJobId)}
             onClick={() => void recoverRepositoryPipeline()}
           >
             <Icon name="refresh" size={15} />恢复任务

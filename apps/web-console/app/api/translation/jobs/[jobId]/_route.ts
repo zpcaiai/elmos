@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GenerationRunnerError } from "../../../../lib/server/generationRunner";
+import { hostedExecutionEnabled } from "../../../../lib/server/hostedExecutionClient";
+import { getHostedTranslationJob } from "../../../../lib/server/hostedTranslationClient";
 import {
   authorizeTranslation,
   getTranslationJob,
@@ -15,7 +17,7 @@ export async function GET(
     const authorized = authorizeTranslation(request);
     const { jobId } = await context.params;
     return NextResponse.json(
-      await getTranslationJob(authorized, jobId),
+      await (hostedExecutionEnabled() ? getHostedTranslationJob(authorized, jobId) : getTranslationJob(authorized, jobId)),
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (error) {

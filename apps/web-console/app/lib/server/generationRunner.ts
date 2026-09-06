@@ -1,6 +1,7 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { spawn, type ChildProcess } from "node:child_process";
 import { CoalescingFlush } from "./coalescingFlush";
+import { LocalStorageScanSchedule } from "./localStorageScanSchedule";
 import {
   constants as fsConstants,
   createReadStream,
@@ -11,6 +12,7 @@ import {
   readFileSync,
   realpathSync,
   statSync,
+  watch,
   type Stats,
 } from "node:fs";
 import {
@@ -2225,7 +2227,8 @@ async function executeCommand(
     let stderr = "";
     let timedOut = false;
     let commandClosed = false;
-    let storageCheckInFlight = false;
+    let storageCheckInFlight: Promise<void> | null = null;
+    const storageScans=new LocalStorageScanSchedule();
     let storageFailure: Error | null = null;
     let persistenceFailure: Error | null = null;
     const persistenceQueue = new CoalescingFlush(() => persist(runner, context, job));
@@ -2246,11 +2249,23 @@ async function executeCommand(
         }, 30_000)
       : null;
     progressHeartbeat?.unref();
+    // Local-only queue: filesystem events coalesce into one dirty bit. Keep a
+    // periodic exact backstop and a mandatory terminal scan; watcher events are
+    // an optimization, never the quota authority.
+    let storageWatcher: ReturnType<typeof watch> | null = null;
+    if (stage === "pipeline") {
+      try {
+        storageWatcher = watch(jobRoot(runner, context, job.id), { recursive:true }, (_event,filename) => { storageScans.changed(filename); });
+        storageWatcher.on("error", () => { storageWatcher?.close(); storageWatcher=null; storageScans.changed(null); });
+        storageWatcher.unref();
+      } catch { storageWatcher=null; } // Unsupported platforms retain exact polling.
+    }
     const storageMonitor = stage === "pipeline"
       ? setInterval(() => {
           if (commandClosed || storageCheckInFlight || storageFailure) return;
-          storageCheckInFlight = true;
-          void boundedDirectoryBytes(jobRoot(runner, context, job.id))
+          if (!storageScans.due(storageWatcher!==null,Date.now())) return;
+          storageScans.started(Date.now());
+          storageCheckInFlight = boundedDirectoryBytes(jobRoot(runner, context, job.id))
             .then((bytes) => {
               if (
                 !commandClosed
@@ -2273,7 +2288,7 @@ async function executeCommand(
               terminate(child);
             })
             .finally(() => {
-              storageCheckInFlight = false;
+              storageCheckInFlight = null;
             });
         }, 2_000)
       : null;
@@ -2298,6 +2313,7 @@ async function executeCommand(
       clearTimeout(timeout);
       if (progressHeartbeat) clearInterval(progressHeartbeat);
       if (storageMonitor) clearInterval(storageMonitor);
+      storageWatcher?.close();
       activeJobs.delete(key);
       await flushPersistence();
       reject(persistenceFailure ?? error);
@@ -2307,7 +2323,17 @@ async function executeCommand(
       clearTimeout(timeout);
       if (progressHeartbeat) clearInterval(progressHeartbeat);
       if (storageMonitor) clearInterval(storageMonitor);
+      storageWatcher?.close();
       activeJobs.delete(key);
+      await storageCheckInFlight;
+      if (stage === "pipeline" && !storageFailure) {
+        try {
+          if (await boundedDirectoryBytes(jobRoot(runner,context,job.id)) > generationStoragePolicy().reservationBytes)
+            storageFailure=new GenerationRunnerError(507,"GENERATION_JOB_STORAGE_RESERVATION_EXCEEDED");
+        } catch (error) {
+          storageFailure=error instanceof Error ? error : new GenerationRunnerError(507,"GENERATION_STORAGE_SCAN_FAILED");
+        }
+      }
       await flushPersistence();
       if (storageFailure) {
         reject(storageFailure);
@@ -2319,6 +2345,8 @@ async function executeCommand(
       }
       const exitCode = timedOut ? 124 : code ?? (signal ? 128 : 1);
       log(job, "system", `${stage} finished with exit code ${exitCode}`);
+      queuePersist();await flushPersistence();
+      if(persistenceFailure){reject(persistenceFailure);return;}
       resolve({ exitCode, stdout: redact(stdout), stderr: redact(stderr) });
     });
   });
