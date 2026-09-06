@@ -155,6 +155,11 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         self.assertLess(install, smoke)
         self.assertIn("deployments: read", workflow)
         self.assertIn("github.event.pull_request.head.sha || github.sha", workflow)
+        self.assertIn("ref: ${{ env.ELMOS_DEPLOYMENT_SHA }}", workflow)
+        self.assertIn('checkout_sha="$(git rev-parse HEAD)"', workflow)
+        self.assertIn(
+            '[[ "$checkout_sha" != "$ELMOS_DEPLOYMENT_SHA" ]]', workflow
+        )
         self.assertIn('--production-url "${ELMOS_PRODUCTION_SMOKE_URL}"', workflow)
 
     def test_workflow_uses_short_lived_oidc_for_protected_preview(self) -> None:
