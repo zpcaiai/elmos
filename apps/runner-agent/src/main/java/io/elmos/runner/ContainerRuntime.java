@@ -100,6 +100,15 @@ public final class ContainerRuntime {
         return new Execution(handle, containerName);
     }
 
+    public Execution startTranslationPreflight(ControlPlaneClient.Lease lease, JobWorkspace workspace) {
+        if (!TranslationJobProtocol.applies(lease)) throw new IllegalArgumentException("TRANSLATION_JOB_KIND_INVALID");
+        var preflight = new ControlPlaneClient.Lease(lease.jobId(), lease.leaseId(), lease.leaseToken(),
+                lease.businessLine(), "translate-preflight-v1", lease.runnerImage(), lease.budgetWallSeconds(),
+                lease.budgetCpuMillis(), lease.budgetMemoryMib(), lease.attempt(), lease.checkpointCursor(), lease.requestPayload());
+        // Source/compiler stdout can never authorize the paid pipeline stage.
+        return start(preflight, workspace, ignored -> {});
+    }
+
     /**
      * Terminates a container and guarantees it is gone.
      *
