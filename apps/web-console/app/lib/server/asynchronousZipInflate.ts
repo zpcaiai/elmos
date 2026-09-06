@@ -19,40 +19,64 @@ export class AsynchronousZipInflate {
       ondata: AsyncFlateStreamHandler = () => undefined;
       #stream: InflateRaw | undefined;
       #terminated = false;
+      #failure: Error | undefined;
+      #rejectWrite: ((error: Error) => void) | undefined;
 
       push(chunk: Uint8Array, final: boolean): void {
         if (owner.#closed || this.#terminated) return;
         if (owner.#pending.length >= 4096) throw new Error("ZIP_INFLATE_QUEUE_LIMIT");
         const bytes = Buffer.from(chunk);
         owner.#pending.push(async () => {
-          if (this.#terminated) return;
+          if (this.#failure) throw this.#failure;
+          if (owner.#closed || this.#terminated) throw new Error("ZIP_ENTRY_TERMINATED");
           const stream = this.#stream ??= createInflateRaw();
           if (!owner.#streams.has(stream)) {
             owner.#streams.add(stream);
+            // This listener outlives individual writes. A zlib error can arrive
+            // between drain() calls or when a completed write is terminated.
+            stream.on("error", (error: Error) => {
+              this.#failure ??= error;
+              this.#rejectWrite?.(error);
+            });
+            stream.once("close", () => owner.#streams.delete(stream));
             stream.on("data", (data: Buffer) => {
               try { this.ondata(null, data, false); }
               catch (error) { stream.destroy(error instanceof Error ? error : new Error("ZIP_CALLBACK_FAILED")); }
             });
           }
           await new Promise<void>((resolve, reject) => {
+            let settled = false;
             const cleanup = () => {
-              stream.removeListener("error", failed);
               stream.removeListener("end", ended);
+              this.#rejectWrite = undefined;
             };
-            const failed = (error: Error) => { cleanup(); reject(error); };
+            const failed = (error: Error) => {
+              if (settled) return;
+              settled = true;
+              this.#failure ??= error;
+              cleanup(); reject(error);
+            };
             const ended = () => {
-              cleanup();
-              owner.#streams.delete(stream);
-              this.ondata(null, new Uint8Array(), true);
-              resolve();
+              if (settled) return;
+              try {
+                this.ondata(null, new Uint8Array(), true);
+                settled = true;
+                cleanup();
+                owner.#streams.delete(stream);
+                resolve();
+              } catch (error) {
+                failed(error instanceof Error ? error : new Error("ZIP_CALLBACK_FAILED"));
+              }
             };
-            stream.once("error", failed);
+            this.#rejectWrite = failed;
             if (final) {
               stream.once("end", ended);
               stream.end(bytes);
             } else {
               stream.write(bytes, (error) => {
                 if (error) { failed(error); return; }
+                if (settled) return;
+                settled = true;
                 cleanup();
                 resolve();
               });
@@ -63,19 +87,25 @@ export class AsynchronousZipInflate {
 
       terminate(): void {
         this.#terminated = true;
-        this.#stream?.destroy(new Error("ZIP_ENTRY_TERMINATED"));
+        this.#failure ??= new Error("ZIP_ENTRY_TERMINATED");
+        this.#rejectWrite?.(this.#failure);
+        this.#stream?.destroy(this.#failure);
       }
     };
   }
 
   async drain(): Promise<void> {
-    while (this.#pending.length) await this.#pending.shift()!();
+    if (this.#closed) throw new Error("ZIP_INFLATE_CLOSED");
+    while (this.#pending.length) {
+      await this.#pending.shift()!();
+      if (this.#closed) throw new Error("ZIP_INFLATE_CLOSED");
+    }
   }
 
   close(): void {
     this.#closed = true;
     this.#pending.length = 0;
-    for (const stream of this.#streams) stream.destroy();
+    for (const stream of this.#streams) stream.destroy(new Error("ZIP_INFLATE_CLOSED"));
     this.#streams.clear();
   }
 }

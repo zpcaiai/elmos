@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 import { Unzip, zipSync } from "fflate";
+import { deflateRawSync } from "node:zlib";
 import { AsynchronousZipInflate } from "../app/lib/server/asynchronousZipInflate.ts";
 
 test("native asynchronous ZIP inflate preserves bytes across arbitrary archive chunks", async () => {
@@ -33,6 +34,35 @@ test("native asynchronous ZIP inflate preserves bytes across arbitrary archive c
       assert.equal(results.get(name), createHash("sha256").update(bytes).digest("hex"));
     }
   } finally { controller.close(); }
+});
+
+test("a final callback exception rejects drain instead of escaping the event callback", async () => {
+  const controller = new AsynchronousZipInflate();
+  const decoder = new controller.decoder("one");
+  decoder.ondata = (_error, _bytes, final) => { if (final) throw new Error("final oracle failed"); };
+  decoder.push(deflateRawSync(Buffer.from("one")), true);
+  try { await assert.rejects(controller.drain(), /final oracle failed/); }
+  finally { controller.close(); }
+});
+test("termination between nonfinal drains cannot emit an unhandled zlib error", async () => {
+  const controller = new AsynchronousZipInflate();
+  const decoder = new controller.decoder("one");
+  decoder.ondata = () => undefined;
+  const compressed = deflateRawSync(Buffer.from("one".repeat(10_000)));
+  decoder.push(compressed.subarray(0, 4), false);
+  await controller.drain();
+  decoder.terminate();
+  await new Promise((resolve) => setImmediate(resolve));
+  controller.close();
+});
+test("close while native output is pending settles the in-flight drain", async () => {
+  const controller = new AsynchronousZipInflate();
+  const decoder = new controller.decoder("one");
+  decoder.ondata = () => undefined;
+  decoder.push(deflateRawSync(new Uint8Array(8 * 1024 * 1024)), true);
+  const draining = controller.drain();
+  controller.close();
+  await assert.rejects(draining, /ZIP_INFLATE_CLOSED/);
 });
 
 test("large compression ratio yields the event loop and cancellation fails closed", async () => {
