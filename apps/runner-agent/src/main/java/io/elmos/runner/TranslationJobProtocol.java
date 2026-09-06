@@ -14,11 +14,36 @@ final class TranslationJobProtocol {
     }
 
     static Map<String, Object> readReceipt(Path file) throws IOException {
-        if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)
-                || Files.size(file) < 1 || Files.size(file) > 2 * 1024 * 1024) {
+        var before=Files.readAttributes(file,java.nio.file.attribute.BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
+        if (!before.isRegularFile() || before.size()<1 || before.size()>2*1024*1024) {
             throw new IOException("TRANSLATION_PHASE_RECEIPT_INVALID");
         }
-        return Json.parseObject(Files.readString(file));
+        byte[] bytes;
+        try(var channel=java.nio.channels.FileChannel.open(file,java.nio.file.StandardOpenOption.READ,LinkOption.NOFOLLOW_LINKS)) {
+            if(channel.size()!=before.size())throw new IOException("TRANSLATION_PHASE_RECEIPT_CHANGED");
+            bytes=readBoundedReceipt(channel,before.size());
+            var after=Files.readAttributes(file,java.nio.file.attribute.BasicFileAttributes.class,LinkOption.NOFOLLOW_LINKS);
+            if(!after.isRegularFile() || !java.util.Objects.equals(before.fileKey(),after.fileKey())
+                    || before.size()!=after.size() || channel.size()!=before.size()
+                    || !before.lastModifiedTime().equals(after.lastModifiedTime()))
+                throw new IOException("TRANSLATION_PHASE_RECEIPT_CHANGED");
+        }
+        return Json.parseObject(java.nio.charset.StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(java.nio.charset.CodingErrorAction.REPORT)
+                .decode(java.nio.ByteBuffer.wrap(bytes)).toString());
+    }
+
+    static byte[] readBoundedReceipt(java.nio.channels.ReadableByteChannel channel,long expectedSize) throws IOException {
+        var buffer=java.nio.ByteBuffer.allocate(2*1024*1024+1);
+        int emptyReads=0;
+        while(buffer.hasRemaining()) {
+            int read=channel.read(buffer);
+            if(read<0)break;
+            if(read==0 && ++emptyReads>32)throw new IOException("TRANSLATION_PHASE_RECEIPT_STALLED");
+        }
+        if(buffer.position()!=expectedSize || buffer.position()>2*1024*1024)
+            throw new IOException("TRANSLATION_PHASE_RECEIPT_CHANGED");
+        return java.util.Arrays.copyOf(buffer.array(),buffer.position());
     }
 
     static void verifyPreflight(Path file, Map<String, Object> input) throws IOException {
@@ -30,6 +55,7 @@ final class TranslationJobProtocol {
                 || !Json.string(value, "repository_ref", "").equals(input.get("repositoryRef"))
                 || !Json.string(value, "source_language", "").equals(input.get("sourceLanguage"))
                 || !Json.string(value, "target_language", "").equals(input.get("targetLanguage"))
+                || !Json.string(value,"route_id","").equals(input.get("sourceLanguage")+"-to-"+input.get("targetLanguage"))
                 || !Json.string(value, "snapshot_sha256", "").matches("[0-9a-f]{64}")) {
             throw new IOException("TRANSLATION_PREFLIGHT_SUBJECT_INVALID");
         }

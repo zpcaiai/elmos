@@ -15,7 +15,33 @@ final class TranslationExecutionSelfTest {
         scenario(scratch,"COMPLETE",true,false,false,JobExecutor.Outcome.ABANDONED,0);
         scenario(scratch,"COMPLETE",false,true,false,JobExecutor.Outcome.FAILED,0);
         scenario(scratch,"COMPLETE",false,false,true,JobExecutor.Outcome.FAILED,0);
-        System.out.println("TRANSLATION EXECUTION SELF TEST PASSED (5 controlled phase/input/fencing scenarios)");
+        receiptBoundaries(scratch);
+        System.out.println("TRANSLATION EXECUTION SELF TEST PASSED (5 phase/input/fencing + 5 pinned receipt scenarios)");
+    }
+    private static void receiptBoundaries(Path scratch) throws Exception {
+        Path root=Files.createTempDirectory(scratch,"receipt-");Path document=root.resolve("receipt.json");
+        Files.writeString(document,"{\"safe\":true}");
+        if(!Boolean.TRUE.equals(TranslationJobProtocol.readReceipt(document).get("safe")))throw new AssertionError("valid receipt rejected");
+        Path symlink=root.resolve("link.json");Files.createSymbolicLink(symlink,document);
+        deniedReceipt(()->TranslationJobProtocol.readReceipt(symlink));
+        Files.write(document,new byte[2*1024*1024+1]);
+        deniedReceipt(()->TranslationJobProtocol.readReceipt(document));
+        Files.writeString(document,"{}");
+        try(var channel=java.nio.channels.FileChannel.open(document,java.nio.file.StandardOpenOption.READ)) {
+            long observed=channel.size();
+            // Deterministic growth after the authority's size observation, on
+            // the actual pinned file descriptor, not an in-memory mock.
+            Files.write(document,new byte[3*1024*1024],java.nio.file.StandardOpenOption.APPEND);
+            deniedReceipt(()->TranslationJobProtocol.readBoundedReceipt(channel,observed));
+            if(channel.position()>2*1024*1024+1)throw new AssertionError("receipt read exceeded hard bound");
+        }
+        Files.write(document,new byte[]{(byte)0xff});
+        deniedReceipt(()->TranslationJobProtocol.readReceipt(document));
+    }
+    @FunctionalInterface private interface ReceiptRead { Object read() throws Exception; }
+    private static void deniedReceipt(ReceiptRead read) throws Exception {
+        try {read.read();throw new AssertionError("unsafe receipt accepted");}
+        catch(java.io.IOException expected) { /* fail closed before phase or terminal transition */ }
     }
     private static void scenario(Path scratch,String status,boolean rejectPipeline,boolean corruptPreflight,
                                  boolean corruptInput,JobExecutor.Outcome expected,int pipelineCount) throws Exception {
