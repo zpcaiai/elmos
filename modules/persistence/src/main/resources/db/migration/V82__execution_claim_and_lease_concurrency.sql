@@ -1,0 +1,480 @@
+-- V82: preserve the V57 public ABI and V80 enqueue/billing authority.
+-- Claim serializes tenant capacity; lifecycle lock order is dispatch -> lease -> job.
+-- Counter reconciliation uses a fresh snapshot after acquiring its counter lock.
+
+CREATE OR REPLACE FUNCTION elmos_claim_execution_jobs(
+    p_runner_node_id varchar,
+    p_capabilities text[],
+    p_limit integer,
+    p_lease_seconds integer,
+    p_lease_ids text[],
+    p_token_hashes text[]
+) RETURNS TABLE (
+    job_id varchar,
+    organization_id varchar,
+    lease_id varchar,
+    lease_expires_at timestamptz,
+    business_line varchar,
+    job_kind varchar,
+    runner_image varchar,
+    budget_wall_seconds integer,
+    budget_cpu_millis integer,
+    budget_memory_mib integer,
+    attempt smallint,
+    checkpoint_cursor jsonb,
+    request_payload jsonb
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_node runner_nodes%ROWTYPE;
+    v_runner_organization_id varchar(96);
+    v_candidate record;
+    v_job execution_jobs%ROWTYPE;
+    v_active integer;
+    v_claimed integer := 0;
+    v_org_limit integer;
+    v_org_active integer;
+    v_lease_id varchar(96);
+    v_expires timestamptz;
+    v_seq integer;
+BEGIN
+    IF p_limit IS NULL OR p_limit < 1 OR p_limit > 16 THEN
+        RAISE EXCEPTION 'ELMOS_CLAIM_LIMIT_INVALID';
+    END IF;
+    IF p_lease_seconds IS NULL OR p_lease_seconds < 30 OR p_lease_seconds > 3600 THEN
+        RAISE EXCEPTION 'ELMOS_CLAIM_LEASE_SECONDS_INVALID';
+    END IF;
+    IF coalesce(array_length(p_lease_ids, 1), 0) <> p_limit
+       OR coalesce(array_length(p_token_hashes, 1), 0) <> p_limit THEN
+        RAISE EXCEPTION 'ELMOS_CLAIM_CREDENTIAL_COUNT_MISMATCH';
+    END IF;
+
+    SELECT a.organization_id INTO v_runner_organization_id
+      FROM runner_node_authentication a
+     WHERE a.runner_node_id = p_runner_node_id AND a.revoked_at IS NULL;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'ELMOS_RUNNER_UNKNOWN';
+    END IF;
+    PERFORM set_config(
+        'app.organization_id', v_runner_organization_id, true);
+
+    SELECT * INTO v_node FROM runner_nodes
+     WHERE runner_node_id = p_runner_node_id FOR UPDATE;
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'ELMOS_RUNNER_UNKNOWN';
+    END IF;
+    IF v_node.fleet_status IS DISTINCT FROM 'READY' THEN
+        RAISE EXCEPTION 'ELMOS_RUNNER_NOT_READY';
+    END IF;
+    IF v_node.last_heartbeat_at IS NULL OR v_node.last_heartbeat_at < now() - interval '90 seconds' THEN
+        RAISE EXCEPTION 'ELMOS_RUNNER_HEARTBEAT_STALE';
+    END IF;
+    IF v_node.drain_requested_at IS NOT NULL THEN
+        RETURN;
+    END IF;
+
+    SELECT count(*) INTO v_active FROM execution_job_dispatch
+     WHERE runner_node_ref = p_runner_node_id AND dispatch_state = 'LEASED';
+    IF v_active >= v_node.max_concurrency THEN
+        RETURN;
+    END IF;
+
+    FOR v_candidate IN
+        SELECT d.job_id AS d_job_id, d.organization_id AS d_org, d.attempt AS d_attempt
+          FROM execution_job_dispatch d
+          LEFT JOIN execution_dispatch_org_counters c ON c.organization_id = d.organization_id
+         WHERE d.dispatch_state = 'READY'
+           AND d.visible_at <= now()
+           AND d.required_capability = ANY (p_capabilities)
+         ORDER BY coalesce(c.leased_count, 0) ASC, d.priority DESC, d.enqueued_at ASC
+         FOR UPDATE OF d SKIP LOCKED
+    LOOP
+        EXIT WHEN v_claimed >= p_limit OR (v_active + v_claimed) >= v_node.max_concurrency;
+
+        v_org_limit := elmos_execution_concurrency_limit(v_candidate.d_org);
+        SELECT coalesce(c.leased_count, 0) INTO v_org_active
+          FROM execution_dispatch_org_counters c
+         WHERE c.organization_id = v_candidate.d_org
+         FOR UPDATE SKIP LOCKED;
+        -- No waiting while holding another tenant's slot: avoid lock-order cycles.
+        CONTINUE WHEN NOT FOUND OR coalesce(v_org_active, 0) >= v_org_limit;
+
+        PERFORM set_config(
+            'app.organization_id', v_candidate.d_org, true);
+        SELECT * INTO v_job FROM execution_jobs
+         WHERE execution_jobs.job_id = v_candidate.d_job_id FOR UPDATE;
+
+        -- A cancel that arrived while the job was still queued never reaches a runner.
+        IF v_job.cancel_requested_at IS NOT NULL THEN
+            UPDATE execution_jobs
+               SET status = 'CANCELLED', result_status = 'BLOCKED', finished_at = now()
+             WHERE execution_jobs.job_id = v_job.job_id;
+            UPDATE execution_job_dispatch SET dispatch_state = 'DONE'
+             WHERE execution_job_dispatch.job_id = v_job.job_id;
+            UPDATE execution_dispatch_org_counters c
+               SET queued_count = greatest(c.queued_count - 1, 0), updated_at = now()
+             WHERE c.organization_id = v_candidate.d_org;
+            CONTINUE;
+        END IF;
+
+        v_claimed := v_claimed + 1;
+        v_lease_id := p_lease_ids[v_claimed];
+        v_expires := now() + make_interval(secs => p_lease_seconds);
+
+        INSERT INTO runner_job_leases (
+            runner_job_lease_id, organization_id, schema_version, status,
+            idempotency_key, payload, job_ref, runner_node_ref, actor_id,
+            lease_state, token_sha256, issued_at, expires_at, last_heartbeat_at
+        ) VALUES (
+            v_lease_id, v_candidate.d_org, '2.0', 'ISSUED',
+            v_lease_id, '{}'::jsonb, v_job.job_id, p_runner_node_id, v_job.actor_id,
+            'ISSUED', p_token_hashes[v_claimed], now(), v_expires, now()
+        );
+
+        UPDATE execution_job_dispatch
+           SET dispatch_state = 'LEASED',
+               lease_ref = v_lease_id,
+               runner_node_ref = p_runner_node_id,
+               lease_expires_at = v_expires,
+               attempt = execution_job_dispatch.attempt + 1
+         WHERE execution_job_dispatch.job_id = v_job.job_id;
+
+        UPDATE execution_jobs
+           SET status = 'CLAIMED',
+               stage = 'claimed',
+               attempt = execution_jobs.attempt + 1,
+               started_at = coalesce(execution_jobs.started_at, now())
+         WHERE execution_jobs.job_id = v_job.job_id;
+
+        UPDATE execution_dispatch_org_counters c
+           SET leased_count = c.leased_count + 1,
+               queued_count = greatest(c.queued_count - 1, 0),
+               updated_at = now()
+         WHERE c.organization_id = v_candidate.d_org;
+
+        SELECT coalesce(max(sequence_no), 0) + 1 INTO v_seq
+          FROM execution_job_events e WHERE e.job_id = v_job.job_id;
+        INSERT INTO execution_job_events (
+            job_event_id, organization_id, job_id, sequence_no, event_type,
+            from_status, to_status, stage, runner_node_ref, lease_ref
+        ) VALUES (
+            'jev-' || md5(v_job.job_id || ':' || v_seq), v_candidate.d_org, v_job.job_id,
+            v_seq, 'CLAIMED', 'QUEUED', 'CLAIMED', 'claimed', p_runner_node_id, v_lease_id
+        );
+
+        job_id := v_job.job_id;
+        organization_id := v_candidate.d_org;
+        lease_id := v_lease_id;
+        lease_expires_at := v_expires;
+        business_line := v_job.business_line;
+        job_kind := v_job.job_kind;
+        runner_image := v_job.runner_image;
+        budget_wall_seconds := v_job.budget_wall_seconds;
+        budget_cpu_millis := v_job.budget_cpu_millis;
+        budget_memory_mib := v_job.budget_memory_mib;
+        attempt := v_job.attempt + 1;
+        checkpoint_cursor := v_job.checkpoint_cursor;
+        request_payload := v_job.request_payload;
+        RETURN NEXT;
+    END LOOP;
+
+    RETURN;
+END;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- 8. Heartbeat, checkpoint, completion
+-- ---------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION elmos_heartbeat_execution_lease(
+    p_lease_id varchar,
+    p_runner_node_id varchar,
+    p_token_hash varchar,
+    p_stage varchar,
+    p_progress smallint,
+    p_checkpoint jsonb,
+    p_lease_seconds integer
+) RETURNS TABLE (cancel_requested boolean, lease_expires_at timestamptz)
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_lease runner_job_leases%ROWTYPE;
+    v_organization_id varchar(96);
+    v_expires timestamptz;
+    v_cancelled boolean;
+BEGIN
+    SELECT organization_id INTO v_organization_id
+      FROM execution_job_dispatch WHERE lease_ref = p_lease_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    PERFORM set_config('app.organization_id', v_organization_id, true);
+
+    SELECT * INTO v_lease FROM runner_job_leases
+     WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    IF v_lease.runner_node_ref IS DISTINCT FROM p_runner_node_id
+       OR v_lease.token_sha256 IS DISTINCT FROM p_token_hash THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_CREDENTIAL_MISMATCH';
+    END IF;
+    IF v_lease.lease_state NOT IN ('ISSUED', 'ACTIVE') THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_NOT_ACTIVE';
+    END IF;
+    IF v_lease.expires_at <= clock_timestamp() THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_EXPIRED';
+    END IF;
+
+    IF p_lease_seconds IS NULL OR p_lease_seconds < 30 OR p_lease_seconds > 3600 THEN
+        RAISE EXCEPTION 'ELMOS_CLAIM_LEASE_SECONDS_INVALID';
+    END IF;
+    v_expires := clock_timestamp() + make_interval(secs => p_lease_seconds);
+
+    UPDATE runner_job_leases
+       SET lease_state = 'ACTIVE', last_heartbeat_at = now(), expires_at = v_expires
+     WHERE runner_job_lease_id = p_lease_id;
+    UPDATE execution_job_dispatch
+       SET lease_expires_at = v_expires
+     WHERE execution_job_dispatch.job_id = v_lease.job_ref;
+    UPDATE runner_nodes SET last_heartbeat_at = now()
+     WHERE runner_node_id = p_runner_node_id;
+
+    UPDATE execution_jobs
+       SET status = CASE WHEN status = 'CLAIMED' THEN 'RUNNING' ELSE status END,
+           stage = coalesce(p_stage, stage),
+           progress = coalesce(p_progress, progress),
+           checkpoint_cursor = coalesce(p_checkpoint, checkpoint_cursor)
+     WHERE execution_jobs.job_id = v_lease.job_ref
+       AND status IN ('CLAIMED', 'RUNNING')
+    RETURNING cancel_requested_at IS NOT NULL INTO v_cancelled;
+
+    cancel_requested := coalesce(v_cancelled, false);
+    lease_expires_at := v_expires;
+    RETURN NEXT;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION elmos_complete_execution_job(
+    p_lease_id varchar,
+    p_runner_node_id varchar,
+    p_token_hash varchar,
+    p_status varchar,
+    p_result_status varchar,
+    p_failure_code varchar
+) RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_lease runner_job_leases%ROWTYPE;
+    v_organization_id varchar(96);
+    v_job execution_jobs%ROWTYPE;
+    v_seq integer;
+    v_requeue boolean := false;
+BEGIN
+    IF p_status NOT IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED') THEN
+        RAISE EXCEPTION 'ELMOS_COMPLETION_STATUS_INVALID';
+    END IF;
+
+    SELECT organization_id INTO v_organization_id
+      FROM execution_job_dispatch WHERE lease_ref = p_lease_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    PERFORM set_config('app.organization_id', v_organization_id, true);
+
+    SELECT * INTO v_lease FROM runner_job_leases
+     WHERE runner_job_lease_id = p_lease_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_LEASE_UNKNOWN'; END IF;
+    IF v_lease.runner_node_ref IS DISTINCT FROM p_runner_node_id
+       OR v_lease.token_sha256 IS DISTINCT FROM p_token_hash THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_CREDENTIAL_MISMATCH';
+    END IF;
+    IF v_lease.lease_state NOT IN ('ISSUED', 'ACTIVE') THEN
+        -- Completion is idempotent: a retried report for an already released
+        -- lease is accepted without changing the terminal record.
+        RETURN false;
+    END IF;
+
+    IF v_lease.expires_at <= clock_timestamp() THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_EXPIRED';
+    END IF;
+
+    SELECT * INTO v_job FROM execution_jobs
+     WHERE execution_jobs.job_id = v_lease.job_ref FOR UPDATE;
+
+    IF v_job.status IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST') THEN
+        UPDATE runner_job_leases SET lease_state = 'RELEASED', released_at = now()
+         WHERE runner_job_lease_id = p_lease_id;
+        RETURN false;
+    END IF;
+
+    v_requeue := (p_status = 'FAILED' AND v_job.attempt < v_job.max_attempts);
+
+    UPDATE runner_job_leases
+       SET lease_state = 'RELEASED', released_at = now()
+     WHERE runner_job_lease_id = p_lease_id;
+
+    IF v_requeue THEN
+        UPDATE execution_jobs
+           SET status = 'QUEUED', stage = 'requeued', failure_code = p_failure_code
+         WHERE execution_jobs.job_id = v_job.job_id;
+        UPDATE execution_job_dispatch
+           SET dispatch_state = 'READY', lease_ref = NULL, runner_node_ref = NULL,
+               lease_expires_at = NULL,
+               visible_at = now() + make_interval(secs => 30 * power(2, v_job.attempt)::integer)
+         WHERE execution_job_dispatch.job_id = v_job.job_id;
+        UPDATE execution_dispatch_org_counters
+           SET leased_count = greatest(leased_count - 1, 0),
+               queued_count = queued_count + 1, updated_at = now()
+         WHERE organization_id = v_job.organization_id;
+    ELSE
+        UPDATE execution_jobs
+           SET status = p_status,
+               result_status = coalesce(p_result_status, 'NOT_RUN'),
+               failure_code = p_failure_code,
+               progress = CASE WHEN p_status = 'SUCCEEDED' THEN 100 ELSE progress END,
+               finished_at = now()
+         WHERE execution_jobs.job_id = v_job.job_id;
+        UPDATE execution_job_dispatch SET dispatch_state = 'DONE'
+         WHERE execution_job_dispatch.job_id = v_job.job_id;
+        UPDATE execution_dispatch_org_counters
+           SET leased_count = greatest(leased_count - 1, 0), updated_at = now()
+         WHERE organization_id = v_job.organization_id;
+    END IF;
+
+    SELECT coalesce(max(sequence_no), 0) + 1 INTO v_seq
+      FROM execution_job_events e WHERE e.job_id = v_job.job_id;
+    INSERT INTO execution_job_events (
+        job_event_id, organization_id, job_id, sequence_no, event_type,
+        from_status, to_status, lease_ref, runner_node_ref, failure_code
+    ) VALUES (
+        'jev-' || md5(v_job.job_id || ':' || v_seq), v_job.organization_id, v_job.job_id,
+        v_seq, CASE WHEN v_requeue THEN 'REQUEUED' WHEN p_status = 'FAILED' THEN 'FAILED' ELSE 'COMPLETED' END,
+        v_job.status, CASE WHEN v_requeue THEN 'QUEUED' ELSE p_status END,
+        p_lease_id, p_runner_node_id, p_failure_code
+    );
+
+    RETURN true;
+END;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- 9. Cancellation and lease reaping
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION elmos_reap_execution_leases()
+RETURNS integer
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_row record;
+    v_node record;
+    v_job execution_jobs%ROWTYPE;
+    v_seq integer;
+    v_count integer := 0;
+BEGIN
+    FOR v_row IN
+        SELECT d.job_id, d.organization_id, d.lease_ref, d.runner_node_ref
+          FROM execution_job_dispatch d
+         WHERE d.dispatch_state = 'LEASED' AND d.lease_expires_at < now()
+         FOR UPDATE SKIP LOCKED
+    LOOP
+        PERFORM 1 FROM execution_dispatch_org_counters c
+         WHERE c.organization_id = v_row.organization_id FOR UPDATE SKIP LOCKED;
+        CONTINUE WHEN NOT FOUND;
+        PERFORM set_config('app.organization_id', v_row.organization_id, true);
+        UPDATE runner_job_leases
+           SET lease_state = 'EXPIRED', released_at = now(), revocation_code = 'LEASE_EXPIRED'
+         WHERE runner_job_lease_id = v_row.lease_ref;
+
+        SELECT * INTO v_job FROM execution_jobs WHERE job_id = v_row.job_id FOR UPDATE;
+
+        IF v_job.attempt < v_job.max_attempts AND v_job.cancel_requested_at IS NULL THEN
+            UPDATE execution_jobs SET status = 'QUEUED', stage = 'requeued'
+             WHERE job_id = v_row.job_id;
+            UPDATE execution_job_dispatch
+               SET dispatch_state = 'READY', lease_ref = NULL, runner_node_ref = NULL,
+                   lease_expires_at = NULL, visible_at = now() + interval '15 seconds'
+             WHERE job_id = v_row.job_id;
+            UPDATE execution_dispatch_org_counters
+               SET leased_count = greatest(leased_count - 1, 0),
+                   queued_count = queued_count + 1, updated_at = now()
+             WHERE organization_id = v_row.organization_id;
+        ELSE
+            UPDATE execution_jobs
+               SET status = 'LOST', result_status = 'BLOCKED',
+                   failure_code = 'RUNNER_LEASE_LOST', finished_at = now()
+             WHERE job_id = v_row.job_id;
+            UPDATE execution_job_dispatch SET dispatch_state = 'DEAD' WHERE job_id = v_row.job_id;
+            UPDATE execution_dispatch_org_counters
+               SET leased_count = greatest(leased_count - 1, 0), updated_at = now()
+             WHERE organization_id = v_row.organization_id;
+        END IF;
+
+        SELECT coalesce(max(sequence_no), 0) + 1 INTO v_seq
+          FROM execution_job_events e WHERE e.job_id = v_row.job_id;
+        INSERT INTO execution_job_events (
+            job_event_id, organization_id, job_id, sequence_no, event_type,
+            lease_ref, runner_node_ref, failure_code
+        ) VALUES (
+            'jev-' || md5(v_row.job_id || ':' || v_seq), v_row.organization_id, v_row.job_id,
+            v_seq, 'LEASE_EXPIRED', v_row.lease_ref, v_row.runner_node_ref, 'RUNNER_LEASE_LOST'
+        );
+
+        v_count := v_count + 1;
+    END LOOP;
+
+    FOR v_node IN
+        SELECT runner_node_id, organization_id
+          FROM runner_node_authentication
+         WHERE revoked_at IS NULL
+    LOOP
+        PERFORM set_config('app.organization_id', v_node.organization_id, true);
+        PERFORM 1 FROM runner_nodes n WHERE n.runner_node_id = v_node.runner_node_id
+         FOR UPDATE SKIP LOCKED;
+        CONTINUE WHEN NOT FOUND;
+        UPDATE runner_nodes
+           SET fleet_status = 'LOST'
+         WHERE runner_node_id = v_node.runner_node_id
+           AND fleet_status IN ('READY', 'DRAINING')
+           AND (last_heartbeat_at IS NULL
+                OR last_heartbeat_at < now() - interval '120 seconds');
+    END LOOP;
+
+    PERFORM elmos_reconcile_dispatch_counters();
+    RETURN v_count;
+END;
+$$;
+
+
+CREATE OR REPLACE FUNCTION elmos_reconcile_dispatch_counters()
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE
+    v_org varchar(96);
+    v_leased integer;
+    v_queued integer;
+    v_fixed integer := 0;
+    v_changed integer;
+BEGIN
+    FOR v_org IN
+        SELECT c.organization_id FROM execution_dispatch_org_counters c
+        ORDER BY c.organization_id FOR UPDATE SKIP LOCKED
+    LOOP
+        -- Separate statement: READ COMMITTED snapshot after taking this tenant's lock.
+        SELECT count(*) FILTER (WHERE d.dispatch_state = 'LEASED'),
+               count(*) FILTER (WHERE d.dispatch_state = 'READY')
+          INTO v_leased, v_queued FROM execution_job_dispatch d
+         WHERE d.organization_id = v_org;
+        UPDATE execution_dispatch_org_counters c
+           SET leased_count = v_leased, queued_count = v_queued, updated_at = now()
+         WHERE c.organization_id = v_org
+           AND (c.leased_count <> v_leased OR c.queued_count <> v_queued);
+        GET DIAGNOSTICS v_changed = ROW_COUNT;
+        v_fixed := v_fixed + v_changed;
+    END LOOP;
+    RETURN v_fixed;
+END;
+$$;
