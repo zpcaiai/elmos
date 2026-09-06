@@ -140,6 +140,43 @@ public final class LocalDiskCasStore implements CasStore {
     }
 
     @Override
+    public void putDurable(CasDigest expected, java.io.InputStream input) {
+        try (CasContent content = CasContent.capture(expected, input)) {
+            if (contains(expected)) {
+                try (var verified = openVerified(expected)) { return; }
+            }
+            Path temporary = Files.createTempFile(staging, "stream-", ".part");
+            try {
+                try (var source = content.openStream(); var output = Files.newOutputStream(temporary)) {
+                    source.transferTo(output);
+                }
+                try (var channel = java.nio.channels.FileChannel.open(temporary,
+                        java.nio.file.StandardOpenOption.WRITE)) { channel.force(true); }
+                Path target = pathFor(expected);
+                Files.createDirectories(target.getParent());
+                moveIntoPlace(temporary, target);
+            } finally { Files.deleteIfExists(temporary); }
+        } catch (IOException error) { throw new UncheckedIOException(error); }
+    }
+
+    @Override
+    public java.io.InputStream openVerified(CasDigest digest) {
+        Path path = pathFor(digest);
+        if (!Files.exists(path)) throw new CasExceptions.CasNotFoundException(digest);
+        try (var input = Files.newInputStream(path)) {
+            // Isolated spool prevents a subsequent pathname/inode rewrite changing verified bytes.
+            return CasContent.capture(digest, input).ownedStream();
+        } catch (CasExceptions.CasCorruptionException corruption) {
+            quarantine(digest, path, digestOf(path));
+            throw corruption;
+        } catch (IllegalArgumentException wrongSize) {
+            CasDigest actual = digestOf(path);
+            quarantine(digest, path, actual);
+            throw new CasExceptions.CasCorruptionException(name, digest, actual);
+        } catch (IOException error) { throw new UncheckedIOException(error); }
+    }
+
+    @Override
     public byte[] readRange(CasDigest digest, long offset, int length) {
         Path path = pathFor(digest);
         if (!Files.exists(path)) {

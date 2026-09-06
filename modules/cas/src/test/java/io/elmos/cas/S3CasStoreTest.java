@@ -50,6 +50,35 @@ class S3CasStoreTest {
         return fixture(1024 * 1024, 1024 * 1024);
     }
 
+    @Test void streamsSingleAndMultipartBodiesWithVerifiedReadback() throws Exception {
+        for (int threshold : new int[] { 1024 * 1024, 1024 }) {
+            try (Fixture fixture = fixture(threshold, 1024)) {
+                byte[] bytes = payload(10001);
+                CasDigest digest = CasDigest.of(bytes);
+                fixture.store().putDurable(digest, new java.io.ByteArrayInputStream(bytes));
+                try (var input = fixture.store().openVerified(digest)) {
+                    assertArrayEquals(bytes, input.readAllBytes());
+                }
+                assertEquals(0, fixture.server().signatureRejections());
+                fixture.server().corruptOnGet("cas/" + digest.shardPath());
+                assertThrows(CasExceptions.CasCorruptionException.class,
+                        () -> fixture.store().openVerified(digest));
+            }
+        }
+    }
+
+    @Test void existingLargePartConfigurationRemainsValidForBothWritePorts() throws Exception {
+        try (Fixture fixture = fixture(1, 128L * 1024 * 1024)) {
+            byte[] first = payload(129);
+            fixture.store().put(CasDigest.of(first), first);
+            assertArrayEquals(first, fixture.store().get(CasDigest.of(first)));
+            byte[] second = payload(130);
+            fixture.store().putDurable(CasDigest.of(second), new java.io.ByteArrayInputStream(second));
+            assertArrayEquals(second, fixture.store().get(CasDigest.of(second)));
+            assertEquals(0, fixture.server().signatureRejections());
+        }
+    }
+
     @Test void putAndGetRoundTripThroughASignedRequest() throws Exception {
         try (Fixture fixture = fixture()) {
             byte[] content = bytes("hello from the shared tier");

@@ -20,6 +20,7 @@ import gzip
 import os
 import shutil
 import tempfile
+import zlib
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
@@ -81,6 +82,7 @@ class ContentAddressableStore:
         compression: str = "none",
         max_bytes: int | None = None,
         restore_bytes_per_ms: float = 200_000.0,
+        native_file_io: bool = False,
     ) -> None:
         self.root = Path(root)
         self.objects_root = self.root / "cas"
@@ -88,6 +90,8 @@ class ContentAddressableStore:
         self.compression = compression
         self.max_bytes = max_bytes
         self.restore_bytes_per_ms = restore_bytes_per_ms
+        # Opt-in until representative profiles justify replacing hashlib's native backend.
+        self.native_file_io = native_file_io
         for directory in (self.objects_root, self.quarantine_root):
             directory.mkdir(parents=True, exist_ok=True)
 
@@ -204,15 +208,40 @@ class ContentAddressableStore:
                 self._link_commit(temporary, destination)
                 self._write_sidecar(digest, size, "none", artifact_kind)
             else:
-                payload, compression = self._maybe_compress(temporary.read_bytes())
-                self._commit(destination, payload)
-                self._write_sidecar(digest, size, compression, artifact_kind)
+                compressed_fd, compressed_name = tempfile.mkstemp(prefix=".elmos-cas-gzip-", dir=staging)
+                compressed_path = Path(compressed_name)
+                try:
+                    with os.fdopen(compressed_fd, "wb") as output:
+                        with temporary.open("rb") as source, gzip.GzipFile(
+                            filename="", mode="wb", fileobj=output, mtime=0,
+                        ) as encoder:
+                            shutil.copyfileobj(source, encoder, CHUNK)
+                        output.flush()
+                        os.fsync(output.fileno())
+                    use_gzip = self.compression in ("gzip", "zstd") and (
+                        compressed_path.stat().st_size < size * COMPRESSION_MIN_RATIO
+                    )
+                    self._link_commit(compressed_path if use_gzip else temporary, destination)
+                    self._write_sidecar(digest, size, "gzip" if use_gzip else "none", artifact_kind)
+                finally:
+                    compressed_path.unlink(missing_ok=True)
             return digest
         finally:
             temporary.unlink(missing_ok=True)
 
     def put_file(self, path: Path, expected_digest: str | None = None, artifact_kind: str = "blob") -> str:
         with Path(path).open("rb") as handle:
+            if expected_digest is not None:
+                require_digest(expected_digest)
+            if self.compression == "none" and self.native_file_io:
+                size = os.fstat(handle.fileno()).st_size
+                self._check_quota(size)
+                native = native_cas_bridge.native_put_file_descriptor(
+                    self.root, handle.fileno(), self.max_bytes if self.max_bytes is not None else size,
+                    expected_digest, artifact_kind,
+                )
+                if native is not None:
+                    return native
             return self.put_stream(handle, expected_digest, artifact_kind)
 
     def put_document(self, document: Any, artifact_kind: str = "manifest") -> str:
@@ -298,8 +327,9 @@ class ContentAddressableStore:
                 return native_data
             if verify and self.is_quarantined(digest):
                 raise CorruptObject("stored object is corrupt", digest=digest, actual="corrupt")
-        raw = info.path.read_bytes()
-        data = gzip.decompress(raw) if info.compressed else raw
+        if info.compressed:
+            return b"".join(self.open_stream(digest, verify=verify))
+        data = info.path.read_bytes()
         if verify:
             actual = sha256_bytes(data)
             if actual != digest:
@@ -312,14 +342,35 @@ class ContentAddressableStore:
 
         return json.loads(self.get_bytes(digest).decode("utf-8"))
 
-    def open_stream(self, digest: str) -> Iterator[bytes]:
+    def open_stream(self, digest: str, verify: bool = True) -> Iterator[bytes]:
+        """Verify to private disk staging before yielding; decompression is size-bounded."""
+        import hashlib
+
         info = self.info(digest)
-        if info.compressed:
-            yield from _chunks(gzip.decompress(info.path.read_bytes()))
-            return
-        with info.path.open("rb") as handle:
+        self._check_quota(info.size)
+        hasher = hashlib.sha256()
+        size = 0
+        with tempfile.TemporaryFile(mode="w+b") as staged:
+            try:
+                with gzip.open(info.path, "rb") if info.compressed else info.path.open("rb") as source:
+                    while True:
+                        chunk = source.read(min(CHUNK, max(1, info.size - size + 1)))
+                        if not chunk:
+                            break
+                        size += len(chunk)
+                        if size > info.size:
+                            raise ValueError("decoded object exceeds declared size")
+                        hasher.update(chunk)
+                        staged.write(chunk)
+                actual = DIGEST_PREFIX + hasher.hexdigest()
+                if size != info.size or (verify and actual != digest):
+                    raise ValueError("object digest or size mismatch")
+            except (gzip.BadGzipFile, EOFError, ValueError, zlib.error) as error:
+                self.quarantine(digest, str(error))
+                raise CorruptObject("stored object is corrupt", digest=digest) from error
+            staged.seek(0)
             while True:
-                chunk = handle.read(CHUNK)
+                chunk = staged.read(CHUNK)
                 if not chunk:
                     break
                 yield chunk
@@ -327,7 +378,8 @@ class ContentAddressableStore:
     def verify(self, digest: str) -> bool:
         """Verify one object. Quarantines and returns ``False`` when corrupt."""
         try:
-            self.get_bytes(digest, verify=True)
+            for _ in self.open_stream(digest):
+                pass
         except CorruptObject:
             return False
         except NotFound:
@@ -376,9 +428,9 @@ class ContentAddressableStore:
         temporary.unlink(missing_ok=True)
         try:
             if info.compressed:
-                data = self.get_bytes(digest, verify=verify)
                 with temporary.open("wb") as handle:
-                    handle.write(data)
+                    for chunk in self.open_stream(digest, verify=verify):
+                        handle.write(chunk)
                     handle.flush()
                     os.fsync(handle.fileno())
             else:

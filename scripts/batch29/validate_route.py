@@ -1260,6 +1260,7 @@ SWIFT_ANALYZER_TOOLCHAIN = {
     "version": ("Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)"),
     "profile": [
         "platform=Darwin/arm64",
+        "apple-host-profile=local-macos26-20260904",
         "xcode=26.6/17F113",
         "macosx-sdk=26.5",
         (
@@ -3271,7 +3272,8 @@ def _canonical_swift_toolchain_identity(
         "profile": [
             item
             for item in profile_items
-            if isinstance(item, str) and not item.startswith("sdk-path=")
+            if isinstance(item, str)
+            and not item.startswith(("sdk-path=", "apple-host-profile="))
         ],
         "build_closure": _canonical_swift_build_closure_identity(
             toolchain.get("build_closure")
@@ -3622,6 +3624,21 @@ def _registered_swift_receipt_contract(receipt: dict[str, Any]) -> dict[str, Any
         ],
     }
     expected_toolchain = json.loads(json.dumps(SWIFT_ANALYZER_TOOLCHAIN))
+    expected_profile = expected_toolchain.get("profile")
+    if not isinstance(expected_profile, list) or not expected_profile:
+        raise ValueError("registered Swift toolchain profile is invalid")
+    portable_profile = [
+        item
+        for item in expected_profile
+        if isinstance(item, str) and not item.startswith("apple-host-profile=")
+    ]
+    if not portable_profile:
+        raise ValueError("registered Swift toolchain portable profile is invalid")
+    expected_toolchain["profile"] = [
+        portable_profile[0],
+        f"apple-host-profile={profile.profile_id}",
+        *portable_profile[1:],
+    ]
     expected_toolchain["swiftc_sha256"] = "sha256:" + profile.swiftc_sha256
     expected_toolchain["swift_driver_sha256"] = "sha256:" + profile.swiftc_sha256
     expected_toolchain["profile"].insert(

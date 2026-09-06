@@ -530,6 +530,12 @@ def _classify(relative: PurePosixPath) -> tuple[FileRole, str | None]:
 
 
 def _stable_read(path: Path | str) -> bytes:
+    content, _, _ = _stable_file(path, retain_content=True)
+    assert content is not None
+    return content
+
+
+def _stable_file(path: Path | str, *, retain_content: bool) -> tuple[bytes | None, str, int]:
     flags = os.O_RDONLY
     no_follow = cast(int, getattr(os, "O_NOFOLLOW", 0))
     flags |= no_follow
@@ -555,14 +561,20 @@ def _stable_read(path: Path | str) -> bytes:
         if before.st_size > MAX_FILE_BYTES:
             raise ProjectGraphError("FILE_SIZE_LIMIT_EXCEEDED")
         chunks: list[bytes] = []
+        digest = hashlib.sha256()
+        size = 0
         remaining = before.st_size
         while remaining:
             chunk = os.read(descriptor, min(remaining, 64 * 1024))
             if not chunk:
                 break
-            chunks.append(chunk)
+            if retain_content:
+                chunks.append(chunk)
+            if not retain_content:
+                digest.update(chunk)
+            size += len(chunk)
             remaining -= len(chunk)
-        content = b"".join(chunks)
+        content = b"".join(chunks) if retain_content else None
         after = os.fstat(descriptor)
         stable = (
             before.st_dev == after.st_dev
@@ -570,16 +582,18 @@ def _stable_read(path: Path | str) -> bytes:
             and before.st_size == after.st_size
             and before.st_mtime_ns == after.st_mtime_ns
             and before.st_ctime_ns == after.st_ctime_ns
-            and len(content) == before.st_size
+            and size == before.st_size
         )
         if not stable:
             raise ProjectGraphError("FILE_CHANGED_DURING_READ")
-        return content
+        return content, digest.hexdigest(), size
     finally:
         os.close(descriptor)
 
 
-def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, str]]]:
+def _walk_repository(
+    root: Path, *, retain_content: bool = True,
+) -> tuple[list[_ScannedFile], list[tuple[str, str]]]:
     scanned: list[_ScannedFile] = []
     inventory_issues: list[tuple[str, str]] = []
     total_bytes = 0
@@ -663,7 +677,17 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
                 inventory_issues.append((relative, "FILE_SYMLINK_NOT_READ"))
                 continue
             try:
-                content = _stable_read(os.path.join(current, name))
+                if retain_content:
+                    retained_content = _stable_read(os.path.join(current, name))
+                    content: bytes | None = retained_content
+                    digest, byte_count = (
+                        _sha256_bytes(retained_content),
+                        len(retained_content),
+                    )
+                else:
+                    content, digest, byte_count = _stable_file(
+                        os.path.join(current, name), retain_content=False,
+                    )
             except (OSError, ProjectGraphError) as error:
                 scanned.append(
                     _ScannedFile(
@@ -678,7 +702,7 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
                 )
                 inventory_issues.append((relative, f"FILE_READ_FAILED:{type(error).__name__}:{error}"))
                 continue
-            total_bytes += len(content)
+            total_bytes += byte_count
             if total_bytes > MAX_REPOSITORY_BYTES:
                 raise ProjectGraphError("REPOSITORY_BYTE_LIMIT_EXCEEDED")
             scanned.append(
@@ -687,8 +711,8 @@ def _walk_repository(root: Path) -> tuple[list[_ScannedFile], list[tuple[str, st
                     role=role,
                     language=language,
                     content=content,
-                    sha256=_sha256_bytes(content),
-                    byte_count=len(content),
+                    sha256=digest,
+                    byte_count=byte_count,
                     read_status=EvidenceStatus.PASSED,
                 )
             )
@@ -1851,6 +1875,39 @@ def _inventory_subject_nodes(
     return nodes, edges, diagnostics
 
 
+@dataclass(frozen=True)
+class ProjectGraphSnapshot:
+    """Invocation-owned bytes, never shared across tenants or source revisions."""
+
+    root: Path
+    files: tuple[_ScannedFile, ...]
+    issues: tuple[tuple[str, str], ...]
+
+
+def capture_project_snapshot(repository: Path) -> ProjectGraphSnapshot:
+    if repository.is_symlink() or not repository.is_dir():
+        raise ProjectGraphError("REPOSITORY_DIRECTORY_INVALID")
+    root = repository.resolve(strict=True)
+    scanned, issues = _walk_repository(root)
+    return ProjectGraphSnapshot(root, tuple(scanned), tuple(issues))
+
+
+def verify_project_snapshot(snapshot: ProjectGraphSnapshot) -> bool:
+    """Rehash live bytes without AST construction or retaining a second source copy.
+
+    Metadata-only checks miss same-size edits and restored timestamps. Keep
+    content verification at each original drift boundary, including ignored
+    entries, errors and files not selected by the translation plan.
+    """
+    if snapshot.root.is_symlink() or not snapshot.root.is_dir():
+        return False
+    files, issues = _walk_repository(snapshot.root, retain_content=False)
+    return (
+        tuple(issues) == snapshot.issues
+        and tuple(files) == tuple(replace(file, content=None) for file in snapshot.files)
+    )
+
+
 def build_project_graph(
     repository: Path,
     repository_ref: str,
@@ -1862,11 +1919,19 @@ def build_project_graph(
     returned graph is repository-complete only when every entry is classified,
     read, and supported by the configured parser/index evidence.
     """
+    _normalise_repository_ref(repository_ref)
+    return materialize_project_graph(capture_project_snapshot(repository), repository_ref, semantic_discovery)
+
+
+def materialize_project_graph(
+    snapshot: ProjectGraphSnapshot,
+    repository_ref: str,
+    semantic_discovery: Mapping[str, object] | None = None,
+) -> dict[str, object]:
+    """Derive a graph from captured bytes; caller owns live drift verification."""
     safe_ref = _normalise_repository_ref(repository_ref)
-    if repository.is_symlink() or not repository.is_dir():
-        raise ProjectGraphError("REPOSITORY_DIRECTORY_INVALID")
-    root = repository.resolve(strict=True)
-    scanned, inventory_issues = _walk_repository(root)
+    root = snapshot.root
+    scanned, inventory_issues = list(snapshot.files), list(snapshot.issues)
     scanned = _apply_contextual_source_language(scanned, semantic_discovery)
     javascript_descriptors: dict[str, dict[str, object]] = {}
     scanned_by_path = {file.path: file for file in scanned}
