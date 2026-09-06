@@ -24,7 +24,10 @@ BYPASSRLS. Preexisting login/superuser/bypass/inheriting/member-of-other-role
 tuples are rejected, not silently reused. The migration owner needs the normal object privileges and CREATEROLE
 for initial provisioning; no runtime account needs CREATEROLE. Do not expose
 the adapter as a tenant API. Missing privileges fail closed; applying a migration
-does not establish production enablement or provider acceptance.
+does not establish production enablement or provider acceptance. V89 additionally
+rejects CREATEROLE, CREATEDB and REPLICATION on either named host group if it
+exists. Its private migration-time assertion is read-only and SECURITY INVOKER;
+it grants no runtime authority and never auto-repairs a role or membership.
 
 The existing secret-reference resolver and active backend configuration are
 reused. The host binds each DELETE to run, tenant, object id, digest, backend id
