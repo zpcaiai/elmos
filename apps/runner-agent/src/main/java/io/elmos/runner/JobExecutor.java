@@ -45,7 +45,13 @@ public final class JobExecutor {
 
     public enum Outcome { SUCCEEDED, PARTIAL, FAILED, CANCELLED, ABANDONED }
 
+    public boolean canAcceptLease() { return !containers.isFenced(); }
+
     public Outcome execute(ControlPlaneClient.Lease lease) {
+        if (!canAcceptLease()) {
+            metrics.increment(AgentMetrics.JOBS_ABANDONED);
+            return Outcome.ABANDONED;
+        }
         metrics.increment(AgentMetrics.JOBS_CLAIMED);
         metrics.gauge(AgentMetrics.RUNNING_JOBS, metrics.gaugeValue(AgentMetrics.RUNNING_JOBS) + 1);
         try {
@@ -80,12 +86,12 @@ public final class JobExecutor {
                 Outcome preflightSupervision = supervise(lease, pump, execution, executionDeadline);
                 if (preflightSupervision != null) return preflightSupervision;
                 Integer preflightExit = execution.handle().waitFor(5, TimeUnit.SECONDS);
+                containers.stop(execution, config.cancelGraceSeconds());
+                execution = null;
                 if (preflightExit == null || preflightExit != 0) {
                     return report(lease, pump, Outcome.FAILED, "TRANSLATION_PREFLIGHT_REJECTED");
                 }
                 TranslationJobProtocol.verifyPreflight(workspace.out().resolve("preflight.json"), lease.requestPayload());
-                containers.forceRemove(execution.containerName());
-                execution = null;
                 if (Instant.now().isAfter(executionDeadline)) return report(lease, pump, Outcome.FAILED, "WALL_CLOCK_BUDGET_EXCEEDED");
                 // Synchronous, fenced acknowledgement before executing any paid
                 // phase. Never derive this transition from workload log lines.
@@ -116,6 +122,11 @@ public final class JobExecutor {
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_DID_NOT_EXIT");
             }
 
+            // Engine-client exit is not proof of daemon termination. Freeze
+            // output/receipt authority only after exact-ID removal is verified.
+            containers.forceRemove(execution.containerName());
+            execution = null;
+
             if (exitCode != 0) {
                 return report(lease, pump, Outcome.FAILED, "WORKLOAD_EXIT_" + exitCode);
             }
@@ -142,6 +153,9 @@ public final class JobExecutor {
             }
             return report(lease, pump, Outcome.SUCCEEDED, null);
 
+        } catch (ContainerRuntime.ReconciliationRequiredException ex) {
+            metrics.increment(AgentMetrics.JOBS_ABANDONED);
+            return Outcome.ABANDONED;
         } catch (ControlPlaneClient.LeaseLostException ex) {
             metrics.increment(AgentMetrics.JOBS_ABANDONED);
             return Outcome.ABANDONED;
@@ -151,16 +165,27 @@ public final class JobExecutor {
             return report(lease, pump, Outcome.FAILED, ex.getMessage());
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            if (execution != null) {
+                try {
+                    containers.stop(execution, config.cancelGraceSeconds());
+                    execution = null;
+                } catch (ContainerRuntime.ReconciliationRequiredException unknown) {
+                    metrics.increment(AgentMetrics.JOBS_ABANDONED);
+                    return Outcome.ABANDONED;
+                }
+            }
             return report(lease, pump, Outcome.FAILED, "AGENT_INTERRUPTED");
         } catch (Exception ex) {
             return report(lease, pump, Outcome.FAILED, "AGENT_INTERNAL_ERROR");
         } finally {
             pump.close();
-            if (execution != null) {
-                containers.forceRemove(execution.containerName());
-            }
-            if (workspace != null) {
-                workspace.close();
+            try {
+                if (execution != null) containers.stop(execution, config.cancelGraceSeconds());
+            } catch (ContainerRuntime.ReconciliationRequiredException unknown) {
+                // Durable intent + node fence retain the unreconciled outcome;
+                // this must not prevent releasing the host workspace lock.
+            } finally {
+                if (workspace != null) workspace.close();
             }
         }
     }

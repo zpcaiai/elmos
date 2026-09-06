@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Self-contained acceptance suite for the Runner Agent.
@@ -36,6 +37,7 @@ public final class AgentSelfTest {
             backoffStaysInBounds();
             nodeCredentialSurvivesRestart(scratch);
             ProcessRunnerConcurrencyTest.main(new String[0]);
+            ResourceIdentitySelfTest.main(new String[0]);
             TranslationExecutionSelfTest.run(scratch);
 
             endToEndSuccess(scratch);
@@ -204,7 +206,13 @@ public final class AgentSelfTest {
 
             Files.createDirectories(work.resolve("orphan-1"));
             Files.createDirectories(work.resolve("orphan-2"));
+            // Known, complete ownership markers with no held lease lock model
+            // crashed new-version workspaces. Unmarked legacy state is unknown.
+            Files.writeString(work.resolve("orphan-1/.elmos-workspace-owner"), java.util.UUID.randomUUID().toString());
+            Files.writeString(work.resolve("orphan-2/.elmos-workspace-owner"), java.util.UUID.randomUUID().toString());
+            Files.createDirectories(work.resolve("unmarked-legacy"));
             check("orphan sweep removes leftovers", JobWorkspace.sweepOrphans(work) == 2);
+            check("orphan sweep preserves unmarked legacy state", Files.isDirectory(work.resolve("unmarked-legacy")));
         } finally {
             JobWorkspace.deleteRecursively(work);
         }
@@ -300,8 +308,8 @@ public final class AgentSelfTest {
             AgentConfig config = engineConfig(plane.baseUrl(), work, engine);
 
             JobExecutor executor = executor(config, plane);
-            JobExecutor.Outcome outcome = executor.execute(
-                    plane.lease("job-ok", "lease-ok", pinned(), 600));
+            var lease = plane.lease("job-ok", "lease-ok", pinned(), 600);
+            JobExecutor.Outcome outcome = executor.execute(lease);
 
             String diagnostic = plane.completions.isEmpty()
                     ? "no-completion"
@@ -321,21 +329,27 @@ public final class AgentSelfTest {
                 check("artifact role was derived",
                         plane.published.get(0).role().equals("PROJECT_ARCHIVE"));
             }
-            check("workspace was cleaned up", !Files.exists(work.resolve("job-ok")));
+            check("workspace was cleaned up", !Files.exists(work.resolve("lease-" + JobWorkspace.leaseIdentity(lease))));
         }
     }
 
     static void cancellationKillsTheContainer(Path scratch) throws Exception {
         try (FakeControlPlane plane = new FakeControlPlane()) {
-            plane.cancelRequested.set(true);
             Path work = Files.createTempDirectory(scratch, "e2e-cancel");
             Path engine = fakeEngine(scratch, "engine-slow.sh", 60, 0);
             AgentConfig config = engineConfig(plane.baseUrl(), work, engine);
 
-            long started = System.currentTimeMillis();
-            JobExecutor.Outcome outcome = executor(config, plane)
-                    .execute(plane.lease("job-cancel", "lease-cancel", pinned(), 600));
-            long elapsed = System.currentTimeMillis() - started;
+            var requestedAt = new java.util.concurrent.atomic.AtomicLong();
+            var trigger = afterEngineReady(engine, () -> {
+                requestedAt.set(System.currentTimeMillis());
+                plane.cancelRequested.set(true);
+            });
+            JobExecutor.Outcome outcome;
+            try {
+                outcome = executor(config, plane).execute(plane.lease("job-cancel", "lease-cancel", pinned(), 600));
+                trigger.get(60, TimeUnit.SECONDS);
+            } finally { trigger.cancel(true); }
+            long elapsed = System.currentTimeMillis() - requestedAt.get();
 
             check("cancelled job reports CANCELLED", outcome == JobExecutor.Outcome.CANCELLED);
             check("cancellation is observed within one heartbeat interval", elapsed < 20_000);
@@ -348,20 +362,24 @@ public final class AgentSelfTest {
 
     static void stolenLeaseIsAbandonedWithoutReporting(Path scratch) throws Exception {
         try (FakeControlPlane plane = new FakeControlPlane()) {
-            plane.leaseStolen.set(true);
             Path work = Files.createTempDirectory(scratch, "e2e-stolen");
             Path engine = fakeEngine(scratch, "engine-slow2.sh", 60, 0);
             AgentConfig config = engineConfig(plane.baseUrl(), work, engine);
 
-            JobExecutor.Outcome outcome = executor(config, plane)
-                    .execute(plane.lease("job-stolen", "lease-stolen", pinned(), 600));
+            var lease = plane.lease("job-stolen", "lease-stolen", pinned(), 600);
+            var trigger = afterEngineReady(engine, () -> plane.leaseStolen.set(true));
+            JobExecutor.Outcome outcome;
+            try {
+                outcome = executor(config, plane).execute(lease);
+                trigger.get(60, TimeUnit.SECONDS);
+            } finally { trigger.cancel(true); }
 
             check("stolen lease yields ABANDONED", outcome == JobExecutor.Outcome.ABANDONED);
             // The decisive assertion: a runner that lost its lease must not write
             // anything, or it would overwrite the newer runner's result.
             check("abandoned job reports nothing", plane.completions.isEmpty());
             check("abandoned job publishes nothing", plane.published.isEmpty());
-            check("abandoned job cleans its workspace", !Files.exists(work.resolve("job-stolen")));
+            check("abandoned job cleans its workspace", !Files.exists(work.resolve("lease-" + JobWorkspace.leaseIdentity(lease))));
         }
     }
 
@@ -455,28 +473,26 @@ public final class AgentSelfTest {
             AgentConfig config = engineConfig(plane.baseUrl(), work, engine);
 
             // Kill the control plane the moment the job starts running.
-            Thread partition = Thread.ofVirtual().start(() -> {
-                try {
-                    Thread.sleep(1_500);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    return;
-                }
+            var partitionedAt = new java.util.concurrent.atomic.AtomicLong();
+            var partition = afterEngineReady(engine, () -> {
+                partitionedAt.set(System.currentTimeMillis());
                 plane.partition();
             });
 
-            long started = System.currentTimeMillis();
-            JobExecutor.Outcome outcome = executor(config, plane)
-                    .execute(plane.lease("job-partition", "lease-partition", pinned(), 600));
-            long elapsed = System.currentTimeMillis() - started;
-            partition.join();
+            var lease = plane.lease("job-partition", "lease-partition", pinned(), 600);
+            JobExecutor.Outcome outcome;
+            try {
+                outcome = executor(config, plane).execute(lease);
+                partition.get(60, TimeUnit.SECONDS);
+            } finally { partition.cancel(true); }
+            long elapsed = System.currentTimeMillis() - partitionedAt.get();
 
             check("a partitioned agent abandons its job", outcome == JobExecutor.Outcome.ABANDONED);
             // lease=30s, safety margin=10s, so fencing must happen by ~20s.
             check("fencing happens before the lease expires", elapsed < 30_000);
             check("a partitioned agent reports nothing", plane.completions.isEmpty());
             check("a partitioned agent cleans its workspace",
-                    !Files.exists(work.resolve("job-partition")));
+                    !Files.exists(work.resolve("lease-" + JobWorkspace.leaseIdentity(lease))));
         }
     }
 
@@ -501,8 +517,8 @@ public final class AgentSelfTest {
                     2, 30, 5, 5, 9999, false, 65532, 65532);
             check("real container runs as a non-root uid", config.workloadUid() != 0);
 
-            JobExecutor.Outcome outcome = executor(config, plane)
-                    .execute(plane.lease("job-podman", "lease-podman", image, 300));
+            var lease = plane.lease("job-podman", "lease-podman", image, 300);
+            JobExecutor.Outcome outcome = executor(config, plane).execute(lease);
 
             check("real podman job succeeded", outcome == JobExecutor.Outcome.SUCCEEDED);
             check("real container produced an artifact", plane.published.size() == 1);
@@ -511,7 +527,7 @@ public final class AgentSelfTest {
                     plane.uploads.size() == 1
                             && new String(plane.uploads.get(0), java.nio.charset.StandardCharsets.UTF_8)
                                     .equals("generated-project-bytes"));
-            check("real workspace was torn down", !Files.exists(work.resolve("job-podman")));
+            check("real workspace was torn down", !Files.exists(work.resolve("lease-" + JobWorkspace.leaseIdentity(lease))));
         }
     }
 
@@ -558,13 +574,39 @@ public final class AgentSelfTest {
                 #!/usr/bin/env bash
                 set -euo pipefail
                 if [ "${1:-}" = "info" ]; then echo '{"rootless":true}'; exit 0; fi
-                if [ "${1:-}" = "kill" ] || [ "${1:-}" = "rm" ]; then exit 0; fi
+                # Stateful stopped-container metadata mirrors explicit-ID cleanup;
+                # the workload itself remains a real, supervised OS process.
+                STATE="${0}.state"
+                mkdir -p "$STATE"
+                if [ "${1:-}" = "inspect" ]; then
+                  if [ -f "$STATE/${2}.json" ]; then cat "$STATE/${2}.json"; exit 0; fi
+                  exit 1
+                fi
+                if [ "${1:-}" = "kill" ]; then exit 0; fi
+                if [ "${1:-}" = "rm" ]; then ID="${3}"; rm -f "$STATE/elmos-${ID:0:48}.json"; exit 0; fi
+                if [ "${1:-}" = "ps" ]; then
+                  for arg in "$@"; do
+                    if [[ "$arg" = id=* ]]; then
+                      ID="${arg#id=}"
+                      if [ -f "$STATE/elmos-${ID:0:48}.json" ]; then echo "$ID"; fi
+                    fi
+                  done
+                  exit 0
+                fi
                 OUT=""
+                NAME=""
+                LEASE=""
                 for arg in "$@"; do
                   case "$arg" in
                     --volume=*:/elmos/out:rw) OUT="${arg#--volume=}"; OUT="${OUT%%:/elmos/out:rw}" ;;
+                    --label=io.elmos.runner.resource-id=*) NAME="${arg#--label=io.elmos.runner.resource-id=}" ;;
+                    --label=io.elmos.runner.lease-sha256=*) LEASE="${arg#--label=io.elmos.runner.lease-sha256=}" ;;
                   esac
                 done
+                ID="${NAME#elmos-}0000000000000000"
+                echo "[{\\"Id\\":\\"$ID\\",\\"Name\\":\\"/$NAME\\",\\"Config\\":{\\"Labels\\":{\\"io.elmos.runner.resource-id\\":\\"$NAME\\",\\"io.elmos.runner.lease-sha256\\":\\"$LEASE\\"}}}]" > "$STATE/$NAME.json.tmp"
+                mv "$STATE/$NAME.json.tmp" "$STATE/$NAME.json"
+                touch "$STATE/ready"
                 echo "::elmos stage=building progress=10"
                 if [ -n "$OUT" ]; then printf 'generated-project-bytes' > "$OUT/project.zip"; fi
                 echo "::elmos stage=packaging progress=90"
@@ -573,6 +615,21 @@ public final class AgentSelfTest {
                 """.formatted(sleepSeconds, exitCode));
         Files.setPosixFilePermissions(script, PosixFilePermissions.fromString("rwx------"));
         return script;
+    }
+
+    private static java.util.concurrent.FutureTask<Void> afterEngineReady(Path engine, Runnable action) {
+        var trigger = new java.util.concurrent.FutureTask<Void>(() -> {
+            long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(60);
+            Path ready = Path.of(engine + ".state").resolve("ready");
+            while (!Files.isRegularFile(ready)) {
+                if (System.nanoTime() >= deadline) throw new AssertionError("engine metadata readiness timed out");
+                Thread.sleep(10);
+            }
+            action.run();
+            return null;
+        });
+        Thread.ofVirtual().start(trigger);
+        return trigger;
     }
 
     private static Map<String, String> with(Map<String, String> base, String key, String value) {
