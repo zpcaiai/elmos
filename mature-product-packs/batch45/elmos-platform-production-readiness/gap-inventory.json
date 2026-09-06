@@ -25,326 +25,394 @@
   "skillCount": 22,
   "blockingCount": 40,
   "openCount": 24,
+  "repositoryBlockingCount": 34,
+  "repositoryOpenCount": 23,
+  "externalGateBlockingCount": 6,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "evidence-manifest.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.sig has not been produced"
     },
     {
       "category": "provenance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "pack.json artifactDigest is still the zero digest"
     },
     {
       "category": "provenance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "pack.json environmentDigest is still the zero digest"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-customer-value-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-deployment-matrix-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-design-partner-reference-validation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-developer-experience-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-economics-profitability-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-ecosystem-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-edition-route-vertical-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-functional-depth-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-independent-expert-validation is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-mature-product-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-mature-product-evidence-pack is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-mature-product-final-gate is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-mature-release-readiness is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-maturity-model-editions is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-product-governance-accountability is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-residual-risk-register is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-route-breadth-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-scale-performance-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-security-data-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-semantic-behavior-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-sre-reliability-dr-certification is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b45-target-maintainability-certification is only experimental in the support matrix"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "certifiedRouteClaimAccuracy has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "customerOutcomePassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "deploymentMatrixPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "developerExperiencePassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "economicsPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "ecosystemPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "evidenceTraceCoverage has not been measured (threshold 0.99)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "functionalDepthPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "maintainabilityPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "scaleSloPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "securityGovernancePassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "semanticBehaviorPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "sreDrPassRate has not been measured (threshold 1.0)"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "criticalOpenProductRisks has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unsupportedMarketingClaims has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unknownP0Correctness has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "criticalSecurityFindings has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unrecoveredDrFailures has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "unacceptedCustomerP0Differences has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "nonzeroFinancialReconciliationDifference has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "conflictedIndependentReviews has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "expiredMandatoryEvidence has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "testIntegrityViolations has not been evaluated"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "holdout corpus is empty"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "representative corpus is empty"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "evidence directory holds no artefacts"
     },
     {
       "category": "approval",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "no accountable approver is recorded on the certification"
     },
     {
       "category": "status",
       "severity": "open",
+      "responsibility": "external-gate",
       "detail": "certification status is NOT_RUN"
     },
     {
       "category": "claim-scope",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "claim local-engineering-runtime-operability passes with no statement in claims.json"
     },
     {
       "category": "evidence",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "claim field-production-maturity is NOT_RUN"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 38 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 39 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 40 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 41 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 42 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 43 has no certified domain gate to aggregate"
     },
     {
       "category": "aggregate",
       "severity": "blocking",
+      "responsibility": "repository",
       "detail": "Batch 44 has no certified domain gate to aggregate"
     }
   ]
