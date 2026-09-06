@@ -36,6 +36,7 @@ public final class AgentSelfTest {
             backoffStaysInBounds();
             nodeCredentialSurvivesRestart(scratch);
             ProcessRunnerConcurrencyTest.main(new String[0]);
+            TranslationExecutionSelfTest.run(scratch);
 
             endToEndSuccess(scratch);
             cancellationKillsTheContainer(scratch);

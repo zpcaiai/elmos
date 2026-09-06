@@ -200,6 +200,51 @@ public final class ControlPlaneClient {
 
     // ---- artifacts ---------------------------------------------------------
 
+    /** Tokens go only to the configured control-plane origin, never to the workload or object URL. */
+    public void downloadTranslationInput(Lease lease, Path destination) throws Exception {
+        Map<String, Object> object = Json.object(lease.requestPayload(), "input");
+        long limit = object.get("byteSize") instanceof Number number ? number.longValue() : -1;
+        if (limit < 1 || limit > TranslationInputMaterializer.MAX_BYTES) {
+            throw new IllegalArgumentException("TRANSLATION_INPUT_SIZE_INVALID");
+        }
+        HttpRequest.Builder request = HttpRequest.newBuilder(URI.create(config.controlPlaneBaseUrl()
+                + "/runner/v1/leases/" + lease.leaseId() + "/translation-input"))
+                .timeout(Duration.ofSeconds(60)).header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(Json.write(Map.of(
+                        "runnerNodeId", config.runnerNodeId(), "jobId", lease.jobId()))));
+        leaseHeaders(lease).forEach(request::header);
+        var response = http.send(request.build(), HttpResponse.BodyHandlers.ofInputStream());
+        try (var input = response.body()) {
+            if (response.statusCode() == 403 || response.statusCode() == 409) {
+                throw new LeaseLostException("TRANSLATION_INPUT_LEASE_REJECTED");
+            }
+            if (response.statusCode() != 200) throw new TransportException("TRANSLATION_INPUT_UNAVAILABLE");
+            // Closing the body is the backstop for a peer that stops sending
+            // after headers; HttpRequest timeout alone does not bound that read.
+            var deadline = java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
+                Thread thread = new Thread(r, "elmos-input-deadline"); thread.setDaemon(true); return thread;
+            });
+            var timeout = deadline.schedule(() -> closeResponseBody(input),
+                    60, java.util.concurrent.TimeUnit.SECONDS);
+            try (var output = java.nio.file.Files.newOutputStream(destination,
+                    java.nio.file.StandardOpenOption.CREATE_NEW)) {
+                byte[] buffer = new byte[64 * 1024];
+                long observed = 0;
+                int n;
+                while ((n = input.read(buffer)) != -1) {
+                    observed += n;
+                    if (observed > limit) throw new IOException("TRANSLATION_INPUT_SIZE_LIMIT");
+                    output.write(buffer, 0, n);
+                }
+                if (observed != limit) throw new IOException("TRANSLATION_INPUT_TRUNCATED");
+            } finally { timeout.cancel(false); deadline.shutdownNow(); }
+        }
+    }
+
+    private static void closeResponseBody(java.io.InputStream input) {
+        try { input.close(); } catch (IOException ignored) { /* deadline is best-effort; normal close still runs */ }
+    }
+
     public UploadTicket requestUploadTicket(Lease lease, String contentSha256, long byteSize, String mediaType) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("runnerNodeId", config.runnerNodeId());

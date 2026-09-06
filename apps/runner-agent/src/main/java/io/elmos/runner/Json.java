@@ -111,6 +111,7 @@ public final class Json {
                 skipWhitespace();
                 expect(':');
                 Object value = readValue(depth + 1);
+                if (result.containsKey(key)) throw new JsonException("duplicate object key");
                 result.put(key, value);
                 skipWhitespace();
                 char c = next();

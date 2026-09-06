@@ -40,6 +40,9 @@ public final class FakeControlPlane implements AutoCloseable {
     public final AtomicInteger claimCount = new AtomicInteger();
     public final AtomicInteger registrationCount = new AtomicInteger();
     public volatile Runnable beforeClaimResponse = () -> {};
+    public volatile byte[] translationInput;
+    public final AtomicBoolean pipelineAcknowledged = new AtomicBoolean();
+    public final AtomicBoolean rejectPipeline = new AtomicBoolean();
 
     public final AtomicBoolean cancelRequested = new AtomicBoolean(false);
     public final AtomicBoolean drainRequested = new AtomicBoolean(false);
@@ -87,13 +90,23 @@ public final class FakeControlPlane implements AutoCloseable {
 
             if (path.endsWith("/heartbeat")) {
                 heartbeatCount.incrementAndGet();
-                if (leaseStolen.get()) {
+                boolean pipeline="pipeline".equals(Json.string(Json.parseObject(body),"stage",""));
+                if (leaseStolen.get() || (pipeline && rejectPipeline.get())) {
                     respond(exchange, 409, Map.of("status", "ERROR", "code", "ELMOS_LEASE_NOT_ACTIVE"));
                     return;
                 }
+                if (pipeline) pipelineAcknowledged.set(true);
                 respond(exchange, 200, Map.of(
                         "cancelRequested", cancelRequested.get(),
                         "leaseExpiresAt", "2030-01-01T00:00:00Z"));
+                return;
+            }
+            if (path.endsWith("/translation-input") && translationInput != null) {
+                if (!exchange.getRequestHeaders().getFirst("X-Elmos-Lease-Token").equals("token-"+leaseId)) {
+                    respond(exchange,403,Map.of());return;
+                }
+                exchange.sendResponseHeaders(200,translationInput.length);
+                try(var output=exchange.getResponseBody()) {output.write(translationInput);}
                 return;
             }
             if (path.endsWith("/complete")) {
