@@ -14,6 +14,7 @@ from typing import Any
 
 from .emitter import EmittedFile
 from .models import Function, Language, RouteError
+from .process_io import run_bounded
 from .react_analyzer import verify_react_runtime_import
 from .repository import javascript_esm_descriptor
 from .toolchains import ExactToolchain, exact_toolchain, sanitized_subprocess_env
@@ -37,7 +38,7 @@ def _run(
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=cwd,
                 check=False,
