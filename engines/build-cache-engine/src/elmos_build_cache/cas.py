@@ -328,7 +328,7 @@ class ContentAddressableStore:
     # -- reads ------------------------------------------------------------
     def get_bytes(self, digest: str, verify: bool = True) -> bytes:
         info = self.info(digest)
-        if not info.compressed and native_cas_bridge.is_native_available():
+        if self.native_bytes_io and not info.compressed and native_cas_bridge.is_native_available():
             native_data = native_cas_bridge.native_get_bytes(self.root, digest, verify=verify)
             if native_data is not None:
                 return native_data

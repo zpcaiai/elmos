@@ -21,7 +21,7 @@ sys.path[:0] = [
     str(ROOT / "engines/build-cache-engine/src"),
     str(ROOT / "engines/polyglot-route-engine/src"),
 ]
-MODES = ("python-bytes", "native-bytes", "python-file", "native-file", "python-stream")
+MODES = ("python-bytes", "native-bytes", "python-file", "native-file", "python-stream", "python-read", "native-read")
 
 
 def sample(mode: str, mib: int, library: Path) -> dict[str, object]:
@@ -41,12 +41,16 @@ def sample(mode: str, mib: int, library: Path) -> dict[str, object]:
             for _ in range(mib * 16):
                 output.write(random_bytes.randbytes(65536))
         store = ContentAddressableStore(
-            root / "store", native_file_io=mode == "native-file", native_bytes_io=mode == "native-bytes",
+            root / "store", native_file_io=mode == "native-file", native_bytes_io=mode in {"native-bytes", "native-read"},
         )
         payload = source.read_bytes() if mode.endswith("bytes") else None
+        if mode.endswith("read"):
+            digest = store.put_file(source)
         tracemalloc.start()
         start = time.perf_counter()
-        if payload is not None:
+        if mode.endswith("read"):
+            read_payload = store.get_bytes(digest)
+        elif payload is not None:
             digest = store.put_bytes(payload)
         elif mode.endswith("file"):
             digest = store.put_file(source)
@@ -56,6 +60,8 @@ def sample(mode: str, mib: int, library: Path) -> dict[str, object]:
         elapsed = time.perf_counter() - start
         peak = tracemalloc.get_traced_memory()[1]
         tracemalloc.stop()
+        if mode.endswith("read"):
+            assert digest == "sha256:" + hashlib.sha256(read_payload).hexdigest()
         verified = hashlib.sha256()
         for chunk in store.open_stream(digest):
             verified.update(chunk)
@@ -73,6 +79,7 @@ def main() -> None:
     parser.add_argument("--file-mib", type=int, default=8, choices=range(1, 65))
     parser.add_argument("--rounds", type=int, default=3, choices=range(1, 11))
     parser.add_argument("--sample", choices=MODES)
+    parser.add_argument("--modes", nargs="+", choices=MODES, default=list(MODES))
     parser.add_argument("--output", type=Path)
     arguments = parser.parse_args()
     library = arguments.native_library.resolve(strict=True)
@@ -82,7 +89,7 @@ def main() -> None:
     from elmos_polyglot_route.process_io import run_bounded
     samples = []
     for _ in range(arguments.rounds):
-        for mode in MODES:
+        for mode in arguments.modes:
             result = run_bounded([
                 sys.executable, str(Path(__file__).resolve()), "--sample", mode,
                 "--file-mib", str(arguments.file_mib), "--native-library", str(library),
@@ -103,10 +110,10 @@ def main() -> None:
         "source_sha256": {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest() for path in sources},
         "samples": samples,
         "median_seconds": {
-            mode: statistics.median(item["seconds"] for item in samples if item["mode"] == mode) for mode in MODES
+            mode: statistics.median(item["seconds"] for item in samples if item["mode"] == mode) for mode in arguments.modes
         },
         "boundaries": [
-            "Data generation and post-write verification are outside the timed region.",
+            "Data generation, read-fixture publication, and post-operation verification are outside the timed region.",
             "Bytes inputs are allocated before tracemalloc starts; native allocations are not counted by tracemalloc.",
             "RSS includes process setup and inputs; shared-host scheduling noise is not production tail latency.",
             "Three samples do not establish p95/p99 or cross-platform superiority.",
