@@ -4,6 +4,7 @@ import {
   localCredentialsConfigured,
   oidcConfigured,
 } from "../../../lib/server/accountSession";
+import { descopeConfigured } from "../../../lib/server/descopeIdentity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         authenticated: false,
-        configured: oidcConfigured() || localCredentialsConfigured(),
+        configured: descopeConfigured() || oidcConfigured() || localCredentialsConfigured(),
         principal: null,
         expiresAt: null,
       },

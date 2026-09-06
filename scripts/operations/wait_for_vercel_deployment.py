@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
 """Resolve the newest Vercel deployment for one exact Git commit.
 
-The deployment smoke must not probe a mutable alias or fall back to an older
-successful deployment while the newest deployment for the commit is pending or
-failed. This helper only reads GitHub deployment records; it performs no
-deployment or provider mutation.
+The deployment smoke must not probe a mutable production alias or fall back to
+an older successful deployment while the commit under test is still building.
+GitHub's deployment record first binds the probe to the requested SHA. Once
+that exact production deployment is successful, the smoke may use the public
+production domain because Vercel's generated production deployment URL remains
+protected under Standard Protection. This helper only reads GitHub deployment
+records; it performs no deployment or provider mutation.
 """
 
 from __future__ import annotations
@@ -105,6 +108,7 @@ def wait_for_deployment(
     fetch_json: Callable[[str], Any],
     timeout_seconds: float,
     poll_seconds: float,
+    production_url: str | None = None,
     monotonic: Callable[[], float] = time.monotonic,
     sleep: Callable[[float], None] = time.sleep,
 ) -> str:
@@ -130,10 +134,18 @@ def wait_for_deployment(
             if status is not None:
                 state = status.get("state")
                 if state == "success":
-                    return _deployment_url(status.get("environment_url"))
+                    exact_url = _deployment_url(status.get("environment_url"))
+                    if deployment.get("environment") == "Production" and production_url:
+                        return _deployment_url(production_url)
+                    return exact_url
                 if state in TERMINAL_FAILURES:
+                    description = (
+                        str(status.get("description", "deployment failed"))
+                        .replace("\r", " ")
+                        .replace("\n", " ")[:240]
+                    )
                     raise DeploymentResolutionError(
-                        f"VERCEL_DEPLOYMENT_{str(state).upper()}"
+                        f"VERCEL_DEPLOYMENT_{str(state).upper()}:{description}"
                     )
         if monotonic() >= deadline:
             raise DeploymentResolutionError("VERCEL_DEPLOYMENT_TIMEOUT")
@@ -215,6 +227,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--github-env", required=True, type=Path)
     parser.add_argument("--timeout-seconds", type=float, default=900)
     parser.add_argument("--poll-seconds", type=float, default=10)
+    parser.add_argument("--production-url")
     return parser.parse_args()
 
 
@@ -229,6 +242,7 @@ def main() -> int:
         fetch_json=_github_fetcher(token),
         timeout_seconds=args.timeout_seconds,
         poll_seconds=args.poll_seconds,
+        production_url=args.production_url,
     )
     _append_github_environment(args.github_env, url)
     print(f"Resolved exact Vercel deployment for {args.sha}: {url}")
