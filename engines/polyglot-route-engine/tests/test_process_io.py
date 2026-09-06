@@ -92,6 +92,34 @@ def test_repeated_timeout_and_flood_leave_no_transport_threads() -> None:
     assert {thread.ident for thread in threading.enumerate()} == initial_threads
 
 
+def test_host_owned_logs_are_flushed_before_process_exit(tmp_path: Path) -> None:
+    log_path = tmp_path / "stdout.log"
+    script = (
+        "import pathlib,sys,time; print('ready',flush=True); "
+        f"p=pathlib.Path({str(log_path)!r}); deadline=time.monotonic()+5\n"
+        "while p.stat().st_size == 0 and time.monotonic()<deadline: time.sleep(.01)\n"
+        "assert p.read_bytes()==b'ready\\n'; print('done'); print('diagnostic',file=sys.stderr)"
+    )
+    with log_path.open("wb") as stdout_log, (tmp_path / "stderr.log").open("wb") as stderr_log:
+        result = run_bounded(
+            [sys.executable, "-c", script], env={}, timeout=15, check=True,
+            stdout_log=stdout_log, stderr_log=stderr_log,
+        )
+    assert result.stdout == "ready\ndone\n"
+    assert log_path.read_bytes() == result.stdout.encode()
+    assert (tmp_path / "stderr.log").read_bytes() == b"diagnostic\n"
+
+
+def test_log_sink_never_receives_bytes_beyond_capture_limit(tmp_path: Path) -> None:
+    log_path = tmp_path / "stdout.log"
+    with log_path.open("wb") as stdout_log, pytest.raises(ProcessOutputLimitError):
+        run_bounded(
+            [sys.executable, "-c", "print('x'*8192)"], env={}, timeout=15,
+            max_stream_bytes=4096, stdout_log=stdout_log,
+        )
+    assert log_path.stat().st_size <= 4096
+
+
 @pytest.mark.skipif(os.name != "posix", reason="POSIX process-group contract")
 def test_normal_completion_cleans_group_before_reaping(monkeypatch) -> None:
     import elmos_polyglot_route.process_io as process_io

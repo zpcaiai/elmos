@@ -21,6 +21,7 @@ import time
 from collections.abc import Mapping, Sequence
 from contextlib import closing
 from pathlib import Path
+from typing import BinaryIO
 
 MAX_PROCESS_STREAM_BYTES = 16 * 1024 * 1024
 _CHUNK = 64 * 1024
@@ -37,6 +38,8 @@ def bounded_communicate(
     input: str | None = None,
     max_stream_bytes: int = MAX_PROCESS_STREAM_BYTES,
     reap: bool = False,
+    stdout_log: BinaryIO | None = None,
+    stderr_log: BinaryIO | None = None,
 ) -> tuple[str, str]:
     """Drain pipes concurrently, retaining at most the per-stream byte budget.
 
@@ -50,6 +53,7 @@ def bounded_communicate(
         raise OSError("BOUNDED_PROCESS_PLATFORM_NOT_IMPLEMENTED")
     deadline = time.monotonic() + timeout
     outputs = [bytearray(), bytearray()]
+    logs = (stdout_log, stderr_log)
     encoding = locale.getpreferredencoding(False)
     payload = memoryview(input.encode(encoding) if input is not None else b"")
     if len(payload) > max_stream_bytes:
@@ -97,6 +101,11 @@ def bounded_communicate(
                         f"PROCESS_OUTPUT_LIMIT_EXCEEDED:{'stdout' if index == 0 else 'stderr'}"
                     )
                 outputs[index].extend(chunk)
+                log = logs[index]
+                if log is not None:
+                    if log.write(chunk) != len(chunk):
+                        raise OSError("PROCESS_LOG_SHORT_WRITE")
+                    log.flush()
     for stream in (process.stdout, process.stderr):
         if stream is not None:
             stream.close()
@@ -190,11 +199,16 @@ def run_bounded(
     input: str | None = None,
     max_stream_bytes: int = MAX_PROCESS_STREAM_BYTES,
     stdin: int | None = None,
+    stdout_log: BinaryIO | None = None,
+    stderr_log: BinaryIO | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """A narrow ``subprocess.run`` adapter for exact text protocols.
 
     ``env`` belongs to the trusted toolchain caller. This adapter grants no
     shell, environment additions, network permission, or sandbox authority.
+    Optional binary log handles are host-owned, bounded by the same output
+    limit, flushed as output arrives, and never opened from child-controlled
+    paths. Raw logs may contain source data; no ambient/global log sink exists.
     """
     if not capture_output or not text or stdin not in (None, subprocess.DEVNULL):
         raise ValueError("bounded text capture required")
@@ -221,6 +235,7 @@ def run_bounded(
         try:
             stdout, stderr = bounded_communicate(
                 process, timeout=timeout, input=input, max_stream_bytes=max_stream_bytes,
+                stdout_log=stdout_log, stderr_log=stderr_log,
             )
             _terminate(process)
             completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
