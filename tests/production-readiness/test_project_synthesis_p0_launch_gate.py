@@ -97,7 +97,7 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
         invoked.assert_called_once_with(
             ["git", "status", "--porcelain=v1", "--untracked-files=all"],
             self.root,
-            timeout=300,
+            timeout=collector.FULL_WORKTREE_SCAN_TIMEOUT_SECONDS,
         )
 
     def test_evidence_collector_reports_git_timeout_as_stable_failure(self) -> None:
@@ -105,11 +105,14 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
             mock.patch.object(
                 collector,
                 "_run",
-                side_effect=subprocess.TimeoutExpired(["git", "status"], 300),
+                side_effect=subprocess.TimeoutExpired(
+                    ["git", "status"],
+                    collector.FULL_WORKTREE_SCAN_TIMEOUT_SECONDS,
+                ),
             ),
             self.assertRaisesRegex(
                 collector.EvidenceFailure,
-                "GIT_COMMAND_TIMEOUT:status:300s",
+                "GIT_COMMAND_TIMEOUT:status:900s",
             ),
         ):
             collector._clean_status(self.root)

@@ -24,6 +24,9 @@ class EvidenceFailure(RuntimeError):
     """A stable current-SHA evidence failure."""
 
 
+FULL_WORKTREE_SCAN_TIMEOUT_SECONDS = 900
+
+
 def _run(command: list[str], cwd: Path, *, timeout: int = 60) -> subprocess.CompletedProcess[str]:
     return subprocess.run(  # noqa: S603
         command,
@@ -78,7 +81,7 @@ def _clean_status(repository: Path) -> tuple[bool, str]:
         "status",
         "--porcelain=v1",
         "--untracked-files=all",
-        timeout=300,
+        timeout=FULL_WORKTREE_SCAN_TIMEOUT_SECONDS,
     )
     return not status, status
 
