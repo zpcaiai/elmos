@@ -158,11 +158,16 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
      * caller forgets to bind the tenant.</p>
      */
     public Optional<String> artifactIdFor(String organizationId, String jobId, String role) {
+        return artifactIdFor(organizationId,jobId,role,null);
+    }
+
+    public Optional<String> artifactIdFor(String organizationId, String jobId, String role, String filename) {
         return inTenant(organizationId, () -> jdbc.sql("""
                 SELECT artifact_id FROM job_artifacts
                  WHERE organization_id = :org
                    AND job_id = :jobId
                    AND artifact_role = :role
+                   AND (CAST(:filename AS varchar) IS NULL OR filename = :filename)
                    AND deleted_at IS NULL
                  ORDER BY published_at DESC
                  LIMIT 1
@@ -170,6 +175,7 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
                 .param("org", organizationId)
                 .param("jobId", jobId)
                 .param("role", role)
+                .param("filename", filename)
                 .query(String.class)
                 .optional());
     }
@@ -312,10 +318,46 @@ public final class JdbcObjectStorageStore implements S3ObjectStore.ObjectStorage
     }
 
     /** Resolves the organization for a lease without trusting anything the runner sent. */
+    public boolean leaseOwnsJob(String leaseId, String runnerNodeId, String jobId, String tokenSha256) {
+        Integer matches = jdbc.sql("""
+                SELECT count(*) FROM runner_job_leases lease
+                  JOIN execution_jobs job ON job.job_id = lease.job_ref
+                    AND job.organization_id = lease.organization_id
+                  JOIN execution_job_dispatch dispatch ON dispatch.job_id = job.job_id
+                    AND dispatch.organization_id = job.organization_id
+                    AND dispatch.lease_ref = lease.runner_job_lease_id
+                    AND dispatch.runner_node_ref = lease.runner_node_ref
+                    AND dispatch.dispatch_state = 'LEASED'
+                 WHERE lease.runner_job_lease_id = :lease AND lease.runner_node_ref = :node
+                   AND lease.job_ref = :job AND lease.token_sha256 = :token
+                   AND lease.lease_state IN ('ISSUED', 'ACTIVE')
+                   AND lease.expires_at > clock_timestamp()
+                   AND job.status IN ('CLAIMED', 'RUNNING') AND job.cancel_requested_at IS NULL
+                """).param("lease", leaseId).param("node", runnerNodeId)
+                .param("job", jobId).param("token", tokenSha256).query(Integer.class).single();
+        return matches != null && matches == 1;
+    }
+
     public Optional<String> organizationForLease(String leaseId) {
         return jdbc.sql("SELECT organization_id FROM runner_job_leases WHERE runner_job_lease_id = :leaseId")
                 .param("leaseId", leaseId)
                 .query(String.class).optional();
+    }
+
+    public boolean executionInputAvailable(String organizationId, String jobId, String bindingId,
+                                            String objectId, String digest, long bytes) {
+        return inTenant(organizationId, () -> jdbc.sql("""
+                SELECT EXISTS (
+                  SELECT 1 FROM execution_input_bindings binding JOIN content_objects object
+                    ON object.content_object_id = binding.content_object_ref
+                   AND object.organization_id = binding.organization_id
+                   WHERE binding.organization_id = :org AND binding.job_ref = :job
+                     AND binding.binding_id = :binding AND binding.binding_state = 'ATTACHED'
+                     AND binding.content_object_ref = :object AND binding.content_sha256 = :sha
+                     AND binding.byte_size = :bytes AND object.content_sha256 = :sha
+                     AND object.byte_size = :bytes AND object.object_state = 'AVAILABLE')
+                """).param("org", organizationId).param("job", jobId).param("binding", bindingId)
+                .param("object", objectId).param("sha", digest).param("bytes", bytes).query(Boolean.class).single());
     }
 
     private <T> T inTenant(String organizationId, Supplier<T> work) {
