@@ -117,6 +117,19 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
         ):
             collector._clean_status(self.root)
 
+    def test_evidence_collector_bounds_complete_production_matrix(self) -> None:
+        with mock.patch.object(collector.shutil, "which", return_value="/usr/bin/uv"):
+            production_matrix = next(
+                check
+                for check in collector._check_plan(self.root)
+                if check[0] == "production-matrix"
+            )
+        self.assertEqual(
+            collector.PRODUCTION_MATRIX_TIMEOUT_SECONDS,
+            production_matrix[3],
+        )
+        self.assertGreaterEqual(production_matrix[3], 16 * 15 * 60)
+
     def _artifact(
         self,
         repository: Path,

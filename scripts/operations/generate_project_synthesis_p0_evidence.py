@@ -25,6 +25,7 @@ class EvidenceFailure(RuntimeError):
 
 
 FULL_WORKTREE_SCAN_TIMEOUT_SECONDS = 900
+PRODUCTION_MATRIX_TIMEOUT_SECONDS = 14_400
 
 
 def _run(command: list[str], cwd: Path, *, timeout: int = 60) -> subprocess.CompletedProcess[str]:
@@ -125,7 +126,21 @@ def _check_plan(repository: Path) -> list[tuple[str, list[str], Path, int]]:
             300,
         ),
         ("exact-toolchain-acceptance", [uv, "run", "--offline", "--frozen", "--project", str(engine), "python", "scripts/run_acceptance.py", "--require-all-toolchains"], engine, 2400),
-        ("production-matrix", [uv, "run", "--offline", "--frozen", "--project", str(engine), "python", "scripts/run_production_matrix.py"], engine, 3600),
+        (
+            "production-matrix",
+            [
+                uv,
+                "run",
+                "--offline",
+                "--frozen",
+                "--project",
+                str(engine),
+                "python",
+                "scripts/run_production_matrix.py",
+            ],
+            engine,
+            PRODUCTION_MATRIX_TIMEOUT_SECONDS,
+        ),
         ("p0-operational-contracts", [sys.executable, "-m", "unittest", "discover", "-s", "tests/production-readiness", "-p", "test_project_synthesis_p0_launch_gate.py"], repository, 300),
         ("runner-production-contract", [sys.executable, "-m", "unittest", "discover", "-s", "deploy/local-runner/tests", "-p", "test_*.py"], repository, 300),
         ("vercel-deployment-waiter-contract", [sys.executable, "-m", "unittest", "discover", "-s", "tests/production-readiness", "-p", "test_vercel_deployment_waiter.py"], repository, 300),
