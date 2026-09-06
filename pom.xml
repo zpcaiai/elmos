@@ -35,6 +35,7 @@
         <module>modules/portfolio-scale</module>
         <module>modules/advanced-verification</module>
         <module>modules/developer-workflow</module>
+        <module>modules/live-workbench</module>
         <module>modules/extension-marketplace</module>
         <module>modules/source-control-workspace-governance</module>
         <module>modules/secure-execution-plane</module>

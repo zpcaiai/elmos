@@ -1,0 +1,34 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-15",
+  "name": "elmos-lw-debug-adapter-broker",
+  "priority": "P0",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-debug-adapter-gateway",
+  "dependencies": [
+    "elmos-lw-runtime-profile",
+    "elmos-lw-sandbox-resource-admission"
+  ],
+  "contract_refs": [
+    "contracts/debug-command.schema.json",
+    "contracts/runtime-event.schema.json"
+  ],
+  "output_artifacts": [
+    "dap-broker",
+    "adapter-registry",
+    "protocol-conformance-report.json"
+  ],
+  "acceptance_cases": [
+    "LW-15-AC-01",
+    "LW-15-AC-02",
+    "LW-15-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

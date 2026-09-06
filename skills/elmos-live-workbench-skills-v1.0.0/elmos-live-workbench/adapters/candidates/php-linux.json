@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "php-linux",
+  "language": "PHP",
+  "framework": "web",
+  "runtime": "PHP",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "Xdebug + DAP bridge",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "web",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "Xdebug protocol bridge independently tested",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}
