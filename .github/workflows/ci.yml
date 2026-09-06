@@ -301,6 +301,12 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP tree drift
+        run: |
+          uv --directory engines/polyglot-route-engine sync --locked --no-dev
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
       - name: Run complete Batch 29 and route-pack contracts
         run: |
           if [[ -z "${ELMOS_JAVA21_HOME:-}" ]]; then
@@ -425,6 +431,15 @@ jobs:
             swift package resolve
             git diff --exit-code -- Package.resolved
           )
+      - name: Fail fast on exact PHP and Flutter build closure drift
+        run: |
+          uv --directory engines/polyglot-route-engine sync --locked
+          uv --directory engines/polyglot-route-engine run --locked --no-dev \
+            python -c \
+              'from elmos_polyglot_route.toolchains import _php_tree_identity; _php_tree_identity()'
+          uv --directory engines/polyglot-route-engine run --locked \
+            python -m pytest -q \
+              tests/test_flutter_repository_pipeline.py::test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel
       - name: Verify compiler-backed route engine
         run: |
           # The installer and route engine independently bind exact versions,

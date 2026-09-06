@@ -8,6 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass, replace
+from datetime import datetime
 from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -457,15 +458,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
-    php_tree_bytes=129_952_851,
-)
-_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
-    _HOMEBREW_ROUTE_LOCAL_PROFILE,
-    profile_id="github-macos26-20260728.0273.1",
-    image_version="20260728.0273.1",
-    product_version="26.5.2",
-    build_version="25F84",
+    php_tree_sha256="4ff67dce127599b9d10ee166a98d71d457fd4f9319b956ffdfc95ac19a12281f",
+    php_tree_bytes=129_940_688,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -486,8 +480,17 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942",
-    php_tree_bytes=129_952_823,
+    php_tree_sha256="c50cdacc716a863ac8a5670367dd7738a2fbabd8b59ed9ece9bde8207eb9c967",
+    php_tree_bytes=129_940_660,
+)
+_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
+    php_tree_sha256="7d3209823954caf0fdded1313dd0167f7c56b7e27f600ea0e377ecff489be1c1",
+    php_tree_bytes=129_952_827,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -4378,11 +4381,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '8c4459ea3d6603c87b85ca6c07fac8d255180f4404b59c3b778230edacd7fb0f'
+_EXPECTED_PHP_TREE_SHA256 = '4ff67dce127599b9d10ee166a98d71d457fd4f9319b956ffdfc95ac19a12281f'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129952837
+_EXPECTED_PHP_TREE_BYTES = 129940688
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4449,7 +4452,81 @@ _PHP_RUNTIME_IDENTITY_SCRIPT = (
 )
 
 
-def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
+def _php_install_receipt_field_digests(
+    receipt: dict[str, object],
+) -> dict[str, dict[str, object]]:
+    diagnostics: dict[str, dict[str, object]] = {}
+    for key, value in sorted(receipt.items()):
+        canonical = json.dumps(value, sort_keys=True, separators=(",", ":")).encode(
+            "utf-8"
+        )
+        field: dict[str, object] = {
+            "bytes": len(canonical),
+            "sha256": hashlib.sha256(canonical).hexdigest(),
+            "type": type(value).__name__,
+        }
+        if isinstance(value, list):
+            elements = [
+                json.dumps(item, sort_keys=True, separators=(",", ":"))
+                for item in value
+            ]
+            sorted_canonical = json.dumps(
+                sorted(elements), separators=(",", ":")
+            ).encode("utf-8")
+            field.update(
+                {
+                    "count": len(elements),
+                    "sorted_sha256": hashlib.sha256(sorted_canonical).hexdigest(),
+                    "unique_count": len(set(elements)),
+                }
+            )
+        diagnostics[key] = field
+    return diagnostics
+
+
+def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
+    """Bind the Homebrew SPDX document without its generation timestamp."""
+    if not isinstance(document, dict):
+        raise RouteError(failure)
+    creation = document.get("creationInfo")
+    created = creation.get("created") if isinstance(creation, dict) else None
+    if (
+        document.get("spdxVersion") != "SPDX-2.3"
+        or document.get("dataLicense") != "CC0-1.0"
+        or document.get("SPDXID") != "SPDXRef-DOCUMENT"
+        or document.get("name") != "SBOM-SPDX-php-8.5.9"
+        or document.get("documentNamespace")
+        != "https://formulae.brew.sh/spdx/php-8.5.9.json"
+        or not isinstance(creation, dict)
+        or set(creation) != {"created", "creators"}
+        or not isinstance(created, str)
+        or not isinstance(creation.get("creators"), list)
+        or not creation["creators"]
+        or not all(isinstance(item, str) for item in creation["creators"])
+    ):
+        raise RouteError(failure)
+    try:
+        if datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ").strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        ) != created:
+            raise RouteError(failure)
+    except ValueError as error:
+        raise RouteError(failure) from error
+    normalized = json.loads(json.dumps(document))
+    normalized["creationInfo"]["created"] = "<sbom-creation-time>"
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
+
+
+def php_tree_identity(
+    root: Path,
+    anchor: Path,
+    failure: str,
+    *,
+    receipt_field_digests: dict[str, dict[str, object]] | None = None,
+    record_digests: dict[str, str] | None = None,
+) -> dict[str, object]:
     """Content identity of one PHP install tree, symlinks included.
 
     Deliberately *not* `_qualified_tree_manifest`, which requires a symlink-free
@@ -4562,9 +4639,24 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
             receipt["time"] = "<installation-time>"
             receipt["source_modified_time"] = "<source-modified-time>"
             receipt["homebrew_version"] = "<homebrew-client-version>"
+            if receipt_field_digests is not None:
+                receipt_field_digests.update(
+                    _php_install_receipt_field_digests(receipt)
+                )
             normalized = json.dumps(
                 receipt, sort_keys=True, separators=(",", ":")
             ).encode("utf-8")
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
+        elif relative == "sbom.spdx.json":
+            try:
+                sbom = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise RouteError(failure) from error
+            normalized = _normalized_php_spdx_sbom(sbom, failure)
             record = {
                 **record,
                 "bytes": len(normalized),
@@ -4585,6 +4677,18 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
         item.relative_to(root).as_posix() for item in paths
     ]:
         raise RouteError(f"{failure}:TREE_CHANGED")
+    if record_digests is not None:
+        for diagnostic_record in records:
+            canonical_record = json.dumps(
+                diagnostic_record, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+            # This short digest is diagnostic only: the full canonical records
+            # still determine the security decision below. Keeping the hosted
+            # failure line bounded lets two independent runners identify the
+            # exact drifting path without dumping toolchain file contents.
+            record_digests[cast(str, diagnostic_record["path"])] = hashlib.sha256(
+                canonical_record
+            ).hexdigest()[:16]
     digest = hashlib.sha256(
         json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
@@ -4602,10 +4706,14 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
 
 def _php_tree_identity() -> dict[str, object]:
     bundle_profile = homebrew_route_bundle_profile()
+    receipt_field_digests: dict[str, dict[str, object]] = {}
+    record_digests: dict[str, str] = {}
     identity = php_tree_identity(
         _EXPECTED_PHP_ROOT,
         _EXPECTED_PHP_ANCHOR,
         "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
+        receipt_field_digests=receipt_field_digests,
+        record_digests=record_digests,
     )
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
@@ -4623,6 +4731,14 @@ def _php_tree_identity() -> dict[str, object]:
             + json.dumps(expected, sort_keys=True, separators=(",", ":"))
             + ":observed="
             + json.dumps(identity, sort_keys=True, separators=(",", ":"))
+            + ":install-receipt-fields="
+            + json.dumps(
+                receipt_field_digests,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":record-digests="
+            + json.dumps(record_digests, sort_keys=True, separators=(",", ":"))
         )
     return {
         **identity,
