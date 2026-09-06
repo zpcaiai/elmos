@@ -1586,11 +1586,13 @@ final class SpringUpgradeRunService {
             } finally {
                 /*
                  * Executor termination normally drains every writer. This
-                 * explicit barrier also covers a late completion racing with
-                 * shutdown: close() cannot return while a persistence write is
-                 * in flight, and no subsequent callback may recreate evidence
-                 * below an owner-managed workspace that is being released.
+                 * explicit pair of barriers also covers a late completion
+                 * racing with shutdown: close() cannot return while a lease or
+                 * persistence write is in flight, and no subsequent callback
+                 * may recreate evidence below an owner-managed workspace that
+                 * is being released.
                  */
+                leaseStore.close();
                 synchronized (persistenceLifecycle) {
                     persistenceClosed = true;
                 }

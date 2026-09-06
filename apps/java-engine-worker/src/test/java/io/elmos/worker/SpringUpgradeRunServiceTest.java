@@ -422,6 +422,12 @@ class SpringUpgradeRunServiceTest {
         assertThrows(SpringUpgradeRunService.NotFound.class,
                 () -> service.get("org-a", first.runId()));
         assertNotEquals(first.runId(), service.create("org-a", request).runId());
+
+        // The replacement run is intentionally asynchronous. Drain it before
+        // JUnit releases the owner-managed @TempDir so its durable state writer
+        // cannot race the extension's recursive cleanup. @AfterEach then also
+        // verifies that close remains idempotent.
+        service.close();
     }
 
     private RunView awaitTerminal(String runId, String organizationId) {

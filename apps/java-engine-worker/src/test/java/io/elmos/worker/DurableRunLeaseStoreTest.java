@@ -3,7 +3,9 @@ package io.elmos.worker;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
@@ -129,6 +131,45 @@ class DurableRunLeaseStoreTest {
 
         assertEquals(List.of(), failures.stream().map(Throwable::toString).toList());
         assertEquals(workers, completed.get());
+    }
+
+    @Test
+    void closeRejectsFutureMutationsWithoutChangingFilesystemState() throws Exception {
+        Clock clock = Clock.fixed(Instant.parse("2026-07-29T00:00:00Z"), ZoneOffset.UTC);
+        DurableRunLeaseStore store = new DurableRunLeaseStore(
+                temporary, "spring-upgrade", 1, 1,
+                Duration.ofHours(1), Duration.ofMinutes(2), clock);
+        String digest = "3".repeat(64);
+        DurableRunLeaseStore.Lease lease = store.acquire(
+                "tenant-a", UUID.randomUUID().toString(), clock.instant(), digest);
+        List<String> beforeClose = filesystemSnapshot(temporary);
+
+        store.close();
+
+        assertThrows(IllegalStateException.class, lease::heartbeat);
+        assertThrows(IllegalStateException.class, () -> lease.release("BLOCKED"));
+        assertThrows(IllegalStateException.class, () -> store.acquire(
+                "tenant-b", UUID.randomUUID().toString(), clock.instant(), digest));
+        assertEquals(beforeClose, filesystemSnapshot(temporary));
+
+        store.close();
+        assertEquals(beforeClose, filesystemSnapshot(temporary));
+    }
+
+    private static List<String> filesystemSnapshot(Path root) throws Exception {
+        List<String> snapshot = new ArrayList<>();
+        try (var paths = Files.walk(root)) {
+            for (Path path : paths.sorted().toList()) {
+                String relative = root.relativize(path).toString();
+                if (Files.isDirectory(path)) {
+                    snapshot.add("D:" + relative);
+                } else {
+                    snapshot.add("F:" + relative + ":" + java.util.HexFormat.of().formatHex(
+                            MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));
+                }
+            }
+        }
+        return snapshot;
     }
 
     private static final class MutableClock extends Clock {
