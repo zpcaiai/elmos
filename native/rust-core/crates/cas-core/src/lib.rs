@@ -193,6 +193,72 @@ pub struct ContentAddressableStore {
 }
 
 impl ContentAddressableStore {
+    /// Stream a pinned, regular source descriptor without moving its shared file offset.
+    /// The caller's descriptor remains owned by the caller. Publication is create-if-absent.
+    #[cfg(unix)]
+    pub fn put_file(&self, source: &File, max_bytes: u64, expected: Option<&str>, kind: &str)
+        -> io::Result<String> {
+        use std::os::unix::fs::{FileExt, MetadataExt};
+        let before = source.metadata()?;
+        if !before.is_file() { return Err(io::Error::new(io::ErrorKind::InvalidInput, "regular file required")); }
+        let limit = self.max_bytes.map_or(max_bytes, |quota| quota.min(max_bytes));
+        if before.len() > limit { return Err(io::Error::other("QuotaExceeded")); }
+        let incoming = self.objects_root.join(".incoming");
+        fs::create_dir_all(&incoming)?;
+        let seq = COUNTER.fetch_add(1, Ordering::Relaxed);
+        let temporary = incoming.join(format!(".native-stream-{}-{}-{}", std::process::id(),
+            SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos(), seq));
+        let result = (|| {
+            let mut target = OpenOptions::new().write(true).create_new(true).open(&temporary)?;
+            fs::set_permissions(&temporary, fs::Permissions::from_mode(0o600))?;
+            let mut hash = Sha256::new();
+            let mut offset = 0u64;
+            let mut buffer = [0u8; 65536];
+            loop {
+                let count = source.read_at(&mut buffer, offset)?;
+                if count == 0 { break; }
+                offset += count as u64;
+                if offset > limit { return Err(io::Error::other("QuotaExceeded")); }
+                hash.update(&buffer[..count]);
+                target.write_all(&buffer[..count])?;
+            }
+            let after = source.metadata()?;
+            if (before.dev(), before.ino(), before.len(), before.mtime(), before.mtime_nsec(), before.ctime(), before.ctime_nsec())
+                != (after.dev(), after.ino(), after.len(), after.mtime(), after.mtime_nsec(), after.ctime(), after.ctime_nsec())
+                || offset != before.len() {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "source changed while streaming"));
+            }
+            let digest = format!("sha256:{}", hash.finalize().iter().map(|b| format!("{b:02x}")).collect::<String>());
+            if expected.is_some_and(|value| value != digest) {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, format!("digest mismatch: got {digest}")));
+            }
+            target.flush()?;
+            target.sync_all()?;
+            fs::set_permissions(&temporary, fs::Permissions::from_mode(BLOB_MODE))?;
+            if self.is_quarantined(&digest) {
+                return Err(io::Error::new(io::ErrorKind::InvalidData, "object is quarantined"));
+            }
+            let destination = self.path_for(&digest)?;
+            let parent = destination.parent().unwrap();
+            fs::create_dir_all(parent)?;
+            match fs::hard_link(&temporary, &destination) {
+                Ok(()) => File::open(parent)?.sync_all()?,
+                // An existing winner may be gzip-encoded by the Python store. Its encoding
+                // metadata belongs to that winner and must never be replaced with "none".
+                Err(error) if error.kind() == io::ErrorKind::AlreadyExists => return Ok(digest),
+                Err(error) => return Err(error),
+            }
+            self.write_sidecar(&digest, offset, "none", kind)?;
+            Ok(digest)
+        })();
+        let cleanup = fs::remove_file(&temporary);
+        match (result, cleanup) {
+            (Ok(digest), Ok(())) => Ok(digest),
+            (Err(error), _) => Err(error),
+            (Ok(_), Err(error)) => Err(error),
+        }
+    }
+
     pub fn new<P: AsRef<Path>>(root: P, compression: Option<&str>, max_bytes: Option<u64>) -> io::Result<Self> {
         let root = root.as_ref().to_path_buf();
         let objects_root = root.join("cas");
@@ -421,8 +487,11 @@ impl ContentAddressableStore {
             file.sync_all()?;
         }
 
-        let _ = fs::rename(&temp_path, &sidecar);
-        let _ = fs::remove_file(&temp_path);
+        if let Err(error) = fs::rename(&temp_path, &sidecar) {
+            let _ = fs::remove_file(&temp_path);
+            return Err(error);
+        }
+        File::open(parent)?.sync_all()?;
         Ok(())
     }
 
@@ -543,6 +612,28 @@ mod tests {
         assert_eq!(hash, "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9");
         let digest = Sha256::digest_canonical(b"hello world");
         assert_eq!(digest, "sha256:b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9");
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn file_stream_preserves_offset_and_rejects_before_publication() {
+        use std::io::{Seek, SeekFrom};
+        let root = tempfile_dir("cas-stream");
+        let source_path = root.join("source");
+        let payload = vec![42u8; 131073];
+        fs::write(&source_path, &payload).unwrap();
+        let mut source = File::open(&source_path).unwrap();
+        source.seek(SeekFrom::Start(7)).unwrap();
+        let cas = ContentAddressableStore::new(root.join("store"), None, None).unwrap();
+        assert!(cas.put_file(&source, 10, None, "blob").is_err());
+        assert!(cas.put_file(&source, 200000, Some("sha256:wrong"), "blob").is_err());
+        assert_eq!(cas.accounting().unwrap().object_count, 0);
+        let digest = cas.put_file(&source, 200000, None, "blob").unwrap();
+        assert_eq!(digest, Sha256::digest_canonical(&payload));
+        assert_eq!(source.stream_position().unwrap(), 7);
+        assert_eq!(cas.get_bytes(&digest, true).unwrap(), payload);
+        assert_eq!(fs::read_dir(cas.objects_root.join(".incoming")).unwrap().count(), 0);
+        fs::remove_dir_all(root).unwrap();
     }
 
     #[test]
