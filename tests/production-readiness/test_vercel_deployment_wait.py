@@ -106,6 +106,34 @@ class VercelDeploymentWaitTests(unittest.TestCase):
         )
         self.assertEqual(url, "https://elmos-alpha.vercel.app")
 
+    def test_preview_deployment_never_uses_public_production_domain(self) -> None:
+        def fetch(path: str) -> Any:
+            if "statuses" in path:
+                return [{
+                    "state": "success",
+                    "created_at": "2026-09-06T10:48:56Z",
+                    "environment_url": "https://elmos-preview.vercel.app",
+                    "creator": {"login": "vercel[bot]"},
+                }]
+            return [{
+                "id": 85,
+                "sha": "e" * 40,
+                "task": "deploy",
+                "environment": "Preview",
+                "creator": {"login": "vercel[bot]"},
+                "created_at": "2026-09-06T10:48:56Z",
+            }]
+
+        url = MODULE.wait_for_deployment(
+            "zpcaiai/elmos",
+            "e" * 40,
+            fetch_json=fetch,
+            timeout_seconds=60,
+            poll_seconds=5,
+            production_url="https://elmos-alpha.vercel.app",
+        )
+        self.assertEqual(url, "https://elmos-preview.vercel.app")
+
     def test_production_domain_is_validated_only_after_exact_deployment_succeeds(self) -> None:
         def fetch(path: str) -> Any:
             if "statuses" in path:

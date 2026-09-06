@@ -188,7 +188,11 @@ class VercelDeploymentWaiterTests(unittest.TestCase):
         self.assertIn('ref: "${{ env.ELMOS_DEPLOYMENT_SHA }}"', workflow)
         self.assertIn('".vercelignore"', workflow)
         self.assertNotIn("deployment_url:", workflow)
-        self.assertNotIn("ELMOS_VERCEL_SMOKE_URL", workflow)
+        self.assertIn(
+            'ELMOS_PRODUCTION_SMOKE_URL: ${{ vars.ELMOS_VERCEL_SMOKE_URL',
+            workflow,
+        )
+        self.assertIn('--production-url "${ELMOS_PRODUCTION_SMOKE_URL}"', workflow)
 
 
 if __name__ == "__main__":
