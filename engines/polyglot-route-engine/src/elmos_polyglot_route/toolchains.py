@@ -458,8 +458,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="4d5a1a2fc8fe2fb5bc7c3b571f84b3a625a9fb1072acf545944b677d4574ec50",
-    php_tree_bytes=129_937_276,
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -480,8 +480,8 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="4d5a1a2fc8fe2fb5bc7c3b571f84b3a625a9fb1072acf545944b677d4574ec50",
-    php_tree_bytes=129_937_276,
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
@@ -489,8 +489,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     image_version="20260728.0273.1",
     product_version="26.5.2",
     build_version="25F84",
-    php_tree_sha256="4d5a1a2fc8fe2fb5bc7c3b571f84b3a625a9fb1072acf545944b677d4574ec50",
-    php_tree_bytes=129_937_276,
+    php_tree_sha256="60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f",
+    php_tree_bytes=129_937_220,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -4381,11 +4381,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '4d5a1a2fc8fe2fb5bc7c3b571f84b3a625a9fb1072acf545944b677d4574ec50'
+_EXPECTED_PHP_TREE_SHA256 = '60693f8f01288501a8c12fead539a4fcc6844a9e6d11ff86947ce245d9088a8f'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129937276
+_EXPECTED_PHP_TREE_BYTES = 129937220
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4461,6 +4461,32 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     if source.get("path") != expected_source_paths[source["tap"]]:
         raise RouteError(failure)
 
+    allowed_version_fields = {
+        "stable",
+        "head",
+        "version_scheme",
+        "compatibility_version",
+    }
+    if (
+        not set(versions).issubset(allowed_version_fields)
+        or ("head" in versions and versions["head"] is not None)
+        or (
+            "version_scheme" in versions
+            and (
+                type(versions["version_scheme"]) is not int
+                or versions["version_scheme"] != 0
+            )
+        )
+        or (
+            "compatibility_version" in versions
+            and (
+                type(versions["compatibility_version"]) is not int
+                or versions["compatibility_version"] != 1
+            )
+        )
+    ):
+        raise RouteError(failure)
+
     for key in ("used_options", "unused_options", "changed_files", "aliases"):
         values = normalized.get(key)
         if values is None:
@@ -4468,6 +4494,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         if not isinstance(values, list) or not all(isinstance(item, str) for item in values):
             raise RouteError(failure)
         normalized[key] = sorted(values)
+
+    aliases = normalized.get("aliases")
+    if aliases is not None and aliases != [] and aliases != ["php@8.5"]:
+        raise RouteError(failure)
+    normalized["aliases"] = ["php@8.5"]
 
     dependencies = normalized.get("runtime_dependencies")
     if dependencies is not None:
@@ -4510,13 +4541,21 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     normalized["homebrew_version"] = "<homebrew-client-version>"
     if "installed_on_request" in normalized:
         normalized["installed_on_request"] = "<installation-request-context>"
+    source["spec"] = "stable"
+    source["versions"] = {"stable": "8.5.9"}
     source["tap"] = (
         f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
         f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
     )
     source["path"] = "<pinned-php-formula-source>"
-    if "tap_git_head" in source:
-        source["tap_git_head"] = "<installer-local-tap-head>"
+    tap_git_head = source.get("tap_git_head")
+    if tap_git_head is not None and (
+        not isinstance(tap_git_head, str)
+        or len(tap_git_head) != 40
+        or any(character not in "0123456789abcdef" for character in tap_git_head)
+    ):
+        raise RouteError(failure)
+    source["tap_git_head"] = "<installer-local-tap-head>"
     return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
         "utf-8"
     )
@@ -4599,8 +4638,20 @@ def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
         or set(creation) != {"created", "creators"}
         or not isinstance(created, str)
         or not isinstance(creation.get("creators"), list)
-        or not creation["creators"]
-        or not all(isinstance(item, str) for item in creation["creators"])
+        or len(creation["creators"]) != 1
+        or not isinstance(creation["creators"][0], str)
+    ):
+        raise RouteError(failure)
+    creator_prefix = "Tool: https://github.com/Homebrew/brew@"
+    creator = creation["creators"][0]
+    creator_version = creator.removeprefix(creator_prefix)
+    if (
+        not creator.startswith(creator_prefix)
+        or not creator_version
+        or any(
+            not (character.isalnum() or character in ".+-")
+            for character in creator_version
+        )
     ):
         raise RouteError(failure)
     try:
@@ -4612,6 +4663,9 @@ def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
         raise RouteError(failure) from error
     normalized = json.loads(json.dumps(document))
     normalized["creationInfo"]["created"] = "<sbom-creation-time>"
+    normalized["creationInfo"]["creators"] = [
+        f"{creator_prefix}<installer-version>"
+    ]
     return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
         "utf-8"
     )
@@ -5007,6 +5061,7 @@ def _php() -> ExactToolchain:
             f"php-debug={document['debug']}",
             f"php-extensions={','.join(document['extensions'])}",
             f"php-tokenizer={tokenizer}",
+            "php-homebrew-installer-metadata=NOT_BOUND",
             "php-homebrew-runtime-dependency-versions=NOT_RUN",
             "php-runtime-semantic-soundness=NOT_RUN",
         ),
