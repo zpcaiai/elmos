@@ -1,0 +1,23 @@
+{
+  "skill_id": "LW-02",
+  "cases": [
+    {
+      "id": "LW-02-AC-01",
+      "expectation": "Unicode UTF-16 到 UTF-8 来回定位精确。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-02-AC-02",
+      "expectation": "内容摘要改变时拒绝旧锚点。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    },
+    {
+      "id": "LW-02-AC-03",
+      "expectation": "新增行后原始证据仍打开原 revision，不能错指新行。",
+      "status": "not_run",
+      "required_environment": "target-elmos-integration"
+    }
+  ]
+}

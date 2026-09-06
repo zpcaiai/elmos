@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "windows-desktop",
+  "language": "C#",
+  "framework": "WPF/.NET desktop",
+  "runtime": "Windows CLR",
+  "os": "windows",
+  "arch": "x86_64",
+  "adapter": "qualified Windows adapter",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "native-stream",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "dedicated Windows execution boundary",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}

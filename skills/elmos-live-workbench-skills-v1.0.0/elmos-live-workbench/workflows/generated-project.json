@@ -1,0 +1,19 @@
+{
+  "workflow": "generation-to-live-learning",
+  "steps": [
+    "commit-artifact",
+    "freeze-snapshot",
+    "compile-manifest",
+    "index-and-map",
+    "prebuild-and-smoke",
+    "admit-resources",
+    "provision-demo",
+    "verify-interactivity",
+    "start-600s-window",
+    "read-teach-run-debug",
+    "revoke-access",
+    "cleanup-and-evidence"
+  ],
+  "cancel_at_any_stage": true,
+  "model_is_authority": false
+}

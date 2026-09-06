@@ -536,7 +536,12 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         "tap": "elmos/pinned-route-ci",
         "tap_git_head": "b" * 40,
         "path": "/opt/homebrew/Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb",
-        "versions": {"stable": "8.5.9"},
+        "versions": {
+            "stable": "8.5.9",
+            "head": "HEAD",
+            "version_scheme": 0,
+            "compatibility_version": 1,
+        },
     })
     document["runtime_dependencies"].reverse()
     document["runtime_dependencies"][0].update(
@@ -553,6 +558,12 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
 
     document["arch"] = "arm64"
     document["aliases"] = ["php8"]
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["aliases"] = ["php@8.5"]
+    document["source"]["versions"]["head"] = "unexpected-head"
     receipt.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")

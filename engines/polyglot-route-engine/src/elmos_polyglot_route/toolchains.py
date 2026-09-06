@@ -4469,7 +4469,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     }
     if (
         not set(versions).issubset(allowed_version_fields)
-        or ("head" in versions and versions["head"] is not None)
+        # Homebrew's API-backed core receipt records an unselected HEAD as null,
+        # while the exact same pinned formula loaded from the CI tap records the
+        # declared HEAD sentinel. ``source.spec == "stable"`` above proves that
+        # neither form selected HEAD; accept only those two exact encodings.
+        or versions.get("head") not in {None, "HEAD"}
         or (
             "version_scheme" in versions
             and (
