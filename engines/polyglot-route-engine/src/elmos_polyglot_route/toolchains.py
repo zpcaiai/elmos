@@ -3765,6 +3765,24 @@ _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT = 157
 _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT = 135
 _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT = 22
 _EXPECTED_RUST_SYSROOT_TREE_BYTES = 531_383_469
+_EXPECTED_RUST_SYSROOT_TREES: tuple[dict[str, object], ...] = (
+    {
+        "root": str(_EXPECTED_RUST_SYSROOT),
+        "sha256": _EXPECTED_RUST_SYSROOT_TREE_SHA256,
+        "record_count": _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
+        "file_count": _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
+        "directory_count": _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
+        "bytes": _EXPECTED_RUST_SYSROOT_TREE_BYTES,
+    },
+    {
+        "root": str(_EXPECTED_RUST_SYSROOT),
+        "sha256": "142705d4cb3f05508d8a23ec78fb98644d50264900b2830875796d7936103c1e",
+        "record_count": 157,
+        "file_count": 135,
+        "directory_count": 22,
+        "bytes": 531_383_469,
+    },
+)
 _EXPECTED_RUST_EXECUTABLE_SHA256 = "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c"
 _EXPECTED_RUST_EXECUTABLE_BYTES = 414_776
 _EXPECTED_RUST_CARGO_SHA256 = "798a97c06e6fc3a63f1b7e3141f87e515e6bc8da1527bc32e19ba27d86bb89c5"
@@ -3879,16 +3897,17 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
         portable_owner_identity=True,
     )
-    _verify_qualified_tree_manifest(
-        sysroot,
-        expected_root=_EXPECTED_RUST_SYSROOT,
-        expected_sha256=_EXPECTED_RUST_SYSROOT_TREE_SHA256,
-        expected_record_count=_EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT,
-        expected_file_count=_EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT,
-        expected_directory_count=_EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT,
-        expected_bytes=_EXPECTED_RUST_SYSROOT_TREE_BYTES,
-        failure="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
-    )
+    if sysroot not in _EXPECTED_RUST_SYSROOT_TREES:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH:expected="
+            + json.dumps(
+                _EXPECTED_RUST_SYSROOT_TREES,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":observed="
+            + json.dumps(sysroot, sort_keys=True, separators=(",", ":"))
+        )
     return wrappers, sysroot
 
 

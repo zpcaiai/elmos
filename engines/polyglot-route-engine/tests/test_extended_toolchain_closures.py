@@ -225,6 +225,41 @@ def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
     assert strict["sha256"] != local["sha256"]
 
 
+def test_rust_accepts_only_complete_allowlisted_hosted_sysroot(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    wrappers = _tree_identity(
+        toolchains._EXPECTED_RUST_WRAPPER_ROOT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_SHA256,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT,
+        toolchains._EXPECTED_RUST_WRAPPER_TREE_BYTES,
+    )
+    hosted_sysroot = copy.deepcopy(toolchains._EXPECTED_RUST_SYSROOT_TREES[1])
+
+    def manifest(root: Path, *_args: object, **_kwargs: object) -> dict[str, object]:
+        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else hosted_sysroot
+
+    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", manifest)
+    assert toolchains._rust_tree_identities() == (wrappers, hosted_sysroot)
+
+    forged = copy.deepcopy(hosted_sysroot)
+    forged["sha256"] = "f" * 64
+
+    def forged_manifest(
+        root: Path, *_args: object, **_kwargs: object
+    ) -> dict[str, object]:
+        return wrappers if root == toolchains._EXPECTED_RUST_WRAPPER_ROOT else forged
+
+    monkeypatch.setattr(toolchains, "_qualified_tree_manifest", forged_manifest)
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
+    ):
+        toolchains._rust_tree_identities()
+
+
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])
 def test_rust_rejects_wrapper_or_sysroot_tree_drift(
     drift: str,
