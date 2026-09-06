@@ -460,13 +460,6 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
     php_tree_bytes=129_949_464,
 )
-_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
-    _HOMEBREW_ROUTE_LOCAL_PROFILE,
-    profile_id="github-macos26-20260728.0273.1",
-    image_version="20260728.0273.1",
-    product_version="26.5.2",
-    build_version="25F84",
-)
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
     image_version="20260831.0337.3",
@@ -488,6 +481,13 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
     php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
     php_tree_bytes=129_949_464,
+)
+_HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
+    _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
+    profile_id="github-macos26-20260728.0273.1",
+    image_version="20260728.0273.1",
+    product_version="26.5.2",
+    build_version="25F84",
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,

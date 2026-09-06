@@ -11,6 +11,37 @@ from elmos_polyglot_route import native, toolchains
 from elmos_polyglot_route.models import RouteError
 
 
+def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> None:
+    local = toolchains._HOMEBREW_ROUTE_LOCAL_PROFILE
+    legacy = toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE
+    current = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
+    closure_fields = (
+        "dotnet_muxer_sha256",
+        "dotnet_muxer_bytes",
+        "dotnet_sdk_tree_sha256",
+        "dotnet_sdk_tree_bytes",
+        "dotnet_hostfxr_tree_sha256",
+        "dotnet_hostfxr_tree_bytes",
+        "dotnet_runtime_tree_sha256",
+        "dotnet_runtime_tree_bytes",
+        "dotnet_reference_pack_tree_sha256",
+        "dotnet_reference_pack_tree_bytes",
+        "dotnet_apphost_pack_tree_sha256",
+        "dotnet_apphost_pack_tree_bytes",
+        "dotnet_hostfxr_sha256",
+        "dotnet_hostpolicy_sha256",
+        "php_tree_sha256",
+        "php_tree_bytes",
+    )
+
+    assert legacy.profile_id == "github-macos26-20260728.0273.1"
+    assert current.profile_id == "github-macos26-20260831.0337.3"
+    assert tuple(getattr(legacy, field) for field in closure_fields) == tuple(
+        getattr(current, field) for field in closure_fields
+    )
+    assert local.dotnet_muxer_sha256 != legacy.dotnet_muxer_sha256
+
+
 def test_apple_host_profiles_select_only_exact_complete_tuples() -> None:
     legacy = toolchains._select_apple_route_host_profile(
         image_version="20260728.0273.1",
