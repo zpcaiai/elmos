@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import errno
 import locale
+import math
 import os
 import select
 import selectors
@@ -24,11 +25,25 @@ from pathlib import Path
 from typing import BinaryIO
 
 MAX_PROCESS_STREAM_BYTES = 16 * 1024 * 1024
+MAX_ALLOWED_PROCESS_STREAM_BYTES = 64 * 1024 * 1024
 _CHUNK = 64 * 1024
 
 
 class ProcessOutputLimitError(OSError):
     """The exact output protocol exceeded its host-owned budget."""
+
+
+def _validate_budgets(timeout: float, max_stream_bytes: int) -> None:
+    if type(timeout) not in (int, float) or timeout <= 0:
+        raise ValueError("PROCESS_TIMEOUT_BUDGET_INVALID")
+    try:
+        finite_timeout = math.isfinite(timeout)
+    except OverflowError:
+        finite_timeout = False
+    if not finite_timeout:
+        raise ValueError("PROCESS_TIMEOUT_BUDGET_INVALID")
+    if type(max_stream_bytes) is not int or not 0 < max_stream_bytes <= MAX_ALLOWED_PROCESS_STREAM_BYTES:
+        raise ValueError("PROCESS_STREAM_BUDGET_INVALID")
 
 
 def bounded_communicate(
@@ -47,8 +62,7 @@ def bounded_communicate(
     clean up its process group. The existing specialized Swift session adapter
     explicitly retains its own reap/cleanup protocol. No helper threads exist.
     """
-    if timeout <= 0 or max_stream_bytes <= 0:
-        raise ValueError("positive process budgets required")
+    _validate_budgets(timeout, max_stream_bytes)
     if os.name != "posix":
         raise OSError("BOUNDED_PROCESS_PLATFORM_NOT_IMPLEMENTED")
     deadline = time.monotonic() + timeout
@@ -210,6 +224,7 @@ def run_bounded(
     limit, flushed as output arrives, and never opened from child-controlled
     paths. Raw logs may contain source data; no ambient/global log sink exists.
     """
+    _validate_budgets(timeout, max_stream_bytes)
     if not capture_output or not text or stdin not in (None, subprocess.DEVNULL):
         raise ValueError("bounded text capture required")
     if input is not None and len(input.encode()) > max_stream_bytes:
