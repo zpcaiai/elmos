@@ -4,6 +4,7 @@ import ast
 import importlib.util
 import re
 import subprocess
+import tempfile
 import unittest
 from unittest import mock
 from pathlib import Path
@@ -57,6 +58,79 @@ def _repository_matrix_test_inventory() -> tuple[frozenset[str], frozenset[str]]
 
 
 class PolyglotRouteCiReadinessTests(unittest.TestCase):
+    def test_setup_go_disables_missing_root_module_cache(self) -> None:
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        setup_go = (
+            "uses: actions/setup-go@"
+            "b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        )
+        self.assertEqual(workflow.count(setup_go), 4)
+        self.assertEqual(workflow.count('go-version: "1.25.0"\n          cache: false'), 4)
+        self.assertFalse((ROOT / "go.mod").exists())
+
+    def test_rust_component_inventory_is_canonicalized_after_exact_validation(
+        self,
+    ) -> None:
+        installer = (
+            ROOT / "scripts/toolchains/install_project_synthesis_toolchains.sh"
+        ).read_text(encoding="utf-8")
+        function = (
+            "normalize_rust_component_inventory() {"
+            + installer.split("normalize_rust_component_inventory() {", 1)[1]
+            .split("\n}\n\ninstall_rust()", 1)[0]
+            + "\n}"
+        )
+        canonical = (
+            "cargo-aarch64-apple-darwin\n"
+            "rust-std-aarch64-apple-darwin\n"
+            "rustc-aarch64-apple-darwin\n"
+            "clippy-preview-aarch64-apple-darwin\n"
+            "rustfmt-preview-aarch64-apple-darwin\n"
+        )
+        noncanonical = canonical.replace(
+            "cargo-aarch64-apple-darwin\nrust-std-aarch64-apple-darwin",
+            "rust-std-aarch64-apple-darwin\ncargo-aarch64-apple-darwin",
+            1,
+        )
+        with self.subTest("known permutation is canonicalized"):
+            with tempfile.TemporaryDirectory() as temporary:
+                inventory = Path(temporary) / "components"
+                inventory.write_text(noncanonical, encoding="utf-8")
+                completed = subprocess.run(
+                    ["/bin/bash", "-s", "--", str(inventory)],
+                    input=(
+                        "set -euo pipefail\n"
+                        + function
+                        + "\nnormalize_rust_component_inventory \"$1\"\n"
+                    ),
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(completed.returncode, 0, completed.stderr)
+                self.assertEqual(inventory.read_text(encoding="utf-8"), canonical)
+
+        with self.subTest("unknown component fails closed"):
+            with tempfile.TemporaryDirectory() as temporary:
+                inventory = Path(temporary) / "components"
+                inventory.write_text(canonical + "unknown-component\n", encoding="utf-8")
+                completed = subprocess.run(
+                    ["/bin/bash", "-s", "--", str(inventory)],
+                    input=(
+                        "set -euo pipefail\n"
+                        + function
+                        + "\nnormalize_rust_component_inventory \"$1\"\n"
+                    ),
+                    text=True,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(completed.returncode, 3, completed.stderr)
+                self.assertEqual(
+                    inventory.read_text(encoding="utf-8"),
+                    canonical + "unknown-component\n",
+                )
+
     def test_route_host_shells_do_not_mask_command_substitution_failures(self) -> None:
         for relative in (
             "scripts/toolchains/prepare_apple_route_ci_host.sh",

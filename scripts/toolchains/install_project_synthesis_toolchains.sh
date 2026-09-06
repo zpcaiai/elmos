@@ -276,6 +276,48 @@ write_rust_wrapper() {
   chmod 0755 "${wrapper}"
 }
 
+normalize_rust_component_inventory() {
+  local components_file="$1"
+  local canonical_file="${components_file}.elmos-canonical"
+  local expected_sorted
+  local observed_sorted
+  expected_sorted="$(
+    printf '%s\n' \
+      'cargo-aarch64-apple-darwin' \
+      'rust-std-aarch64-apple-darwin' \
+      'rustc-aarch64-apple-darwin' \
+      'clippy-preview-aarch64-apple-darwin' \
+      'rustfmt-preview-aarch64-apple-darwin' \
+      | LC_ALL=C /usr/bin/sort
+  )"
+  if [[ ! -f "${components_file}" || -L "${components_file}" \
+    || -e "${canonical_file}" || -L "${canonical_file}" ]]; then
+    printf 'Rust component inventory is unavailable or unsafe: %s\n' \
+      "${components_file}" >&2
+    return 3
+  fi
+  observed_sorted="$(LC_ALL=C /usr/bin/sort "${components_file}")"
+  if [[ "${observed_sorted}" != "${expected_sorted}" ]]; then
+    printf 'Rust component inventory is not the exact pinned closure.\n' >&2
+    return 3
+  fi
+  # rustup-init can emit the three core components in a different order on
+  # otherwise byte-identical hosts. The inventory is a set, so validate that
+  # set exactly and then publish one canonical serialization before the tree
+  # is moved into its immutable, digest-bound location.
+  (
+    umask 022
+    printf '%s\n' \
+      'cargo-aarch64-apple-darwin' \
+      'rust-std-aarch64-apple-darwin' \
+      'rustc-aarch64-apple-darwin' \
+      'clippy-preview-aarch64-apple-darwin' \
+      'rustfmt-preview-aarch64-apple-darwin' \
+      >"${canonical_file}"
+  )
+  mv "${canonical_file}" "${components_file}"
+}
+
 install_rust() {
   local target="${TOOLCHAIN_ROOT}/rust/${RUST_VERSION}"
   if [[ -x "${target}/bin/rustc" && -x "${target}/bin/cargo" ]] \
@@ -298,6 +340,8 @@ install_rust() {
     RUSTUP_HOME="${stage}/rustup" CARGO_HOME="${stage}/cargo" \
       "${stage}/cargo/bin/rustup" component add \
       --toolchain "${RUST_VERSION}" clippy rustfmt
+    normalize_rust_component_inventory \
+      "${stage}/rustup/toolchains/${RUST_VERSION}-aarch64-apple-darwin/lib/rustlib/components"
     mv "${stage}" "${target}"
   fi
   # Wrapper semantics are part of the qualified route-toolchain identity. A
