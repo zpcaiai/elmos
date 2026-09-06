@@ -5,14 +5,15 @@ from __future__ import annotations
 import ctypes
 import json
 import os
+import threading
 from pathlib import Path
-from typing import Any, Optional
 
 _NATIVE_LIB = None
 _INIT_ATTEMPTED = False
+_INIT_LOCK = threading.Lock()
 
 
-def _find_library() -> Optional[str]:
+def _find_library() -> str | None:
     custom_path = os.environ.get("ELMOS_NATIVE_LIB")
     if custom_path and os.path.exists(custom_path):
         return custom_path
@@ -31,6 +32,11 @@ def _find_library() -> Optional[str]:
 
 
 def get_native_lib():
+    with _INIT_LOCK:
+        return _load_native_lib()
+
+
+def _load_native_lib():
     global _NATIVE_LIB, _INIT_ATTEMPTED
     if _NATIVE_LIB is not None:
         return _NATIVE_LIB
@@ -62,6 +68,11 @@ def get_native_lib():
             ctypes.c_char_p,
         ]
         lib.elmos_cas_put_bytes.restype = ctypes.c_void_p
+        if hasattr(lib, "elmos_cas_put_fd"):
+            lib.elmos_cas_put_fd.argtypes = [
+                ctypes.c_char_p, ctypes.c_int, ctypes.c_uint64, ctypes.c_char_p, ctypes.c_char_p,
+            ]
+            lib.elmos_cas_put_fd.restype = ctypes.c_void_p
 
         # void* elmos_cas_get_bytes(char* root, char* digest, int verify, size_t* out_len)
         lib.elmos_cas_get_bytes.argtypes = [
@@ -105,9 +116,9 @@ def is_native_available() -> bool:
 def native_put_bytes(
     root: Path | str,
     data: bytes,
-    expected_digest: Optional[str] = None,
+    expected_digest: str | None = None,
     artifact_kind: str = "blob",
-) -> Optional[str]:
+) -> str | None:
     lib = get_native_lib()
     if lib is None:
         return None
@@ -116,7 +127,9 @@ def native_put_bytes(
     expected_bytes = expected_digest.encode("utf-8") if expected_digest else None
     kind_bytes = artifact_kind.encode("utf-8")
 
-    data_buffer = (ctypes.c_uint8 * len(data)).from_buffer_copy(data)
+    # Immutable bytes stay strongly referenced throughout the synchronous native borrow.
+    # The C ABI never writes through this pointer; CDLL releases the GIL while Rust runs.
+    data_buffer = ctypes.cast(ctypes.c_char_p(data), ctypes.POINTER(ctypes.c_uint8))
     res_ptr = lib.elmos_cas_put_bytes(
         root_bytes,
         data_buffer,
@@ -137,7 +150,7 @@ def native_put_bytes(
         lib.elmos_free_string(res_ptr)
 
 
-def native_get_bytes(root: Path | str, digest: str, verify: bool = True) -> Optional[bytes]:
+def native_get_bytes(root: Path | str, digest: str, verify: bool = True) -> bytes | None:
     lib = get_native_lib()
     if lib is None:
         return None
@@ -163,7 +176,43 @@ def native_get_bytes(root: Path | str, digest: str, verify: bool = True) -> Opti
         lib.elmos_free_bytes(ptr, out_len.value)
 
 
-def native_contains(root: Path | str, digest: str) -> Optional[bool]:
+def native_put_file_descriptor(
+    root: Path, descriptor: int, max_bytes: int, expected_digest: str | None, artifact_kind: str,
+) -> str | None:
+    """None means unsupported ABI only. Native execution errors never silently fall back."""
+    from .canonical import require_digest
+    from .errors import DigestMismatch, QuotaExceeded
+
+    lib = get_native_lib()
+    if lib is None or not hasattr(lib, "elmos_cas_put_fd"):
+        return None
+    encoded_root = os.fsencode(root)
+    if (max_bytes < 0 or max_bytes > 2**64 - 1 or "\0" in artifact_kind
+            or b"\0" in encoded_root or descriptor < 0 or descriptor > 2**31 - 1):
+        raise ValueError("invalid native CAS stream argument")
+    if expected_digest is not None:
+        require_digest(expected_digest)
+    pointer = lib.elmos_cas_put_fd(
+        encoded_root, descriptor, max_bytes,
+        expected_digest.encode() if expected_digest is not None else None, artifact_kind.encode(),
+    )
+    if not pointer:
+        raise OSError("native CAS stream returned no result")
+    try:
+        result = json.loads(ctypes.string_at(pointer))
+        if "error" in result:
+            message = str(result["error"])
+            if message == "QuotaExceeded":
+                raise QuotaExceeded("object exceeds the configured CAS budget", size=max_bytes)
+            if message.startswith("digest mismatch:"):
+                raise DigestMismatch(message, expected=expected_digest)
+            raise OSError(message)
+        return require_digest(result["digest"])
+    finally:
+        lib.elmos_free_string(pointer)
+
+
+def native_contains(root: Path | str, digest: str) -> bool | None:
     lib = get_native_lib()
     if lib is None:
         return None
@@ -171,7 +220,7 @@ def native_contains(root: Path | str, digest: str) -> Optional[bool]:
     return res == 1
 
 
-def native_is_quarantined(root: Path | str, digest: str) -> Optional[bool]:
+def native_is_quarantined(root: Path | str, digest: str) -> bool | None:
     lib = get_native_lib()
     if lib is None:
         return None
@@ -179,7 +228,7 @@ def native_is_quarantined(root: Path | str, digest: str) -> Optional[bool]:
     return res == 1
 
 
-def native_quarantine(root: Path | str, digest: str, reason: str) -> Optional[bool]:
+def native_quarantine(root: Path | str, digest: str, reason: str) -> bool | None:
     lib = get_native_lib()
     if lib is None:
         return None

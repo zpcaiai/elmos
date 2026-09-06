@@ -7,10 +7,12 @@ import {
   oidcConfiguration,
   localAccountCookieDeletionOptions,
   localAccountCookieNames,
+  refreshSessionFromRequest,
   revokeToken,
   trustedPublicOrigin,
   unsafeCookieValue,
 } from "../../../lib/server/accountSession";
+import { revokeDescopeSession } from "../../../lib/server/descopeIdentity";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -25,7 +27,10 @@ export async function POST(request: NextRequest) {
   const accessToken = unsafeCookieValue(request, accountCookieNames.accessToken);
   let revocationConfirmed = false;
   try {
-    if (refreshToken || accessToken) {
+    const provider = refreshToken ? refreshSessionFromRequest(request).provider : "OIDC";
+    if (provider === "DESCOPE" && refreshToken) {
+      revocationConfirmed = await revokeDescopeSession(refreshToken);
+    } else if (refreshToken || accessToken) {
       revocationConfirmed = await revokeToken(refreshToken || accessToken);
     }
   } catch {

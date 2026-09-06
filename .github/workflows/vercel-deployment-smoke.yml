@@ -43,11 +43,13 @@ jobs:
         if: ${{ !inputs.deployment_url }}
         env:
           GITHUB_TOKEN: ${{ github.token }}
+          ELMOS_PRODUCTION_SMOKE_URL: ${{ vars.ELMOS_VERCEL_SMOKE_URL || 'https://elmos-alpha.vercel.app' }}
         run: >-
           python3 scripts/operations/wait_for_vercel_deployment.py
           --repository "${GITHUB_REPOSITORY}"
           --sha "${ELMOS_DEPLOYMENT_SHA}"
           --github-env "${GITHUB_ENV}"
+          --production-url "${ELMOS_PRODUCTION_SMOKE_URL}"
 
       - name: Set up Node.js 22
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7
