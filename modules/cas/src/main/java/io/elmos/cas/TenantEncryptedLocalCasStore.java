@@ -31,11 +31,25 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
     private final String name;
     private final Path root;
     private final TenantEncryption encryption;
+    private final long maximumStreamBytes;
+    private final long maximumLegacyBytes;
 
     public TenantEncryptedLocalCasStore(String name, Path root, TenantEncryption encryption) {
+        this(name, root, encryption, 1024L * 1024 * 1024, 64L * 1024 * 1024);
+    }
+
+    /** Legacy v2 reads need a bounded whole-envelope JCE operation; v3 is frame-bounded. */
+    public TenantEncryptedLocalCasStore(String name, Path root, TenantEncryption encryption,
+                                        long maximumStreamBytes, long maximumLegacyBytes) {
         this.name = CasText.required(name, "name");
         this.root = Objects.requireNonNull(root, "root").toAbsolutePath().normalize();
         this.encryption = Objects.requireNonNull(encryption, "encryption");
+        if (maximumStreamBytes < 1 || maximumStreamBytes > (1L << 40)
+                || maximumLegacyBytes < 0 || maximumLegacyBytes > Integer.MAX_VALUE - 1024 * 1024) {
+            throw new IllegalArgumentException("encrypted CAS input bounds are invalid");
+        }
+        this.maximumStreamBytes = maximumStreamBytes;
+        this.maximumLegacyBytes = maximumLegacyBytes;
         if (!encryption.encryptsAtRest()) {
             throw new IllegalArgumentException(
                     "tenant encrypted store requires application-layer encryption");
@@ -118,30 +132,32 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
 
         @Override
         public void put(CasDigest expected, byte[] content) {
-            CasDigest actual = CasDigest.of(content);
-            if (!actual.equals(expected)) {
-                throw new CasExceptions.CasCorruptionException(name(), expected, actual);
-            }
+            putDurable(expected, new java.io.ByteArrayInputStream(content));
+        }
+
+        @Override
+        public void putDurable(CasDigest expected, java.io.InputStream content) {
+            requireStreamSize(expected);
             Path target = pathFor(expected);
-            if (contains(expected)) {
-                verifyStored(expected);
-                return;
-            }
-            TenantEncryption.Envelope envelope = encryption.seal(tenantId, expected, content);
-            byte[] encoded = encode(envelope);
-            try {
+            try (CasContent verified = CasContent.capture(expected, content)) {
+                if (contains(expected)) {
+                    verifyStored(expected);
+                    return;
+                }
                 Files.createDirectories(target.getParent());
                 Path temporary = Files.createTempFile(root.resolve("staging"), namespace + "-", ".part");
                 try {
-                    Files.write(temporary, encoded);
+                    try (var input = verified.openStream(); var output = Files.newOutputStream(temporary)) {
+                        FramedTenantCipher.write(encryption, tenantId, expected, input, output);
+                    }
+                    try (var channel = java.nio.channels.FileChannel.open(temporary,
+                            java.nio.file.StandardOpenOption.WRITE)) { channel.force(true); }
                     moveIntoPlace(temporary, target);
                 } finally {
                     Files.deleteIfExists(temporary);
                 }
             } catch (IOException error) {
                 throw new UncheckedIOException("cannot store encrypted " + expected.compact(), error);
-            } finally {
-                Arrays.fill(encoded, (byte) 0);
             }
             // A concurrent publisher may have won the immutable name. Never report success until
             // the bytes that actually won that name authenticate and hash to the requested digest.
@@ -150,6 +166,60 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
 
         @Override
         public byte[] get(CasDigest digest) {
+            if (digest.sizeBytes() > Integer.MAX_VALUE - 8) {
+                throw new IllegalArgumentException("large encrypted object requires openVerified");
+            }
+            try (var input = openVerified(digest)) { return input.readAllBytes(); }
+            catch (IOException error) { throw new UncheckedIOException(error); }
+        }
+
+        @Override
+        public java.io.InputStream openVerified(CasDigest digest) {
+            requireStreamSize(digest);
+            Path path = pathFor(digest);
+            if (!contains(digest)) throw new CasExceptions.CasNotFoundException(digest);
+            try (var input = Files.newInputStream(path)) {
+                byte[] magic = input.readNBytes(MAGIC.length);
+                if (Arrays.equals(magic, MAGIC)) {
+                    if (digest.sizeBytes() > maximumLegacyBytes) {
+                        throw new IllegalArgumentException("CAS_LEGACY_V2_REQUIRES_BOUNDED_OFFLINE_MIGRATION");
+                    }
+                    byte[] plaintext = readLegacy(digest);
+                    try {
+                        return CasContent.capture(digest, new java.io.ByteArrayInputStream(plaintext)).ownedStream();
+                    } finally { Arrays.fill(plaintext, (byte) 0); }
+                }
+                if (!Arrays.equals(magic, FramedTenantCipher.MAGIC)
+                        || Files.size(path) > FramedTenantCipher.maximumPhysicalBytes(encryption, digest.sizeBytes())) {
+                    throw new CasExceptions.CasCorruptionException(name(), digest, CasDigest.ofUtf8("invalid envelope size or version"));
+                }
+                try (var decrypted = FramedTenantCipher.decrypt(encryption, tenantId, digest, input)) {
+                    // No caller observes even the first plaintext byte before ALL tags and SHA pass.
+                    return CasContent.capture(digest, decrypted).ownedStream();
+                }
+            } catch (CasExceptions.CasCorruptionException corruption) {
+                if (contains(digest)) quarantine(digest, path, "stream-authentication-failed");
+                throw corruption;
+            } catch (CasExceptions.CasAccessDeniedException denied) {
+                if (Set.of("TENANT_CIPHERTEXT_AUTHENTICATION_FAILED", "TENANT_KMS_ENVELOPE_MALFORMED",
+                        "TENANT_KMS_ENVELOPE_KEY_MISMATCH").contains(denied.reason())) {
+                    if (contains(digest)) quarantine(digest, path, "stream-key-authentication-failed");
+                    throw new CasExceptions.CasCorruptionException(name(), digest, CasDigest.ofUtf8("invalid encrypted key"));
+                }
+                throw denied;
+            } catch (java.io.EOFException truncated) {
+                if (contains(digest)) quarantine(digest, path, "stream-truncated");
+                throw new CasExceptions.CasCorruptionException(name(), digest, CasDigest.ofUtf8("truncated encrypted stream"));
+            } catch (IOException error) { throw new UncheckedIOException("cannot read encrypted stream", error); }
+        }
+
+        private void requireStreamSize(CasDigest digest) {
+            if (digest.sizeBytes() > maximumStreamBytes) {
+                throw new IllegalArgumentException("encrypted CAS object exceeds streaming byte budget");
+            }
+        }
+
+        private byte[] readLegacy(CasDigest digest) {
             Path path = pathFor(digest);
             if (!contains(digest)) {
                 throw new CasExceptions.CasNotFoundException(digest);
@@ -280,8 +350,8 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
         }
 
         private void verifyStored(CasDigest digest) {
-            byte[] verified = get(digest);
-            Arrays.fill(verified, (byte) 0);
+            try (var verified = openVerified(digest)) { /* Authentication completed before return. */ }
+            catch (IOException error) { throw new UncheckedIOException(error); }
         }
     }
 
