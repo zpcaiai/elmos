@@ -1,0 +1,4 @@
+# Reference tests only. Exact installed versions are recorded in the validation report.
+jsonschema>=4,<5
+debugpy>=1.8,<2
+PyYAML>=6,<7

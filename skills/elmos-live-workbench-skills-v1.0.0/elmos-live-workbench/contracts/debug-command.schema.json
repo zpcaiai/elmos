@@ -1,0 +1,105 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/debug-command.schema.json",
+  "title": "debug-command",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "idempotency_key": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generation": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "stop_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "control_lease_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "command": {
+      "type": "string",
+      "enum": [
+        "stackTrace",
+        "scopes",
+        "variables",
+        "threads",
+        "next",
+        "stepIn",
+        "stepOut",
+        "continue",
+        "pause",
+        "terminate",
+        "evaluate",
+        "setVariable",
+        "setExpression",
+        "runInTerminal"
+      ]
+    },
+    "arguments_digest": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "required_capability": {
+      "type": "string",
+      "enum": [
+        "inspect",
+        "control",
+        "mutate",
+        "host-exec"
+      ]
+    },
+    "authorization_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "deadline": {
+      "type": "number",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "session_id",
+    "command_id",
+    "idempotency_key",
+    "generation",
+    "stop_epoch",
+    "control_lease_id",
+    "command",
+    "arguments_digest",
+    "required_capability",
+    "authorization_ref",
+    "deadline"
+  ],
+  "additionalProperties": false
+}

@@ -612,6 +612,7 @@ include Makefile.batch33
 include Makefile.batch34
 include Makefile.batch35
 include Makefile.batch36
+include Makefile.live-workbench
 include Makefile.batch37
 include Makefile.batch38
 include Makefile.batch39

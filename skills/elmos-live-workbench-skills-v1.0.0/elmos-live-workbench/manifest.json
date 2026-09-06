@@ -1,0 +1,239 @@
+{
+  "name": "elmos-live-workbench",
+  "version": "1.0.0",
+  "created_on": "2026-09-06",
+  "kind": "additive-implementation-skillpack",
+  "external_router_count": 1,
+  "internal_workflow_count": 28,
+  "skills": [
+    {
+      "id": "LW-01",
+      "name": "elmos-lw-artifact-contract",
+      "priority": "P0",
+      "title": "生成/转换产物交付契约",
+      "path": "skills/P0/elmos-lw-artifact-contract",
+      "existing_owner": "elmos-project-package-manifest"
+    },
+    {
+      "id": "LW-02",
+      "name": "elmos-lw-revision-source-anchor",
+      "priority": "P0",
+      "title": "不可变源码锚点与坐标",
+      "path": "skills/P0/elmos-lw-revision-source-anchor",
+      "existing_owner": "elmos-evidence-provenance"
+    },
+    {
+      "id": "LW-03",
+      "name": "elmos-lw-reader-semantic-navigation",
+      "priority": "P0",
+      "title": "源码阅读与语义导航",
+      "path": "skills/P0/elmos-lw-reader-semantic-navigation",
+      "existing_owner": "elmos-online-code-reader"
+    },
+    {
+      "id": "LW-04",
+      "name": "elmos-lw-line-teaching",
+      "priority": "P0",
+      "title": "按行/语句证据化教学",
+      "path": "skills/P0/elmos-lw-line-teaching",
+      "existing_owner": "elmos-code-explanation"
+    },
+    {
+      "id": "LW-05",
+      "name": "elmos-lw-module-teaching",
+      "priority": "P0",
+      "title": "模块职责、契约与业务切片教学",
+      "path": "skills/P0/elmos-lw-module-teaching",
+      "existing_owner": "elmos-code-explanation"
+    },
+    {
+      "id": "LW-06",
+      "name": "elmos-lw-architecture-teaching",
+      "priority": "P0",
+      "title": "架构分析与图谱教学",
+      "path": "skills/P0/elmos-lw-architecture-teaching",
+      "existing_owner": "elmos-project-intelligence-graph"
+    },
+    {
+      "id": "LW-07",
+      "name": "elmos-lw-conversion-correspondence",
+      "priority": "P0",
+      "title": "转换来源与语义检查点映射",
+      "path": "skills/P0/elmos-lw-conversion-correspondence",
+      "existing_owner": "elmos-repository-semantic-compiler"
+    },
+    {
+      "id": "LW-08",
+      "name": "elmos-lw-runtime-profile",
+      "priority": "P0",
+      "title": "运行/调试适配器资格矩阵",
+      "path": "skills/P0/elmos-lw-runtime-profile",
+      "existing_owner": "elmos-debug-adapter-gateway"
+    },
+    {
+      "id": "LW-09",
+      "name": "elmos-lw-prebuild-cache",
+      "priority": "P0",
+      "title": "预构建、缓存与快速首见",
+      "path": "skills/P0/elmos-lw-prebuild-cache",
+      "existing_owner": "elmos-project-preview"
+    },
+    {
+      "id": "LW-10",
+      "name": "elmos-lw-demo-data-services",
+      "priority": "P0",
+      "title": "演示数据与依赖服务闭包",
+      "path": "skills/P0/elmos-lw-demo-data-services",
+      "existing_owner": "elmos-debug-sandbox-orchestration"
+    },
+    {
+      "id": "LW-11",
+      "name": "elmos-lw-sandbox-resource-admission",
+      "priority": "P0",
+      "title": "隔离执行与完整窗口资源准入",
+      "path": "skills/P0/elmos-lw-sandbox-resource-admission",
+      "existing_owner": "elmos-debug-sandbox-orchestration"
+    },
+    {
+      "id": "LW-12",
+      "name": "elmos-lw-readiness-verification",
+      "priority": "P0",
+      "title": "可交互就绪验收",
+      "path": "skills/P0/elmos-lw-readiness-verification",
+      "existing_owner": "elmos-project-preview"
+    },
+    {
+      "id": "LW-13",
+      "name": "elmos-lw-preview-lease-600s",
+      "priority": "P0",
+      "title": "服务端600秒预览生命周期",
+      "path": "skills/P0/elmos-lw-preview-lease-600s",
+      "existing_owner": "elmos-project-preview"
+    },
+    {
+      "id": "LW-14",
+      "name": "elmos-lw-preview-access-isolation",
+      "priority": "P0",
+      "title": "预览访问代理与浏览器隔离",
+      "path": "skills/P0/elmos-lw-preview-access-isolation",
+      "existing_owner": "elmos-project-preview"
+    },
+    {
+      "id": "LW-15",
+      "name": "elmos-lw-debug-adapter-broker",
+      "priority": "P0",
+      "title": "DAP/CDP适配器会话网关",
+      "path": "skills/P0/elmos-lw-debug-adapter-broker",
+      "existing_owner": "elmos-debug-adapter-gateway"
+    },
+    {
+      "id": "LW-16",
+      "name": "elmos-lw-breakpoint-binding",
+      "priority": "P0",
+      "title": "断点与运行源码精准绑定",
+      "path": "skills/P0/elmos-lw-breakpoint-binding",
+      "existing_owner": "elmos-online-debug-workbench"
+    },
+    {
+      "id": "LW-17",
+      "name": "elmos-lw-debug-command-safety",
+      "priority": "P0",
+      "title": "调试命令权限、epoch与恢复",
+      "path": "skills/P0/elmos-lw-debug-command-safety",
+      "existing_owner": "elmos-online-debug-workbench"
+    },
+    {
+      "id": "LW-18",
+      "name": "elmos-lw-execution-evidence-linking",
+      "priority": "P0",
+      "title": "运行轨迹、变量与架构关联",
+      "path": "skills/P0/elmos-lw-execution-evidence-linking",
+      "existing_owner": "elmos-distributed-debug-correlation"
+    },
+    {
+      "id": "LW-19",
+      "name": "elmos-lw-guided-learning-mission",
+      "priority": "P0",
+      "title": "可验证源码学习任务",
+      "path": "skills/P0/elmos-lw-guided-learning-mission",
+      "existing_owner": "elmos-debug-learning-copilot"
+    },
+    {
+      "id": "LW-20",
+      "name": "elmos-lw-acceptance-fixtures",
+      "priority": "P0",
+      "title": "功能、安全与十分钟验收门禁",
+      "path": "skills/P0/elmos-lw-acceptance-fixtures",
+      "existing_owner": "elmos-functional-assurance-integration"
+    },
+    {
+      "id": "LW-21",
+      "name": "elmos-lw-differential-debug-lab",
+      "priority": "P1",
+      "title": "源/目标双运行差分教学",
+      "path": "skills/P1/elmos-lw-differential-debug-lab",
+      "existing_owner": "elmos-distributed-debug-correlation"
+    },
+    {
+      "id": "LW-22",
+      "name": "elmos-lw-edit-rebuild-invalidation",
+      "priority": "P1",
+      "title": "练习编辑、重构建与证据失效",
+      "path": "skills/P1/elmos-lw-edit-rebuild-invalidation",
+      "existing_owner": "elmos-project-version"
+    },
+    {
+      "id": "LW-23",
+      "name": "elmos-lw-replay-timeline-inputs",
+      "priority": "P1",
+      "title": "事件回看与输入重放",
+      "path": "skills/P1/elmos-lw-replay-timeline-inputs",
+      "existing_owner": "elmos-debug-record-replay"
+    },
+    {
+      "id": "LW-24",
+      "name": "elmos-lw-failure-triage-repair",
+      "priority": "P1",
+      "title": "启动/调试失败诊断与有界修复",
+      "path": "skills/P1/elmos-lw-failure-triage-repair",
+      "existing_owner": "elmos-debug-learning-copilot"
+    },
+    {
+      "id": "LW-25",
+      "name": "elmos-lw-assessment-accessibility-collaboration",
+      "priority": "P1",
+      "title": "教学评估、可访问性与协作",
+      "path": "skills/P1/elmos-lw-assessment-accessibility-collaboration",
+      "existing_owner": "elmos-onboarding-learning-path"
+    },
+    {
+      "id": "LW-26",
+      "name": "elmos-lw-evidence-privacy-export",
+      "priority": "P1",
+      "title": "证据导出、保留与用户数据治理",
+      "path": "skills/P1/elmos-lw-evidence-privacy-export",
+      "existing_owner": "elmos-evidence-provenance"
+    },
+    {
+      "id": "LW-27",
+      "name": "elmos-lw-distributed-coordinated-debug",
+      "priority": "P2",
+      "title": "分布式协同断点实验",
+      "path": "skills/P2/elmos-lw-distributed-coordinated-debug",
+      "existing_owner": "elmos-distributed-debug-correlation"
+    },
+    {
+      "id": "LW-28",
+      "name": "elmos-lw-native-device-lab",
+      "priority": "P2",
+      "title": "原生桌面/移动/设备实验室",
+      "path": "skills/P2/elmos-lw-native-device-lab",
+      "existing_owner": "elmos-debug-sandbox-orchestration"
+    }
+  ],
+  "base_family": "Elmos Proof-Driven Agentic Harness / Repository Semantic Compiler v3",
+  "compatibility": "design-aligned; live-repository-integration-not-executed",
+  "public_preview_seconds": 600,
+  "assurance": "no production certification; no E5 authority",
+  "license_note": "Original documents and fixtures; third-party tools not redistributed."
+}

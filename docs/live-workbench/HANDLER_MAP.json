@@ -1,0 +1,38 @@
+{
+  "schema_version": "lw.v1",
+  "source_archive_sha256": "c7619ce2955b083e39660a159166b6c9b498855203a55b5b8dd3b2cc68d84cfe",
+  "handlers": {
+    "elmos-lw-artifact-contract": "registerArtifactDelivery",
+    "elmos-lw-revision-source-anchor": "registerAnchor",
+    "elmos-lw-reader-semantic-navigation": "readSource",
+    "elmos-lw-line-teaching": "explain",
+    "elmos-lw-module-teaching": "explain",
+    "elmos-lw-architecture-teaching": "explain",
+    "elmos-lw-conversion-correspondence": "registerCorrespondence",
+    "elmos-lw-runtime-profile": "registerRuntimeProfile",
+    "elmos-lw-prebuild-cache": "prebuildCacheKey",
+    "elmos-lw-demo-data-services": "admitDemoDependencies",
+    "elmos-lw-sandbox-resource-admission": "createPreviewSession",
+    "elmos-lw-readiness-verification": "commitReadiness",
+    "elmos-lw-preview-lease-600s": "previewStatus",
+    "elmos-lw-preview-access-isolation": "authorizePreviewAccess",
+    "elmos-lw-debug-adapter-broker": "submitDebug",
+    "elmos-lw-breakpoint-binding": "bindBreakpoint",
+    "elmos-lw-debug-command-safety": "submitDebug",
+    "elmos-lw-execution-evidence-linking": "linkRuntimeEvidence",
+    "elmos-lw-guided-learning-mission": "registerMission",
+    "elmos-lw-acceptance-fixtures": "registerArtifactDelivery",
+    "elmos-lw-differential-debug-lab": "compareObservedValues",
+    "elmos-lw-edit-rebuild-invalidation": "invalidateForNewSnapshot",
+    "elmos-lw-replay-timeline-inputs": "replayTimeline",
+    "elmos-lw-failure-triage-repair": "triage",
+    "elmos-lw-assessment-accessibility-collaboration": "assessmentAccess",
+    "elmos-lw-evidence-privacy-export": "exportClaims",
+    "elmos-lw-distributed-coordinated-debug": "distributedDebugAvailability",
+    "elmos-lw-native-device-lab": "nativeDeviceLabAvailability"
+  },
+  "host_bound_skills": [
+    "elmos-lw-distributed-coordinated-debug",
+    "elmos-lw-native-device-lab"
+  ]
+}
