@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "kotlin-jvm-linux",
+  "language": "Kotlin",
+  "framework": "JVM service",
+  "runtime": "JVM",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "java-debug + Kotlin symbol integration",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "api",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "coroutine/source-mapping requires independent proof",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}

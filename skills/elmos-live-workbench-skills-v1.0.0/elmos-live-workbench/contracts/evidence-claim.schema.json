@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://schemas.elmos.invalid/lw/v1/evidence-claim.schema.json",
+  "title": "evidence-claim",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "const": "lw.v1"
+    },
+    "tenant_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^sha256:[a-f0-9]{64}$"
+    },
+    "claim_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "text": {
+      "type": "string",
+      "minLength": 1
+    },
+    "classification": {
+      "type": "string",
+      "enum": [
+        "verified-static",
+        "runtime-observed",
+        "inferred",
+        "unknown",
+        "recommended"
+      ]
+    },
+    "source_anchor_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "runtime_event_ids": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "assumptions": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "evidence_limitations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "generator_version": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant_id",
+    "repository_id",
+    "snapshot_id",
+    "claim_id",
+    "text",
+    "classification",
+    "source_anchor_ids",
+    "runtime_event_ids",
+    "assumptions",
+    "evidence_limitations",
+    "generator_version"
+  ],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "classification": {
+            "const": "verified-static"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "source_anchor_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "classification": {
+            "const": "runtime-observed"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "runtime_event_ids": {
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ]
+}

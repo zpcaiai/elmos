@@ -1,0 +1,21 @@
+{
+  "schema_version": "lw.v1",
+  "profile_id": "rust-cpp-linux",
+  "language": "Rust/C++",
+  "framework": "native CLI/HTTP",
+  "runtime": "native",
+  "os": "linux",
+  "arch": "x86_64",
+  "adapter": "lldb-dap",
+  "adapter_version": null,
+  "runtime_digest": null,
+  "preview_kind": "cli",
+  "qualification_status": "candidate",
+  "capabilities": [],
+  "evidence_ids": [],
+  "limitations": [
+    "DWARF/optimization/toolchain conditions",
+    "Candidate only; no deployment qualification supplied in this package."
+  ],
+  "license_review_required": true
+}
