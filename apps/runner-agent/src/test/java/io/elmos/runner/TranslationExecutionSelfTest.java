@@ -58,7 +58,11 @@ final class TranslationExecutionSelfTest {
             var client=new ControlPlaneClient(config);var metrics=new AgentMetrics();
             var phases=new java.util.ArrayList<String>();
             ProcessRunner processes=new ProcessRunner() {
-                public Result run(List<String> command,Path cwd,Map<String,String> env,long timeout) {return new Result(0,"","",false);}
+                public Result run(List<String> command,Path cwd,Map<String,String> env,long timeout) {
+                    // This phase fixture has no real containers. Resource identity
+                    // and immutable-ID cleanup have a separate stateful fixture.
+                    return new Result(command.contains("inspect") ? 1 : 0,"","",false);
+                }
                 public Handle start(List<String> command,Path cwd,Map<String,String> env,java.util.function.Consumer<String> log) {
                     try {
                         String phase=command.stream().filter(arg->arg.startsWith("--env=ELMOS_JOB_KIND=")).findFirst().orElseThrow().substring("--env=ELMOS_JOB_KIND=".length());

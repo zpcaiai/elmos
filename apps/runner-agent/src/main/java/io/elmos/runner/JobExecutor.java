@@ -64,7 +64,7 @@ public final class JobExecutor {
         try {
             ContainerRuntime.validateImage(lease.runnerImage());
 
-            workspace = JobWorkspace.create(config.workRoot(), lease.jobId(),
+            workspace = JobWorkspace.create(config.workRoot(), lease,
                     config.workloadUid(), config.workloadGid());
             workspace.writeInput("request.json", Json.write(lease.requestPayload()));
             workspace.writeInput("checkpoint.json", Json.write(lease.checkpointCursor()));
