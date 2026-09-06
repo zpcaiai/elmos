@@ -10,6 +10,7 @@ import {
   type Stats,
 } from "node:fs";
 import { inflateRawSync } from "node:zlib";
+import { LocalProcessCapacity } from "./localProcessCapacity";
 import {
   access,
   lstat,
@@ -1460,6 +1461,7 @@ async function boundedOpenPipelineFile(
   relativePath: string,
   maximumBytes: number,
   errorCode: string,
+  hashBeforeUse = true,
 ): Promise<OpenedPipelineFile> {
   const candidate = confined(pipeline, relativePath);
   let resolved: string;
@@ -1488,7 +1490,7 @@ async function boundedOpenPipelineFile(
     if (!info.isFile() || info.nlink !== 1 || info.size < 1 || info.size > maximumBytes) {
       fail(409, errorCode);
     }
-    const sha256 = await sha256OpenPipelineFile(handle, info, errorCode);
+    const sha256 = hashBeforeUse ? await sha256OpenPipelineFile(handle, info, errorCode) : "";
     return { handle, path: resolved, size: info.size, sha256, stats: info };
   } catch (error) {
     await handle.close().catch(() => undefined);
@@ -3098,6 +3100,12 @@ export async function cancelTranslationJob(
   return job;
 }
 
+const artifactCapacityState = globalThis as typeof globalThis & {
+  __elmosTranslationArtifactCapacity?: LocalProcessCapacity;
+};
+const artifactCapacity = artifactCapacityState.__elmosTranslationArtifactCapacity
+  ??= new LocalProcessCapacity();
+
 export async function translationArtifact(
   context: AuthorizedContext,
   jobId: string,
@@ -3126,11 +3134,29 @@ export async function translationArtifact(
     bytes: job.artifactSize,
     sha256: job.artifactSha256,
   };
-  const artifact = await verifiedOpenPipelineFile(
-    confined(jobRoot(runner, context, jobId), "pipeline"),
-    descriptor,
-    "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
-  );
+  let admission: ReturnType<typeof artifactCapacity.acquire>;
+  try {
+    admission = artifactCapacity.acquire(context.tenantId, 4, 2);
+  } catch {
+    fail(429, "TRANSLATION_ARTIFACT_CAPACITY_REACHED");
+  }
+  // The archive validator hashes the same opened handle while inspecting every
+  // entry. Avoid a redundant full read before that complete verification pass.
+  let artifact: OpenedPipelineFile;
+  try {
+    artifact = await boundedOpenPipelineFile(
+      confined(jobRoot(runner, context, jobId), "pipeline"),
+      descriptor.path,
+      descriptor.bytes,
+      "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH",
+      false,
+    );
+  } catch (error) {
+    admission.release();
+    throw error;
+  }
+  // A slow reader retains its slot until the same verified handle closes.
+  artifact.handle.once("close", admission.release);
   try {
     await validateTranslationCodeArtifactArchive(
       artifact.handle,
@@ -3144,6 +3170,10 @@ export async function translationArtifact(
         summary: job.conversionSummary,
       },
     );
+    if (!sameOpenFileStats(artifact.stats, await artifact.handle.stat())) {
+      fail(409, "TRANSLATION_ARTIFACT_INTEGRITY_MISMATCH");
+    }
+    artifact.sha256 = descriptor.sha256;
     return artifact;
   } catch {
     await artifact.handle.close().catch(() => undefined);
