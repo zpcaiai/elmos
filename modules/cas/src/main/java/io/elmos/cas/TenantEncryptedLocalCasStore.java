@@ -34,6 +34,8 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
     private final long maximumStreamBytes;
     private final long maximumLegacyBytes;
 
+    static boolean isLocalScopedStore(CasStore store) { return store instanceof ScopedStore; }
+
     public TenantEncryptedLocalCasStore(String name, Path root, TenantEncryption encryption) {
         this(name, root, encryption, 1024L * 1024 * 1024, 64L * 1024 * 1024);
     }
@@ -97,6 +99,11 @@ public final class TenantEncryptedLocalCasStore implements TenantCasStore {
         private final String namespace;
         private final Path blobs;
         private final Path quarantine;
+
+        @Override
+        public CasCatalog.DurableObjectEnsurer publicationEnsurer(java.util.Map<CasDigest, CasContent> staged) {
+            return new LocalCasPublication(this, staged);
+        }
 
         private ScopedStore(String tenantId) {
             this.tenantId = tenantId;

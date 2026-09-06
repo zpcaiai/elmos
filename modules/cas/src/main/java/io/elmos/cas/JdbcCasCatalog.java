@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 
 /**
- * PostgreSQL implementation of {@link CasCatalog} against the V65-V76 CAS schema, using
+ * PostgreSQL implementation of {@link CasCatalog} against the V65-V83 CAS schema, using
  * {@code java.sql} only — no ORM, no Spring, no driver-specific API. The driver is supplied by
  * whoever builds the {@link DataSource}.
  *
@@ -31,9 +31,18 @@ public final class JdbcCasCatalog implements CasCatalog {
 
     private static final Executor DIRECT_ABORT_EXECUTOR = Runnable::run;
     private final DataSource dataSource;
+    private final int publicationLeaseSeconds;
 
     public JdbcCasCatalog(DataSource dataSource) {
+        this(dataSource, java.time.Duration.ofMinutes(30));
+    }
+
+    /** Host-owned lease budget; expiry never establishes that a writer has stopped. */
+    public JdbcCasCatalog(DataSource dataSource, java.time.Duration publicationLease) {
         this.dataSource = Objects.requireNonNull(dataSource, "dataSource");
+        long seconds = Objects.requireNonNull(publicationLease, "publicationLease").toSeconds();
+        if (seconds < 1 || seconds > 3600) throw new IllegalArgumentException("CAS publication lease must be 1..3600 seconds");
+        this.publicationLeaseSeconds = Math.toIntExact(seconds);
     }
 
     private interface Work<T> {
@@ -142,14 +151,8 @@ public final class JdbcCasCatalog implements CasCatalog {
         ReferenceRoot first = requireEntryRootSet(entry, requestedRoots);
         Objects.requireNonNull(durableObjectEnsurer, "durableObjectEnsurer");
         Map<String, ReferenceRoot> requestedByHex = requestedRootMap(requestedRoots);
-        return inTenant(entry.tenantId(), connection -> {
-            ensureActiveTenant(connection, entry.tenantId());
-            List<CasDigest> digests = requestedRoots.stream()
-                    .map(ReferenceRoot::digest).distinct().toList();
-            lockObjectLifecycles(connection, entry.tenantId(), digests);
-            ensureNoActiveDeletionTombstones(connection, entry.tenantId(), digests);
-            durableObjectEnsurer.ensureDurable();
-            clearRepairableDeletionTombstones(connection, entry.tenantId(), digests);
+        List<CasDigest> digests = requestedRoots.stream().map(ReferenceRoot::digest).distinct().toList();
+        return withPublicationPins(entry.tenantId(), null, digests, durableObjectEnsurer, connection -> {
             record(connection, entry);
             return addReferenceRoots(connection, first, requestedByHex);
         });
@@ -463,18 +466,8 @@ public final class JdbcCasCatalog implements CasCatalog {
             throw new IllegalArgumentException(
                     "catalogue entry and resource binding must identify the same tenant object");
         }
-        inTenant(entry.tenantId(), connection -> {
-            lockTenantLifecycle(connection, entry.tenantId());
-            lockResourceLifecycle(connection, entry.tenantId(),
-                    binding.resourceKind(), binding.resourceId());
-            requireExactActiveResource(connection, resource);
-            requireBindingResource(binding, resource);
-            lockObjectLifecycles(connection, entry.tenantId(), List.of(entry.digest()));
-            ensureNoActiveDeletionTombstones(
-                    connection, entry.tenantId(), List.of(entry.digest()));
-            durableObjectEnsurer.ensureDurable();
-            clearRepairableDeletionTombstones(
-                    connection, entry.tenantId(), List.of(entry.digest()));
+        requireBindingResource(binding, resource);
+        withPublicationPins(entry.tenantId(), resource, List.of(entry.digest()), durableObjectEnsurer, connection -> {
             record(connection, entry);
             bindResource(connection, binding, resource);
             return null;
@@ -701,14 +694,8 @@ public final class JdbcCasCatalog implements CasCatalog {
         ReferenceRoot first = requireOneRootSet(requestedRoots);
         Objects.requireNonNull(durableObjectEnsurer, "durableObjectEnsurer");
         Map<String, ReferenceRoot> requestedByHex = requestedRootMap(requestedRoots);
-        return inTenant(first.tenantId(), connection -> {
-            ensureActiveTenant(connection, first.tenantId());
-            List<CasDigest> digests = requestedRoots.stream()
-                    .map(ReferenceRoot::digest).distinct().toList();
-            lockObjectLifecycles(connection, first.tenantId(), digests);
-            ensureNoActiveDeletionTombstones(connection, first.tenantId(), digests);
-            durableObjectEnsurer.ensureDurable();
-            clearRepairableDeletionTombstones(connection, first.tenantId(), digests);
+        List<CasDigest> digests = requestedRoots.stream().map(ReferenceRoot::digest).distinct().toList();
+        return withPublicationPins(first.tenantId(), null, digests, durableObjectEnsurer, connection -> {
             return addReferenceRoots(connection, first, requestedByHex);
         });
     }
@@ -726,17 +713,8 @@ public final class JdbcCasCatalog implements CasCatalog {
             throw new IllegalArgumentException("resource and roots must share a tenant");
         }
         Map<String, ReferenceRoot> requestedByHex = requestedRootMap(requestedRoots);
-        return inTenant(first.tenantId(), connection -> {
-            lockTenantLifecycle(connection, resource.tenantId());
-            lockResourceLifecycle(connection, resource.tenantId(),
-                    resource.resourceKind(), resource.resourceId());
-            requireExactActiveResource(connection, resource);
-            List<CasDigest> digests = requestedRoots.stream()
-                    .map(ReferenceRoot::digest).distinct().toList();
-            lockObjectLifecycles(connection, first.tenantId(), digests);
-            ensureNoActiveDeletionTombstones(connection, first.tenantId(), digests);
-            durableObjectEnsurer.ensureDurable();
-            clearRepairableDeletionTombstones(connection, first.tenantId(), digests);
+        List<CasDigest> digests = requestedRoots.stream().map(ReferenceRoot::digest).distinct().toList();
+        return withPublicationPins(first.tenantId(), resource, digests, durableObjectEnsurer, connection -> {
             return addReferenceRoots(connection, first, requestedByHex, resource);
         });
     }
@@ -1158,6 +1136,16 @@ public final class JdbcCasCatalog implements CasCatalog {
         return inTenant(candidate.tenantId(), connection -> {
             lockObjectLifecycles(
                     connection, candidate.tenantId(), List.of(candidate.digest()));
+            try (PreparedStatement pins = connection.prepareStatement("""
+                    SELECT 1 FROM cas_object_publication_pins
+                     WHERE organization_id = ? AND digest_hex = ? AND pin_state <> 'RELEASED' LIMIT 1
+                    """)) {
+                pins.setString(1, candidate.tenantId());
+                pins.setString(2, candidate.digest().hex());
+                try (ResultSet rows = pins.executeQuery()) {
+                    if (rows.next()) return DeletionStart.LIVE_REFERENCE_OR_HOLD;
+                }
+            }
             try (PreparedStatement existingTombstone = connection.prepareStatement("""
                     SELECT deletion_state
                       FROM cas_object_deletion_tombstones
@@ -1449,6 +1437,190 @@ public final class JdbcCasCatalog implements CasCatalog {
             throw new IllegalArgumentException(
                     "binding and resource lifecycle identify different resources");
         }
+    }
+
+    /**
+     * Three phases: a short pin transaction, unconnected physical I/O, then an epoch-bound
+     * publication transaction. A GC attempt takes the same object lock before inspecting pins.
+     * Expired/crashed writers remain GC blockers until their physical effects are reconciled.
+     */
+    private <T> T withPublicationPins(String tenantId, ResourceLifecycle resource,
+                                     List<CasDigest> requested, DurableObjectEnsurer writer,
+                                     Work<T> publication) {
+        List<CasDigest> digests = requested.stream().distinct()
+                .sorted(java.util.Comparator.comparing(CasDigest::hex)).toList();
+        if (digests.isEmpty() || digests.size() > 128) {
+            throw new IllegalArgumentException("CAS publication requires 1..128 distinct objects");
+        }
+        String pinId = java.util.UUID.randomUUID().toString();
+        long epoch = inTenant(tenantId, connection -> {
+            long currentEpoch = lockPublicationScope(connection, tenantId, resource, digests);
+            maintainPublicationPins(connection, tenantId);
+            try (PreparedStatement budget = connection.prepareStatement("""
+                    SELECT count(*) FROM cas_object_publication_pins
+                     WHERE organization_id = ? AND pin_state <> 'RELEASED'
+                    """)) {
+                budget.setString(1, tenantId);
+                try (ResultSet rows = budget.executeQuery()) {
+                    rows.next();
+                    if (rows.getLong(1) + digests.size() > 128) {
+                        throw new IllegalStateException("CAS_PUBLICATION_PIN_CAPACITY_EXCEEDED");
+                    }
+                }
+            }
+            try (PreparedStatement insert = connection.prepareStatement("""
+                    INSERT INTO cas_object_publication_pins
+                        (organization_id, publication_id, digest_hex, size_bytes, tenant_epoch,
+                         resource_kind, resource_id, resource_epoch, lease_expires_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, clock_timestamp() + make_interval(secs => ?))
+                    """)) {
+                for (CasDigest digest : digests) {
+                    insert.setString(1, tenantId);
+                    insert.setString(2, pinId);
+                    insert.setString(3, digest.hex());
+                    insert.setLong(4, digest.sizeBytes());
+                    insert.setLong(5, currentEpoch);
+                    insert.setString(6, resource == null ? null : resource.resourceKind().name());
+                    insert.setString(7, resource == null ? null : resource.resourceId());
+                    if (resource == null) insert.setNull(8, java.sql.Types.BIGINT);
+                    else insert.setLong(8, resource.resourceEpoch());
+                    insert.setInt(9, publicationLeaseSeconds);
+                    insert.addBatch();
+                }
+                insert.executeBatch();
+            }
+            return currentEpoch;
+        });
+        Throwable failure = null;
+        boolean published = false;
+        boolean physicalCompleted = false;
+        try {
+            // inTenant has committed AND closed its connection before this callback begins.
+            writer.ensureDurable();
+            physicalCompleted = true;
+            T result = inTenant(tenantId, connection -> {
+                if (lockPublicationScope(connection, tenantId, resource, digests) != epoch) {
+                    throw new IllegalStateException("CAS_PUBLICATION_TENANT_EPOCH_CHANGED");
+                }
+                try (PreparedStatement valid = connection.prepareStatement("""
+                        SELECT count(*) FROM cas_object_publication_pins
+                         WHERE organization_id = ? AND publication_id = ? AND tenant_epoch = ?
+                           AND pin_state = 'ACTIVE' AND lease_expires_at > clock_timestamp()
+                        """)) {
+                    valid.setString(1, tenantId);
+                    valid.setString(2, pinId);
+                    valid.setLong(3, epoch);
+                    try (ResultSet rows = valid.executeQuery()) {
+                        rows.next();
+                        if (rows.getInt(1) != digests.size()) {
+                            throw new IllegalStateException("CAS_PUBLICATION_PIN_EXPIRED_OR_UNRECONCILED");
+                        }
+                    }
+                }
+                clearRepairableDeletionTombstones(connection, tenantId, digests);
+                T publishedValue = publication.apply(connection);
+                releasePublicationPins(connection, tenantId, pinId);
+                return publishedValue;
+            });
+            published = true;
+            return result;
+        } catch (RuntimeException | Error error) {
+            failure = error;
+            throw error;
+        } finally {
+            // Success proves completed I/O. On failure only the exact repository-owned local
+            // publisher can prove physical termination; generic/provider failures stay UNKNOWN.
+            try {
+                if (!published) {
+                    boolean quiescent = physicalCompleted
+                            || (writer instanceof LocalCasPublication local && local.stopped());
+                    inTenant(tenantId, connection -> {
+                        lockObjectLifecycles(connection, tenantId, digests);
+                        if (quiescent) releasePublicationPins(connection, tenantId, pinId);
+                        else unknownPublicationPins(connection, tenantId, pinId);
+                        return null;
+                    });
+                }
+            } catch (RuntimeException cleanup) {
+                if (failure != null) failure.addSuppressed(cleanup);
+                else throw cleanup;
+            }
+        }
+    }
+
+    private static long lockPublicationScope(Connection connection, String tenantId,
+                                              ResourceLifecycle resource, List<CasDigest> digests)
+            throws SQLException {
+        long epoch = ensureActiveTenant(connection, tenantId);
+        if (resource != null) {
+            if (!tenantId.equals(resource.tenantId()) || epoch != resource.tenantEpoch()) {
+                throw new IllegalStateException("CAS_PUBLICATION_RESOURCE_TENANT_MISMATCH");
+            }
+            lockResourceLifecycle(connection, tenantId, resource.resourceKind(), resource.resourceId());
+            requireExactActiveResource(connection, resource);
+        }
+        lockObjectLifecycles(connection, tenantId, digests);
+        ensureNoActiveDeletionTombstones(connection, tenantId, digests);
+        return epoch;
+    }
+
+    private static void releasePublicationPins(Connection connection, String tenantId, String pinId)
+            throws SQLException {
+        try (PreparedStatement release = connection.prepareStatement("""
+                UPDATE cas_object_publication_pins SET pin_state = 'RELEASED', updated_at = clock_timestamp()
+                 WHERE organization_id = ? AND publication_id = ? AND pin_state <> 'RELEASED'
+                """)) {
+            release.setString(1, tenantId);
+            release.setString(2, pinId);
+            release.executeUpdate();
+        }
+    }
+
+    private static void unknownPublicationPins(Connection connection, String tenantId, String pinId)
+            throws SQLException {
+        try (PreparedStatement unknown = connection.prepareStatement("""
+                UPDATE cas_object_publication_pins SET pin_state = 'OUTCOME_UNKNOWN', updated_at = clock_timestamp()
+                 WHERE organization_id = ? AND publication_id = ? AND pin_state = 'ACTIVE'
+                """)) {
+            unknown.setString(1, tenantId);
+            unknown.setString(2, pinId);
+            unknown.executeUpdate();
+        }
+    }
+
+    /** Classifies abandoned leases but NEVER releases them without trusted writer fencing. */
+    public int reconcilePublicationPins(String tenantId) {
+        return inTenant(tenantId, connection -> {
+            lockTenantLifecycle(connection, tenantId);
+            return maintainPublicationPins(connection, tenantId);
+        });
+    }
+
+    private static int maintainPublicationPins(Connection connection, String tenantId) throws SQLException {
+        int expired;
+        try (PreparedStatement mark = connection.prepareStatement("""
+                UPDATE cas_object_publication_pins SET pin_state = 'OUTCOME_UNKNOWN', updated_at = clock_timestamp()
+                 WHERE organization_id = ? AND pin_state = 'ACTIVE' AND lease_expires_at <= clock_timestamp()
+                """)) {
+            mark.setString(1, tenantId);
+            expired = mark.executeUpdate();
+        }
+        try (PreparedStatement prune = connection.prepareStatement("""
+                DELETE FROM cas_object_publication_pins WHERE (organization_id, publication_id, digest_hex) IN (
+                    SELECT organization_id, publication_id, digest_hex FROM cas_object_publication_pins
+                     WHERE organization_id = ? AND pin_state = 'RELEASED'
+                       AND (updated_at < clock_timestamp() - interval '24 hours'
+                         OR (publication_id, digest_hex) IN (
+                             SELECT publication_id, digest_hex FROM cas_object_publication_pins
+                              WHERE organization_id = ? AND pin_state = 'RELEASED'
+                              ORDER BY updated_at DESC, publication_id, digest_hex OFFSET 4096))
+                     ORDER BY updated_at LIMIT 256)
+                """)) {
+            prune.setString(1, tenantId);
+            prune.setString(2, tenantId);
+            prune.executeUpdate();
+        }
+        return expired;
     }
 
     private static void lockTenantLifecycle(Connection connection, String tenantId)

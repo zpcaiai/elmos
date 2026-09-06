@@ -106,7 +106,7 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                     resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                     resource.repositoryId(), declared, clock.getAsLong());
             catalog.recordAndBindDurableResource(intended, binding, lifecycle,
-                    () -> persistStaged(store, declared, staged));
+                    store.publicationEnsurer(Map.of(declared, staged)));
             CasCatalog.CatalogEntry recorded = catalog.findBound(
                             resource.organizationId(), CasCatalog.ResourceKind.REPOSITORY,
                             resource.repositoryId(), declared)
@@ -121,13 +121,6 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
     private static io.elmos.cas.CasContent stageStored(CasStore store, CasDigest digest) {
         try (var input = store.openVerified(digest)) {
             return io.elmos.cas.CasContent.capture(digest, input);
-        } catch (IOException error) { throw new UncheckedIOException(error); }
-    }
-
-    private static void persistStaged(CasStore store, CasDigest digest, io.elmos.cas.CasContent staged) {
-        try (var input = staged.openStream()) {
-            store.putDurable(digest, input);
-            try (var verified = store.openVerified(digest)) { /* Verify before catalog publication. */ }
         } catch (IOException error) { throw new UncheckedIOException(error); }
     }
 
@@ -198,7 +191,7 @@ public final class CasBackedArtifactStore implements SnapshotPorts.ArtifactStore
                 .toList();
         long authoritativeGeneration = catalog.publishDurableResourceReferenceRoots(
                 lifecycle, requestedRoots,
-                () -> staged.contents.forEach((digest, content) -> persistStaged(store, digest, content)));
+                store.publicationEnsurer(staged.contents));
 
         List<CasCatalog.ReferenceRoot> active = catalog.activeReferenceRoots(
                 resource.organizationId(), CasGarbageCollector.RootKind.SNAPSHOT, rootOwner);
