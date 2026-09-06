@@ -47,6 +47,11 @@ ambiguous exceptions fail closed. Closure requires a fix or mitigation plus
 replayable verification; dismissing or suppressing an alert alone is not proof
 of remediation.
 
+The machine-readable PSIRT lifecycle and evidence requirements are defined in
+`config/batch40-psirt-policy.json`. That contract keeps intake, triage,
+containment, remediation, verification, disclosure, and closure distinct and
+disables automatic risk acceptance and case closure.
+
 ## Coordinated disclosure
 
 The maintainers and reporter should agree on disclosure timing after a fix is
@@ -60,4 +65,6 @@ additional risk.
 Automated dependency, secret, static, container, or infrastructure scans are
 self-attested engineering evidence. A clean scan does not establish that every
 vulnerability is absent and does not constitute an independent security
-assessment, production approval, or Batch 40 certification.
+assessment, production approval, or Batch 40 certification. The repository
+policy has not been independently exercised or approved as a certification
+control.

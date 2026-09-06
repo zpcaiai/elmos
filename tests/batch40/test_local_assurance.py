@@ -160,8 +160,11 @@ jobs:
             "batch40-local-assurance:", 1
         )[0]
         record = "python3 scripts/batch40_record_results.py"
+        controls = "$(MAKE) batch40-repository-controls PACK=$(PACK)"
         assurance = "$(MAKE) batch40-local-assurance PACK=$(PACK)"
-        self.assertEqual(2, target.count(record))
+        self.assertEqual(3, target.count(record))
+        self.assertLess(target.index(record), target.index(controls))
+        self.assertLess(target.index(controls), target.index(assurance))
         self.assertLess(target.index(record), target.index(assurance))
         self.assertLess(target.index(assurance), target.rindex(record))
 

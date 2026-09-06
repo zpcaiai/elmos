@@ -31,6 +31,11 @@ dependabot_path = P / 'evidence/execution/b40-dependabot-alerts.json'
 dependabot = json.loads(dependabot_path.read_text()) if dependabot_path.is_file() else None
 assurance_path = P / 'evidence/execution/b40-local-assurance.json'
 assurance = json.loads(assurance_path.read_text()) if assurance_path.is_file() else None
+repository_controls_path = P / 'evidence/execution/b40-repository-controls.json'
+repository_controls = (
+    json.loads(repository_controls_path.read_text())
+    if repository_controls_path.is_file() else None
+)
 actionable = scan['totals']['actionableFindingCount']
 unresolved_license_count = sum(
     1 for component in inv['components']
@@ -175,6 +180,15 @@ if assurance is not None:
         'externalOperationExecuted': False,
         'authorizationRefs': [],
     })
+if repository_controls is not None:
+    evidence['claims'].append({
+        'claimId': 'b40-repository-control-contracts',
+        'status': 'PASS' if repository_controls.get('status') == 'PASS' else 'FAIL',
+        'evidenceRefs': ['b40-repository-controls'],
+        'provenanceRefs': ['b40-repository-controls-provenance'],
+        'externalOperationExecuted': False,
+        'authorizationRefs': [],
+    })
 (P / 'evidence.json').write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + '\n')
 
 claims = json.loads((P / 'claims.json').read_text())
@@ -243,6 +257,25 @@ if assurance is not None:
         'scope': assurance['scope'],
         'limitations': assurance['limitations'],
         'evidenceRefs': ['b40-local-assurance'],
+    })
+if repository_controls is not None:
+    limited_count = sum(
+        result.get('status') == 'limited'
+        for result in repository_controls.get('capabilityResults', {}).values()
+        if isinstance(result, dict)
+    )
+    claims['claims'].append({
+        'claimId': 'b40-repository-control-contracts',
+        'statement': (
+            f"The repository-owned Batch 40 control run evaluated "
+            f"{repository_controls['scope']['controlCount']} fail-closed controls across "
+            f"{repository_controls['scope']['capabilityCount']} capabilities; "
+            f"{limited_count} capabilities have bounded local implementation evidence and "
+            f"{len(repository_controls.get('failedControls', []))} controls failed."
+        ),
+        'scope': repository_controls['scope'],
+        'limitations': repository_controls['limitations'],
+        'evidenceRefs': ['b40-repository-controls'],
     })
 (P / 'claims.json').write_text(json.dumps(claims, indent=2, ensure_ascii=False) + '\n')
 
@@ -370,6 +403,17 @@ if assurance is not None:
     (provenance_dir / 'b40-local-assurance-provenance.json').write_text(
         json.dumps(assurance_provenance, indent=2, ensure_ascii=False) + '\n'
     )
+repository_controls_provenance = None
+if repository_controls is not None:
+    repository_controls_provenance = preserve_or_create_local_provenance(
+        repository_controls,
+        evidence_id='b40-repository-controls',
+        analyzer='scripts/batch40_repository_controls.py',
+        filename='b40-repository-controls-provenance.json',
+    )
+    (provenance_dir / 'b40-repository-controls-provenance.json').write_text(
+        json.dumps(repository_controls_provenance, indent=2, ensure_ascii=False) + '\n'
+    )
 
 artifact_path = P / 'artifact/schema-surface.json'
 environment_path = P / 'environment/toolchain.json'
@@ -431,6 +475,7 @@ pack['evidenceRefs'] = sorted(set(pack.get('evidenceRefs', [])) | {
     'b40-dependency-inventory', 'b40-secret-scan',
     *(['b40-dependabot-alerts'] if dependabot is not None else []),
     *(['b40-local-assurance'] if assurance is not None else []),
+    *(['b40-repository-controls'] if repository_controls is not None else []),
 })
 (P / 'pack.json').write_text(json.dumps(pack, indent=2, ensure_ascii=False) + '\n')
 
@@ -450,6 +495,18 @@ limited = {
     'b40-runner-update-supply-chain': ['b40-local-assurance'] if assurance is not None else [],
     'b40-license-ip-provenance': ['b40-dependency-inventory'],
 }
+if repository_controls is not None and repository_controls.get('status') == 'PASS':
+    for capability_id, result in repository_controls.get('capabilityResults', {}).items():
+        if (
+            capability_id in limited or not isinstance(result, dict)
+            or result.get('status') != 'limited'
+            or result.get('localControlStatus') != 'PASS'
+            or result.get('externalExecution') != 'NOT_RUN'
+            or result.get('independentVerification') != 'NOT_RUN'
+            or result.get('certificationStatus') != 'NOT_CERTIFIED'
+        ):
+            continue
+        limited[capability_id] = ['b40-repository-controls']
 for capability in matrix['capabilities']:
     capability['owner'] = 'elmos-platform-maintainers'
     refs = limited.get(capability['capabilityId'])
@@ -486,6 +543,9 @@ if dependabot_provenance_record is not None:
 if assurance_provenance is not None:
     all_provenance.append(assurance_provenance)
     all_provenance_refs.append('b40-local-assurance')
+if repository_controls_provenance is not None:
+    all_provenance.append(repository_controls_provenance)
+    all_provenance_refs.append('b40-repository-controls')
 provenance_record.update({
     'status': 'draft',
     'evidenceRefs': all_provenance_refs,
@@ -495,12 +555,87 @@ provenance_record.update({
     json.dumps(provenance_record, indent=2, ensure_ascii=False) + '\n'
 )
 
-if assurance is not None:
+if repository_controls is not None:
+    license_queue = repository_controls.get('licenseReviewQueue', [])
+    approved_license_count = sum(
+        record.get('decisionStatus') == 'APPROVED'
+        for record in license_queue if isinstance(record, dict)
+    )
+    license_register = {
+        'schemaVersion': 1,
+        'id': 'elmos-platform-direct-dependency-license-decisions',
+        'batch': 40,
+        'packKey': 'elmos-platform-supply-chain',
+        'owner': 'elmos-platform-maintainers',
+        'status': 'BLOCKED_PENDING_APPROVAL',
+        'policy': repository_controls.get('licenseReviewPolicy', {}),
+        'componentCount': len(license_queue),
+        'approvedCount': approved_license_count,
+        'unresolvedCount': len(license_queue) - approved_license_count,
+        'evidenceRefs': ['b40-dependency-inventory', 'b40-repository-controls'],
+        'records': license_queue,
+        'independentVerification': 'NOT_RUN',
+        'certificationStatus': 'NOT_CERTIFIED',
+    }
+    (P / 'license-decision-register.json').write_text(
+        json.dumps(license_register, indent=2, ensure_ascii=False) + '\n'
+    )
+
+residual_risks = json.loads((P / 'residual-risks.json').read_text())
+residual_risks.update({
+    'status': 'OPEN',
+    'owner': 'elmos-platform-maintainers',
+    'risks': [
+        {
+            'id': 'RISK-B40-SIGN-001',
+            'severity': 'critical',
+            'status': 'OPEN',
+            'statement': (
+                'Production artifacts do not yet have an independently verified signature or '
+                'isolated-builder provenance receipt.'
+            ),
+        },
+        {
+            'id': 'RISK-B40-SBOM-LICENSE-001',
+            'severity': 'high',
+            'status': 'OPEN',
+            'statement': (
+                f'The direct dependency surface is inventoried, but transitive Maven coverage is NOT_RUN '
+                f'and {unresolved_license_count} external direct components lack approved license decisions.'
+            ),
+        },
+        {
+            'id': 'RISK-B40-SLA-001',
+            'severity': 'high',
+            'status': 'OPEN',
+            'statement': (
+                f"Historical Dependabot remediation SLA compliance is "
+                f"{dependabot.get('metrics', {}).get('vulnerabilitySlaCompliance', 'NOT_RUN') if dependabot else 'NOT_RUN'}: "
+                f"{dependabot.get('vulnerabilitySla', {}).get('breachCount', 'NOT_RUN') if dependabot else 'NOT_RUN'} of "
+                f"{dependabot.get('vulnerabilitySla', {}).get('evaluatedCount', 'NOT_RUN') if dependabot else 'NOT_RUN'} fixed "
+                'alerts breached the declared response limit. The observed history is immutable.'
+            ),
+        },
+        {
+            'id': 'RISK-B40-INDEPENDENT-001',
+            'severity': 'critical',
+            'status': 'OPEN',
+            'statement': (
+                'Independent security assessment, representative and holdout execution, and '
+                'accountable external approval remain NOT_RUN.'
+            ),
+        },
+    ],
+})
+(P / 'residual-risks.json').write_text(
+    json.dumps(residual_risks, indent=2, ensure_ascii=False) + '\n'
+)
+
+if assurance is not None or repository_controls is not None:
     crosswalk = json.loads((P / 'control-crosswalk.json').read_text())
-    crosswalk.update({
-        'status': 'draft',
-        'evidenceRefs': ['b40-local-assurance'],
-        'records': [
+    crosswalk_records = []
+    if assurance is not None:
+        crosswalk_records.extend(
             {
                 'controlId': control['controlId'],
                 'statement': control['statement'],
@@ -509,12 +644,31 @@ if assurance is not None:
                 'boundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
             }
             for control in assurance['controls']
+        )
+    if repository_controls is not None:
+        crosswalk_records.extend(
+            {
+                'controlId': control['controlId'],
+                'statement': control['statement'],
+                'status': control['status'],
+                'evidenceRefs': ['b40-repository-controls'],
+                'capabilityIds': control.get('capabilityIds', []),
+                'boundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
+            }
+            for control in repository_controls['controls']
+        )
+    crosswalk.update({
+        'status': 'draft',
+        'evidenceRefs': [
+            *(['b40-local-assurance'] if assurance is not None else []),
+            *(['b40-repository-controls'] if repository_controls is not None else []),
         ],
+        'records': crosswalk_records,
     })
     (P / 'control-crosswalk.json').write_text(
         json.dumps(crosswalk, indent=2, ensure_ascii=False) + '\n'
     )
-    if assurance.get('threatModel'):
+    if assurance is not None and assurance.get('threatModel'):
         threat_model = json.loads((P / 'threat-model.json').read_text())
         threat_model.update({
             'status': 'draft',
@@ -532,10 +686,44 @@ if assurance is not None:
             json.dumps(threat_model, indent=2, ensure_ascii=False) + '\n'
         )
 if dependabot is not None:
+    if repository_controls is not None:
+        vex_record = json.loads((P / 'vex-record.json').read_text())
+        vex_record.update({
+            'status': 'draft',
+            'evidenceRefs': ['b40-dependabot-alerts', 'b40-repository-controls'],
+            'records': repository_controls.get('vexRecords', []),
+            'metadata': {
+                'mappingPolicy': 'fixed maps to FIXED; every other accepted alert state maps to UNDER_INVESTIGATION',
+                'notAffectedInferenceAllowed': False,
+                'deploymentApplicability': 'NOT_RUN',
+                'independentVerification': 'NOT_RUN',
+            },
+        })
+        (P / 'vex-record.json').write_text(
+            json.dumps(vex_record, indent=2, ensure_ascii=False) + '\n'
+        )
+        psirt_case = json.loads((P / 'psirt-case.json').read_text())
+        psirt_case.update({
+            'status': 'draft',
+            'evidenceRefs': ['b40-repository-controls'],
+            'records': [],
+            'metadata': {
+                'policy': repository_controls.get('psirtPolicy', {}),
+                'caseExecution': 'NOT_RUN',
+                'incidentExercise': 'NOT_RUN',
+                'independentVerification': 'NOT_RUN',
+            },
+        })
+        (P / 'psirt-case.json').write_text(
+            json.dumps(psirt_case, indent=2, ensure_ascii=False) + '\n'
+        )
     assurance_label = assurance.get('status') if assurance is not None else 'NOT_RUN'
+    controls_label = (
+        repository_controls.get('status') if repository_controls is not None else 'NOT_RUN'
+    )
     print(f"batch40 已记录: sbomCoverage={inv['metrics']['sbomCoverage']} "
           f"secretLeaks={actionable} dependabotOpen={dependabot['openCount']} "
-          f"localAssurance={assurance_label} "
+          f"repositoryControls={controls_label} localAssurance={assurance_label} "
           f"(advisory {scan['totals']['advisoryFindingCount']} 不计入)")
 else:
     print(f"batch40 已记录: sbomCoverage={inv['metrics']['sbomCoverage']} secretLeaks={actionable} "

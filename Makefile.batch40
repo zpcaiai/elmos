@@ -1,6 +1,6 @@
 UV ?= uv
 BATCH40_PYTHON ?= $(UV) run --quiet --with jsonschema --with pyyaml python
-.PHONY: batch40-evidence batch40-secret-scan batch40-local-assurance batch40-check batch40-scaffold batch40-gate batch40-gaps batch40-score batch40-manifest batch40-request
+.PHONY: batch40-evidence batch40-secret-scan batch40-repository-controls batch40-local-assurance batch40-check batch40-scaffold batch40-gate batch40-gaps batch40-score batch40-manifest batch40-request
 BATCH40_MAVEN_REPOSITORY ?= $(HOME)/.m2/repository
 BATCH40_SECRET_SCAN_SCOPE ?= config/batch40-secret-scan-scope.json
 batch40-check:
@@ -45,10 +45,18 @@ batch40-evidence:
 		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-dependency-inventory.json
 	$(MAKE) batch40-secret-scan PACK=$(PACK)
 	# Refresh content-addressed dependency and secret-scan provenance before
-	# assurance checks those reports. The final pass records fresh assurance.
+	# repository controls check those reports. The later passes record fresh
+	# repository-control and local-assurance provenance in dependency order.
+	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
+	$(MAKE) batch40-repository-controls PACK=$(PACK)
 	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
 	$(MAKE) batch40-local-assurance PACK=$(PACK)
 	python3 scripts/batch40_record_results.py mature-product-packs/batch40/$(PACK)
+batch40-repository-controls:
+	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
+	$(BATCH40_PYTHON) scripts/batch40_repository_controls.py \
+		--pack mature-product-packs/batch40/$(PACK) \
+		--output mature-product-packs/batch40/$(PACK)/evidence/execution/b40-repository-controls.json
 batch40-local-assurance:
 	@test -n "$(PACK)" || (echo "PACK=<pack-key> required" && exit 2)
 	$(BATCH40_PYTHON) scripts/batch40_local_assurance.py \

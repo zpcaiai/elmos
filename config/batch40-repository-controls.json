@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "policyId": "elmos-batch40-repository-controls-v1",
+  "owner": "elmos-platform-maintainers",
+  "codeownersPath": ".github/CODEOWNERS",
+  "securityPolicyPath": "SECURITY.md",
+  "psirtPolicyPath": "config/batch40-psirt-policy.json",
+  "licenseReviewPolicyPath": "config/batch40-license-review-policy.json",
+  "adapterPolicyPath": "engines/security-compliance-engine/policies/security-tool-adapters-v1.json",
+  "securityProfilePath": "engines/security-compliance-engine/policies/security-profiles-v1.json",
+  "requiredCodeownerPatterns": [
+    "/.github/workflows/",
+    "/Makefile.batch40",
+    "/config/batch40-*",
+    "/docs/batch40/",
+    "/engines/security-compliance-engine/",
+    "/mature-product-packs/batch40/",
+    "/schemas/batch40/",
+    "/scripts/batch40_*",
+    "/tests/batch40/"
+  ],
+  "requiredAdapters": [
+    "SAST",
+    "SCA",
+    "IAC",
+    "CONTAINER",
+    "DAST",
+    "SBOM",
+    "PROVENANCE",
+    "VEX"
+  ],
+  "modelArtifactExtensions": [
+    ".gguf",
+    ".h5",
+    ".onnx",
+    ".pt",
+    ".pth",
+    ".safetensors"
+  ],
+  "modelArtifactRegistry": {},
+  "externalExecution": {
+    "sast": "NOT_RUN",
+    "dastIast": "NOT_RUN",
+    "containerIac": "NOT_RUN",
+    "artifactSigning": "NOT_RUN",
+    "isolatedBuilder": "NOT_RUN",
+    "independentAssessment": "NOT_RUN"
+  },
+  "capabilities": [
+    "b40-ai-model-supply-chain",
+    "b40-artifact-container-signing",
+    "b40-container-kubernetes-iac-scanning",
+    "b40-dast-iast-integration",
+    "b40-independent-security-assessment",
+    "b40-isolated-trusted-builder",
+    "b40-psirt-security-incident",
+    "b40-sast-integration",
+    "b40-secure-code-review-approval",
+    "b40-slsa-provenance",
+    "b40-vex-applicability"
+  ]
+}
