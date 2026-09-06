@@ -2591,6 +2591,10 @@ print('\\n'.join(failures))
         self.assertEqual(baseline_failures, [])
         projection = validator._swift_receipt_stable_projection(receipt)
         self.assertEqual(set(projection), {"sha256", "receipt"})
+        self.assertNotIn(
+            "apple-host-profile=",
+            json.dumps(projection["receipt"]["toolchain"]["profile"]),
+        )
         self.assertEqual(
             projection["receipt"]["dependency"]["mirror"]["seed"],
             "verified-content-addressed-standalone-cache",
@@ -3315,6 +3319,28 @@ print('\\n'.join(failures))
                 "SWIFT_ANALYZER_RECEIPT_INVALID",
             ):
                 generator.validate_portable_swift_receipt(route, reference)
+
+    def test_specialized_packed_runtime_lock_identity_is_synchronized(self):
+        generator = load_specialized_pack_generator()
+        validator_path = (
+            ROOT / "scripts" / "batch35" / "validate_formal_route_campaign.py"
+        )
+        spec = importlib.util.spec_from_file_location(
+            "batch35_formal_route_campaign_validator",
+            validator_path,
+        )
+        self.assertIsNotNone(spec)
+        assert spec is not None and spec.loader is not None
+        validator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(validator)
+        lock_path = ROOT / "engines" / "polyglot-route-engine" / "uv.lock"
+
+        expected_sha256 = digest(lock_path)
+        expected_bytes = lock_path.stat().st_size
+        self.assertEqual(generator.PRODUCTION_LOCK_SHA256, expected_sha256)
+        self.assertEqual(generator.PRODUCTION_LOCK_BYTES, expected_bytes)
+        self.assertEqual(validator.PRODUCTION_LOCK_SHA256, expected_sha256)
+        self.assertEqual(validator.PRODUCTION_LOCK_BYTES, expected_bytes)
 
     def test_specialized_module_rejects_forged_runtime_observation_closure(self):
         with tempfile.TemporaryDirectory() as td:
