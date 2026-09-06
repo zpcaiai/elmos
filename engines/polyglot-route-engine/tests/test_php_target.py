@@ -487,14 +487,60 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         "homebrew_version": "6.0.1",
         "time": 1,
         "source_modified_time": 100,
+        "installed_on_request": True,
+        "aliases": ["php@8.5"],
         "arch": "arm64",
-        "source": {"tap": "homebrew/core", "versions": {"stable": "8.5.9"}},
+        "source": {
+            "spec": "stable",
+            "tap": "homebrew/core",
+            "tap_git_head": "a" * 40,
+            "path": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+            "versions": {
+                "stable": "8.5.9",
+                "head": None,
+                "version_scheme": 0,
+                "compatibility_version": 1,
+            },
+        },
+        "runtime_dependencies": [
+            {
+                "full_name": "zlib",
+                "version": "1.0",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1.0",
+                "declared_directly": False,
+            },
+            {
+                "full_name": "openssl@3",
+                "version": "3.0",
+                "revision": 0,
+                "bottle_rebuild": 1,
+                "pkg_version": "3.0_1",
+                "declared_directly": True,
+            },
+        ],
     }
     receipt.write_text(json.dumps(document), encoding="utf-8")
     baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
-    document.update(
-        {"homebrew_version": "6.1.0", "time": 2, "source_modified_time": 200}
+    document.update({
+        "homebrew_version": "6.1.0",
+        "time": 2,
+        "source_modified_time": 200,
+        "installed_on_request": False,
+        "aliases": [],
+    })
+    document["source"].update({
+        "spec": None,
+        "tap": "elmos/pinned-route-ci",
+        "tap_git_head": "b" * 40,
+        "path": "/opt/homebrew/Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb",
+        "versions": {"stable": "8.5.9"},
+    })
+    document["runtime_dependencies"].reverse()
+    document["runtime_dependencies"][0].update(
+        {"version": "3.1", "revision": 2, "pkg_version": "3.1_2"}
     )
     receipt.write_text(json.dumps(document), encoding="utf-8")
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
@@ -504,6 +550,12 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     receipt.write_text(json.dumps(document), encoding="utf-8")
     semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert semantic_drift["sha256"] != baseline["sha256"]
+
+    document["arch"] = "arm64"
+    document["aliases"] = ["php8"]
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
 
 def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) -> None:
@@ -516,9 +568,28 @@ def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) 
         "homebrew_version": "6.0.1",
         "time": 1,
         "source_modified_time": 100,
+        "source": {
+            "tap": "homebrew/core",
+            "path": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+            "versions": {"stable": "8.5.9"},
+        },
         "runtime_dependencies": [
-            {"full_name": "alpha", "version": "1"},
-            {"full_name": "beta", "version": "2"},
+            {
+                "full_name": "alpha",
+                "version": "1",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "1",
+                "declared_directly": True,
+            },
+            {
+                "full_name": "beta",
+                "version": "2",
+                "revision": 0,
+                "bottle_rebuild": 0,
+                "pkg_version": "2",
+                "declared_directly": False,
+            },
         ],
     }
     receipt.write_text(json.dumps(document), encoding="utf-8")
@@ -540,7 +611,7 @@ def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) 
         receipt_field_digests=second,
     )
 
-    assert first_identity["sha256"] != second_identity["sha256"]
+    assert first_identity == second_identity
     assert first["runtime_dependencies"]["sha256"] != second["runtime_dependencies"]["sha256"]
     assert first["runtime_dependencies"]["sorted_sha256"] == second[
         "runtime_dependencies"
@@ -602,7 +673,10 @@ def test_php_tree_normalizes_only_the_spdx_generation_time(tmp_path) -> None:
     sbom.write_text(json.dumps(document), encoding="utf-8")
     baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
-    document["creationInfo"]["created"] = "2026-09-06T07:03:04Z"
+    document["creationInfo"] = {
+        "created": "2026-09-06T07:03:04Z",
+        "creators": ["Tool: https://github.com/Homebrew/brew@6.0.20-100-gabcdef"],
+    }
     sbom.write_text(json.dumps(document), encoding="utf-8")
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline
@@ -613,6 +687,14 @@ def test_php_tree_normalizes_only_the_spdx_generation_time(tmp_path) -> None:
     assert semantic_drift["sha256"] != baseline["sha256"]
 
     document["creationInfo"]["created"] = "2026-99-06T07:03:04Z"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["creationInfo"] = {
+        "created": "2026-09-06T07:03:04Z",
+        "creators": ["Tool: unexpected-generator@1.0"],
+    }
     sbom.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
