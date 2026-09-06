@@ -158,11 +158,16 @@ class ContentAddressableStore:
             require_digest(expected_digest)
         # Bytes and file-descriptor kernels have separate measured opt-ins.
         # A selected native kernel owns the hash; do not hash twice across FFI.
-        if self.compression == "none" and self.native_bytes_io:
-            self._check_quota(len(data))
+        if (
+            self.compression == "none" and self.native_bytes_io
+            and (self.max_bytes is None or len(data) <= self.max_bytes)
+        ):
             native = native_cas_bridge.native_put_bytes(self.root, data, expected_digest, artifact_kind)
             if native is not None:
                 return native
+        # Over-budget input still follows the established digest/dedup/quota
+        # order: an existing object needs no new allocation. Never send a new
+        # over-budget object into a native publisher to discover its identity.
         digest = sha256_bytes(data)
         if expected_digest is not None and require_digest(expected_digest) != digest:
             raise DigestMismatch(

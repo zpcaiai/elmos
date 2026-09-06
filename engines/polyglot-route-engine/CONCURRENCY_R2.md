@@ -57,7 +57,7 @@ by this worktree. Counts below are separate selections, not additive coverage.
 | Selection | Result |
 | --- | --- |
 | `tests/test_process_io.py` | 12 passed, including real processes, byte caps, live logs, repeated cleanup |
-| `tests/test_cas.py tests/test_cas_streaming.py` with native dylib configured | 21 passed |
+| `tests/test_cas.py tests/test_cas_streaming.py` with native dylib configured | 23 passed, including backend-identical digest/dedup/quota ordering |
 | project graph + snapshot focused selection | 26 passed |
 | archive streaming + existing archived assembly evidence closure selection | 44 passed |
 | resource budget + TypeScript batch + initial transport selection | 21 passed |
@@ -84,6 +84,8 @@ compiler code. Scheduler migration-failure injection is explicitly a local
 control-flow test, not source/target conversion certification. The ZIP 4 MiB
 transport fixture proves exact legacy ZIP bytes; existing semantic-closure
 tests independently cover evidence tampering and unsupported behavior.
+Ruff passes for the polyglot source, new tests, CAS changes and profile script;
+mypy passes for all 17 changed/reached polyglot source modules.
 
 ## CAS profile replay and results
 
@@ -96,9 +98,10 @@ python tools/performance/r2_native_profile.py --rounds 3 --file-mib 8 --native-l
 ```
 
 Historical write report: `tools/performance/r2_native_profile_20260906.json`.
-Final read report: `tools/performance/r2_native_profile_reads_20260907.json`.
-The write report binds the earlier script/CAS revision, preserved in Git;
-the later additive read modes do not retroactively change that evidence.
+Read-backend report: `tools/performance/r2_native_profile_reads_20260907.json`.
+Each report binds its measured script/CAS revision, preserved in Git; later
+additive read modes and over-budget compatibility changes do not retroactively
+change that evidence. These samples configured no quota.
 
 | API/backend | Observed median seconds, 3 samples |
 | --- | ---: |
