@@ -33,7 +33,7 @@
     "test:admin-login-notification": "node --loader ./test/ts-extension-loader.mjs --test test/adminLoginNotification.test.mjs",
     "test:auth-callback-route": "node --loader ./test/ts-extension-loader.mjs --test test/authCallbackRoute.test.mjs",
     "test:api-route-dispatch": "node --experimental-strip-types --test test/apiRouteMatcher.test.mjs",
-    "test:translation-report": "node --experimental-strip-types --test test/translationConversionReport.test.mjs",
+    "test:translation-report": "node --loader ./test/ts-extension-loader.mjs --test test/translationConversionReport.test.mjs test/asynchronousZipInflate.test.mjs",
     "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
     "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",
     "test:e2e": "playwright test",

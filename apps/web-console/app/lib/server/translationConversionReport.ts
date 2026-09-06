@@ -2,7 +2,8 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import type { FileHandle } from "node:fs/promises";
 import path from "node:path";
-import { Unzip, UnzipInflate } from "fflate";
+import { Unzip } from "fflate";
+import { AsynchronousZipInflate } from "./asynchronousZipInflate";
 import type {
   TranslationConversionReportFile,
   TranslationConversionSummary,
@@ -1323,7 +1324,8 @@ export async function validateTranslationConversionBundleArchive(
     };
     file.start();
   });
-  unzip.register(UnzipInflate);
+  const inflaters = new AsynchronousZipInflate();
+  unzip.register(inflaters.decoder);
   const archiveDigest = createHash("sha256");
   let archiveBytes = 0;
   try {
@@ -1336,12 +1338,16 @@ export async function validateTranslationConversionBundleArchive(
       if (archiveBytes > descriptor.bytes) invalid();
       archiveDigest.update(bytes);
       unzip.push(bytes, false);
+      await inflaters.drain();
       if (validationError) throw validationError;
     }
     unzip.push(new Uint8Array(), true);
+    await inflaters.drain();
     if (validationError) throw validationError;
   } catch {
     invalid();
+  } finally {
+    inflaters.close();
   }
   if (
     validationError
@@ -1442,7 +1448,8 @@ export async function validateTranslationCodeArtifactArchive(
     };
     file.start();
   });
-  unzip.register(UnzipInflate);
+  const inflaters = new AsynchronousZipInflate();
+  unzip.register(inflaters.decoder);
 
   const archiveDigest = createHash("sha256");
   let archiveBytes = 0;
@@ -1456,12 +1463,16 @@ export async function validateTranslationCodeArtifactArchive(
       if (archiveBytes > descriptor.bytes) invalidArtifact();
       archiveDigest.update(bytes);
       unzip.push(bytes, false);
+      await inflaters.drain();
       if (validationError) throw validationError;
     }
     unzip.push(new Uint8Array(), true);
+    await inflaters.drain();
     if (validationError) throw validationError;
   } catch {
     invalidArtifact();
+  } finally {
+    inflaters.close();
   }
   if (
     validationError
