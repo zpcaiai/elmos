@@ -21,6 +21,14 @@ SPEC = importlib.util.spec_from_file_location("project_synthesis_p0_launch_gate"
 assert SPEC is not None and SPEC.loader is not None
 subject = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(subject)
+COLLECTOR_PATH = ROOT / "scripts" / "operations" / "generate_project_synthesis_p0_evidence.py"
+COLLECTOR_SPEC = importlib.util.spec_from_file_location(
+    "project_synthesis_p0_evidence_collector",
+    COLLECTOR_PATH,
+)
+assert COLLECTOR_SPEC is not None and COLLECTOR_SPEC.loader is not None
+collector = importlib.util.module_from_spec(COLLECTOR_SPEC)
+COLLECTOR_SPEC.loader.exec_module(collector)
 
 
 class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
@@ -76,6 +84,35 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
         evidence = self.root / name
         evidence.mkdir()
         return evidence
+
+    def test_evidence_collector_bounds_full_worktree_scan_for_large_repositories(self) -> None:
+        completed = subprocess.CompletedProcess(
+            ["git", "status"],
+            0,
+            stdout="",
+            stderr="",
+        )
+        with mock.patch.object(collector, "_run", return_value=completed) as invoked:
+            self.assertEqual((True, ""), collector._clean_status(self.root))
+        invoked.assert_called_once_with(
+            ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+            self.root,
+            timeout=300,
+        )
+
+    def test_evidence_collector_reports_git_timeout_as_stable_failure(self) -> None:
+        with (
+            mock.patch.object(
+                collector,
+                "_run",
+                side_effect=subprocess.TimeoutExpired(["git", "status"], 300),
+            ),
+            self.assertRaisesRegex(
+                collector.EvidenceFailure,
+                "GIT_COMMAND_TIMEOUT:status:300s",
+            ),
+        ):
+            collector._clean_status(self.root)
 
     def _artifact(
         self,

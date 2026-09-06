@@ -36,8 +36,15 @@ def _run(command: list[str], cwd: Path, *, timeout: int = 60) -> subprocess.Comp
     )
 
 
-def _git(repository: Path, *arguments: str) -> str:
-    completed = _run(["git", *arguments], repository)
+def _git(repository: Path, *arguments: str, timeout: int = 60) -> str:
+    try:
+        completed = _run(["git", *arguments], repository, timeout=timeout)
+    except subprocess.TimeoutExpired as error:
+        raise EvidenceFailure(
+            f"GIT_COMMAND_TIMEOUT:{arguments[0]}:{timeout}s"
+        ) from error
+    except OSError as error:
+        raise EvidenceFailure(f"GIT_COMMAND_FAILED:{arguments[0]}") from error
     if completed.returncode != 0:
         raise EvidenceFailure(f"GIT_COMMAND_FAILED:{arguments[0]}")
     return completed.stdout.strip()
@@ -66,7 +73,13 @@ def _write_atomic(path: Path, value: bytes) -> None:
 
 
 def _clean_status(repository: Path) -> tuple[bool, str]:
-    status = _git(repository, "status", "--porcelain=v1", "--untracked-files=all")
+    status = _git(
+        repository,
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all",
+        timeout=300,
+    )
     return not status, status
 
 
