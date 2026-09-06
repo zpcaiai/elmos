@@ -50,6 +50,32 @@ class JdbcTranslationExecutionInputLiveTest {
                 "a PREPARED root with an unknown writer cannot issue a second PUT permit");
     }
 
+    @Test void uploadRegistrationCannotReissuePurgedKeysOrChangeContentIdentity() {
+        String org=tenant();var store=new JdbcObjectStorageStore(jdbc,transactions,reference->{throw new AssertionError("no provider credentials needed");});
+        String id=store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key");
+        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"));
+        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),101,"application/zip","primary","tenant-fixture/key"));
+        assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","changed-key"));
+        store.markAvailable(org,id);
+        assertEquals(id,store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"),"available exact content dedup remains compatible");
+        for(String state:java.util.List.of("PURGE_PENDING","PURGED")) {
+            jdbc.sql("UPDATE content_objects SET object_state=:state WHERE content_object_id=:id").param("state",state).param("id",id).update();
+            assertThrows(io.elmos.storage.S3ObjectStore.ObjectStorageException.class,()->store.registerPendingObject(org,digest(50),100,"application/zip","primary","tenant-fixture/key"));
+        }
+    }
+
+    @Test void provisioningRejectsAnUnsafeExistingRuntimeRole() throws Exception {
+        try(var connection=connections.getConnection();var statement=connection.createStatement();
+            var script=new org.springframework.core.io.ClassPathResource("db/provisioning/translation_input_runtime.sql").getInputStream()) {
+            connection.setAutoCommit(false);
+            try {
+                statement.execute("ALTER ROLE elmos_translation_input_runtime LOGIN");
+                String sql=new String(script.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
+                assertTrue(assertThrows(java.sql.SQLException.class,()->statement.execute(sql)).getMessage().contains("ELMOS_TRANSLATION_RUNTIME_ROLE_UNSAFE"));
+            } finally {connection.rollback();}
+        }
+    }
+
     @Test void digestTenantAndIdempotencyDriftCannotAttachAnotherObject() {
         String org = tenant(); String other = tenant(); String object = object(org, 2);
         prepare(org, object, "key", 2);

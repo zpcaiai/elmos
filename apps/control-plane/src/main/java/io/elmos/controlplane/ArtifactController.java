@@ -171,7 +171,7 @@ public class ArtifactController {
 
         return ResponseEntity.ok(Map.of(
                 "downloadUrl", ticket.downloadUrl().toString(),
-                "filename", java.nio.file.Path.of(granted.filename()).getFileName().toString(),
+                "filename", filename == null ? granted.filename() : java.nio.file.Path.of(granted.filename()).getFileName().toString(),
                 "contentSha256", granted.contentSha256(),
                 "byteSize", granted.byteSize(),
                 "expiresInSeconds", DOWNLOAD_TICKET_TTL_SECONDS));

@@ -16,6 +16,27 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class TranslationExecutionBoundaryTest {
+    @Test void exactFilenameTicketDoesNotChangeTheLegacyDownloadNameContract() {
+        var attributes=new org.springframework.web.context.request.ServletRequestAttributes(new org.springframework.mock.web.MockHttpServletRequest());
+        attributes.setAttribute(OidcTenantMembershipFilter.PRINCIPAL_ATTRIBUTE,principal(Set.of("workspace:view")),org.springframework.web.context.request.RequestAttributes.SCOPE_REQUEST);
+        org.springframework.web.context.request.RequestContextHolder.setRequestAttributes(attributes);
+        try {
+            var storage=mock(JdbcObjectStorageStore.class);var jobs=mock(ExecutionJobPort.class);
+            var stores=mock(ArtifactController.ObjectStoreFactory.class);var store=mock(io.elmos.storage.S3ObjectStore.class);
+            var tenants=mock(ArtifactController.TenantContext.class);
+            when(tenants.organizationId()).thenReturn("tenant-fixture");when(tenants.actorId()).thenReturn("actor-fixture");
+            when(jobs.find("tenant-fixture","job")).thenReturn(java.util.Optional.of(mock(ExecutionJobPort.JobView.class)));
+            when(storage.artifactIdFor("tenant-fixture","job","TEST_REPORT")).thenReturn(java.util.Optional.of("artifact"));
+            when(storage.artifactIdFor("tenant-fixture","job","TEST_REPORT","reports/details.json")).thenReturn(java.util.Optional.of("artifact"));
+            when(storage.issueDownloadGrant("tenant-fixture","artifact","actor-fixture",300)).thenReturn(new JdbcObjectStorageStore.GrantedDownload(
+                    "primary","key","a".repeat(64),100,"application/json","reports/details.json",java.time.Duration.ofMinutes(5)));
+            when(stores.current()).thenReturn(store);when(store.presignDownload(anyString(),anyString(),anyString(),any())).thenReturn(
+                    new io.elmos.storage.S3ObjectStore.DownloadTicket(java.net.URI.create("https://objects.example.test/key"),"key",java.time.Duration.ofMinutes(5)));
+            var controller=new ArtifactController(storage,stores,jobs,tenants);
+            assertEquals("reports/details.json",((Map<?,?>)controller.downloadTicket("job","TEST_REPORT").getBody()).get("filename"));
+            assertEquals("details.json",((Map<?,?>)controller.downloadTicket("job","TEST_REPORT","reports/details.json").getBody()).get("filename"));
+        } finally {org.springframework.web.context.request.RequestContextHolder.resetRequestAttributes();}
+    }
     @Test void inputDownloadAdmissionIsHeldUntilTheActualStreamFinishes() throws Exception {
         var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
         var server=com.sun.net.httpserver.HttpServer.create(new java.net.InetSocketAddress("127.0.0.1",0),0);
