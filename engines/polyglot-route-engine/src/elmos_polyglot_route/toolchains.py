@@ -4469,7 +4469,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     }
     if (
         not set(versions).issubset(allowed_version_fields)
-        or ("head" in versions and versions["head"] is not None)
+        # Homebrew's API receipt records a missing HEAD version as null, while
+        # loading the same pinned formula from the repository-owned tap records
+        # the formula's git source as the sentinel "HEAD". Neither changes the
+        # selected stable 8.5.9 bottle, but every other value remains unsafe.
+        or ("head" in versions and versions["head"] not in {None, "HEAD"})
         or (
             "version_scheme" in versions
             and (
