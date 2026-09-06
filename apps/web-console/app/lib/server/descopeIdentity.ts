@@ -1,8 +1,11 @@
-import { createSdk } from "@descope/nextjs-sdk/server";
+import { createRemoteJWKSet, jwtVerify, type JWTPayload } from "jose";
 import { AccountSessionError, type DescopeAuthenticationMethod, type DescopeIdentity } from "./accountSession";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phonePattern = /^\+[1-9]\d{7,14}$/;
+const defaultDescopeBaseUrl = "https://api.descope.com";
+const maximumProviderResponseLength = 256_000;
+const providerRequestTimeoutMs = 15_000;
 
 type DescopeConfiguration = {
   projectId: string;
@@ -19,6 +22,12 @@ type DescopeUser = {
   phone?: string;
   verifiedPhone?: boolean;
   OAuth?: Record<string, boolean>;
+};
+
+type DescopeTokenResponse = {
+  sessionJwt: string;
+  refreshJwt?: string;
+  user?: DescopeUser;
 };
 
 export type VerifiedDescopeSession = {
@@ -84,14 +93,6 @@ export function descopeWechatConfigured(): boolean {
   }
 }
 
-function sdk() {
-  const configuration = descopeConfiguration();
-  return createSdk({
-    projectId: configuration.projectId,
-    ...(configuration.baseUrl ? { baseUrl: configuration.baseUrl } : {}),
-  });
-}
-
 function normalizedEmail(value: string): string {
   const normalized = value.trim().toLocaleLowerCase("en-US");
   if (normalized.length > 254 || !emailPattern.test(normalized)) {
@@ -112,15 +113,106 @@ function providerFailure(code: string, status = 401): AccountSessionError {
   return new AccountSessionError(status, code, "身份提供商未接受本次请求，请检查输入后重试。");
 }
 
-function assertProviderResponse<T>(
-  response: { ok: boolean; data?: T; code?: number },
-  code: string,
-): T {
-  if (!response.ok || response.data === undefined) {
-    const status = response.code === 429 ? 429 : response.code === 404 ? 401 : 502;
-    throw providerFailure(code, status);
+function providerStatus(status: number): number {
+  if (status === 429) return 429;
+  if ([400, 401, 403, 404].includes(status)) return 401;
+  return 502;
+}
+
+function descopeApiBaseUrl(configuration: DescopeConfiguration): string {
+  return configuration.baseUrl ?? defaultDescopeBaseUrl;
+}
+
+async function providerRequest<T>(input: {
+  path: string;
+  method?: "GET" | "POST";
+  body?: Record<string, unknown>;
+  query?: Record<string, string>;
+  refreshToken?: string;
+  errorCode: string;
+}): Promise<T> {
+  const configuration = descopeConfiguration();
+  const target = new URL(input.path, `${descopeApiBaseUrl(configuration)}/`);
+  Object.entries(input.query ?? {}).forEach(([name, value]) => target.searchParams.set(name, value));
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), providerRequestTimeoutMs);
+  let response: Response;
+  try {
+    response = await fetch(target, {
+      method: input.method ?? "POST",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${configuration.projectId}${input.refreshToken ? `:${input.refreshToken}` : ""}`,
+        "x-descope-project-id": configuration.projectId,
+        ...(input.body ? { "Content-Type": "application/json" } : {}),
+      },
+      ...(input.body ? { body: JSON.stringify(input.body) } : {}),
+      cache: "no-store",
+      redirect: "error",
+      signal: controller.signal,
+    });
+  } catch {
+    throw providerFailure(input.errorCode, 502);
+  } finally {
+    clearTimeout(timeout);
   }
-  return response.data;
+  const raw = await response.text();
+  if (!response.ok) {
+    throw providerFailure(input.errorCode, providerStatus(response.status));
+  }
+  if (raw.length > maximumProviderResponseLength) {
+    throw providerFailure(`${input.errorCode}_RESPONSE_TOO_LARGE`, 502);
+  }
+  if (!raw) return {} as T;
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      throw new Error("response is not an object");
+    }
+    return parsed as T;
+  } catch {
+    throw providerFailure(`${input.errorCode}_RESPONSE_INVALID`, 502);
+  }
+}
+
+const descopeJwks = new Map<string, ReturnType<typeof createRemoteJWKSet>>();
+
+function trustedIssuer(issuer: unknown, projectId: string): boolean {
+  if (issuer === projectId) return true;
+  if (typeof issuer !== "string" || !issuer) return false;
+  try {
+    const segments = new URL(issuer).pathname.split("/").filter(Boolean);
+    return segments.at(-1) === projectId || segments.at(-2) === projectId;
+  } catch {
+    const segments = issuer.split("/").filter(Boolean);
+    return segments.at(-1) === projectId || segments.at(-2) === projectId;
+  }
+}
+
+async function validateDescopeJwt(token: string): Promise<JWTPayload> {
+  if (!token || token.length > 32_768) throw providerFailure("DESCOPE_TOKEN_INVALID", 401);
+  const configuration = descopeConfiguration();
+  const key = `${descopeApiBaseUrl(configuration)}/${configuration.projectId}`;
+  let jwks = descopeJwks.get(key);
+  if (!jwks) {
+    jwks = createRemoteJWKSet(
+      new URL(`/v2/keys/${encodeURIComponent(configuration.projectId)}`, `${descopeApiBaseUrl(configuration)}/`),
+      { timeoutDuration: providerRequestTimeoutMs, cooldownDuration: 30_000 },
+    );
+    descopeJwks.set(key, jwks);
+  }
+  try {
+    const verified = await jwtVerify(token, jwks, {
+      algorithms: ["RS256"],
+      clockTolerance: 5,
+    });
+    if (!trustedIssuer(verified.payload.iss, configuration.projectId)) {
+      throw new Error("issuer mismatch");
+    }
+    return verified.payload;
+  } catch {
+    throw providerFailure("DESCOPE_TOKEN_INVALID", 401);
+  }
 }
 
 function identityFromUser(user: DescopeUser): DescopeIdentity {
@@ -149,23 +241,16 @@ async function verifiedSession(
   if (!data.sessionJwt || !data.refreshJwt || !data.user) {
     throw providerFailure("DESCOPE_TOKEN_RESPONSE_INVALID", 502);
   }
-  const client = sdk();
-  let sessionInfo: Awaited<ReturnType<typeof client.validateSession>>;
-  let refreshInfo: Awaited<ReturnType<typeof client.validateJwt>>;
-  try {
-    [sessionInfo, refreshInfo] = await Promise.all([
-      client.validateSession(data.sessionJwt),
-      client.validateJwt(data.refreshJwt),
-    ]);
-  } catch {
-    throw providerFailure("DESCOPE_TOKEN_INVALID", 401);
-  }
+  const [sessionClaims, refreshClaims] = await Promise.all([
+    validateDescopeJwt(data.sessionJwt),
+    validateDescopeJwt(data.refreshJwt),
+  ]);
   const identity = identityFromUser(data.user);
   if (
-    sessionInfo.token.sub !== identity.userId
-    || refreshInfo.token.sub !== identity.userId
-    || typeof sessionInfo.token.exp !== "number"
-    || typeof refreshInfo.token.exp !== "number"
+    sessionClaims.sub !== identity.userId
+    || refreshClaims.sub !== identity.userId
+    || typeof sessionClaims.exp !== "number"
+    || typeof refreshClaims.exp !== "number"
   ) {
     throw providerFailure("DESCOPE_IDENTITY_MISMATCH", 403);
   }
@@ -188,8 +273,8 @@ async function verifiedSession(
     authenticationMethod: method,
     accessToken: data.sessionJwt,
     refreshToken: data.refreshJwt,
-    expiresAt: sessionInfo.token.exp * 1_000,
-    refreshExpiresAt: refreshInfo.token.exp * 1_000,
+    expiresAt: sessionClaims.exp * 1_000,
+    refreshExpiresAt: refreshClaims.exp * 1_000,
   };
 }
 
@@ -200,28 +285,41 @@ export async function startDescopeOtp(input: {
   displayName?: string;
   allowSignUpOrIn?: boolean;
 }): Promise<{ loginId: string; maskedDestination: string }> {
-  const client = sdk();
   if (input.channel === "EMAIL") {
     const loginId = normalizedEmail(input.loginId);
-    const response = input.allowSignUpOrIn
-      ? await client.otp.signUpOrIn.email(loginId)
-      : input.intent === "REGISTER"
-        ? await client.otp.signUp.email(
-          loginId,
-          { email: loginId, ...(input.displayName ? { name: input.displayName.trim() } : {}) },
-        )
-        : await client.otp.signIn.email(loginId);
-    const data = assertProviderResponse(response, "DESCOPE_OTP_START_REJECTED");
+    const operation = input.allowSignUpOrIn
+      ? "signup-in"
+      : input.intent === "REGISTER" ? "signup" : "signin";
+    const data = await providerRequest<{ maskedEmail: string }>({
+      path: `/v1/auth/otp/${operation}/email`,
+      body: {
+        loginId,
+        ...(input.intent === "REGISTER"
+          ? { user: { email: loginId, ...(input.displayName ? { name: input.displayName.trim() } : {}) } }
+          : {}),
+      },
+      errorCode: "DESCOPE_OTP_START_REJECTED",
+    });
+    if (typeof data.maskedEmail !== "string" || !data.maskedEmail) {
+      throw providerFailure("DESCOPE_OTP_START_RESPONSE_INVALID", 502);
+    }
     return { loginId, maskedDestination: data.maskedEmail };
   }
   const loginId = normalizedPhone(input.loginId);
-  const response = input.intent === "REGISTER"
-    ? await client.otp.signUp.sms(
+  const operation = input.intent === "REGISTER" ? "signup" : "signin";
+  const data = await providerRequest<{ maskedPhone: string }>({
+    path: `/v1/auth/otp/${operation}/sms`,
+    body: {
       loginId,
-      { phone: loginId, ...(input.displayName ? { name: input.displayName.trim() } : {}) },
-    )
-    : await client.otp.signIn.sms(loginId);
-  const data = assertProviderResponse(response, "DESCOPE_OTP_START_REJECTED");
+      ...(input.intent === "REGISTER"
+        ? { user: { phone: loginId, ...(input.displayName ? { name: input.displayName.trim() } : {}) } }
+        : {}),
+    },
+    errorCode: "DESCOPE_OTP_START_REJECTED",
+  });
+  if (typeof data.maskedPhone !== "string" || !data.maskedPhone) {
+    throw providerFailure("DESCOPE_OTP_START_RESPONSE_INVALID", 502);
+  }
   return { loginId, maskedDestination: data.maskedPhone };
 }
 
@@ -234,11 +332,14 @@ export async function verifyDescopeOtp(input: {
   if (!/^\d{4,10}$/.test(code)) {
     throw new AccountSessionError(400, "DESCOPE_OTP_CODE_INVALID", "验证码格式无效。");
   }
-  const client = sdk();
-  const response = input.channel === "EMAIL"
-    ? await client.otp.verify.email(normalizedEmail(input.loginId), code)
-    : await client.otp.verify.sms(normalizedPhone(input.loginId), code);
-  const data = assertProviderResponse(response, "DESCOPE_OTP_VERIFY_REJECTED");
+  const loginId = input.channel === "EMAIL"
+    ? normalizedEmail(input.loginId)
+    : normalizedPhone(input.loginId);
+  const data = await providerRequest<DescopeTokenResponse>({
+    path: `/v1/auth/otp/verify/${input.channel === "EMAIL" ? "email" : "sms"}`,
+    body: { loginId, code },
+    errorCode: "DESCOPE_OTP_VERIFY_REJECTED",
+  });
   return verifiedSession(
     data,
     input.channel === "EMAIL" ? "EMAIL_OTP" : "PHONE_OTP",
@@ -254,8 +355,12 @@ export async function startDescopeWechat(redirectUrl: string): Promise<{
   if (!configuration.wechatProvider) {
     throw new AccountSessionError(503, "DESCOPE_WECHAT_NOT_CONFIGURED", "微信开放平台登录尚未配置。");
   }
-  const response = await sdk().oauth.start(configuration.wechatProvider, redirectUrl);
-  const data = assertProviderResponse(response, "DESCOPE_WECHAT_START_REJECTED");
+  const data = await providerRequest<{ url?: string }>({
+    path: "/v1/auth/oauth/authorize",
+    body: {},
+    query: { provider: configuration.wechatProvider, redirectURL: redirectUrl },
+    errorCode: "DESCOPE_WECHAT_START_REJECTED",
+  });
   const rawUrl = "url" in data && typeof data.url === "string" ? data.url : "";
   let target: URL;
   try {
@@ -280,8 +385,11 @@ export async function exchangeDescopeWechat(
   if (!configuredProvider || configuredProvider !== provider) {
     throw new AccountSessionError(403, "DESCOPE_WECHAT_PROVIDER_MISMATCH", "微信登录提供商不匹配。");
   }
-  const response = await sdk().oauth.exchange(code);
-  const data = assertProviderResponse(response, "DESCOPE_WECHAT_EXCHANGE_REJECTED");
+  const data = await providerRequest<DescopeTokenResponse>({
+    path: "/v1/auth/oauth/exchange",
+    body: { code },
+    errorCode: "DESCOPE_WECHAT_EXCHANGE_REJECTED",
+  });
   const providerLinked = Object.entries(data.user?.OAuth ?? {}).some(
     ([name, linked]) => name.toLocaleLowerCase("en-US") === provider && linked === true,
   );
@@ -295,18 +403,21 @@ export async function refreshDescopeSession(
   refreshToken: string,
   method: DescopeAuthenticationMethod,
 ): Promise<VerifiedDescopeSession> {
-  const client = sdk();
-  let refreshed: Awaited<ReturnType<typeof client.refreshSession>>;
-  try {
-    refreshed = await client.refreshSession(refreshToken);
-  } catch {
-    throw providerFailure("DESCOPE_REFRESH_REJECTED", 401);
-  }
+  await validateDescopeJwt(refreshToken);
+  const refreshed = await providerRequest<DescopeTokenResponse>({
+    path: "/v1/auth/refresh",
+    refreshToken,
+    errorCode: "DESCOPE_REFRESH_REJECTED",
+  });
   const effectiveRefreshToken = refreshed.refreshJwt ?? refreshToken;
-  const userResponse = await client.me(effectiveRefreshToken);
-  const user = assertProviderResponse(userResponse, "DESCOPE_USER_LOOKUP_REJECTED");
+  const user = await providerRequest<DescopeUser>({
+    path: "/v1/auth/me",
+    method: "GET",
+    refreshToken: effectiveRefreshToken,
+    errorCode: "DESCOPE_USER_LOOKUP_REJECTED",
+  });
   return verifiedSession({
-    sessionJwt: refreshed.jwt,
+    sessionJwt: refreshed.sessionJwt,
     refreshJwt: effectiveRefreshToken,
     user,
   }, method);
@@ -314,8 +425,12 @@ export async function refreshDescopeSession(
 
 export async function revokeDescopeSession(refreshToken: string): Promise<boolean> {
   try {
-    const response = await sdk().logout(refreshToken);
-    return response.ok;
+    await providerRequest<Record<string, never>>({
+      path: "/v1/auth/logout",
+      refreshToken,
+      errorCode: "DESCOPE_LOGOUT_REJECTED",
+    });
+    return true;
   } catch {
     return false;
   }
