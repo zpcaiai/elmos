@@ -548,6 +548,38 @@ def test_php_receipt_diagnostics_distinguish_array_order_from_content(tmp_path) 
     assert first["runtime_dependencies"]["unique_count"] == 2
 
 
+def test_php_record_diagnostics_localize_exact_tree_drift(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    stable = root / "stable.txt"
+    drifting = root / "drifting.txt"
+    stable.write_text("stable", encoding="utf-8")
+    drifting.write_text("first", encoding="utf-8")
+    first: dict[str, str] = {}
+    first_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        record_digests=first,
+    )
+
+    drifting.write_text("other", encoding="utf-8")
+    second: dict[str, str] = {}
+    second_identity = php_tree_identity(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        record_digests=second,
+    )
+
+    assert first_identity["sha256"] != second_identity["sha256"]
+    assert first["stable.txt"] == second["stable.txt"]
+    assert first["drifting.txt"] != second["drifting.txt"]
+    assert len(first["drifting.txt"]) == 16
+
+
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:
     """Recording an unbound name is acceptable for an installer script. It is not
     acceptable for anything the interpreter could dlopen: that has to live inside

@@ -4489,6 +4489,7 @@ def php_tree_identity(
     failure: str,
     *,
     receipt_field_digests: dict[str, dict[str, object]] | None = None,
+    record_digests: dict[str, str] | None = None,
 ) -> dict[str, object]:
     """Content identity of one PHP install tree, symlinks included.
 
@@ -4629,6 +4630,18 @@ def php_tree_identity(
         item.relative_to(root).as_posix() for item in paths
     ]:
         raise RouteError(f"{failure}:TREE_CHANGED")
+    if record_digests is not None:
+        for diagnostic_record in records:
+            canonical_record = json.dumps(
+                diagnostic_record, sort_keys=True, separators=(",", ":")
+            ).encode("utf-8")
+            # This short digest is diagnostic only: the full canonical records
+            # still determine the security decision below. Keeping the hosted
+            # failure line bounded lets two independent runners identify the
+            # exact drifting path without dumping toolchain file contents.
+            record_digests[cast(str, diagnostic_record["path"])] = hashlib.sha256(
+                canonical_record
+            ).hexdigest()[:16]
     digest = hashlib.sha256(
         json.dumps(records, sort_keys=True, separators=(",", ":")).encode("utf-8")
     ).hexdigest()
@@ -4647,11 +4660,13 @@ def php_tree_identity(
 def _php_tree_identity() -> dict[str, object]:
     bundle_profile = homebrew_route_bundle_profile()
     receipt_field_digests: dict[str, dict[str, object]] = {}
+    record_digests: dict[str, str] = {}
     identity = php_tree_identity(
         _EXPECTED_PHP_ROOT,
         _EXPECTED_PHP_ANCHOR,
         "EXACT_TOOLCHAIN_PHP_TREE_UNSAFE",
         receipt_field_digests=receipt_field_digests,
+        record_digests=record_digests,
     )
     expected = {
         "root": str(_EXPECTED_PHP_ROOT),
@@ -4675,6 +4690,8 @@ def _php_tree_identity() -> dict[str, object]:
                 sort_keys=True,
                 separators=(",", ":"),
             )
+            + ":record-digests="
+            + json.dumps(record_digests, sort_keys=True, separators=(",", ":"))
         )
     return {
         **identity,
