@@ -1,0 +1,34 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-22",
+  "name": "elmos-lw-edit-rebuild-invalidation",
+  "priority": "P1",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-project-version",
+  "dependencies": [
+    "elmos-lw-guided-learning-mission",
+    "elmos-lw-prebuild-cache"
+  ],
+  "contract_refs": [
+    "contracts/source-anchor.schema.json",
+    "contracts/evidence-claim.schema.json"
+  ],
+  "output_artifacts": [
+    "practice-patch.json",
+    "invalidation-plan.json",
+    "rebuild-results.json"
+  ],
+  "acceptance_cases": [
+    "LW-22-AC-01",
+    "LW-22-AC-02",
+    "LW-22-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

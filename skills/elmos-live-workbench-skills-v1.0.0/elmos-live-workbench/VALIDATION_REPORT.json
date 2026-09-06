@@ -1,0 +1,111 @@
+{
+  "schema_version": "lw.v1",
+  "report_id": "local-reference-validation-1.0.0",
+  "scope": "local-reference-package",
+  "generated_at": "2026-09-06T09:41:24.195506+00:00",
+  "status": "passed-scoped-tests",
+  "results": [
+    {
+      "surface": "static-package-contracts",
+      "status": "passed",
+      "evidence_paths": [
+        "reports/package-validation.json"
+      ],
+      "limits": [
+        "Static contract/DAG/example/profile checks; not application behavior."
+      ]
+    },
+    {
+      "surface": "reference-unit-tests",
+      "status": "passed",
+      "evidence_paths": [
+        "reports/unit-tests.json",
+        "reports/unit-tests.txt"
+      ],
+      "limits": [
+        "82 local tests; injected clock is not a 600-second hosted run."
+      ]
+    },
+    {
+      "surface": "host-port-typecheck",
+      "status": "passed",
+      "evidence_paths": [
+        "reports/typecheck.json"
+      ],
+      "limits": [
+        "TypeScript interfaces only; no host implementation supplied."
+      ]
+    },
+    {
+      "surface": "paired-python-javascript-native-fixtures",
+      "status": "passed",
+      "evidence_paths": [
+        "reports/native-fixtures.json"
+      ],
+      "limits": [
+        "12 bounded inputs, independently authored original programs, not real Elmos conversion output."
+      ]
+    },
+    {
+      "surface": "python-local-dap",
+      "status": "passed",
+      "evidence_paths": [
+        "reports/debugpy-lab.json"
+      ],
+      "limits": [
+        "Trusted local debugpy fixture only; no browser workbench or isolation-provider qualification."
+      ]
+    },
+    {
+      "surface": "live-elmos-repository-integration",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    },
+    {
+      "surface": "browser-workbench-e2e",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    },
+    {
+      "surface": "four-runtime-family-qualification",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    },
+    {
+      "surface": "isolated-provider-security",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    },
+    {
+      "surface": "real-600s-preview",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    },
+    {
+      "surface": "provider-cleanup-and-cross-tenant-security",
+      "status": "not_run",
+      "evidence_paths": [],
+      "limits": [
+        "See deployment qualification report; full release remains blocked."
+      ]
+    }
+  ],
+  "wall_clock_seconds": 15.879904,
+  "may_self_certify_e5": false,
+  "deployment_qualified": false
+}

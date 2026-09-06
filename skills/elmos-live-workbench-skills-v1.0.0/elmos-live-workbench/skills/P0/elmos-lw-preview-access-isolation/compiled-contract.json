@@ -1,0 +1,32 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-14",
+  "name": "elmos-lw-preview-access-isolation",
+  "priority": "P0",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-project-preview",
+  "dependencies": [
+    "elmos-lw-preview-lease-600s"
+  ],
+  "contract_refs": [
+    "contracts/preview-session.schema.json"
+  ],
+  "output_artifacts": [
+    "preview-gateway",
+    "browser-isolation-policy.json",
+    "cross-tenant-access-tests"
+  ],
+  "acceptance_cases": [
+    "LW-14-AC-01",
+    "LW-14-AC-02",
+    "LW-14-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

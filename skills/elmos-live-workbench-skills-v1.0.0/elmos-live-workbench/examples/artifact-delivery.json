@@ -1,0 +1,62 @@
+{
+  "schema_version": "lw.v1",
+  "tenant_id": "local-fixture",
+  "repository_id": "original-cart-python",
+  "snapshot_id": "sha256:94af3d9e3a526baad253ef5e44ecfea249286645d8823664ad334cdf7a431d0f",
+  "delivery_id": "illustrative-original-cart",
+  "origin": "generated",
+  "source_snapshot_id": null,
+  "build_artifact_digest": "sha256:02938bed775408cf5b641db21c0edad0a1e2894cb4a9df9a0e2649c6c343c409",
+  "lockfile_digest": "sha256:01088b62b2302abfc5b47f904fa11039c95571dfa875c111f95591bdfb0812ca",
+  "runtime_profile_id": "python-linux",
+  "entrypoint_id": "quote-cli",
+  "preview_kind": "cli",
+  "services": [
+    {
+      "id": "cart",
+      "role": "app",
+      "depends_on": [],
+      "image_digest": "sha256:58666c7580bd3811fda04bf9a3fba05f6c5b6bd6d6cb22dff2285bde347e0b27",
+      "data_mode": "none",
+      "ports": []
+    }
+  ],
+  "capabilities": {
+    "read": {
+      "status": "experimental",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    },
+    "teach": {
+      "status": "not_run",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    },
+    "build": {
+      "status": "experimental",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    },
+    "preview": {
+      "status": "not_run",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    },
+    "debug": {
+      "status": "experimental",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    },
+    "compare": {
+      "status": "not_run",
+      "reason": "schema example; see actual test reports",
+      "evidence_ids": []
+    }
+  },
+  "semantic_map_id": null,
+  "mission_ids": [
+    "cart-boundary"
+  ],
+  "virtualized_dependencies": [],
+  "production_credentials_allowed": false
+}

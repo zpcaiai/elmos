@@ -1,0 +1,39 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-20",
+  "name": "elmos-lw-acceptance-fixtures",
+  "priority": "P0",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-functional-assurance-integration",
+  "dependencies": [
+    "elmos-lw-artifact-contract",
+    "elmos-lw-reader-semantic-navigation",
+    "elmos-lw-conversion-correspondence",
+    "elmos-lw-preview-access-isolation",
+    "elmos-lw-debug-command-safety",
+    "elmos-lw-guided-learning-mission"
+  ],
+  "contract_refs": [
+    "contracts/qualification-report.schema.json",
+    "contracts/cleanup-receipt.schema.json"
+  ],
+  "output_artifacts": [
+    "qualification-report.json",
+    "runtime-matrix.json",
+    "real-600s-evidence-bundle",
+    "release-gate-report.json"
+  ],
+  "acceptance_cases": [
+    "LW-20-AC-01",
+    "LW-20-AC-02",
+    "LW-20-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}
