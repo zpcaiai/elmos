@@ -21,6 +21,7 @@
   "evidenceRefs": [
     "b40-dependabot-alerts",
     "b40-dependency-inventory",
+    "b40-local-assurance",
     "b40-secret-scan"
   ],
   "metadata": {}

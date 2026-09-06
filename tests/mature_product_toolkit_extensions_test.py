@@ -150,6 +150,18 @@ class ToolkitExtensionsTest(unittest.TestCase):
             self.assertEqual(1, result.returncode)
             inventory = read(pack / "gap-inventory.json")
             self.assertGreater(inventory["blockingCount"], 0)
+            self.assertEqual(
+                inventory["blockingCount"],
+                inventory["repositoryBlockingCount"] + inventory["externalGateBlockingCount"],
+            )
+            self.assertEqual(
+                inventory["openCount"],
+                inventory["repositoryOpenCount"] + inventory["externalGateOpenCount"],
+            )
+            self.assertTrue(all(
+                gap["responsibility"] in {"repository", "external-gate"}
+                for gap in inventory["gaps"]
+            ))
             categories = {gap["category"] for gap in inventory["gaps"]}
             for expected in ("provenance", "corpus", "approval", "metric", "zero-tolerance", "evidence"):
                 self.assertIn(expected, categories, f"a fresh scaffold must report a {expected} gap")

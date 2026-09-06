@@ -1,0 +1,36 @@
+{
+  "recordType": "provenance",
+  "schemaVersion": 1,
+  "id": "b40-local-assurance-provenance",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "evidenceId": "b40-local-assurance",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "repositoryRevision": "64e72cd8609a79bceb67e590d17e4467fd3da20c",
+  "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+  "runReport": {
+    "path": "evidence/execution/b40-local-assurance.json",
+    "sha256": "sha256:d43790d440fd8004907f6ee28b0f6dfaad986394f20841866856929ec258d9e6",
+    "bytes": 12862
+  },
+  "analyzer": {
+    "path": "scripts/batch40_local_assurance.py",
+    "sha256": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7",
+    "reportedDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7"
+  },
+  "environment": {
+    "capturedAt": "2026-09-06T19:02:01.006402Z",
+    "pythonVersion": "3.14.6",
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "limitations": [
+    "The measurement covers the exact CI workflow and claims currently declared by this pack; it is not whole-product or whole-supply-chain coverage.",
+    "Repository-local checks are self-attested and do not replace an independent assessor, independent corpus, accountable approval, or external signature.",
+    "The action-pin audit proves immutable references in the workflow text; it does not independently attest GitHub runner images or action publisher provenance.",
+    "Freshness means evidence timestamps fall inside the configured local window; it does not establish that an external verifier reproduced the evidence.",
+    "The checker excludes its own claim from evidence-graph metrics to avoid a recursive digest; the exact non-recursive claim and narrative sets are content-addressed in inputs."
+  ],
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN"
+}

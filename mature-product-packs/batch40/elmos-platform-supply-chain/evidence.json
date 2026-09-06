@@ -39,6 +39,18 @@
       "authorizationRefs": [
         "user-request://dependabot-alert-review"
       ]
+    },
+    {
+      "claimId": "b40-local-assurance-controls",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "provenanceRefs": [
+        "b40-local-assurance-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
     }
   ]
 }

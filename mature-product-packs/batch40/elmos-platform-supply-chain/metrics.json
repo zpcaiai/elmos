@@ -10,10 +10,12 @@
       "name": "auditEvidenceFreshnessRate",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "criticalVulnerabilityCount",
@@ -30,10 +32,12 @@
       "name": "evidenceTraceCoverage",
       "threshold": 0.98,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "independentAssessmentClosureRate",
@@ -48,10 +52,12 @@
       "name": "provenanceCoverage",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "sbomCoverage",
@@ -68,10 +74,12 @@
       "name": "secureSdlcControlCoverage",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "signaturePassRate",
@@ -104,19 +112,23 @@
       "name": "threatModelCoverage",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 1.0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to the exact CI workflow and currently declared pack claims; external and independent assessment remains NOT_RUN"
     },
     {
       "name": "vulnerabilitySlaCompliance",
       "threshold": 1.0,
       "comparator": "min",
-      "measured": false,
-      "value": null,
-      "evidenceRefs": [],
-      "note": "not measured"
+      "measured": true,
+      "value": 0.9027,
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ],
+      "note": "fixed Dependabot alerts only; dismissed and auto-dismissed alerts are excluded pending separate risk-acceptance review"
     }
   ],
   "packKey": "elmos-platform-supply-chain"

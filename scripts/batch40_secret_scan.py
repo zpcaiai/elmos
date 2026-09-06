@@ -23,6 +23,7 @@ import math
 import os
 import platform
 import re
+import subprocess
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
@@ -68,6 +69,17 @@ BENIGN = (
 )
 ENTROPY_THRESHOLD = 4.2
 ENTROPY_MIN_LENGTH = 24
+
+
+def repository_revision(root: Path) -> str | None:
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    revision = result.stdout.strip()
+    return revision if re.fullmatch(r"[0-9a-f]{40}", revision) else None
 
 
 def shannon_entropy(value: str) -> float:
@@ -226,6 +238,7 @@ def merge_reports(directory: Path, output: Path | None) -> int:
     suppressed: dict[str, dict] = {}
     roots: set[str] = set()
     missing_roots: set[str] = set()
+    revisions: set[str] = set()
     problems: set[str] = set()
     scanned = binary = large = considered = 0
     started = finished = None
@@ -248,6 +261,8 @@ def merge_reports(directory: Path, output: Path | None) -> int:
         rule_count = coverage.get("ruleCount", rule_count)
         entropy = coverage.get("entropyThreshold", entropy)
         tool_digest = report.get("toolDigest", tool_digest)
+        if isinstance(report.get("repositoryRevision"), str):
+            revisions.add(report["repositoryRevision"])
         problems.update(report.get("allowlist", {}).get("problems", []))
         for finding in report.get("findings", []):
             findings[finding["fingerprint"]] = finding
@@ -269,6 +284,7 @@ def merge_reports(directory: Path, output: Path | None) -> int:
     merged = {
         "check": "batch40-secret-scan",
         "batch": 40,
+        "repositoryRevision": next(iter(revisions)) if len(revisions) == 1 else None,
         "mergedFrom": [part.name for part in parts],
         "startedAt": started,
         "finishedAt": finished,
@@ -445,6 +461,7 @@ def main() -> int:
     report = {
         "check": "batch40-secret-scan",
         "batch": 40,
+        "repositoryRevision": repository_revision(repo),
         "startedAt": started.isoformat().replace("+00:00", "Z"),
         "finishedAt": finished.isoformat().replace("+00:00", "Z"),
         "replayCommand": (

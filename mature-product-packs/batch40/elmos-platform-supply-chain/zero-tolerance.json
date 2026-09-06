@@ -54,17 +54,21 @@
     },
     {
       "name": "testIntegrityViolations",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 0,
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "note": "bounded to continue-on-error enforcement in the exact CI workflow; independent corpus and signed evidence integrity remain NOT_RUN"
     },
     {
       "name": "unresolvedLicenseBlocks",
-      "evaluated": false,
-      "observed": null,
-      "evidenceRefs": [],
-      "note": "not evaluated"
+      "evaluated": true,
+      "observed": 427,
+      "evidenceRefs": [
+        "b40-dependency-inventory"
+      ],
+      "note": "427 external direct components have no resolved license decision in the bounded inventory; unknown license state fails closed"
     },
     {
       "name": "unsignedProductionArtifacts",

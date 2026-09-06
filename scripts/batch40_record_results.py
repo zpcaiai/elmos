@@ -5,6 +5,7 @@ This updates measured engineering evidence only.  It never changes the pack
 certification status or manufactures the signed evidence manifest required for
 the Batch 40 gate.
 """
+import argparse
 import hashlib
 import json
 import platform
@@ -13,12 +14,28 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-P = Path(sys.argv[1] if len(sys.argv) > 1 else 'mature-product-packs/batch40/elmos-platform-supply-chain')
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    'pack', nargs='?', type=Path,
+    default=Path('mature-product-packs/batch40/elmos-platform-supply-chain'),
+)
+parser.add_argument(
+    '--skip-context-refresh', action='store_true',
+    help='preserve the existing artifact/environment digests when the full repository is not checked out',
+)
+arguments = parser.parse_args()
+P = arguments.pack
 inv = json.loads((P / 'evidence/execution/b40-dependency-inventory.json').read_text())
 scan = json.loads((P / 'evidence/execution/b40-secret-scan.json').read_text())
 dependabot_path = P / 'evidence/execution/b40-dependabot-alerts.json'
 dependabot = json.loads(dependabot_path.read_text()) if dependabot_path.is_file() else None
+assurance_path = P / 'evidence/execution/b40-local-assurance.json'
+assurance = json.loads(assurance_path.read_text()) if assurance_path.is_file() else None
 actionable = scan['totals']['actionableFindingCount']
+unresolved_license_count = sum(
+    1 for component in inv['components']
+    if not component.get('internal') and not component.get('licenses')
+)
 
 
 def sha256_file(path: Path) -> str:
@@ -43,7 +60,7 @@ def local_provenance(report: dict, *, evidence_id: str, analyzer: str) -> dict:
         'packKey': 'elmos-platform-supply-chain',
         'evidenceId': evidence_id,
         'status': 'LOCAL_EXECUTED_SELF_ATTESTED',
-        'repositoryRevision': git_revision(),
+        'repositoryRevision': report.get('repositoryRevision') or git_revision(),
         'replayCommand': report.get('replayCommand'),
         'runReport': {
             'path': f'evidence/execution/{evidence_id}.json',
@@ -67,8 +84,27 @@ def local_provenance(report: dict, *, evidence_id: str, analyzer: str) -> dict:
     }
 
 
+def preserve_or_create_local_provenance(
+    report: dict, *, evidence_id: str, analyzer: str, filename: str,
+) -> dict:
+    """Do not silently rebind an old report to the current Git revision."""
+    path = P / f'evidence/provenance/{filename}'
+    report_path = P / f'evidence/execution/{evidence_id}.json'
+    current_digest = sha256_file(report_path)
+    if path.is_file():
+        existing = json.loads(path.read_text())
+        if existing.get('runReport', {}).get('sha256') == current_digest:
+            return existing
+    if not report.get('repositoryRevision'):
+        raise SystemExit(
+            f'ERROR: changed evidence {evidence_id} has no repositoryRevision; rerun its analyzer'
+        )
+    return local_provenance(report, evidence_id=evidence_id, analyzer=analyzer)
+
+
 def dependabot_provenance(report: dict) -> dict:
     raw_path = P / 'evidence/execution/b40-dependabot-alerts.raw.json'
+    report_path = P / 'evidence/execution/b40-dependabot-alerts.json'
     return {
         'schemaVersion': 1,
         'id': 'batch40-dependabot-alerts-provenance',
@@ -87,6 +123,11 @@ def dependabot_provenance(report: dict) -> dict:
                 'sha256': sha256_file(raw_path),
                 'bytes': raw_path.stat().st_size,
             },
+        },
+        'runReport': {
+            'path': 'evidence/execution/b40-dependabot-alerts.json',
+            'sha256': sha256_file(report_path),
+            'bytes': report_path.stat().st_size,
         },
         'analyzer': {
             'path': 'scripts/batch40_dependabot_alerts.py',
@@ -124,6 +165,15 @@ if dependabot is not None:
         'provenanceRefs': ['batch40-dependabot-alerts-provenance'],
         'externalOperationExecuted': True,
         'authorizationRefs': ['user-request://dependabot-alert-review'],
+    })
+if assurance is not None:
+    evidence['claims'].append({
+        'claimId': 'b40-local-assurance-controls',
+        'status': 'PASS' if assurance.get('status') == 'PASS' else 'FAIL',
+        'evidenceRefs': ['b40-local-assurance'],
+        'provenanceRefs': ['b40-local-assurance-provenance'],
+        'externalOperationExecuted': False,
+        'authorizationRefs': [],
     })
 (P / 'evidence.json').write_text(json.dumps(evidence, indent=2, ensure_ascii=False) + '\n')
 
@@ -177,9 +227,22 @@ if dependabot is not None:
             'alertCount': dependabot['alertCount'],
             'stateCounts': dependabot['stateCounts'],
             'openBySeverity': dependabot['openBySeverity'],
+            'vulnerabilitySla': dependabot.get('vulnerabilitySla'),
         },
         'limitations': dependabot['limitations'],
         'evidenceRefs': ['b40-dependabot-alerts'],
+    })
+if assurance is not None:
+    claims['claims'].append({
+        'claimId': 'b40-local-assurance-controls',
+        'statement': (
+            f"The repository-owned Batch 40 assurance run evaluated "
+            f"{assurance['scope']['controlCount']} exact CI and evidence-graph controls; "
+            f"{len(assurance.get('failedControls', []))} controls failed."
+        ),
+        'scope': assurance['scope'],
+        'limitations': assurance['limitations'],
+        'evidenceRefs': ['b40-local-assurance'],
     })
 (P / 'claims.json').write_text(json.dumps(claims, indent=2, ensure_ascii=False) + '\n')
 
@@ -196,6 +259,30 @@ for entry in metrics['metrics']:
             'value': dependabot['metrics']['criticalVulnerabilityCount'],
             'evidenceRefs': ['b40-dependabot-alerts'],
             'note': 'open critical alerts in the exact GitHub Dependabot snapshot; high and medium counts are recorded separately',
+        })
+    if (
+        dependabot is not None
+        and entry['name'] == 'vulnerabilitySlaCompliance'
+        and dependabot.get('metrics', {}).get('vulnerabilitySlaCompliance') is not None
+    ):
+        entry.update({
+            'measured': True,
+            'value': dependabot['metrics']['vulnerabilitySlaCompliance'],
+            'evidenceRefs': ['b40-dependabot-alerts'],
+            'note': (
+                'fixed Dependabot alerts only; dismissed and auto-dismissed alerts are excluded '
+                'pending separate risk-acceptance review'
+            ),
+        })
+    if assurance is not None and entry['name'] in assurance.get('metrics', {}):
+        entry.update({
+            'measured': True,
+            'value': assurance['metrics'][entry['name']],
+            'evidenceRefs': ['b40-local-assurance'],
+            'note': (
+                'bounded to the exact CI workflow and currently declared pack claims; '
+                'external and independent assessment remains NOT_RUN'
+            ),
         })
 (P / 'metrics.json').write_text(json.dumps(metrics, indent=2, ensure_ascii=False) + '\n')
 
@@ -215,22 +302,56 @@ for entry in flags['flags']:
             'evidenceRefs': ['b40-dependabot-alerts'],
             'note': 'exact GitHub Dependabot snapshot; independent verification and non-GitHub advisory coverage remain outstanding',
         })
+    if assurance is not None and entry['name'] == 'testIntegrityViolations':
+        integrity_control = next(
+            (
+                control for control in assurance.get('controls', [])
+                if control.get('controlId') == 'B40-CI-NO-SOFT-FAILURES'
+            ),
+            None,
+        )
+        if integrity_control is not None:
+            entry.update({
+                'evaluated': True,
+                'observed': 0 if integrity_control.get('status') == 'PASS' else 1,
+                'evidenceRefs': ['b40-local-assurance'],
+                'note': (
+                    'bounded to continue-on-error enforcement in the exact CI workflow; '
+                    'independent corpus and signed evidence integrity remain NOT_RUN'
+                ),
+            })
+    if entry['name'] == 'unresolvedLicenseBlocks':
+        entry.update({
+            'evaluated': True,
+            'observed': unresolved_license_count,
+            'evidenceRefs': ['b40-dependency-inventory'],
+            'note': (
+                f'{unresolved_license_count} external direct components have no resolved license '
+                'decision in the bounded inventory; unknown license state fails closed'
+            ),
+        })
 (P / 'zero-tolerance.json').write_text(json.dumps(flags, indent=2, ensure_ascii=False) + '\n')
+dependabot_provenance_record = None
 if dependabot is not None:
-    provenance = P / 'evidence/provenance/b40-dependabot-alerts-provenance.json'
-    provenance.write_text(json.dumps(dependabot_provenance(dependabot), indent=2, ensure_ascii=False) + '\n')
+    provenance = P / 'evidence/provenance/batch40-dependabot-alerts-provenance.json'
+    dependabot_provenance_record = dependabot_provenance(dependabot)
+    provenance.write_text(
+        json.dumps(dependabot_provenance_record, indent=2, ensure_ascii=False) + '\n'
+    )
 
 provenance_dir = P / 'evidence/provenance'
 provenance_dir.mkdir(parents=True, exist_ok=True)
-inventory_provenance = local_provenance(
+inventory_provenance = preserve_or_create_local_provenance(
     inv,
     evidence_id='b40-dependency-inventory',
     analyzer='scripts/batch40_dependency_inventory.py',
+    filename='batch40-dependency-inventory-provenance.json',
 )
-secret_provenance = local_provenance(
+secret_provenance = preserve_or_create_local_provenance(
     scan,
     evidence_id='b40-secret-scan',
     analyzer='scripts/batch40_secret_scan.py',
+    filename='b40-secret-scan-provenance.json',
 )
 (provenance_dir / 'batch40-dependency-inventory-provenance.json').write_text(
     json.dumps(inventory_provenance, indent=2, ensure_ascii=False) + '\n'
@@ -238,61 +359,96 @@ secret_provenance = local_provenance(
 (provenance_dir / 'b40-secret-scan-provenance.json').write_text(
     json.dumps(secret_provenance, indent=2, ensure_ascii=False) + '\n'
 )
+assurance_provenance = None
+if assurance is not None:
+    assurance_provenance = preserve_or_create_local_provenance(
+        assurance,
+        evidence_id='b40-local-assurance',
+        analyzer='scripts/batch40_local_assurance.py',
+        filename='b40-local-assurance-provenance.json',
+    )
+    (provenance_dir / 'b40-local-assurance-provenance.json').write_text(
+        json.dumps(assurance_provenance, indent=2, ensure_ascii=False) + '\n'
+    )
 
-declaration_paths = sorted({
-    declared
-    for component in inv['components']
-    for declared in component.get('declaredIn', [])
-    if Path(declared).is_file()
-})
-artifact_members = [
-    {
-        'path': path,
-        'sha256': sha256_file(Path(path)),
-        'bytes': Path(path).stat().st_size,
-    }
-    for path in declaration_paths
-]
-artifact = {
-    'artifactType': 'declared-dependency-surface',
-    'memberCount': len(artifact_members),
-    'members': artifact_members,
-    'mavenBoms': inv['sources'].get('mavenBoms', []),
-}
-artifact['compositeDigest'] = 'sha256:' + hashlib.sha256(
-    json.dumps(artifact, sort_keys=True, separators=(',', ':')).encode()
-).hexdigest()
 artifact_path = P / 'artifact/schema-surface.json'
-artifact_path.write_text(json.dumps(artifact, indent=2, ensure_ascii=False) + '\n')
-environment = {
-    'capturedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
-    'os': f'{platform.system()} {platform.release()}',
-    'machine': platform.machine(),
-    'pythonVersion': platform.python_version(),
-    'pythonImplementation': platform.python_implementation(),
-    'repositoryRevision': git_revision(),
-    'evidenceBoundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
-    'independentVerification': 'NOT_RUN',
-}
 environment_path = P / 'environment/toolchain.json'
-environment_path.write_text(json.dumps(environment, indent=2, ensure_ascii=False) + '\n')
+if not arguments.skip_context_refresh:
+    declaration_paths = sorted({
+        declared
+        for component in inv['components']
+        for declared in component.get('declaredIn', [])
+        if Path(declared).is_file()
+    })
+    expected_declarations = sorted({
+        declared
+        for component in inv['components']
+        for declared in component.get('declaredIn', [])
+    })
+    if declaration_paths != expected_declarations:
+        missing = sorted(set(expected_declarations) - set(declaration_paths))
+        raise SystemExit(
+            f'ERROR: {len(missing)} dependency declaration files are unavailable; '
+            'use --skip-context-refresh only when preserving an already captured context'
+        )
+    artifact_members = [
+        {
+            'path': path,
+            'sha256': sha256_file(Path(path)),
+            'bytes': Path(path).stat().st_size,
+        }
+        for path in declaration_paths
+    ]
+    artifact = {
+        'artifactType': 'declared-dependency-surface',
+        'memberCount': len(artifact_members),
+        'members': artifact_members,
+        'mavenBoms': inv['sources'].get('mavenBoms', []),
+    }
+    artifact['compositeDigest'] = 'sha256:' + hashlib.sha256(
+        json.dumps(artifact, sort_keys=True, separators=(',', ':')).encode()
+    ).hexdigest()
+    artifact_path.write_text(json.dumps(artifact, indent=2, ensure_ascii=False) + '\n')
+    environment = {
+        'capturedAt': datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z'),
+        'os': f'{platform.system()} {platform.release()}',
+        'machine': platform.machine(),
+        'pythonVersion': platform.python_version(),
+        'pythonImplementation': platform.python_implementation(),
+        'repositoryRevision': git_revision(),
+        'evidenceBoundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
+        'independentVerification': 'NOT_RUN',
+    }
+    environment_path.write_text(json.dumps(environment, indent=2, ensure_ascii=False) + '\n')
 
 pack = json.loads((P / 'pack.json').read_text())
 pack['owner'] = 'elmos-platform-maintainers'
 pack['status'] = 'experimental'
-pack['artifactDigest'] = sha256_file(artifact_path)
-pack['environmentDigest'] = sha256_file(environment_path)
+if not arguments.skip_context_refresh:
+    pack['artifactDigest'] = sha256_file(artifact_path)
+    pack['environmentDigest'] = sha256_file(environment_path)
 pack['evidenceRefs'] = sorted(set(pack.get('evidenceRefs', [])) | {
     'b40-dependency-inventory', 'b40-secret-scan',
     *(['b40-dependabot-alerts'] if dependabot is not None else []),
+    *(['b40-local-assurance'] if assurance is not None else []),
 })
 (P / 'pack.json').write_text(json.dumps(pack, indent=2, ensure_ascii=False) + '\n')
 
 matrix = json.loads((P / 'support-matrix.json').read_text())
 limited = {
     'b40-dependency-sca-governance': ['b40-dependabot-alerts'] if dependabot is not None else [],
+    'b40-vulnerability-patch-sla': ['b40-dependabot-alerts'] if dependabot is not None else [],
     'b40-sbom-component-identity': ['b40-dependency-inventory'],
     'b40-secret-credential-scanning': ['b40-secret-scan'],
+    'b40-secure-sdlc-ssdf': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-customer-audit-evidence': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-security-supply-chain-gate': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-supply-chain-compliance-factory': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-threat-modeling': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-security-architecture-review': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-compliance-control-crosswalk': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-runner-update-supply-chain': ['b40-local-assurance'] if assurance is not None else [],
+    'b40-license-ip-provenance': ['b40-dependency-inventory'],
 }
 for capability in matrix['capabilities']:
     capability['owner'] = 'elmos-platform-maintainers'
@@ -322,17 +478,64 @@ sbom_record.update({
 (P / 'sbom-record.json').write_text(json.dumps(sbom_record, indent=2, ensure_ascii=False) + '\n')
 
 provenance_record = json.loads((P / 'provenance-record.json').read_text())
+all_provenance = [inventory_provenance, secret_provenance]
+all_provenance_refs = ['b40-dependency-inventory', 'b40-secret-scan']
+if dependabot_provenance_record is not None:
+    all_provenance.append(dependabot_provenance_record)
+    all_provenance_refs.append('b40-dependabot-alerts')
+if assurance_provenance is not None:
+    all_provenance.append(assurance_provenance)
+    all_provenance_refs.append('b40-local-assurance')
 provenance_record.update({
     'status': 'draft',
-    'evidenceRefs': ['b40-dependency-inventory', 'b40-secret-scan'],
-    'records': [inventory_provenance, secret_provenance],
+    'evidenceRefs': all_provenance_refs,
+    'records': all_provenance,
 })
 (P / 'provenance-record.json').write_text(
     json.dumps(provenance_record, indent=2, ensure_ascii=False) + '\n'
 )
+
+if assurance is not None:
+    crosswalk = json.loads((P / 'control-crosswalk.json').read_text())
+    crosswalk.update({
+        'status': 'draft',
+        'evidenceRefs': ['b40-local-assurance'],
+        'records': [
+            {
+                'controlId': control['controlId'],
+                'statement': control['statement'],
+                'status': control['status'],
+                'evidenceRefs': ['b40-local-assurance'],
+                'boundary': 'LOCAL_EXECUTED_SELF_ATTESTED',
+            }
+            for control in assurance['controls']
+        ],
+    })
+    (P / 'control-crosswalk.json').write_text(
+        json.dumps(crosswalk, indent=2, ensure_ascii=False) + '\n'
+    )
+    if assurance.get('threatModel'):
+        threat_model = json.loads((P / 'threat-model.json').read_text())
+        threat_model.update({
+            'status': 'draft',
+            'evidenceRefs': ['b40-local-assurance'],
+            'records': assurance['threatModel']['threats'],
+            'metadata': {
+                'modelId': assurance['threatModel']['id'],
+                'scope': assurance['threatModel']['scope'],
+                'expectedThreatCount': assurance['threatModel']['expectedThreatCount'],
+                'completeThreatCount': assurance['threatModel']['completeThreatCount'],
+                'independentVerification': 'NOT_RUN',
+            },
+        })
+        (P / 'threat-model.json').write_text(
+            json.dumps(threat_model, indent=2, ensure_ascii=False) + '\n'
+        )
 if dependabot is not None:
+    assurance_label = assurance.get('status') if assurance is not None else 'NOT_RUN'
     print(f"batch40 已记录: sbomCoverage={inv['metrics']['sbomCoverage']} "
           f"secretLeaks={actionable} dependabotOpen={dependabot['openCount']} "
+          f"localAssurance={assurance_label} "
           f"(advisory {scan['totals']['advisoryFindingCount']} 不计入)")
 else:
     print(f"batch40 已记录: sbomCoverage={inv['metrics']['sbomCoverage']} secretLeaks={actionable} "

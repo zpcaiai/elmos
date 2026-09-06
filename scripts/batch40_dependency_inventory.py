@@ -21,6 +21,7 @@ import json
 import os
 import platform
 import re
+import subprocess
 import sys
 import xml.etree.ElementTree as ElementTree
 from datetime import datetime, timezone
@@ -33,6 +34,17 @@ SKIP_DIRECTORIES = {"node_modules", ".git", "_to_delete", "target", "build", "di
 
 def sha256_bytes(payload: bytes) -> str:
     return "sha256:" + hashlib.sha256(payload).hexdigest()
+
+
+def repository_revision(root: Path) -> str | None:
+    result = subprocess.run(
+        ["git", "-C", str(root), "rev-parse", "HEAD"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    revision = result.stdout.strip()
+    return revision if re.fullmatch(r"[0-9a-f]{40}", revision) else None
 
 
 def walk(root: Path, name: str) -> list[Path]:
@@ -363,6 +375,7 @@ def main() -> int:
     report = {
         "check": "batch40-dependency-inventory",
         "batch": 40,
+        "repositoryRevision": repository_revision(repo),
         "startedAt": started.isoformat().replace("+00:00", "Z"),
         "finishedAt": finished.isoformat().replace("+00:00", "Z"),
         "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",

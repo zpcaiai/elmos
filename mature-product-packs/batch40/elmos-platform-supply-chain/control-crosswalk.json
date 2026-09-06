@@ -4,9 +4,129 @@
   "batch": 40,
   "version": "0.1.0",
   "owner": "elmos-platform-maintainers",
-  "status": "NOT_RUN",
-  "evidenceRefs": [],
-  "records": [],
+  "status": "draft",
+  "evidenceRefs": [
+    "b40-local-assurance"
+  ],
+  "records": [
+    {
+      "controlId": "B40-CI-LEAST-PRIVILEGE",
+      "statement": "The CI workflow grants only repository-content read permission.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-ACTION-PINS",
+      "statement": "Every external GitHub Action is pinned to an immutable commit.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-CHECKOUT-CREDENTIALS",
+      "statement": "Every checkout removes the workflow token from local Git configuration.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-BOUNDED-JOBS",
+      "statement": "Every CI job has an explicit positive timeout.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-STATIC-RUNNERS",
+      "statement": "Every CI job selects a literal, non-floating runner label.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-TRUSTED-EVENTS",
+      "statement": "The CI workflow does not execute through pull_request_target.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CI-NO-SOFT-FAILURES",
+      "statement": "No job or step in the exact CI workflow weakens failure propagation with continue-on-error.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-THREAT-MODEL-COVERAGE",
+      "statement": "Every expected supply-chain threat has assets, boundaries, controls, evidence requirements, ownership, and residual risk.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EVIDENCE-REFS",
+      "statement": "Every claim evidence reference resolves.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-PROVENANCE-REFS",
+      "statement": "Every claim has resolvable provenance.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EXTERNAL-AUTHORITY",
+      "statement": "Every recorded external operation has authorization.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CLAIM-BOUNDARIES",
+      "statement": "Every passing claim states its limitations.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-EVIDENCE-FRESHNESS",
+      "statement": "Referenced execution evidence is current.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    }
+  ],
   "metadata": {},
   "packKey": "elmos-platform-supply-chain"
 }

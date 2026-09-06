@@ -1,0 +1,362 @@
+{
+  "check": "batch40-local-assurance",
+  "batch": 40,
+  "status": "PASS",
+  "repositoryRevision": "64e72cd8609a79bceb67e590d17e4467fd3da20c",
+  "startedAt": "2026-09-06T19:01:51.663522Z",
+  "finishedAt": "2026-09-06T19:01:52.353673Z",
+  "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+  "toolDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7",
+  "scope": {
+    "workflow": ".github/workflows/ci.yml",
+    "threatModel": "config/batch40-supply-chain-threat-model.json",
+    "pack": "mature-product-packs/batch40/elmos-platform-supply-chain",
+    "claimCount": 3,
+    "controlCount": 13,
+    "freshnessWindowDays": 30
+  },
+  "inputs": {
+    "workflowSha256": "sha256:7258032bdea31923986965ed21f42b44955121d1f52863831d8c0a6a98692ed0",
+    "threatModelSha256": "sha256:628bb97ab0f87d0f651b09c03a0a351676490eb50fc2c7e662b2036848d2634d",
+    "evidenceClaimSetSha256": "sha256:7b9eb6d4be3e7147fb0529dfa49651bc49ccdeaf077266b8d037f047ce82eb22",
+    "claimNarrativeSetSha256": "sha256:2d7623224ab486a87fad76e5eee9c8b16ce9090cb44c963171c61244a0c12529"
+  },
+  "metrics": {
+    "auditEvidenceFreshnessRate": 1.0,
+    "evidenceTraceCoverage": 1.0,
+    "provenanceCoverage": 1.0,
+    "secureSdlcControlCoverage": 1.0,
+    "threatModelCoverage": 1.0
+  },
+  "controls": [
+    {
+      "controlId": "B40-CI-LEAST-PRIVILEGE",
+      "statement": "The CI workflow grants only repository-content read permission.",
+      "status": "PASS",
+      "details": [
+        "top-level permissions are exactly contents: read"
+      ]
+    },
+    {
+      "controlId": "B40-CI-ACTION-PINS",
+      "statement": "Every external GitHub Action is pinned to an immutable commit.",
+      "status": "PASS",
+      "details": [
+        "78 action references are immutable"
+      ]
+    },
+    {
+      "controlId": "B40-CI-CHECKOUT-CREDENTIALS",
+      "statement": "Every checkout removes the workflow token from local Git configuration.",
+      "status": "PASS",
+      "details": [
+        "20 checkout steps disable credential persistence"
+      ]
+    },
+    {
+      "controlId": "B40-CI-BOUNDED-JOBS",
+      "statement": "Every CI job has an explicit positive timeout.",
+      "status": "PASS",
+      "details": [
+        "22 jobs have explicit timeouts"
+      ]
+    },
+    {
+      "controlId": "B40-CI-STATIC-RUNNERS",
+      "statement": "Every CI job selects a literal, non-floating runner label.",
+      "status": "PASS",
+      "details": [
+        "22 jobs use literal runner labels"
+      ]
+    },
+    {
+      "controlId": "B40-CI-TRUSTED-EVENTS",
+      "statement": "The CI workflow does not execute through pull_request_target.",
+      "status": "PASS",
+      "details": [
+        "pull_request_target is absent"
+      ]
+    },
+    {
+      "controlId": "B40-CI-NO-SOFT-FAILURES",
+      "statement": "No job or step in the exact CI workflow weakens failure propagation with continue-on-error.",
+      "status": "PASS",
+      "details": [
+        "no continue-on-error setting is enabled"
+      ]
+    },
+    {
+      "controlId": "B40-THREAT-MODEL-COVERAGE",
+      "statement": "Every expected supply-chain threat has assets, boundaries, controls, evidence requirements, ownership, and residual risk.",
+      "status": "PASS",
+      "details": [
+        "10/10 expected threats are complete"
+      ]
+    },
+    {
+      "controlId": "B40-EVIDENCE-REFS",
+      "statement": "Every claim evidence reference resolves.",
+      "status": "PASS",
+      "details": [
+        "all in-scope records passed"
+      ]
+    },
+    {
+      "controlId": "B40-PROVENANCE-REFS",
+      "statement": "Every claim has resolvable provenance.",
+      "status": "PASS",
+      "details": [
+        "all in-scope records passed"
+      ]
+    },
+    {
+      "controlId": "B40-EXTERNAL-AUTHORITY",
+      "statement": "Every recorded external operation has authorization.",
+      "status": "PASS",
+      "details": [
+        "all in-scope records passed"
+      ]
+    },
+    {
+      "controlId": "B40-CLAIM-BOUNDARIES",
+      "statement": "Every passing claim states its limitations.",
+      "status": "PASS",
+      "details": [
+        "all in-scope records passed"
+      ]
+    },
+    {
+      "controlId": "B40-EVIDENCE-FRESHNESS",
+      "statement": "Referenced execution evidence is current.",
+      "status": "PASS",
+      "details": [
+        "all in-scope records passed"
+      ]
+    }
+  ],
+  "threatModel": {
+    "id": "elmos-platform-supply-chain-threat-model-v1",
+    "owner": "elmos-platform-maintainers",
+    "scope": "ELMOS source, CI workflow, declared dependencies, build runners, release artifacts, and Batch 40 evidence",
+    "expectedThreatCount": 10,
+    "completeThreatCount": 10,
+    "threats": [
+      {
+        "threatId": "B40-THREAT-SOURCE-TAMPERING",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "Git source revision",
+          "reviewed pull-request diff"
+        ],
+        "trustBoundaries": [
+          "developer workstation to GitHub",
+          "pull request to protected branch"
+        ],
+        "controls": [
+          "immutable commit identity",
+          "required CI",
+          "review approval"
+        ],
+        "evidenceRequirement": "protected-branch policy and reviewed merge receipt",
+        "residualRisk": "External branch-protection and reviewer evidence is NOT_RUN."
+      },
+      {
+        "threatId": "B40-THREAT-ACTION-COMPROMISE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "CI execution authority",
+          "build outputs"
+        ],
+        "trustBoundaries": [
+          "repository workflow to third-party GitHub Action"
+        ],
+        "controls": [
+          "full commit pin for every external Action",
+          "least-privilege workflow token"
+        ],
+        "evidenceRequirement": "workflow pin and permission audit",
+        "residualRisk": "Publisher provenance and upstream action compromise are not independently assessed."
+      },
+      {
+        "threatId": "B40-THREAT-TOKEN-ABUSE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "GitHub workflow token",
+          "repository contents"
+        ],
+        "trustBoundaries": [
+          "GitHub token to checked-out repository"
+        ],
+        "controls": [
+          "contents read permission",
+          "checkout persist-credentials false"
+        ],
+        "evidenceRequirement": "CI workflow least-privilege audit",
+        "residualRisk": "GitHub-hosted token issuance is externally operated and not independently attested here."
+      },
+      {
+        "threatId": "B40-THREAT-DEPENDENCY-COMPROMISE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "Maven dependencies",
+          "npm dependencies",
+          "runtime integrity"
+        ],
+        "trustBoundaries": [
+          "package registry to resolver",
+          "lockfile to build"
+        ],
+        "controls": [
+          "declared dependency inventory",
+          "Dependabot alert governance"
+        ],
+        "evidenceRequirement": "resolved graph, advisory snapshot, license and integrity decisions",
+        "residualRisk": "Transitive Maven graph, non-GitHub advisories, and complete license decisions remain open."
+      },
+      {
+        "threatId": "B40-THREAT-SECRET-LEAK",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "credentials",
+          "signing material",
+          "tenant data"
+        ],
+        "trustBoundaries": [
+          "developer input to repository",
+          "repository to CI logs"
+        ],
+        "controls": [
+          "bounded credential scanner",
+          "owned expiring allowlist"
+        ],
+        "evidenceRequirement": "working-tree and history scan with provider validation",
+        "residualRisk": "Git history and provider validation remain NOT_RUN."
+      },
+      {
+        "threatId": "B40-THREAT-RUNNER-DOWNGRADE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "toolchain identity",
+          "build reproducibility"
+        ],
+        "trustBoundaries": [
+          "workflow label to GitHub-hosted runner image"
+        ],
+        "controls": [
+          "literal non-floating runner labels",
+          "explicit tool versions",
+          "job timeouts"
+        ],
+        "evidenceRequirement": "runtime runner-image attestation and downgrade rejection receipt",
+        "residualRisk": "Hosted runner image identity and downgrade behavior remain externally NOT_RUN."
+      },
+      {
+        "threatId": "B40-THREAT-ARTIFACT-TAMPERING",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "release bundle",
+          "container images",
+          "SBOM"
+        ],
+        "trustBoundaries": [
+          "builder to registry",
+          "registry to deployment"
+        ],
+        "controls": [
+          "digest-bound release manifest",
+          "signature and verification contract"
+        ],
+        "evidenceRequirement": "real signed artifact, transparency or trust-root record, and verification receipt",
+        "residualRisk": "No production artifact signature or external verification receipt exists."
+      },
+      {
+        "threatId": "B40-THREAT-MISSING-PROVENANCE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "build provenance",
+          "SBOM",
+          "certification evidence"
+        ],
+        "trustBoundaries": [
+          "build executor to evidence store",
+          "evidence store to verifier"
+        ],
+        "controls": [
+          "content-addressed evidence references",
+          "executor and verifier separation contract"
+        ],
+        "evidenceRequirement": "SLSA provenance from an isolated builder and independent verification",
+        "residualRisk": "Local provenance is self-attested; isolated-builder and independent evidence are NOT_RUN."
+      },
+      {
+        "threatId": "B40-THREAT-CROSS-TENANT-EVIDENCE",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "tenant evidence",
+          "customer audit export"
+        ],
+        "trustBoundaries": [
+          "tenant execution to shared evidence store",
+          "evidence store to export"
+        ],
+        "controls": [
+          "tenant-scoped authorization contract",
+          "content-addressed evidence references"
+        ],
+        "evidenceRequirement": "multi-tenant negative test and external storage policy receipt",
+        "residualRisk": "Representative multi-tenant evidence execution remains NOT_RUN."
+      },
+      {
+        "threatId": "B40-THREAT-TEST-EVIDENCE-MANIPULATION",
+        "owner": "elmos-platform-maintainers",
+        "assets": [
+          "test definitions",
+          "raw results",
+          "gate decision"
+        ],
+        "trustBoundaries": [
+          "repository tests to CI",
+          "CI result to certification authority"
+        ],
+        "controls": [
+          "fail-closed gate",
+          "no continue-on-error on required jobs",
+          "content-addressed evidence manifest contract"
+        ],
+        "evidenceRequirement": "independent corpus, immutable raw results, and signed certification request",
+        "residualRisk": "Independent corpora, signed request, and independent replay remain NOT_RUN."
+      }
+    ]
+  },
+  "freshness": [
+    {
+      "evidenceRef": "b40-dependabot-alerts",
+      "timestamp": "2026-09-06T18:55:03Z",
+      "fresh": true,
+      "problem": null
+    },
+    {
+      "evidenceRef": "b40-dependency-inventory",
+      "timestamp": "2026-09-05T17:50:04.258026Z",
+      "fresh": true,
+      "problem": null
+    },
+    {
+      "evidenceRef": "b40-secret-scan",
+      "timestamp": "2026-09-05T17:52:12.214948Z",
+      "fresh": true,
+      "problem": null
+    }
+  ],
+  "failedControls": [],
+  "limitations": [
+    "The measurement covers the exact CI workflow and claims currently declared by this pack; it is not whole-product or whole-supply-chain coverage.",
+    "Repository-local checks are self-attested and do not replace an independent assessor, independent corpus, accountable approval, or external signature.",
+    "The action-pin audit proves immutable references in the workflow text; it does not independently attest GitHub runner images or action publisher provenance.",
+    "Freshness means evidence timestamps fall inside the configured local window; it does not establish that an external verifier reproduced the evidence.",
+    "The checker excludes its own claim from evidence-graph metrics to avoid a recursive digest; the exact non-recursive claim and narrative sets are content-addressed in inputs."
+  ],
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN",
+  "certificationStatus": "NOT_CERTIFIED"
+}

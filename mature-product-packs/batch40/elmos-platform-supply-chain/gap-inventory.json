@@ -22,223 +22,174 @@
     "zero-tolerance"
   ],
   "skillCount": 24,
-  "blockingCount": 21,
-  "openCount": 22,
+  "blockingCount": 14,
+  "openCount": 13,
+  "repositoryBlockingCount": 1,
+  "repositoryOpenCount": 12,
+  "externalGateBlockingCount": 13,
+  "externalGateOpenCount": 1,
   "certifiable": false,
   "gaps": [
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "evidence-manifest.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.json has not been produced"
     },
     {
       "category": "evidence",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "certification-request.sig has not been produced"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-ai-model-supply-chain is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-artifact-container-signing is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-compliance-control-crosswalk is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-container-kubernetes-iac-scanning is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-customer-audit-evidence is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-dast-iast-integration is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-independent-security-assessment is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-isolated-trusted-builder is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-license-ip-provenance is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-psirt-security-incident is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-runner-update-supply-chain is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-sast-integration is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-secure-code-review-approval is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-secure-sdlc-ssdf is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-security-architecture-review is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-security-supply-chain-gate is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-slsa-provenance is only experimental in the support matrix"
     },
     {
       "category": "coverage",
       "severity": "open",
-      "detail": "b40-supply-chain-compliance-factory is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-threat-modeling is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
+      "responsibility": "repository",
       "detail": "b40-vex-applicability is only experimental in the support matrix"
     },
     {
-      "category": "coverage",
-      "severity": "open",
-      "detail": "b40-vulnerability-patch-sla is only experimental in the support matrix"
-    },
-    {
       "category": "metric",
       "severity": "blocking",
-      "detail": "auditEvidenceFreshnessRate has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "evidenceTraceCoverage has not been measured (threshold 0.98)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "independentAssessmentClosureRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
       "severity": "blocking",
-      "detail": "provenanceCoverage has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "secureSdlcControlCoverage has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "signatureVerificationRate has not been measured (threshold 1.0)"
     },
     {
       "category": "metric",
-      "severity": "blocking",
-      "detail": "threatModelCoverage has not been measured (threshold 1.0)"
-    },
-    {
-      "category": "metric",
-      "severity": "blocking",
-      "detail": "vulnerabilitySlaCompliance has not been measured (threshold 1.0)"
+      "severity": "open",
+      "responsibility": "repository",
+      "detail": "vulnerabilitySlaCompliance is 0.9027, below the required 1.0"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "unsignedProductionArtifacts has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "tamperedArtifactsAccepted has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
-      "detail": "unresolvedLicenseBlocks has not been evaluated"
+      "responsibility": "repository",
+      "detail": "unresolvedLicenseBlocks observed 427, must be zero"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "builderAttestationFailures has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "runnerDowngradeAcceptances has not been evaluated"
     },
     {
       "category": "zero-tolerance",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "crossTenantEvidenceLeaks has not been evaluated"
-    },
-    {
-      "category": "zero-tolerance",
-      "severity": "blocking",
-      "detail": "testIntegrityViolations has not been evaluated"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "holdout corpus is empty"
     },
     {
       "category": "corpus",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "representative corpus is empty"
     },
     {
       "category": "approval",
       "severity": "blocking",
+      "responsibility": "external-gate",
       "detail": "no accountable approver is recorded on the certification"
     },
     {
       "category": "status",
       "severity": "open",
+      "responsibility": "external-gate",
       "detail": "certification status is NOT_RUN"
     }
   ]

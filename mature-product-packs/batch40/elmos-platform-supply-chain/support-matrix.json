@@ -17,9 +17,12 @@
     },
     {
       "capabilityId": "b40-compliance-control-crosswalk",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-container-kubernetes-iac-scanning",
@@ -29,9 +32,12 @@
     },
     {
       "capabilityId": "b40-customer-audit-evidence",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-dast-iast-integration",
@@ -62,9 +68,12 @@
     },
     {
       "capabilityId": "b40-license-ip-provenance",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-dependency-inventory"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-psirt-security-incident",
@@ -74,9 +83,12 @@
     },
     {
       "capabilityId": "b40-runner-update-supply-chain",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-sast-integration",
@@ -110,21 +122,30 @@
     },
     {
       "capabilityId": "b40-secure-sdlc-ssdf",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-security-architecture-review",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-security-supply-chain-gate",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-slsa-provenance",
@@ -134,15 +155,21 @@
     },
     {
       "capabilityId": "b40-supply-chain-compliance-factory",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-threat-modeling",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-local-assurance"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     },
     {
       "capabilityId": "b40-vex-applicability",
@@ -152,9 +179,12 @@
     },
     {
       "capabilityId": "b40-vulnerability-patch-sla",
-      "status": "experimental",
+      "status": "limited",
       "owner": "elmos-platform-maintainers",
-      "evidenceRefs": []
+      "evidenceRefs": [
+        "b40-dependabot-alerts"
+      ],
+      "notes": "Repository-owned bounded engineering evidence only; external and independent evidence is NOT_RUN."
     }
   ],
   "packKey": "elmos-platform-supply-chain"
