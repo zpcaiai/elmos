@@ -507,6 +507,11 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
 
     assert local.profile_id == "local-macos26-20260904"
+    assert local.php_tree_sha256 == (
+        "927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177"
+    )
+    assert local.php_tree_bytes == 129_937_259
+    assert local.php_tree_identity_status == "PINNED"
     assert legacy_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
@@ -514,6 +519,7 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23"
     )
     assert legacy_hosted.php_tree_bytes == 129_949_421
+    assert legacy_hosted.php_tree_identity_status == "PROBE_REQUIRED"
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
@@ -521,12 +527,8 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23"
     )
     assert current_hosted.php_tree_bytes == 129_949_421
-    assert current_hosted.php_tree_alternates == (
-        (
-            "5ab2daeb1d2a29341e9bafa68401c3df9ef54dc379d0a904f5e95d1c8ff74df9",
-            129_949_421,
-        ),
-    )
+    assert current_hosted.php_tree_identity_status == "PROBE_REQUIRED"
+    assert current_hosted.php_tree_alternates == ()
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 != local.php_tree_sha256
     assert current_hosted.php_tree_bytes != local.php_tree_bytes
@@ -593,27 +595,36 @@ def test_php_toolchain_binds_the_selected_homebrew_bundle_profile() -> None:
     assert f"php-tree-bytes={bundle_profile.php_tree_bytes}" in selected.profile
 
 
-def test_php_tree_accepts_only_an_exact_registered_hosted_variant(
+def test_php_tree_hosted_profile_emits_identity_without_accepting_probe(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     profile = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
     observed = {
         "root": str(toolchains._EXPECTED_PHP_ROOT),
-        "sha256": profile.php_tree_alternates[0][0],
+        "sha256": profile.php_tree_sha256,
         "record_count": toolchains._EXPECTED_PHP_TREE_RECORD_COUNT,
         "file_count": toolchains._EXPECTED_PHP_TREE_FILE_COUNT,
         "directory_count": toolchains._EXPECTED_PHP_TREE_DIRECTORY_COUNT,
-        "bytes": profile.php_tree_alternates[0][1],
+        "bytes": profile.php_tree_bytes,
         "symlinks": toolchains._EXPECTED_PHP_TREE_SYMLINKS,
         "unbound_symlinks": toolchains._EXPECTED_PHP_TREE_UNBOUND_SYMLINKS,
     }
     monkeypatch.setattr(toolchains, "homebrew_route_bundle_profile", lambda: profile)
-    monkeypatch.setattr(toolchains, "php_tree_identity", lambda *_args, **_kwargs: observed)
+    diagnostic = {
+        **observed,
+        "payload_sha256": "1" * 64,
+        "install_receipt_sha256": "2" * 64,
+    }
+    monkeypatch.setattr(
+        toolchains,
+        "php_tree_identity",
+        lambda *_args, **kwargs: diagnostic if kwargs.get("include_diagnostics") else observed,
+    )
 
-    assert toolchains._php_tree_identity()["sha256"] == observed["sha256"]
-
-    observed["sha256"] = "0" * 64
-    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_PHP_TREE_MISMATCH"):
+    with pytest.raises(
+        RouteError,
+        match=r"EXACT_TOOLCHAIN_PHP_TREE_PROBE_REQUIRED:observed=.*payload_sha256",
+    ):
         toolchains._php_tree_identity()
 
 
