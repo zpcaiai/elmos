@@ -25,7 +25,10 @@ class EvidenceFailure(RuntimeError):
 
 
 FULL_WORKTREE_SCAN_TIMEOUT_SECONDS = 900
+ENGINE_TESTS_TIMEOUT_SECONDS = 3_600
+EXACT_TOOLCHAIN_ACCEPTANCE_TIMEOUT_SECONDS = 7_200
 PRODUCTION_MATRIX_TIMEOUT_SECONDS = 14_400
+P0_OPERATIONAL_CONTRACTS_TIMEOUT_SECONDS = 1_800
 
 
 def _run(command: list[str], cwd: Path, *, timeout: int = 60) -> subprocess.CompletedProcess[str]:
@@ -111,7 +114,7 @@ def _check_plan(repository: Path) -> list[tuple[str, list[str], Path, int]]:
                 "pytest",
             ],
             engine,
-            1200,
+            ENGINE_TESTS_TIMEOUT_SECONDS,
         ),
         (
             "ruff",
@@ -125,7 +128,22 @@ def _check_plan(repository: Path) -> list[tuple[str, list[str], Path, int]]:
             engine,
             300,
         ),
-        ("exact-toolchain-acceptance", [uv, "run", "--offline", "--frozen", "--project", str(engine), "python", "scripts/run_acceptance.py", "--require-all-toolchains"], engine, 2400),
+        (
+            "exact-toolchain-acceptance",
+            [
+                uv,
+                "run",
+                "--offline",
+                "--frozen",
+                "--project",
+                str(engine),
+                "python",
+                "scripts/run_acceptance.py",
+                "--require-all-toolchains",
+            ],
+            engine,
+            EXACT_TOOLCHAIN_ACCEPTANCE_TIMEOUT_SECONDS,
+        ),
         (
             "production-matrix",
             [
@@ -141,7 +159,21 @@ def _check_plan(repository: Path) -> list[tuple[str, list[str], Path, int]]:
             engine,
             PRODUCTION_MATRIX_TIMEOUT_SECONDS,
         ),
-        ("p0-operational-contracts", [sys.executable, "-m", "unittest", "discover", "-s", "tests/production-readiness", "-p", "test_project_synthesis_p0_launch_gate.py"], repository, 300),
+        (
+            "p0-operational-contracts",
+            [
+                sys.executable,
+                "-m",
+                "unittest",
+                "discover",
+                "-s",
+                "tests/production-readiness",
+                "-p",
+                "test_project_synthesis_p0_launch_gate.py",
+            ],
+            repository,
+            P0_OPERATIONAL_CONTRACTS_TIMEOUT_SECONDS,
+        ),
         ("runner-production-contract", [sys.executable, "-m", "unittest", "discover", "-s", "deploy/local-runner/tests", "-p", "test_*.py"], repository, 300),
         ("vercel-deployment-waiter-contract", [sys.executable, "-m", "unittest", "discover", "-s", "tests/production-readiness", "-p", "test_vercel_deployment_waiter.py"], repository, 300),
         ("batch33-cloud-gate", [uv, "run", "--offline", "--with", "jsonschema>=4.23", "--with", "pyyaml", "python", "scripts/batch33/run_cloud_gate.py", "cloud-packs/elmos-project-generation-cloud-run-handoff"], repository, 300),

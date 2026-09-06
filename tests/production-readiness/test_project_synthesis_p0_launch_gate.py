@@ -117,18 +117,26 @@ class ProjectSynthesisP0LaunchGateTest(unittest.TestCase):
         ):
             collector._clean_status(self.root)
 
-    def test_evidence_collector_bounds_complete_production_matrix(self) -> None:
+    def test_evidence_collector_budgets_complete_local_checks(self) -> None:
         with mock.patch.object(collector.shutil, "which", return_value="/usr/bin/uv"):
-            production_matrix = next(
-                check
-                for check in collector._check_plan(self.root)
-                if check[0] == "production-matrix"
-            )
+            checks = {check[0]: check for check in collector._check_plan(self.root)}
+        self.assertEqual(
+            collector.ENGINE_TESTS_TIMEOUT_SECONDS,
+            checks["engine-tests"][3],
+        )
+        self.assertEqual(
+            collector.EXACT_TOOLCHAIN_ACCEPTANCE_TIMEOUT_SECONDS,
+            checks["exact-toolchain-acceptance"][3],
+        )
         self.assertEqual(
             collector.PRODUCTION_MATRIX_TIMEOUT_SECONDS,
-            production_matrix[3],
+            checks["production-matrix"][3],
         )
-        self.assertGreaterEqual(production_matrix[3], 16 * 15 * 60)
+        self.assertEqual(
+            collector.P0_OPERATIONAL_CONTRACTS_TIMEOUT_SECONDS,
+            checks["p0-operational-contracts"][3],
+        )
+        self.assertGreaterEqual(checks["production-matrix"][3], 16 * 15 * 60)
 
     def _artifact(
         self,
