@@ -132,6 +132,41 @@ def test_complete_tree_verifier_rejects_a_self_consistent_forgery() -> None:
         )
 
 
+def test_flutter_tree_accepts_only_complete_allowlisted_receipts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    hosted_cache = copy.deepcopy(toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1])
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: hosted_cache,
+    )
+
+    assert toolchains._flutter_build_tree_identities() == {"dart_sdk": hosted_cache}
+
+    forged = copy.deepcopy(hosted_cache)
+    forged["sha256"] = "f" * 64
+    monkeypatch.setattr(
+        toolchains,
+        "_qualified_tree_manifest",
+        lambda *args, **kwargs: forged,
+    )
+    with pytest.raises(
+        RouteError,
+        match="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
+    ):
+        toolchains._flutter_build_tree_identities()
+
+
+def test_flutter_closure_digest_is_bound_to_selected_complete_tree() -> None:
+    pristine = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[0]}
+    hosted_cache = {"dart_sdk": toolchains._EXPECTED_FLUTTER_DART_SDK_TREES[1]}
+
+    assert toolchains._flutter_build_closure_sha256(pristine) != (
+        toolchains._flutter_build_closure_sha256(hosted_cache)
+    )
+
+
 def test_go_tree_verifier_rejects_same_version_content_drift(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
