@@ -29,10 +29,20 @@ CREATE POLICY tenant_isolation ON execution_input_bindings
     WITH CHECK (organization_id = current_setting('app.organization_id', true));
 REVOKE ALL ON execution_input_bindings FROM PUBLIC;
 
+-- Private admission authority, not tenant-readable input metadata. A forced-RLS
+-- definer must not mistake a tenant-filtered SUM for a global reservation.
+CREATE TABLE execution_input_admission_budgets (
+    budget_key varchar(128) PRIMARY KEY,
+    prepared_count integer NOT NULL DEFAULT 0 CHECK (prepared_count >= 0),
+    prepared_bytes bigint NOT NULL DEFAULT 0 CHECK (prepared_bytes >= 0)
+);
+INSERT INTO execution_input_admission_budgets(budget_key) VALUES('global');
+REVOKE ALL ON execution_input_admission_budgets FROM PUBLIC;
+
 CREATE FUNCTION elmos_prepare_execution_input(
     p_id varchar, p_org varchar, p_key varchar, p_object varchar, p_sha varchar, p_bytes bigint
-) RETURNS varchar LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
-DECLARE v_object content_objects%ROWTYPE; v_binding execution_input_bindings%ROWTYPE;
+) RETURNS varchar LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
+DECLARE v_object content_objects%ROWTYPE; v_binding execution_input_bindings%ROWTYPE; v_inserted integer;
 BEGIN
     IF p_org IS DISTINCT FROM current_setting('app.organization_id', true)
         OR p_key IS NULL OR length(p_key) NOT BETWEEN 1 AND 160 THEN
@@ -40,11 +50,14 @@ BEGIN
     END IF;
     -- Short metadata-only admission lock; never held over provider I/O.
     PERFORM pg_advisory_xact_lock(8601, 1);
+    INSERT INTO execution_input_admission_budgets(budget_key) VALUES('tenant:' || p_org) ON CONFLICT DO NOTHING;
+    IF (SELECT count(*) FROM execution_input_admission_budgets WHERE budget_key IN ('global','tenant:' || p_org)) <> 2 THEN
+        RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_BUDGET_STATE_UNKNOWN';
+    END IF;
     IF NOT EXISTS (SELECT 1 FROM execution_input_bindings WHERE organization_id = p_org AND idempotency_key = p_key)
-      AND ((SELECT count(*) FROM execution_input_bindings WHERE binding_state = 'PREPARED') >= 128
-        OR (SELECT coalesce(sum(byte_size),0) FROM execution_input_bindings WHERE binding_state = 'PREPARED') + p_bytes > 4294967296
-        OR (SELECT count(*) FROM execution_input_bindings WHERE binding_state = 'PREPARED' AND organization_id = p_org) >= 8
-        OR (SELECT coalesce(sum(byte_size),0) FROM execution_input_bindings WHERE binding_state = 'PREPARED' AND organization_id = p_org) + p_bytes > 536870912) THEN
+      AND EXISTS (SELECT 1 FROM execution_input_admission_budgets WHERE
+        (budget_key = 'global' AND (prepared_count >= 128 OR prepared_bytes + p_bytes > 4294967296))
+        OR (budget_key = 'tenant:' || p_org AND (prepared_count >= 8 OR prepared_bytes + p_bytes > 536870912))) THEN
         RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_UNRECONCILED_CAPACITY';
     END IF;
     -- Every root creator locks the object BEFORE testing state. GC uses the
@@ -61,25 +74,33 @@ BEGIN
       VALUES (p_id, p_org, p_key, p_object, p_sha, p_bytes,
         elmos_effective_retention_days(p_org, 'STANDARD'))
       ON CONFLICT (organization_id, idempotency_key) DO NOTHING;
+    GET DIAGNOSTICS v_inserted = ROW_COUNT;
+    IF v_inserted <> 1 THEN
+        -- An existing root is not a fresh PUT permit. A prior writer may still
+        -- be running after timeout, and an ATTACHED replay must perform no PUT.
+        RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_UPLOAD_UNRECONCILED';
+    END IF;
+    UPDATE execution_input_admission_budgets SET prepared_count=prepared_count+1, prepared_bytes=prepared_bytes+p_bytes
+      WHERE budget_key IN ('global','tenant:' || p_org);
     SELECT * INTO v_binding FROM execution_input_bindings
       WHERE organization_id = p_org AND idempotency_key = p_key FOR UPDATE;
     IF v_binding.content_object_ref IS DISTINCT FROM p_object
         OR v_binding.content_sha256 IS DISTINCT FROM p_sha OR v_binding.byte_size IS DISTINCT FROM p_bytes THEN
         RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_IDEMPOTENCY_CONFLICT';
     END IF;
-    IF v_binding.binding_state = 'PREPARED' THEN
-        UPDATE execution_input_bindings SET prepared_expires_at = clock_timestamp() + interval '1 hour'
-          WHERE binding_id = v_binding.binding_id;
-    END IF;
     RETURN v_binding.binding_id;
 END $$;
 
 CREATE FUNCTION elmos_attach_execution_input(p_org varchar, p_job varchar, p_binding varchar)
-RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE v_job execution_jobs%ROWTYPE; v_binding execution_input_bindings%ROWTYPE; v_object content_objects%ROWTYPE;
 BEGIN
     IF p_org IS DISTINCT FROM current_setting('app.organization_id', true) THEN
         RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_SUBJECT_INVALID';
+    END IF;
+    PERFORM pg_advisory_xact_lock(8601, 1);
+    IF (SELECT count(*) FROM execution_input_admission_budgets WHERE budget_key IN ('global','tenant:' || p_org)) <> 2 THEN
+        RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_BUDGET_STATE_UNKNOWN';
     END IF;
     SELECT * INTO v_binding FROM execution_input_bindings WHERE organization_id = p_org AND binding_id = p_binding;
     IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_UNKNOWN'; END IF;
@@ -96,45 +117,66 @@ BEGIN
         OR (v_binding.binding_state = 'PREPARED' AND v_binding.prepared_expires_at <= clock_timestamp()) THEN
         RAISE EXCEPTION 'ELMOS_EXECUTION_INPUT_BINDING_INVALID';
     END IF;
+    IF v_binding.binding_state = 'PREPARED' THEN
+        UPDATE execution_input_admission_budgets SET prepared_count=prepared_count-1, prepared_bytes=prepared_bytes-v_binding.byte_size
+          WHERE budget_key IN ('global','tenant:' || p_org);
+    END IF;
     UPDATE execution_input_bindings SET binding_state = 'ATTACHED', job_ref = p_job WHERE binding_id = p_binding;
     UPDATE content_objects SET last_referenced_at = clock_timestamp() WHERE content_object_id = v_object.content_object_id;
     RETURN true;
 END $$;
 
 CREATE FUNCTION elmos_execution_input_retained(p_object varchar) RETURNS boolean
-LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
-    SELECT EXISTS (
+LANGUAGE plpgsql STABLE SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
+DECLARE v_org text := nullif(current_setting('app.organization_id',true),'');
+BEGIN
+    IF row_security_active('execution_input_bindings') AND v_org IS NULL THEN
+        RAISE EXCEPTION 'ELMOS_OBJECT_GC_TENANT_CONTEXT_REQUIRED';
+    END IF;
+    -- Hidden/unknown objects cannot be interpreted as unreferenced objects.
+    IF NOT EXISTS (SELECT 1 FROM content_objects WHERE content_object_id=p_object
+        AND (v_org IS NULL OR organization_id=v_org)) THEN RETURN true; END IF;
+    RETURN EXISTS (
         SELECT 1 FROM execution_input_bindings b LEFT JOIN execution_jobs j
           ON j.job_id = b.job_ref AND j.organization_id = b.organization_id
-        WHERE b.content_object_ref = p_object AND (
+        WHERE b.content_object_ref = p_object AND (v_org IS NULL OR b.organization_id=v_org) AND (
             b.legal_hold OR b.binding_state = 'PREPARED'
             OR (b.binding_state = 'ATTACHED' AND (
                 j.job_id IS NULL OR j.status NOT IN ('SUCCEEDED', 'PARTIAL', 'FAILED', 'CANCELLED', 'LOST')
                 OR j.finished_at IS NULL OR j.finished_at + make_interval(days => b.retain_days) > clock_timestamp()))
         )
-    )
+    );
+END
 $$;
 
 CREATE OR REPLACE FUNCTION elmos_expire_artifacts(p_gc_run_id varchar, p_batch_limit integer)
-RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE v_expired integer := 0; v_held integer := 0; v_object varchar;
+    v_org text := nullif(current_setting('app.organization_id',true),'');
 BEGIN
+    IF row_security_active('content_objects') AND v_org IS NULL THEN
+        RAISE EXCEPTION 'ELMOS_OBJECT_GC_TENANT_CONTEXT_REQUIRED';
+    END IF;
     IF p_batch_limit IS NULL OR p_batch_limit < 1 OR p_batch_limit > 5000 THEN
         RAISE EXCEPTION 'ELMOS_OBJECT_GC_BATCH_INVALID';
     END IF;
     INSERT INTO object_gc_runs(gc_run_id) VALUES(p_gc_run_id) ON CONFLICT(gc_run_id) DO NOTHING;
-    SELECT count(*) INTO v_held FROM job_artifacts WHERE deleted_at IS NULL AND legal_hold;
+    SELECT count(*) INTO v_held FROM job_artifacts WHERE deleted_at IS NULL AND legal_hold
+        AND (v_org IS NULL OR organization_id=v_org);
     WITH due AS (
         SELECT artifact_id FROM job_artifacts WHERE deleted_at IS NULL AND NOT legal_hold
+          AND (v_org IS NULL OR organization_id=v_org)
           AND expires_at IS NOT NULL AND expires_at < now()
           ORDER BY expires_at LIMIT p_batch_limit FOR UPDATE SKIP LOCKED
     ), marked AS (
         UPDATE job_artifacts a SET deleted_at = now(), deletion_reason = 'RETENTION_EXPIRED'
-          FROM due WHERE a.artifact_id = due.artifact_id RETURNING 1
+          FROM due WHERE a.artifact_id = due.artifact_id AND (v_org IS NULL OR a.organization_id=v_org) RETURNING 1
     ) SELECT count(*) INTO v_expired FROM marked;
     FOR v_object IN SELECT o.content_object_id FROM content_objects o
         WHERE o.object_state = 'AVAILABLE'
-          AND NOT EXISTS (SELECT 1 FROM job_artifacts a WHERE a.content_object_ref = o.content_object_id AND a.deleted_at IS NULL)
+          AND (v_org IS NULL OR o.organization_id=v_org)
+          AND NOT EXISTS (SELECT 1 FROM job_artifacts a WHERE a.content_object_ref = o.content_object_id
+              AND a.organization_id=o.organization_id AND a.deleted_at IS NULL)
           AND NOT elmos_execution_input_retained(o.content_object_id)
         ORDER BY o.created_at, o.content_object_id LIMIT p_batch_limit FOR UPDATE SKIP LOCKED
     LOOP
@@ -142,7 +184,9 @@ BEGIN
         -- a concurrent prepare/attach committed before our lock is visible.
         UPDATE content_objects o SET object_state = 'PURGE_PENDING'
           WHERE o.content_object_id = v_object AND o.object_state = 'AVAILABLE'
-            AND NOT EXISTS (SELECT 1 FROM job_artifacts a WHERE a.content_object_ref = o.content_object_id AND a.deleted_at IS NULL)
+            AND (v_org IS NULL OR o.organization_id=v_org)
+            AND NOT EXISTS (SELECT 1 FROM job_artifacts a WHERE a.content_object_ref = o.content_object_id
+                AND a.organization_id=o.organization_id AND a.deleted_at IS NULL)
             AND NOT elmos_execution_input_retained(o.content_object_id);
     END LOOP;
     UPDATE object_gc_runs SET expired_count = v_expired, held_count = v_held WHERE gc_run_id = p_gc_run_id;
@@ -166,7 +210,7 @@ CREATE OR REPLACE FUNCTION elmos_publish_job_artifact(
 ) RETURNS varchar
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path = pg_catalog, public, pg_temp
 AS $$
 DECLARE
     v_object content_objects%ROWTYPE;
@@ -212,7 +256,7 @@ END;
 $$;
 
 CREATE FUNCTION elmos_translation_billing_guard() RETURNS boolean
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
 DECLARE v_enabled boolean;
 BEGIN
     SELECT enabled INTO v_enabled FROM wallet_enforcement_settings WHERE singleton FOR SHARE;
@@ -222,7 +266,7 @@ BEGIN
     RETURN true;
 END $$;
 CREATE FUNCTION elmos_translation_enqueue_billing_guard() RETURNS trigger
-LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+LANGUAGE plpgsql SECURITY DEFINER SET search_path = pg_catalog, public, pg_temp AS $$
 BEGIN
     IF NEW.business_line = 'TRANSLATION' AND NEW.job_kind = 'translate-pipeline-v1' THEN
         PERFORM elmos_translation_billing_guard();
@@ -233,3 +277,12 @@ CREATE TRIGGER translation_enqueue_billing_guard BEFORE INSERT OR UPDATE OF busi
 FOR EACH ROW EXECUTE FUNCTION elmos_translation_enqueue_billing_guard();
 REVOKE EXECUTE ON FUNCTION elmos_translation_billing_guard() FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION elmos_translation_enqueue_billing_guard() FROM PUBLIC;
+
+DO $$ BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname='elmos_billing_runtime') THEN
+        GRANT SELECT ON execution_input_bindings TO elmos_billing_runtime;
+        GRANT EXECUTE ON FUNCTION elmos_prepare_execution_input(varchar,varchar,varchar,varchar,varchar,bigint) TO elmos_billing_runtime;
+        GRANT EXECUTE ON FUNCTION elmos_attach_execution_input(varchar,varchar,varchar) TO elmos_billing_runtime;
+        GRANT EXECUTE ON FUNCTION elmos_translation_billing_guard() TO elmos_billing_runtime;
+    END IF;
+END $$;

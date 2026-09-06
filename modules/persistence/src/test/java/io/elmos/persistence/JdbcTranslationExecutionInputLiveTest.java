@@ -40,7 +40,8 @@ class JdbcTranslationExecutionInputLiveTest {
         gc();
         assertEquals("AVAILABLE", state(object));
         assertTrue(retained(object));
-        assertEquals(binding, prepare(org, object, "same", 1), "retry renews exact binding, not a second root");
+        assertThrows(RuntimeException.class, () -> prepare(org, object, "same", 1),
+                "a PREPARED root with an unknown writer cannot issue a second PUT permit");
     }
 
     @Test void digestTenantAndIdempotencyDriftCannotAttachAnotherObject() {
@@ -84,6 +85,100 @@ class JdbcTranslationExecutionInputLiveTest {
         assertThrows(RuntimeException.class, () -> prepare(org,extra,"overflow",18));
         assertEquals(8L,jdbc.sql("SELECT count(*) FROM execution_input_bindings WHERE organization_id=:org")
                 .param("org",org).query(Long.class).single());
+    }
+
+    @Test void ordinaryDefinerUsesGlobalBudgetAndRuntimeCannotBypassTenantRls() throws Exception {
+        String org=tenant(), other=tenant(), ownObject=object(org,40), otherObject=object(other,41);
+        prepare(other,otherObject,"existing",41);
+        String owner="input_owner_"+UUID.randomUUID().toString().replace("-","");
+        String prepareSignature="elmos_prepare_execution_input(varchar,varchar,varchar,varchar,varchar,bigint)";
+        try(var connection=connections.getConnection()) {
+            connection.setAutoCommit(false);
+            try {
+                execute(connection,"CREATE ROLE "+owner+" NOLOGIN NOSUPERUSER NOBYPASSRLS");
+                execute(connection,"GRANT USAGE ON SCHEMA public TO "+owner);
+                execute(connection,"GRANT SELECT,INSERT,UPDATE ON execution_input_bindings,execution_input_admission_budgets,content_objects TO "+owner);
+                execute(connection,"GRANT SELECT ON execution_jobs TO "+owner);
+                execute(connection,"GRANT EXECUTE ON FUNCTION elmos_effective_retention_days(varchar,varchar) TO "+owner);
+                execute(connection,"ALTER FUNCTION "+prepareSignature+" OWNER TO "+owner);
+                execute(connection,"ALTER FUNCTION elmos_execution_input_retained(varchar) OWNER TO "+owner);
+                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                assertEquals("true",scalar(connection,"SELECT has_function_privilege(current_user,?,'EXECUTE')",prepareSignature));
+                assertEquals("false",scalar(connection,"SELECT has_table_privilege(current_user,'execution_input_admission_budgets','SELECT')"));
+                scalar(connection,"SELECT set_config('app.organization_id',?,true)",org);
+                String binding=scalar(connection,"SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                        "input-"+UUID.randomUUID(),org,"own",ownObject,digest(40));
+                assertTrue(binding.startsWith("input-"));
+                assertEquals("1",scalar(connection,"SELECT count(*) FROM execution_input_bindings"),"runtime sees only its own binding");
+                denied(connection,"ELMOS_EXECUTION_INPUT_SUBJECT_INVALID",
+                        "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                        "input-"+UUID.randomUUID(),other,"cross",otherObject,digest(41));
+                denied(connection,"ELMOS_EXECUTION_INPUT_UPLOAD_UNRECONCILED",
+                        "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                        "input-"+UUID.randomUUID(),org,"own",ownObject,digest(40));
+
+                execute(connection,"RESET ROLE");
+                execute(connection,"UPDATE execution_input_admission_budgets SET prepared_count=128 WHERE budget_key='global'");
+                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                denied(connection,"ELMOS_EXECUTION_INPUT_UNRECONCILED_CAPACITY",
+                        "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                        "input-"+UUID.randomUUID(),org,"global-full",ownObject,digest(40));
+                execute(connection,"RESET ROLE");
+                execute(connection,"DELETE FROM execution_input_admission_budgets WHERE budget_key='global'");
+                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                denied(connection,"ELMOS_EXECUTION_INPUT_BUDGET_STATE_UNKNOWN",
+                        "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                        "input-"+UUID.randomUUID(),org,"missing-counter",ownObject,digest(40));
+
+                execute(connection,"RESET ROLE"); execute(connection,"SET LOCAL ROLE "+owner);
+                assertEquals("true",scalar(connection,"SELECT row_security_active('execution_input_bindings')"));
+                assertEquals("true",scalar(connection,"SELECT elmos_execution_input_retained(?)",otherObject),"hidden objects are never unreferenced");
+                scalar(connection,"SELECT set_config('app.organization_id','',true)");
+                denied(connection,"ELMOS_OBJECT_GC_TENANT_CONTEXT_REQUIRED","SELECT elmos_execution_input_retained(?)",ownObject);
+            } finally {connection.rollback();}
+        }
+    }
+
+    @Test void tenantContextConstrainsGcEvenWithPrivilegedFunctionOwner() {
+        String org=tenant(), other=tenant(), ownObject=object(org,42), otherObject=object(other,43);
+        transactions.executeWithoutResult(status->{bind(org);gc();});
+        assertEquals("PURGE_PENDING",state(ownObject));
+        assertEquals("AVAILABLE",state(otherObject),"superuser SECURITY DEFINER must still honor the explicit tenant scope");
+    }
+
+    @Test void concurrentPrepareGrantsOnlyOneExternalWriterAuthority() throws Exception {
+        String org=tenant(), object=object(org,44);
+        try(var first=connections.getConnection();var pool=java.util.concurrent.Executors.newSingleThreadExecutor()) {
+            first.setAutoCommit(false);
+            scalar(first,"SELECT set_config('app.organization_id',?,true)",org);
+            scalar(first,"SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
+                    "input-"+UUID.randomUUID(),org,"one-writer",object,digest(44));
+            var started=new java.util.concurrent.CountDownLatch(1);
+            var second=pool.submit(()->{
+                started.countDown();
+                return assertThrows(RuntimeException.class,()->prepare(org,object,"one-writer",44));
+            });
+            assertTrue(started.await(20,java.util.concurrent.TimeUnit.SECONDS));
+            first.commit();
+            assertTrue(second.get(20,java.util.concurrent.TimeUnit.SECONDS).getMessage().contains("ELMOS_EXECUTION_INPUT_UPLOAD_UNRECONCILED"));
+            assertEquals(1L,jdbc.sql("SELECT prepared_count::bigint FROM execution_input_admission_budgets WHERE budget_key=:key")
+                    .param("key","tenant:"+org).query(Long.class).single());
+        }
+    }
+
+    private static void execute(java.sql.Connection connection,String sql) throws java.sql.SQLException {
+        try(var statement=connection.createStatement()){statement.execute(sql);}
+    }
+    private static String scalar(java.sql.Connection connection,String sql,String... parameters) throws java.sql.SQLException {
+        try(var statement=connection.prepareStatement(sql)) {
+            for(int index=0;index<parameters.length;index++)statement.setString(index+1,parameters[index]);
+            try(var result=statement.executeQuery()){assertTrue(result.next());return String.valueOf(result.getObject(1));}
+        }
+    }
+    private static void denied(java.sql.Connection connection,String code,String sql,String... parameters) throws java.sql.SQLException {
+        var savepoint=connection.setSavepoint();
+        try {assertTrue(assertThrows(java.sql.SQLException.class,()->scalar(connection,sql,parameters)).getMessage().contains(code));}
+        finally {connection.rollback(savepoint);connection.releaseSavepoint(savepoint);}
     }
 
     @Test void publisherCannotResurrectObjectWhenGcWonTheObjectLock() throws Exception {
