@@ -13,6 +13,9 @@
     "route": {"$ref": "#/$defs/exact_specialized_route"},
     "module_input_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
     "module_input": {"$ref": "#/$defs/module_input"},
+    "identifier_hygiene": {"$ref": "#/$defs/module_identifier_hygiene"},
+    "javascript_esm_descriptor": {"$ref": "#/$defs/javascript_esm_descriptor"},
+    "javascript_esm_descriptor_observation": {"$ref": "#/$defs/javascript_esm_descriptor_observation"},
     "module_contract": {
       "type": "object",
       "required": ["source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_language_prelude", "verified_language_wrapper", "manifest_symbols", "exact_profile_symbol_set", "exact_generated_helper_symbol_set", "exact_profile_signature_set", "whole_file_closure_sha256", "independence"],
@@ -52,8 +55,8 @@
       "required": ["rule", "input_domain", "out_of_domain_arithmetic_behavior", "function_count", "passed_function_count", "status", "proof_strength", "original_source_bytes_theorem", "source_compiler_runtime_soundness", "target_compiler_runtime_soundness", "analyzer_and_emitter_soundness", "source_user_call_graph", "target_call_graph", "target_profile_to_emitted_call_graph_status", "target_profile_to_emitted_call_graph_scope"],
       "properties": {
         "rule": {"type": "string", "minLength": 1},
-        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
-        "out_of_domain_arithmetic_behavior": {"const": "BLOCKED_NOT_EQUIVALENTLY_MODELED"},
+        "input_domain": {"enum": ["canonical-finite-no-error-input-domain", "nodejs-es2022-esm-safe-integer-finite-v1"]},
+        "out_of_domain_arithmetic_behavior": {"enum": ["BLOCKED_NOT_EQUIVALENTLY_MODELED", "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1"]},
         "function_count": {"type": "integer", "minimum": 0},
         "passed_function_count": {"type": "integer", "minimum": 0},
         "status": {"enum": ["PASSED", "FAILED", "UNKNOWN", "NOT_RUN"]},
@@ -78,16 +81,17 @@
     "external_verification_status": {"const": "NOT_RUN"},
     "limitations": {"type": "array", "items": {"type": "string", "minLength": 1}}
   },
+  "additionalProperties": false,
   "allOf": [
     {
       "if": {"properties": {"status": {"const": "PASSED"}}, "required": ["status"]},
       "then": {
-        "required": ["module_input", "source_validation", "target_validation", "unsupported_semantics", "whole_file_closure"],
+        "required": ["module_input", "identifier_hygiene", "source_validation", "target_validation", "unsupported_semantics", "whole_file_closure"],
         "properties": {
           "local_verification_status": {"const": "PASSED"},
           "module_input_sha256": {"$ref": "#/$defs/sha256"},
           "functions": {"minItems": 3},
-          "artifact_refs": {"minItems": 22},
+          "artifact_refs": {"minItems": 25},
           "composition": {"properties": {"function_count": {"minimum": 3}, "passed_function_count": {"minimum": 3}, "status": {"const": "PASSED"}}}
         }
       }
@@ -110,8 +114,61 @@
         "properties": {
           "status": {"const": "PASSED"},
           "route": {
+            "properties": {"source_language": {"const": "javascript"}},
+            "required": ["source_language"]
+          },
+          "module_input": {
+            "properties": {"source_logical_file": {"pattern": "\\.js$"}},
+            "required": ["source_logical_file"]
+          }
+        },
+        "required": ["status", "route", "module_input"]
+      },
+      "then": {
+        "required": ["javascript_esm_descriptor", "javascript_esm_descriptor_observation"],
+        "properties": {
+          "module_input": {"required": ["javascript_esm_descriptor"]},
+          "artifact_refs": {
+            "contains": {
+              "properties": {"role": {"const": "source-javascript-esm-descriptor"}},
+              "required": ["role"]
+            },
+            "minContains": 1,
+            "maxContains": 1
+          }
+        }
+      },
+      "else": {
+        "not": {
+          "anyOf": [
+            {"required": ["javascript_esm_descriptor"]},
+            {"required": ["javascript_esm_descriptor_observation"]},
+            {
+              "properties": {"module_input": {"required": ["javascript_esm_descriptor"]}},
+              "required": ["module_input"]
+            },
+            {
+              "properties": {
+                "artifact_refs": {
+                  "contains": {
+                    "properties": {"role": {"const": "source-javascript-esm-descriptor"}},
+                    "required": ["role"]
+                  }
+                }
+              },
+              "required": ["artifact_refs"]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {"const": "PASSED"},
+          "route": {
             "properties": {
-              "route_key": {"enum": ["cpp-to-swift", "swift-to-cpp", "objc-to-swift", "swift-to-objc"]}
+              "route_key": {"enum": ["cpp-to-swift", "swift-to-cpp", "objc-to-swift", "swift-to-objc", "javascript-to-swift", "swift-to-javascript"]}
             },
             "required": ["route_key"]
           }
@@ -134,20 +191,108 @@
           }
         }
       }
+    },
+    {
+      "if": {
+        "properties": {
+          "route": {
+            "anyOf": [
+              {"properties": {"source_language": {"const": "javascript"}}, "required": ["source_language"]},
+              {"properties": {"target_language": {"const": "javascript"}}, "required": ["target_language"]}
+            ]
+          }
+        },
+        "required": ["route"]
+      },
+      "then": {
+        "properties": {
+          "composition": {
+            "properties": {
+              "input_domain": {"const": "nodejs-es2022-esm-safe-integer-finite-v1"},
+              "out_of_domain_arithmetic_behavior": {"const": "BLOCKED_OUTSIDE_NODEJS_ES2022_ESM_SAFE_INTEGER_FINITE_V1"}
+            }
+          },
+          "module_input": {
+            "properties": {"input_domain": {"const": "nodejs-es2022-esm-safe-integer-finite-v1"}}
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "composition": {
+            "properties": {
+              "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+              "out_of_domain_arithmetic_behavior": {"const": "BLOCKED_NOT_EQUIVALENTLY_MODELED"}
+            }
+          },
+          "module_input": {
+            "properties": {"input_domain": {"const": "canonical-finite-no-error-input-domain"}}
+          }
+        }
+      }
     }
   ],
   "$defs": {
     "sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "unit_namespace": {
+      "type": "object",
+      "required": ["schema_version", "kind", "scope", "repository_snapshot_sha256", "work_unit_id", "source_logical_path", "source_sha256"],
+      "properties": {
+        "schema_version": {"const": "1.0.0"},
+        "kind": {"const": "elmos.identifier-unit-namespace"},
+        "scope": {"enum": ["standalone-semantic-ir", "standalone-artifact", "repository-work-unit"]},
+        "repository_snapshot_sha256": {"oneOf": [{"$ref": "#/$defs/sha256"}, {"type": "null"}]},
+        "work_unit_id": {"oneOf": [{"type": "string", "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"}, {"type": "null"}]},
+        "source_logical_path": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\)(?!.*[\\u0000-\\u001f\\u007f]).*[^/]$"},
+        "source_sha256": {"$ref": "#/$defs/sha256"}
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"scope": {"const": "repository-work-unit"}}, "required": ["scope"]},
+          "then": {"properties": {"repository_snapshot_sha256": {"$ref": "#/$defs/sha256"}, "work_unit_id": {"type": "string", "pattern": "^WU-[0-9]{5}(?:-F[0-9]{3})?$"}}},
+          "else": {"properties": {"repository_snapshot_sha256": {"type": "null"}, "work_unit_id": {"type": "null"}}}
+        }
+      ],
+      "additionalProperties": false
+    },
+    "javascript_esm_descriptor": {
+      "type": "object",
+      "required": ["logical_path", "snapshot_path", "artifact_path", "sha256", "bytes", "type"],
+      "properties": {
+        "logical_path": {
+          "type": "string",
+          "pattern": "^(?:\\.\\./)*(?:[^/\\u0000-\\u001f\\u007f]+/)*package\\.json$"
+        },
+        "snapshot_path": {"const": "source/package.json"},
+        "artifact_path": {"const": "source-module-artifact/package.json"},
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1},
+        "type": {"const": "module"}
+      },
+      "additionalProperties": false
+    },
+    "javascript_esm_descriptor_observation": {
+      "type": "object",
+      "required": ["observed_origin_path"],
+      "properties": {
+        "observed_origin_path": {
+          "type": "string",
+          "pattern": "^/(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*//)(?!.*\\\\).*/package\\.json$"
+        }
+      },
+      "additionalProperties": false
+    },
     "swift_dependency_cache_receipt": {
       "type": "object",
-      "required": ["cache_key", "cache_schema", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
+      "required": ["cache_key", "cache_schema", "object_store_policy", "identity", "version", "revision", "seed", "sha256", "file_count", "bytes"],
       "properties": {
-        "cache_key": {"const": "swift-syntax-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
-        "cache_schema": {"const": "swift-dependencies-v1"},
+        "cache_key": {"const": "swift-syntax-standalone-v2-600.0.1-0687f71944021d616d34d922343dcef086855920-b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
+        "cache_schema": {"const": "swift-dependencies-standalone-v2"},
+        "object_store_policy": {"const": "standalone-no-alternates-no-hardlinks-v2"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "sha256": {"const": "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"},
         "file_count": {"const": 753},
         "bytes": {"const": 8866479}
@@ -158,7 +303,7 @@
       "type": "object",
       "required": ["seed", "cache", "git", "identity", "version", "revision", "sha256", "file_count", "bytes"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "cache": {"$ref": "#/$defs/swift_dependency_cache_receipt"},
         "git": {
           "const": {
@@ -180,7 +325,7 @@
       "type": "object",
       "required": ["seed", "identity", "version", "revision", "sha256", "file_count", "bytes", "git", "cache"],
       "properties": {
-        "seed": {"const": "verified-content-addressed-cache"},
+        "seed": {"const": "verified-content-addressed-standalone-cache"},
         "identity": {"const": "swift-syntax"},
         "version": {"const": "600.0.1"},
         "revision": {"const": "0687f71944021d616d34d922343dcef086855920"},
@@ -596,13 +741,13 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink", "cdhash_full"],
       "properties": {
         "path": {"const": "/usr/bin/sandbox-exec"},
-        "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+        "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
         "bytes": {"const": 102368},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
         "gid": {"const": 0},
         "nlink": {"const": 1},
-        "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+        "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
       },
       "additionalProperties": false
     },
@@ -611,7 +756,7 @@
       "required": ["path", "sha256", "bytes", "mode", "uid", "gid", "nlink"],
       "properties": {
         "path": {"const": "/usr/bin/codesign"},
-        "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+        "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
         "bytes": {"const": 458576},
         "mode": {"const": "0755"},
         "uid": {"const": 0},
@@ -869,11 +1014,11 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink", "cdhash_full"],
           "properties": {
-            "sha256": {"const": "sha256:e3d7a792c58a5d3783d2f7274c82d70062393830d8cb1ded713ca554a470bd2f"},
+            "sha256": {"const": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a"},
             "bytes": {"const": 102368},
             "mode": {"const": "0755"},
             "nlink": {"const": 1},
-            "cdhash_full": {"const": "3fd94e400493dc8210fe815339088e83b0cdc18fc800c1352de86a7562e22ff5"}
+            "cdhash_full": {"const": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625"}
           },
           "additionalProperties": false
         },
@@ -881,7 +1026,7 @@
           "type": "object",
           "required": ["sha256", "bytes", "mode", "nlink"],
           "properties": {
-            "sha256": {"const": "sha256:6f92f630759f1a7f3faa0bebe1b27b3565a44d5d44c15cc4ddead6b3af373f40"},
+            "sha256": {"const": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e"},
             "bytes": {"const": 458576},
             "mode": {"const": "0755"},
             "nlink": {"const": 1}
@@ -996,6 +1141,7 @@
       "additionalProperties": false
     },
     "module_route": {
+      "description": "Active exact-eight module routes plus immutable historical JavaScript module-evidence routes. JavaScript is not an active language.",
       "oneOf": [
         {"const": {"source_language": "cpp", "target_language": "objc"}},
         {"const": {"source_language": "objc", "target_language": "cpp"}},
@@ -1004,16 +1150,34 @@
         {"const": {"source_language": "objc", "target_language": "swift"}},
         {"const": {"source_language": "swift", "target_language": "objc"}},
         {"const": {"source_language": "cpp", "target_language": "java"}},
-        {"const": {"source_language": "java", "target_language": "cpp"}}
+        {"const": {"source_language": "java", "target_language": "cpp"}},
+        {"const": {"source_language": "java", "target_language": "javascript"}},
+        {"const": {"source_language": "csharp", "target_language": "javascript"}},
+        {"const": {"source_language": "go", "target_language": "javascript"}},
+        {"const": {"source_language": "rust", "target_language": "javascript"}},
+        {"const": {"source_language": "python", "target_language": "javascript"}},
+        {"const": {"source_language": "typescript", "target_language": "javascript"}},
+        {"const": {"source_language": "cpp", "target_language": "javascript"}},
+        {"const": {"source_language": "objc", "target_language": "javascript"}},
+        {"const": {"source_language": "swift", "target_language": "javascript"}},
+        {"const": {"source_language": "javascript", "target_language": "java"}},
+        {"const": {"source_language": "javascript", "target_language": "csharp"}},
+        {"const": {"source_language": "javascript", "target_language": "go"}},
+        {"const": {"source_language": "javascript", "target_language": "rust"}},
+        {"const": {"source_language": "javascript", "target_language": "python"}},
+        {"const": {"source_language": "javascript", "target_language": "typescript"}},
+        {"const": {"source_language": "javascript", "target_language": "cpp"}},
+        {"const": {"source_language": "javascript", "target_language": "objc"}},
+        {"const": {"source_language": "javascript", "target_language": "swift"}}
       ]
     },
     "module_input": {
       "type": "object",
-      "required": ["profile", "route", "input_domain", "source_artifact_sha256", "target_artifact_sha256", "source_artifact_byte_count", "target_artifact_byte_count", "source_logical_file", "target_logical_file", "corpus_sha256", "source_semantic_ir_sha256", "target_semantic_ir_sha256", "case_manifest_sha256", "source_inventory_sha256", "source_inventory_byte_count", "target_inventory_sha256", "target_inventory_byte_count", "whole_file_closure_sha256"],
+      "required": ["profile", "route", "input_domain", "source_artifact_sha256", "target_artifact_sha256", "source_artifact_byte_count", "target_artifact_byte_count", "source_logical_file", "target_logical_file", "corpus_sha256", "source_semantic_ir_sha256", "target_semantic_ir_sha256", "case_manifest_sha256", "source_inventory_sha256", "source_inventory_byte_count", "target_inventory_sha256", "target_inventory_byte_count", "whole_file_closure_sha256", "identifier_hygiene"],
       "properties": {
         "profile": {"const": "typed-pure-module-v1"},
         "route": {"$ref": "#/$defs/module_route"},
-        "input_domain": {"const": "canonical-finite-no-error-input-domain"},
+        "input_domain": {"enum": ["canonical-finite-no-error-input-domain", "nodejs-es2022-esm-safe-integer-finite-v1"]},
         "source_artifact_sha256": {"$ref": "#/$defs/sha256"},
         "target_artifact_sha256": {"$ref": "#/$defs/sha256"},
         "source_artifact_byte_count": {"type": "integer", "minimum": 1},
@@ -1028,7 +1192,102 @@
         "source_inventory_byte_count": {"type": "integer", "minimum": 1},
         "target_inventory_sha256": {"$ref": "#/$defs/sha256"},
         "target_inventory_byte_count": {"type": "integer", "minimum": 1},
-        "whole_file_closure_sha256": {"$ref": "#/$defs/sha256"}
+        "whole_file_closure_sha256": {"$ref": "#/$defs/sha256"},
+        "identifier_hygiene": {"$ref": "#/$defs/module_identifier_hygiene"},
+        "javascript_esm_descriptor": {"$ref": "#/$defs/javascript_esm_descriptor"}
+      },
+      "additionalProperties": false
+    },
+    "module_identifier_artifact_ref": {
+      "type": "object",
+      "required": ["path", "sha256", "bytes"],
+      "properties": {
+        "path": {
+          "enum": [
+            "identifier-plan.json",
+            "target-semantic-ir.raw.json",
+            "target-semantic-ir.normalized.json"
+          ]
+        },
+        "sha256": {"$ref": "#/$defs/sha256"},
+        "bytes": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": false
+    },
+    "identifier_parameter_mapping": {
+      "type": "object",
+      "required": ["raw_name", "canonical_name", "canonical_type"],
+      "properties": {
+        "raw_name": {"type": "string", "minLength": 1},
+        "canonical_name": {"type": "string", "minLength": 1},
+        "canonical_type": {"enum": ["integer", "number", "boolean", "string"]}
+      },
+      "additionalProperties": false
+    },
+    "identifier_function_mapping": {
+      "type": "object",
+      "required": ["raw_symbol", "canonical_symbol", "parameters"],
+      "properties": {
+        "raw_symbol": {"type": "string", "minLength": 1},
+        "canonical_symbol": {"type": "string", "minLength": 1},
+        "parameters": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/identifier_parameter_mapping"}
+        }
+      },
+      "additionalProperties": false
+    },
+    "module_identifier_hygiene": {
+      "type": "object",
+      "required": ["status", "policy_id", "policy_sha256", "unit_namespace", "unit_namespace_sha256", "plan", "raw_target_ir", "normalized_target_ir", "functions", "renamed"],
+      "properties": {
+        "status": {"const": "PASSED"},
+        "policy_id": {"const": "typed-alpha-hygiene-v2"},
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "unit_namespace": {"$ref": "#/$defs/unit_namespace"},
+        "unit_namespace_sha256": {"$ref": "#/$defs/sha256"},
+        "plan": {
+          "allOf": [
+            {"$ref": "#/$defs/module_identifier_artifact_ref"},
+            {"properties": {"path": {"const": "identifier-plan.json"}}}
+          ]
+        },
+        "raw_target_ir": {
+          "allOf": [
+            {"$ref": "#/$defs/module_identifier_artifact_ref"},
+            {"properties": {"path": {"const": "target-semantic-ir.raw.json"}}}
+          ]
+        },
+        "normalized_target_ir": {
+          "allOf": [
+            {"$ref": "#/$defs/module_identifier_artifact_ref"},
+            {"properties": {"path": {"const": "target-semantic-ir.normalized.json"}}}
+          ]
+        },
+        "functions": {
+          "type": "array",
+          "minItems": 3,
+          "items": {"$ref": "#/$defs/identifier_function_mapping"}
+        },
+        "renamed": {"type": "boolean"}
+      },
+      "additionalProperties": false
+    },
+    "whole_file_identifier_hygiene": {
+      "type": "object",
+      "required": ["status", "policy_id", "policy_sha256", "unit_namespace", "unit_namespace_sha256", "plan_sha256", "functions"],
+      "properties": {
+        "status": {"const": "PASSED"},
+        "policy_id": {"const": "typed-alpha-hygiene-v2"},
+        "policy_sha256": {"$ref": "#/$defs/sha256"},
+        "unit_namespace": {"$ref": "#/$defs/unit_namespace"},
+        "unit_namespace_sha256": {"$ref": "#/$defs/sha256"},
+        "plan_sha256": {"$ref": "#/$defs/sha256"},
+        "functions": {
+          "type": "array",
+          "minItems": 3,
+          "items": {"$ref": "#/$defs/identifier_function_mapping"}
+        }
       },
       "additionalProperties": false
     },
@@ -1083,7 +1342,7 @@
       "properties": {
         "status": {"const": "EXACT_AND_CLOSED"},
         "role": {"enum": ["source", "target"]},
-        "language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Exact module-profile languages, including immutable historical JavaScript evidence; this is not the live route-language enum."},
         "directives": {"type": "array", "items": {"$ref": "#/$defs/language_directive"}}
       },
       "additionalProperties": false
@@ -1153,7 +1412,7 @@
       "properties": {
         "status": {"const": "NOT_APPLICABLE"},
         "role": {"enum": ["source", "target"]},
-        "language": {"enum": ["cpp", "objc", "swift"]},
+        "language": {"enum": ["csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Non-Java exact module-profile languages, including immutable historical JavaScript evidence."},
         "file": {"type": "string", "minLength": 1}
       },
       "additionalProperties": false
@@ -1180,7 +1439,7 @@
         "schema_version": {"const": "1.0.0"},
         "kind": {"const": "elmos.typed-pure-module-inventory"},
         "profile": {"const": "typed-pure-module-v1"},
-        "source_language": {"enum": ["cpp", "objc", "swift", "java"]},
+        "source_language": {"enum": ["java", "csharp", "go", "rust", "python", "typescript", "cpp", "objc", "swift", "javascript"], "description": "Exact module-profile inventory language, including immutable historical JavaScript evidence."},
         "source_file": {"type": "string", "minLength": 1},
         "analyzer": {"type": "string", "minLength": 1},
         "analyzer_version": {"type": "string", "minLength": 1},
@@ -1203,9 +1462,11 @@
     },
     "profile_symbol": {
       "type": "object",
-      "required": ["symbol", "qualified_name", "declaration_kind", "occurrence", "source_span", "raw_signature", "raw_parameter_names", "canonical_signature"],
+      "required": ["symbol", "raw_symbol", "canonical_symbol", "qualified_name", "declaration_kind", "occurrence", "source_span", "raw_signature", "raw_parameter_names", "canonical_signature"],
       "properties": {
         "symbol": {"type": "string", "minLength": 1},
+        "raw_symbol": {"type": "string", "minLength": 1},
+        "canonical_symbol": {"type": "string", "minLength": 1},
         "qualified_name": {"type": "string", "minLength": 1},
         "declaration_kind": {"type": "string", "minLength": 1},
         "occurrence": {"type": "integer", "minimum": 1},
@@ -1250,7 +1511,7 @@
     },
     "whole_file_closure": {
       "type": "object",
-      "required": ["schema_version", "kind", "profile", "route", "status", "source_inventory_sha256", "source_inventory_bytes", "target_inventory_sha256", "target_inventory_bytes", "manifest_symbols", "source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_generated_helpers", "verified_language_prelude", "verified_language_wrapper", "blocked_declarations", "source_user_call_graph", "target_call_graph_policy", "target_call_graph", "target_builtin_normalizations"],
+      "required": ["schema_version", "kind", "profile", "route", "status", "source_inventory_sha256", "source_inventory_bytes", "target_inventory_sha256", "target_inventory_bytes", "manifest_symbols", "source_profile_symbols", "target_profile_symbols", "target_helper_symbols", "verified_generated_helpers", "verified_language_prelude", "verified_language_wrapper", "blocked_declarations", "source_user_call_graph", "target_call_graph_policy", "target_call_graph", "target_builtin_normalizations", "identifier_hygiene"],
       "properties": {
         "schema_version": {"const": "1.0.0"},
         "kind": {"const": "elmos.typed-pure-module-whole-file-closure"},
@@ -1272,21 +1533,59 @@
         "source_user_call_graph": {"const": {"edges": [], "status": "EMPTY_AND_CLOSED"}},
         "target_call_graph_policy": {"const": "UNSUPPORTED_EXCEPT_EXACT_EMITTER_HELPERS"},
         "target_call_graph": {"$ref": "#/$defs/target_call_graph"},
-        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}}
+        "target_builtin_normalizations": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+        "identifier_hygiene": {"$ref": "#/$defs/whole_file_identifier_hygiene"}
       },
       "additionalProperties": false
     },
     "target_call_graph_edge": {
+      "oneOf": [
+        {"$ref": "#/$defs/target_signature_guard_edge"},
+        {"$ref": "#/$defs/target_arithmetic_edge"}
+      ]
+    },
+    "target_signature_guard_edge": {
+      "type": "object",
+      "required": ["caller", "canonical_caller", "callee", "callee_kind", "canonical_domain", "canonical_operator", "normalization_rule", "guard_scope", "guard_subject", "canonical_guard_subject"],
+      "properties": {
+        "caller": {"type": "string", "minLength": 1},
+        "canonical_caller": {"type": "string", "minLength": 1},
+        "callee": {"type": "string", "minLength": 1},
+        "callee_kind": {"const": "exact-generated-helper"},
+        "canonical_domain": {"enum": ["integer", "number", "boolean", "string"]},
+        "canonical_operator": {"const": "guard"},
+        "normalization_rule": {"type": "string", "minLength": 1},
+        "guard_scope": {"enum": ["signature-parameter", "signature-return"]},
+        "guard_subject": {"type": "string", "minLength": 1},
+        "canonical_guard_subject": {"type": "string", "minLength": 1}
+      },
+      "additionalProperties": false
+    },
+    "target_arithmetic_edge": {
       "type": "object",
       "required": ["caller", "callee", "callee_kind", "canonical_domain", "canonical_operator", "normalization_rule"],
       "properties": {
         "caller": {"type": "string", "minLength": 1},
+        "canonical_caller": {"type": "string", "minLength": 1},
         "callee": {"type": "string", "minLength": 1},
         "callee_kind": {"enum": ["exact-generated-helper", "pinned-target-builtin"]},
         "canonical_domain": {"enum": ["integer", "number"]},
         "canonical_operator": {"enum": ["+", "-", "*", "/", "%"]},
-        "normalization_rule": {"type": "string", "minLength": 1}
+        "normalization_rule": {"type": "string", "minLength": 1},
+        "guard_scope": {"enum": ["arithmetic-result", "arithmetic-divisor"]},
+        "guard_subject": {"type": "string", "minLength": 1}
       },
+      "oneOf": [
+        {"required": ["guard_scope", "guard_subject"]},
+        {
+          "not": {
+            "anyOf": [
+              {"required": ["guard_scope"]},
+              {"required": ["guard_subject"]}
+            ]
+          }
+        }
+      ],
       "additionalProperties": false
     },
     "target_call_graph": {
@@ -1322,6 +1621,7 @@
       "additionalProperties": false
     },
     "exact_specialized_route": {
+      "description": "Active exact-eight module routes plus immutable historical JavaScript module-evidence routes. JavaScript is not an active language.",
       "oneOf": [
         {"const": {"route_key": "cpp-to-objc", "source_language": "cpp", "target_language": "objc"}},
         {"const": {"route_key": "objc-to-cpp", "source_language": "objc", "target_language": "cpp"}},
@@ -1330,7 +1630,25 @@
         {"const": {"route_key": "objc-to-swift", "source_language": "objc", "target_language": "swift"}},
         {"const": {"route_key": "swift-to-objc", "source_language": "swift", "target_language": "objc"}},
         {"const": {"route_key": "cpp-to-java", "source_language": "cpp", "target_language": "java"}},
-        {"const": {"route_key": "java-to-cpp", "source_language": "java", "target_language": "cpp"}}
+        {"const": {"route_key": "java-to-cpp", "source_language": "java", "target_language": "cpp"}},
+        {"const": {"route_key": "java-to-javascript", "source_language": "java", "target_language": "javascript"}},
+        {"const": {"route_key": "csharp-to-javascript", "source_language": "csharp", "target_language": "javascript"}},
+        {"const": {"route_key": "go-to-javascript", "source_language": "go", "target_language": "javascript"}},
+        {"const": {"route_key": "rust-to-javascript", "source_language": "rust", "target_language": "javascript"}},
+        {"const": {"route_key": "python-to-javascript", "source_language": "python", "target_language": "javascript"}},
+        {"const": {"route_key": "typescript-to-javascript", "source_language": "typescript", "target_language": "javascript"}},
+        {"const": {"route_key": "cpp-to-javascript", "source_language": "cpp", "target_language": "javascript"}},
+        {"const": {"route_key": "objc-to-javascript", "source_language": "objc", "target_language": "javascript"}},
+        {"const": {"route_key": "swift-to-javascript", "source_language": "swift", "target_language": "javascript"}},
+        {"const": {"route_key": "javascript-to-java", "source_language": "javascript", "target_language": "java"}},
+        {"const": {"route_key": "javascript-to-csharp", "source_language": "javascript", "target_language": "csharp"}},
+        {"const": {"route_key": "javascript-to-go", "source_language": "javascript", "target_language": "go"}},
+        {"const": {"route_key": "javascript-to-rust", "source_language": "javascript", "target_language": "rust"}},
+        {"const": {"route_key": "javascript-to-python", "source_language": "javascript", "target_language": "python"}},
+        {"const": {"route_key": "javascript-to-typescript", "source_language": "javascript", "target_language": "typescript"}},
+        {"const": {"route_key": "javascript-to-cpp", "source_language": "javascript", "target_language": "cpp"}},
+        {"const": {"route_key": "javascript-to-objc", "source_language": "javascript", "target_language": "objc"}},
+        {"const": {"route_key": "javascript-to-swift", "source_language": "javascript", "target_language": "swift"}}
       ]
     },
     "symbols": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
@@ -1338,7 +1656,7 @@
       "type": "object",
       "required": ["role", "path", "sha256", "bytes"],
       "properties": {
-        "role": {"enum": ["source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest", "source-module-inventory", "target-module-inventory", "whole-file-module-closure", "swift-analyzer-build-receipt"]},
+        "role": {"enum": ["identifier-plan", "raw-target-ir", "normalized-target-ir", "source-module-semantic-ir", "target-module-semantic-ir", "source-module-observations", "target-module-observations", "original-source-module-artifact", "source-javascript-esm-descriptor", "emitted-target-module-artifact", "module-formal-input", "formal-function-input", "formal-function-smt2", "formal-function-result", "source-module-validation", "target-module-validation", "module-case-manifest", "source-module-inventory", "target-module-inventory", "whole-file-module-closure", "swift-analyzer-build-receipt"]},
         "path": {"type": "string", "minLength": 1},
         "sha256": {"$ref": "#/$defs/sha256"},
         "bytes": {"type": "integer", "minimum": 1}

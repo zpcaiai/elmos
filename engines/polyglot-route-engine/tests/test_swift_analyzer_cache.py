@@ -965,6 +965,15 @@ def test_swift_build_session_exit_requires_three_consecutive_empty_snapshots(
     )
 
 
+def test_swift_post_completion_budget_covers_required_identity_scans() -> None:
+    minimum_scan_budget = (
+        native._SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS
+        * (native._SWIFT_BUILD_REQUIRED_EMPTY_SNAPSHOTS + 2)
+    )
+
+    assert native._SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS >= minimum_scan_budget
+
+
 @pytest.mark.parametrize("interrupt_phase", ("communicate", "enumeration"))
 def test_swift_build_step_preserves_keyboard_interrupt(
     tmp_path: Path,

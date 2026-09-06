@@ -18,37 +18,37 @@ static std::int64_t elmos_checked_sub(std::int64_t left, std::int64_t right) {
     return result;
 }
 
-bool both(bool left, bool right) {
-    return (left && right);
+bool elmos_fn_7593e4aca0357f18(bool elmos_p000_53ee0c0dc7d37f34, bool elmos_p001_1ac4b85273361501) {
+    return (elmos_p000_53ee0c0dc7d37f34 && elmos_p001_1ac4b85273361501);
 }
 
-std::int64_t calculate(std::int64_t subtotal, std::int64_t tax) {
-    if ((subtotal < 0)) {
+std::int64_t elmos_fn_8efef4422e0cb671(std::int64_t elmos_p000_d50a8d7085768191, std::int64_t elmos_p001_fd646bef911b2fd2) {
+    if ((elmos_p000_d50a8d7085768191 < 0)) {
         return 0;
     }
-    return elmos_checked_add(subtotal, tax);
+    return elmos_checked_add(elmos_p000_d50a8d7085768191, elmos_p001_fd646bef911b2fd2);
 }
 
-std::int64_t clamp(std::int64_t value, std::int64_t minimum, std::int64_t maximum) {
-    if ((value < minimum)) {
-        return minimum;
+std::int64_t elmos_fn_c975e17d9e6a9021(std::int64_t elmos_p000_55aadea8c11d7754, std::int64_t elmos_p001_b47fe8b0f91ddb10, std::int64_t elmos_p002_8253fbf66bf74aad) {
+    if ((elmos_p000_55aadea8c11d7754 < elmos_p001_b47fe8b0f91ddb10)) {
+        return elmos_p001_b47fe8b0f91ddb10;
     }
-    if ((value > maximum)) {
-        return maximum;
+    if ((elmos_p000_55aadea8c11d7754 > elmos_p002_8253fbf66bf74aad)) {
+        return elmos_p002_8253fbf66bf74aad;
     }
-    return value;
+    return elmos_p000_55aadea8c11d7754;
 }
 
-double clampNumber(double value, double minimum, double maximum) {
-    if ((value < minimum)) {
-        return minimum;
+double elmos_fn_c475b1fac1b34de4(double elmos_p000_d4f4478b81888062, double elmos_p001_872ad24aafadd054, double elmos_p002_000e6b8ff40cfd8c) {
+    if ((elmos_p000_d4f4478b81888062 < elmos_p001_872ad24aafadd054)) {
+        return elmos_p001_872ad24aafadd054;
     }
-    if ((value > maximum)) {
-        return maximum;
+    if ((elmos_p000_d4f4478b81888062 > elmos_p002_000e6b8ff40cfd8c)) {
+        return elmos_p002_000e6b8ff40cfd8c;
     }
-    return value;
+    return elmos_p000_d4f4478b81888062;
 }
 
-std::int64_t difference(std::int64_t left, std::int64_t right) {
-    return elmos_checked_sub(left, right);
+std::int64_t elmos_fn_a83e40c09f4bf5d9(std::int64_t elmos_p000_2f0cf04dda1f8b59, std::int64_t elmos_p001_060cc2931bfe40a8) {
+    return elmos_checked_sub(elmos_p000_2f0cf04dda1f8b59, elmos_p001_060cc2931bfe40a8);
 }
