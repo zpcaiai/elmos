@@ -36,6 +36,10 @@ public class ExecutionJobController {
     private final JdbcObjectStorageStore artifacts;
     private final ObjectMapper json;
     private final Map<ExecutionJobPort.BusinessLine, RuntimeProfile> profiles;
+    private TranslationExecutionPreparation translations;
+
+    @org.springframework.beans.factory.annotation.Autowired
+    void translationPreparation(TranslationExecutionPreparation preparation) { this.translations = preparation; }
 
     record RuntimeProfile(String permission, String capability, String image) {}
 
@@ -92,11 +96,34 @@ public class ExecutionJobController {
                 ? "batch105-108-proof-loop"
                 : require(request.jobKind(), 64, "ELMOS_JOB_KIND_INVALID");
         String jobId = "job-" + UUID.randomUUID();
+        if (line == ExecutionJobPort.BusinessLine.TRANSLATION) {
+            if (translations == null) {
+                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(Map.of(
+                        "status", "CONFIGURATION_REQUIRED", "code", "TRANSLATION_HOSTED_PREPARATION_REQUIRED"));
+            }
+            if (!TranslationExecutionPreparation.KIND.equals(jobKind)) {
+                throw new ExecutionJobPort.ExecutionStateException("TRANSLATION_JOB_KIND_INVALID");
+            }
+            var replay=jobs.findByIdempotencyKey(principal.organizationId(),idempotencyKey);
+            if (replay.isPresent()) {
+                var existing=jobs.find(principal.organizationId(),replay.get().jobId()).orElseThrow();
+                var previous=jobs.requestPayload(principal.organizationId(),existing.jobId()).orElseThrow();
+                if (existing.businessLine()!=line || !existing.jobKind().equals(jobKind)
+                        || !existing.actorId().equals(principal.actorId())
+                        || !payload.keySet().equals(java.util.Set.of("repositoryWorkspaceId","casesBundleId","sourceLanguage","targetLanguage")))
+                    throw new ExecutionJobPort.ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT");
+                for (var field:payload.entrySet()) if (!java.util.Objects.equals(previous.get(field.getKey()),field.getValue()))
+                    throw new ExecutionJobPort.ExecutionStateException("ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT");
+                return ResponseEntity.accepted().body(Map.of("jobId",existing.jobId(),"status",existing.status(),
+                        "requestDigest",replay.get().requestDigest()));
+            }
+            payload = translations.prepare(principal, payload, idempotencyKey);
+        }
         if (line == ExecutionJobPort.BusinessLine.MODERNIZATION_PROOF) {
             payload = modernizationProofPayload(payload, principal, jobId);
         }
         String digest = digest(payload);
-        String persisted = jobs.enqueue(new ExecutionJobPort.EnqueueCommand(
+        ExecutionJobPort.EnqueueCommand command = new ExecutionJobPort.EnqueueCommand(
                 jobId,
                 principal.organizationId(),
                 principal.actorId(),
@@ -109,7 +136,10 @@ public class ExecutionJobController {
                 profile.image(),
                 request.priority() == null ? (short) 100 : request.priority(),
                 request.budgetWallSeconds() == null ? 3600 : request.budgetWallSeconds(),
-                request.maxAttempts() == null ? (short) 1 : request.maxAttempts()));
+                line == ExecutionJobPort.BusinessLine.TRANSLATION ? (short) 1
+                        : request.maxAttempts() == null ? (short) 1 : request.maxAttempts());
+        String persisted = line == ExecutionJobPort.BusinessLine.TRANSLATION
+                ? translations.enqueue(jobs, command) : jobs.enqueue(command);
         return ResponseEntity.accepted().body(Map.of(
                 "jobId", persisted,
                 "status", "QUEUED",
@@ -131,10 +161,31 @@ public class ExecutionJobController {
                         "status", "ERROR", "code", "ELMOS_EXECUTION_JOB_UNKNOWN")));
     }
 
+    @GetMapping("/translation-readiness")
+    public ResponseEntity<?> translationReadiness() {
+        principal(ExecutionJobPort.BusinessLine.TRANSLATION);
+        String image=profiles.get(ExecutionJobPort.BusinessLine.TRANSLATION).image();
+        if (translations == null || !image.matches("^[a-z0-9][a-z0-9._/-]*(:[0-9]+)?/?[a-z0-9._/-]*@sha256:[0-9a-f]{64}$"))
+            return ResponseEntity.status(503).body(Map.of("status","BLOCKED","code","TRANSLATION_HOSTED_CONFIGURATION_REQUIRED"));
+        translations.requireSubmissionConfiguration();
+        return ResponseEntity.ok(Map.of("status","READY","isolation","ROOTLESS_CONTAINER","sourceStorage","READ_ONLY",
+                "reason","QUEUE_ADMISSION_CONFIGURED_RUNTIME_EVIDENCE_NOT_RUN","executionStatus","NOT_RUN"));
+    }
+
     private Map<String, Object> jobResponse(ExecutionJobPort.JobView job) {
         Map<String, Object> response = new java.util.LinkedHashMap<>(
                 json.convertValue(job, new com.fasterxml.jackson.core.type.TypeReference<>() {}));
         response.put("artifacts", artifacts.artifactsFor(job.organizationId(), job.jobId()));
+        if (job.businessLine() == ExecutionJobPort.BusinessLine.TRANSLATION
+                && TranslationExecutionPreparation.KIND.equals(job.jobKind())) {
+            Map<String, Object> payload = jobs.requestPayload(job.organizationId(), job.jobId())
+                    .orElseThrow(() -> new ExecutionJobPort.ExecutionStateException("TRANSLATION_INPUT_MISSING"));
+            Map<String, Object> summary = new java.util.LinkedHashMap<>(payload);
+            summary.remove("input"); // Object identity is a runner capability, not browser routing authority.
+            Object input = payload.get("input");
+            if (input instanceof Map<?, ?> object) summary.put("inputSha256", object.get("sha256"));
+            response.put("translation", summary);
+        }
         return response;
     }
 
@@ -317,7 +368,12 @@ public class ExecutionJobController {
             case "ELMOS_EXECUTION_IDEMPOTENCY_CONFLICT",
                  "ELMOS_EXECUTION_STORAGE_CONFLICT" -> HttpStatus.CONFLICT;
             case "ELMOS_EXECUTION_NO_ACTIVE_ENTITLEMENT",
-                 "ELMOS_EXECUTION_QUEUE_DEPTH_EXCEEDED" -> HttpStatus.TOO_MANY_REQUESTS;
+                 "ELMOS_EXECUTION_QUEUE_DEPTH_EXCEEDED", "TRANSLATION_INPUT_CAPACITY_EXCEEDED",
+                 "TRANSLATION_INPUT_TENANT_CAPACITY_EXCEEDED" -> HttpStatus.TOO_MANY_REQUESTS;
+            case "TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED", "TRANSLATION_REPOSITORY_SERVICE_REQUIRED",
+                 "TRANSLATION_INPUT_PREPARATION_FAILED", "TRANSLATION_INPUT_UPLOAD_UNCONFIRMED",
+                 "TRANSLATION_HOSTED_CONFIGURATION_REQUIRED", "TRANSLATION_ADMISSION_RUNTIME_REQUIRED",
+                 "TRANSLATION_RUNTIME_DATABASE_AUTHORITY_REQUIRED" -> HttpStatus.SERVICE_UNAVAILABLE;
             default -> HttpStatus.BAD_REQUEST;
         };
         return ResponseEntity.status(status).body(Map.of("status", "ERROR", "code", ex.code()));

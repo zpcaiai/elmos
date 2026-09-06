@@ -40,6 +40,10 @@ elmos:
     local:
       enabled: ${ELMOS_LOCAL_IDENTITY_ENABLED:false}
       pepper-file: ${ELMOS_IDENTITY_PEPPER_FILE:}
+  translation:
+    repository-root: ${ELMOS_TRANSLATION_REPOSITORY_ROOT:}
+    cases-root: ${ELMOS_TRANSLATION_CASES_ROOT:}
+    node-executable: ${ELMOS_TRANSLATION_NODE_EXECUTABLE:}
   execution:
     images:
       generation: ${ELMOS_RUNNER_IMAGE_GENERATION:}
