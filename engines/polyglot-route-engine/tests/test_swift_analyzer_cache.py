@@ -796,7 +796,7 @@ child = subprocess.Popen(
     [sys.executable, "-c", child_script, str(child_record)],
     stdin=subprocess.DEVNULL,
 )
-deadline = time.monotonic() + 5
+deadline = time.monotonic() + 30
 while not child_record.exists():
     if time.monotonic() >= deadline:
         raise RuntimeError("child did not become ready")
@@ -819,6 +819,28 @@ while True:
     monkeypatch.setattr(native, "_SWIFT_BUILD_REAP_RESERVE_SECONDS", 0.5)
     monkeypatch.setattr(native, "_SWIFT_BUILD_SESSION_POLL_SECONDS", 0.01)
     monkeypatch.setattr(native, "_SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS", 0.3)
+    monkeypatch.delenv("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", raising=False)
+    real_bounded_communicate = native.bounded_communicate
+
+    def communicate_after_fixture_ready(
+        process: subprocess.Popen[str],
+        *,
+        input: str | None,
+        timeout: float,
+        reap: bool,
+    ) -> tuple[str, str]:
+        # Establish the moved process group before starting the unchanged
+        # transport timeout. On a heavily loaded host, Python startup itself
+        # may exceed that timeout and never exercise the cleanup under test.
+        # This hook is inside the build step's cleanup-protected try block.
+        readiness_deadline = time.monotonic() + 45
+        while not parent_record.exists():
+            if time.monotonic() >= readiness_deadline:
+                raise AssertionError("Swift cleanup fixture did not become ready")
+            time.sleep(0.01)
+        return real_bounded_communicate(process, input=input, timeout=timeout, reap=reap)
+
+    monkeypatch.setattr(native, "bounded_communicate", communicate_after_fixture_ready)
     real_session_members = native._swift_build_session_members
     if enumeration_mode == "primary-fallback":
         real_libproc_enumeration = native._swift_build_process_ids_from_libproc
