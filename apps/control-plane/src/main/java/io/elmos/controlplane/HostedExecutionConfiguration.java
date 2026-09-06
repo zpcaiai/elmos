@@ -5,6 +5,7 @@ import io.elmos.identity.AuthenticationService;
 import io.elmos.identity.JdbcIdentityStore;
 import io.elmos.persistence.JdbcExecutionJobStore;
 import io.elmos.persistence.JdbcObjectStorageStore;
+import io.elmos.persistence.JdbcTenantObjectRetentionStore;
 import io.elmos.persistence.JdbcOrganizationSelfServiceStore;
 import io.elmos.persistence.JdbcRunnerRegistrationStore;
 import io.elmos.storage.S3ObjectStore;
@@ -87,6 +88,12 @@ class HostedExecutionConfiguration {
     }
 
     @Bean
+    JdbcTenantObjectRetentionStore tenantObjectRetentionStore(
+            JdbcClient jdbc, TransactionTemplate billingTransactionTemplate) {
+        return new JdbcTenantObjectRetentionStore(jdbc, billingTransactionTemplate);
+    }
+
+    @Bean
     ArtifactController.TenantContext artifactTenantContext() {
         return new ArtifactController.TenantContext() {
             @Override
@@ -130,50 +137,42 @@ class HostedExecutionConfiguration {
  * physically deleted, and only a confirmed 2xx/404 advances it to PURGED.
  */
 @org.springframework.stereotype.Component
+@ConditionalOnProperty(prefix = "elmos.object-storage", name = "host-gc-enabled", havingValue = "true")
 class ObjectRetentionScheduler {
     private final JdbcObjectStorageStore metadata;
-    private final ArtifactController.ObjectStoreFactory stores;
+    private final JdbcTenantObjectRetentionStore retention;
+    private final Clock clock;
 
     ObjectRetentionScheduler(
             JdbcObjectStorageStore metadata,
-            ArtifactController.ObjectStoreFactory stores
+            JdbcTenantObjectRetentionStore retention,
+            Clock clock
     ) {
         this.metadata = metadata;
-        this.stores = stores;
+        this.retention = retention;
+        this.clock = clock;
     }
 
     @Scheduled(fixedDelayString = "${elmos.object-storage.gc-interval-ms:3600000}")
     void collect() {
-        String runId = "gc-" + java.util.UUID.randomUUID();
-        metadata.expireArtifacts(runId, 500);
-        var pending = metadata.pendingPurges(250);
-        int purged = 0;
-        int failed = 0;
-        S3ObjectStore store;
-        try {
-            store = stores.current();
-        } catch (S3ObjectStore.ObjectStorageException unavailable) {
-            metadata.finishGcRun(
-                    runId, 0, Math.max(1, pending.size()));
-            return;
-        }
-        for (JdbcObjectStorageStore.PendingPurge purge : pending) {
-            try {
-                store.deleteObject(
-                        purge.organizationId(), purge.contentSha256());
-                if (metadata.confirmPurged(
-                        purge.organizationId(),
-                        purge.contentObjectId())) {
-                    purged++;
-                } else {
-                    failed++;
+        retention.collect(new JdbcTenantObjectRetentionStore.ConfirmedDeleter() {
+            private S3ObjectStore.Backend backend;
+            private S3ObjectStore provider;
+
+            @Override public void delete(JdbcTenantObjectRetentionStore.Purge purge) {
+                // Capture once per round, after the metadata connection has
+                // been returned. Reuse one bounded HTTP client for the round.
+                if (backend == null) {
+                    backend = metadata.activeBackend();
+                    provider = new S3ObjectStore(backend, metadata, clock);
                 }
-            } catch (S3ObjectStore.ObjectStorageException ignored) {
-                // Unknown provider state remains PURGE_PENDING. The next run
-                // retries DELETE idempotently; it never publishes a false purge.
-                failed++;
+                if (!purge.backendId().equals(backend.backendId())
+                        || !purge.storageKey().equals(S3ObjectStore.storageKey(
+                                purge.organizationId(), purge.contentSha256()))) {
+                    throw new S3ObjectStore.ObjectStorageException("OBJECT_GC_PROVIDER_BINDING_MISMATCH");
+                }
+                provider.deleteObject(purge.organizationId(), purge.contentSha256());
             }
-        }
-        metadata.finishGcRun(runId, purged, failed);
+        });
     }
 }
