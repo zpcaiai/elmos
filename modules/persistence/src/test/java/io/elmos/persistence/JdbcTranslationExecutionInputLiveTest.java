@@ -19,7 +19,7 @@ class JdbcTranslationExecutionInputLiveTest {
     static TransactionTemplate transactions;
     static DriverManagerDataSource connections;
 
-    @BeforeAll static void database() {
+    @BeforeAll static void database() throws Exception {
         String url = System.getenv("ELMOS_EXECUTION_QUEUE_TEST_JDBC_URL");
         assumeTrue(url != null && !url.isBlank(), "requires a disposable PostgreSQL fixture");
         if (!"true".equals(System.getenv("ELMOS_EXECUTION_QUEUE_TEST_DISPOSABLE")))
@@ -28,6 +28,12 @@ class JdbcTranslationExecutionInputLiveTest {
                 System.getenv().getOrDefault("ELMOS_EXECUTION_QUEUE_TEST_DATABASE_USER", System.getProperty("user.name")),
                 System.getenv().getOrDefault("ELMOS_EXECUTION_QUEUE_TEST_DATABASE_PASSWORD", ""));
         Flyway.configure().dataSource(data).defaultSchema("public").load().migrate();
+        // Exercise the repository's exact operator provisioning artifact, not
+        // a test-only role whose permissions the deployed runtime cannot obtain.
+        try(var connection=data.getConnection();var statement=connection.createStatement();
+            var script=new org.springframework.core.io.ClassPathResource("db/provisioning/translation_input_runtime.sql").getInputStream()) {
+            statement.execute(new String(script.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8));
+        }
         jdbc = JdbcClient.create(data);
         connections = data;
         transactions = new TransactionTemplate(new DataSourceTransactionManager(data));
@@ -102,7 +108,7 @@ class JdbcTranslationExecutionInputLiveTest {
                 execute(connection,"GRANT EXECUTE ON FUNCTION elmos_effective_retention_days(varchar,varchar) TO "+owner);
                 execute(connection,"ALTER FUNCTION "+prepareSignature+" OWNER TO "+owner);
                 execute(connection,"ALTER FUNCTION elmos_execution_input_retained(varchar) OWNER TO "+owner);
-                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                execute(connection,"SET LOCAL ROLE elmos_translation_input_runtime");
                 assertEquals("true",scalar(connection,"SELECT has_function_privilege(current_user,?,'EXECUTE')",prepareSignature));
                 assertEquals("false",scalar(connection,"SELECT has_table_privilege(current_user,'execution_input_admission_budgets','SELECT')"));
                 scalar(connection,"SELECT set_config('app.organization_id',?,true)",org);
@@ -119,13 +125,13 @@ class JdbcTranslationExecutionInputLiveTest {
 
                 execute(connection,"RESET ROLE");
                 execute(connection,"UPDATE execution_input_admission_budgets SET prepared_count=128 WHERE budget_key='global'");
-                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                execute(connection,"SET LOCAL ROLE elmos_translation_input_runtime");
                 denied(connection,"ELMOS_EXECUTION_INPUT_UNRECONCILED_CAPACITY",
                         "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
                         "input-"+UUID.randomUUID(),org,"global-full",ownObject,digest(40));
                 execute(connection,"RESET ROLE");
                 execute(connection,"DELETE FROM execution_input_admission_budgets WHERE budget_key='global'");
-                execute(connection,"SET LOCAL ROLE elmos_billing_runtime");
+                execute(connection,"SET LOCAL ROLE elmos_translation_input_runtime");
                 denied(connection,"ELMOS_EXECUTION_INPUT_BUDGET_STATE_UNKNOWN",
                         "SELECT elmos_prepare_execution_input(?,?,?,?,?,CAST(100 AS bigint))",
                         "input-"+UUID.randomUUID(),org,"missing-counter",ownObject,digest(40));
