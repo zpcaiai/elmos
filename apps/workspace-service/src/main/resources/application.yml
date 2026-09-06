@@ -41,6 +41,7 @@ elmos:
         enabled: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_ENABLED:false}
         provider: ${ELMOS_SNAPSHOT_CAS_ENCRYPTION_PROVIDER:DIRECTORY}
         key-directory: ${ELMOS_SNAPSHOT_CAS_TENANT_KEY_DIRECTORY:}
+        maximum-legacy-bytes: ${ELMOS_SNAPSHOT_CAS_MAXIMUM_LEGACY_BYTES:67108864}
         kms-broker:
           endpoint: ${ELMOS_SNAPSHOT_CAS_KMS_BROKER_ENDPOINT:}
           connect-timeout: ${ELMOS_SNAPSHOT_CAS_KMS_BROKER_CONNECT_TIMEOUT:5s}

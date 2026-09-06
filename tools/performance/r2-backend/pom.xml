@@ -38,6 +38,6 @@
     <module>../../../modules/modernization-proof-loop</module>
     <module>../../../apps/control-plane</module>
     <module>../../../apps/runner-agent</module>
+    <module>../../../apps/workspace-service</module>
   </modules>
 </project>
-

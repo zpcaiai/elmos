@@ -30,6 +30,13 @@ up to 1 TiB. Per-operation crypto allocations are bounded by frames and the prov
 budget (at most 1 MiB overhead). These are not an aggregate disk-admission quota; hosts must
 budget concurrent private plaintext spools and encrypted staging space.
 
+The control-plane writer uses its existing `elmos.snapshot.max-artifact-bytes`
+limit for v3 streams; the workspace reader uses the corresponding
+`elmos.workspace.snapshot-max-artifact-bytes`. Both use
+`ELMOS_SNAPSHOT_MAX_ARTIFACT_BYTES`. The separate legacy budget is configured with
+`ELMOS_SNAPSHOT_CAS_MAXIMUM_LEGACY_BYTES` (default 67108864); increasing the general
+artifact limit never silently increases whole-envelope legacy decryption memory.
+
 ## Legacy v2 and rollout
 
 V2 ciphertext remains readable, including key rotation. Its monolithic JCE decrypt operation
