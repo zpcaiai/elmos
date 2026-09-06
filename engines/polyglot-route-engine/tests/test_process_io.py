@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import subprocess
 import sys
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -72,6 +73,46 @@ def test_legacy_helper_build_environment_does_not_inherit_hooks(monkeypatch) -> 
     monkeypatch.setenv("PYTHONPATH", "/hostile")
     result = run_bounded([
         sys.executable, "-c",
-        "import os; assert 'NODE_OPTIONS' not in os.environ; assert 'PYTHONPATH' not in os.environ; print(os.environ['HOME'])",
+        "import os; assert 'NODE_OPTIONS' not in os.environ; "
+        "assert 'PYTHONPATH' not in os.environ; print(os.environ['HOME'])",
     ])
     assert not Path(result.stdout.strip()).exists()
+
+
+def test_repeated_timeout_and_flood_leave_no_transport_threads() -> None:
+    initial_threads = {thread.ident for thread in threading.enumerate()}
+    for _ in range(5):
+        with pytest.raises(ProcessOutputLimitError):
+            run_bounded(
+                [sys.executable, "-c", "import sys; sys.stdout.write('x'*1048576)"],
+                env={}, timeout=10, max_stream_bytes=4096,
+            )
+        with pytest.raises(subprocess.TimeoutExpired):
+            run_bounded([sys.executable, "-c", "import time; time.sleep(30)"], env={}, timeout=0.05)
+    assert {thread.ident for thread in threading.enumerate()} == initial_threads
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX process-group contract")
+def test_normal_completion_cleans_group_before_reaping(monkeypatch) -> None:
+    import elmos_polyglot_route.process_io as process_io
+    calls = []
+    original = process_io._terminate
+    def terminate(process):
+        calls.append(process.returncode)
+        return original(process)
+    monkeypatch.setattr(process_io, "_terminate", terminate)
+    assert run_bounded([sys.executable, "-c", "pass"], env={}).returncode == 0
+    assert calls == [None, 0]
+
+
+@pytest.mark.skipif(os.name != "posix", reason="POSIX process-group contract")
+def test_child_closing_pipes_does_not_escape_normal_completion(tmp_path: Path) -> None:
+    sentinel = tmp_path / "leaked"
+    child = f"import time,pathlib; time.sleep(2); pathlib.Path({str(sentinel)!r}).write_text('leak')"
+    parent = (
+        "import subprocess,sys; "
+        f"subprocess.Popen([sys.executable,'-c',{child!r}],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)"
+    )
+    assert run_bounded([sys.executable, "-c", parent], env={}).returncode == 0
+    time.sleep(2)
+    assert not sentinel.exists()
