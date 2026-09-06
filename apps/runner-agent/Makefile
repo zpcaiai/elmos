@@ -8,6 +8,7 @@ all: test build
 build:
 	@mkdir -p $(BIN_DIR)
 	go build -ldflags="-s -w" -o $(BINARY) .
+	go build -ldflags="-s -w" -o $(BIN_DIR)/elmos-supervisor ./cmd/elmos-supervisor
 
 test:
 	go test -v -race ./...
