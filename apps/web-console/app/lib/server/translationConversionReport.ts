@@ -76,6 +76,8 @@ export type ValidatedTranslationPreflight = {
 };
 
 export type TranslationCodeArtifactContext = {
+  manifestSha256?: string;
+  repositoryClaims?: Readonly<Record<string, unknown>>;
   pipelineStatus: "COMPLETE" | "PARTIAL";
   repositoryRef: string;
   snapshotSha256: string;
@@ -1505,6 +1507,18 @@ export async function validateTranslationCodeArtifactArchive(
       "snapshot_sha256",
       "status",
     ];
+    if ("repository_complete" in manifest) {
+      // This is the exact expanded schema emitted by the repository pipeline,
+      // not permission to accept arbitrary added claims. A prior semantic
+      // validator must bind these precise manifest bytes before reuse.
+      if (!expected.manifestSha256 || !DIGEST_PATTERN.test(expected.manifestSha256)
+        || createHash("sha256").update(Buffer.concat(manifestChunks)).digest("hex") !== expected.manifestSha256) invalidArtifact();
+      expectedTopLevelKeys.push("source_language","target_language","repository_scale","repository_limits","unit_batch_status",
+        "project_graph","conversion_coverage","behavior_coverage","repository_complete","runtime_verification_status",
+        "local_execution_evidence","repository_execution_status","independent_verification_status");
+      expectedTopLevelKeys.sort();
+      if (expected.repositoryClaims && Object.entries(expected.repositoryClaims).some(([key,value])=>!deepJsonEqual(manifest[key],value))) invalidArtifact();
+    }
     if (JSON.stringify(Object.keys(manifest).sort()) !== JSON.stringify(expectedTopLevelKeys)) {
       invalidArtifact();
     }

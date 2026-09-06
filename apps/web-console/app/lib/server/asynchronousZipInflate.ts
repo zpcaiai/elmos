@@ -40,7 +40,7 @@ export class AsynchronousZipInflate {
             });
             stream.once("close", () => owner.#streams.delete(stream));
             stream.on("data", (data: Buffer) => {
-              try { this.ondata(null, data, false); }
+              try { this.ondata(null, new Uint8Array(data), false); }
               catch (error) { stream.destroy(error instanceof Error ? error : new Error("ZIP_CALLBACK_FAILED")); }
             });
           }
