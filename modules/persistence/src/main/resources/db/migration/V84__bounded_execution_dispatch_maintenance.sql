@@ -141,7 +141,17 @@ BEGIN
              WHERE d.organization_id = v_org AND d.dispatch_state = 'READY'
                AND d.visible_at <= now() AND d.required_capability = ANY (p_capabilities)
              ORDER BY d.priority DESC, d.enqueued_at, d.job_id
-             LIMIT (128 - v_probed) FOR UPDATE OF d SKIP LOCKED
+             -- PL/pgSQL implicit cursors prefetch rows (and their locks). Bound
+             -- the SQL result by every remaining capacity, not only the loop's
+             -- processed-row counter. Each opened window can then be consumed
+             -- completely before a capacity EXIT; cancelled rows also consume
+             -- v_probed. Thus all windows together acquire at most 128 READY
+             -- candidate locks, not merely return at most 128 processed rows.
+             -- This does not bound physical scans of filtered/locked tuples.
+             LIMIT least(128 - v_probed, p_limit - v_claimed,
+                         v_org_limit - v_org_active,
+                         v_node.max_concurrency - v_active - v_claimed)
+             FOR UPDATE OF d SKIP LOCKED
         LOOP
         EXIT WHEN v_claimed >= p_limit OR v_org_active >= v_org_limit
                OR v_active + v_claimed >= v_node.max_concurrency;
@@ -392,4 +402,3 @@ BEGIN
     RETURN v_fixed;
 END;
 $$;
-

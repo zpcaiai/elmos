@@ -53,6 +53,17 @@ BEGIN
     IF p_lease_seconds IS NULL OR p_lease_seconds < 30 OR p_lease_seconds > 3600 THEN
         RAISE EXCEPTION 'ELMOS_CLAIM_LEASE_SECONDS_INVALID';
     END IF;
+
+    -- These writes can wait behind another transaction. Obtain their locks in
+    -- the established dispatch -> lease -> runner -> job order BEFORE the final
+    -- authorization clock check or renewal. Waiting is not a lease extension.
+    PERFORM 1 FROM runner_nodes WHERE runner_node_id = p_runner_node_id FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_RUNNER_UNKNOWN'; END IF;
+    PERFORM 1 FROM execution_jobs WHERE job_id = v_lease.job_ref FOR UPDATE;
+    IF NOT FOUND THEN RAISE EXCEPTION 'ELMOS_EXECUTION_JOB_UNKNOWN'; END IF;
+    IF v_lease.expires_at <= clock_timestamp() THEN
+        RAISE EXCEPTION 'ELMOS_LEASE_EXPIRED';
+    END IF;
     v_expires := clock_timestamp() + make_interval(secs => p_lease_seconds);
 
     UPDATE runner_job_leases
