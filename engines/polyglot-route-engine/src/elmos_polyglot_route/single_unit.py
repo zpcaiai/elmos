@@ -27,7 +27,6 @@ from __future__ import annotations
 
 import json
 import os
-import signal
 import subprocess
 import tempfile
 from pathlib import Path
@@ -36,6 +35,7 @@ from typing import Any
 from .emitter import emit
 from .identifier_hygiene import plan_identifiers, target_ir_view
 from .models import SUPPORTED_LANGUAGES, Language, RouteError
+from .process_io import bounded_communicate, terminate_bounded_process
 from .source_analyzer import analyze
 from .toolchains import (
     ExactToolchain,
@@ -245,35 +245,13 @@ def _run(
                 env=environment,
             )
             try:
-                stdout, stderr = process.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired as error:
-                if os.name == "posix":
-                    try:
-                        os.killpg(process.pid, signal.SIGTERM)
-                    except ProcessLookupError:
-                        pass
-                else:
-                    process.terminate()
-                try:
-                    process.communicate(timeout=2)
-                except subprocess.TimeoutExpired:
-                    if os.name == "posix":
-                        try:
-                            os.killpg(process.pid, signal.SIGKILL)
-                        except ProcessLookupError:
-                            pass
-                    else:
-                        process.kill()
-                    process.communicate()
+                stdout, stderr = bounded_communicate(process, timeout=timeout)
+            except (OSError, subprocess.TimeoutExpired) as error:
                 raise RouteError(
                     f"STATIC_CHECK_PROCESS_FAILED:{Path(command[0]).name}:timeout"
                 ) from error
             finally:
-                if os.name == "posix" and process is not None:
-                    try:
-                        os.killpg(process.pid, signal.SIGKILL)
-                    except ProcessLookupError:
-                        pass
+                terminate_bounded_process(process)
             return subprocess.CompletedProcess(
                 command,
                 process.returncode,

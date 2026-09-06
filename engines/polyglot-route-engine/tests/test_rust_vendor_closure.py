@@ -187,7 +187,7 @@ def test_native_run_cleans_private_cargo_environment_on_success_and_failure(
             stderr="forced cargo failure" if returncode else "",
         )
 
-    monkeypatch.setattr(native.subprocess, "run", fake_run)
+    monkeypatch.setattr(native, "run_bounded", fake_run)
     command = [
         rust_toolchain.auxiliary,
         "run",

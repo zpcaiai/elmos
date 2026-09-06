@@ -32,6 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import Language, RouteError, SemanticIR
+from .process_io import run_bounded
 from .toolchains import sanitized_subprocess_env
 
 #: Nodes that wrap a value without changing it in the certified subset.
@@ -137,7 +138,7 @@ def _sdk_path(explicit: str | None) -> str:
             scratch = root / "tmp"
             home.mkdir(mode=0o700)
             scratch.mkdir(mode=0o700)
-            completed = subprocess.run(
+            completed = run_bounded(
                 [str(xcrun), "--sdk", "macosx", "--show-sdk-path"],
                 check=False,
                 capture_output=True,
@@ -189,13 +190,14 @@ def _run_clang(
         home.mkdir(mode=0o700)
         scratch.mkdir(mode=0o700)
         try:
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=source.parent,
                 check=False,
                 capture_output=True,
                 text=True,
                 timeout=120,
+                max_stream_bytes=64 * 1024 * 1024,
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,

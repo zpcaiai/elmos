@@ -1652,7 +1652,9 @@ function inventoryModule() {
 try {
   const result = selector === "--inventory"
     ? inventoryModule()
-    : analyzeNamedFunction(selector);
+    : selector.startsWith("--functions=")
+      ? analyzeFunctionBatch(selector.slice("--functions=".length))
+      : analyzeNamedFunction(selector);
   process.stdout.write(`${JSON.stringify(result)}\n`);
 } catch (error) {
   const message = error instanceof Error ? error.message : "TYPESCRIPT_ANALYZER_FAILED";
@@ -1661,4 +1663,26 @@ try {
     : "TYPESCRIPT_ANALYZER_FAILED";
   process.stderr.write(`${safe}\n`);
   process.exitCode = 2;
+}
+
+function analyzeFunctionBatch(value) {
+  const names = value.split(",");
+  if (names.length > 100 || new Set(names).size !== names.length
+      || names.some((name) => !/^[A-Za-z_][A-Za-z0-9_]*$/.test(name))) {
+    throw new Error("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID");
+  }
+  return {
+    kind: "elmos.typed-pure-function-batch",
+    analyzer_version: ts.version,
+    results: names.map((name) => {
+      try {
+        return { function: name, status: "ok", value: analyzeNamedFunction(name) };
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "TYPESCRIPT_ANALYZER_FAILED";
+        const safe = /^[A-Z][A-Z0-9_]*(?::[A-Za-z0-9_.:<>=/+,\-]+)*$/.test(message)
+          ? message : "TYPESCRIPT_ANALYZER_FAILED";
+        return { function: name, status: "domain_error", error: safe };
+      }
+    }),
+  };
 }

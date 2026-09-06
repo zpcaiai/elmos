@@ -34,6 +34,7 @@ from .react_repository import (
     react_project_descriptor,
     validate_react_repository_verification,
 )
+from .resource_budget import ExecutionBudget, bounded_map
 
 SCHEMA_VERSION = "1.0.0"
 CHECKPOINT_NAME = "batch-checkpoint.jsonl"
@@ -272,6 +273,7 @@ def run_batch(
     output: Path,
     *,
     limit: int | None = None,
+    execution_budget: ExecutionBudget | None = None,
 ) -> dict[str, Any]:
     if discovery.get("kind") != "elmos.repository-discovery-report":
         raise RouteError("DISCOVERY_REPORT_KIND_INVALID")
@@ -342,7 +344,7 @@ def run_batch(
     outcomes: list[dict[str, Any]] = []
     resumed = 0
 
-    for result in selected:
+    def execute(result: dict[str, Any]) -> dict[str, Any]:
         unit_id = str(result.get("id", ""))
         if _UNIT_ID_PATTERN.fullmatch(unit_id) is None:
             raise RouteError("DISCOVERY_RESULT_ID_INVALID")
@@ -356,9 +358,7 @@ def run_batch(
         ):
             # Resumable skip records have no legitimate generated unit tree.
             _reset_unit_output(output, unit_id)
-            outcomes.append({**prior, "resumed_from_checkpoint": True})
-            resumed += 1
-            continue
+            return {**prior, "resumed_from_checkpoint": True}
         # PASSED outcomes are deliberately replayed and a missing checkpoint is
         # not authority for reusing bytes.  Reset any current non-resumed unit
         # before migration so orphaned content cannot survive into this run.
@@ -468,7 +468,13 @@ def run_batch(
                         "reason": str(error)[:300] or type(error).__name__,
                         "checkpoint_identity": identity,
                     }
-        _append_checkpoint(checkpoint, entry)
+        return entry
+
+    for entry in bounded_map(execute, selected, execution_budget or ExecutionBudget()):
+        if entry.get("resumed_from_checkpoint"):
+            resumed += 1
+        else:
+            _append_checkpoint(checkpoint, entry)
         outcomes.append(entry)
 
     counts: dict[str, int] = {}

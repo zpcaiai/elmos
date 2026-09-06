@@ -39,7 +39,6 @@ import math
 import os
 import re
 import shutil
-import signal
 import stat
 import struct
 import subprocess
@@ -68,6 +67,7 @@ from .models import (
     SemanticIR,
     repository_language_lifecycle,
 )
+from .process_io import bounded_communicate, terminate_bounded_process
 from .react_analyzer import validate_react_runtime_receipt, verify_react_runtime_import
 from .toolchains import (
     exact_toolchain,
@@ -2117,6 +2117,7 @@ def verify_archived_assembly_closure(
     read_bytes: Callable[[str], bytes],
     *,
     root_prefix: str = "assembled/",
+    stream_identity: Callable[[str], tuple[int, str]] | None = None,
 ) -> dict[str, Any]:
     """Recompute assembly-owned build inputs exclusively from archive bytes."""
 
@@ -2137,6 +2138,13 @@ def verify_archived_assembly_closure(
         require_build_passed=True,
     )
     names = set(archive_paths)
+    def content_identity(path: str) -> tuple[int, str]:
+        if stream_identity is not None:
+            size, digest = stream_identity(path)
+            return size, "sha256:" + digest
+        content = read_bytes(path)
+        return len(content), "sha256:" + hashlib.sha256(content).hexdigest()
+
     if target_language == "flutter":
         verification = manifest["build_verification"]
         assert isinstance(verification, Mapping)
@@ -2146,9 +2154,7 @@ def verify_archived_assembly_closure(
         archived_path = f"{root_prefix}{relative}"
         if archived_path not in names:
             raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_MISSING")
-        content = read_bytes(archived_path)
-        observed = "sha256:" + hashlib.sha256(content).hexdigest()
-        if len(content) != artifact["bytes"] or observed != artifact["sha256"]:
+        if content_identity(archived_path) != (artifact["bytes"], artifact["sha256"]):
             raise RouteError("ASSEMBLY_ARCHIVE_FLUTTER_COMPILED_ARTIFACT_DRIFTED")
     if _archived_source_paths(names, target_language, root_prefix) != set(included_bindings):
         raise RouteError("ASSEMBLY_ARCHIVE_SOURCE_SET_MISMATCH")
@@ -2156,9 +2162,7 @@ def verify_archived_assembly_closure(
         archived_path = f"{root_prefix}{relative}"
         if archived_path not in names:
             raise RouteError(f"ASSEMBLY_ARCHIVE_BUILD_INPUT_MISSING:{relative}")
-        content = read_bytes(archived_path)
-        observed = "sha256:" + hashlib.sha256(content).hexdigest()
-        if len(content) != expected_bytes or observed != expected_sha256:
+        if content_identity(archived_path) != (expected_bytes, expected_sha256):
             raise RouteError(f"ASSEMBLY_ARCHIVE_BUILD_INPUT_DRIFTED:{relative}")
     source_language = manifest.get("source_language")
     assert source_language in _PLACERS
@@ -2167,8 +2171,6 @@ def verify_archived_assembly_closure(
     included_by_id = {
         str(raw["id"]): raw for raw in manifest["included_units"] if isinstance(raw, Mapping)
     }
-    copied_contents: dict[str, dict[str, bytes]] = {}
-    source_contents: dict[str, dict[str, bytes]] = {}
     expected_assembled_evidence = {f"{root_prefix}{relative}" for relative in evidence_bindings}
     observed_assembled_evidence = {
         name for name in names if name.startswith(f"{root_prefix}{_EVIDENCE_ROOT}/")
@@ -2197,34 +2199,43 @@ def verify_archived_assembly_closure(
     }
     if observed_source_evidence - expected_source_evidence:
         raise RouteError("ASSEMBLY_ARCHIVE_SOURCE_EVIDENCE_ARTIFACT_SET_MISMATCH")
+    grouped_bindings: dict[str, list[tuple[str, str, str, int, str]]] = {}
     for relative, (unit_id, role, source_relative, expected_bytes, expected_sha256) in evidence_bindings.items():
-        assembled_archive_path = f"{root_prefix}{relative}"
-        source_archive_path = f"batch/{source_relative}"
-        if assembled_archive_path not in names or source_archive_path not in names:
-            raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_MISSING:{unit_id}:{role}")
-        copied = read_bytes(assembled_archive_path)
-        source = read_bytes(source_archive_path)
-        observed_sha256 = "sha256:" + hashlib.sha256(copied).hexdigest()
-        if (
-            len(copied) != expected_bytes
-            or len(source) != expected_bytes
-            or copied != source
-            or observed_sha256 != expected_sha256
-        ):
-            raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_DRIFTED:{unit_id}:{role}")
-        copied_contents.setdefault(unit_id, {})[role] = copied
-        source_contents.setdefault(unit_id, {})[role] = source
-    for unit_id in copied_contents:
+        grouped_bindings.setdefault(unit_id, []).append(
+            (relative, role, source_relative, expected_bytes, expected_sha256)
+        )
+    # Parse one unit's exact evidence pair at a time. Retaining every unit's
+    # source and copied bytes turned the archive verifier into a second archive.
+    for unit_id, bindings in grouped_bindings.items():
+        copied_contents: dict[str, bytes] = {}
+        source_contents: dict[str, bytes] = {}
+        for relative, role, source_relative, expected_bytes, expected_sha256 in bindings:
+            assembled_archive_path = f"{root_prefix}{relative}"
+            source_archive_path = f"batch/{source_relative}"
+            if assembled_archive_path not in names or source_archive_path not in names:
+                raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_MISSING:{unit_id}:{role}")
+            copied = read_bytes(assembled_archive_path)
+            source = read_bytes(source_archive_path)
+            observed_sha256 = "sha256:" + hashlib.sha256(copied).hexdigest()
+            if (
+                len(copied) != expected_bytes
+                or len(source) != expected_bytes
+                or copied != source
+                or observed_sha256 != expected_sha256
+            ):
+                raise RouteError(f"ASSEMBLY_ARCHIVE_EVIDENCE_ARTIFACT_DRIFTED:{unit_id}:{role}")
+            copied_contents[role] = copied
+            source_contents[role] = source
         included_unit = included_by_id[unit_id]
         _validate_bound_evidence_contents(
-            copied_contents[unit_id],
+            copied_contents,
             unit_id=unit_id,
             source_language=source_language,
             repository_snapshot_sha256=repository_snapshot_sha256,
             included_unit=included_unit,
         )
         _validate_bound_evidence_contents(
-            source_contents[unit_id],
+            source_contents,
             unit_id=unit_id,
             source_language=source_language,
             repository_snapshot_sha256=repository_snapshot_sha256,
@@ -2892,20 +2903,8 @@ def _run(
                 ),
             )
             try:
-                stdout, stderr = process.communicate(timeout=timeout)
-            except subprocess.TimeoutExpired as error:
-                if os.name == "posix":
-                    _kill_process_group(process.pid, signal.SIGTERM)
-                else:
-                    process.terminate()
-                try:
-                    process.communicate(timeout=2)
-                except subprocess.TimeoutExpired:
-                    if os.name == "posix":
-                        _kill_process_group(process.pid, signal.SIGKILL)
-                    else:
-                        process.kill()
-                    process.communicate()
+                stdout, stderr = bounded_communicate(process, timeout=timeout)
+            except (OSError, subprocess.TimeoutExpired) as error:
                 raise RouteError(
                     f"{failure_prefix}:{Path(command[0]).name}:process"
                 ) from error
@@ -2913,8 +2912,7 @@ def _run(
                 # A compiler/analyzer must not leave a detached helper behind.
                 # Every invocation owns a fresh session, so any surviving member
                 # after the direct command exits is outside the bounded build.
-                if os.name == "posix" and process is not None:
-                    _kill_process_group(process.pid, signal.SIGKILL)
+                terminate_bounded_process(process)
             completed = subprocess.CompletedProcess(
                 command,
                 process.returncode,

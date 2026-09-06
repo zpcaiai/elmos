@@ -32,8 +32,10 @@ from .models import (
     RouteError,
     SemanticIR,
 )
+from .process_io import bounded_communicate, run_bounded
 from .python_analyzer import analyze_python
 from .repository import javascript_esm_descriptor
+from .resource_budget import keyed_lock
 from .toolchains import (
     AppleRouteHostProfile,
     ExactToolchain,
@@ -87,8 +89,8 @@ _JAVASCRIPT_TYPESCRIPT_SHA256 = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][2]
 _JAVASCRIPT_TYPESCRIPT_BYTES = _JAVASCRIPT_TYPESCRIPT_ASSET_SPECS[3][1]
 _JAVASCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _TYPESCRIPT_ANALYZER = ENGINE_ROOT / "native" / "typescript" / "analyzer.mjs"
-_TYPESCRIPT_ANALYZER_SHA256 = "f5073ca09f38cf96da88c9be23c45aee9ded01f8a0aff632fd6c32150e0d95e8"
-_TYPESCRIPT_ANALYZER_BYTES = 62_910
+_TYPESCRIPT_ANALYZER_SHA256 = "ff1ecbbd1a3ed54b19e3d417ef1546a5d099216eb74c474c8894c64c48614a2b"
+_TYPESCRIPT_ANALYZER_BYTES = 63_875
 _TYPESCRIPT_ANALYZER_MAX_SOURCE_BYTES = 2_000_000
 _PHP_ANALYZER = ENGINE_ROOT / "native" / "php" / "analyzer.php"
 _PHP_ANALYZER_SHA256 = "624dcfca3d60052aed151c07716b58a40ec73c48337f2424c66d005f8aad497d"
@@ -2975,7 +2977,7 @@ def _run_swift_build_step(
         raise RouteError(failure + ":process") from error
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
     try:
-        stdout, stderr = process.communicate(input=input_text, timeout=effective_timeout)
+        stdout, stderr = bounded_communicate(process, input=input_text, timeout=effective_timeout, reap=True)
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -4887,7 +4889,7 @@ def _run_csharp_build_step(
     failure: str,
 ) -> None:
     try:
-        completed = subprocess.run(
+        completed = run_bounded(
             command,
             cwd=cwd,
             check=False,
@@ -5534,7 +5536,7 @@ def _run(
                 )
             if environment_overrides:
                 environment.update(environment_overrides)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 cwd=cwd,
                 check=False,
@@ -6869,7 +6871,13 @@ def _run_trusted_typescript_analyzer(
     *,
     emitted_target: bool = False,
 ) -> dict[str, Any]:
-    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None:
+    batched_names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else []
+    valid_batch = (
+        1 < len(batched_names) <= 100
+        and len(set(batched_names)) == len(batched_names)
+        and all(re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", name) for name in batched_names)
+    )
+    if selector != "--inventory" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", selector) is None and not valid_batch:
         raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
     if selector == "--inventory" and emitted_target:
         raise RouteError("TYPESCRIPT_ANALYZER_COMMAND_SHAPE_INVALID")
@@ -6930,6 +6938,16 @@ def _run_trusted_typescript_analyzer(
             f"node-closure={toolchain_binding['node_closure_sha256']};"
             f"typescript-profile={toolchain_binding['profile_sha256']}"
         )
+        if valid_batch:
+            entries = bound.get("results")
+            if bound.get("kind") != "elmos.typed-pure-function-batch" or not isinstance(entries, list):
+                raise RouteError("TYPESCRIPT_ANALYZER_BATCH_CONTRACT_INVALID")
+            for entry in entries:
+                if isinstance(entry, dict) and entry.get("status") == "ok":
+                    result = entry.get("value")
+                    if not isinstance(result, dict) or result.get("analyzer_version") != analyzer_version:
+                        raise RouteError("TYPESCRIPT_ANALYZER_VERSION_MISMATCH")
+                    result["analyzer_version"] = bound["analyzer_version"]
         return bound
 
 
@@ -7090,6 +7108,11 @@ def _verify_java_analyzer_classes(classes: Path, receipt: Mapping[str, Any]) -> 
 
 
 def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
+    with keyed_lock(("java-analyzer", str(helper), toolchain.executable)):
+        return _java_analyzer_classes_locked(helper, toolchain)
+
+
+def _java_analyzer_classes_locked(helper: Path, toolchain: ExactToolchain) -> tuple[Path, dict[str, Any]] | None:
     """Compile the Java analyzer once and bind the bytecode to its source.
 
     The engine runs the analyzer through JEP 330's source launcher, which
@@ -7137,7 +7160,7 @@ def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Pat
     shutil.rmtree(staging, ignore_errors=True)
     try:
         staging.mkdir(mode=0o700, parents=True)
-        completed = subprocess.run(
+        completed = run_bounded(
             [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
             capture_output=True,
             text=True,
@@ -7526,7 +7549,7 @@ def inventory_module(source: Path, language: Language) -> dict[str, Any]:
     return validated
 
 
-_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust"})
+_BATCH_ANALYZABLE_LANGUAGES: Final[frozenset[str]] = frozenset({"java", "go", "rust", "typescript"})
 
 
 def analyze_many(
@@ -7666,6 +7689,16 @@ def _analyze_batch(
             def promote(reason: str) -> RouteError | None:
                 return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
 
+        elif language == "typescript":
+            if len(function_names) > 100:
+                return None
+            document = _run_trusted_typescript_analyzer(
+                toolchain, resolved, selector, emitted_target=emitted_target,
+            )
+
+            def promote(reason: str) -> RouteError | None:
+                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+
         else:
             return None
     except RouteError:
@@ -7682,12 +7715,18 @@ def _analyze_batch(
             return None
         name = entry.get("function")
         status = entry.get("status")
-        if not isinstance(name, str):
+        if not isinstance(name, str) or name in results:
             return None
         if status == "ok":
             value = entry.get("value")
             if not isinstance(value, dict):
                 return None
+            if language == "typescript":
+                try:
+                    results[name] = _external_semantic_ir(value)
+                except RouteError as error:
+                    results[name] = error
+                continue
             try:
                 results[name] = SemanticIR.from_mapping(value)
             except (RouteError, ValueError, TypeError):
@@ -7985,7 +8024,7 @@ def _compile_kotlin_analyzer(
         executable_dirs=(jvm_home / "bin", Path(toolchain.executable).resolve().parent),
     )
     environment["JAVA_HOME"] = str(jvm_home)
-    completed = subprocess.run(
+    completed = run_bounded(
         [
             str(toolchain.executable),
             "-nowarn",
@@ -8172,7 +8211,7 @@ def analyze(
             project = ENGINE_ROOT / "native" / "csharp"
             dll = project / "bin" / "Release" / "net10.0" / "Elmos.Csharp.EmittedAnalyzer.dll"
             if not dll.is_file():
-                subprocess.run(
+                run_bounded(
                     [toolchain.executable, "build", str(project), "-c", "Release", "--nologo"],
                     cwd=project,
                     check=False,

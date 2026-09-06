@@ -691,6 +691,10 @@ def test_assembly_process_uses_a_private_environment_without_ambient_hooks(
     observed: dict[str, str] = {}
 
     class FakePopen:
+        stdin = None
+        stdout = None
+        stderr = None
+
         def __init__(self, command: list[str], **kwargs: Any) -> None:
             self.command = command
             self.pid = 99999
@@ -709,7 +713,11 @@ def test_assembly_process_uses_a_private_environment_without_ambient_hooks(
             del timeout
             return ("", "")
 
+        def wait(self, timeout: int | None = None) -> int:
+            return self.returncode
+
     monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.Popen", FakePopen)
+    monkeypatch.setattr(assembly, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
     result = assembly._run(["/usr/bin/true"], tmp_path)
 
     assert result.returncode == 0
@@ -736,6 +744,10 @@ def test_assembly_process_failure_preserves_bounded_sanitized_dual_streams(
     )
 
     class FakePopen:
+        stdin = None
+        stdout = None
+        stderr = None
+
         def __init__(self, command: list[str], **kwargs: Any) -> None:
             del kwargs
             self.command = command
@@ -746,7 +758,11 @@ def test_assembly_process_failure_preserves_bounded_sanitized_dual_streams(
             del timeout
             return (stdout, stderr)
 
+        def wait(self, timeout: int | None = None) -> int:
+            return self.returncode
+
     monkeypatch.setattr("elmos_polyglot_route.assembly.subprocess.Popen", FakePopen)
+    monkeypatch.setattr(assembly, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
 
     with pytest.raises(RouteError) as captured:
         assembly._run(["/private/toolchains/secret-tool"], tmp_path)

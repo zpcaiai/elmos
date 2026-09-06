@@ -4,6 +4,7 @@ import ctypes
 import json
 import os
 import sys
+import threading
 from pathlib import Path
 from typing import cast
 
@@ -11,6 +12,7 @@ type JsonValue = None | bool | int | float | str | list[JsonValue] | dict[str, J
 
 _LIB: ctypes.CDLL | None = None
 _TRIED_LOAD = False
+_INIT_LOCK = threading.Lock()
 
 
 def _find_library() -> Path | None:
@@ -31,6 +33,11 @@ def _find_library() -> Path | None:
 
 
 def _get_lib() -> ctypes.CDLL | None:
+    with _INIT_LOCK:
+        return _load_lib()
+
+
+def _load_lib() -> ctypes.CDLL | None:
     global _LIB, _TRIED_LOAD
     if _TRIED_LOAD:
         return _LIB

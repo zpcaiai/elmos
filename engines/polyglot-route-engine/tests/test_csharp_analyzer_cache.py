@@ -187,7 +187,7 @@ def test_csharp_analyzer_concurrent_first_use_builds_once_and_runs_private_dll(
 ) -> None:
     engine, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
-    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+    monkeypatch.setattr(native, "run_bounded", _successful_build_runner(commands))
 
     try:
         with ThreadPoolExecutor(max_workers=8) as executor:
@@ -266,7 +266,7 @@ def test_csharp_analyzer_cache_rejects_content_drift_without_rebuilding(
         monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     engine, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
-    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+    monkeypatch.setattr(native, "run_bounded", _successful_build_runner(commands))
 
     try:
         binary, _ = native._csharp_analyzer(toolchain)
@@ -301,7 +301,7 @@ def test_csharp_analyzer_cache_rejects_same_version_bundle_replacement(
         monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
-    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+    monkeypatch.setattr(native, "run_bounded", _successful_build_runner(commands))
 
     try:
         native._csharp_analyzer(toolchain)
@@ -335,7 +335,7 @@ def test_csharp_analyzer_build_failure_is_terminal_for_the_process_identity(
         commands.append(command)
         return subprocess.CompletedProcess(command, 1, "", "locked restore rejected")
 
-    monkeypatch.setattr(subprocess, "run", rejected_restore)
+    monkeypatch.setattr(native, "run_bounded", rejected_restore)
     try:
         for _ in range(2):
             with pytest.raises(RouteError, match="CSHARP_ANALYZER_RESTORE_FAILED:locked restore rejected"):
@@ -374,7 +374,7 @@ def test_csharp_analyzer_rejects_unverified_cached_package_before_dotnet(
         calls += 1
         raise AssertionError("dotnet must not run")
 
-    monkeypatch.setattr(subprocess, "run", should_not_run)
+    monkeypatch.setattr(native, "run_bounded", should_not_run)
     try:
         with pytest.raises(RouteError, match=error):
             native._csharp_analyzer(toolchain)
@@ -400,7 +400,7 @@ def test_csharp_analyzer_rejects_symlinked_build_input_before_restore(
         calls += 1
         raise AssertionError("dotnet must not run")
 
-    monkeypatch.setattr(subprocess, "run", should_not_run)
+    monkeypatch.setattr(native, "run_bounded", should_not_run)
     try:
         with pytest.raises(RouteError, match="CSHARP_ANALYZER_INPUT_UNSAFE"):
             native._csharp_analyzer(toolchain)
@@ -424,7 +424,7 @@ def test_csharp_analyzer_reuses_a_verified_cross_process_build(
     monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
-    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+    monkeypatch.setattr(native, "run_bounded", _successful_build_runner(commands))
 
     try:
         first_binary, first_receipt = native._csharp_analyzer(toolchain)
@@ -457,7 +457,7 @@ def test_csharp_analyzer_cross_process_cache_refuses_a_tampered_entry(
     monkeypatch.setenv(native._ANALYZER_BINARY_CACHE_ENV, "1")
     _, toolchain, _ = _fake_engine(tmp_path, monkeypatch)
     commands: list[list[str]] = []
-    monkeypatch.setattr(subprocess, "run", _successful_build_runner(commands))
+    monkeypatch.setattr(native, "run_bounded", _successful_build_runner(commands))
 
     try:
         native._csharp_analyzer(toolchain)
