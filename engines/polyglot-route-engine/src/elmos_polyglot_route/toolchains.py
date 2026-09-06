@@ -486,7 +486,7 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="6ddab1ecf90fa966611504a6c55aed93d234f3f7a64a46e6a1ef10085f291942",
+    php_tree_sha256="38b310070aa8b877ae42444c7af365f4b5784f6673c3542262c47adf1597d8e5",
     php_tree_bytes=129_952_823,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
