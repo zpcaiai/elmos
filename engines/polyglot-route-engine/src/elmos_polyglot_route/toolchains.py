@@ -4464,6 +4464,7 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     allowed_version_fields = {
         "stable",
         "head",
+        "bottle",
         "version_scheme",
         "compatibility_version",
     }
@@ -4483,6 +4484,10 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         # "HEAD-<hex-revision>" form. Neither changes the selected stable 8.5.9
         # bottle, but branch names and every other value remain unsafe.
         or ("head" in versions and not head_version_is_safe)
+        # Homebrew receipt generations that serialize Formula#versions retain
+        # the formula's bottle declaration here. This exact closure is poured
+        # from the pinned bottle, so only the literal boolean true is valid.
+        or ("bottle" in versions and versions["bottle"] is not True)
         or (
             "version_scheme" in versions
             and (
