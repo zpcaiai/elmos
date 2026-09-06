@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>io.elmos</groupId><artifactId>elmos-parent</artifactId><version>0.1.0-SNAPSHOT</version><relativePath>../../pom.xml</relativePath></parent>
+  <artifactId>elmos-concurrency-verification</artifactId>
+  <packaging>pom</packaging>
+  <!-- Uses reactor classes for changed APIs, without installing task jars into shared .m2. -->
+  <modules>
+    <module>../../modules/object-storage</module>
+    <module>../../modules/cas</module>
+    <module>../../modules/snapshot</module>
+    <module>../../modules/integrations</module>
+  </modules>
+</project>

@@ -85,43 +85,43 @@ public final class LeasePoller implements AutoCloseable {
             return;
         }
 
-        int free = slots.availablePermits();
-        if (free <= 0) {
+        int reserved = 0;
+        while (reserved < config.claimBatchSize() && slots.tryAcquire()) reserved++;
+        if (reserved == 0) {
             Thread.sleep(1_000);
             return;
         }
 
-        List<ControlPlaneClient.Lease> leases;
         try {
-            leases = client.claim(Math.min(free, config.claimBatchSize()));
+            if (draining.get() || stopped.get()) return;
+            List<ControlPlaneClient.Lease> leases = client.claim(reserved);
             errorBackoff.reset();
+            if (leases.isEmpty()) {
+                // No active leases: release capacity before polling backoff.
+                slots.release(reserved);
+                reserved = 0;
+                Thread.sleep(idleBackoff.nextDelayMillis());
+                return;
+            }
+            idleBackoff.reset();
+            for (ControlPlaneClient.Lease lease : leases) {
+                if (reserved == 0 || draining.get() || stopped.get()) {
+                    metrics.increment(AgentMetrics.JOBS_ABANDONED);
+                    continue;
+                }
+                jobs.submit(() -> {
+                    try { executor.execute(lease); }
+                    finally { slots.release(); }
+                });
+                reserved--; // ownership transferred to the submitted task only after success
+            }
         } catch (RuntimeException ex) {
+            slots.release(reserved);
+            reserved = 0;
             metrics.increment(AgentMetrics.CLAIM_FAILURES);
             Thread.sleep(errorBackoff.nextDelayMillis());
-            return;
-        }
-
-        if (leases.isEmpty()) {
-            Thread.sleep(idleBackoff.nextDelayMillis());
-            return;
-        }
-        idleBackoff.reset();
-
-        for (ControlPlaneClient.Lease lease : leases) {
-            if (!slots.tryAcquire()) {
-                // The control plane granted more than we can run. This should not
-                // happen - it tracks our capacity - but if it does, the safe move is
-                // to leave the extra lease to expire rather than to over-subscribe.
-                metrics.increment(AgentMetrics.JOBS_ABANDONED);
-                continue;
-            }
-            jobs.submit(() -> {
-                try {
-                    executor.execute(lease);
-                } finally {
-                    slots.release();
-                }
-            });
+        } finally {
+            slots.release(reserved);
         }
     }
 

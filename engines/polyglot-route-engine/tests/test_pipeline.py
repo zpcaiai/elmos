@@ -323,14 +323,17 @@ def test_repository_pipeline_rejects_project_graph_drift_during_execution(
         cases_directory: Path | None = None,
         cases_manifest: dict[str, object] | None = None,
     ):
-        result = original_verify(
-            target_language,
-            destination,
-            cases_directory=cases_directory,
-            cases_manifest=cases_manifest,
-        )
-        (repository / "late-resource.json").write_text('{"changed": true}', encoding="utf-8")
-        return result
+        try:
+            return original_verify(
+                target_language,
+                destination,
+                cases_directory=cases_directory,
+                cases_manifest=cases_manifest,
+            )
+        finally:
+            # Inject the intended race even when the native build fails first.
+            # The pipeline must reject source drift on both success and failure paths.
+            (repository / "late-resource.json").write_text('{"changed": true}', encoding="utf-8")
 
     monkeypatch.setattr(pipeline_module, "verify_assembled_project", verify_then_mutate)
 

@@ -4,6 +4,9 @@ import test from "node:test";
 
 import { NextRequest } from "next/server.js";
 
+import "./descopeOtpVerifyRoute.test.mjs";
+import "./descopeIdentity.test.mjs";
+
 import {
   accountCookieNames,
   authCallbackFixture,

@@ -32,6 +32,31 @@ ELMOS_ADMIN_LOGIN_EMAIL_FROM=ELMOS Security <security@example.com>
 ELMOS_RESEND_API_KEY_FILE=/run/secrets/elmos/resend-api-key
 ```
 
+For public self-service accounts, the Web Console also supports a provisioned
+Descope project. Vercel Marketplace injects the two public project values; the
+remaining values are application policy rather than provider secrets:
+
+```text
+NEXT_PUBLIC_DESCOPE_PROJECT_ID=<vercel-marketplace-managed>
+NEXT_PUBLIC_DESCOPE_BASE_URL=<vercel-marketplace-managed>
+ELMOS_DESCOPE_DEFAULT_ORGANIZATION_ID=elmos-public
+ELMOS_DESCOPE_WECHAT_PROVIDER=wechat
+```
+
+Email and phone registration/login use Descope OTP APIs directly. The server
+validates the returned session and refresh JWTs, matches the verified user
+profile to the initiated email or E.164 phone number, and then creates an ELMOS
+session. The encrypted challenge cookie binds login versus registration,
+channel, login mode, identity and return path. A phone-only or WeChat identity
+always remains an ordinary `DEVELOPER` account.
+
+`ELMOS_DESCOPE_WECHAT_PROVIDER` must be absent until a real custom OAuth
+provider has been configured in Descope with the WeChat Open Platform AppID,
+secret, approved callback and user-attribute mapping. While absent, the UI
+shows the WeChat capability as unavailable and cannot generate a placeholder
+QR code. The callback is
+`https://<public-origin>/api/auth/descope/wechat/callback`.
+
 `ELMOS_OIDC_CLIENT_SECRET` and `ELMOS_SESSION_SECRET` must be injected through
 the deployment secret store. Rotation invalidates new exchanges or existing
 sealed sessions as appropriate.
@@ -93,7 +118,13 @@ Only the case-normalized, IdP-verified exact address `zpchoney@gmail.com` can
 receive `admin:*` and `configuration:manage`; aliases, unverified addresses,
 locally registered accounts and privileged role claims on any other address are
 stripped of administrator authority. The administrator address is rejected by
-local self-registration and must use the OIDC administrator flow.
+all ordinary self-registration and must use either the OIDC administrator flow
+or a fresh Descope email OTP from the dedicated administrator page. Phone OTP
+and WeChat OAuth can never authorize the administrator, even when linked to the
+same Descope user.
+The dedicated administrator OTP uses sign-up-or-in so the first verified login
+can create the Descope identity; possession of the exact mailbox OTP is still
+required before any administrator authority or ELMOS session is issued.
 
 Every successful administrator token exchange sends a security notice to the
 fixed administrator mailbox before session cookies are written. The Web Console
@@ -101,9 +132,14 @@ uses the fixed Resend HTTPS endpoint and requires exactly one of
 `ELMOS_RESEND_API_KEY` or an absolute, owner-only
 `ELMOS_RESEND_API_KEY_FILE`. If notification is disabled, misconfigured,
 times out, is rate limited or is rejected, the application writes no admin
-session and best-effort revokes the newly exchanged OIDC tokens.
+session and best-effort revokes the newly exchanged OIDC or Descope tokens.
 Access-token JWT and identity validation occurs before this notice, so a failed
 access-token gate cannot trigger an administrator-login email.
+On Vercel, the Resend Marketplace integration supplies `RESEND_API_KEY`
+directly; do not copy it into a second environment variable. The default
+`onboarding@resend.dev` sender is limited to the email address associated with
+the Resend account, so a verified sending domain is required before expanding
+the recipient set.
 For the production Compose profile, the host secret must be readable by numeric
 UID `10001` while its group/other permission bits remain unset.
 
