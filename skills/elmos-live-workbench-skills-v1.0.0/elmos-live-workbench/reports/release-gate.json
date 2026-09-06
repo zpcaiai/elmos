@@ -1,0 +1,24 @@
+{
+  "release": "BLOCKED",
+  "failures": [
+    "missing, not passed or no evidence: ui-e2e",
+    "missing, not passed or no evidence: dap-python",
+    "missing, not passed or no evidence: dap-javascript",
+    "missing, not passed or no evidence: dap-jvm",
+    "missing, not passed or no evidence: dap-dotnet",
+    "missing, not passed or no evidence: real-600s",
+    "missing, not passed or no evidence: expiry-enforcement",
+    "missing, not passed or no evidence: cleanup",
+    "missing, not passed or no evidence: sandbox-isolation",
+    "missing, not passed or no evidence: tenant-security",
+    "missing, not passed or no evidence: recovery-fencing",
+    "missing, not passed or no evidence: evidence-accuracy",
+    "missing, not passed or no evidence: learning-privacy",
+    "missing, not passed or no evidence: failure-transparency",
+    "missing, not passed or no evidence: conversion-mapping",
+    "missing, not passed or no evidence: admission-quota",
+    "missing, not passed or no evidence: trace-correlation",
+    "missing, not passed or no evidence: accessibility"
+  ],
+  "e5_certificate": false
+}

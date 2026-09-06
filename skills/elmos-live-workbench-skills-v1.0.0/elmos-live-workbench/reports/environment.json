@@ -1,0 +1,12 @@
+{
+  "versions": {
+    "python": "3.13.5",
+    "node": "v22.16.0",
+    "typescript": "Version 5.8.3",
+    "debugpy": "1.8.20",
+    "jsonschema": "4.26.0",
+    "PyYAML": "6.0.3"
+  },
+  "os": "linux",
+  "note": "Local reference environment, not a pinned production image or deployment qualification."
+}

@@ -1,0 +1,32 @@
+{
+  "schema_version": "lw.v1",
+  "mapping_id": "authored-fixture-comparison",
+  "tenant_id": "local-fixture",
+  "source_snapshot_id": "sha256:94af3d9e3a526baad253ef5e44ecfea249286645d8823664ad334cdf7a431d0f",
+  "target_snapshot_id": "sha256:7d27c43ef114489b7638aaaaa37c49510c56399e763aab965a87724459f18e9f",
+  "relation": "one-to-one",
+  "source_anchor_ids": [
+    "python-quote-function"
+  ],
+  "ir_symbol_ids": [
+    "cart.quote"
+  ],
+  "target_anchor_ids": [
+    "javascript-quote-function"
+  ],
+  "rule_id": null,
+  "confidence": "observed-scenario",
+  "checkpoint_ids": [
+    "input-valid",
+    "discount-boundary",
+    "total-output"
+  ],
+  "assumptions": [
+    "independently authored reference programs, NOT actual Elmos conversion output",
+    "integer cents [0,1000000]"
+  ],
+  "evidence_ids": [
+    "reports/native-fixtures.json"
+  ],
+  "universal_equivalence_proven": false
+}
