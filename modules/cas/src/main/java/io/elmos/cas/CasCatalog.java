@@ -27,7 +27,9 @@ public interface CasCatalog {
      * publication protocol. Implementations must reject {@code PENDING} or
      * {@code OUTCOME_UNKNOWN} before invoking this callback; they invoke it while a new deletion
      * is excluded and may clear only a terminal repairable tombstone afterwards. A failure must
-     * leave every deletion tombstone and root unchanged.
+     * leave every deletion tombstone and root unchanged. The callback is synchronous: it must
+     * not return or throw until all physical operations it started have terminated. Unknown
+     * asynchronous provider outcomes require a host reconciliation adapter, not this callback.
      */
     @FunctionalInterface
     interface DurableObjectEnsurer {
@@ -209,7 +211,7 @@ public interface CasCatalog {
     long recordAndAddReferenceRoots(CatalogEntry entry, List<ReferenceRoot> roots);
 
     /**
-     * Production publication boundary for a newly catalogued object. The implementation locks
+     * Production publication boundary for a newly catalogued object. The implementation fences
      * every referenced digest, invokes {@code durableObjectEnsurer}, clears any prior deletion
      * tombstone, then records metadata and publishes the complete logical root set atomically.
      * Bytes written by the callback may remain after a later catalogue rollback, but a root may
@@ -251,8 +253,10 @@ public interface CasCatalog {
     );
 
     /**
-     * Epoch-bound first publication.  Implementations hold the tenant and resource lifecycle
-     * fences through the durable callback and binding insert, then lock objects in digest order.
+     * Epoch-bound first publication. Implementations either hold lifecycle locks through the
+     * synchronous durable callback, or commit durable object pins before releasing those locks
+     * and revalidate exact ACTIVE epochs before publication. A pin expires publication authority,
+     * never the GC fence: the writer must be known to have stopped before releasing that fence.
      */
     void recordAndBindDurableResource(
             CatalogEntry entry,

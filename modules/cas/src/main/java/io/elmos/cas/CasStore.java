@@ -19,6 +19,12 @@ import java.util.Set;
  */
 public interface CasStore {
 
+    /** Exact staged-object publication. Unknown/provider-backed failures remain unreconciled. */
+    default CasCatalog.DurableObjectEnsurer publicationEnsurer(Map<CasDigest, CasContent> staged) {
+        Map<CasDigest, CasContent> contents = Map.copyOf(staged);
+        return () -> LocalCasPublication.persist(this, contents);
+    }
+
     String name();
 
     boolean contains(CasDigest digest);
