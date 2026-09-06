@@ -1,0 +1,35 @@
+{
+  "contract_version": "lw.v1",
+  "skill_id": "LW-21",
+  "name": "elmos-lw-differential-debug-lab",
+  "priority": "P1",
+  "status": "implementation-required",
+  "routing": "internal-workflow",
+  "existing_owner_to_reuse": "elmos-distributed-debug-correlation",
+  "dependencies": [
+    "elmos-lw-conversion-correspondence",
+    "elmos-lw-execution-evidence-linking",
+    "elmos-lw-acceptance-fixtures"
+  ],
+  "contract_refs": [
+    "contracts/semantic-correspondence.schema.json",
+    "contracts/runtime-event.schema.json"
+  ],
+  "output_artifacts": [
+    "differential-run.json",
+    "first-divergence.json",
+    "conversion-lab.json"
+  ],
+  "acceptance_cases": [
+    "LW-21-AC-01",
+    "LW-21-AC-02",
+    "LW-21-AC-03"
+  ],
+  "hard_policies": [
+    "policies/security-baseline.json",
+    "policies/preview-window.json",
+    "policies/claim-evidence.json"
+  ],
+  "required_evidence": "real-results-for-claimed-capability",
+  "may_self_certify_e5": false
+}

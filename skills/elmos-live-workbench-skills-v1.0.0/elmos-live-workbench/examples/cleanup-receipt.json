@@ -1,0 +1,22 @@
+{
+  "schema_version": "lw.v1",
+  "tenant_id": "local-fixture",
+  "session_id": "illustrative-session",
+  "generation": 1,
+  "deadline": 700,
+  "observed_at": 720,
+  "checks": {
+    "proxy_revoked": true,
+    "connections_closed": true,
+    "processes_stopped": true,
+    "volumes_deleted": true,
+    "secrets_revoked": true,
+    "adapters_stopped": true,
+    "ports_closed": true
+  },
+  "status": "cleaned",
+  "verifier_id": "EXAMPLE-ONLY",
+  "evidence_ids": [
+    "EXAMPLE-ONLY-NOT-PROVIDER-OBSERVATION"
+  ]
+}
