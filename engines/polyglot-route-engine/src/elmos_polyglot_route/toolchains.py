@@ -4483,9 +4483,21 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         )
         or (
             "compatibility_version" in versions
-            and (
-                type(versions["compatibility_version"]) is not int
-                or versions["compatibility_version"] != 1
+            and not (
+                (
+                    type(versions["compatibility_version"]) is int
+                    and versions["compatibility_version"] == 1
+                )
+                # A bottle loaded from the exact no-git CI tap starts with an
+                # empty source-version record. Homebrew hydrates ``stable`` and
+                # ``version_scheme`` before writing INSTALL_RECEIPT.json, but
+                # leaves ``compatibility_version`` null. The pinned formula
+                # digest and the normalized install tree still bind the declared
+                # compatibility version; accept this null only for that tap.
+                or (
+                    source.get("tap") == "elmos/pinned-route-ci"
+                    and versions["compatibility_version"] is None
+                )
             )
         )
     ):
