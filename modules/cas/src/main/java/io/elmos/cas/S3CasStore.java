@@ -321,8 +321,10 @@ public final class S3CasStore implements CasStore {
     }
 
     private void multipartUpload(CasDigest digest, java.io.InputStream content) {
-        if (config.partSizeBytes() > 64L * 1024 * 1024) {
-            throw new IllegalArgumentException("CAS streaming part exceeds 64 MiB memory policy");
+        // Preserve existing configured part sizes; memory is bounded by that operator-owned
+        // budget (8 MiB by default), not the total object. Refuse only unrepresentable arrays.
+        if (config.partSizeBytes() > Integer.MAX_VALUE - 8L) {
+            throw new IllegalArgumentException("CAS multipart part size exceeds the byte-buffer limit");
         }
         String key = objectKey(digest);
         HttpResponse<byte[]> created = send("POST", key, Map.of("uploads", ""),
