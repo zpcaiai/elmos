@@ -25,6 +25,68 @@ class GitRepositoryWorkspaceServiceTest {
     @TempDir Path temporary;
 
     @Test
+    void retirementFreesAdmissionBeforeRecursiveCleanupAndDoesNotFollowSymlinks() throws Exception {
+        var source = repository(false, false, false);
+        var pending = new java.util.ArrayList<Runnable>();
+        var root = temporary.resolve("retirement-workspaces");
+        var service = cleanupService(root, pending::add);
+        var first = service.create(request(source, source.branch()), "unused", Optional.empty());
+        expire(root, first.workspaceId());
+        var outside = temporary.resolve("outside.txt");
+        Files.writeString(outside, "must survive");
+        Files.createSymbolicLink(root.resolve(first.workspaceId()).resolve("external"), outside);
+        var second = service.create(request(source, source.branch()), "unused", Optional.empty());
+        assertFalse(Files.exists(root.resolve(first.workspaceId())));
+        assertTrue(Files.exists(root.resolve(second.workspaceId())));
+        assertEquals(1, pending.size());
+        var retired = root.resolve(".retired").resolve(first.workspaceId());
+        assertTrue(Files.exists(retired.resolve("workspace/repository")));
+        assertTrue(Files.exists(retired.resolve("ticket")));
+        assertEquals(second.workspaceId(), service.inspect("tenant-a", "actor-a", second.workspaceId()).workspaceId());
+        pending.removeFirst().run();
+        assertFalse(Files.exists(retired));
+        assertEquals("must survive", Files.readString(outside));
+    }
+
+    @Test
+    void rejectedCleanupIsReplayedByNewServiceWithoutDeletingUnknownDirectories() throws Exception {
+        var source = repository(false, false, false);
+        var root = temporary.resolve("retirement-workspaces");
+        var service = cleanupService(root, task -> { throw new java.util.concurrent.RejectedExecutionException(); });
+        var first = service.create(request(source, source.branch()), "unused", Optional.empty());
+        expire(root, first.workspaceId());
+        service.create(request(source, source.branch()), "unused", Optional.empty());
+        var retired = root.resolve(".retired").resolve(first.workspaceId());
+        assertTrue(Files.exists(retired.resolve("ticket")));
+        var unknown = root.resolve(".retired").resolve(java.util.UUID.randomUUID().toString());
+        Files.createDirectories(unknown);
+        Files.writeString(unknown.resolve("unknown.txt"), "keep");
+        var pending = new java.util.ArrayList<Runnable>();
+        var restarted = cleanupService(root, pending::add);
+        assertThrows(IllegalStateException.class, () -> restarted.create(
+                request(source, source.branch()), "unused", Optional.empty()));
+        assertEquals(1, pending.size());
+        pending.removeFirst().run();
+        assertFalse(Files.exists(retired));
+        assertEquals("keep", Files.readString(unknown.resolve("unknown.txt")));
+    }
+
+    private GitRepositoryWorkspaceService cleanupService(Path root, java.util.concurrent.Executor executor) {
+        return new GitRepositoryWorkspaceService(root, 1000, 64L * 1024 * 1024, true,
+                Set.of(), 1, Duration.ofDays(1), (id, context, credential) -> {
+                    throw new UnsupportedOperationException();
+                }, executor);
+    }
+
+    private static void expire(Path root, String workspaceId) throws IOException {
+        var file = root.resolve(workspaceId).resolve("workspace.properties");
+        var properties = new java.util.Properties();
+        try (var input = Files.newInputStream(file)) { properties.load(input); }
+        properties.setProperty("createdAt", java.time.Instant.now().minus(Duration.ofDays(2)).toString());
+        try (var output = Files.newOutputStream(file)) { properties.store(output, "expired fixture"); }
+    }
+
+    @Test
     void independentWorkspaceProgressesWhileSameWorkspaceWaitsAcrossServiceInstances() throws Exception {
         var source = repository(false, false, false);
         var firstService = service();
