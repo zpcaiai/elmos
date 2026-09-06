@@ -10,7 +10,7 @@ BEGIN
             NOCREATEDB NOCREATEROLE NOREPLICATION NOINHERIT;
     END IF;
     IF EXISTS (SELECT 1 FROM pg_roles r WHERE r.rolname='elmos_translation_input_runtime'
-        AND (r.rolsuper OR r.rolbypassrls OR r.rolcanlogin OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication
+        AND (r.rolsuper OR r.rolbypassrls OR r.rolcanlogin OR r.rolcreatedb OR r.rolcreaterole OR r.rolreplication OR r.rolinherit
              OR EXISTS (SELECT 1 FROM pg_auth_members m WHERE m.member=r.oid))) THEN
         RAISE EXCEPTION 'ELMOS_TRANSLATION_RUNTIME_ROLE_UNSAFE';
     END IF;

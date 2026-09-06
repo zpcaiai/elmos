@@ -65,14 +65,16 @@ class JdbcTranslationExecutionInputLiveTest {
     }
 
     @Test void provisioningRejectsAnUnsafeExistingRuntimeRole() throws Exception {
+        for(String attribute:java.util.List.of("LOGIN","CREATEDB","CREATEROLE","REPLICATION","INHERIT","SUPERUSER","BYPASSRLS")) {
         try(var connection=connections.getConnection();var statement=connection.createStatement();
             var script=new org.springframework.core.io.ClassPathResource("db/provisioning/translation_input_runtime.sql").getInputStream()) {
             connection.setAutoCommit(false);
             try {
-                statement.execute("ALTER ROLE elmos_translation_input_runtime LOGIN");
+                statement.execute("ALTER ROLE elmos_translation_input_runtime "+attribute);
                 String sql=new String(script.readAllBytes(),java.nio.charset.StandardCharsets.UTF_8);
                 assertTrue(assertThrows(java.sql.SQLException.class,()->statement.execute(sql)).getMessage().contains("ELMOS_TRANSLATION_RUNTIME_ROLE_UNSAFE"));
             } finally {connection.rollback();}
+        }
         }
     }
 
