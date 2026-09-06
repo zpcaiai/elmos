@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Controlled concurrent schedules for the V80 PostgreSQL 17.5 admission contract.
@@ -299,6 +300,164 @@ class JdbcExecutionJobEnqueueConcurrencyLiveTest {
                     runner_pool_id, enrollment_credential_id) VALUES (:runner,:org,:pool,:credential)
                 """).param("runner", runner).param("org", organization)
                 .param("pool", "pool-" + runner).param("credential", "cred-" + runner).update();
+    }
+
+    @Test
+    void boundedTenantWindowRotatesPastSaturatedTenants() {
+        String suffix = java.util.UUID.randomUUID().toString().substring(0,8);
+        String prefix = "org-v84-window-" + suffix + "-";
+        String capability = "fixture:v84-window:" + suffix;
+        for (int i = 0; i < 40; i++) {
+            String org = prefix + String.format("%02d", i);
+            seedTrial(org);
+            jobs.enqueue(new ExecutionJobPort.EnqueueCommand("job-window-" + suffix + "-" + i, org,
+                    "actor-v84", ExecutionJobPort.BusinessLine.TRANSLATION, "translate",
+                    "idem-window", String.format("%064x", i + 100), java.util.Map.of(),
+                    capability, IMAGE, (short) 100, 120, (short) 1));
+            if (i < 39) adminJdbc.sql("UPDATE execution_dispatch_org_counters SET leased_count=1 "
+                    + "WHERE organization_id=:org").param("org", org).update();
+        }
+        // Least-loaded tenants win within a round. Put the healthy tenant in a
+        // later round to exercise rotation past an actually saturated window.
+        adminJdbc.sql("UPDATE execution_dispatch_org_counters SET last_claim_probe_at=now() "
+                + "WHERE organization_id=:org").param("org",prefix+"39").update();
+        String runner = "runner-v84-window-" + suffix;
+        seedRunner(prefix + "39", runner, capability);
+        assertTrue(jobs.claim(runner, List.of(capability), 1, 120).isEmpty());
+        assertEquals(32, adminJdbc.sql("SELECT count(*) FROM execution_dispatch_org_counters "
+                + "WHERE organization_id LIKE :prefix AND organization_id<>:healthy AND last_claim_probe_at > '-infinity'")
+                .param("prefix",prefix+"%").param("healthy",prefix+"39")
+                .query(Integer.class).single());
+        var second = jobs.claim(runner, List.of(capability), 1, 120);
+        assertEquals(1, second.size());
+        assertEquals("job-window-" + suffix + "-39", second.getFirst().jobId());
+    }
+
+    @Test
+    void translationMeteringStartsOnlyAtValidUncancelledPipelineHeartbeat() {
+        String org = "org-v85-metering";
+        String capability = "fixture:v85-metering";
+        String runner = "runner-v85-metering";
+        seedTrial(org);
+        seedRunner(org,runner,capability);
+        jobs.enqueue(new ExecutionJobPort.EnqueueCommand("job-v85-metering", org,
+                "fixture", ExecutionJobPort.BusinessLine.TRANSLATION, "translate-pipeline-v1",
+                "idem-v85-metering", "d".repeat(64), java.util.Map.of(), capability,
+                IMAGE,(short)100,120,(short)1));
+        var grant=jobs.claim(runner,List.of(capability),1,120).getFirst();
+        adminJdbc.sql("UPDATE execution_jobs SET started_at=now()-interval '5 minutes' WHERE job_id=:job")
+                .param("job",grant.jobId()).update();
+        assertThrows(ExecutionJobPort.ExecutionStateException.class,
+                () -> jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(),runner,
+                        "wrong-token","pipeline",(short)1,java.util.Map.of(),120)));
+        jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(),runner,grant.leaseToken(),
+                "preflight",(short)1,java.util.Map.of(),120));
+        assertEquals(0,adminJdbc.sql("SELECT elapsed_seconds FROM elmos_wallet_settlement_facts(:org,:job)")
+                .param("org",org).param("job",grant.jobId()).query(Integer.class).single());
+        assertThrows(org.springframework.dao.DataAccessException.class,
+                () -> adminJdbc.sql("UPDATE execution_jobs SET status='SUCCEEDED', finished_at=now() WHERE job_id=:job")
+                        .param("job",grant.jobId()).update());
+        jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(),runner,grant.leaseToken(),
+                "pipeline",(short)2,java.util.Map.of(),120));
+        String first=adminJdbc.sql("SELECT metering_started_at::text FROM execution_jobs WHERE job_id=:job")
+                .param("job",grant.jobId()).query(String.class).single();
+        jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(grant.leaseId(),runner,grant.leaseToken(),
+                "pipeline",(short)3,java.util.Map.of(),120));
+        assertEquals(first,adminJdbc.sql("SELECT metering_started_at::text FROM execution_jobs WHERE job_id=:job")
+                .param("job",grant.jobId()).query(String.class).single());
+        assertTrue(adminJdbc.sql("SELECT elapsed_seconds FROM elmos_wallet_settlement_facts(:org,:job)")
+                .param("org",org).param("job",grant.jobId()).query(Integer.class).single()<120,
+                "five minutes of input/preflight time must not be charged");
+        jobs.complete(new ExecutionJobPort.CompletionCommand(grant.leaseId(),runner,grant.leaseToken(),
+                ExecutionJobPort.Status.SUCCEEDED,ExecutionJobPort.ResultStatus.PASSED,null));
+
+        jobs.enqueue(new ExecutionJobPort.EnqueueCommand("job-v85-cancel",org,"fixture",
+                ExecutionJobPort.BusinessLine.TRANSLATION,"translate-pipeline-v1","idem-v85-cancel",
+                "e".repeat(64),java.util.Map.of(),capability,IMAGE,(short)100,120,(short)1));
+        var cancelled=jobs.claim(runner,List.of(capability),1,120).getFirst();
+        adminJdbc.sql("UPDATE execution_jobs SET cancel_requested_at=now(),cancel_requested_by='fixture' WHERE job_id=:job")
+                .param("job",cancelled.jobId()).update();
+        assertTrue(jobs.heartbeat(new ExecutionJobPort.HeartbeatCommand(cancelled.leaseId(),runner,
+                cancelled.leaseToken(),"pipeline",(short)1,java.util.Map.of(),120)).cancelRequested());
+        assertEquals(0,adminJdbc.sql("SELECT count(*) FROM execution_jobs WHERE job_id=:job AND metering_started_at IS NOT NULL")
+                .param("job",cancelled.jobId()).query(Integer.class).single());
+    }
+
+    @Test
+    void boundedCounterRepairRotatesAndIsNotGrantedToRuntime() {
+        String prefix = "org-v84-reconcile-";
+        // Isolate rotation from other fixtures without deleting any authoritative data.
+        adminJdbc.sql("UPDATE execution_dispatch_org_counters SET last_reconciled_at=now()").update();
+        for (int i = 0; i < 40; i++) {
+            String org = prefix + String.format("%02d", i);
+            seedTrial(org);
+            adminJdbc.sql("INSERT INTO execution_dispatch_org_counters(organization_id,queued_count) "
+                    + "VALUES(:org,7)").param("org", org).update();
+        }
+        assertEquals(32, adminJdbc.sql("SELECT elmos_reconcile_dispatch_counters_batch(32)")
+                .query(Integer.class).single());
+        assertEquals(8, adminJdbc.sql("SELECT count(*) FROM execution_dispatch_org_counters "
+                + "WHERE organization_id LIKE 'org-v84-reconcile-%' AND queued_count=7")
+                .query(Integer.class).single());
+        adminJdbc.sql("SELECT elmos_reconcile_dispatch_counters_batch(32)").query(Integer.class).single();
+        assertEquals(0, adminJdbc.sql("SELECT count(*) FROM execution_dispatch_org_counters "
+                + "WHERE organization_id LIKE 'org-v84-reconcile-%' AND queued_count<>0")
+                .query(Integer.class).single());
+        assertFalse(runtimeJdbc.sql("SELECT has_function_privilege(current_user, "
+                + "'elmos_reconcile_dispatch_counters_batch(integer)', 'EXECUTE')")
+                .query(Boolean.class).single());
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.dao.DataAccessException.class,
+                () -> adminJdbc.sql("SELECT elmos_reconcile_dispatch_counters_batch(129)").query(Integer.class).single());
+    }
+
+    @Test
+    void reaperProcessesAtMost128ExpiredLeasesAnd64RunnerProbesPerTransaction() {
+        String org = "org-v84-reaper";
+        String runner = "runner-v84-reaper";
+        seedTrial(org);
+        seedRunner(org, runner, "fixture:v84-reaper");
+        // Synthetic expired records exercise the real SQL state machine, not a mocked store.
+        adminJdbc.sql("""
+                INSERT INTO execution_jobs(job_id,organization_id,actor_id,business_line,job_kind,
+                    idempotency_key,request_digest,required_capability,status,attempt,max_attempts)
+                SELECT 'job-v84-reap-'||n,:org,'fixture','TRANSLATION','translate',
+                    'idem-reap-'||n,repeat('a',64),'fixture:v84-reaper','CLAIMED',1,1
+                  FROM generate_series(1,130) n
+                """).param("org", org).update();
+        adminJdbc.sql("""
+                INSERT INTO runner_job_leases(runner_job_lease_id,organization_id,schema_version,status,
+                    idempotency_key,payload,job_ref,runner_node_ref,actor_id,lease_state,token_sha256,
+                    issued_at,expires_at,last_heartbeat_at)
+                SELECT 'lease-v84-reap-'||n,:org,'2.0','ISSUED','lease-v84-reap-'||n,'{}'::jsonb,
+                    'job-v84-reap-'||n,:runner,'fixture','ISSUED',repeat('b',64),
+                    now()-interval '5 minutes',now()-interval '1 minute',now()-interval '2 minutes'
+                  FROM generate_series(1,130) n
+                """).param("org",org).param("runner",runner).update();
+        adminJdbc.sql("""
+                INSERT INTO execution_job_dispatch(job_id,organization_id,required_capability,
+                    dispatch_state,lease_ref,runner_node_ref,lease_expires_at,attempt)
+                SELECT 'job-v84-reap-'||n,:org,'fixture:v84-reaper','LEASED',
+                    'lease-v84-reap-'||n,:runner,now()-interval '1 minute',1
+                  FROM generate_series(1,130) n
+                """).param("org",org).param("runner",runner).update();
+        adminJdbc.sql("INSERT INTO execution_dispatch_org_counters(organization_id,leased_count) VALUES(:org,130)")
+                .param("org",org).update();
+        for (int i=0;i<65;i++) seedRunner(org,"runner-v84-probe-"+i,"fixture:v84-reaper");
+        adminJdbc.sql("UPDATE runner_node_authentication SET last_reaped_at=now() "
+                + "WHERE runner_node_id NOT LIKE 'runner-v84-probe-%'").update();
+        adminJdbc.sql("UPDATE runner_nodes SET last_heartbeat_at=now()-interval '5 minutes' "
+                + "WHERE runner_node_id LIKE 'runner-v84-probe-%'").update();
+        assertEquals(128,adminJdbc.sql("SELECT elmos_reap_execution_leases()").query(Integer.class).single());
+        assertEquals(2,adminJdbc.sql("SELECT count(*) FROM execution_job_dispatch "
+                + "WHERE organization_id=:org AND dispatch_state='LEASED'")
+                .param("org",org).query(Integer.class).single());
+        assertEquals(64,adminJdbc.sql("SELECT count(*) FROM runner_nodes "
+                + "WHERE runner_node_id LIKE 'runner-v84-probe-%' AND fleet_status='LOST'")
+                .query(Integer.class).single());
+        assertEquals(2,adminJdbc.sql("SELECT elmos_reap_execution_leases()").query(Integer.class).single());
+        assertEquals(65,adminJdbc.sql("SELECT count(*) FROM runner_nodes "
+                + "WHERE runner_node_id LIKE 'runner-v84-probe-%' AND fleet_status='LOST'")
+                .query(Integer.class).single());
     }
 
     private static DatabaseTarget databaseTarget() {

@@ -23,14 +23,14 @@ authorized by this ledger. Existing shared-checkout changes are not inputs.
 | Q1 | P0 | Translation routes use the canonical hosted execution authority | IN_PROGRESS |
 | Q2 | P0 | CAS durable I/O outside database transactions with lifecycle protection | IN_PROGRESS |
 | Q3 | P0 | Bounded Python compiler/analyzer subprocess output and lifetime | IN_PROGRESS |
-| Q4 | P0 | Generation request limit enforced while reading | IN_PROGRESS |
-| Q5 | P1 | Multimodal fallback admission held until process/reconciliation completion | IN_PROGRESS |
+| Q4 | P0 | Generation request limit enforced while reading | LOCAL_VERIFIED |
+| Q5 | P1 | Multimodal fallback admission held until process/reconciliation completion | LOCAL_VERIFIED |
 | Q6 | P1 | ZIP generation/download verification with bounded memory/work | IN_PROGRESS |
 | Q7 | P1 | Backward-compatible authenticated streaming encrypted CAS | IN_PROGRESS |
 | Q8 | P1 | Bounded batch execution and trusted toolchain identity reuse | IN_PROGRESS |
-| Q9 | P1 | Bounded PostgreSQL claim scanning and scheduled reconciliation | IN_PROGRESS |
+| Q9 | P1 | Bounded PostgreSQL claim scanning and scheduled reconciliation | LOCAL_VERIFIED |
 | Q10 | P1 | Git admission separated from recursive expired-workspace cleanup | LOCAL_VERIFIED |
-| Q11 | P1 | Local generation log persistence coalescing/backpressure | IN_PROGRESS |
+| Q11 | P1 | Local generation log persistence coalescing/backpressure | LOCAL_VERIFIED |
 | Q12 | P2 | Indexed graph association and measured CAS bytes/file/stream selection | IN_PROGRESS |
 | Q13 | P2 | Integrated concurrency/correctness and resource-profile qualification | NOT_RUN |
 
@@ -53,3 +53,29 @@ actual code plus negative/concurrency regression evidence before closure.
   Coordination remains JVM-local, as before; this is not a shared-filesystem
   multi-host scheduler. Retirement tickets cover process restart/retry, not a
   claim of filesystem power-loss durability on every platform.
+
+- Q4/Q5/Q11: integration replay of the first request/process/log checkpoint:
+  13/13 Node tests passed; subsequent tiny-chunk and async abort edge cases are
+  included in the final replay list. The process bulkhead is JVM-independent,
+  Node-instance local (not a distributed capacity guarantee), and retains slots
+  until actual child close, including after HTTP timeout.
+- Q6 Web: `npm run test:translation-report` passed 29/29 tests on the integrated
+  tree, including the real Python report producer, corrupt/duplicate/reordered
+  artifacts, asynchronous zlib termination and callback-failure lifecycles.
+- Q9: a fresh local PostgreSQL 17.5 database applied migrations 1-82 and V84.
+  Nine of ten live cases initially passed; the rotation fixture was corrected
+  to put the healthy tenant in a later scheduling round (least-loaded selection
+  within the current round was correctly choosing it immediately). The repaired
+  rotation case and new V85 fenced metering case then both passed. A clean
+  integrated full-suite replay is still required. Scheduling locks/work rows
+  are bounded to 32 tenant probes and 128 job candidates per claim, 128 lease
+  expiry probes, 64 runner probes and 32 counter reconciliations per scheduled
+  reaper transaction. Existing explicit full counter repair remains available.
+  Active-state partial indexes avoid counting completed dispatch history;
+  bounds on selected/locked work do not imply constant physical query I/O.
+- Translation billing compatibility decision remains open: legacy commercial
+  usage charges runner minutes even on failed work and releases only the fixed
+  conversion credits. The canonical wallet is a different pricing authority.
+  V85 supplies a host-fenced pipeline timestamp for the new exact job kind; it
+  does not authorize a tariff change, wallet/credits conversion or double charge.
+  Existing wallet settlement policies and earlier job kinds remain unchanged.
