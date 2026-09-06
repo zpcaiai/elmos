@@ -282,6 +282,24 @@ _TRANSIENT_DEPENDENCY_FETCH_MARKERS = (
 )
 
 
+def _dotnet_acceptance_commands(tool: str) -> tuple[list[str], ...]:
+    """Return reproducible local .NET checks without claiming an online audit.
+
+    NuGet enables a remote vulnerability feed during restore.  The acceptance
+    harness is provider-free and reports external evidence separately, so a
+    transient audit endpoint must neither create a false build failure nor a
+    false vulnerability-scan success.  Lockfile enforcement remains active in
+    both restore passes; generated project CI keeps its normal online audit.
+    """
+
+    provider_free_restore = "-p:NuGetAudit=false"
+    return (
+        [tool, "restore", "--use-lock-file", provider_free_restore],
+        [tool, "restore", "--locked-mode", provider_free_restore],
+        [tool, "test", "--no-restore", "-c", "Release"],
+    )
+
+
 def _go_module_cache_roots(cwd: Path) -> tuple[Path, Path]:
     configured_gomod = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOMODCACHE", "").strip()
     configured_gocache = os.getenv("ELMOS_PROJECT_SYNTHESIS_GOCACHE", "").strip()
@@ -1494,12 +1512,7 @@ def verify_workspace(
         if exact_toolchains["csharp"]:
             tool = _runtime_tool("csharp", "dotnet", "/opt/homebrew/bin/dotnet")
             assert tool is not None
-            dotnet_commands = (
-                [tool, "restore", "--use-lock-file"],
-                [tool, "restore", "--locked-mode"],
-                [tool, "test", "--no-restore", "-c", "Release"],
-            )
-            for command in dotnet_commands:
+            for command in _dotnet_acceptance_commands(tool):
                 result = _run(command, root / "dotnet", language="csharp")
                 results.append(result)
                 if result["status"] != "PASSED":
