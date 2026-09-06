@@ -524,7 +524,14 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         "installed_on_request": False,
     })
     document["source"].update(
-        {"tap": "elmos/pinned-route-ci", "tap_git_head": "b" * 40}
+        {
+            "tap": "elmos/pinned-route-ci",
+            "tap_git_head": "b" * 40,
+            "path": (
+                "/opt/homebrew/Library/Taps/elmos/"
+                "homebrew-pinned-route-ci/Formula/php.rb"
+            ),
+        }
     )
     document["runtime_dependencies"].reverse()
     document["runtime_dependencies"][0].update(
@@ -538,6 +545,34 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     receipt.write_text(json.dumps(document), encoding="utf-8")
     semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert semantic_drift["sha256"] != baseline["sha256"]
+
+
+def test_php_tree_rejects_an_unpinned_synthetic_tap_formula_path(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    (root / "INSTALL_RECEIPT.json").write_text(
+        json.dumps(
+            {
+                "homebrew_version": "5.0.0",
+                "time": 1,
+                "source_modified_time": 1,
+                "source": {
+                    "tap": "elmos/pinned-route-ci",
+                    "path": (
+                        "/opt/homebrew/Library/Taps/elmos/"
+                        "homebrew-pinned-route-ci/Formula/other.rb"
+                    ),
+                    "versions": {"stable": "8.5.9"},
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
 
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:

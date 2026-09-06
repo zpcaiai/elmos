@@ -583,6 +583,31 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_emitted_integer_to_number_cast_relifts_exactly(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    semantic = _ir(
+        _function("asNumber", [("value", "integer")], "number", _name("value"))
+    )
+    plan = plan_identifiers(semantic, "swift")
+    target = target_ir_view(semantic, plan).functions[0]
+    emitted = emit(semantic, "swift", identifier_plan=plan)
+    source = tmp_path / emitted.relative_path
+    source.write_text(emitted.content, encoding="utf-8")
+
+    relifted = analyze(source, "swift", target.name, emitted_target=True)
+
+    function = relifted.functions[0]
+    assert function.return_type == "number"
+    assert [(parameter.name, parameter.type) for parameter in function.parameters] == [
+        (target.parameters[0].name, "integer")
+    ]
+    assert function.body[0].expression is not None
+    assert function.body[0].expression.kind == "name"
+    assert function.body[0].expression.value == target.parameters[0].name
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
 def test_swift_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> None:
     from elmos_polyglot_route.native import analyze
 

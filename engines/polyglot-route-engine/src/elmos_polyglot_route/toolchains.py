@@ -4458,9 +4458,19 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         or source.get("tap") not in {"homebrew/core", "elmos/pinned-route-ci"}
     ):
         raise RouteError(failure)
+    source_tap = source["tap"]
     path = source.get("path")
-    if path is not None and (
-        not isinstance(path, str) or not path.endswith("/php/manifests/8.5.9")
+    core_manifest_path = "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9"
+    pinned_tap_formula_suffix = "/elmos/homebrew-pinned-route-ci/Formula/php.rb"
+    if path is not None and not isinstance(path, str):
+        raise RouteError(failure)
+    if source_tap == "homebrew/core" and path is not None and not path.endswith(
+        "/php/manifests/8.5.9"
+    ):
+        raise RouteError(failure)
+    if source_tap == "elmos/pinned-route-ci" and path is not None and not (
+        path.endswith("/php/manifests/8.5.9")
+        or path.endswith(pinned_tap_formula_suffix)
     ):
         raise RouteError(failure)
 
@@ -4517,6 +4527,11 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
         f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
     )
+    # Homebrew 6.x records the downloaded core manifest while older hosted
+    # clients record the exact synthetic-tap formula path. The installer has
+    # already pinned that formula's upstream commit and SHA-256, so bind both
+    # allowlisted representations to one stable source identity.
+    source["path"] = core_manifest_path
     if "tap_git_head" in source:
         source["tap_git_head"] = "<installer-local-tap-head>"
     return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(

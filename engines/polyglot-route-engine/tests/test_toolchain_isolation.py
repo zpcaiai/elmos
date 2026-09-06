@@ -507,7 +507,8 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
     )
 
     assert local.profile_id == "local-macos26-20260904"
-    assert legacy_hosted.dotnet_muxer_sha256 == local.dotnet_muxer_sha256
+    assert legacy_hosted.dotnet_muxer_sha256 == current_hosted.dotnet_muxer_sha256
+    assert legacy_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
     assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
