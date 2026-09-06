@@ -1,5 +1,6 @@
 import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { spawn, type ChildProcess } from "node:child_process";
+import { CoalescingFlush } from "./coalescingFlush";
 import {
   constants as fsConstants,
   createReadStream,
@@ -2227,13 +2228,14 @@ async function executeCommand(
     let storageCheckInFlight = false;
     let storageFailure: Error | null = null;
     let persistenceFailure: Error | null = null;
-    let persistenceQueue = Promise.resolve();
-    const queuePersist = () => {
-      persistenceQueue = persistenceQueue
-        .then(() => persist(runner, context, job))
-        .catch((error: unknown) => {
-          persistenceFailure ??= error instanceof Error ? error : new Error("JOB_PERSISTENCE_FAILED");
-        });
+    const persistenceQueue = new CoalescingFlush(() => persist(runner, context, job));
+    const queuePersist = () => persistenceQueue.request();
+    const flushPersistence = async () => {
+      try {
+        await persistenceQueue.flush();
+      } catch (error) {
+        persistenceFailure ??= error instanceof Error ? error : new Error("JOB_PERSISTENCE_FAILED");
+      }
     };
     const startedAt = Date.now();
     const progressHeartbeat = stage === "pipeline"
@@ -2297,7 +2299,7 @@ async function executeCommand(
       if (progressHeartbeat) clearInterval(progressHeartbeat);
       if (storageMonitor) clearInterval(storageMonitor);
       activeJobs.delete(key);
-      await persistenceQueue;
+      await flushPersistence();
       reject(persistenceFailure ?? error);
     });
     child.once("close", async (code, signal) => {
@@ -2306,7 +2308,7 @@ async function executeCommand(
       if (progressHeartbeat) clearInterval(progressHeartbeat);
       if (storageMonitor) clearInterval(storageMonitor);
       activeJobs.delete(key);
-      await persistenceQueue;
+      await flushPersistence();
       if (storageFailure) {
         reject(storageFailure);
         return;
