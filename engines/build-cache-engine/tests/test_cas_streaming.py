@@ -134,6 +134,22 @@ def test_bytes_read_backend_is_independent_opt_in(tmp_path, monkeypatch):
     assert selected.get_bytes(digest) == payload
 
 
+@pytest.mark.parametrize("native_bytes_io", [False, True])
+def test_bytes_backend_preserves_digest_dedup_quota_order(tmp_path, monkeypatch, native_bytes_io):
+    from elmos_build_cache.errors import DigestMismatch, QuotaExceeded
+    payload = b"previously published object"
+    existing = ContentAddressableStore(tmp_path / "store")
+    digest = existing.put_bytes(payload)
+    store = ContentAddressableStore(existing.root, max_bytes=1, native_bytes_io=native_bytes_io)
+    monkeypatch.setattr(native_cas_bridge, "native_put_bytes", lambda *_: pytest.fail("over-budget native publish"))
+    assert store.put_bytes(payload) == digest
+    with pytest.raises(DigestMismatch):
+        store.put_bytes(payload, expected_digest="sha256:" + "0" * 64)
+    with pytest.raises(QuotaExceeded):
+        store.put_bytes(b"new over-budget object")
+    assert not store.contains(sha256_bytes(b"new over-budget object"))
+
+
 def test_native_file_writer_preserves_existing_compressed_winner(tmp_path):
     if not native_cas_bridge.is_native_available():
         pytest.skip("native library not configured")
