@@ -42,3 +42,20 @@ test("client cancellation ends stalled body read", async () => {
   await assert.rejects(result, fails("REQUEST_ABORTED"));
   assert.equal(body.locked, false);
 });
+test("100,000 empty or one-byte chunks retain only the fixed byte budget", async () => {
+  for (const size of [0, 1]) {
+    let count = 0;
+    const body = new ReadableStream({ pull(c) {
+      if (count++ === 100_000) c.close();
+      else c.enqueue(new Uint8Array(size).fill(97));
+    } });
+    assert.equal((await readBoundedRequestBody(request(body), 128 * 1024, 120_000)).length, size * 100_000);
+  }
+});
+test("an immediately-ready empty stream still processes the abort race", async () => {
+  const controller = new AbortController();
+  const body = new ReadableStream({ pull(c) { c.enqueue(new Uint8Array()); } });
+  const result = readBoundedRequestBody(request(body, {}, controller.signal), 96 * 1024);
+  setImmediate(() => controller.abort());
+  await assert.rejects(result, fails("REQUEST_ABORTED"));
+});
