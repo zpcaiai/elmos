@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class JdbcTranslationExecutionInputLiveTest {
     static JdbcClient jdbc;
     static TransactionTemplate transactions;
+    static DriverManagerDataSource connections;
 
     @BeforeAll static void database() {
         String url = System.getenv("ELMOS_EXECUTION_QUEUE_TEST_JDBC_URL");
@@ -28,6 +29,7 @@ class JdbcTranslationExecutionInputLiveTest {
                 System.getenv().getOrDefault("ELMOS_EXECUTION_QUEUE_TEST_DATABASE_PASSWORD", ""));
         Flyway.configure().dataSource(data).defaultSchema("public").load().migrate();
         jdbc = JdbcClient.create(data);
+        connections = data;
         transactions = new TransactionTemplate(new DataSourceTransactionManager(data));
     }
 
@@ -82,6 +84,52 @@ class JdbcTranslationExecutionInputLiveTest {
         assertThrows(RuntimeException.class, () -> prepare(org,extra,"overflow",18));
         assertEquals(8L,jdbc.sql("SELECT count(*) FROM execution_input_bindings WHERE organization_id=:org")
                 .param("org",org).query(Long.class).single());
+    }
+
+    @Test void publisherCannotResurrectObjectWhenGcWonTheObjectLock() throws Exception {
+        String org=tenant(), object=object(org,30), job="job-"+UUID.randomUUID();
+        jdbc.sql("""
+            INSERT INTO execution_jobs(job_id,organization_id,actor_id,business_line,job_kind,idempotency_key,
+              request_digest,required_capability) VALUES(:job,:org,'fixture','TRANSLATION','legacy-fixture',:job,:sha,'translation:multi')
+            """).param("job",job).param("org",org).param("sha",digest(30)).update();
+        try (var owner=connections.getConnection(); var pool=java.util.concurrent.Executors.newSingleThreadExecutor()) {
+            owner.setAutoCommit(false);
+            try(var lock=owner.prepareStatement("SELECT content_object_id FROM content_objects WHERE content_object_id=? FOR UPDATE")) {
+                lock.setString(1,object); lock.executeQuery().close();
+            }
+            var publisherPid=new java.util.concurrent.CompletableFuture<Integer>();
+            var published=pool.submit(()->{
+                try(var publisher=connections.getConnection()) {
+                    try(var query=publisher.createStatement();var result=query.executeQuery("SELECT pg_backend_pid()")) {
+                        result.next();publisherPid.complete(result.getInt(1));
+                    }
+                    try(var call=publisher.prepareStatement("SELECT elmos_publish_job_artifact(?,?,?,?,?,?,?)")) {
+                        call.setString(1,"artifact-"+UUID.randomUUID());call.setString(2,org);call.setString(3,job);
+                        call.setString(4,"PROJECT_ARCHIVE");call.setString(5,"fixture.zip");call.setString(6,object);call.setString(7,"STANDARD");
+                        call.executeQuery().close();return true;
+                    } catch(java.sql.SQLException expected) {return false;}
+                }
+            });
+            try {
+                int pid=publisherPid.get(20,java.util.concurrent.TimeUnit.SECONDS);
+                long deadline=System.nanoTime()+java.util.concurrent.TimeUnit.SECONDS.toNanos(20);
+                boolean blocked=false;
+                while(System.nanoTime()<deadline) {
+                    blocked=jdbc.sql("SELECT cardinality(pg_blocking_pids(:pid))>0").param("pid",pid).query(Boolean.class).single();
+                    if(blocked) break;
+                    Thread.sleep(10);
+                }
+                assertTrue(blocked,"publisher must reach the controlled object-lock boundary");
+                try(var gc=owner.prepareStatement("SELECT elmos_expire_artifacts(?,5000)")) {
+                    gc.setString(1,"gc-"+UUID.randomUUID());gc.executeQuery().close();
+                }
+                owner.commit();
+                assertFalse(published.get(20,java.util.concurrent.TimeUnit.SECONDS),"publisher must re-read PURGE_PENDING after acquiring the lock");
+                assertEquals("PURGE_PENDING",state(object));
+                assertEquals(0L,jdbc.sql("SELECT count(*) FROM job_artifacts WHERE content_object_ref=:object")
+                        .param("object",object).query(Long.class).single());
+            } finally {owner.rollback();}
+        }
     }
 
     static String tenant() {
