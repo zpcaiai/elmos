@@ -479,8 +479,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d",
-    php_tree_bytes=129_949_439,
+    php_tree_sha256="abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23",
+    php_tree_bytes=129_949_421,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -501,8 +501,8 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d",
-    php_tree_bytes=129_949_439,
+    php_tree_sha256="abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23",
+    php_tree_bytes=129_949_421,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,

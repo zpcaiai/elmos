@@ -259,6 +259,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
         "inode": 2,
     }
     toolchain = route_engine._swift_toolchain_receipt(exact_toolchain("swift"))
+    apple_host = route_engine.apple_route_host_profile("swift")
     probe_compiler = next(
         component for component in toolchain["build_closure"]["components"] if component["role"] == "clang"
     )
@@ -309,7 +310,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
                 },
                 "git": {
                     "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
-                    "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+                    "sha256": "sha256:" + apple_host.apple_git_sha256,
                     "version": "git version 2.50.1 (Apple Git-155)",
                 },
                 "identity": "swift-syntax",
@@ -326,18 +327,18 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
             "scope": "swift-build-process-tree",
             "sandbox": {
                 "path": "/usr/bin/sandbox-exec",
-                "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
-                "bytes": 102_368,
+                "sha256": "sha256:" + apple_host.sandbox_exec_sha256,
+                "bytes": apple_host.sandbox_exec_bytes,
                 "mode": "0755",
                 "uid": 0,
                 "gid": 0,
                 "nlink": 1,
-                "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+                "cdhash_full": apple_host.sandbox_exec_cdhash_full,
             },
             "verifier": {
                 "path": "/usr/bin/codesign",
-                "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
-                "bytes": 458_576,
+                "sha256": "sha256:" + apple_host.codesign_sha256,
+                "bytes": apple_host.codesign_bytes,
                 "mode": "0755",
                 "uid": 0,
                 "gid": 0,

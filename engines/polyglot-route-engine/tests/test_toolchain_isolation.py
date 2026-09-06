@@ -511,19 +511,19 @@ def test_homebrew_route_bundle_profiles_are_exact_and_fail_closed() -> None:
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert legacy_hosted.php_tree_sha256 == (
-        "22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d"
+        "abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23"
     )
-    assert legacy_hosted.php_tree_bytes == 129_949_439
+    assert legacy_hosted.php_tree_bytes == 129_949_421
     assert current_hosted.dotnet_muxer_sha256 == (
         "09a8314accfaee5580c2a9f4aeace6ca5180b8bf41c1e693f9708118e47a47c4"
     )
     assert current_hosted.php_tree_sha256 == (
-        "22d27404db944e342071c6c9e97427b680946a98f1f04e37f55c281426ba6f0d"
+        "abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23"
     )
-    assert current_hosted.php_tree_bytes == 129_949_439
+    assert current_hosted.php_tree_bytes == 129_949_421
     assert current_hosted.dotnet_muxer_sha256 != local.dotnet_muxer_sha256
-    assert legacy_hosted.php_tree_sha256 == local.php_tree_sha256
-    assert current_hosted.php_tree_bytes == local.php_tree_bytes
+    assert legacy_hosted.php_tree_sha256 != local.php_tree_sha256
+    assert current_hosted.php_tree_bytes != local.php_tree_bytes
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_HOMEBREW_HOST_PROFILE_MISMATCH"):
         toolchains._select_homebrew_route_bundle_profile(
