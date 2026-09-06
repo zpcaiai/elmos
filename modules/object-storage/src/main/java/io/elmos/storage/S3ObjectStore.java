@@ -47,6 +47,24 @@ public final class S3ObjectStore {
     }
 
     /**
+     * Host-owned protocol capability, not a deployment flag or a provider HTTP
+     * success code. Existing bearer PUT URLs can replay across a DELETE and an
+     * expired URL does not prove an already accepted writer has stopped.
+     */
+    public enum HostedPhysicalGcCapability {
+        BLOCKED_UPLOAD_FENCING;
+
+        public void requireWriterQuiescence() {
+            throw new IllegalStateException("PHYSICAL_GC_BLOCKED_UPLOAD_FENCING");
+        }
+    }
+
+    /** All currently implemented S3 backend configurations use the same unfenced upload protocol. */
+    public static HostedPhysicalGcCapability hostedPhysicalGcCapability() {
+        return HostedPhysicalGcCapability.BLOCKED_UPLOAD_FENCING;
+    }
+
+    /**
      * Resolved backend configuration, mirroring one ACTIVE row of
      * {@code object_storage_backends}.
      */

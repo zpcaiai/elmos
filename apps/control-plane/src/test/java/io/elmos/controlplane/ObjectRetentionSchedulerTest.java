@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import java.net.InetSocketAddress;
 import java.time.Clock;
@@ -16,7 +17,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 class ObjectRetentionSchedulerTest {
@@ -28,6 +28,25 @@ class ObjectRetentionSchedulerTest {
         var condition=ObjectRetentionScheduler.class.getAnnotation(ConditionalOnProperty.class);
         assertNotNull(condition);assertFalse(condition.matchIfMissing());
         assertArrayEquals(new String[]{"host-gc-enabled"},condition.name());
+        context().run(c->{assertNull(c.getStartupFailure());assertTrue(c.getBeansOfType(ObjectRetentionScheduler.class).isEmpty());});
+        verifyNoInteractions(metadata,retention);
+    }
+
+    @Test void enablingCurrentS3FailsStartupBeforeAnyMetadataOrProviderEffect() throws Exception {
+        AtomicInteger calls=new AtomicInteger();
+        HttpServer server=server(204,calls,new AtomicReference<>());
+        try {
+            when(metadata.activeBackend()).thenReturn(backend(server));
+            context().withPropertyValues("elmos.object-storage.host-gc-enabled=true").run(c->{
+                Throwable failure=c.getStartupFailure();assertNotNull(failure);
+                while(failure.getCause()!=null)failure=failure.getCause();
+                assertInstanceOf(IllegalStateException.class,failure);
+                assertEquals("PHYSICAL_GC_BLOCKED_UPLOAD_FENCING",failure.getMessage());
+            });
+            assertEquals(S3ObjectStore.HostedPhysicalGcCapability.BLOCKED_UPLOAD_FENCING,
+                    S3ObjectStore.hostedPhysicalGcCapability());
+            verifyNoInteractions(metadata,retention);assertEquals(0,calls.get());
+        } finally {server.stop(0);}
     }
 
     @ParameterizedTest @ValueSource(strings={"backend","key"})
@@ -35,34 +54,33 @@ class ObjectRetentionSchedulerTest {
         AtomicInteger calls=new AtomicInteger();
         HttpServer server=server(204,calls,new AtomicReference<>());
         try {
-            when(metadata.activeBackend()).thenReturn(backend(server));
             var purge=new JdbcTenantObjectRetentionStore.Purge("run","org-gc","obj",sha,
                     drift.equals("backend")?"other":"primary",drift.equals("key")?"wrong":"org-gc/obj/"+sha);
-            when(retention.collect(any())).thenAnswer(call->{call.<JdbcTenantObjectRetentionStore.ConfirmedDeleter>getArgument(0).delete(purge);return null;});
             assertEquals("OBJECT_GC_PROVIDER_BINDING_MISMATCH",assertThrows(S3ObjectStore.ObjectStorageException.class,
-                    ()->new ObjectRetentionScheduler(metadata,retention,Clock.systemUTC()).collect()).getMessage());
+                    ()->ObjectRetentionScheduler.validateBinding(backend(server),purge)).getMessage());
             assertEquals(0,calls.get());
         } finally {server.stop(0);}
     }
 
     @ParameterizedTest @ValueSource(ints={204,404,500})
-    void onlyConfirmedProviderResultsReturnNormallyAndBackendIsCapturedOnce(int status) throws Exception {
+    void lowLevelDeleteResultDoesNotByItselfProveHostedGcSafety(int status) throws Exception {
         AtomicInteger calls=new AtomicInteger();AtomicReference<String> request=new AtomicReference<>();
         HttpServer server=server(status,calls,request);
         try {
-            when(metadata.activeBackend()).thenReturn(backend(server));
-            var purge=new JdbcTenantObjectRetentionStore.Purge("run","org-gc","obj",sha,"primary","org-gc/obj/"+sha);
-            when(retention.collect(any())).thenAnswer(call->{
-                var deleter=call.<JdbcTenantObjectRetentionStore.ConfirmedDeleter>getArgument(0);
-                deleter.delete(purge);deleter.delete(purge);
-                return new JdbcTenantObjectRetentionStore.RoundResult(2,2,0);
-            });
-            var scheduler=new ObjectRetentionScheduler(metadata,retention,Clock.systemUTC());
-            if(status==500) assertThrows(S3ObjectStore.ObjectStorageException.class,scheduler::collect);
-            else {scheduler.collect();assertEquals(2,calls.get());}
+            var provider=new S3ObjectStore(backend(server),metadata,Clock.systemUTC());
+            if(status==500) assertThrows(S3ObjectStore.ObjectStorageException.class,()->provider.deleteObject("org-gc",sha));
+            else {provider.deleteObject("org-gc",sha);provider.deleteObject("org-gc",sha);assertEquals(2,calls.get());}
             assertEquals("DELETE /bucket/org-gc/obj/"+sha,request.get());
-            verify(metadata,times(1)).activeBackend();
+            assertThrows(IllegalStateException.class,()->S3ObjectStore.hostedPhysicalGcCapability().requireWriterQuiescence());
+            verifyNoInteractions(metadata,retention);
         } finally {server.stop(0);}
+    }
+
+    ApplicationContextRunner context() {
+        return new ApplicationContextRunner().withUserConfiguration(ObjectRetentionScheduler.class)
+                .withBean(JdbcObjectStorageStore.class,()->metadata)
+                .withBean(JdbcTenantObjectRetentionStore.class,()->retention)
+                .withBean(Clock.class,Clock::systemUTC);
     }
 
     S3ObjectStore.Backend backend(HttpServer server) {
