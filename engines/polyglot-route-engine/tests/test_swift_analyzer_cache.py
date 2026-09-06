@@ -679,6 +679,7 @@ def test_swift_build_ps_process_list_is_bounded_and_exact(
         return subprocess.CompletedProcess(command, 0, stdout, b"")
 
     monkeypatch.setattr(native.subprocess, "run", run)
+    monkeypatch.setattr(native, "run_bounded", run)
     monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_IDS", maximum_ids)
     monkeypatch.setattr(native, "_SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES", maximum_bytes)
 
@@ -993,6 +994,7 @@ def test_swift_build_step_preserves_keyboard_interrupt(
 
     process = InterruptingProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
     monkeypatch.setattr(
         native,
         "_attempt_swift_build_session_cleanup",
@@ -1044,6 +1046,7 @@ def test_swift_build_step_preserves_system_exit(
 
     process = InterruptingProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
 
     def cleanup(candidate: InterruptingProcess) -> tuple[BaseException | None, tuple[str, ...]]:
         cleaned.append(candidate.pid)
@@ -1082,6 +1085,7 @@ def test_swift_build_step_fails_closed_on_normal_completion_enumeration_error(
 
     process = CompletedProcess()
     monkeypatch.setattr(native.subprocess, "Popen", lambda *_args, **_kwargs: process)
+    monkeypatch.setattr(native, "bounded_communicate", lambda process, **kwargs: process.communicate(**kwargs))
     monkeypatch.setattr(
         native,
         "_wait_for_swift_build_session_exit",

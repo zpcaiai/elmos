@@ -13,6 +13,8 @@ from pathlib import Path, PurePosixPath
 from typing import Any, cast
 
 from .models import Language, RouteError
+from .process_io import run_bounded
+from .resource_budget import keyed_lock
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
 _GO_TELEMETRY_MODE = b"off\n"
@@ -306,7 +308,7 @@ def _output(
                 env["LOGNAME"] = current_user
                 if "__CF_USER_TEXT_ENCODING" in os.environ:
                     env["__CF_USER_TEXT_ENCODING"] = os.environ["__CF_USER_TEXT_ENCODING"]
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 check=False,
                 capture_output=True,
@@ -3444,6 +3446,11 @@ def _discover_node_topology() -> dict[str, object]:
 
 
 def _node_cached_topology() -> dict[str, object]:
+    with keyed_lock(("node-topology", str(_EXPECTED_NODE_ROOT))):
+        return _node_cached_topology_locked()
+
+
+def _node_cached_topology_locked() -> dict[str, object]:
     global _NODE_TOPOLOGY_CACHE
 
     if _NODE_TOPOLOGY_CACHE is None:
@@ -5115,7 +5122,7 @@ def _kotlin_version_banner(jvm_home: Path) -> str:
                 executable_dirs=(jvm_home / "bin", _EXPECTED_KOTLINC_EXECUTABLE.parent),
             )
             environment["JAVA_HOME"] = str(jvm_home)
-            completed = subprocess.run(
+            completed = run_bounded(
                 command,
                 check=False,
                 capture_output=True,
@@ -5521,4 +5528,8 @@ def exact_toolchain(language: Language) -> ExactToolchain:
     `identifier_hygiene.policy_for_language` and the pipeline's own lookup
     all raise a coded `RouteError` here.
     """
-    return _cached_exact_toolchain(language, _toolchain_fingerprint())
+    fingerprint = _toolchain_fingerprint()
+    # lru_cache is coherent but can execute the same cold selector in several
+    # threads. Serialize only that exact key; never cache live content receipts.
+    with keyed_lock(("exact-toolchain", language, fingerprint)):
+        return _cached_exact_toolchain(language, fingerprint)
