@@ -255,6 +255,7 @@ class SpringUpgradeRunServiceTest {
         assertEquals(1, transformer.stopCalls.get());
         assertEquals(RunStatus.CANCELLED,
                 awaitTerminal(run.runId(), "org-a").status());
+        awaitLeaseReconciled(run.runId());
     }
 
     @Test void preDestroyStopsEveryRemoteHandleOnce() {
@@ -455,6 +456,35 @@ class SpringUpgradeRunServiceTest {
             }
         } while (System.nanoTime() < deadline);
         return fail("runtime did not reach " + expected);
+    }
+
+    private void awaitLeaseReconciled(String runId) {
+        Path durableQueue = workspace.resolve(".durable-queue");
+        String tenantDigest = sha256Text("org-a");
+        Path receipt = durableQueue.resolve("receipts/spring-upgrade")
+                .resolve(tenantDigest).resolve(runId + ".properties");
+        Path lease = durableQueue.resolve("leases/spring-upgrade")
+                .resolve(tenantDigest).resolve(runId + ".properties");
+        long deadline = System.nanoTime() + ASYNC_STATE_TIMEOUT.toNanos();
+        do {
+            if (Files.isRegularFile(receipt) && !Files.exists(lease)) return;
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException error) {
+                Thread.currentThread().interrupt();
+                fail("test interrupted while awaiting durable lease reconciliation");
+            }
+        } while (System.nanoTime() < deadline);
+        fail("durable lease was not reconciled for " + runId);
+    }
+
+    private static String sha256Text(String value) {
+        try {
+            return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256")
+                    .digest(value.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception error) {
+            throw new IllegalStateException("SHA-256 unavailable", error);
+        }
     }
 
     private static StartRequest request(String key) {

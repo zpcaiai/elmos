@@ -8,6 +8,7 @@ import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass, replace
+from datetime import datetime
 from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -457,8 +458,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="fb454ccb6b4aad2297c30d8741e5722ffb08439670469a03c46602b31c219277",
-    php_tree_bytes=129_952_851,
+    php_tree_sha256="4ff67dce127599b9d10ee166a98d71d457fd4f9319b956ffdfc95ac19a12281f",
+    php_tree_bytes=129_940_688,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -4380,11 +4381,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '8c4459ea3d6603c87b85ca6c07fac8d255180f4404b59c3b778230edacd7fb0f'
+_EXPECTED_PHP_TREE_SHA256 = '4ff67dce127599b9d10ee166a98d71d457fd4f9319b956ffdfc95ac19a12281f'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129952837
+_EXPECTED_PHP_TREE_BYTES = 129940688
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4481,6 +4482,41 @@ def _php_install_receipt_field_digests(
             )
         diagnostics[key] = field
     return diagnostics
+
+
+def _normalized_php_spdx_sbom(document: object, failure: str) -> bytes:
+    """Bind the Homebrew SPDX document without its generation timestamp."""
+    if not isinstance(document, dict):
+        raise RouteError(failure)
+    creation = document.get("creationInfo")
+    created = creation.get("created") if isinstance(creation, dict) else None
+    if (
+        document.get("spdxVersion") != "SPDX-2.3"
+        or document.get("dataLicense") != "CC0-1.0"
+        or document.get("SPDXID") != "SPDXRef-DOCUMENT"
+        or document.get("name") != "SBOM-SPDX-php-8.5.9"
+        or document.get("documentNamespace")
+        != "https://formulae.brew.sh/spdx/php-8.5.9.json"
+        or not isinstance(creation, dict)
+        or set(creation) != {"created", "creators"}
+        or not isinstance(created, str)
+        or not isinstance(creation.get("creators"), list)
+        or not creation["creators"]
+        or not all(isinstance(item, str) for item in creation["creators"])
+    ):
+        raise RouteError(failure)
+    try:
+        if datetime.strptime(created, "%Y-%m-%dT%H:%M:%SZ").strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        ) != created:
+            raise RouteError(failure)
+    except ValueError as error:
+        raise RouteError(failure) from error
+    normalized = json.loads(json.dumps(document))
+    normalized["creationInfo"]["created"] = "<sbom-creation-time>"
+    return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
+        "utf-8"
+    )
 
 
 def php_tree_identity(
@@ -4610,6 +4646,17 @@ def php_tree_identity(
             normalized = json.dumps(
                 receipt, sort_keys=True, separators=(",", ":")
             ).encode("utf-8")
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
+        elif relative == "sbom.spdx.json":
+            try:
+                sbom = json.loads(path.read_text(encoding="utf-8"))
+            except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
+                raise RouteError(failure) from error
+            normalized = _normalized_php_spdx_sbom(sbom, failure)
             record = {
                 **record,
                 "bytes": len(normalized),

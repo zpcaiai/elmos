@@ -580,6 +580,44 @@ def test_php_record_diagnostics_localize_exact_tree_drift(tmp_path) -> None:
     assert len(first["drifting.txt"]) == 16
 
 
+def test_php_tree_normalizes_only_the_spdx_generation_time(tmp_path) -> None:
+    from elmos_polyglot_route.models import RouteError
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    sbom = root / "sbom.spdx.json"
+    document = {
+        "spdxVersion": "SPDX-2.3",
+        "dataLicense": "CC0-1.0",
+        "SPDXID": "SPDXRef-DOCUMENT",
+        "name": "SBOM-SPDX-php-8.5.9",
+        "documentNamespace": "https://formulae.brew.sh/spdx/php-8.5.9.json",
+        "creationInfo": {
+            "created": "2026-09-06T07:01:02Z",
+            "creators": ["Tool: https://github.com/Homebrew/brew@6.0.19"],
+        },
+        "packages": [{"name": "php", "checksum": "first"}],
+    }
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["creationInfo"]["created"] = "2026-09-06T07:03:04Z"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert invocation_drift == baseline
+
+    document["packages"][0]["checksum"] = "other"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
+
+    document["creationInfo"]["created"] = "2026-99-06T07:03:04Z"
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:
     """Recording an unbound name is acceptable for an installer script. It is not
     acceptable for anything the interpreter could dlopen: that has to live inside
