@@ -872,6 +872,27 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
       "${HOMEBREW_PREFIX}/share/flutter/bin/cache/dart-sdk/bin/dart" \
       pub get --enforce-lockfile
   )
+
+  # The compiler-backed C# analyzer later rebuilds from a verified, local-only
+  # NuGet mirror. Hydrate the exact packages.lock.json graph while this trusted
+  # provisioning phase still has network access; runtime analysis verifies the
+  # nupkg, sha512 and metadata receipts before copying any package into its
+  # isolated restore directory.
+  readonly CSHARP_ANALYZER_PROJECT="${REPOSITORY_ROOT}/engines/dotnet-engine/src/Elmos.Dotnet.SemanticCli/Elmos.Dotnet.SemanticCli.csproj"
+  if [[ ! -f "${CSHARP_ANALYZER_PROJECT}" || -L "${CSHARP_ANALYZER_PROJECT}" ]]; then
+    printf 'C# analyzer project is missing or unsafe.\n' >&2
+    exit 3
+  fi
+  HOME="${PINNED_HOME}" \
+    NUGET_PACKAGES="${PINNED_HOME}/.nuget/packages" \
+    DOTNET_CLI_HOME="${PINNED_HOME}/.dotnet" \
+    DOTNET_CLI_TELEMETRY_OPTOUT=1 \
+    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=1 \
+    "${HOMEBREW_CELLAR}/dotnet/10.0.301/libexec/dotnet" restore \
+      "${CSHARP_ANALYZER_PROJECT}" \
+      --locked-mode \
+      --disable-parallel \
+      --nologo
 fi
 
 readonly CAPTURE_ROOT="${REPOSITORY_ROOT}/routes/cpp-to-java/certification/formal-artifacts/engine-sources/runtime"

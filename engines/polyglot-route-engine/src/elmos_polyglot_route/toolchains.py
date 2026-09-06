@@ -5512,27 +5512,51 @@ _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT = 1012
 _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT = 112
 _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES = 607_877_856
 
+# Flutter's immutable 3.44.1 cask has two exact Dart SDK tree receipts on the
+# supported macOS 26 GitHub host images. The second receipt is the fully hashed
+# post-install cache state observed on the 20260831 image; it is not a wildcard
+# for additional files or a version-only exception. Every count, byte total and
+# content/mode digest must match one of these complete identities.
+_EXPECTED_FLUTTER_DART_SDK_TREES: tuple[dict[str, object], ...] = (
+    {
+        "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
+        "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
+        "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
+        "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
+        "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
+        "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+    },
+    {
+        "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
+        "sha256": "723c91129a701c5f3aaf31e30df986e6d79c70092b3f9087b7d3225028a7b107",
+        "record_count": 1125,
+        "file_count": 1013,
+        "directory_count": 112,
+        "bytes": 611_763_504,
+    },
+)
 
-def _expected_flutter_build_closure() -> dict[str, object]:
+
+def _expected_flutter_build_closure(
+    trees: dict[str, dict[str, object]] | None = None,
+) -> dict[str, object]:
+    dart_sdk = (
+        dict(_EXPECTED_FLUTTER_DART_SDK_TREES[0])
+        if trees is None
+        else dict(trees["dart_sdk"])
+    )
     return {
         "schema": _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA,
-        "trees": {
-            "dart_sdk": {
-                "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
-                "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-                "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-                "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-                "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-                "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
-            },
-        },
+        "trees": {"dart_sdk": dart_sdk},
     }
 
 
-def _flutter_build_closure_sha256() -> str:
+def _flutter_build_closure_sha256(
+    trees: dict[str, dict[str, object]] | None = None,
+) -> str:
     return hashlib.sha256(
         json.dumps(
-            _expected_flutter_build_closure(),
+            _expected_flutter_build_closure(trees),
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=True,
@@ -5547,16 +5571,17 @@ def _flutter_build_tree_identities() -> dict[str, dict[str, object]]:
         "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_UNSAFE",
         portable_owner_identity=True,
     )
-    _verify_qualified_tree_manifest(
-        dart_sdk,
-        expected_root=_EXPECTED_FLUTTER_DART_SDK_ROOT,
-        expected_sha256=_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-        expected_record_count=_EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-        expected_file_count=_EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-        expected_directory_count=_EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-        expected_bytes=_EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
-        failure="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
-    )
+    if dart_sdk not in _EXPECTED_FLUTTER_DART_SDK_TREES:
+        raise RouteError(
+            "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH:expected="
+            + json.dumps(
+                _EXPECTED_FLUTTER_DART_SDK_TREES,
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            + ":observed="
+            + json.dumps(dart_sdk, sort_keys=True, separators=(",", ":"))
+        )
     return {"dart_sdk": dart_sdk}
 
 
@@ -5603,11 +5628,18 @@ def _flutter() -> ExactToolchain:
     )
     observed_dart = _output([str(_EXPECTED_FLUTTER_DART), "--version"])
     after = bindings()
-    if before != after or fields != _EXPECTED_FLUTTER_VERSION_FIELDS or observed_dart != _EXPECTED_FLUTTER_DART_VERSION:
+    trees = _flutter_build_tree_identities()
+    if (
+        before != after
+        or fields != _EXPECTED_FLUTTER_VERSION_FIELDS
+        or observed_dart != _EXPECTED_FLUTTER_DART_VERSION
+    ):
         raise RouteError(
             "EXACT_TOOLCHAIN_MISMATCH:flutter:expected=Flutter-3.44.1/Dart-3.12.1:"
             f"observed={fields[0]}/{fields[3]}"
         )
+    closure_sha256 = _flutter_build_closure_sha256(trees)
+    dart_sdk_sha256 = str(trees["dart_sdk"]["sha256"])
     return ExactToolchain(
         "flutter",
         "Flutter 3.44.1 / Dart 3.12.1",
@@ -5619,8 +5651,8 @@ def _flutter() -> ExactToolchain:
             f"flutter-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[1]}",
             f"flutter-engine-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[2]}",
             f"flutter-build-closure-schema={_EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA}",
-            f"flutter-build-closure-sha256={_flutter_build_closure_sha256()}",
-            f"flutter-dart-sdk-tree-sha256={_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256}",
+            f"flutter-build-closure-sha256={closure_sha256}",
+            f"flutter-dart-sdk-tree-sha256={dart_sdk_sha256}",
             "dart-analyzer=10.1.0",
             "_fe_analyzer_shared=95.0.0",
             "repository-build=pure-dart-import-free",
@@ -5648,6 +5680,13 @@ def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, objec
     ):
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_IDENTITY_MISMATCH")
     trees = _flutter_build_tree_identities()
+    closure_sha256 = _flutter_build_closure_sha256(trees)
+    if (
+        f"flutter-build-closure-sha256={closure_sha256}" not in toolchain.profile
+        or f"flutter-dart-sdk-tree-sha256={trees['dart_sdk']['sha256']}"
+        not in toolchain.profile
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
     if toolchain != exact_toolchain("flutter"):
         raise RouteError("EXACT_TOOLCHAIN_FLUTTER_BUILD_CHANGED_DURING_VERIFICATION")
     profile_sha256 = hashlib.sha256(
@@ -5662,7 +5701,7 @@ def verify_flutter_build_toolchain(toolchain: ExactToolchain) -> dict[str, objec
         "kind": "elmos.flutter-dart-build-toolchain-receipt",
         "language": "flutter",
         "version": toolchain.version,
-        "closure_sha256": _flutter_build_closure_sha256(),
+        "closure_sha256": closure_sha256,
         "profile_sha256": profile_sha256,
         "trees": trees,
     }
