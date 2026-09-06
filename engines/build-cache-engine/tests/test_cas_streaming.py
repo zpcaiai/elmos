@@ -115,6 +115,25 @@ def test_unavailable_selected_bytes_kernel_falls_back_but_errors_do_not(tmp_path
     assert not store.contains(sha256_bytes(b"must not publish"))
 
 
+def test_bytes_read_backend_is_independent_opt_in(tmp_path, monkeypatch):
+    payload = b"explicit bytes read backend"
+    store = ContentAddressableStore(tmp_path / "store", native_file_io=True)
+    digest = store.put_bytes(payload)
+    calls = []
+    monkeypatch.setattr(native_cas_bridge, "is_native_available", lambda: True)
+    def native(root, requested_digest, verify):
+        calls.append((root, requested_digest, verify))
+        return payload
+    monkeypatch.setattr(native_cas_bridge, "native_get_bytes", native)
+    assert store.get_bytes(digest) == payload
+    assert calls == []
+    selected = ContentAddressableStore(store.root, native_bytes_io=True)
+    assert selected.get_bytes(digest) == payload
+    assert calls == [(store.root, digest, True)]
+    monkeypatch.setattr(native_cas_bridge, "native_get_bytes", lambda *args, **kwargs: None)
+    assert selected.get_bytes(digest) == payload
+
+
 def test_native_file_writer_preserves_existing_compressed_winner(tmp_path):
     if not native_cas_bridge.is_native_available():
         pytest.skip("native library not configured")
