@@ -431,16 +431,43 @@ def nodejs_route_error_code(reason: str) -> str | None:
     return code
 
 
-def nodejs_stable_route_error(reason: str) -> str:
-    """Remove only the private absolute analyzer snapshot path from an error."""
+def _stable_native_route_error(reason: str, *, invalid_wrapper: str) -> str:
+    """Remove only an absolute native-analyzer path from a domain error."""
 
     prefix = "NATIVE_ANALYZER_FAILED:"
     if not reason.startswith(prefix):
         return reason
     wrapped = reason[len(prefix) :].split(":", 1)
     if len(wrapped) != 2 or not Path(wrapped[0]).is_absolute():
-        raise RuntimeError(f"NODEJS_NATIVE_ERROR_WRAPPER_INVALID:{reason}")
+        raise RuntimeError(f"{invalid_wrapper}:{reason}")
     return wrapped[1]
+
+
+def stable_native_route_error(reason: str) -> str:
+    """Project an exact native wrapper onto its stable semantic error text."""
+
+    stable = _stable_native_route_error(
+        reason,
+        invalid_wrapper="NATIVE_ERROR_WRAPPER_INVALID",
+    )
+    if stable == reason:
+        return stable
+    executable = reason.removeprefix("NATIVE_ANALYZER_FAILED:").split(":", 1)[0]
+    go_runner_failure = MISSING_SYMBOL_FAILURE + "\nexit status 2"
+    if Path(executable).name == "go" and stable == go_runner_failure:
+        return MISSING_SYMBOL_FAILURE
+    if "\n" in stable or "\r" in stable:
+        raise RuntimeError(f"NATIVE_ERROR_WRAPPER_INVALID:{reason}")
+    return stable
+
+
+def nodejs_stable_route_error(reason: str) -> str:
+    """Preserve the Node.js-specific invalid-wrapper diagnostic contract."""
+
+    return _stable_native_route_error(
+        reason,
+        invalid_wrapper="NODEJS_NATIVE_ERROR_WRAPPER_INVALID",
+    )
 
 
 def declared_input_domain(route_key: str) -> str:
@@ -5519,6 +5546,7 @@ def execute_negative(
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"
             )
+    reason = stable_native_route_error(reason)
     if reason != MISSING_SYMBOL_FAILURE:
         raise RuntimeError(f"NEGATIVE_CASE_WRONG_FAILURE:{source}-to-{target}:{reason}")
     relative = "certification/local-negative-evidence.json"

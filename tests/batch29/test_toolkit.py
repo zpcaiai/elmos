@@ -4785,25 +4785,51 @@ print('\\n'.join(failures))
 
     def test_negative_replay_writes_reachable_gate_report_and_readme(self):
         runner = load_polyglot_runner()
+        self.assertEqual(
+            runner.stable_native_route_error(runner.MISSING_SYMBOL_FAILURE),
+            runner.MISSING_SYMBOL_FAILURE,
+        )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "NATIVE_ERROR_WRAPPER_INVALID",
+        ):
+            runner.stable_native_route_error(
+                "NATIVE_ANALYZER_FAILED:relative/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+            )
+        with self.assertRaisesRegex(
+            RuntimeError,
+            "NATIVE_ERROR_WRAPPER_INVALID",
+        ):
+            runner.stable_native_route_error(
+                "NATIVE_ANALYZER_FAILED:/private/native/go:"
+                + runner.MISSING_SYMBOL_FAILURE
+                + "\nuntrusted trailer"
+            )
         with tempfile.TemporaryDirectory() as td:
             repo = Path(td).resolve()
-            route = repo / "routes" / "python-to-typescript"
+            route = repo / "routes" / "go-to-cpp"
             (route / "certification").mkdir(parents=True)
             fixtures = repo / "fixtures"
-            source = fixtures / "python" / "pricing.py"
+            source = fixtures / "go" / "pricing.go"
             cases = fixtures / "behavior-cases.json"
             source.parent.mkdir(parents=True)
             source.write_text(
-                "def calculate(a: int, b: int) -> int:\n    return a + b\n"
+                "package pricing\n\n"
+                "func calculate(a int64, b int64) int64 { return a + b }\n"
             )
             cases.write_text('[{"args":[1,2],"expected":3}]\n')
             with mock.patch.object(
                 runner,
                 "migrate",
-                side_effect=runner.RouteError(runner.MISSING_SYMBOL_FAILURE),
+                side_effect=runner.RouteError(
+                    "NATIVE_ANALYZER_FAILED:/private/native/go:"
+                    + runner.MISSING_SYMBOL_FAILURE
+                    + "\nexit status 2"
+                ),
             ):
                 reference = runner.execute_negative(
-                    route, fixtures, "python", "typescript"
+                    route, fixtures, "go", "cpp"
                 )
             self.assertEqual(reference, "certification/local-negative-evidence.json")
             evidence = json.loads((route / reference).read_text())
