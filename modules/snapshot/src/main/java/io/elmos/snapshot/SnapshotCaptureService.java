@@ -86,18 +86,20 @@ public final class SnapshotCaptureService {
                 if (treeSha == null || !treeSha.matches("[0-9a-f]{40}")) throw new SecurityException("SCM did not prove the snapshot tree SHA");
                 var context = new DeterministicSnapshotArchiver.SnapshotContext("GITHUB", request.repositoryId(), request.repositoryFullName(),
                         request.requestedRef(), resolved.commitSha(), treeSha);
-                var archive = requireAuthoritativeSourceLease
-                        ? archiver.archive(source.path(), context, source.sourceLease())
-                        : archiver.archive(source.path(), context);
-                byte[] archiveBytes = archive.archive(), manifestBytes = archive.manifest();
+                try (var spool = requireAuthoritativeSourceLease
+                        ? archiver.spool(source.path(), context, source.sourceLease())
+                        : archiver.spool(source.path(), context);
+                     var archiveInput = spool.openStream()) {
+                var archive = spool.metadata();
+                byte[] manifestBytes = archive.manifest();
                 String snapshotId = "snapshot-" + UUID.randomUUID();
-                String archiveRef = artifacts.putIfAbsent(resource, archive.archiveSha256(), archiveBytes.length,
-                        new ByteArrayInputStream(archiveBytes), "application/zstd");
+                String archiveRef = artifacts.putIfAbsent(resource, archive.archiveSha256(), archive.archiveSize(),
+                        archiveInput, "application/zstd");
                 String manifestRef = artifacts.putIfAbsent(resource, archive.manifestSha256(), manifestBytes.length,
                         new ByteArrayInputStream(manifestBytes), "application/json");
                 var snapshot = new SnapshotModel.RepositorySnapshot(snapshotId, request.organizationId(),
                         request.repositoryId(), request.requestedRef(), resolved.commitSha(), treeSha, archiveRef,
-                        archive.archiveSha256(), archiveBytes.length, manifestRef, archive.manifestSha256(), SCHEMA_VERSION,
+                        archive.archiveSha256(), archive.archiveSize(), manifestRef, archive.manifestSha256(), SCHEMA_VERSION,
                         SnapshotModel.Status.AVAILABLE, clock.instant());
                 requireArtifactReferences(snapshot);
                 List<String> references = references(snapshot);
@@ -156,6 +158,7 @@ public final class SnapshotCaptureService {
                 reconciliations.markResolved(
                         resource.organizationId(), reconciliation.reconciliationId());
                 return stored;
+                }
             } catch (RuntimeException failure) { throw failure; }
             catch (Exception failure) { throw new IllegalStateException("snapshot staging cleanup failed", failure); }
         }
