@@ -39,7 +39,7 @@ from elmos_polyglot_route.identifier_hygiene import (
 )
 from elmos_polyglot_route.models import Expression, Language, RouteError, SemanticIR, SourceSpan, Statement
 from elmos_polyglot_route.native import analyze, inventory_module
-from elmos_polyglot_route.toolchains import exact_toolchain
+from elmos_polyglot_route.toolchains import apple_route_host_profile, exact_toolchain
 
 SOURCE_BYTES = b"s" * 4_000
 TARGET_BYTES = b"t" * 4_000
@@ -244,6 +244,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
     dependency_digest = "sha256:b78ec1b227a6cbe43ca239585f66907e50485b9119f96b5461bfc888f0e5f45d"
     dependency_revision = "0687f71944021d616d34d922343dcef086855920"
     dependency_cache_key = "swift-syntax-standalone-v2-600.0.1-" + dependency_revision + "-" + dependency_digest[7:]
+    selected_host = apple_route_host_profile("swift")
     binary_root = Path("/private/tmp/elmos-swift-analyzer-test")
     binary = {
         "name": "ElmosSwiftAnalyzer",
@@ -308,7 +309,7 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
                 },
                 "git": {
                     "path": "/Applications/Xcode.app/Contents/Developer/usr/bin/git",
-                    "sha256": "sha256:10f9c1df894525ae4c7454258febab6d3d25071062b42cb48dbb1842cdffd2a9",
+                    "sha256": "sha256:" + selected_host.apple_git_sha256,
                     "version": "git version 2.50.1 (Apple Git-155)",
                 },
                 "identity": "swift-syntax",
@@ -325,18 +326,18 @@ def _synthetic_swift_build_receipt() -> dict[str, object]:
             "scope": "swift-build-process-tree",
             "sandbox": {
                 "path": "/usr/bin/sandbox-exec",
-                "sha256": "sha256:abc5bb136d6b5cce8fa85d789f78e3326c51ca60cae637b2064adfb67a1dcd9a",
-                "bytes": 102_368,
+                "sha256": "sha256:" + selected_host.sandbox_exec_sha256,
+                "bytes": selected_host.sandbox_exec_bytes,
                 "mode": "0755",
                 "uid": 0,
                 "gid": 0,
                 "nlink": 1,
-                "cdhash_full": "4828e16826baf4052b8212b82d1f3f2c13216303e062f0cc2b398f045d422625",
+                "cdhash_full": selected_host.sandbox_exec_cdhash_full,
             },
             "verifier": {
                 "path": "/usr/bin/codesign",
-                "sha256": "sha256:844d30a12929b59c9f2215e2a308c3e1db572831a478f35906e452a54025603e",
-                "bytes": 458_576,
+                "sha256": "sha256:" + selected_host.codesign_sha256,
+                "bytes": selected_host.codesign_bytes,
                 "mode": "0755",
                 "uid": 0,
                 "gid": 0,
@@ -538,6 +539,43 @@ def test_swift_inventory_requires_and_byte_binds_private_build_receipt() -> None
     with pytest.raises(RouteError, match="PURE_MODULE_INVENTORY_KEYS_INVALID:source:swift"):
         _verify_inventory_artifact(
             missing,
+            role="source",
+            language="swift",
+            logical_file="module.swift",
+            artifact_bytes=artifact,
+        )
+
+
+def test_swift_inventory_rejects_apple_host_profile_drift() -> None:
+    artifact = b"func identity(_ value: Int64) -> Int64 { value }\n"
+    inventory = _synthetic_swift_inventory(artifact)
+
+    changed_git = json.loads(json.dumps(inventory))
+    changed_git["analyzer_build_receipt"]["dependency"]["mirror"]["git"]["sha256"] = (  # type: ignore[index]
+        "sha256:" + "b" * 64
+    )
+    with pytest.raises(
+        RouteError,
+        match="PURE_MODULE_ANALYZER_BUILD_RECEIPT_INVALID:source:swift",
+    ):
+        _verify_inventory_artifact(
+            changed_git,
+            role="source",
+            language="swift",
+            logical_file="module.swift",
+            artifact_bytes=artifact,
+        )
+
+    changed_sandbox = json.loads(json.dumps(inventory))
+    changed_sandbox["analyzer_build_receipt"]["network_isolation"]["sandbox"]["sha256"] = (  # type: ignore[index]
+        "sha256:" + "c" * 64
+    )
+    with pytest.raises(
+        RouteError,
+        match="PURE_MODULE_ANALYZER_NETWORK_ISOLATION_INVALID:source:swift",
+    ):
+        _verify_inventory_artifact(
+            changed_sandbox,
             role="source",
             language="swift",
             logical_file="module.swift",
