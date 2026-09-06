@@ -540,7 +540,7 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
             "stable": "8.5.9",
             "head": "HEAD",
             "version_scheme": 0,
-            "compatibility_version": 1,
+            "compatibility_version": None,
         },
     })
     document["runtime_dependencies"].reverse()
@@ -564,6 +564,14 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
 
     document["aliases"] = ["php@8.5"]
     document["source"]["versions"]["head"] = "unexpected-head"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["source"]["versions"].update({
+        "head": "HEAD",
+        "compatibility_version": 0,
+    })
     receipt.write_text(json.dumps(document), encoding="utf-8")
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
