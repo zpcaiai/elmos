@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import math
 import subprocess
@@ -8,7 +9,10 @@ from typing import Any
 
 import pytest
 
+import elmos_polyglot_route.assembly as assembly
+import elmos_polyglot_route.clang_analyzer as clang_analyzer
 import elmos_polyglot_route.native as native
+import elmos_polyglot_route.single_unit as single_unit
 from elmos_polyglot_route.emitter import (
     _CPP_HELPERS,
     _OBJC_HELPERS,
@@ -35,6 +39,14 @@ from elmos_polyglot_route.validation import (
 )
 
 ENGINE_ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_native_analysis_validation_and_assembly_share_the_default_deadline() -> None:
+    assert inspect.signature(native._run).parameters["timeout"].default == 600
+    assert inspect.signature(_run).parameters["timeout"].default == 600
+    assert inspect.signature(assembly._run).parameters["timeout"].default == 600
+    assert inspect.signature(clang_analyzer._run_clang).parameters["timeout"].default == 600
+    assert inspect.signature(single_unit._run).parameters["timeout"].default == 600
 
 
 def _failing_receipt_bound_swift_analyzer(
