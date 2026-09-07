@@ -23,9 +23,9 @@
   ],
   "skillCount": 24,
   "blockingCount": 14,
-  "openCount": 13,
+  "openCount": 2,
   "repositoryBlockingCount": 1,
-  "repositoryOpenCount": 12,
+  "repositoryOpenCount": 1,
   "externalGateBlockingCount": 13,
   "externalGateOpenCount": 1,
   "certifiable": false,
@@ -47,72 +47,6 @@
       "severity": "blocking",
       "responsibility": "external-gate",
       "detail": "certification-request.sig has not been produced"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-ai-model-supply-chain is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-artifact-container-signing is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-container-kubernetes-iac-scanning is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-dast-iast-integration is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-independent-security-assessment is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-isolated-trusted-builder is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-psirt-security-incident is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-sast-integration is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-secure-code-review-approval is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-slsa-provenance is only experimental in the support matrix"
-    },
-    {
-      "category": "coverage",
-      "severity": "open",
-      "responsibility": "repository",
-      "detail": "b40-vex-applicability is only experimental in the support matrix"
     },
     {
       "category": "metric",

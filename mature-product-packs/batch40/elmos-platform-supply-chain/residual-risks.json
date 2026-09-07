@@ -8,19 +8,25 @@
       "id": "RISK-B40-SIGN-001",
       "severity": "critical",
       "status": "OPEN",
-      "statement": "Release artifacts are not signed and no build provenance is attested, so tampering would not be detected."
+      "statement": "Production artifacts do not yet have an independently verified signature or isolated-builder provenance receipt."
     },
     {
-      "id": "RISK-B40-SBOM-001",
+      "id": "RISK-B40-SBOM-LICENSE-001",
       "severity": "high",
       "status": "OPEN",
-      "statement": "No SBOM exists for the Java or pnpm dependency graphs, so vulnerability applicability cannot be assessed."
+      "statement": "The direct dependency surface is inventoried, but transitive Maven coverage is NOT_RUN and 427 external direct components lack approved license decisions."
+    },
+    {
+      "id": "RISK-B40-SLA-001",
+      "severity": "high",
+      "status": "OPEN",
+      "statement": "Historical Dependabot remediation SLA compliance is 0.9027: 18 of 185 fixed alerts breached the declared response limit. The observed history is immutable."
     },
     {
       "id": "RISK-B40-INDEPENDENT-001",
       "severity": "critical",
       "status": "OPEN",
-      "statement": "No independent penetration test or code audit has been commissioned."
+      "statement": "Independent security assessment, representative and holdout execution, and accountable external approval remain NOT_RUN."
     }
   ]
 }

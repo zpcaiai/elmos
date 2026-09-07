@@ -6,7 +6,8 @@
   "owner": "elmos-platform-maintainers",
   "status": "draft",
   "evidenceRefs": [
-    "b40-local-assurance"
+    "b40-local-assurance",
+    "b40-repository-controls"
   ],
   "records": [
     {
@@ -123,6 +124,148 @@
       "status": "PASS",
       "evidenceRefs": [
         "b40-local-assurance"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-REPOSITORY-CONTROL-SCOPE",
+      "statement": "The local control scope and external NOT_RUN boundary are exact.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-ai-model-supply-chain",
+        "b40-artifact-container-signing",
+        "b40-container-kubernetes-iac-scanning",
+        "b40-dast-iast-integration",
+        "b40-independent-security-assessment",
+        "b40-isolated-trusted-builder",
+        "b40-psirt-security-incident",
+        "b40-sast-integration",
+        "b40-secure-code-review-approval",
+        "b40-slsa-provenance",
+        "b40-vex-applicability"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-SECURE-REVIEW-OWNERSHIP",
+      "statement": "Every sensitive Batch 40 path has an explicit reviewer owner and a private reporting policy.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-secure-code-review-approval"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-PSIRT-LIFECYCLE",
+      "statement": "The PSIRT lifecycle is owned, bounded, non-automatic, and closure requires verification evidence.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-psirt-security-incident"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-LICENSE-DECISION-QUEUE",
+      "statement": "Every external direct component is retained in a fail-closed legal review queue; no approval is inferred.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-STATIC-AND-IAC-ADAPTER-BOUNDARY",
+      "statement": "SAST, container, and IaC adapter contracts fail closed until an approved provider is configured.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-sast-integration",
+        "b40-container-kubernetes-iac-scanning"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-ACTIVE-TEST-AUTHORIZATION",
+      "statement": "Active application-security tests require target authorization and remain unconfigured.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-dast-iast-integration"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-ISOLATED-BUILDER-POLICY",
+      "statement": "Critical builds require independent assessment and deny automatic production authorization.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-isolated-trusted-builder"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-CONTENT-ADDRESSED-PROVENANCE",
+      "statement": "Local evidence provenance is content-addressed and the verifier rejects digest tampering.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-slsa-provenance",
+        "b40-artifact-container-signing"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-INDEPENDENT-ASSESSMENT-BOUNDARY",
+      "statement": "Independent assessment requires a distinct verifier; no repository check can self-promote it.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-independent-security-assessment"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-AI-MODEL-ARTIFACT-REGISTRY",
+      "statement": "Every tracked deployable model artifact must have an owner, digest, and provenance reference.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-ai-model-supply-chain"
+      ],
+      "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
+    },
+    {
+      "controlId": "B40-VEX-SAFE-MAPPING",
+      "statement": "Dependabot state is mapped to draft VEX without inferring NOT_AFFECTED from dismissal.",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "capabilityIds": [
+        "b40-vex-applicability"
       ],
       "boundary": "LOCAL_EXECUTED_SELF_ATTESTED"
     }

@@ -51,6 +51,18 @@
       ],
       "externalOperationExecuted": false,
       "authorizationRefs": []
+    },
+    {
+      "claimId": "b40-repository-control-contracts",
+      "status": "PASS",
+      "evidenceRefs": [
+        "b40-repository-controls"
+      ],
+      "provenanceRefs": [
+        "b40-repository-controls-provenance"
+      ],
+      "externalOperationExecuted": false,
+      "authorizationRefs": []
     }
   ]
 }

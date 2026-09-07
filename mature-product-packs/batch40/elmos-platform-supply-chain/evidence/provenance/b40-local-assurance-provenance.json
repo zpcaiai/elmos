@@ -6,12 +6,12 @@
   "packKey": "elmos-platform-supply-chain",
   "evidenceId": "b40-local-assurance",
   "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
+  "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
   "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
   "runReport": {
     "path": "evidence/execution/b40-local-assurance.json",
-    "sha256": "sha256:a9e2229a7d5cf160efc6094d362fbc91e7661681a561efc45a9624a3721d59e0",
-    "bytes": 12862
+    "sha256": "sha256:360ffec6a68caad5d64c2f55faea97048f48cb712e7c327eef018a0cc620b49a",
+    "bytes": 13016
   },
   "analyzer": {
     "path": "scripts/batch40_local_assurance.py",
@@ -19,7 +19,7 @@
     "reportedDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7"
   },
   "environment": {
-    "capturedAt": "2026-09-06T19:49:31.488333Z",
+    "capturedAt": "2026-09-06T23:59:51.643906Z",
     "pythonVersion": "3.14.6",
     "system": "Darwin",
     "machine": "arm64"

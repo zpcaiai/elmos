@@ -3,8 +3,8 @@
 - Pack: `elmos-platform-supply-chain`
 - Skills in scope: 24
 - Blocking gaps: 14
-- Open gaps: 13
-- Repository-owned: 1 blocking / 12 open
+- Open gaps: 2
+- Repository-owned: 1 blocking / 1 open
 - External gate: 13 blocking / 1 open
 
 This inventory is a work list. It grants no status and is not evidence.
@@ -28,16 +28,5 @@ This inventory is a work list. It grants no status and is not evidence.
 
 ## Open
 
-- [coverage / repository] b40-ai-model-supply-chain is only experimental in the support matrix
-- [coverage / repository] b40-artifact-container-signing is only experimental in the support matrix
-- [coverage / repository] b40-container-kubernetes-iac-scanning is only experimental in the support matrix
-- [coverage / repository] b40-dast-iast-integration is only experimental in the support matrix
-- [coverage / repository] b40-independent-security-assessment is only experimental in the support matrix
-- [coverage / repository] b40-isolated-trusted-builder is only experimental in the support matrix
-- [coverage / repository] b40-psirt-security-incident is only experimental in the support matrix
-- [coverage / repository] b40-sast-integration is only experimental in the support matrix
-- [coverage / repository] b40-secure-code-review-approval is only experimental in the support matrix
-- [coverage / repository] b40-slsa-provenance is only experimental in the support matrix
-- [coverage / repository] b40-vex-applicability is only experimental in the support matrix
 - [metric / repository] vulnerabilitySlaCompliance is 0.9027, below the required 1.0
 - [status / external-gate] certification status is NOT_RUN

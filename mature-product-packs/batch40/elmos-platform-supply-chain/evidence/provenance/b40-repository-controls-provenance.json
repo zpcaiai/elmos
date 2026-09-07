@@ -1,0 +1,36 @@
+{
+  "recordType": "provenance",
+  "schemaVersion": 1,
+  "id": "b40-repository-controls-provenance",
+  "batch": 40,
+  "packKey": "elmos-platform-supply-chain",
+  "evidenceId": "b40-repository-controls",
+  "status": "LOCAL_EXECUTED_SELF_ATTESTED",
+  "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
+  "replayCommand": "uv run --quiet python scripts/batch40_repository_controls.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
+  "runReport": {
+    "path": "evidence/execution/b40-repository-controls.json",
+    "sha256": "sha256:b3d321a4db354ef166ae7340129277215acaa42bb491d433e53c3ba60c79ef38",
+    "bytes": 388553
+  },
+  "analyzer": {
+    "path": "scripts/batch40_repository_controls.py",
+    "sha256": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655",
+    "reportedDigest": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655"
+  },
+  "environment": {
+    "capturedAt": "2026-09-06T23:59:43.183984Z",
+    "pythonVersion": "3.14.6",
+    "system": "Darwin",
+    "machine": "arm64"
+  },
+  "limitations": [
+    "This is bounded repository-owned engineering evidence, not a provider scan, production signature, isolated-builder attestation, independent assessment, approval, or certification.",
+    "SAST, DAST/IAST, container, IaC, signing, and isolated-builder adapters remain NOT_CONFIGURED or NOT_RUN; the local result proves their typed fail-closed boundary only.",
+    "The model registry covers tracked deployable files with the configured extensions; remote registries, runtime downloads, and embedded model services are not enumerated.",
+    "Draft VEX records preserve dismissed and open alerts as UNDER_INVESTIGATION and do not establish deployment reachability or NOT_AFFECTED status.",
+    "CODEOWNERS expresses review ownership but branch protection and actual review approvals remain external evidence."
+  ],
+  "externalOperationExecuted": false,
+  "independentVerification": "NOT_RUN"
+}

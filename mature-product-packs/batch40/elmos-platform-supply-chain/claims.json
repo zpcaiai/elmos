@@ -265,7 +265,7 @@
         "workflow": ".github/workflows/ci.yml",
         "threatModel": "config/batch40-supply-chain-threat-model.json",
         "pack": "mature-product-packs/batch40/elmos-platform-supply-chain",
-        "claimCount": 3,
+        "claimCount": 4,
         "controlCount": 13,
         "freshnessWindowDays": 30
       },
@@ -278,6 +278,28 @@
       ],
       "evidenceRefs": [
         "b40-local-assurance"
+      ]
+    },
+    {
+      "claimId": "b40-repository-control-contracts",
+      "statement": "The repository-owned Batch 40 control run evaluated 11 fail-closed controls across 11 capabilities; 11 capabilities have bounded local implementation evidence and 0 controls failed.",
+      "scope": {
+        "capabilityCount": 11,
+        "controlCount": 11,
+        "sourceTargetCount": 11031,
+        "containerIacTargetCount": 60,
+        "modelArtifactCount": 0,
+        "dependabotAlertCount": 290
+      },
+      "limitations": [
+        "This is bounded repository-owned engineering evidence, not a provider scan, production signature, isolated-builder attestation, independent assessment, approval, or certification.",
+        "SAST, DAST/IAST, container, IaC, signing, and isolated-builder adapters remain NOT_CONFIGURED or NOT_RUN; the local result proves their typed fail-closed boundary only.",
+        "The model registry covers tracked deployable files with the configured extensions; remote registries, runtime downloads, and embedded model services are not enumerated.",
+        "Draft VEX records preserve dismissed and open alerts as UNDER_INVESTIGATION and do not establish deployment reachability or NOT_AFFECTED status.",
+        "CODEOWNERS expresses review ownership but branch protection and actual review approvals remain external evidence."
+      ],
+      "evidenceRefs": [
+        "b40-repository-controls"
       ]
     }
   ],
