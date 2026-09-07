@@ -15,9 +15,6 @@ import {
 } from "../../../../lib/server/accountSession";
 import { safeOperationsReturnTo } from "../../../../lib/surfaceAudience";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
-
 /**
  * Administrator login entry, deliberately separate from /api/auth/login:
  * GET starts ADMIN OIDC. POST is an explicitly configured loopback-only
