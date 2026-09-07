@@ -347,23 +347,6 @@ final class DurableRunLeaseStore implements AutoCloseable {
         }
     }
 
-    /**
-     * Closes the final filesystem-writer admission gate for this store.
-     *
-     * <p>The same in-process lock guards both mutation admission and closure,
-     * so close waits for an admitted mutation to finish and no later heartbeat,
-     * release, or acquire can recreate queue state below an owner-managed
-     * workspace.</p>
-     */
-    @Override public void close() {
-        processLock.lock();
-        try {
-            closed = true;
-        } finally {
-            processLock.unlock();
-        }
-    }
-
     private Path leasePath(String tenantDigest, String runId) {
         return confined(leasesRoot, tenantDigest, runId + ".properties");
     }
