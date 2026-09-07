@@ -8,6 +8,8 @@ import re
 import stat
 import subprocess
 import tempfile
+import tomllib
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import datetime
 from functools import cache, lru_cache
@@ -929,6 +931,7 @@ def _qualified_tree_manifest(
     failure: str,
     *,
     portable_owner_identity: bool = False,
+    file_normalizer: Callable[[Path, str, str], bytes | None] | None = None,
 ) -> dict[str, object]:
     """Return a complete immutable manifest for a symlink-free toolchain tree."""
 
@@ -973,6 +976,15 @@ def _qualified_tree_manifest(
             )
             continue
         record = _qualified_file_record(path, root, failure)
+        if file_normalizer is not None:
+            relative = path.relative_to(root).as_posix()
+            normalized = file_normalizer(path, relative, failure)
+            if normalized is not None:
+                record = {
+                    **record,
+                    "bytes": len(normalized),
+                    "sha256": hashlib.sha256(normalized).hexdigest(),
+                }
         records.append(cast(dict[str, object], record))
         file_count += 1
         file_bytes += cast(int, record["bytes"])
@@ -3786,11 +3798,11 @@ _EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT = 0
 _EXPECTED_RUST_WRAPPER_TREE_BYTES = 1_963
-_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "fd9d219f8755f252cb05a242d57addbe8c090b17a855ad367434c4de8467ce31"
+_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "3a513845dcd89f4477b746702f9a9e8862e49fa17d2a2dfd44aa3e882a3d7ff5"
 _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT = 157
 _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT = 135
 _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT = 22
-_EXPECTED_RUST_SYSROOT_TREE_BYTES = 531_383_469
+_EXPECTED_RUST_SYSROOT_TREE_BYTES = 531_383_415
 _EXPECTED_RUST_EXECUTABLE_SHA256 = "af4a9eb303553510e9d74220636dc4b21f8574ddeab73741bf6b892adc49c21c"
 _EXPECTED_RUST_EXECUTABLE_BYTES = 414_776
 _EXPECTED_RUST_CARGO_SHA256 = "798a97c06e6fc3a63f1b7e3141f87e515e6bc8da1527bc32e19ba27d86bb89c5"
@@ -3801,6 +3813,77 @@ _EXPECTED_RUST_RUSTUP_SHA256 = "aeb4105778ca1bd3c6b0e75768f581c656633cd51368fa61
 _EXPECTED_RUST_RUSTUP_BYTES = 11_053_296
 _EXPECTED_RUST_VERSION = "rustc 1.89.0 (29483883e 2025-08-04)"
 _EXPECTED_RUST_CARGO_VERSION = "cargo 1.89.0 (c24e10642 2025-06-23)"
+
+_RUST_SYSROOT_COMPONENTS_PATH = "lib/rustlib/components"
+_RUST_SYSROOT_CONFIG_PATH = "lib/rustlib/multirust-config.toml"
+_EXPECTED_RUST_SYSROOT_COMPONENTS = (
+    ("cargo", "aarch64-apple-darwin", False),
+    ("clippy-preview", "aarch64-apple-darwin", True),
+    ("rust-std", "aarch64-apple-darwin", False),
+    ("rustc", "aarch64-apple-darwin", False),
+    ("rustfmt-preview", "aarch64-apple-darwin", True),
+)
+
+
+def _normalized_rust_sysroot_receipt(
+    path: Path, relative: str, failure: str
+) -> bytes | None:
+    """Canonicalize only Rustup's component installation-order receipts."""
+    if relative not in {_RUST_SYSROOT_COMPONENTS_PATH, _RUST_SYSROOT_CONFIG_PATH}:
+        return None
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError) as error:
+        raise RouteError(f"{failure}:RUSTUP_RECEIPT_INVALID:{relative}") from error
+
+    expected_names = {
+        f"{package}-{target}"
+        for package, target, _is_extension in _EXPECTED_RUST_SYSROOT_COMPONENTS
+    }
+    if relative == _RUST_SYSROOT_COMPONENTS_PATH:
+        names = raw.splitlines()
+        if len(names) != len(set(names)) or set(names) != expected_names:
+            raise RouteError(f"{failure}:RUSTUP_COMPONENTS_INVALID")
+        return ("\n".join(sorted(names)) + "\n").encode("utf-8")
+
+    try:
+        document = tomllib.loads(raw)
+    except tomllib.TOMLDecodeError as error:
+        raise RouteError(f"{failure}:RUSTUP_CONFIG_INVALID") from error
+    components = document.get("components") if isinstance(document, dict) else None
+    if (
+        not isinstance(document, dict)
+        or set(document) != {"config_version", "components"}
+        or document.get("config_version") != "1"
+        or not isinstance(components, list)
+    ):
+        raise RouteError(f"{failure}:RUSTUP_CONFIG_INVALID")
+    normalized_components: list[tuple[str, str, bool]] = []
+    for component in components:
+        if (
+            not isinstance(component, dict)
+            or set(component) != {"pkg", "target", "is_extension"}
+            or not isinstance(component.get("pkg"), str)
+            or not isinstance(component.get("target"), str)
+            or type(component.get("is_extension")) is not bool
+        ):
+            raise RouteError(f"{failure}:RUSTUP_CONFIG_INVALID")
+        normalized_components.append(
+            (component["pkg"], component["target"], component["is_extension"])
+        )
+    if (
+        len(normalized_components) != len(set(normalized_components))
+        or set(normalized_components) != set(_EXPECTED_RUST_SYSROOT_COMPONENTS)
+    ):
+        raise RouteError(f"{failure}:RUSTUP_CONFIG_COMPONENTS_INVALID")
+    canonical = {
+        "config_version": "1",
+        "components": [
+            {"pkg": package, "target": target, "is_extension": is_extension}
+            for package, target, is_extension in sorted(normalized_components)
+        ],
+    }
+    return json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def _go_tree_identity() -> dict[str, object]:
@@ -3904,6 +3987,7 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         _EXPECTED_USER_LOCAL,
         "EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_UNSAFE",
         portable_owner_identity=True,
+        file_normalizer=_normalized_rust_sysroot_receipt,
     )
     _verify_qualified_tree_manifest(
         sysroot,

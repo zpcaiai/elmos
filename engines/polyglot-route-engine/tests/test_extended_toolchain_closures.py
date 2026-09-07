@@ -190,6 +190,68 @@ def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
     assert strict["sha256"] != local["sha256"]
 
 
+def test_rustup_component_receipts_normalize_only_install_order(tmp_path: Path) -> None:
+    components = tmp_path / "components"
+    names = [
+        f"{package}-{target}"
+        for package, target, _is_extension in toolchains._EXPECTED_RUST_SYSROOT_COMPONENTS
+    ]
+    components.write_text("\n".join(names) + "\n", encoding="utf-8")
+    first = toolchains._normalized_rust_sysroot_receipt(
+        components,
+        toolchains._RUST_SYSROOT_COMPONENTS_PATH,
+        "TEST_RUST",
+    )
+    components.write_text("\n".join(reversed(names)) + "\n", encoding="utf-8")
+    second = toolchains._normalized_rust_sysroot_receipt(
+        components,
+        toolchains._RUST_SYSROOT_COMPONENTS_PATH,
+        "TEST_RUST",
+    )
+    assert first == second
+
+    def config(rows: list[tuple[str, str, bool]]) -> str:
+        body = ['config_version = "1"']
+        for package, target, extension in rows:
+            body.extend(
+                (
+                    "",
+                    "[[components]]",
+                    f'pkg = "{package}"',
+                    f'target = "{target}"',
+                    f"is_extension = {str(extension).lower()}",
+                )
+            )
+        return "\n".join(body) + "\n"
+
+    receipt = tmp_path / "multirust-config.toml"
+    rows = list(toolchains._EXPECTED_RUST_SYSROOT_COMPONENTS)
+    receipt.write_text(config(rows), encoding="utf-8")
+    first = toolchains._normalized_rust_sysroot_receipt(
+        receipt,
+        toolchains._RUST_SYSROOT_CONFIG_PATH,
+        "TEST_RUST",
+    )
+    receipt.write_text(config(list(reversed(rows))), encoding="utf-8")
+    second = toolchains._normalized_rust_sysroot_receipt(
+        receipt,
+        toolchains._RUST_SYSROOT_CONFIG_PATH,
+        "TEST_RUST",
+    )
+    assert first == second
+
+
+def test_rustup_component_receipts_reject_semantic_drift(tmp_path: Path) -> None:
+    receipt = tmp_path / "components"
+    receipt.write_text("cargo-aarch64-apple-darwin\nunknown-target\n", encoding="utf-8")
+    with pytest.raises(RouteError, match="RUSTUP_COMPONENTS_INVALID"):
+        toolchains._normalized_rust_sysroot_receipt(
+            receipt,
+            toolchains._RUST_SYSROOT_COMPONENTS_PATH,
+            "TEST_RUST",
+        )
+
+
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])
 def test_rust_rejects_wrapper_or_sysroot_tree_drift(
     drift: str,
