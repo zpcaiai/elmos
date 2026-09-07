@@ -179,7 +179,7 @@ def _run(
     cwd: Path,
     *,
     toolchain: ExactToolchain,
-    timeout: int = 120,
+    timeout: int = 600,
 ) -> subprocess.CompletedProcess[str]:
     """Run one static compiler in an isolated environment and process group.
 
