@@ -1,0 +1,4 @@
+# Optional compatibility candidates, NOT tested production locks.
+# Resolve and freeze approved versions outside the package before native qualification.
+langgraph>=1,<2
+langgraph-checkpoint-sqlite

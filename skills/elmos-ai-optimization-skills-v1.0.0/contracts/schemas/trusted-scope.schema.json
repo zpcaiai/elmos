@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:trusted-scope",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "tenant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "principal": {
+      "type": "string",
+      "minLength": 1
+    },
+    "acl_epoch": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "security_context_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expires_at": {
+      "type": "string",
+      "minLength": 1
+    },
+    "revisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "repository": {
+            "type": "string",
+            "minLength": 1
+          },
+          "snapshot": {
+            "type": "string",
+            "minLength": 1
+          },
+          "generation": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "repository",
+          "snapshot",
+          "generation"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant",
+    "principal",
+    "acl_epoch",
+    "security_context_ref",
+    "expires_at",
+    "revisions"
+  ],
+  "additionalProperties": false
+}

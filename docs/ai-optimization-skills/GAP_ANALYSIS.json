@@ -1,0 +1,72 @@
+{
+  "schema_version": "ao.v1",
+  "package": "elmos-ai-optimization-skills-v1.0.0",
+  "host_status": "IMPLEMENTED_LOCAL",
+  "qualification": "LOCAL_ENGINEERING_VALIDATED",
+  "ports": [
+    {
+      "port": "EvidenceContextService",
+      "path": "engines/ai-optimization-engine/src/elmos_ai_optimization/evidence_context.py",
+      "symbol": "EvidenceContextService",
+      "status": "implemented",
+      "action": "verify",
+      "evidence": ["test_evidence_context.py", "test_fast_path_exact", "test_token_budget_packing"]
+    },
+    {
+      "port": "ScopeResolver",
+      "path": "engines/ai-optimization-engine/src/elmos_ai_optimization/scope.py",
+      "symbol": "ScopeResolver",
+      "status": "implemented",
+      "action": "verify",
+      "evidence": ["test_scope_security.py", "test_cartesian_rejection", "test_acl_revocation"]
+    },
+    {
+      "port": "RevisionCatalog",
+      "path": "engines/ai-optimization-engine/src/elmos_ai_optimization/projection.py",
+      "symbol": "ProjectionCatalog",
+      "status": "implemented",
+      "action": "verify",
+      "evidence": ["test_projection_catalog.py", "test_cas_head_publish"]
+    },
+    {
+      "port": "SymbolGraphPort",
+      "path": "packages/repository-orchestrator/src/elmos_repository_orchestrator/semantic.py",
+      "symbol": "SymbolGraph",
+      "status": "reused",
+      "action": "verify",
+      "evidence": ["packages/repository-orchestrator/tests"]
+    },
+    {
+      "port": "ModelGateway",
+      "path": "packages/repository-orchestrator/src/elmos_repository_orchestrator/models.py",
+      "symbol": "ModelRegistry",
+      "status": "reused",
+      "action": "verify",
+      "evidence": ["packages/repository-orchestrator/tests"]
+    },
+    {
+      "port": "AgentSubflowPort",
+      "path": "engines/ai-optimization-engine/src/elmos_ai_optimization/agent_subflow.py",
+      "symbol": "BoundedAgentSubflow",
+      "status": "implemented",
+      "action": "verify",
+      "evidence": ["test_bounded_agent_subflow.py", "test_no_progress_termination"]
+    },
+    {
+      "port": "ExecutionGateway",
+      "path": "engines/ai-optimization-engine/src/elmos_ai_optimization/execution.py",
+      "symbol": "ExecutionGatewayBridge",
+      "status": "implemented",
+      "action": "verify",
+      "evidence": ["test_execution.py", "test_generation_fencing", "test_reconciliation"]
+    },
+    {
+      "port": "AcceptanceService",
+      "path": "packages/repository-orchestrator/src/elmos_repository_orchestrator/gates.py",
+      "symbol": "DeterministicValidator",
+      "status": "reused",
+      "action": "verify",
+      "evidence": ["packages/repository-orchestrator/tests"]
+    }
+  ]
+}

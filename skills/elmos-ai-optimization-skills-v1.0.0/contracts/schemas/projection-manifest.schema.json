@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:projection-manifest",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "tenant": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repository": {
+      "type": "string",
+      "minLength": 1
+    },
+    "snapshot": {
+      "type": "string",
+      "minLength": 1
+    },
+    "generation": {
+      "type": "string",
+      "minLength": 1
+    },
+    "expected_previous": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "state": {
+      "type": "string",
+      "enum": [
+        "BUILDING",
+        "VALIDATED",
+        "PUBLISHED",
+        "RETIRED"
+      ]
+    },
+    "expected_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "actual_count": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "toolchain_digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "embedding_space": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "tenant",
+    "repository",
+    "snapshot",
+    "generation",
+    "expected_previous",
+    "state",
+    "expected_count",
+    "actual_count",
+    "toolchain_digest",
+    "embedding_space"
+  ],
+  "additionalProperties": false
+}
