@@ -73,6 +73,12 @@ LOCAL_SEMANTIC_SKILLS = frozenset(
         "build-and-dependency-graph",
         "semantic-ir-reconciliation",
         "multi-language-ast-extraction",
+        "api-contract-ingestion",
+        "database-metadata-ingestion",
+        "license-and-rights-classification",
+        "repository-incremental-ingestion",
+        "runtime-trace-ingestion",
+        "source-freshness-and-expiry",
     }
 )
 
@@ -106,7 +112,9 @@ EXCLUDED_PATHS = frozenset(
         DOCS_RECEIPT_PATH,
     }
 )
-TRANSIENT_NAMES = frozenset({"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache"})
+TRANSIENT_NAMES = frozenset(
+    {"__pycache__", ".mypy_cache", ".pytest_cache", ".ruff_cache", ".venv"}
+)
 TRANSIENT_SUFFIXES = (".pyc", ".pyo")
 
 ENGINE_SOURCE = "engines/knowledge-skill-model-foundry-engine/src"
@@ -590,6 +598,10 @@ def build_receipt(repo_root: Path) -> dict[str, Any]:
                 "compiled_contracts_validated": 1_310,
                 "exact_local_semantic_handlers_exercised": len(LOCAL_SEMANTIC_SKILLS),
                 "prepare_only_skills": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "exact_integration_bindings_validated": 1_310,
+                "host_route_bound_skills": 1_310 - len(LOCAL_SEMANTIC_SKILLS),
+                "integration_unbound_skills": 0,
+                "pipeline_host_routes_validated": 14,
             },
             "evidence_status": "LOCAL_EXECUTED_SELF_ATTESTED",
             "evidence_capture": "EXECUTED_BY_WRITE_MODE_ONLY",

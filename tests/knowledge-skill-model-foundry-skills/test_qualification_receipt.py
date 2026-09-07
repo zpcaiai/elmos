@@ -54,8 +54,12 @@ class QualificationReceiptTests(unittest.TestCase):
             receipt["local_qualification"]["capability_scope"],
             {
                 "compiled_contracts_validated": 1_310,
-                "exact_local_semantic_handlers_exercised": 45,
-                "prepare_only_skills": 1_265,
+                "exact_local_semantic_handlers_exercised": 51,
+                "prepare_only_skills": 1_259,
+                "exact_integration_bindings_validated": 1_310,
+                "host_route_bound_skills": 1_259,
+                "integration_unbound_skills": 0,
+                "pipeline_host_routes_validated": 14,
             },
         )
         self.assertEqual(receipt["source_archive"]["execution"], "NEVER_EXECUTED")
@@ -70,6 +74,7 @@ class QualificationReceiptTests(unittest.TestCase):
         files = set(self.tool.implementation_files(ROOT))
         self.assertNotIn(self.tool.ENGINE_RECEIPT_PATH, files)
         self.assertNotIn(self.tool.DOCS_RECEIPT_PATH, files)
+        self.assertFalse(any(".venv" in path.parts for path in files))
         self.assertNotIn(self.tool.CATALOG_PATH, files)
         self.assertNotIn(self.tool.PACKAGE_REPORT_PATH, files)
         self.assertTrue(all("__pycache__" not in path.parts for path in files))

@@ -1,8 +1,9 @@
-"""Deterministic prepare-only plans for the exact 14 Foundry pipelines.
+"""Exact plans and host-broker execution bindings for 14 Foundry pipelines.
 
-No method in this module ingests data, creates datasets, trains models, signs
-evidence, deploys artifacts, or promotes certification. Source pipeline YAML
-is provenance-bound declarative input only.
+The repository compiles an exact route for every pipeline.  Execution remains
+fail closed unless a host injects an authorized broker, durable store, permit
+verifier, invocation-scoped permit, and independently verified provider
+receipt.  The source pipeline YAML is never executed.
 """
 
 from __future__ import annotations
@@ -11,6 +12,17 @@ from dataclasses import dataclass
 from types import MappingProxyType
 from typing import Any, Mapping, Sequence
 
+from .adapters import (
+    AdapterBinding,
+    AdapterRegistry,
+    EffectClass,
+    ExternalAdapterRoute,
+    ExternalExecutionBroker,
+    InvocationPermit,
+    InvocationRequest,
+    PermitVerifier,
+)
+from .canonical import canonical_digest
 from .dataset import DatasetFoundry
 from .domain import TenantScope
 from .evidence import EvidenceLedger
@@ -29,6 +41,7 @@ from .model import ModelFoundry
 from .policies import PolicyEngine
 from .serving import ModelServingGateway
 from .skills import EXPECTED_PIPELINES, SkillCatalog
+from .store import FoundryStore
 
 
 @dataclass(frozen=True, slots=True)
@@ -37,6 +50,14 @@ class PipelineProfile:
     required_inputs: tuple[str, ...]
     required_adapters: tuple[str, ...]
     external_effects: tuple[str, ...]
+
+
+PIPELINE_BINDING_VERSION = "1.0.0"
+PIPELINE_REQUIRED_OUTPUTS = (
+    "pipeline execution receipt",
+    "rollback outcome",
+    "step evidence",
+)
 
 
 def _profile(
@@ -72,8 +93,71 @@ if set(PIPELINE_PROFILE_REGISTRY) != EXPECTED_PIPELINES:
     raise RuntimeError("the exact 14-pipeline preparation registry is incomplete")
 
 
+def _plain_digest(value: Mapping[str, Any]) -> str:
+    return canonical_digest(value).removeprefix("sha256:")
+
+
+def build_pipeline_adapter_registry(
+    skills: SkillCatalog,
+    *,
+    permit_verifier: PermitVerifier | None = None,
+    external_broker: ExternalExecutionBroker | None = None,
+) -> AdapterRegistry:
+    """Compile 14 distinct privileged host routes from verified source rows."""
+
+    registry = AdapterRegistry(
+        permit_verifier=permit_verifier,
+        external_broker=external_broker,
+    )
+    for name, profile in sorted(PIPELINE_PROFILE_REGISTRY.items()):
+        source = skills.pipeline_records[name]
+        operation = f"foundry.pipeline.{name}.execute"
+        document = {
+            "schema_version": "elmos.foundry.pipeline-binding.v1",
+            "pipeline": name,
+            "kind": source["kind"],
+            "source_sha256": source["source_sha256"],
+            "required_inputs": list(profile.required_inputs),
+            "required_adapters": list(profile.required_adapters),
+            "external_effects": list(profile.external_effects),
+            "required_outputs": list(PIPELINE_REQUIRED_OUTPUTS),
+            "operation": operation,
+            "effect_class": EffectClass.PRIVILEGED_EXTERNAL.value,
+        }
+        binding_digest = _plain_digest(document)
+        registry.register(
+            AdapterBinding(
+                adapter_id=f"pipeline.{name}",
+                version=PIPELINE_BINDING_VERSION,
+                digest=binding_digest,
+                exact_skills=(name,),
+                effect_class=EffectClass.PRIVILEGED_EXTERNAL,
+                metadata={
+                    "integration_status": "HOST_BROKER_REQUIRED",
+                    "source_sha256": str(source["source_sha256"]),
+                },
+            ),
+            ExternalAdapterRoute(
+                route_id=f"pipeline-route.{name}",
+                version=PIPELINE_BINDING_VERSION,
+                digest=_plain_digest(
+                    {
+                        "schema_version": "elmos.foundry.pipeline-route.v1",
+                        "pipeline": name,
+                        "binding_digest": binding_digest,
+                        "operation": operation,
+                    }
+                ),
+                operation=operation,
+            ),
+        )
+    if len(registry.describe()) != len(EXPECTED_PIPELINES):
+        raise RuntimeError("pipeline adapter registry coverage is incomplete")
+    return registry
+
+
 class PipelineOrchestrator:
-    """Prepare content-addressed plans without performing pipeline effects."""
+    """Prepare exact plans and invoke only explicitly authorized host routes."""
 
     def __init__(
         self,
@@ -86,6 +170,10 @@ class PipelineOrchestrator:
         serving: ModelServingGateway,
         policies: PolicyEngine,
         evidence: EvidenceLedger,
+        store: FoundryStore | None = None,
+        adapter_registry: AdapterRegistry | None = None,
+        permit_verifier: PermitVerifier | None = None,
+        external_broker: ExternalExecutionBroker | None = None,
     ) -> None:
         self.kernel = kernel
         self.skills = skills
@@ -98,6 +186,12 @@ class PipelineOrchestrator:
         self.serving = serving
         self.policies = policies
         self.evidence = evidence
+        self.store = store
+        self.adapters = adapter_registry or build_pipeline_adapter_registry(
+            skills,
+            permit_verifier=permit_verifier,
+            external_broker=external_broker,
+        )
 
     def prepare_pipeline(
         self,
@@ -107,9 +201,17 @@ class PipelineOrchestrator:
         tenant_scope: TenantScope | None = None,
     ) -> Mapping[str, Any]:
         scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.pipeline.prepare")
+        return self._prepare_pipeline(pipeline_name, params, scope)
+
+    def _prepare_pipeline(
+        self,
+        pipeline_name: str,
+        params: Mapping[str, Any],
+        scope: TenantScope,
+    ) -> Mapping[str, Any]:
         if not isinstance(params, Mapping):
             raise TypeError("pipeline parameters must be an object")
-        self.kernel.require_context(scope, "foundry.pipeline.prepare")
         profile = PIPELINE_PROFILE_REGISTRY.get(pipeline_name)
         catalog_record = self.skills.pipeline_records.get(pipeline_name)
         if profile is None or catalog_record is None:
@@ -153,6 +255,10 @@ class PipelineOrchestrator:
             "missing_required_inputs": missing,
             "required_adapters": profile.required_adapters,
             "external_effects": profile.external_effects,
+            "runtime_execution_mode": "HOST_BROKER",
+            "integration_binding_status": "HOST_BROKER_REQUIRED",
+            "adapter_binding": f"pipeline.{pipeline_name}",
+            "broker_route": f"pipeline-route.{pipeline_name}",
             "side_effects_authorized": False,
             "execution_status": "NOT_RUN",
             "local_validation_status": (
@@ -167,6 +273,117 @@ class PipelineOrchestrator:
         result = dict(plan)
         result["plan_digest"] = digest_json(plan)
         return MappingProxyType(result)
+
+    def execute_pipeline(
+        self,
+        pipeline_name: str,
+        params: Mapping[str, Any],
+        *,
+        tenant_scope: TenantScope | None = None,
+        adapter_id: str | None = None,
+        invocation_id: str | None = None,
+        permit: InvocationPermit | None = None,
+    ) -> Mapping[str, Any]:
+        """Execute an exact pipeline route through the host-owned broker."""
+
+        scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.pipeline.execute")
+        plan = self._prepare_pipeline(pipeline_name, params, scope)
+        if plan.get("status") in {"UNKNOWN_PIPELINE", "BLOCKED"}:
+            return plan
+        if invocation_id is None or invocation_id != scope.invocation_id:
+            return MappingProxyType(
+                {
+                    **dict(plan),
+                    "status": "NOT_RUN",
+                    "execution_status": "NOT_RUN",
+                    "reason": "invocation_id must match the host-minted context",
+                }
+            )
+        profile = PIPELINE_PROFILE_REGISTRY[pipeline_name]
+        binding = self.adapters.binding_for(pipeline_name)
+        if binding is None:
+            return MappingProxyType(
+                {
+                    **dict(plan),
+                    "status": "NOT_RUN",
+                    "execution_status": "NOT_RUN",
+                    "reason": "exact pipeline adapter binding is unavailable",
+                }
+            )
+        route_operation = f"foundry.pipeline.{pipeline_name}.execute"
+        adapter_result = self.adapters.invoke(
+            skill_name=pipeline_name,
+            payload={"operation": route_operation, "inputs": dict(params)},
+            tenant_scope=scope,
+            invocation_id=invocation_id,
+            adapter_id=adapter_id,
+            permit=permit,
+            risk_class="critical",
+            required_inputs=profile.required_inputs,
+            required_outputs=PIPELINE_REQUIRED_OUTPUTS,
+            allowed_tools=profile.required_adapters,
+            required_gates=(
+                "external-result-verified",
+                "rollback-outcome-reconciled",
+                "step-evidence-complete",
+            ),
+            store=self.store,
+        )
+        return MappingProxyType(
+            {
+                **dict(plan),
+                "status": adapter_result.status,
+                "execution_status": adapter_result.outputs.get(
+                    "execution_status", adapter_result.status
+                ),
+                "adapter_result": dict(adapter_result.outputs),
+                "external_effects_performed": adapter_result.external_effects_performed,
+                "external_evidence_status": adapter_result.external_evidence_status,
+                "certification_status": CERTIFICATION_STATUS,
+                "error": adapter_result.error,
+            }
+        )
+
+    def prepare_execution_request(
+        self,
+        pipeline_name: str,
+        params: Mapping[str, Any],
+        *,
+        tenant_scope: TenantScope | None = None,
+        adapter_id: str,
+        invocation_id: str,
+    ) -> InvocationRequest:
+        """Return the canonical pipeline request for host permit issuance."""
+
+        scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.pipeline.execute")
+        if pipeline_name not in PIPELINE_PROFILE_REGISTRY:
+            raise ValueError("unknown pipeline has no runtime authority")
+        if invocation_id != scope.invocation_id:
+            raise ValueError("invocation_id does not match the host-minted context")
+        plan = self._prepare_pipeline(pipeline_name, params, scope)
+        if plan["status"] != MAXIMUM_LOCAL_DECISION:
+            raise ValueError("pipeline inputs do not satisfy the exact plan contract")
+        profile = PIPELINE_PROFILE_REGISTRY[pipeline_name]
+        return self.adapters.prepare_external_request(
+            skill_name=pipeline_name,
+            payload={
+                "operation": f"foundry.pipeline.{pipeline_name}.execute",
+                "inputs": dict(params),
+            },
+            tenant_scope=scope,
+            invocation_id=invocation_id,
+            adapter_id=adapter_id,
+            risk_class="critical",
+            required_inputs=profile.required_inputs,
+            allowed_tools=profile.required_adapters,
+            required_gates=(
+                "external-result-verified",
+                "rollback-outcome-reconciled",
+                "step-evidence-complete",
+            ),
+        )
 
     def run_knowledge_to_skill_pipeline(
         self,
@@ -223,4 +440,11 @@ class PipelineOrchestrator:
         )
 
 
-__all__ = ["PIPELINE_PROFILE_REGISTRY", "PipelineOrchestrator", "PipelineProfile"]
+__all__ = [
+    "PIPELINE_BINDING_VERSION",
+    "PIPELINE_PROFILE_REGISTRY",
+    "PIPELINE_REQUIRED_OUTPUTS",
+    "PipelineOrchestrator",
+    "PipelineProfile",
+    "build_pipeline_adapter_registry",
+]

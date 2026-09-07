@@ -1,8 +1,9 @@
 # Knowledge-Skill-Model Foundry v3 integration
 
 This integration turns the pinned 16,007-entry ZIP into a typed control plane
-with 45 exact provider-free semantic handlers, 1,265 conservative prepare-only
-contracts, and a separately gated external-effect boundary. It does not
+with 51 exact provider-free semantic handlers, 1,259 conservative catalog
+contracts with distinct host integration routes, and a separately gated
+external-effect boundary. It does not
 reinterpret the archive as trusted instructions and does not claim that its
 1,310 specifications already have native provider or customer evidence.
 
@@ -27,9 +28,11 @@ executable Python files remain inert input.
 - deterministic compiled-contract v2 catalog binding all 7,860 authoritative
   per-Skill source documents, with 458 BASIC and 852 ENHANCED contracts;
 - 41 pack handlers and 1,310 explicit allowlisted atomic bindings;
-- 45 exact local semantic handlers covering contract/hash/graph, registry and
+- 51 exact local semantic handlers covering contract/hash/graph, registry and
   routing, trust and audit, normalization/provenance, durable experience replay,
-  dataset, evidence and serving controls;
+  knowledge ingestion, dataset, evidence and serving controls;
+- 1,259 distinct source-digest-bound external adapter identities and privileged
+  Broker operations, with no wildcard dispatcher and no execution fallback;
 - request-bound, policy-gated, durable and non-replayable Broker execution for
   external semantics; direct external Python callbacks are forbidden, route
   operations and effect classes are exact, and successful receipts must carry
@@ -40,13 +43,15 @@ executable Python files remain inert input.
 - verifier-bound consent, trajectory capture, dataset use, E1 promotion and
   route planning; injected file-backed SQLite now persists governed asset metadata,
   quarantine and local model promotion, with expiring instance-fenced serving health;
-- conservative pipeline preparation for all 14 declared pipelines.
+- conservative preparation plus exact host-Broker execution and permit-request
+  paths for all 14 declared pipelines.
 
 ## Status vocabulary
 
-`LOCAL` identifies one of the 45 exact repository-owned semantic handlers;
-`PREPARE_ONLY` means that the repository can validate scope and produce a
-content-bound execution plan. `REQUIRES_ADAPTER` means the requested semantic or
+`LOCAL` identifies one of the 51 exact repository-owned semantic handlers;
+`PREPARE_ONLY` remains the catalog semantic state for the 1,259 Skills whose
+native behavior is host-owned. `HOST_ROUTE_BOUND` means an exact route exists,
+not that its provider ran. `REQUIRES_ADAPTER` means the requested semantic or
 external effect did not run. `LOCAL_EXECUTED_SELF_ATTESTED` is local engineering
 evidence. `READY_FOR_EXTERNAL_GATE` is not certification. `NOT_RUN`,
 `INCONCLUSIVE`, and `UNKNOWN` never pass a gate.

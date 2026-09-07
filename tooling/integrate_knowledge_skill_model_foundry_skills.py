@@ -242,6 +242,12 @@ LOCAL_CAPABILITY_ALLOWLIST: frozenset[str] = frozenset(
         "build-and-dependency-graph",
         "semantic-ir-reconciliation",
         "multi-language-ast-extraction",
+        "api-contract-ingestion",
+        "database-metadata-ingestion",
+        "license-and-rights-classification",
+        "repository-incremental-ingestion",
+        "runtime-trace-ingestion",
+        "source-freshness-and-expiry",
     }
 )
 

@@ -19,7 +19,13 @@ from threading import RLock
 from typing import Any, Iterable, Mapping, Sequence, cast
 import zipfile
 
-from .adapters import AdapterRegistry, InvocationPermit
+from .adapters import (
+    AdapterRegistry,
+    ExternalExecutionBroker,
+    InvocationPermit,
+    InvocationRequest,
+    PermitVerifier,
+)
 from .domain import (
     CertificationStatus,
     EvidenceState,
@@ -40,8 +46,8 @@ from .kernel import ExecutionKernel
 from .local_semantics import (
     LOCAL_SEMANTIC_SKILLS,
     CatalogView,
-    build_local_adapter_registry,
 )
+from .registry import build_default_adapter_registry
 from .store import FoundryStore
 
 
@@ -57,7 +63,7 @@ SOURCE_ARCHIVE_PATH = ROOT / "skills/subskills/elmos-knowledge-skill-model-found
 SOURCE_ARCHIVE_PREFIX = "elmos-knowledge-skill-model-foundry-v3.0.0/"
 CATALOG_SCHEMA_VERSION = "elmos.knowledge-skill-model-foundry.compiled-catalog.v2"
 EXPECTED_COMPILED_CATALOG_SHA256 = (
-    "a6879f76d075829da20982a066f2d175c0c7577e6b0d09c6c08a1ecc285b9006"
+    "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
 )
 EXPECTED_PACKAGE = {
     "id": "elmos-knowledge-skill-model-foundry-v3.0.0",
@@ -1064,25 +1070,31 @@ def _check_dag(atomic: Mapping[str, Mapping[str, Any]]) -> None:
 class SkillCatalog:
     """Validated exact catalog plus prepare-only and adapter execution paths."""
 
-    def __init__(self, kernel: ExecutionKernel | None = None, *, catalog_path: Path | None = None, adapter_registry: AdapterRegistry | None = None, store: FoundryStore | None = None) -> None:
+    def __init__(self, kernel: ExecutionKernel | None = None, *, catalog_path: Path | None = None, adapter_registry: AdapterRegistry | None = None, store: FoundryStore | None = None, permit_verifier: PermitVerifier | None = None, external_broker: ExternalExecutionBroker | None = None) -> None:
         self.kernel = kernel or ExecutionKernel()
         self.snapshot = load_compiled_catalog(catalog_path or DEFAULT_CATALOG_PATH)
         self.store = store
         self.adapters = (
             adapter_registry
             if adapter_registry is not None
-            else build_local_adapter_registry(cast(CatalogView, self.snapshot), store=store)
+            else build_default_adapter_registry(
+                cast(CatalogView, self.snapshot),
+                store=store,
+                permit_verifier=permit_verifier,
+                external_broker=external_broker,
+            )
         )
         if adapter_registry is None:
-            for name in sorted(LOCAL_SEMANTIC_SKILLS):
+            for name in sorted(self.snapshot.atomic_skills):
                 binding = self.adapters.binding_for(name)
-                if (
-                    binding is None
-                    or binding.adapter_id
-                    != self.snapshot.atomic_skills[name]["semantic_handler_binding"]
-                ):
+                expected = (
+                    self.snapshot.atomic_skills[name]["semantic_handler_binding"]
+                    if name in LOCAL_SEMANTIC_SKILLS
+                    else f"external.{name}"
+                )
+                if binding is None or binding.adapter_id != expected:
                     raise CatalogValidationError(
-                        f"{name}: local adapter registry/catalog binding mismatch"
+                        f"{name}: default adapter registry/catalog binding mismatch"
                     )
         self._records = self.snapshot.atomic_skills
         self._meta_skills = self.snapshot.meta_skills
@@ -1287,6 +1299,37 @@ class SkillCatalog:
         )
         return _result(operation=canonical, status=adapter_result.status, outputs=outputs, error=adapter_result.error, external_effects_performed=adapter_result.external_effects_performed)
 
+    def prepare_external_request(
+        self,
+        skill_name: str,
+        inputs: Mapping[str, Any],
+        tenant_scope: TenantScope | None = None,
+        *,
+        adapter_id: str,
+        invocation_id: str,
+    ) -> InvocationRequest:
+        """Return the canonical request for trusted host permit issuance."""
+
+        scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.adapter.execute")
+        canonical = self._canonical_skill_name(skill_name)
+        if canonical is None:
+            raise ValueError("unknown Skill has no runtime authority")
+        if invocation_id != scope.invocation_id:
+            raise ValueError("invocation_id does not match the host-minted context")
+        record = self._records[canonical]
+        return self.adapters.prepare_external_request(
+            skill_name=canonical,
+            payload=inputs,
+            tenant_scope=scope,
+            invocation_id=invocation_id,
+            adapter_id=adapter_id,
+            risk_class=str(record["risk_class"]),
+            required_inputs=tuple(str(item) for item in record["inputs"]),
+            allowed_tools=tuple(str(item) for item in record["allowed_tools"]),
+            required_gates=tuple(str(item) for item in record["required_gates"]),
+        )
+
     def describe(self) -> Mapping[str, Any]:
         return MappingProxyType(
             {
@@ -1307,9 +1350,20 @@ class SkillCatalog:
                 "pipelines": self.total_pipelines,
                 "bindings": len(self._skill_bindings),
                 "adapters": self.adapters.describe(),
-                "implementation_status": "MIXED_LOCAL_AND_PREPARE_ONLY",
+                "exact_adapter_bindings": len(self.adapters.describe()),
+                "external_integration_bindings": self.total_atomic_skills
+                - len(LOCAL_SEMANTIC_SKILLS),
+                "implementation_status": "ALL_EXACT_BINDINGS_LOCAL_OR_HOST_ROUTED",
                 "capability_states": MappingProxyType(
                     {"LOCAL": len(LOCAL_SEMANTIC_SKILLS), "PREPARE_ONLY": self.total_atomic_skills - len(LOCAL_SEMANTIC_SKILLS)}
+                ),
+                "integration_states": MappingProxyType(
+                    {
+                        "LOCAL_EXECUTABLE": len(LOCAL_SEMANTIC_SKILLS),
+                        "HOST_ROUTE_BOUND": self.total_atomic_skills
+                        - len(LOCAL_SEMANTIC_SKILLS),
+                        "UNBOUND": 0,
+                    }
                 ),
                 "local_evidence_status": "NOT_RUN",
                 "local_evidence_ceiling": LOCAL_EVIDENCE_STATUS,

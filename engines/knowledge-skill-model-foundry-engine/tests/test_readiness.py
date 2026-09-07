@@ -50,11 +50,18 @@ class FoundryReadinessTests(unittest.TestCase):
         summary = self.report["summary"]
         self.assertEqual(len(self.handlers), summary["local_semantic_handlers"])
         self.assertEqual(1310 - len(self.handlers), summary["prepare_only"])
+        self.assertEqual(1310, summary["exact_adapter_bindings"])
+        self.assertEqual(1310 - len(self.handlers), summary["host_route_bound"])
+        self.assertEqual(0, summary["integration_unbound"])
         self.assertEqual(0, summary["whole_skills_complete"])
         self.assertEqual(9090, summary["dependency_edges"])
         self.assertEqual(31440, summary["source_acceptance_cases_required"])
         for name, row in self.rows.items():
             self.assertEqual(name not in self.handlers, row["code_missing"]["exact_semantic_handler"])
+            self.assertEqual(
+                "LOCAL_EXECUTABLE" if name in self.handlers else "HOST_ROUTE_BOUND",
+                row["integration_binding"]["status"],
+            )
             self.assertFalse(row["whole_skill_complete"])
             self.assertFalse(row["execution_authorized"])
             self.assertEqual("NOT_RUN", row["external_evidence_status"])
@@ -100,6 +107,7 @@ class FoundryReadinessTests(unittest.TestCase):
         self.assertIn("PREPARE_ONLY", text)
         self.assertIn("NOT_CERTIFIED", text)
         self.assertIn("code_missing", text)
+        self.assertIn("integration_binding", text)
         self.assertIn("verification_missing", text)
         self.assertIn("requirements, not executed test cases", text)
 

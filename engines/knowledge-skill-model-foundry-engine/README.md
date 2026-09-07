@@ -12,8 +12,10 @@ catalog in the same archive is retained only as a diagnosed source defect.
 ## Runtime guarantees
 
 - unknown Skills and unregistered adapters fail closed;
-- all 1,310 Skills have exact compiled contracts; 45 provider-free Skills have
-  exact local semantic handlers and 1,265 remain prepare-only;
+- all 1,310 Skills have exact compiled contracts and runtime bindings; 51
+  provider-free Skills have exact local semantic handlers and 1,259 have
+  distinct digest-bound host Broker routes while retaining catalog state
+  `PREPARE_ONLY`;
 - external-effect mutations bind authenticated tenant, project, actor, purpose,
   environment, workspace, revision, capability lease, exact payload, expiry,
   one-time permit, policy decision, and durable idempotency key;
@@ -41,13 +43,14 @@ qualify a production deployment.
 ## Capability truth
 
 The package contains 41 Meta-Skills and 1,310 atomic specifications. Every
-atomic identity has an exact runtime binding. Exactly 45 provider-free Skills
-are `LOCAL`; the remaining 1,265 are `PREPARE_ONLY` and lack exact semantic
-implementations or integration bindings. They require repository code, concrete
-input/output contracts and tool/environment bindings before execution and
-independent validation can establish their behavior. Configuring an adapter
-alone does not close these code gaps. A prepared plan is not the business
-effect it describes.
+atomic identity has an exact runtime binding. Exactly 51 provider-free Skills
+are `LOCAL`; the remaining 1,259 retain source/catalog state `PREPARE_ONLY` but
+are no longer integration-unbound: each has its own source-digest-bound adapter
+identity, privileged operation and non-executable Broker route. The host must
+still supply and attest the concrete provider implementation, environment,
+durable store, permit and result verifier. Binding coverage therefore closes
+the generic integration-dispatch gap; it does not complete native semantics or
+prove the business effect.
 
 Local qualification may report only `LOCAL_EXECUTED_SELF_ATTESTED` and
 `READY_FOR_EXTERNAL_GATE`. External evidence remains `NOT_RUN`; certification
