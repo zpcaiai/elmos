@@ -68,8 +68,8 @@ export default async function LoginPage({
 
         <div className="user-scope-notice" role="note">
           <strong>登录后可以使用的功能</strong>
-          <span>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换、多模态输入、前端转换工厂、代码仓库工作区、任务编排与模型路由、迁移工坊、功能能力中心、套餐与用量、账户与组织。</span>
-          <small>平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放。</small>
+          <span>Spring 老项目翻新、全库跨语言转换、多语言项目生成、国产数据库 SQL 转换。</span>
+          <small>其余页面（代码仓库工作区、多模态输入、任务编排与模型路由、前端转换工厂、功能能力中心、套餐与用量、账户与组织）以及平台运营页面（运营管理端、观测存证、契约治理、商业化控制面、证据闭环、验证沙箱、冒烟运行）不对用户账户开放，仅管理员账户登录后可见。</small>
         </div>
         {error && <div className="auth-error" role="alert">{error}</div>}
         {parameters.registered === "1" && (
@@ -158,13 +158,6 @@ export default async function LoginPage({
             <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
           </div>
         )}
-        <div className="admin-entry-callout" aria-label="管理员专用入口">
-          <div>
-            <strong>管理员专用入口</strong>
-            <span>管理员登录与普通用户登录使用独立页面和受控会话，可见页面也完全不同。</span>
-          </div>
-          <a className="button admin-entry-button" href="/admin/login">进入管理员登录</a>
-        </div>
         {!descopeReady && !configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>

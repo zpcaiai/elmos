@@ -99,9 +99,11 @@ export function HelpCenter() {
             <span className="overline">02</span>
             <h2 id="help-delivery-title">{english ? "Controlled repository delivery" : "受控仓库交付"}</h2>
           </div>
-          <Link className="text-link" href="/repositories">
-            {english ? "Open repository workspace" : "打开仓库工作区"}
-          </Link>
+          {hasAdminAccess && (
+            <Link className="text-link" href="/repositories">
+              {english ? "Open repository workspace" : "打开仓库工作区"}
+            </Link>
+          )}
         </div>
         <ol className="help-steps">
           {deliverySteps.map(([number, zh, en]) => (

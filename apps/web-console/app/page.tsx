@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Icon } from "./components/Icon";
 import { StatusChip } from "./components/StatusChip";
+import { hasPlatformAdministratorSession } from "./lib/server/surfaceGuards";
 
 const workspaces = [
   {
@@ -57,7 +58,10 @@ const attention = [
   ["ChinaDB 实库执行", "13 个本地查询适配器可发射 SQL；实库执行与认证仍未运行", "NOT_RUN"],
 ];
 
-export default function Home() {
+export default async function Home() {
+  // The four business-line workspaces above are the entire customer surface;
+  // links into administrator-only pages stay hidden from customer sessions.
+  const administrator = await hasPlatformAdministratorSession();
   return (
     <div className="page-stack">
       <section className="welcome-card">
@@ -140,13 +144,13 @@ export default function Home() {
           <h2>控制面只准备决策</h2>
           <p>当前页面不会执行客户代码、写入生产系统、签发认证或代替人工批准。</p>
           <div className="boundary-rule"><Icon name="lock" size={17} /><span>未知、过期、冲突与未运行状态一律不通过</span></div>
-          <Link className="text-link" href="/commercialization">查看职责分离 <Icon name="arrow" size={14} /></Link>
+          {administrator && <Link className="text-link" href="/commercialization">查看职责分离 <Icon name="arrow" size={14} /></Link>}
         </article>
       </section>
 
       <section className="overview-grid qualification-overview">
         <article className="surface-card namespace-card">
-          <div className="card-heading"><div><span className="overline">功能覆盖范围</span><h2>迁移与交付两类功能，边界不混用</h2></div><Link className="text-link" href="/capabilities">查看全部功能 <Icon name="arrow" size={14} /></Link></div>
+          <div className="card-heading"><div><span className="overline">功能覆盖范围</span><h2>迁移与交付两类功能，边界不混用</h2></div>{administrator && <Link className="text-link" href="/capabilities">查看全部功能 <Icon name="arrow" size={14} /></Link>}</div>
           <div className="namespace-summary">
             <div className="namespace-item"><div><span className="namespace-dot migration-dot" /><strong>迁移能力</strong><small>语言 / 框架 / 数据库 / 云 · 820 项功能</small></div><b>45%</b></div>
             <div className="namespace-track"><span className="namespace-fill migration-fill" style={{width:"45%"}} /></div>

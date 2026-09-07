@@ -5,13 +5,15 @@ import { formatCny, formatQuota, pricingCatalog } from "../lib/pricingCatalog";
 import styles from "./PricingPage.module.css";
 import { PlanBillingAction, SubscriptionManager } from "./BillingActions";
 import { UsageDashboard } from "./UsageDashboard";
+import { requirePlatformOperationsSurface } from "../lib/server/surfaceGuards";
 
 export const metadata: Metadata = {
   title: "套餐与用量",
   description: "ELMOS 人民币免费体验、专业月付与专业年付套餐",
 };
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  await requirePlatformOperationsSurface("/pricing");
   const catalogOrderable = pricingCatalog.status === "PUBLISHED"
     && pricingCatalog.sellerLegalEntityStatus === "CONFIGURED"
     && pricingCatalog.taxStatus === "CONFIGURED"

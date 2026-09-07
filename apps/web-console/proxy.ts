@@ -14,16 +14,23 @@ const operationsPrefixes = [
   "/proof-loop",
   "/playground",
   "/smoke",
+  // Non-business-line product surfaces: administrators only.
+  "/repositories",
+  "/capabilities",
+  "/intake",
+  "/orchestration",
+  "/frontend",
+  "/pricing",
+  "/account",
 ];
 
-// Product surfaces: any signed-in customer session is enough.
+// Product surfaces: the four customer business lines. Any signed-in customer
+// session is enough; every other page is invisible to a customer session.
 const userPrefixes = [
   "/spring",
   "/translation",
   "/generation",
-  "/repositories",
   "/migration",
-  "/capabilities",
 ];
 
 const protectedPrefixes = [...userPrefixes, ...operationsPrefixes];
@@ -288,7 +295,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   // "/skills" is deliberately absent: it only permanent-redirects to
-  // /capabilities, and gating it would bounce the legacy link to /login instead.
+  // /capabilities, and gating it would bounce the legacy link to the
+  // administrator entry instead.
   matcher: [
     "/api/:path*",
     "/spring/:path*",
@@ -304,5 +312,10 @@ export const config = {
     "/proof-loop/:path*",
     "/playground/:path*",
     "/smoke/:path*",
+    "/intake/:path*",
+    "/orchestration/:path*",
+    "/frontend/:path*",
+    "/pricing/:path*",
+    "/account/:path*",
   ],
 };

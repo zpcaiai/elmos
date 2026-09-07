@@ -21,14 +21,14 @@ const navigation: Array<{
   { href: "/", label: "总览", enLabel: "Overview", hint: "Overview", icon: "home", group: "user" },
   { href: "/spring", label: "Spring 老项目翻新", enLabel: "Spring modernization", hint: "Legacy modernization", icon: "workflow", group: "user" },
   { href: "/translation", label: "全库跨语言转换", enLabel: "Language translation", hint: "Directed routes", icon: "code", group: "user" },
-  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file", group: "user" },
   { href: "/generation", label: "多语言项目生成", enLabel: "Project generation", hint: "Project synthesis", icon: "spark", group: "user" },
-  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "Vue / React / 小程序 / ArkUI / Flutter", icon: "route", group: "user" },
-  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box", group: "user" },
-  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow", group: "user" },
-  { href: "/migration", label: "迁移工坊", enLabel: "Migration studio", hint: "Migration", icon: "route", group: "user" },
-  { href: "/capabilities", label: "功能能力中心", enLabel: "Capability center", hint: "平台能做什么", icon: "test", group: "user" },
-  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans / credits", icon: "layers", group: "user" },
+  { href: "/migration", label: "国产数据库 SQL 转换", enLabel: "ChinaDB SQL conversion", hint: "Migration / ChinaDB SQL", icon: "route", group: "user" },
+  { href: "/intake", label: "多模态输入", enLabel: "Multimodal intake", hint: "Files / media / packages", icon: "file", group: "operations" },
+  { href: "/frontend", label: "前端转换工厂", enLabel: "Frontend transformation", hint: "Vue / React / 小程序 / ArkUI / Flutter", icon: "route", group: "operations" },
+  { href: "/repositories", label: "代码仓库工作区", enLabel: "Repository workspace", hint: "GitHub / Gitee / Git", icon: "box", group: "operations" },
+  { href: "/orchestration", label: "任务编排与模型路由", enLabel: "Task orchestration", hint: "DAG / cost routing", icon: "workflow", group: "operations" },
+  { href: "/capabilities", label: "功能能力中心", enLabel: "Capability center", hint: "平台能做什么", icon: "test", group: "operations" },
+  { href: "/pricing", label: "套餐与用量", enLabel: "Plans and usage", hint: "Plans / credits", icon: "layers", group: "operations" },
   { href: "/admin", label: "运营管理端", enLabel: "Operations admin", hint: "Operations", icon: "settings", group: "operations" },
   { href: "/observability", label: "全链路观测与存证", enLabel: "Observability & SLSA", hint: "OTLP & SLSA", icon: "shield", group: "operations" },
   { href: "/governance", label: "契约治理与变异", enLabel: "Governance & Mutation", hint: "API diff & Mutate", icon: "route", group: "operations" },
@@ -43,7 +43,7 @@ const operationsSurfaces = new Set(
 );
 
 const mobileNavigation = navigation.filter((item) =>
-  ["/", "/spring", "/translation", "/intake", "/generation", "/frontend", "/capabilities"].includes(item.href),
+  ["/", "/spring", "/translation", "/generation", "/migration"].includes(item.href),
 );
 
 const commands = [
