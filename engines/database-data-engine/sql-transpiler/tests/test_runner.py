@@ -155,11 +155,11 @@ def test_postgresql_to_sqlite_executes_on_real_server_175(
     assert result["certification"] == "NOT_CERTIFIED"
 
     environment = json.loads((output / "environment.json").read_text())
-    source_engine = environment["engines"]["source"]
-    assert source_engine["engineVersionObserved"] == "17.5"
-    assert source_engine["engineVersionObserved"] == source_engine[
-        "engineVersionRequired"
-    ]
+    source_runner = environment["sourceRunner"]
+    assert source_runner["engineVersionObserved"] == "17.5"
+    assert source_runner["engineVersionObservedRaw"] == "17.5 (Homebrew)"
+    assert source_runner["profile"]["id"] == "postgresql-17.5"
+    assert source_runner["network"] == "LOOPBACK_EPHEMERAL_PORT"
 
     manifest = json.loads((output / "runner-evidence.json").read_text())
     assert manifest["contentAddressed"] is True
