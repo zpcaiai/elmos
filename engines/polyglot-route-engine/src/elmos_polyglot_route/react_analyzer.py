@@ -418,7 +418,7 @@ def verify_react_runtime_import(toolchain: ExactToolchain) -> dict[str, Any]:
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=60,
+                timeout=600,
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,
@@ -646,7 +646,7 @@ def _run_react_frontend(
                     check=False,
                     capture_output=True,
                     text=True,
-                    timeout=60,
+                    timeout=600,
                     env=sanitized_subprocess_env(
                         home=home,
                         temp_dir=scratch,

@@ -26,7 +26,10 @@ def _run(
     command: list[str],
     cwd: Path,
     *,
-    timeout: int = 180,
+    # Source validation executes the same native toolchains as assembly
+    # verification. Keep their bounded default deadline aligned so a valid
+    # cold build is not rejected only because it ran on one side of the route.
+    timeout: int = 600,
     executable_dirs: tuple[Path, ...] = (),
 ) -> subprocess.CompletedProcess[str]:
     executable = Path(command[0])

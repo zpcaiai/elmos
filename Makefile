@@ -1,6 +1,7 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+CARGO ?= cargo
 # A leaked UV_PROJECT_ENVIRONMENT from a one-engine survey shell makes
 # `uv --directory … --locked` resolve a foreign venv and fail the lockfile
 # check. Every recipe must see a project-local environment.
@@ -518,6 +519,7 @@ project-synthesis:
 	$(UV) --directory engines/project-synthesis-engine run --locked python ../../scripts/operations/validate_generation_support_matrix.py
 	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
 		$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py)
+	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src

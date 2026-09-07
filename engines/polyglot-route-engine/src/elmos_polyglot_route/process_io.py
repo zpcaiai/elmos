@@ -51,6 +51,22 @@ def _validate_capture_policy(retain_stdout: bool, stdout_log: BinaryIO | None) -
         raise ValueError("PROCESS_CAPTURE_POLICY_INVALID")
 
 
+def _validate_leader_poll_policy(
+    leader_exit_poll_interval: float | None,
+    *,
+    reap: bool,
+) -> None:
+    if leader_exit_poll_interval is None:
+        return
+    if (
+        type(leader_exit_poll_interval) not in (int, float)
+        or not math.isfinite(leader_exit_poll_interval)
+        or leader_exit_poll_interval <= 0
+        or not reap
+    ):
+        raise ValueError("PROCESS_LEADER_POLL_POLICY_INVALID")
+
+
 def bounded_communicate(
     process: subprocess.Popen[str],
     *,
@@ -61,18 +77,27 @@ def bounded_communicate(
     stdout_log: BinaryIO | None = None,
     stderr_log: BinaryIO | None = None,
     retain_stdout: bool = True,
+    leader_exit_poll_interval: float | None = None,
 ) -> tuple[str, str]:
     """Drain pipes concurrently, retaining at most the per-stream byte budget.
 
     Does not normally reap: the leader identity remains pinned while callers
-    clean up its process group. The existing specialized Swift session adapter
-    explicitly retains its own reap/cleanup protocol. No helper threads exist.
+    clean up its process group. The specialized Swift session adapter may opt
+    into periodic leader polling because it has its own identity-checked
+    process-tree cleanup protocol; that mode requires ``reap=True``. No helper
+    threads exist.
     """
     _validate_budgets(timeout, max_stream_bytes)
     _validate_capture_policy(retain_stdout, stdout_log)
+    _validate_leader_poll_policy(leader_exit_poll_interval, reap=reap)
     if os.name != "posix":
         raise OSError("BOUNDED_PROCESS_PLATFORM_NOT_IMPLEMENTED")
     deadline = time.monotonic() + timeout
+    leader_probe_deadline = (
+        time.monotonic() + leader_exit_poll_interval
+        if leader_exit_poll_interval is not None
+        else None
+    )
     outputs = [bytearray(), bytearray()]
     stream_sizes = [0, 0]
     logs = (stdout_log, stderr_log)
@@ -96,7 +121,10 @@ def bounded_communicate(
             remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise subprocess.TimeoutExpired(process.args, timeout)
-            for key, _events in selector.select(remaining):
+            wait = remaining
+            if leader_probe_deadline is not None:
+                wait = min(wait, max(0.0, leader_probe_deadline - time.monotonic()))
+            for key, _events in selector.select(wait):
                 index = key.data
                 if index == 2:
                     try:
@@ -130,6 +158,12 @@ def bounded_communicate(
                     if log.write(chunk) != len(chunk):
                         raise OSError("PROCESS_LOG_SHORT_WRITE")
                     log.flush()
+            if leader_probe_deadline is not None and time.monotonic() >= leader_probe_deadline:
+                poll = getattr(process, "poll", None)
+                if not callable(poll) or poll() is not None:
+                    raise subprocess.TimeoutExpired(process.args, timeout)
+                assert leader_exit_poll_interval is not None
+                leader_probe_deadline = time.monotonic() + leader_exit_poll_interval
     for stream in (process.stdout, process.stderr):
         if stream is not None:
             stream.close()
