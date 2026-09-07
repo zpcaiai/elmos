@@ -14,6 +14,12 @@ export type FinancialAdminPrincipal = {
   accessToken?: string;
 };
 
+type FinancialAdminCandidate = {
+  role: string;
+  authentication: string;
+  accessToken?: string;
+};
+
 export type ReconciliationResolution = {
   reconciliationCaseId: string;
   resolutionStatus: "RESOLVED" | "REJECTED";
@@ -37,9 +43,9 @@ export class BillingReconciliationPolicyError extends Error {
 }
 
 export function requireFinancialOidcAdmin(
-  principal: FinancialAdminPrincipal,
+  principal: FinancialAdminCandidate,
   requiredRole: "VIEWER" | "APPROVER",
-): void {
+): asserts principal is FinancialAdminPrincipal {
   if (
     principal.authentication !== "OIDC_SESSION"
     || typeof principal.accessToken !== "string"
@@ -52,7 +58,9 @@ export function requireFinancialOidcAdmin(
       "财务对账只接受已验证的管理员企业账户会话。",
     );
   }
-  const actualRank = roleRank[principal.role];
+  const actualRank = Object.hasOwn(roleRank, principal.role)
+    ? roleRank[principal.role as keyof typeof roleRank]
+    : undefined;
   if (!actualRank || actualRank < roleRank[requiredRole]) {
     throw new BillingReconciliationPolicyError(
       403,
