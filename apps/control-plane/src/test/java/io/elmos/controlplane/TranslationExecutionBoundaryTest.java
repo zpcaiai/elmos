@@ -119,7 +119,7 @@ class TranslationExecutionBoundaryTest {
         var stores = mock(ArtifactController.ObjectStoreFactory.class);
         var jdbc = mock(JdbcClient.class);
         var preparation = new TranslationExecutionPreparation(provider,stores,jdbc,
-                mock(TransactionTemplate.class),new ObjectMapper(),"","",true);
+                mock(TransactionTemplate.class),new ObjectMapper(),mock(io.elmos.integrations.TrustedTranslationAdmissionRunner.class),"","",true);
         var error=assertThrows(ExecutionJobPort.ExecutionStateException.class,
                 () -> preparation.prepare(principal(Set.of("translation:execute","repository:read")),Map.of(),"idempotent"));
         assertEquals("TRANSLATION_HOSTED_BILLING_CONTRACT_REQUIRED",error.code());
@@ -131,10 +131,68 @@ class TranslationExecutionBoundaryTest {
                 .getBeanProvider(GitRepositoryWorkspaceService.class);
         var stores=mock(ArtifactController.ObjectStoreFactory.class);
         var preparation=new TranslationExecutionPreparation(provider,stores,mock(JdbcClient.class),
-                mock(TransactionTemplate.class),new ObjectMapper(),"","",false);
+                mock(TransactionTemplate.class),new ObjectMapper(),mock(io.elmos.integrations.TrustedTranslationAdmissionRunner.class),"","",false);
         assertThrows(org.springframework.security.access.AccessDeniedException.class,
                 () -> preparation.prepare(principal(Set.of("repository:read")),Map.of(),"idempotent"));
         verifyNoInteractions(stores);
+    }
+
+    @Test void admissionOutputIsReducedToTheExactTrustedEvidenceFields() throws Exception {
+        String digest = "a".repeat(64);
+        byte[] output = ("{\"repositoryExecutionStatus\":\"PASSED\","
+                + "\"repositoryProfile\":\"typed-pure-function-v1\","
+                + "\"repositoryEvidenceRef\":\"certification/evidence.json\","
+                + "\"repositoryEvidenceSha256\":\"" + digest + "\","
+                + "\"repositoryEvidenceBytes\":17}").getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        assertEquals(Map.of(
+                "repositoryExecutionStatus", "PASSED",
+                "repositoryProfile", "typed-pure-function-v1",
+                "repositoryEvidenceRef", "certification/evidence.json",
+                "repositoryEvidenceSha256", digest,
+                "repositoryEvidenceBytes", 17L), parser().parseAdmission(output));
+    }
+
+    @Test void admissionOutputCannotOverridePreparedSubjectFields() {
+        String output = "{\"repositoryExecutionStatus\":\"PASSED\","
+                + "\"repositoryProfile\":\"typed-pure-function-v1\","
+                + "\"repositoryEvidenceRef\":\"certification/evidence.json\","
+                + "\"repositoryEvidenceSha256\":\"" + "a".repeat(64) + "\","
+                + "\"repositoryEvidenceBytes\":17,\"tenantId\":\"attacker\"}";
+        var error = assertThrows(ExecutionJobPort.ExecutionStateException.class,
+                () -> parser().parseAdmission(output.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+        assertEquals("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE", error.code());
+    }
+
+    @Test void admissionOutputRejectsTrailingAndDuplicateJsonTokens() {
+        String digest = "a".repeat(64);
+        String valid = "{\"repositoryExecutionStatus\":\"PASSED\","
+                + "\"repositoryProfile\":\"typed-pure-function-v1\","
+                + "\"repositoryEvidenceRef\":\"certification/evidence.json\","
+                + "\"repositoryEvidenceSha256\":\"" + digest + "\","
+                + "\"repositoryEvidenceBytes\":17}";
+        String duplicate = "{\"repositoryExecutionStatus\":\"PASSED\","
+                + "\"repositoryExecutionStatus\":\"PASSED\","
+                + "\"repositoryProfile\":\"typed-pure-function-v1\","
+                + "\"repositoryEvidenceRef\":\"certification/evidence.json\","
+                + "\"repositoryEvidenceSha256\":\"" + digest + "\","
+                + "\"repositoryEvidenceBytes\":17}";
+
+        for (String invalid : java.util.List.of(valid + "{}", duplicate)) {
+            var error = assertThrows(ExecutionJobPort.ExecutionStateException.class,
+                    () -> parser().parseAdmission(
+                            invalid.getBytes(java.nio.charset.StandardCharsets.UTF_8)));
+            assertEquals("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE", error.code());
+        }
+    }
+
+    private static TranslationExecutionPreparation parser() {
+        ObjectProvider<GitRepositoryWorkspaceService> provider =
+                new org.springframework.beans.factory.support.StaticListableBeanFactory()
+                        .getBeanProvider(GitRepositoryWorkspaceService.class);
+        return new TranslationExecutionPreparation(provider,
+                mock(ArtifactController.ObjectStoreFactory.class), mock(JdbcClient.class),
+                mock(TransactionTemplate.class), new ObjectMapper(),
+                mock(io.elmos.integrations.TrustedTranslationAdmissionRunner.class), "", "", false);
     }
 
     private static ControlPlanePrincipal principal(Set<String> permissions) {

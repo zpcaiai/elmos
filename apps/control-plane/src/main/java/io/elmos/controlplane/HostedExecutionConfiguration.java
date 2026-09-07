@@ -3,6 +3,7 @@ package io.elmos.controlplane;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.identity.AuthenticationService;
 import io.elmos.identity.JdbcIdentityStore;
+import io.elmos.integrations.TrustedTranslationAdmissionRunner;
 import io.elmos.persistence.JdbcExecutionJobStore;
 import io.elmos.persistence.JdbcObjectStorageStore;
 import io.elmos.persistence.JdbcTenantObjectRetentionStore;
@@ -26,6 +27,11 @@ import java.time.Clock;
 /** Wires the durable hosted-execution and optional local-identity adapters. */
 @Configuration
 class HostedExecutionConfiguration {
+    @Bean
+    TrustedTranslationAdmissionRunner trustedTranslationAdmissionRunner() {
+        return new TrustedTranslationAdmissionRunner();
+    }
+
     @Bean
     ExecutionJobPort executionJobPort(
             JdbcClient jdbc,

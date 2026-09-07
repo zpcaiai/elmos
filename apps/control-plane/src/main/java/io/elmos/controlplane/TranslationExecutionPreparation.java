@@ -2,6 +2,7 @@ package io.elmos.controlplane;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.elmos.integrations.GitRepositoryWorkspaceService;
+import io.elmos.integrations.TrustedTranslationAdmissionRunner;
 import io.elmos.storage.S3ObjectStore;
 import io.elmos.workflow.ExecutionJobPort;
 import org.springframework.beans.factory.ObjectProvider;
@@ -37,6 +38,7 @@ final class TranslationExecutionPreparation {
     private final JdbcClient jdbc;
     private final TransactionTemplate transactions;
     private final ObjectMapper json;
+    private final TrustedTranslationAdmissionRunner admissionRunner;
     private final String casesRoot;
     private final String repositoryRoot;
     private final boolean billingEnforced;
@@ -48,11 +50,13 @@ final class TranslationExecutionPreparation {
     TranslationExecutionPreparation(ObjectProvider<GitRepositoryWorkspaceService> workspaces,
             ArtifactController.ObjectStoreFactory stores, JdbcClient jdbc,
             TransactionTemplate billingTransactionTemplate, ObjectMapper json,
+            TrustedTranslationAdmissionRunner admissionRunner,
             @Value("${elmos.translation.cases-root:}") String casesRoot,
             @Value("${elmos.translation.repository-root:}") String repositoryRoot,
             @Value("${ELMOS_BILLING_ENFORCEMENT_ENABLED:${elmos.billing.enforcement-enabled:false}}") boolean billingEnforced) {
         this.workspaces = workspaces; this.stores = stores; this.jdbc = jdbc;
         this.transactions = billingTransactionTemplate; this.json = json;
+        this.admissionRunner = admissionRunner;
         this.casesRoot = casesRoot; this.repositoryRoot = repositoryRoot;
         this.billingEnforced = billingEnforced;
     }
@@ -225,54 +229,57 @@ final class TranslationExecutionPreparation {
     }
 
     private Map<String, Object> gate(String source, String target) {
-        Process process = null;
-        java.util.concurrent.ScheduledExecutorService deadlines = null;
         try {
             Path root = trustedDirectory(repositoryRoot);
             Path node = Path.of(nodeExecutable);
-            if (!node.isAbsolute() || !Files.isRegularFile(node) || !Files.isExecutable(node)) fail("TRANSLATION_ADMISSION_RUNTIME_REQUIRED");
-            ProcessBuilder builder = new ProcessBuilder(node.toString(), "--no-warnings", "--loader",
-                    root.resolve("apps/translation-runtime-runner/ts-loader.mjs").toString(),
-                    root.resolve("apps/translation-runtime-runner/admission.mjs").toString(), source, target);
-            builder.directory(root.toFile()).redirectErrorStream(true);
-            builder.environment().clear();
-            builder.environment().put("ELMOS_REPOSITORY_ROOT", root.toString());
-            builder.environment().put("NODE_ENV", "production");
-            process = builder.start();
-            process.getOutputStream().close();
-            Process child = process;
-            deadlines = java.util.concurrent.Executors.newSingleThreadScheduledExecutor(r -> {
-                Thread thread = new Thread(r, "translation-admission-deadline"); thread.setDaemon(true); return thread;
-            });
-            deadlines.schedule(child::destroyForcibly, 30, java.util.concurrent.TimeUnit.SECONDS);
-            byte[] bytes;
-            try (var output = process.getInputStream()) { bytes = output.readNBytes(64 * 1024 + 1); }
-            if (bytes.length > 64 * 1024) fail("TRANSLATION_ROUTE_ADMISSION_OUTPUT_LIMIT");
-            if (!process.waitFor(5, java.util.concurrent.TimeUnit.SECONDS) || process.exitValue() != 0)
-                fail("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
-            var result = json.readTree(bytes);
-            if (!result.path("repositoryExecutionStatus").asText().equals("PASSED")
-                    || !result.path("repositoryProfile").asText().equals("typed-pure-function-v1")
-                    || !result.path("repositoryEvidenceSha256").asText().matches("[a-f0-9]{64}")
-                    || !result.path("repositoryEvidenceBytes").canConvertToLong()
-                    || result.path("repositoryEvidenceBytes").asLong() < 1)
-                fail("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
-            return json.convertValue(result, new com.fasterxml.jackson.core.type.TypeReference<Map<String,Object>>() {});
+            byte[] bytes = admissionRunner.run(node, root, source, target);
+            return parseAdmission(bytes);
+        } catch (TrustedTranslationAdmissionRunner.AdmissionFailure error) {
+            throw new ExecutionJobPort.ExecutionStateException(error.code());
         } catch (ExecutionJobPort.ExecutionStateException error) { throw error; }
         catch (Exception error) { throw new ExecutionJobPort.ExecutionStateException("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE"); }
-        finally {
-            if (deadlines != null) deadlines.shutdownNow();
-            if (process != null && process.isAlive()) {
-                // This trusted gate is read-only. Keep its preparation slot
-                // until the killed process is actually reaped.
-                process.destroyForcibly();
-                boolean interrupted=false;
-                while(process.isAlive()) {
-                    try {process.waitFor();} catch(InterruptedException error) {interrupted=true;}
-                }
-                if(interrupted)Thread.currentThread().interrupt();
+    }
+
+    Map<String, Object> parseAdmission(byte[] bytes) {
+        com.fasterxml.jackson.databind.JsonNode result;
+        try (var parser = json.getFactory().createParser(bytes)) {
+            parser.enable(com.fasterxml.jackson.core.StreamReadFeature
+                    .STRICT_DUPLICATE_DETECTION.mappedFeature());
+            result = json.readTree(parser);
+            if (parser.nextToken() != null) {
+                fail("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
             }
+        } catch (IOException error) {
+            throw new ExecutionJobPort.ExecutionStateException(
+                    "TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
         }
+        if (result == null || !result.isObject()) {
+            fail("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
+        }
+        var fields = new java.util.HashSet<String>();
+        result.fieldNames().forEachRemaining(fields::add);
+        String evidenceRef = result.path("repositoryEvidenceRef").asText();
+        if (!fields.equals(java.util.Set.of(
+                        "repositoryExecutionStatus", "repositoryProfile",
+                        "repositoryEvidenceRef", "repositoryEvidenceSha256",
+                        "repositoryEvidenceBytes"))
+                || !result.path("repositoryExecutionStatus").asText().equals("PASSED")
+                || !result.path("repositoryProfile").asText().equals("typed-pure-function-v1")
+                || !evidenceRef.matches("certification/[a-z0-9][a-z0-9._/-]{1,260}\\.json")
+                || evidenceRef.contains("..") || evidenceRef.contains("\\")
+                || !result.path("repositoryEvidenceSha256").asText().matches("[a-f0-9]{64}")
+                || !result.path("repositoryEvidenceBytes").isIntegralNumber()
+                || !result.path("repositoryEvidenceBytes").canConvertToLong()
+                || result.path("repositoryEvidenceBytes").asLong() < 1
+                || result.path("repositoryEvidenceBytes").asLong() > 8L * 1024 * 1024) {
+            fail("TRANSLATION_ROUTE_NOT_REPOSITORY_EXECUTABLE");
+        }
+        return Map.of(
+                "repositoryExecutionStatus", "PASSED",
+                "repositoryProfile", "typed-pure-function-v1",
+                "repositoryEvidenceRef", evidenceRef,
+                "repositoryEvidenceSha256", result.path("repositoryEvidenceSha256").asText(),
+                "repositoryEvidenceBytes", result.path("repositoryEvidenceBytes").asLong());
     }
 
     private static Path trustedDirectory(String value) throws IOException {

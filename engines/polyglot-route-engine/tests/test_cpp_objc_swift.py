@@ -337,6 +337,175 @@ def test_cpp_source_lifts_scalars_and_control_flow(tmp_path: Path) -> None:
 
 
 @requires_clang
+def test_cpp_ast_filter_selects_the_exact_name_from_multiple_json_documents(
+    tmp_path: Path,
+) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".cpp",
+        "cpp",
+        "#include <cstdint>\n"
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "std::int64_t calculateTotal(std::int64_t value) { return value + 1; }\n",
+        "calculate",
+    )
+    assert [function.name for function in semantic.functions] == ["calculate"]
+
+
+@requires_clang
+def test_cpp_ast_filter_preserves_the_missing_symbol_contract(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:missing$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\nstd::int64_t calculate(std::int64_t value) { return value; }\n",
+            "missing",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_a_namespaced_function_as_top_level(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "namespace billing {\n"
+            "std::int64_t calculate(std::int64_t value) { return value + 1; }\n"
+            "}\n"
+            "using billing::calculate;\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_selects_global_over_same_named_namespace_function(
+    tmp_path: Path,
+) -> None:
+    semantic = _analyze(
+        tmp_path,
+        ".cpp",
+        "cpp",
+        "#include <cstdint>\n"
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "namespace billing {\n"
+        "std::int64_t calculate(std::int64_t value) { return value + 1; }\n"
+        "}\n",
+        "calculate",
+    )
+    expression = semantic.functions[0].body[0].expression
+    assert expression is not None
+    assert expression.kind == "name"
+    assert expression.value == "value"
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_c_linkage_outside_inventory_scope(tmp_path: Path) -> None:
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        'extern "C" {\n'
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    assert subject["analyzable"] is False
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_hidden_friend_outside_inventory_scope(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "struct Billing {\n"
+            "friend std::int64_t calculate(std::int64_t value) { return value; }\n"
+            "};\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_ast_filter_rejects_anonymous_namespace_function(tmp_path: Path) -> None:
+    with pytest.raises(RouteError, match="^FUNCTION_NOT_FOUND:calculate$"):
+        _analyze(
+            tmp_path,
+            ".cpp",
+            "cpp",
+            "#include <cstdint>\n"
+            "namespace {\n"
+            "std::int64_t calculate(std::int64_t value) { return value; }\n"
+            "}\n",
+            "calculate",
+        )
+
+
+@requires_clang
+def test_cpp_linkage_wrapper_preserves_default_cpp_function_semantics(
+    tmp_path: Path,
+) -> None:
+    """Explicit C++ linkage is transparent while its wrapper stays explicit."""
+
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        'extern "C++" {\n'
+        "std::int64_t calculate(std::int64_t value) { return value; }\n"
+        "}\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    semantic = analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    wrapper = next(
+        row for row in inventory["subjects"] if row["declaration_kind"] == "LinkageSpecDecl"
+    )
+    assert subject["analyzable"] is True
+    assert wrapper["analyzable"] is False
+    assert semantic.functions[0].name == "calculate"
+
+
+@requires_clang
+def test_cpp_file_static_function_matches_inventory_analyzability(tmp_path: Path) -> None:
+    from elmos_polyglot_route.clang_analyzer import analyze_clang, inventory_clang_module
+
+    source = tmp_path / "source.cpp"
+    source.write_text(
+        "#include <cstdint>\n"
+        "static std::int64_t calculate(std::int64_t value) { return value; }\n",
+        encoding="utf-8",
+    )
+    assert CLANGXX is not None
+
+    inventory = inventory_clang_module(source, "cpp", CLANGXX, "test")
+    semantic = analyze_clang(source, "cpp", "calculate", CLANGXX, "test")
+
+    subject = next(row for row in inventory["subjects"] if row["name"] == "calculate")
+    assert subject["analyzable"] is True
+    assert subject["signature"]["visibility"] == "internal"
+    assert semantic.functions[0].name == "calculate"
+
+
+@requires_clang
 def test_cpp_const_reference_string_parameters_lift_as_string(tmp_path: Path) -> None:
     # `const std::string &` is how C++ passes a string by value to a pure
     # function; the canonical model has no reference notion, so the qualifiers

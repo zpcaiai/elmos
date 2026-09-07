@@ -32,7 +32,7 @@ from pathlib import Path
 from typing import Any
 
 from .models import Language, RouteError, SemanticIR
-from .process_io import run_bounded
+from .process_io import ProcessOutputLimitError, run_bounded
 from .toolchains import sanitized_subprocess_env
 
 #: Nodes that wrap a value without changing it in the certified subset.
@@ -166,6 +166,8 @@ def _run_clang(
     source: Path,
     language: Language,
     sdk_path: str | None,
+    *,
+    declaration_filter: str | None = None,
 ) -> dict[str, Any]:
     mode = "c++" if language == "cpp" else "objective-c"
     standard = "-std=c++20" if language == "cpp" else "-std=c17"
@@ -178,9 +180,14 @@ def _run_clang(
         _sdk_path(sdk_path),
         "-Xclang",
         "-ast-dump=json",
-        "-fsyntax-only",
-        str(source),
     ]
+    if declaration_filter is not None:
+        # clang still parses and type-checks the complete translation unit, but
+        # emits only declaration subtrees whose qualified name contains this
+        # host-selected function identifier. This prevents SDK/header ASTs from
+        # dominating the bounded subprocess channel.
+        command.extend(["-Xclang", "-ast-dump-filter", "-Xclang", declaration_filter])
+    command.extend(["-fsyntax-only", str(source)])
     if language == "objc":
         command[4:4] = ["-fobjc-arc", "-framework", "Foundation"]
     with tempfile.TemporaryDirectory(prefix="elmos-clang-env-") as temporary:
@@ -204,6 +211,8 @@ def _run_clang(
                     executable_dirs=(Path(executable).resolve().parent,),
                 ),
             )
+        except ProcessOutputLimitError as error:
+            raise RouteError(f"NATIVE_ANALYZER_OUTPUT_LIMIT:{executable}") from error
         except subprocess.TimeoutExpired as error:
             raise RouteError(f"NATIVE_ANALYZER_TIMEOUT:{executable}") from error
     errors = [
@@ -213,11 +222,33 @@ def _run_clang(
     ]
     if errors:
         raise RouteError("SOURCE_DIAGNOSTICS_BLOCK_ANALYSIS:" + "; ".join(errors[:5])[:2_000])
-    if completed.returncode != 0 or not completed.stdout.strip():
+    if completed.returncode != 0:
         detail = (completed.stderr or completed.stdout).strip()[-2_000:]
         raise RouteError(f"NATIVE_ANALYZER_FAILED:{executable}:{detail}")
+    if not completed.stdout.strip():
+        if declaration_filter is not None:
+            return {"kind": "TranslationUnitDecl", "inner": []}
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{executable}:")
     try:
-        value = json.loads(completed.stdout)
+        if declaration_filter is None:
+            value = json.loads(completed.stdout)
+        else:
+            # ast-dump-filter can match more than one declaration. clang emits
+            # those JSON objects consecutively, so parse the exact sequence and
+            # restore the TranslationUnit shape consumed below.
+            decoder = json.JSONDecoder()
+            offset = 0
+            declarations: list[dict[str, Any]] = []
+            while offset < len(completed.stdout):
+                while offset < len(completed.stdout) and completed.stdout[offset].isspace():
+                    offset += 1
+                if offset == len(completed.stdout):
+                    break
+                declaration, offset = decoder.raw_decode(completed.stdout, offset)
+                if not isinstance(declaration, dict):
+                    raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
+                declarations.append(declaration)
+            value = {"kind": "TranslationUnitDecl", "inner": declarations}
     except json.JSONDecodeError as error:
         raise RouteError(f"NATIVE_ANALYZER_INVALID_JSON:{executable}") from error
     if not isinstance(value, dict):
@@ -703,6 +734,35 @@ def _function(
     )
 
 
+def _is_unqualified_cpp_function(node: dict[str, Any]) -> bool:
+    """Accept only a plain global C++ function from a filtered Clang root.
+
+    ``-ast-dump-filter`` emits matching declarations without their lexical
+    parents.  The compiler-owned Itanium symbol therefore remains the only
+    scope identity in the JSON root: plain global names start with a decimal
+    source-name length (or ``L`` plus that length for file-static functions),
+    while namespace/anonymous-namespace names use the nested-name ``N`` form.
+    Missing/non-Itanium names include C-linkage declarations and fail closed;
+    the exact route toolchains use this ABI on both Darwin and Linux.
+    """
+
+    # Hidden friends have global Itanium linkage but are not ordinary
+    # top-level declarations. Clang preserves their lexical owner explicitly
+    # even when the filtered dump omits the record node.
+    if node.get("parentDeclContextId") is not None:
+        return False
+    mangled = node.get("mangledName")
+    if not isinstance(mangled, str):
+        return False
+    encoded = mangled.lstrip("_")
+    if not encoded.startswith("Z"):
+        return False
+    source_name = encoded[1:]
+    if source_name.startswith("L"):
+        source_name = source_name[1:]
+    return bool(source_name) and source_name[0].isdigit()
+
+
 def analyze_clang(
     source: Path,
     language: Language,
@@ -716,7 +776,13 @@ def analyze_clang(
     """Lift one named C++/Objective-C function into the semantic IR."""
     if language not in ("cpp", "objc"):
         raise RouteError(f"UNSUPPORTED_SOURCE_LANGUAGE:{language}")
-    tree = _run_clang(executable, source, language, sdk_path)
+    tree = _run_clang(
+        executable,
+        source,
+        language,
+        sdk_path,
+        declaration_filter=function_name,
+    )
     candidates = [
         node
         for node in _inner(tree)
@@ -724,16 +790,21 @@ def analyze_clang(
         and node.get("name") == function_name
         and not node.get("isImplicit")
         and any(child.get("kind") == "CompoundStmt" for child in _inner(node))
+        and _inventory_span(node, source) is not None
+        and (language != "cpp" or _is_unqualified_cpp_function(node))
     ]
     if not candidates:
         raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}")
     if len(candidates) > 1:
         raise RouteError(f"AMBIGUOUS_FUNCTION_DEFINITION:{function_name}")
     semantic_markers = _function_semantic_markers(candidates[0])
-    if semantic_markers:
+    unsupported_markers = [
+        marker for marker in semantic_markers if marker != "storage-class:static"
+    ]
+    if unsupported_markers:
         raise RouteError(
             f"{language.upper()}_FUNCTION_SEMANTIC_MARKERS_OUTSIDE_CERTIFIED_SUBSET:"
-            + ",".join(semantic_markers)
+            + ",".join(unsupported_markers)
         )
     return SemanticIR.from_mapping(
         {
@@ -937,7 +1008,17 @@ def inventory_clang_module(
             if kind == "TranslationUnitDecl":
                 visit(child, scope, top_level=True)
             elif kind in scope_kinds:
-                visit(child, child_scope, top_level=False)
+                # An explicit C++ linkage specification restates the language's
+                # default linkage and does not introduce a lexical scope. Keep
+                # the wrapper itself as an obligation, but let its plain global
+                # functions retain the same analyzability as an unwrapped
+                # declaration. C linkage and nested wrappers remain fail-closed.
+                transparent_cpp_linkage = (
+                    top_level
+                    and kind == "LinkageSpecDecl"
+                    and node.get("language") == "C++"
+                )
+                visit(child, child_scope, top_level=transparent_cpp_linkage)
 
     visit(tree, (), top_level=True)
     return {
