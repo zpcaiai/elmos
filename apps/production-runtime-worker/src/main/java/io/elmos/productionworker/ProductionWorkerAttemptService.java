@@ -46,7 +46,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Bounded worker inbox and exact downstream workload execution protocol. */
 final class ProductionWorkerAttemptService implements AutoCloseable {
     private static final int MAX_ENGINE_RESPONSE_BYTES = 1_048_576;
-    private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(10);
+    private static final Duration SHUTDOWN_TIMEOUT = Duration.ofSeconds(30);
     enum LocalStatus {
         ACKED, RUNNING, SUCCEEDED, FAILED, PROVIDER_OUTCOME_UNKNOWN,
         CHECKPOINT_OUTCOME_UNKNOWN, COMPLETION_OUTCOME_UNKNOWN
@@ -103,6 +103,10 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
     private final Set<UUID> completionReconciliationInFlight = ConcurrentHashMap.newKeySet();
     private final Map<UUID, AttemptState> attempts = new ConcurrentHashMap<>();
     private final AtomicBoolean closed = new AtomicBoolean();
+    private final Object shutdownMonitor = new Object();
+    private boolean shutdownIssued;
+    private final ProductionWorkerLifecycleGate lifecycleGate =
+            new ProductionWorkerLifecycleGate();
     private volatile boolean journalHealthy = true;
 
     ProductionWorkerAttemptService(
@@ -191,10 +195,13 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
 
     synchronized Acceptance accept(DispatchEnvelope envelope) {
         Objects.requireNonNull(envelope, "envelope");
-        if (closed.get()) {
-            throw new ProductionRuntimeException(
-                    "WORKER_SHUTTING_DOWN", "worker is not accepting new work while shutting down");
+        try (var ignored = lifecycleGate.enter()) {
+            requireOpen();
+            return acceptWhileOpen(envelope);
         }
+    }
+
+    private Acceptance acceptWhileOpen(DispatchEnvelope envelope) {
         if (!journalHealthy) {
             throw new ProductionRuntimeException(
                     "WORKER_DURABLE_JOURNAL_FAILURE",
@@ -240,6 +247,21 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
     }
 
     boolean checkpoint(
+            UUID attemptId,
+            UUID presentedWorkerId,
+            long presentedFencingToken,
+            String presentedIdempotencyKey,
+            CheckpointInput input
+    ) {
+        try (var ignored = lifecycleGate.enter()) {
+            requireOpen();
+            return checkpointWhileOpen(
+                    attemptId, presentedWorkerId, presentedFencingToken,
+                    presentedIdempotencyKey, input);
+        }
+    }
+
+    private boolean checkpointWhileOpen(
             UUID attemptId,
             UUID presentedWorkerId,
             long presentedFencingToken,
@@ -394,7 +416,7 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
             if (checkpoints.isArray()) {
                 for (JsonNode value : checkpoints) {
                     CheckpointInput input = checkpointInput(value);
-                    if (!checkpoint(
+                    if (!checkpointWhileOpen(
                             state.envelope.attemptId(), state.envelope.workerId(),
                             state.envelope.fencingToken(),
                             state.envelope.dispatchIdempotencyKey(), input)) {
@@ -1046,10 +1068,8 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
                 checkpointReconciliationExecutor,
                 completionReconciliationExecutor,
                 executors);
-        if (closed.compareAndSet(false, true)) {
-            ownedExecutors.forEach(ExecutorService::shutdownNow);
-        }
-        awaitTermination(ownedExecutors);
+        closed.compareAndSet(false, true);
+        awaitQuiescence(ownedExecutors);
     }
 
     boolean executorsShutdown() {
@@ -1074,22 +1094,71 @@ final class ProductionWorkerAttemptService implements AutoCloseable {
                 && executors.isTerminated();
     }
 
-    private static void awaitTermination(List<ExecutorService> ownedExecutors) {
+    private void awaitQuiescence(List<ExecutorService> ownedExecutors) {
         long deadline = System.nanoTime() + SHUTDOWN_TIMEOUT.toNanos();
-        try {
-            for (ExecutorService executor : ownedExecutors) {
+        ProductionWorkerLifecycleGate.DrainResult drain =
+                lifecycleGate.drainUntil(deadline);
+        boolean interrupted = drain.interrupted();
+        issueShutdownOnce(ownedExecutors);
+
+        boolean executorsTerminated = true;
+        for (ExecutorService executor : ownedExecutors) {
+            boolean terminated = executor.isTerminated();
+            while (!terminated) {
                 long remaining = deadline - System.nanoTime();
-                if (remaining <= 0L
-                        || !executor.awaitTermination(remaining, TimeUnit.NANOSECONDS)) {
-                    throw new IllegalStateException(
-                            "worker executors did not terminate within shutdown timeout");
+                if (remaining <= 0L) break;
+                try {
+                    terminated = executor.awaitTermination(
+                            remaining, TimeUnit.NANOSECONDS);
+                } catch (InterruptedException ex) {
+                    interrupted = true;
                 }
             }
-        } catch (InterruptedException ex) {
-            Thread.currentThread().interrupt();
-            throw new IllegalStateException(
-                    "interrupted while waiting for worker executors to terminate", ex);
+            if (!terminated) {
+                executorsTerminated = false;
+                break;
+            }
         }
+        if (interrupted) Thread.currentThread().interrupt();
+        if (!drain.drained()) {
+            throw new IllegalStateException(
+                    "worker ingress did not quiesce within shutdown timeout");
+        }
+        if (!executorsTerminated) {
+            throw new IllegalStateException(
+                    "worker executors did not terminate within shutdown timeout");
+        }
+    }
+
+    private void issueShutdownOnce(List<ExecutorService> ownedExecutors) {
+        synchronized (shutdownMonitor) {
+            if (shutdownIssued) return;
+            ownedExecutors.forEach(ExecutorService::shutdownNow);
+            shutdownIssued = true;
+        }
+    }
+
+    private void requireOpen() {
+        if (closed.get()) {
+            throw new ProductionRuntimeException(
+                    "WORKER_SHUTTING_DOWN",
+                    "worker is not accepting new work while shutting down");
+        }
+    }
+
+    boolean acceptingWork() {
+        return !closed.get() && journalHealthy;
+    }
+
+    ProductionWorkerLifecycleGate.Ingress enterRegistration() {
+        ProductionWorkerLifecycleGate.Ingress ingress = lifecycleGate.enter();
+        if (acceptingWork()) return ingress;
+        ingress.close();
+        return null;
+    }
+
+    int activeIngress() {
+        return lifecycleGate.activeIngress();
     }
 
     boolean journalHealthy() {

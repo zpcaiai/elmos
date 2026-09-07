@@ -57,8 +57,9 @@ final class ProductionWorkerRegistrationLoop {
 
     @Scheduled(initialDelay = 0, fixedDelay = 30000)
     void register() {
-        if (!attempts.journalHealthy()) return;
-        try {
+        ProductionWorkerLifecycleGate.Ingress ingress = attempts.enterRegistration();
+        if (ingress == null) return;
+        try (ingress) {
             HttpRequest request = HttpRequest.newBuilder(endpoint)
                     .timeout(Duration.ofSeconds(10))
                     .header("Content-Type", "application/json")
@@ -68,6 +69,8 @@ final class ProductionWorkerRegistrationLoop {
                             json.writeValueAsBytes(registration)))
                     .build();
             http.send(request, HttpResponse.BodyHandlers.discarding());
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
         } catch (Exception ignored) {
             // Scheduler freshness selection expires this worker after two
             // minutes; registration loss therefore fails closed automatically.
