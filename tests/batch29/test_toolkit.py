@@ -4634,6 +4634,29 @@ print('\\n'.join(failures))
                 },
             )
 
+    def test_persisted_artifact_manifest_keeps_php_target_source(self):
+        runner = load_polyglot_runner()
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td).resolve()
+            route = repo / "routes" / "java-to-php"
+            generated = repo / "generated"
+            generated.mkdir()
+            target = generated / "migrated.php"
+            target.write_text("<?php\n\ndeclare(strict_types=1);\n", encoding="utf-8")
+            (generated / "semantic-ir.json").write_text(
+                '{"schema_version":"1.0.0"}\n', encoding="utf-8"
+            )
+
+            reference = runner.persist_artifact_directory(
+                repo, route, "development", generated
+            )
+
+            manifest = json.loads((route / str(reference["path"])).read_text())
+            self.assertIn("migrated.php", {item["path"] for item in manifest["files"]})
+            self.assertTrue(
+                (route / "certification/artifacts/development/migrated.php").is_file()
+            )
+
     def test_execute_route_persists_every_engine_output_and_binds_manifests(self):
         runner = load_polyglot_runner()
         with tempfile.TemporaryDirectory() as td:

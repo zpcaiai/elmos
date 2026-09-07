@@ -740,6 +740,7 @@ ARTIFACT_ALLOWED_SUFFIXES = {
     ".md",
     ".m",
     ".mjs",
+    ".php",
     ".py",
     ".rs",
     ".smt2",
