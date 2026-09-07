@@ -614,6 +614,146 @@ def test_trusted_go_analyzer_rejects_non_analyze_command_shapes(
         native._run_trusted_go_analyzer(toolchain, helper, [source, selector, *tail])
 
 
+def _synthetic_rust_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -> ExactToolchain:
+    return ExactToolchain(
+        language="rust",
+        version="1.89.0",
+        executable="/fixed/rustc",
+        auxiliary="/fixed/cargo",
+        profile=profile,
+        executable_sha256="a" * 64,
+        auxiliary_sha256="b" * 64,
+    )
+
+
+def _trusted_rust_test_input(tmp_path: Path, function_name: str = "value") -> tuple[Path, list[str]]:
+    source = tmp_path / "narrow.rs"
+    source.write_text("fn value(input: i64) -> i64 { input }\n", encoding="utf-8")
+    package = ENGINE_ROOT / "native" / "rust"
+    return package, [str(source.resolve()), function_name]
+
+
+def test_trusted_rust_analyzer_promotes_only_exact_missing_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    reason = "FUNCTION_NOT_FOUND:absent"
+    toolchain = _synthetic_rust_toolchain()
+    package, arguments = _trusted_rust_test_input(tmp_path, "absent")
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_rust_analyzer_package_binding", lambda package, cargo: "binding")
+
+    def fail(
+        command: list[str],
+        *,
+        cwd: Path,
+        timeout: int,
+        isolated_cargo: bool,
+        cargo_package: Path,
+    ) -> dict[str, Any]:
+        assert command == [
+            toolchain.auxiliary,
+            "run",
+            "--quiet",
+            "--offline",
+            "--locked",
+            "--manifest-path",
+            str(package / "Cargo.toml"),
+            "--",
+            *arguments,
+        ]
+        assert cwd == package
+        assert timeout == 900
+        assert isolated_cargo is True
+        assert cargo_package == package
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.auxiliary}:{reason}")
+
+    monkeypatch.setattr(native, "_run", fail)
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_rust_analyzer(toolchain, package, arguments)
+
+    assert str(captured.value) == reason
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "FUNCTION_NOT_FOUND:other",
+        "FUNCTION_NOT_FOUND:absent\nextra-output",
+        "RUST_UNSUPPORTED_TYPE",
+        "NATIVE_ANALYZER_FAILED:/forged/cargo:FUNCTION_NOT_FOUND:absent",
+    ],
+)
+def test_trusted_rust_analyzer_does_not_promote_unknown_multiline_or_forged_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stderr: str,
+) -> None:
+    toolchain = _synthetic_rust_toolchain()
+    package, arguments = _trusted_rust_test_input(tmp_path, "absent")
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_rust_analyzer_package_binding", lambda package, cargo: "binding")
+    wrapped = f"NATIVE_ANALYZER_FAILED:{toolchain.auxiliary}:{stderr}"
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, timeout, isolated_cargo, cargo_package: (_ for _ in ()).throw(RouteError(wrapped)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_rust_analyzer(toolchain, package, arguments)
+
+    assert str(captured.value) == wrapped
+
+
+def test_trusted_rust_analyzer_rejects_package_drift_before_error_promotion(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchain = _synthetic_rust_toolchain()
+    package, arguments = _trusted_rust_test_input(tmp_path, "absent")
+    bindings = iter(["before", "after"])
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_rust_analyzer_package_binding", lambda package, cargo: next(bindings))
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, timeout, isolated_cargo, cargo_package: (_ for _ in ()).throw(
+            RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.auxiliary}:FUNCTION_NOT_FOUND:absent")
+        ),
+    )
+
+    with pytest.raises(RouteError, match="^RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION$"):
+        native._run_trusted_rust_analyzer(toolchain, package, arguments)
+
+
+@pytest.mark.parametrize(
+    ("source_kind", "selector", "tail"),
+    [
+        ("relative", "value", []),
+        ("absolute", "--inventory", []),
+        ("absolute", "--functions=value,value", []),
+        ("absolute", "--functions=value,", []),
+        ("absolute", "value", ["--unexpected"]),
+        ("absolute", "value\nforged", []),
+    ],
+)
+def test_trusted_rust_analyzer_rejects_non_analyze_command_shapes(
+    tmp_path: Path,
+    source_kind: str,
+    selector: str,
+    tail: list[str],
+) -> None:
+    toolchain = _synthetic_rust_toolchain()
+    package = ENGINE_ROOT / "native" / "rust"
+    absolute_source = tmp_path / "narrow.rs"
+    absolute_source.write_text("fn value() {}\n", encoding="utf-8")
+    source = "relative.rs" if source_kind == "relative" else str(absolute_source.resolve())
+
+    with pytest.raises(RouteError, match="^RUST_ANALYZER_COMMAND_SHAPE_INVALID$"):
+        native._run_trusted_rust_analyzer(toolchain, package, [source, selector, *tail])
+
+
 def _require_native_toolchain(language: str) -> None:
     try:
         exact_toolchain(language)  # type: ignore[arg-type]

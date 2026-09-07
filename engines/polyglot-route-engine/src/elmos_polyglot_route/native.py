@@ -5682,6 +5682,123 @@ def _run_trusted_go_analyzer(
         return value
 
 
+def _rust_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("RUST_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
+
+
+def _verify_trusted_rust_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "rust"
+        or expected.version != "1.89.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is None
+        or not Path(expected.auxiliary).is_absolute()
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+        or expected.auxiliary_sha256 is None
+        or digest(expected.auxiliary_sha256) is None
+    ):
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("rust")
+    except RouteError as error:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("RUST_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _rust_analyzer_package_binding(package: Path, cargo: Path) -> str:
+    expected = ENGINE_ROOT / "native" / "rust"
+    if not package.is_absolute() or package != expected or package.is_symlink():
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE")
+    try:
+        return _toolchain_build_cache_key(
+            "rust-analyzer-inputs",
+            cargo,
+            files=(
+                package / "Cargo.toml",
+                package / "Cargo.lock",
+                package / ".cargo" / "config.toml",
+            ),
+            trees=(package / "src", package / "vendor"),
+            salt=("cargo-run=--quiet,--offline,--locked",),
+        )
+    except OSError as error:
+        raise RouteError("RUST_ANALYZER_PACKAGE_UNSAFE") from error
+
+
+def _run_trusted_rust_analyzer(
+    toolchain: ExactToolchain,
+    package: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run a package- and toolchain-bound Rust analyzer with exact error promotion."""
+
+    promotable = _rust_analyzer_arguments(arguments)
+    if toolchain.auxiliary is None:
+        raise RouteError("RUST_ANALYZER_CARGO_REQUIRED")
+    cargo = Path(toolchain.auxiliary)
+    expected_package = _rust_analyzer_package_binding(package, cargo)
+    _verify_trusted_rust_toolchain(toolchain)
+    command = [
+        str(cargo),
+        "run",
+        "--quiet",
+        "--offline",
+        "--locked",
+        "--manifest-path",
+        str(package / "Cargo.toml"),
+        "--",
+        *arguments,
+    ]
+    try:
+        value = _run(
+            command,
+            cwd=package,
+            timeout=900,
+            isolated_cargo=True,
+            cargo_package=package,
+        )
+    except RouteError as error:
+        try:
+            current_package = _rust_analyzer_package_binding(package, cargo)
+        except RouteError as changed:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from changed
+        if current_package != expected_package:
+            raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_rust_toolchain(toolchain)
+        wrapped = str(error)
+        for reason in promotable:
+            if wrapped == f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}":
+                raise RouteError(reason) from error
+        raise
+    if _rust_analyzer_package_binding(package, cargo) != expected_package:
+        raise RouteError("RUST_ANALYZER_PACKAGE_CHANGED_DURING_EXECUTION")
+    _verify_trusted_rust_toolchain(toolchain)
+    return value
+
+
 def _run(
     command: list[str],
     *,
@@ -7825,29 +7942,14 @@ def _analyze_batch(
             package = ENGINE_ROOT / "native" / "rust"
             if toolchain.auxiliary is None:
                 return None
-            cargo = toolchain.auxiliary
-            document = _run(
-                [
-                    cargo,
-                    "run",
-                    "--quiet",
-                    "--offline",
-                    "--locked",
-                    "--manifest-path",
-                    str(package / "Cargo.toml"),
-                    "--",
-                    str(resolved),
-                    selector,
-                    *(["--emitted-target"] if emitted_target else []),
-                ],
-                cwd=package,
-                timeout=900,
-                isolated_cargo=True,
-                cargo_package=package,
-            )
+            arguments = [str(resolved), selector]
+            if emitted_target:
+                arguments.append("--emitted-target")
+            document = _run_trusted_rust_analyzer(toolchain, package, arguments)
+            promotable = _rust_analyzer_arguments(arguments)
 
             def promote(reason: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{cargo}:{reason}")
+                return RouteError(reason) if reason in promotable else None
 
         else:
             return None
@@ -8382,25 +8484,10 @@ def analyze(
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
-        value = _run(
-            [
-                toolchain.auxiliary,
-                "run",
-                "--quiet",
-                "--offline",
-                "--locked",
-                "--manifest-path",
-                str(package / "Cargo.toml"),
-                "--",
-                str(source),
-                function_name,
-                *(["--emitted-target"] if emitted_target else []),
-            ],
-            cwd=package,
-            timeout=900,
-            isolated_cargo=True,
-            cargo_package=package,
-        )
+        arguments = [str(source), function_name]
+        if emitted_target:
+            arguments.append("--emitted-target")
+        value = _run_trusted_rust_analyzer(toolchain, package, arguments)
     elif language == "javascript":
         value = _run_trusted_javascript_analyzer(
             toolchain,
