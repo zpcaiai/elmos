@@ -128,6 +128,13 @@ export function validateWorkspaceServiceBaseUrl(
   return validateBaseUrl(configured, ["workspace-service:8082"], environment);
 }
 
+export function validateLiveWorkbenchBaseUrl(
+  configured: string,
+  environment: UpstreamEnvironment = process.env,
+): string {
+  return validateBaseUrl(configured, ["live-workbench:8092"], environment);
+}
+
 export function configuredControlPlaneBaseUrl(
   options: ResolutionOptions = {},
 ): string | null {
@@ -161,6 +168,13 @@ export function configuredWorkspaceServiceBaseUrl(
 ): string | null {
   const configured = environment.ELMOS_WORKSPACE_SERVICE_URL?.trim();
   return configured ? validateWorkspaceServiceBaseUrl(configured, environment) : null;
+}
+
+export function configuredLiveWorkbenchBaseUrl(
+  environment: UpstreamEnvironment = process.env,
+): string | null {
+  const configured = environment.ELMOS_LIVE_WORKBENCH_BASE_URL?.trim();
+  return configured ? validateLiveWorkbenchBaseUrl(configured, environment) : null;
 }
 
 export function configuredRepositoryWorkspaceBaseUrl(
