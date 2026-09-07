@@ -133,10 +133,10 @@ export default async function AdminLoginPage({
           </div>
         )}
 
-        {configured && <div className="admin-login-notification" role="note">
-          <strong>登录安全通知</strong>
-          <span>企业账户登录成功后，系统会向 {ADMINISTRATOR_EMAIL} 发送安全通知。</span>
-        </div>}
+        <div className="admin-login-notification" role="note">
+          <strong>受信任提供商登录安全通知</strong>
+          <span>每次管理员成功登录后（仅限企业 OIDC 或邮箱验证码），系统都会向 {ADMINISTRATOR_EMAIL} 发送安全通知；通知失败时不会建立管理员会话。</span>
+        </div>
 
         <div className="auth-links admin-auth-links">
           <span>不是管理员？</span>

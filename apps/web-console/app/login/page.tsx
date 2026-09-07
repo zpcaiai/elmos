@@ -134,6 +134,7 @@ export default async function LoginPage({
             <h2>使用邮箱登录</h2>
             <p>本地邮箱密码登录仅限 localhost 开发测试；生产环境永久禁用。</p>
             <input type="hidden" name="returnTo" value={returnTo} />
+            <input type="hidden" name="loginMode" value="USER" />
             <label>
               <span>邮箱</span>
               <input
