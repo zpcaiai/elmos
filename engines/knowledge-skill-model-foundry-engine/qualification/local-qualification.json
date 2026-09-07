@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "74488ef18606b696ced9c2fc5afa9b10f90ad2ad",
+  "baseline_commit": "66165d9a75b6c39736354cd608ae443470cf0af2",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -38,7 +38,7 @@
       "tooling/qualify_knowledge_skill_model_foundry.py",
       "tooling/report_foundry_readiness.py"
     ],
-    "sha256": "27a8d43b148307f75d6b4a34def5febfe9e57fddf498f57f45731b48a622d9dc",
+    "sha256": "eac9d0da25c9f9f724fc28c85bee14da3baaa5ed0c78cfbf2d25a938a9db3264",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",

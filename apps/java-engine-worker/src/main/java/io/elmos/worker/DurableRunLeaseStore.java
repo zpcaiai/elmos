@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * <p>Run state remains the authoritative queue record. Lease files only grant
  * bounded execution authority and are safe to expire after missed heartbeats.</p>
  */
-final class DurableRunLeaseStore {
+final class DurableRunLeaseStore implements AutoCloseable {
     /*
      * In-process monitors, one per queue lock file.
      *
@@ -128,12 +128,14 @@ final class DurableRunLeaseStore {
     private final Path receiptsRoot;
     private final Path deadRoot;
     private final Path lockPath;
+    private final ReentrantLock processLock;
     private final String line;
     private final int globalCapacity;
     private final int tenantCapacity;
     private final Duration queueTtl;
     private final Duration leaseTtl;
     private final Clock clock;
+    private boolean closed;
 
     DurableRunLeaseStore(
             Path runnerRoot,
@@ -166,6 +168,7 @@ final class DurableRunLeaseStore {
         this.receiptsRoot = confined(root, "receipts", line);
         this.deadRoot = confined(root, "dead-letter", line);
         this.lockPath = confined(root, "control", line + ".lock");
+        this.processLock = PROCESS_LOCKS.computeIfAbsent(lockPath, key -> new ReentrantLock());
         try {
             Files.createDirectories(leasesRoot);
             Files.createDirectories(receiptsRoot);
@@ -326,17 +329,36 @@ final class DurableRunLeaseStore {
      * happened to be admitted at the same moment.</p>
      */
     private <T> T withLock(IoSupplier<T> operation) {
-        ReentrantLock processLock =
-                PROCESS_LOCKS.computeIfAbsent(lockPath, key -> new ReentrantLock());
         processLock.lock();
-        try (FileChannel channel = FileChannel.open(
-                lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
-             FileLock ignored = channel.lock()) {
-            return operation.get();
-        } catch (LeaseException error) {
-            throw error;
-        } catch (IOException error) {
-            throw new IllegalStateException("durable queue lock unavailable", error);
+        try {
+            if (closed) throw new IllegalStateException("durable queue store is closed");
+            try (FileChannel channel = FileChannel.open(
+                    lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                 FileLock ignored = channel.lock()) {
+                return operation.get();
+            } catch (LeaseException error) {
+                throw error;
+            } catch (IOException error) {
+                throw new IllegalStateException("durable queue lock unavailable", error);
+            }
+        } finally {
+            processLock.unlock();
+        }
+    }
+
+    /**
+     * Closes queue mutation admission after all service tasks have terminated.
+     *
+     * <p>The same in-process lock guards mutation and closure. Consequently an
+     * in-flight heartbeat or release finishes before this method returns, and
+     * every later operation fails before opening (and potentially recreating)
+     * the filesystem lock. This is the final writer barrier required before an
+     * owner releases or removes the workspace.</p>
+     */
+    @Override public void close() {
+        processLock.lock();
+        try {
+            closed = true;
         } finally {
             processLock.unlock();
         }

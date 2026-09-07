@@ -410,7 +410,13 @@ def test_unknown_http_route_uses_fail_closed_error_envelope(client: TestClient) 
     assert value["certification"] == "NOT_CERTIFIED"
 
 
-def test_isolated_assessment_process_returns_only_bounded_blocked_json() -> None:
+def test_isolated_assessment_process_returns_only_bounded_blocked_json(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # Preserve the production fail-closed startup SLO while giving this positive
+    # macOS-spawn integration path enough test-only budget on a saturated host.
+    assert http_api.ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS == 30.0
+    monkeypatch.setattr(http_api, "ASSESSMENT_PROCESS_STARTUP_TIMEOUT_SECONDS", 600.0)
     request = parse_commercial_request_json(json.dumps(_request(), separators=(",", ":")).encode())
     payload = http_api._run_assessment_isolated(request)
     value = json.loads(payload)
