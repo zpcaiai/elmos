@@ -545,6 +545,57 @@ def test_swift_inventory_requires_and_byte_binds_private_build_receipt() -> None
         )
 
 
+def test_swift_inventory_verifier_uses_the_selected_apple_host_profile(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    inventory = _synthetic_swift_inventory(
+        b"func identity(_ value: Int64) -> Int64 { value }\n"
+    )
+    receipt = inventory["analyzer_build_receipt"]  # type: ignore[assignment]
+    selected = route_engine.apple_route_host_profile("swift")
+    hosted = replace(
+        selected,
+        apple_git_sha256="b" * 64,
+        sandbox_exec_sha256="c" * 64,
+        sandbox_exec_cdhash_full="d" * 64,
+        codesign_sha256="e" * 64,
+    )
+    receipt["dependency"]["mirror"]["git"]["sha256"] = (  # type: ignore[index]
+        "sha256:" + hosted.apple_git_sha256
+    )
+    sandbox = receipt["network_isolation"]["sandbox"]  # type: ignore[index]
+    sandbox["sha256"] = "sha256:" + hosted.sandbox_exec_sha256
+    sandbox["cdhash_full"] = hosted.sandbox_exec_cdhash_full
+    verifier = receipt["network_isolation"]["verifier"]  # type: ignore[index]
+    verifier["sha256"] = "sha256:" + hosted.codesign_sha256
+    canonical = route_engine._canonical_swift_analyzer_receipt(receipt)  # type: ignore[arg-type]
+    receipt["canonical_identity"] = {
+        "sha256": route_engine._canonical_digest(canonical),
+        "receipt": canonical,
+    }
+    canonical_toolchain = route_engine._canonical_swift_toolchain_identity(  # type: ignore[attr-defined]
+        receipt["toolchain"]
+    )
+    inventory["analyzer_version"] = (
+        "swift-syntax;"
+        f"source-inputs={receipt['source_inputs']['sha256']};"
+        f"swift-driver={receipt['toolchain']['swift_driver_sha256']};"
+        f"swift-syntax-tree={receipt['dependency']['sha256']};"
+        f"canonical-receipt={receipt['canonical_identity']['sha256']};"
+        f"binary={receipt['binary']['sha256']};"
+        f"toolchain={route_engine._canonical_digest(canonical_toolchain)};"
+        f"build-closure={route_engine._canonical_digest(canonical_toolchain['build_closure'])};"
+        f"network-policy={receipt['network_isolation']['policy']['sha256']}"
+    )
+    monkeypatch.setattr(route_engine, "apple_route_host_profile", lambda _language: hosted)
+
+    route_engine._verify_inventory_analyzer_build_receipt(
+        inventory,
+        role="target",
+        language="swift",
+    )
+
+
 def test_swift_canonical_build_identity_excludes_raw_absolute_paths_and_file_ids() -> None:
     first = _synthetic_swift_build_receipt()
     second = json.loads(json.dumps(first))

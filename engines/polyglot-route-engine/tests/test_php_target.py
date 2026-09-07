@@ -488,6 +488,8 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
         "time": 1,
         "source_modified_time": 100,
         "installed_on_request": True,
+        "used_options": [],
+        "unused_options": [],
         "arch": "arm64",
         "source": {
             "tap": "homebrew/core",
@@ -537,6 +539,7 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     document["runtime_dependencies"][0].update(
         {"version": "3.1", "revision": 2, "pkg_version": "3.1_2"}
     )
+    document.pop("used_options")
     receipt.write_text(json.dumps(document), encoding="utf-8")
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline

@@ -4477,6 +4477,12 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     for key in ("used_options", "unused_options", "changed_files", "aliases"):
         values = normalized.get(key)
         if values is None:
+            # Older Homebrew clients omit an empty option array while newer
+            # clients serialize it. Absence and an empty set carry the same
+            # formula semantics; make that representation stable without
+            # inventing aliases or changed-file records when those are absent.
+            if key in {"used_options", "unused_options"}:
+                normalized[key] = []
             continue
         if not isinstance(values, list) or not all(isinstance(item, str) for item in values):
             raise RouteError(failure)
