@@ -353,7 +353,7 @@ endif
 ifeq ($(REQUIRE_SOURCE_PACKAGES),)
 guarded = @if $(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2); then set -e; $(3); fi
 else
-guarded = @$(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2) && set -e && $(3)
+guarded = @$(SOURCE_PACKAGE_GUARD) $(1) --manifest $(2) && (set -e; $(3))
 endif
 
 batch1-55-skills:
