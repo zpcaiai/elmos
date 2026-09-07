@@ -1,0 +1,33 @@
+{
+  "schema_version": "lw-traceability.v1",
+  "source_archive_sha256": "c7619ce2955b083e39660a159166b6c9b498855203a55b5b8dd3b2cc68d84cfe",
+  "scope": "all 28 package identities plus 18 deployment acceptance surfaces",
+  "implementation": {
+    "typed_domain_handlers": "modules/live-workbench/src/main/java/io/elmos/liveworkbench/LiveWorkbenchService.java",
+    "durable_control_plane": "modules/live-workbench/src/main/java/io/elmos/liveworkbench/ProductionLiveWorkbenchService.java",
+    "postgresql_rls_and_ledgers": "modules/live-workbench/src/main/resources/db/migration/V83__live_workbench_production.sql",
+    "sandbox_provider_boundary": "modules/live-workbench/src/main/java/io/elmos/liveworkbench/SandboxProviderPort.java",
+    "authenticated_api": "modules/live-workbench/src/main/java/io/elmos/liveworkbench/LiveWorkbenchController.java",
+    "browser_workbench": "apps/web-console/app/workbench/LiveWorkbenchStudio.tsx",
+    "external_gate": "scripts/live_workbench/run_production_gate.py"
+  },
+  "skill_coverage_authority": "docs/live-workbench/HANDLER_MAP.json",
+  "local_tests": [
+    "modules/live-workbench/src/test/java/io/elmos/liveworkbench/LiveWorkbenchServiceTest.java",
+    "modules/live-workbench/src/test/java/io/elmos/liveworkbench/ProductionLiveWorkbenchServiceTest.java",
+    "modules/live-workbench/src/test/java/io/elmos/liveworkbench/LiveWorkbenchMigrationContractTest.java",
+    "tests/live-workbench/test_archive_integration.py",
+    "tests/live-workbench/test_production_gate.py"
+  ],
+  "external_acceptance": {
+    "case_inventory": [
+      "ui-e2e", "dap-python", "dap-javascript", "dap-jvm", "dap-dotnet", "real-600s",
+      "expiry-enforcement", "cleanup", "sandbox-isolation", "tenant-security", "recovery-fencing",
+      "evidence-accuracy", "learning-privacy", "failure-transparency", "conversion-mapping",
+      "admission-quota", "trace-correlation", "accessibility"
+    ],
+    "current_status": "NOT_RUN",
+    "certification": "NOT_CERTIFIED",
+    "reason": "No authorized provider deployment, browser/device matrix, independent verifier, or signed evidence bundle is present."
+  }
+}
