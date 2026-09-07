@@ -1,0 +1,4 @@
+interface:
+  display_name: "Modernization Engine Contract"
+  short_description: "Maintain versioned ELMOS engine contracts"
+  default_prompt: "Use $modernization-engine-contract to add or revise an ELMOS engine endpoint or schema."

@@ -1318,7 +1318,7 @@ def test_typescript_named_relift_binds_actual_inventory_span_and_closes_module(
         "typescript",
         "target",
     )
-    assert all(function.source_span is None for function in analyzed_target.functions)
+    assert all(function.source_span is not None for function in analyzed_target.functions)
     raw_target_ir = _bind_function_spans_from_inventory(
         analyzed_target,
         target_inventory,

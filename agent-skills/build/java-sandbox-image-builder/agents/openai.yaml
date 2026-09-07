@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java Sandbox Image Builder"
+  short_description: "Build traceable Java sandbox images"
+  default_prompt: "Use $java-sandbox-image-builder to implement or review this ELMOS Batch 2 capability."

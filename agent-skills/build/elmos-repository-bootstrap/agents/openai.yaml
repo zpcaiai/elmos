@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Repository Bootstrap"
+  short_description: "Bootstrap and validate the ELMOS modular monolith repository"
+  default_prompt: "Use $elmos-repository-bootstrap to create or refactor the ELMOS repository and verify module boundaries."

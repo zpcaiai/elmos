@@ -1,0 +1,46 @@
+{
+  "expectations": [
+    {
+      "text": "Restricted code is not routed to the public provider even though it is healthy.",
+      "passed": true,
+      "evidence": "result.md classifies the code RESTRICTED and declares the public provider ineligible for failover."
+    },
+    {
+      "text": "The budget failure and private-provider outage lead to BLOCKED or HUMAN_REQUIRED rather than success.",
+      "passed": true,
+      "evidence": "result.md returns HUMAN_REQUIRED with both explicit reason codes and prohibits downstream success."
+    },
+    {
+      "text": "No provider secret is issued and no completed usage charge is posted for a call that never began.",
+      "passed": true,
+      "evidence": "result.md records NOT_ISSUED, stops before dispatch, and keeps invocation/token/completed charge at zero."
+    },
+    {
+      "text": "The decision records policy, correlation, classification, provider status, and reason evidence.",
+      "passed": true,
+      "evidence": "The evidence bullet enumerates organization, actor, correlation, classification, policy/version, provider eligibility and health, budget, route, secret, and reason."
+    }
+  ],
+  "summary": {"passed": 4, "failed": 0, "total": 4, "pass_rate": 1.0},
+  "execution_metrics": {
+    "tool_calls": {}, "total_tool_calls": 0, "total_steps": 1,
+    "errors_encountered": 0, "output_chars": 0, "transcript_chars": 0
+  },
+  "claims": [
+    {
+      "claim": "The decision cannot leak restricted code to a healthy public fallback.",
+      "type": "quality",
+      "verified": true,
+      "evidence": "The first bullet makes the private provider the only eligible route and final route is NONE."
+    }
+  ],
+  "user_notes_summary": {
+    "uncertainties": [],
+    "needs_review": ["No without-skill baseline was executed because this turn did not authorize subagent evaluation."],
+    "workarounds": ["Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."]
+  },
+  "eval_feedback": {
+    "suggestions": [],
+    "overall": "The assertions jointly test classification, route eligibility, budget, secrets, ledger behavior, and evidence."
+  }
+}

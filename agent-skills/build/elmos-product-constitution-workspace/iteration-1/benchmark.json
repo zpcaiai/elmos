@@ -1,0 +1,172 @@
+{
+  "metadata": {
+    "skill_name": "elmos-product-constitution",
+    "skill_path": "/Users/stephen/DevProjects/AIProjects/elmos/agent-skills/build/elmos-product-constitution",
+    "executor_model": "current-session-inline-review",
+    "analyzer_model": "not-run",
+    "timestamp": "2026-07-20T17:51:11Z",
+    "evals_run": [
+      1,
+      2,
+      3
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": 1,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The decision rejects organizationId from the request body as a tenant authority.",
+          "passed": true,
+          "evidence": "result.md calls the body field untrusted and requires rejecting the org-a/org-b mismatch."
+        },
+        {
+          "text": "The repository lookup is constrained by server-derived organization and backed by row-level security.",
+          "passed": true,
+          "evidence": "result.md requires findByOrganizationIdAndId(org-a, runId), transaction-local app.organization_id, and ENABLE/FORCE RLS."
+        },
+        {
+          "text": "The cross-tenant attempt returns a non-enumerating denial and emits immutable audit evidence.",
+          "passed": true,
+          "evidence": "result.md specifies generic denied/not-found and an append-only, hash-chain-valid DENY audit event without target data."
+        },
+        {
+          "text": "The output does not suggest disabling RLS or running customer work in the control plane.",
+          "passed": true,
+          "evidence": "result.md explicitly keeps RLS and excludes builds, shell, Recipes, and agents from the control-plane path."
+        }
+      ],
+      "notes": [
+        "No without-skill baseline was executed because this turn did not authorize subagent evaluation.",
+        "Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."
+      ]
+    },
+    {
+      "eval_id": 2,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "Restricted code is not routed to the public provider even though it is healthy.",
+          "passed": true,
+          "evidence": "result.md classifies the code RESTRICTED and declares the public provider ineligible for failover."
+        },
+        {
+          "text": "The budget failure and private-provider outage lead to BLOCKED or HUMAN_REQUIRED rather than success.",
+          "passed": true,
+          "evidence": "result.md returns HUMAN_REQUIRED with both explicit reason codes and prohibits downstream success."
+        },
+        {
+          "text": "No provider secret is issued and no completed usage charge is posted for a call that never began.",
+          "passed": true,
+          "evidence": "result.md records NOT_ISSUED, stops before dispatch, and keeps invocation/token/completed charge at zero."
+        },
+        {
+          "text": "The decision records policy, correlation, classification, provider status, and reason evidence.",
+          "passed": true,
+          "evidence": "The evidence bullet enumerates organization, actor, correlation, classification, policy/version, provider eligibility and health, budget, route, secret, and reason."
+        }
+      ],
+      "notes": [
+        "No without-skill baseline was executed because this turn did not authorize subagent evaluation.",
+        "Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."
+      ]
+    },
+    {
+      "eval_id": 3,
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 4,
+        "failed": 0,
+        "total": 4,
+        "time_seconds": 0.0,
+        "tokens": 0,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The duplicate order event is idempotent and does not double-consume entitlement or allowance.",
+          "passed": true,
+          "evidence": "result.md requires a stable idempotency key, returns the original decision, and prohibits duplicate subscription, allowance, and lease effects."
+        },
+        {
+          "text": "Partial private capacity fulfillment is not reported as complete.",
+          "passed": true,
+          "evidence": "result.md keeps the order PARTIALLY_FULFILLED and the pending capacity item open."
+        },
+        {
+          "text": "Blocked Maven readiness prevents onboarding completion and the failed critical gate keeps the project RED despite 85% progress.",
+          "passed": true,
+          "evidence": "result.md explicitly decides NOT_READY and RED and states why customer preference and numeric progress cannot override those gates."
+        },
+        {
+          "text": "CRM, payment, tax, invoicing, revenue recognition, and accounting effects are not claimed as completed.",
+          "passed": true,
+          "evidence": "result.md lists these as integration boundaries, records NOT_CONFIGURED, and prohibits external completion claims."
+        }
+      ],
+      "notes": [
+        "No without-skill baseline was executed because this turn did not authorize subagent evaluation.",
+        "Token and wall-clock metrics are unavailable for this inline evidence review and are recorded as zero rather than estimated."
+      ]
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0.0,
+        "max": 0.0
+      },
+      "tokens": {
+        "mean": 0.0,
+        "stddev": 0.0,
+        "min": 0,
+        "max": 0
+      }
+    },
+    "delta": {
+      "pass_rate": "N/A",
+      "time_seconds": "N/A",
+      "tokens": "N/A"
+    }
+  },
+  "notes": [
+    "Three adversarial with-skill cases passed 12 of 12 substantive expectations.",
+    "No without-skill baseline was run because subagent evaluation was not authorized for this turn; no comparative delta is claimed.",
+    "Token, wall-clock, and tool-call measurements were unavailable for the inline review and remain zero rather than estimated."
+  ]
+}

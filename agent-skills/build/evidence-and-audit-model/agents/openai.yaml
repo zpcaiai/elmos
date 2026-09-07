@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence and Audit Model"
+  short_description: "Create immutable evidence and append only audit trails"
+  default_prompt: "Use $evidence-and-audit-model when producing validating storing or reporting ELMOS evidence."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "ELMOS Product Constitution"
+  short_description: "Enforce ELMOS product architecture security and MVP boundaries"
+  default_prompt: "Use $elmos-product-constitution before designing implementing or reviewing any ELMOS change."
