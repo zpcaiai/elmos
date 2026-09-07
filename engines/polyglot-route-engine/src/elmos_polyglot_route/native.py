@@ -3007,8 +3007,18 @@ def _run_swift_build_step(
                 # bounded, identity-checked process-tree cleanup as a timeout.
                 pending_input = None
                 poll = getattr(process, "poll", None)
-                if not callable(poll) or poll() is not None:
+                if not callable(poll):
                     raise
+                if poll() is not None:
+                    # The leader may finish in the narrow interval between
+                    # communicate() timing out and poll(). Give its already
+                    # closed pipes one final bounded drain before treating an
+                    # exited leader as evidence of inherited live pipe holders.
+                    stdout, stderr = process.communicate(
+                        input=None,
+                        timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
+                    )
+                    break
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
