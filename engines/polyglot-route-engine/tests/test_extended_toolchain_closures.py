@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import os
+import stat
 import subprocess
 from pathlib import Path
 
@@ -97,6 +98,46 @@ def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
         wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
         assert function.count(wrapper_call) == 1
         assert function.index(wrapper_call) > reuse_branch_end
+    seal_call = 'seal_rust_sysroot "${target}"'
+    assert function.count(seal_call) == 1
+    assert function.index(seal_call) > function.index('write_rust_wrapper "${target}" "rustup"')
+
+
+def test_rust_installer_seals_sysroot_payload_without_removing_execution_bits(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("seal_rust_sysroot() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    target = tmp_path / "rust"
+    sysroot = target / "rustup" / "toolchains" / "1.89.0-aarch64-apple-darwin"
+    executable = sysroot / "bin" / "rustc"
+    payload = sysroot / "lib" / "libstd.rlib"
+    executable.parent.mkdir(parents=True)
+    payload.parent.mkdir(parents=True)
+    executable.write_bytes(b"compiler")
+    payload.write_bytes(b"library")
+    executable.chmod(0o755)
+    payload.chmod(0o644)
+
+    completed = subprocess.run(
+        [
+            "/bin/bash",
+            "-c",
+            function + '\nRUST_VERSION=1.89.0\nseal_rust_sysroot "$1"',
+            "bash",
+            str(target),
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+
+    assert completed.returncode == 0, completed.stderr
+    assert stat.S_IMODE(executable.stat().st_mode) == 0o555
+    assert stat.S_IMODE(payload.stat().st_mode) == 0o444
+    assert stat.S_IMODE(sysroot.stat().st_mode) == 0o555
 
 
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
@@ -223,6 +264,23 @@ def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
 
     assert alternate["sha256"] == local["sha256"]
     assert strict["sha256"] != local["sha256"]
+
+
+def test_rust_sysroot_root_must_remain_read_only(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir(mode=0o755)
+    monkeypatch.setattr(toolchains, "_EXPECTED_RUST_SYSROOT", root)
+
+    with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE"):
+        toolchains._rust_sysroot_root_identity()
+
+    root.chmod(0o555)
+    identity = toolchains._rust_sysroot_root_identity()
+
+    assert stat.S_IMODE(identity[2]) == 0o555
 
 
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])
