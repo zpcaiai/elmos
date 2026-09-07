@@ -1,6 +1,0 @@
-{
-  "component": true,
-  "usingComponents": {
-    "china-db-sql-preflight-studio": "/components/ChinaDbSqlPreflightStudio/index"
-  }
-}

@@ -1,8 +1,0 @@
-{
-  "labId": "LAB-ID",
-  "runtime": "source-native",
-  "toolchains": [],
-  "environmentFingerprint": "sha256:...",
-  "hardware": {},
-  "readiness": "not-run"
-}

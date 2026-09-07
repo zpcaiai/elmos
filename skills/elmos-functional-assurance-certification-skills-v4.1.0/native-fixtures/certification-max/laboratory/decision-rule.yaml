@@ -1,4 +1,0 @@
-limit: 0.9
-direction: min
-expandedUncertainty: 0.02
-rule: guard-band

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 743: business readiness and integration acceptance"
-  short_description: "Operate authoritative Batch 18 capability"
-  default_prompt: "Use $business-readiness-and-integration-acceptance to evaluate this capability with evidence."

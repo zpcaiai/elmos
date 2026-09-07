@@ -1,3 +1,0 @@
-Elmos Project-Use License
-
-This generated package is provided to its recipient for use, modification, and implementation in Elmos-related projects. The recipient may adapt and redistribute it within their project and organization. No warranty is provided. Third-party platforms, payment providers, model APIs, tax, accounting, security, privacy, and regulatory requirements remain subject to their own terms and professional review.

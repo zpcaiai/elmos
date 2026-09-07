@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 731: value capture office manager"
-  short_description: "Operate authoritative Batch 18 capability"
-  default_prompt: "Use $value-capture-office-manager to evaluate this capability with evidence."

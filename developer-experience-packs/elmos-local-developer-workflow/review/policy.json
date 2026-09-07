@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "title": "Review policy",
-  "key": "elmos-local-developer-workflow-review",
-  "status": "blocked",
-  "separation_of_duties": true,
-  "external_review_status": "NOT_RUN",
-  "evidence_refs": []
-}

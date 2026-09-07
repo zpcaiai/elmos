@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 697: identity cutover and rollback manager"
-  short_description: "Operate authoritative Batch 18 capability"
-  default_prompt: "Use $identity-cutover-and-rollback-manager to evaluate this capability with evidence."

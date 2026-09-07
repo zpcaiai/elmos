@@ -1,3 +1,0 @@
-# Exact production persistence driver. Keep synchronized with the ``postgres``
-# project extra and qualify this tuple against PostgreSQL 17 before release.
-psycopg[binary]==3.2.13

@@ -1,7 +1,0 @@
-shadowPercent: 100
-canaryPercent: 1
-rollbackOn:
-- quality
-- safety
-- latency
-- cost

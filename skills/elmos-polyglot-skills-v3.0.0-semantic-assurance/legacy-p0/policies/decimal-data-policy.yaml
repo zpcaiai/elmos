@@ -1,5 +1,0 @@
-moneyAndFixedDecimal: exact-semantics-required
-packedDecimal: byte-layout-evidence
-rounding: explicit
-overflow: explicit
-sampleOnlyReconciliation: insufficient-for-critical-data

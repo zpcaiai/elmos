@@ -1,9 +1,0 @@
-{
-  "schema_version": 1,
-  "corpus": "representative-repository",
-  "selection_status": "NOT_RUN",
-  "execution_status": "NOT_RUN",
-  "inputs": [],
-  "customer_repository": false,
-  "external_execution": "NOT_RUN"
-}

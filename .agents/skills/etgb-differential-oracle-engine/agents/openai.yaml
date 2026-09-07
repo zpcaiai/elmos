@@ -1,6 +1,0 @@
-interface:
-  display_name: "ETGB Differential Oracle Engine"
-  short_description: "Run ETGB full product assurance with evidence controls"
-  default_prompt: "Use $etgb-differential-oracle-engine to run this ETGB capability with fail-closed evidence."
-policy:
-  allow_implicit_invocation: true

@@ -1,9 +1,0 @@
-{
-  "gate_id": "batch1-37-strict",
-  "status": "blocked",
-  "metrics": {},
-  "blockers": [
-    "results-not-generated"
-  ],
-  "evidence_digest": ""
-}

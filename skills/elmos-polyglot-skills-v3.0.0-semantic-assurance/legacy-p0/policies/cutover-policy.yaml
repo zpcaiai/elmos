@@ -1,5 +1,0 @@
-criticalWorkload: dual-run-or-approved-equivalent
-rollback: tested
-dataMigration: reconcilable
-irreversibleChange: explicit-approval
-decommission: post-observation-window

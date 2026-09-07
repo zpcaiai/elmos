@@ -1,1 +1,0 @@
-elmos_proof_harness

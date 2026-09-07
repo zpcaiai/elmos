@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 690: group integration control tower"
-  short_description: "Operate authoritative Batch 18 capability"
-  default_prompt: "Use $group-integration-control-tower to evaluate this capability with evidence."

@@ -1,6 +1,0 @@
-apiVersion: v2
-name: proof-harness
-description: Fail-closed Elmos proof-driven harness control plane
-type: application
-version: 0.2.0
-appVersion: "3.1.0"

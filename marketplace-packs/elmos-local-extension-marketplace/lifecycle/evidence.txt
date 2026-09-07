@@ -1,1 +1,0 @@
-NOT_RUN: external evidence was not authorized or executed.

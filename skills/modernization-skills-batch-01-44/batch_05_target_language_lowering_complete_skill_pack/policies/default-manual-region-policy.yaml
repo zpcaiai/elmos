@@ -1,4 +1,0 @@
-manual_region:
-  regenerate_may_not_overwrite: true
-  conflict_requires_human: true
-  region_markers_required: true

@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 477: organization design principle builder"
-  short_description: "Operate authoritative Batch 15 capability"
-  default_prompt: "Use $organization-design-principle-builder to evaluate this capability with evidence."

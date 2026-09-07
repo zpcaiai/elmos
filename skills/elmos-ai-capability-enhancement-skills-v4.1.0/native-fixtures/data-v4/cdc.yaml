@@ -1,3 +1,0 @@
-ordering: per-key
-deduplication: event-id
-gapTolerance: 0

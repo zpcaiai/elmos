@@ -1,4 +1,0 @@
-elmos-sql-transpiler
-elmos-sql-dialect
-pyyaml>=6.0.0
-jsonschema>=4.0.0

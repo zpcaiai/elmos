@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 487: promotion calibration and talent review manager"
-  short_description: "Operate authoritative Batch 15 capability"
-  default_prompt: "Use $promotion-calibration-and-talent-review-manager to evaluate this capability with evidence."

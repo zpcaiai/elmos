@@ -1,7 +1,0 @@
-# escape=`
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
-USER ContainerUser
-WORKDIR C:\workspace
-ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
-ENTRYPOINT ["dotnet"]

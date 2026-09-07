@@ -1,4 +1,0 @@
-interface:
-  display_name: "Elmos Plan Diff Audit Journal"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-plan-diff-audit-journal to perform its bounded repository workflow with provenance and fail-closed evidence."

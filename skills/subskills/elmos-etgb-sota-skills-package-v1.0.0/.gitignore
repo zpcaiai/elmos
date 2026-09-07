@@ -1,8 +1,0 @@
-.venv/
-__pycache__/
-*.pyc
-*.class
-.etgb/
-reports/*.jsonl
-reports/*.html
-corpora/worktrees/

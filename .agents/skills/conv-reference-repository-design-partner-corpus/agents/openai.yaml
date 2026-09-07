@@ -1,4 +1,0 @@
-interface:
-  display_name: "Conv Reference Repository Design Partner Corpus"
-  short_description: "Run this ELMOS product-convergence Skill with evidence"
-  default_prompt: "Use $conv-reference-repository-design-partner-corpus to execute this ELMOS product-convergence Skill with fail-closed evidence."

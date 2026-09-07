@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 467: core capability and moat planner"
-  short_description: "Operate authoritative Batch 15 capability"
-  default_prompt: "Use $core-capability-and-moat-planner to evaluate this capability with evidence."

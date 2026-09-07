@@ -1,5 +1,0 @@
-{
-  "allowed": false,
-  "reason": "path outside read roots",
-  "rule": "filesystem"
-}

@@ -1,6 +1,0 @@
-measurand: task-success-rate
-components:
-- 0.01
-- 0.02
-- 0.005
-coverageFactor: 2

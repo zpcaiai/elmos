@@ -1,4 +1,0 @@
-interface:
-  display_name: "Skill 712: network dns connectivity integration"
-  short_description: "Operate authoritative Batch 18 capability"
-  default_prompt: "Use $network-dns-connectivity-integration to evaluate this capability with evidence."

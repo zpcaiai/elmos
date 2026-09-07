@@ -1,1 +1,0 @@
-{"runner":"DISTRIBUTED_EQUIVALENCE","rootless":true,"ephemeral":true,"network":"DENY","productionCredentials":false,"requiresSameInputSnapshot":true,"requiresSameDataSnapshot":true,"sideEffectsCompared":true,"notRunCanPass":false}

@@ -1,4 +1,0 @@
-interface:
-  display_name: "B102 Transaction Concurrency Equivalence"
-  short_description: "Run this ELMOS product-closure Skill safely"
-  default_prompt: "Use $b102-transaction-concurrency-equivalence to execute this ELMOS product-closure Skill with fail-closed evidence."

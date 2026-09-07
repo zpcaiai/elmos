@@ -1,4 +1,0 @@
-stale_evidence:
-  default_ttl_days: 90
-  expired_evidence_blocks_publication: true
-  expiry_triggers_recheck: true

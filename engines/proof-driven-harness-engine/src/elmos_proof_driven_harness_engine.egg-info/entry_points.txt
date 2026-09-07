@@ -1,2 +1,0 @@
-[console_scripts]
-elmos-proof-harness = elmos_proof_harness.cli:main

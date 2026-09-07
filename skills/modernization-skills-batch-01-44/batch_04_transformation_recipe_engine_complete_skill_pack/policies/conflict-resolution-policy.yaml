@@ -1,4 +1,0 @@
-conflict_resolution:
-  overlapping_rewrites: reject
-  priority_ties: reject
-  resolution_must_be_recorded: true

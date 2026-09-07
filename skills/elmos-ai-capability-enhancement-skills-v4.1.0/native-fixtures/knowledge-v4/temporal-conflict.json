@@ -1,6 +1,0 @@
-{
-  "fact": "policy-limit",
-  "oldValidTo": "2026-01-01",
-  "newValidFrom": "2026-01-01",
-  "resolution": "latest-valid-authoritative"
-}
