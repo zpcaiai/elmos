@@ -32,6 +32,7 @@ export const accountCookieNames = {
 export const localAccountCookieNames = {
   session: "elmos_local_session",
   accessToken: "elmos_local_access_token",
+  administratorSession: "elmos_local_admin_session",
 } as const;
 
 export type AccountCookieName =
@@ -275,6 +276,7 @@ function applyAdministratorPolicy(
     ...principalWithoutEmail,
     ...(email ? { email } : {}),
     emailVerified,
+    temporaryAdministrator: false,
     isPlatformAdmin,
     roles: primary.roles,
     permissions: primary.permissions,
@@ -284,7 +286,7 @@ function applyAdministratorPolicy(
 
 export function isPlatformAdministrator(principal: AccountPrincipal): boolean {
   return principal.isPlatformAdmin === true
-    && principal.emailVerified === true
+    && (principal.emailVerified === true || principal.temporaryAdministrator === true)
     && normalizedEmail(principal.email) === ADMINISTRATOR_EMAIL
     && principal.permissions.includes("admin:read");
 }
@@ -322,6 +324,7 @@ export type AccountPrincipal = {
   email?: string;
   emailVerified: boolean;
   isPlatformAdmin: boolean;
+  temporaryAdministrator?: boolean;
   organizationId: string;
   roles: AccountRole[];
   permissions: AccountPermission[];
@@ -566,6 +569,105 @@ export function localCredentialsConfigured(): boolean {
   } catch {
     return false;
   }
+}
+
+// Explicit, loopback-only development bootstrap. Never an OIDC fallback or
+// evidence that the mailbox was verified. No default administrator password.
+function temporaryAdministratorConfiguration() {
+  const salt = process.env.ELMOS_TEMP_ADMIN_PASSWORD_SALT ?? "";
+  const hash = process.env.ELMOS_TEMP_ADMIN_PASSWORD_HASH ?? "";
+  const organizationId = process.env.ELMOS_OPERATIONS_TENANT_ID?.trim() || "local-test";
+  if (
+    !["development", "test"].includes(process.env.NODE_ENV ?? "")
+    || process.env.ELMOS_TEMP_ADMIN_ENABLED !== "true"
+    || !/^[a-f0-9]{32}$/.test(salt)
+    || !/^[a-f0-9]{128}$/.test(hash)
+    || (process.env.ELMOS_SESSION_SECRET?.trim().length ?? 0) < 32
+    || !organizationPattern.test(organizationId)
+  ) {
+    throw new AccountSessionError(404, "TEMP_ADMIN_DISABLED", "临时管理员密码登录未启用。只允许本地开发环境使用。");
+  }
+  return { salt, hash, organizationId };
+}
+
+export function temporaryAdministratorConfigured(): boolean {
+  try { temporaryAdministratorConfiguration(); return true; } catch { return false; }
+}
+
+function assertTemporaryAdministratorRequest(request: Request): void {
+  const url = new URL(request.url);
+  const host = request.headers.get("host");
+  if (
+    !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+    || host !== url.host
+  ) {
+    throw new AccountSessionError(403, "TEMP_ADMIN_LOOPBACK_ONLY", "临时管理员密码登录仅允许本机访问。");
+  }
+  assertSameOriginMutation(request);
+}
+
+// Bounded single-process development throttle; this entry is disabled in production.
+let temporaryAdminFailures = 0;
+let temporaryAdminLockedUntil = 0;
+
+export function authenticateTemporaryAdministrator(
+  request: Request, username: string, password: string,
+): { session: string; principal: AccountPrincipal; expiresAt: number } {
+  const configuration = temporaryAdministratorConfiguration();
+  assertTemporaryAdministratorRequest(request);
+  const now = Date.now();
+  if (temporaryAdminLockedUntil > now) {
+    throw new AccountSessionError(429, "TEMP_ADMIN_LOCKED", "尝试次数过多，请在十五分钟后重试。");
+  }
+  if (temporaryAdminLockedUntil) {
+    temporaryAdminLockedUntil = 0;
+    temporaryAdminFailures = 0;
+  }
+  const candidate = password.length <= 1024 ? password : "";
+  const digest = scryptSync(candidate, Buffer.from(configuration.salt, "hex"), 64);
+  if (!timingSafeEqual(digest, Buffer.from(configuration.hash, "hex"))
+    || normalizedEmail(username) !== ADMINISTRATOR_EMAIL || password.length > 1024) {
+    temporaryAdminFailures += 1;
+    if (temporaryAdminFailures >= 5) temporaryAdminLockedUntil = now + 15 * 60_000;
+    throw new AccountSessionError(401, "TEMP_ADMIN_INVALID", "管理员账号或密码错误。");
+  }
+  temporaryAdminFailures = 0;
+  const membership = administratorMembership({
+    organizationId: configuration.organizationId, roles: [], permissions: [],
+  }, true);
+  const principal: AccountPrincipal = {
+    actorId: ADMINISTRATOR_EMAIL, displayName: "平台管理员", email: ADMINISTRATOR_EMAIL,
+    emailVerified: false, isPlatformAdmin: true, temporaryAdministrator: true,
+    ...membership, memberships: [membership],
+  };
+  const expiresAt = now + 60 * 60_000;
+  return {
+    principal, expiresAt,
+    session: seal({ version: 1, principal, expiresAt,
+      credentialFingerprint: hashToken(JSON.stringify(configuration)) }),
+  };
+}
+
+function temporaryAdministratorSession(request: Request, sealed: string, requiredPermission?: AccountPermission) {
+  const configuration = temporaryAdministratorConfiguration();
+  assertTemporaryAdministratorRequest(request);
+  const session = unseal<{
+    version: number; principal: AccountPrincipal; expiresAt: number; credentialFingerprint: string;
+  }>(sealed, "ACCOUNT_SESSION_INVALID");
+  if (session.version !== 1 || !Number.isFinite(session.expiresAt) || session.expiresAt <= Date.now()
+    || session.expiresAt > Date.now() + 60 * 60_000
+    || session.credentialFingerprint !== hashToken(JSON.stringify(configuration))
+    || session.principal.temporaryAdministrator !== true
+    || session.principal.emailVerified !== false
+    || session.principal.actorId !== ADMINISTRATOR_EMAIL
+    || session.principal.organizationId !== configuration.organizationId
+    || !isPlatformAdministrator(session.principal)) {
+    throw new AccountSessionError(401, "ACCOUNT_SESSION_EXPIRED", "临时管理员会话已失效，请重新登录。");
+  }
+  if (requiredPermission && !session.principal.permissions.includes(requiredPermission)) {
+    throw new AccountSessionError(403, "ACCOUNT_PERMISSION_REQUIRED", "当前账户缺少执行此操作的权限。");
+  }
+  return { principal: session.principal, expiresAt: session.expiresAt, accessToken: "" };
 }
 
 function localCredentialStorePath(): string {
@@ -2030,6 +2132,8 @@ export function accountSessionFromRequest(
   expiresAt: number;
 } {
   const cookies = cookieMap(request.headers.get("cookie"));
+  const temporaryAdmin = cookies.get(localAccountCookieNames.administratorSession);
+  if (temporaryAdmin) return temporaryAdministratorSession(request, temporaryAdmin, requiredPermission);
   let sealed = cookies.get(accountCookieNames.session) ?? "";
   let accessToken = cookies.get(accountCookieNames.accessToken) ?? "";
   let localCredentialSession = false;

@@ -3,6 +3,7 @@ import {
   accountSessionFromRequest,
   localCredentialsConfigured,
   oidcConfigured,
+  temporaryAdministratorConfigured,
 } from "../../../lib/server/accountSession";
 import { descopeConfigured } from "../../../lib/server/descopeIdentity";
 
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         authenticated: false,
-        configured: descopeConfigured() || oidcConfigured() || localCredentialsConfigured(),
+        configured: descopeConfigured() || oidcConfigured() || localCredentialsConfigured() || temporaryAdministratorConfigured(),
         principal: null,
         expiresAt: null,
       },
