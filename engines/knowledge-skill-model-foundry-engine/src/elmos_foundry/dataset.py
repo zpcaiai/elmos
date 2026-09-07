@@ -3,12 +3,14 @@
 from __future__ import annotations
 
 from decimal import Decimal, InvalidOperation
+from dataclasses import replace
 import hashlib
 from threading import RLock
 from types import MappingProxyType
 from typing import Sequence
 
 from .authorizations import AuthorizationVerifier, require_authorization
+from .asset_store import asset_payload, restore_asset
 from .canonical import canonical_digest, canonical_json
 from .domain import (
     CertificationStatus,
@@ -20,6 +22,7 @@ from .domain import (
     TenantScope,
 )
 from .kernel import ExecutionKernel
+from .store import FoundryStore
 
 
 def _ratio(value: Decimal | str | float, label: str) -> Decimal:
@@ -40,9 +43,11 @@ class DatasetFoundry:
         kernel: ExecutionKernel | None = None,
         *,
         data_use_verifier: AuthorizationVerifier | None = None,
+        store: FoundryStore | None = None,
     ) -> None:
         self.kernel = kernel or ExecutionKernel()
         self._data_use_verifier = data_use_verifier
+        self.store = store
         self._datasets: dict[tuple[str, str, str], list[DatasetItem]] = {}
         self._lock = RLock()
 
@@ -75,12 +80,13 @@ class DatasetFoundry:
         if sum(ratios, Decimal("0")) != Decimal("1"):
             raise ValueError("dataset split ratios must sum exactly to 1")
         if any(
-            episode.tenant_id != scope.tenant_id
-            or episode.project_id != scope.project_id
+            episode.tenant_id != scope.tenant_id or episode.project_id != scope.project_id
             for episode in episodes
         ):
             raise ValueError("cross-tenant or cross-project episodes fail closed")
         ordered = sorted(episodes, key=lambda item: item.episode_id)
+        if len({episode.episode_id for episode in ordered}) != len(ordered):
+            raise ValueError("dataset episodes must have unique identities")
         episode_digests = [
             canonical_digest(
                 {
@@ -159,7 +165,36 @@ class DatasetFoundry:
                 )
             )
         with self._lock:
-            self._datasets[(scope.tenant_id, scope.project_id, dataset_id)] = items
+            if self.store is not None:
+                manifest = {
+                    "tenant_id": scope.tenant_id,
+                    "project_id": scope.project_id,
+                    "dataset_id": dataset_id,
+                    "dataset_name": dataset_name,
+                    "item_count": len(items),
+                    "request_digest": dataset_identity,
+                    "data_use_authorization_digest": data_use_authorization_digest,
+                    "data_use_request_digest": authorization.request_digest,
+                }
+                self.store._create_assets_after_verified_authorization(
+                    scope,
+                    (
+                        ("dataset", dataset_id, "", dataset_identity, manifest),
+                        *(
+                            (
+                                "dataset_item",
+                                item.item_id,
+                                dataset_id,
+                                canonical_digest(asset_payload(item)),
+                                asset_payload(item),
+                            )
+                            for item in items
+                        ),
+                    ),
+                )
+            else:
+                # An exact retry must never remove a prior quarantine decision.
+                self._datasets.setdefault((scope.tenant_id, scope.project_id, dataset_id), items)
         return dataset_id
 
     def get_dataset_items(
@@ -167,22 +202,62 @@ class DatasetFoundry:
         dataset_id: str,
         split: str | None = None,
         tenant_scope: TenantScope | None = None,
+        *,
+        limit: int = 1000,
+        after_id: str = "",
     ) -> Sequence[DatasetItem]:
         scope = tenant_scope or self.kernel.current_tenant
         self.kernel.require_context(scope, "foundry.dataset.read")
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 1000:
+            raise ValueError("dataset query limit must be in [1, 1000]")
+        if self.store is not None:
+            filters: dict[str, str | bool] = {"quarantine": False}
+            if split is not None:
+                filters["split"] = split
+            return tuple(
+                restore_asset(DatasetItem, record.payload)
+                for record in self.store.query_assets(
+                    scope,
+                    "dataset_item",
+                    parent_id=dataset_id,
+                    limit=limit,
+                    after_id=after_id,
+                    filters=filters,
+                )
+            )
         with self._lock:
             items = tuple(self._datasets.get((scope.tenant_id, scope.project_id, dataset_id), ()))
         return tuple(
             item
-            for item in items
-            if not item.quarantine and (split is None or item.split == split)
-        )
+            for item in sorted(items, key=lambda item: item.item_id)
+            if not item.quarantine
+            and item.item_id > after_id
+            and (split is None or item.split == split)
+        )[:limit]
 
-    def quarantine_item(
-        self, item_id: str, tenant_scope: TenantScope | None = None
-    ) -> bool:
+    def quarantine_item(self, item_id: str, tenant_scope: TenantScope | None = None) -> bool:
         scope = tenant_scope or self.kernel.current_tenant
         self.kernel.require_context(scope, "foundry.dataset.quarantine")
+        if self.store is not None:
+            record = self.store.get_asset(scope, "dataset_item", item_id)
+            if record is None:
+                return False
+            item = restore_asset(DatasetItem, record.payload)
+            if item.quarantine:
+                return True
+            updated = replace(
+                item, quality_score=0.0, quarantine=True, evidence_state=EvidenceState.REJECTED
+            )
+            self.store.update_asset(
+                scope,
+                "dataset_item",
+                item_id,
+                record.revision,
+                asset_payload(updated),
+                event_type="dataset.item.quarantined",
+                event_payload={"dataset_id": item.dataset_id},
+            )
+            return True
         with self._lock:
             for key, items in self._datasets.items():
                 if key[:2] != (scope.tenant_id, scope.project_id):
