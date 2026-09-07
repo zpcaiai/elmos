@@ -50,6 +50,14 @@ checks += 1;
 rejected(
   () => requireFinancialOidcAdmin({
     role: "APPROVER",
+    authentication: "TEMPORARY_ADMIN_PASSWORD",
+  }, "VIEWER"),
+  BillingReconciliationPolicyError,
+  "FINANCIAL_OIDC_SESSION_REQUIRED",
+);
+rejected(
+  () => requireFinancialOidcAdmin({
+    role: "APPROVER",
     authentication: "UNSUPPORTED_CREDENTIAL",
   }, "VIEWER"),
   BillingReconciliationPolicyError,
