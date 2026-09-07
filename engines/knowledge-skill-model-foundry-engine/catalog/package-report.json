@@ -29,8 +29,8 @@
     "version": "2.0.0"
   },
   "capability_states": {
-    "LOCAL": 26,
-    "PREPARE_ONLY": 1284
+    "LOCAL": 45,
+    "PREPARE_ONLY": 1265
   },
   "certification_status": "NOT_CERTIFIED",
   "counts": {

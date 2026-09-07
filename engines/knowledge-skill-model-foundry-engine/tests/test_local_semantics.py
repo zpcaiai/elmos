@@ -55,6 +55,11 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
                 "foundry.adapter.execute",
                 "foundry.store.read",
                 "foundry.store.write",
+                "foundry.retrieval.read",
+                "foundry.retrieval.region.local",
+                "foundry.retrieval.classification.internal",
+                "foundry.retrieval.role.reader",
+                "foundry.retrieval.rights.internal",
             ),
             ttl_seconds=600,
             invocation_id=invocation_id,
@@ -266,6 +271,28 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         self.assertIsNotNone(record)
         assert record is not None
         pack = record["pack"]
+        from test_foundation_semantics import fixture_inputs as foundation_fixture
+        from test_dataset_semantics import fixture_inputs as dataset_fixture
+        from test_runtime_semantics import fixture_inputs as runtime_fixture
+        from test_build_graph_semantics import fixture_inputs as build_graph_fixture
+        from test_ir_reconciliation_semantics import fixture_inputs as ir_fixture
+        from test_ast_extraction_semantics import fixture_inputs as ast_fixture
+        from elmos_foundry.runtime_semantics import RUNTIME_SEMANTIC_SKILLS
+        from elmos_foundry.foundation_semantics import FOUNDATION_SEMANTIC_SKILLS
+        from elmos_foundry.dataset_semantics import DATASET_SEMANTIC_SKILLS
+
+        if skill_name == "build-and-dependency-graph":
+            return build_graph_fixture(skill_name, scope or self.scope)
+        if skill_name == "semantic-ir-reconciliation":
+            return ir_fixture(skill_name, scope or self.scope)
+        if skill_name == "multi-language-ast-extraction":
+            return ast_fixture(skill_name, scope or self.scope)
+        if skill_name in RUNTIME_SEMANTIC_SKILLS:
+            return runtime_fixture(skill_name, scope or self.scope)
+        if skill_name in FOUNDATION_SEMANTIC_SKILLS:
+            return foundation_fixture(skill_name, scope or self.scope)
+        if skill_name in DATASET_SEMANTIC_SKILLS:
+            return dataset_fixture(skill_name, scope or self.scope)
         if pack == "00-foundation-contracts":
             values = self._foundation_inputs(skill_name)
         elif pack == "05-skill-foundry-runtime":
@@ -360,7 +387,7 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         return inner["outputs"]
 
     def test_all_exact_local_skills_execute_with_declared_contracts(self) -> None:
-        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 26)
+        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 45)
         described = {
             skill_name
             for row in self.service.status()["adapters"]

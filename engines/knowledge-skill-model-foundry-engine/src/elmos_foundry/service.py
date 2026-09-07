@@ -41,6 +41,7 @@ class FoundryService:
         serving_route_verifier: AuthorizationVerifier | None = None,
     ) -> None:
         self.kernel = kernel or ExecutionKernel()
+        self.store = store
         self.policies = PolicyEngine(self.kernel.require_context)
         self.evidence = EvidenceLedger(
             self.kernel,
@@ -50,6 +51,7 @@ class FoundryService:
         self.knowledge = KnowledgeManager(
             self.kernel,
             consent_verifier=knowledge_consent_verifier,
+            store=store,
         )
         self.skills = SkillCatalog(
             self.kernel,
@@ -60,20 +62,24 @@ class FoundryService:
         self.memory = ExperienceMemoryStore(
             self.kernel,
             capture_verifier=experience_capture_verifier,
+            store=store,
         )
         self.dataset = DatasetFoundry(
             self.kernel,
             data_use_verifier=dataset_data_use_verifier,
+            store=store,
         )
         self.model = ModelFoundry(
             self.kernel,
             evidence_ledger=self.evidence,
             policy_engine=self.policies,
             promotion_verifier=model_promotion_verifier,
+            store=store,
         )
         self.serving = ModelServingGateway(
             self.kernel,
             route_verifier=serving_route_verifier,
+            store=store,
         )
         self.database = DatabaseManager()
         self.pipelines = PipelineOrchestrator(
@@ -138,7 +144,10 @@ class FoundryService:
         )
 
     def status(self) -> Mapping[str, Any]:
-        return self.skills.describe()
+        return {
+            **self.skills.describe(),
+            "asset_persistence": self.store.persistence_mode if self.store is not None else "PROCESS_LOCAL",
+        }
 
 
 __all__ = ["FoundryService"]

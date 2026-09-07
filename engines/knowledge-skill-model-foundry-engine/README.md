@@ -12,8 +12,8 @@ catalog in the same archive is retained only as a diagnosed source defect.
 ## Runtime guarantees
 
 - unknown Skills and unregistered adapters fail closed;
-- all 1,310 Skills have exact compiled contracts; 26 provider-free Skills have
-  exact local semantic handlers and 1,284 remain prepare-only;
+- all 1,310 Skills have exact compiled contracts; 45 provider-free Skills have
+  exact local semantic handlers and 1,265 remain prepare-only;
 - external-effect mutations bind authenticated tenant, project, actor, purpose,
   environment, workspace, revision, capability lease, exact payload, expiry,
   one-time permit, policy decision, and durable idempotency key;
@@ -29,19 +29,25 @@ catalog in the same archive is retained only as a diagnosed source defect.
 - local execution never manufactures E3-E5 evidence or production status.
 
 The knowledge, experience, dataset, model and serving helper classes are
-bounded process-local planning surfaces. They deliberately fail without trusted
-authorization verifiers where consent or evidence is required, but they are not
-durable production asset stores. Durable execution and evidence require the
-injected SQLite and private CAS implementations.
+bounded local planning surfaces with optional shared SQLite persistence. Inject
+a file-backed `FoundryStore` through `FoundryService` to recover metadata after
+restart. Asset changes use versioned compare-and-swap and atomic audit events;
+idempotent creation cannot clear quarantine or revert model promotion. Serving
+availability expires and cannot survive a gateway restart as trusted health.
+Consent and evidence still require trusted authorization verifiers. Without a
+store, or with `:memory:`, state is process-local. Local SQLite recovery does not
+qualify a production deployment.
 
 ## Capability truth
 
 The package contains 41 Meta-Skills and 1,310 atomic specifications. Every
-atomic identity has an exact runtime binding. Exactly 26 provider-free Skills
-are `LOCAL`; the remaining 1,284 are `PREPARE_ONLY` until the required language,
-database, framework, cloud, model, customer, or independent-verifier adapter is
-configured and evidenced. A prepared plan is not the business effect it
-describes.
+atomic identity has an exact runtime binding. Exactly 45 provider-free Skills
+are `LOCAL`; the remaining 1,265 are `PREPARE_ONLY` and lack exact semantic
+implementations or integration bindings. They require repository code, concrete
+input/output contracts and tool/environment bindings before execution and
+independent validation can establish their behavior. Configuring an adapter
+alone does not close these code gaps. A prepared plan is not the business
+effect it describes.
 
 Local qualification may report only `LOCAL_EXECUTED_SELF_ATTESTED` and
 `READY_FOR_EXTERNAL_GATE`. External evidence remains `NOT_RUN`; certification
@@ -56,8 +62,14 @@ make knowledge-skill-model-foundry-skills
 That target performs no provider, training, deployment, production, or
 certification action.
 
-The wheel/sdist are offline-installable and include the digest-pinned compiled
-catalog. After installation, the four read-only/preparation CLI forms are:
+The wheel/sdist include the digest-pinned compiled catalog. Offline installation
+also requires the runtime dependencies in `requirements-runtime.lock` to be
+present in the local package cache or approved mirror. The JavaScript AST parser
+is the pure Python Esprima 4.0.1 package (BSD license); its source archive digest
+is pinned in that lock. It parses ECMAScript 2017 without running input programs
+and does not provide TypeScript or modern JavaScript runtime support.
+
+After installation, the four read-only/preparation CLI forms are:
 
 ```bash
 elmos-foundry validate
