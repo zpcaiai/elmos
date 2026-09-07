@@ -49,6 +49,25 @@ LOCAL_SEMANTIC_SKILLS: frozenset[str] = frozenset(
         "complexity-risk-cost-latency-routing",
         "model-version-pinning-determinism",
         "tool-call-schema-and-policy-check",
+        "architecture-decision-record",
+        "capability-taxonomy-governance",
+        "compatibility-matrix-manager",
+        "tenancy-scope-contract",
+        "evidence-contract",
+        "policy-contract",
+        "data-usage-consent-contract",
+        "release-bundle-contract",
+        "repo-org-time-split-builder",
+        "dataset-lineage-and-provenance",
+        "dataset-revocation-unlearning-index",
+        "preference-pair-builder",
+        "active-learning-sample-selection",
+        "semantic-and-ast-deduplication",
+        "skill-transaction-and-rollback",
+        "tenant-policy-aware-retrieval",
+        "build-and-dependency-graph",
+        "semantic-ir-reconciliation",
+        "multi-language-ast-extraction",
     }
 )
 
@@ -280,6 +299,19 @@ class LocalSemanticRuntime:
             "model-version-pinning-determinism": self.model_version_pinning_determinism,
             "tool-call-schema-and-policy-check": self.tool_call_schema_and_policy_check,
         }
+        from .foundation_semantics import build_foundation_handlers
+        from .dataset_semantics import build_dataset_handlers
+        from .runtime_semantics import build_runtime_handlers
+        from .build_graph_semantics import build_build_graph_handlers
+        from .ir_reconciliation_semantics import build_ir_reconciliation_handlers
+        from .ast_extraction_semantics import build_ast_extraction_handlers
+
+        handlers.update(build_foundation_handlers(catalog, store))
+        handlers.update(build_dataset_handlers(catalog, store))
+        handlers.update(build_runtime_handlers(catalog, store))
+        handlers.update(build_build_graph_handlers(catalog, store))
+        handlers.update(build_ir_reconciliation_handlers(catalog, store))
+        handlers.update(build_ast_extraction_handlers(catalog, store))
         if set(handlers) != LOCAL_SEMANTIC_SKILLS:
             raise RuntimeError("local semantic handler registry is not exact")
         missing = sorted(LOCAL_SEMANTIC_SKILLS - set(catalog.atomic_skills))

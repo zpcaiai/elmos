@@ -35,7 +35,7 @@ class ServiceTests(unittest.TestCase):
         self.assertEqual(
             status["implementation_status"], "MIXED_LOCAL_AND_PREPARE_ONLY"
         )
-        self.assertEqual(status["capability_states"], {"LOCAL": 26, "PREPARE_ONLY": 1_284})
+        self.assertEqual(status["capability_states"], {"LOCAL": 45, "PREPARE_ONLY": 1_265})
         self.assertEqual(status["local_evidence_status"], "NOT_RUN")
         self.assertEqual(
             status["local_evidence_ceiling"], "LOCAL_EXECUTED_SELF_ATTESTED"

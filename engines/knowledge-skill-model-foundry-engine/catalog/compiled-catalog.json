@@ -1887,7 +1887,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "active",
@@ -2088,7 +2088,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.active-learning-sample-selection",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/active-learning-sample-selection/tests/conformance.yaml",
@@ -20743,7 +20743,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "architecture",
@@ -20943,7 +20943,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.architecture-decision-record",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/architecture-decision-record/tests/conformance.yaml",
@@ -41535,7 +41535,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "build",
@@ -41732,7 +41732,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.build-and-dependency-graph",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/build-and-dependency-graph/tests/conformance.yaml",
@@ -48365,7 +48365,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "capability",
@@ -48565,7 +48565,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.capability-taxonomy-governance",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/capability-taxonomy-governance/tests/conformance.yaml",
@@ -67339,7 +67339,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "compatibility",
@@ -67539,7 +67539,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.compatibility-matrix-manager",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/compatibility-matrix-manager/tests/conformance.yaml",
@@ -100788,7 +100788,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "consent",
@@ -100989,7 +100989,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.data-usage-consent-contract",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/data-usage-consent-contract/tests/conformance.yaml",
@@ -106609,7 +106609,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "dataset",
@@ -106809,7 +106809,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.dataset-lineage-and-provenance",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/dataset-lineage-and-provenance/tests/conformance.yaml",
@@ -107273,7 +107273,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "dataset",
@@ -107474,7 +107474,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.dataset-revocation-unlearning-index",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/dataset-revocation-unlearning-index/tests/conformance.yaml",
@@ -148111,7 +148111,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "contract",
@@ -148307,7 +148307,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.evidence-contract",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/evidence-contract/tests/conformance.yaml",
@@ -259447,7 +259447,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "ast",
@@ -259645,7 +259645,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.multi-language-ast-extraction",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/multi-language-ast-extraction/tests/conformance.yaml",
@@ -295600,7 +295600,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "contract",
@@ -295795,7 +295795,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.policy-contract",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/policy-contract/tests/conformance.yaml",
@@ -298096,7 +298096,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "builder",
@@ -298296,7 +298296,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.preference-pair-builder",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/preference-pair-builder/tests/conformance.yaml",
@@ -329331,7 +329331,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "bundle",
@@ -329531,7 +329531,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.release-bundle-contract",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/release-bundle-contract/tests/conformance.yaml",
@@ -331773,7 +331773,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "builder",
@@ -331975,7 +331975,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.repo-org-time-split-builder",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/repo-org-time-split-builder/tests/conformance.yaml",
@@ -369623,7 +369623,7 @@
       "business_lines": [
         "dataset-foundry"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "06-dataset-foundry",
         "ast",
@@ -369823,7 +369823,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.semantic-and-ast-deduplication",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/06-dataset-foundry/semantic-and-ast-deduplication/tests/conformance.yaml",
@@ -371688,7 +371688,7 @@
       "business_lines": [
         "repository-intelligence"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "02-repository-semantic-intelligence",
         "ir",
@@ -371885,7 +371885,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.semantic-ir-reconciliation",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/02-repository-semantic-intelligence/semantic-ir-reconciliation/tests/conformance.yaml",
@@ -390489,7 +390489,7 @@
       "business_lines": [
         "skill-runtime"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "05-skill-foundry-runtime",
         "rollback",
@@ -390690,7 +390690,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.skill-transaction-and-rollback",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/05-skill-foundry-runtime/skill-transaction-and-rollback/tests/conformance.yaml",
@@ -428651,7 +428651,7 @@
       "business_lines": [
         "platform-foundation"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "00-foundation-contracts",
         "contract",
@@ -428851,7 +428851,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.tenancy-scope-contract",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/00-foundation-contracts/tenancy-scope-contract/tests/conformance.yaml",
@@ -431666,7 +431666,7 @@
       "business_lines": [
         "retrieval-context"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "03-retrieval-context-engineering",
         "aware",
@@ -431868,7 +431868,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.tenant-policy-aware-retrieval",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/03-retrieval-context-engineering/tenant-policy-aware-retrieval/tests/conformance.yaml",

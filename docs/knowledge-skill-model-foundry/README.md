@@ -1,7 +1,7 @@
 # Knowledge-Skill-Model Foundry v3 integration
 
 This integration turns the pinned 16,007-entry ZIP into a typed control plane
-with 26 exact provider-free semantic handlers, 1,284 conservative prepare-only
+with 45 exact provider-free semantic handlers, 1,265 conservative prepare-only
 contracts, and a separately gated external-effect boundary. It does not
 reinterpret the archive as trusted instructions and does not claim that its
 1,310 specifications already have native provider or customer evidence.
@@ -27,7 +27,7 @@ executable Python files remain inert input.
 - deterministic compiled-contract v2 catalog binding all 7,860 authoritative
   per-Skill source documents, with 458 BASIC and 852 ENHANCED contracts;
 - 41 pack handlers and 1,310 explicit allowlisted atomic bindings;
-- 26 exact local semantic handlers covering contract/hash/graph, registry and
+- 45 exact local semantic handlers covering contract/hash/graph, registry and
   routing, trust and audit, normalization/provenance, durable experience replay,
   dataset, evidence and serving controls;
 - request-bound, policy-gated, durable and non-replayable Broker execution for
@@ -38,12 +38,13 @@ executable Python files remain inert input.
   checkpoints, append-only audit/evidence, outbox reconciliation, and private
   content-addressed artifacts on the injected execution-control path;
 - verifier-bound consent, trajectory capture, dataset use, E1 promotion and
-  route planning; the convenience asset managers remain process-local;
+  route planning; injected file-backed SQLite now persists governed asset metadata,
+  quarantine and local model promotion, with expiring instance-fenced serving health;
 - conservative pipeline preparation for all 14 declared pipelines.
 
 ## Status vocabulary
 
-`LOCAL` identifies one of the 26 exact repository-owned semantic handlers;
+`LOCAL` identifies one of the 45 exact repository-owned semantic handlers;
 `PREPARE_ONLY` means that the repository can validate scope and produce a
 content-bound execution plan. `REQUIRES_ADAPTER` means the requested semantic or
 external effect did not run. `LOCAL_EXECUTED_SELF_ATTESTED` is local engineering
@@ -52,3 +53,10 @@ evidence. `READY_FOR_EXTERNAL_GATE` is not certification. `NOT_RUN`,
 
 The immutable mirror under `skills/elmos-knowledge-skill-model-foundry-v3.0.0/`
 and the source ZIP are never modified by the runtime.
+
+Qualification receipts retain the Git commit observed when their checks ran.
+Later delivery commits may reuse a receipt only while all content bindings
+remain exact and the recorded baseline is an existing ancestor of `HEAD`.
+Git checkouts must contain that history; a shallow checkout missing the baseline
+fails closed. Archive-only copies can check their content bindings without
+claiming verified Git ancestry.
