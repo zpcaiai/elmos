@@ -1,9 +1,8 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomUUID, timingSafeEqual } from "node:crypto";
 import { spawn } from "node:child_process";
-import { existsSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, lstatSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import type { NextRequest } from "next/server";
 
 import {
   bindChinaDbSqlRequestToCapabilities,
@@ -31,6 +30,8 @@ const ASSESS_PATH = "/api/v1/database-data/sql-preflight/assess";
 const UPSTREAM_TIMEOUT_MS = 30_000;
 const CATALOG_RELATIVE_PATH =
   "engines/database-data-engine/sql-transpiler/src/elmos_sql_transpiler/data/chinadb-commercial-v1.json";
+const ORGANIZATION_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$/;
+const ACTOR_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._:@/-]{2,199}$/;
 
 let cachedRepositoryCapabilities: ChinaDbSqlCapabilities | null = null;
 
@@ -65,7 +66,7 @@ function fail(status: number, errorCode: string, message: string): never {
 }
 
 export function chinaDbSqlContext(
-  request: NextRequest,
+  request: Request,
   permission: AccountPermission,
 ): ChinaDbSqlContext {
   const session = accountSessionFromRequest(request, permission);
@@ -76,8 +77,102 @@ export function chinaDbSqlContext(
   };
 }
 
+function digestEqual(left: string, right: string): boolean {
+  return timingSafeEqual(
+    createHash("sha256").update(left).digest(),
+    createHash("sha256").update(right).digest(),
+  );
+}
+
+function localRunnerToken(): string {
+  const token = process.env.ELMOS_LOCAL_RUNNER_AUTH_TOKEN;
+  const tokenFile = process.env.ELMOS_LOCAL_RUNNER_AUTH_TOKEN_FILE;
+  if (Boolean(token) === Boolean(tokenFile)) {
+    fail(503, "LOCAL_RUNNER_AUTH_NOT_CONFIGURED", "本地 SQL 预检身份租约尚未配置。");
+  }
+  if (token) {
+    if (token.length < 24 || token.length > 4_096) {
+      fail(503, "LOCAL_RUNNER_AUTH_NOT_CONFIGURED", "本地 SQL 预检身份租约尚未配置。");
+    }
+    return token;
+  }
+  if (!tokenFile || !path.isAbsolute(tokenFile)) {
+    fail(503, "LOCAL_RUNNER_AUTH_NOT_CONFIGURED", "本地 SQL 预检身份租约尚未配置。");
+  }
+  const info = lstatSync(tokenFile);
+  if (
+    info.isSymbolicLink()
+    || !info.isFile()
+    || info.size > 4_096
+    || (info.mode & 0o077) !== 0
+  ) {
+    fail(503, "LOCAL_RUNNER_AUTH_FILE_UNSAFE", "本地 SQL 预检令牌文件不安全。");
+  }
+  const value = readFileSync(tokenFile, "utf-8").trim();
+  if (value.length < 24 || value.length > 4_096) {
+    fail(503, "LOCAL_RUNNER_AUTH_NOT_CONFIGURED", "本地 SQL 预检身份租约尚未配置。");
+  }
+  return value;
+}
+
+/**
+ * Assess requests require an authenticated tenant/actor. Missing sessions fail
+ * closed except for an explicit local-runner lease, matching generation.
+ */
+export function requireChinaDbSqlContext(
+  request: Request,
+  permission: AccountPermission,
+): ChinaDbSqlContext {
+  try {
+    return chinaDbSqlContext(request, permission);
+  } catch (error) {
+    if (!(error instanceof AccountSessionError) || error.code !== "ACCOUNT_SESSION_REQUIRED") {
+      throw error;
+    }
+  }
+  if (
+    process.env.NODE_ENV === "production"
+    || process.env.ELMOS_LOCAL_RUNNER_ENABLED !== "true"
+  ) {
+    fail(401, "ACCOUNT_SESSION_REQUIRED", "请先登录企业账户。");
+  }
+  const expectedTenant = process.env.ELMOS_LOCAL_RUNNER_TENANT_ID ?? "";
+  const expectedActor = process.env.ELMOS_LOCAL_RUNNER_ACTOR_ID ?? "";
+  const expiresAt = process.env.ELMOS_LOCAL_RUNNER_AUTH_TOKEN_EXPIRES_AT ?? "";
+  const expiry = Date.parse(expiresAt);
+  if (!ORGANIZATION_PATTERN.test(expectedTenant) || !ACTOR_PATTERN.test(expectedActor)) {
+    fail(503, "LOCAL_RUNNER_IDENTITY_LEASE_INVALID", "本地 SQL 预检租户或执行者租约无效。");
+  }
+  if (
+    !/(Z|[+-]\d{2}:\d{2})$/.test(expiresAt)
+    || Number.isNaN(expiry)
+    || expiry <= Date.now()
+    || expiry > Date.now() + 24 * 60 * 60_000
+  ) {
+    fail(503, "LOCAL_RUNNER_TOKEN_LEASE_INVALID", "本地 SQL 预检令牌租约无效或已过期。");
+  }
+  const authorization = request.headers.get("authorization") ?? "";
+  const presentedToken = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
+  if (!digestEqual(presentedToken, localRunnerToken())) {
+    fail(401, "AUTHENTICATION_REQUIRED", "需要有效的本地 SQL 预检短期令牌。");
+  }
+  const tenant = request.headers.get("x-elmos-tenant") ?? "";
+  if (!ORGANIZATION_PATTERN.test(tenant) || !digestEqual(tenant, expectedTenant)) {
+    fail(403, "TENANT_ID_NOT_BOUND_TO_CREDENTIAL", "请求租户与本地 SQL 预检凭证绑定不一致。");
+  }
+  const actor = request.headers.get("x-elmos-actor") ?? "";
+  if (!ACTOR_PATTERN.test(actor) || !digestEqual(actor, expectedActor)) {
+    fail(403, "ACTOR_ID_NOT_BOUND_TO_CREDENTIAL", "请求执行者与本地 SQL 预检凭证绑定不一致。");
+  }
+  return {
+    organizationId: tenant,
+    actorId: actor,
+    accessToken: presentedToken,
+  };
+}
+
 export function optionalChinaDbSqlContext(
-  request: NextRequest,
+  request: Request,
   permission: AccountPermission = "workspace:view",
 ): ChinaDbSqlContext | null {
   try {
