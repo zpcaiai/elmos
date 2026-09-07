@@ -5,7 +5,7 @@ from __future__ import annotations
 import ctypes
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 _NATIVE_LIB: Optional[ctypes.CDLL] = None
 _INIT_ATTEMPTED = False
@@ -58,7 +58,7 @@ def init_catalog_native(catalog_data: str | bytes | Path) -> int:
     else:
         json_bytes = catalog_data
 
-    code = lib.elmos_foundry_init_catalog(json_bytes)
+    code = int(lib.elmos_foundry_init_catalog(json_bytes))
     if code > 0:
         _CATALOG_INITIALIZED = True
     return code
@@ -75,6 +75,9 @@ def resolve_dependencies_native(skill_name: str) -> Optional[List[str]]:
 
     try:
         json_bytes = ctypes.string_at(raw_ptr)
-        return json.loads(json_bytes.decode("utf-8"))
+        decoded = json.loads(json_bytes.decode("utf-8"))
+        if not isinstance(decoded, list) or any(not isinstance(item, str) for item in decoded):
+            return None
+        return [str(item) for item in decoded]
     finally:
         lib.elmos_free_string(raw_ptr)

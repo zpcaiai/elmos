@@ -5,6 +5,8 @@ import {
   AccountSessionError,
   accountSessionFromRequest,
   isPlatformAdministrator,
+  localAccountCookieNames,
+  trustedPublicOrigin,
 } from "./accountSession";
 import type { PlatformOperationsSurface } from "../surfaceAudience";
 
@@ -21,8 +23,15 @@ export async function requirePlatformOperationsSurface(
   const requestHeaders = new Headers(await headers());
   let denialCode: string | null = null;
   try {
+    const syntheticRequest = new Request(`https://elmos.invalid${surface}`, { headers: requestHeaders });
+    // Only the development bootstrap needs a real loopback URL. Its validator
+    // still requires both that URL and Host to match; never trust arbitrary Host.
+    const temporary = (requestHeaders.get("cookie") ?? "").includes(`${localAccountCookieNames.administratorSession}=`);
+    const request = temporary
+      ? new Request(new URL(surface, trustedPublicOrigin(syntheticRequest)), { headers: requestHeaders })
+      : syntheticRequest;
     const session = accountSessionFromRequest(
-      new Request(`https://elmos.invalid${surface}`, { headers: requestHeaders }),
+      request,
       "admin:read",
     );
     if (!isPlatformAdministrator(session.principal)) {

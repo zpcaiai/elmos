@@ -103,7 +103,7 @@ test("deployed console exposes separate provider-backed user and administrator e
   await expect(page.getByLabel("管理员邮箱")).toHaveValue("zpchoney@gmail.com");
   await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "微信扫码登录" })).toHaveCount(0);
-  await expect(page.getByText("每次管理员成功登录后")).toBeVisible();
+  await expect(page.getByText(/管理员登录入口不提供普通用户登录功能/)).toBeVisible();
 
   const session = await page.evaluate(async () => {
     const response = await fetch("/api/auth/session", { credentials: "same-origin" });

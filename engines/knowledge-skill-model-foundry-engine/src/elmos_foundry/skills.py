@@ -10,14 +10,22 @@ from __future__ import annotations
 from collections import Counter, deque
 from dataclasses import dataclass
 import hashlib
+import io
 import json
 from pathlib import Path, PurePosixPath
 import re
 from types import MappingProxyType
+from threading import RLock
 from typing import Any, Iterable, Mapping, Sequence, cast
 import zipfile
 
-from .adapters import AdapterRegistry, InvocationPermit
+from .adapters import (
+    AdapterRegistry,
+    ExternalExecutionBroker,
+    InvocationPermit,
+    InvocationRequest,
+    PermitVerifier,
+)
 from .domain import (
     CertificationStatus,
     EvidenceState,
@@ -38,8 +46,8 @@ from .kernel import ExecutionKernel
 from .local_semantics import (
     LOCAL_SEMANTIC_SKILLS,
     CatalogView,
-    build_local_adapter_registry,
 )
+from .registry import build_default_adapter_registry
 from .store import FoundryStore
 
 
@@ -55,7 +63,7 @@ SOURCE_ARCHIVE_PATH = ROOT / "skills/subskills/elmos-knowledge-skill-model-found
 SOURCE_ARCHIVE_PREFIX = "elmos-knowledge-skill-model-foundry-v3.0.0/"
 CATALOG_SCHEMA_VERSION = "elmos.knowledge-skill-model-foundry.compiled-catalog.v2"
 EXPECTED_COMPILED_CATALOG_SHA256 = (
-    "74004fd557b95b58eb293c2c46518582f6d699eb6f2aea97c32e86ce9f45a2b9"
+    "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
 )
 EXPECTED_PACKAGE = {
     "id": "elmos-knowledge-skill-model-foundry-v3.0.0",
@@ -85,6 +93,7 @@ EXPECTED_PIPELINES = frozenset(
 )
 _SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]{0,255}$")
+_CONTROL_RE = re.compile(r"[\x00-\x1f\x7f]")
 
 _ROOT_KEYS = {"schema_version", "package", "authority", "discovery", "atomic_skills", "meta_skills", "pipelines"}
 _PACKAGE_KEYS = {"id", "name", "version", "archive_sha256", "archive_bytes"}
@@ -220,7 +229,7 @@ def _exact_keys(value: Any, expected: set[str], label: str) -> Mapping[str, Any]
 def _string(value: Any, label: str) -> str:
     if not isinstance(value, str) or not value or value != value.strip():
         raise CatalogValidationError(f"{label} must be a non-empty canonical string")
-    if any(ord(character) < 0x20 or ord(character) == 0x7F for character in value):
+    if _CONTROL_RE.search(value):
         raise CatalogValidationError(f"{label} contains a control character")
     return value
 
@@ -335,6 +344,13 @@ class CatalogSnapshot:
     atomic_skills: Mapping[str, Mapping[str, Any]]
     meta_skills: Mapping[str, Mapping[str, Any]]
     pipelines: Mapping[str, Mapping[str, Any]]
+
+
+# The cached graph is deeply immutable. Every load still hashes the current
+# catalog and source archive; missing, changed or symlinked archives fail closed.
+# Keep one entry so alternate catalogs cannot grow process memory without bound.
+_CATALOG_CACHE: dict[tuple[str, str, bool, frozenset[str]], CatalogSnapshot] = {}
+_CATALOG_CACHE_LOCK = RLock()
 
 
 def _validate_source_bindings(
@@ -814,6 +830,13 @@ def load_compiled_catalog(path: Path = DEFAULT_CATALOG_PATH) -> CatalogSnapshot:
         raise CatalogValidationError(
             "compiled catalog SHA-256 does not match the hard-pinned runtime identity"
         )
+    packaged_runtime = path.resolve() == PACKAGED_CATALOG_PATH.resolve()
+    archive_bytes = None if packaged_runtime else _read_verified_archive()
+    cache_key = (str(path.resolve()), observed_catalog_digest, packaged_runtime, LOCAL_SEMANTIC_SKILLS)
+    with _CATALOG_CACHE_LOCK:
+        cached = _CATALOG_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
     try:
         raw = json.loads(raw_bytes)
     except (UnicodeDecodeError, json.JSONDecodeError) as exc:
@@ -958,15 +981,14 @@ def load_compiled_catalog(path: Path = DEFAULT_CATALOG_PATH) -> CatalogSnapshot:
     if pipeline_kinds != Counter({"DurablePipeline": 10, "Pipeline": 4}):
         raise CatalogValidationError("pipeline kind distribution is not source exact")
 
-    packaged_runtime = path.resolve() == PACKAGED_CATALOG_PATH.resolve()
     if packaged_runtime:
         source_authority_status = "BUILD_TIME_DIGEST_BOUND_SOURCE_AUTHORITY"
         runtime_archive_reverified = False
     else:
-        _verify_archive_sources(source_digests)
+        _verify_archive_sources(source_digests, archive_bytes)
         source_authority_status = "RUNTIME_ARCHIVE_REVERIFIED"
         runtime_archive_reverified = True
-    return CatalogSnapshot(
+    snapshot = CatalogSnapshot(
         path=path.resolve(),
         content_sha256=observed_catalog_digest,
         source_authority_status=source_authority_status,
@@ -978,10 +1000,14 @@ def load_compiled_catalog(path: Path = DEFAULT_CATALOG_PATH) -> CatalogSnapshot:
         meta_skills=MappingProxyType(meta),
         pipelines=MappingProxyType(pipelines),
     )
+    with _CATALOG_CACHE_LOCK:
+        _CATALOG_CACHE.clear()
+        _CATALOG_CACHE[cache_key] = snapshot
+    return snapshot
 
 
-def _verify_archive_sources(source_digests: Mapping[str, str]) -> None:
-    """Bind every compiled authority row back to bytes in the pinned ZIP."""
+def _read_verified_archive() -> bytes:
+    """Read the exact bytes later parsed, avoiding a verify/reopen race."""
     try:
         if SOURCE_ARCHIVE_PATH.is_symlink():
             raise CatalogValidationError("pinned source archive must not be a symlink")
@@ -992,8 +1018,16 @@ def _verify_archive_sources(source_digests: Mapping[str, str]) -> None:
         raise CatalogValidationError("pinned source archive byte size drift")
     if hashlib.sha256(archive_bytes).hexdigest() != EXPECTED_PACKAGE["archive_sha256"]:
         raise CatalogValidationError("pinned source archive SHA-256 drift")
+    return archive_bytes
+
+
+def _verify_archive_sources(
+    source_digests: Mapping[str, str], archive_bytes: bytes | None = None,
+) -> None:
+    """Bind every compiled authority row back to bytes in the pinned ZIP."""
+    verified_bytes = _read_verified_archive() if archive_bytes is None else archive_bytes
     try:
-        with zipfile.ZipFile(SOURCE_ARCHIVE_PATH) as archive:
+        with zipfile.ZipFile(io.BytesIO(verified_bytes)) as archive:
             members: dict[str, list[zipfile.ZipInfo]] = {}
             for info in archive.infolist():
                 members.setdefault(info.filename, []).append(info)
@@ -1036,25 +1070,31 @@ def _check_dag(atomic: Mapping[str, Mapping[str, Any]]) -> None:
 class SkillCatalog:
     """Validated exact catalog plus prepare-only and adapter execution paths."""
 
-    def __init__(self, kernel: ExecutionKernel | None = None, *, catalog_path: Path | None = None, adapter_registry: AdapterRegistry | None = None, store: FoundryStore | None = None) -> None:
+    def __init__(self, kernel: ExecutionKernel | None = None, *, catalog_path: Path | None = None, adapter_registry: AdapterRegistry | None = None, store: FoundryStore | None = None, permit_verifier: PermitVerifier | None = None, external_broker: ExternalExecutionBroker | None = None) -> None:
         self.kernel = kernel or ExecutionKernel()
         self.snapshot = load_compiled_catalog(catalog_path or DEFAULT_CATALOG_PATH)
         self.store = store
         self.adapters = (
             adapter_registry
             if adapter_registry is not None
-            else build_local_adapter_registry(cast(CatalogView, self.snapshot), store=store)
+            else build_default_adapter_registry(
+                cast(CatalogView, self.snapshot),
+                store=store,
+                permit_verifier=permit_verifier,
+                external_broker=external_broker,
+            )
         )
         if adapter_registry is None:
-            for name in sorted(LOCAL_SEMANTIC_SKILLS):
+            for name in sorted(self.snapshot.atomic_skills):
                 binding = self.adapters.binding_for(name)
-                if (
-                    binding is None
-                    or binding.adapter_id
-                    != self.snapshot.atomic_skills[name]["semantic_handler_binding"]
-                ):
+                expected = (
+                    self.snapshot.atomic_skills[name]["semantic_handler_binding"]
+                    if name in LOCAL_SEMANTIC_SKILLS
+                    else f"external.{name}"
+                )
+                if binding is None or binding.adapter_id != expected:
                     raise CatalogValidationError(
-                        f"{name}: local adapter registry/catalog binding mismatch"
+                        f"{name}: default adapter registry/catalog binding mismatch"
                     )
         self._records = self.snapshot.atomic_skills
         self._meta_skills = self.snapshot.meta_skills
@@ -1259,6 +1299,37 @@ class SkillCatalog:
         )
         return _result(operation=canonical, status=adapter_result.status, outputs=outputs, error=adapter_result.error, external_effects_performed=adapter_result.external_effects_performed)
 
+    def prepare_external_request(
+        self,
+        skill_name: str,
+        inputs: Mapping[str, Any],
+        tenant_scope: TenantScope | None = None,
+        *,
+        adapter_id: str,
+        invocation_id: str,
+    ) -> InvocationRequest:
+        """Return the canonical request for trusted host permit issuance."""
+
+        scope = tenant_scope or self.kernel.current_tenant
+        self.kernel.require_context(scope, "foundry.adapter.execute")
+        canonical = self._canonical_skill_name(skill_name)
+        if canonical is None:
+            raise ValueError("unknown Skill has no runtime authority")
+        if invocation_id != scope.invocation_id:
+            raise ValueError("invocation_id does not match the host-minted context")
+        record = self._records[canonical]
+        return self.adapters.prepare_external_request(
+            skill_name=canonical,
+            payload=inputs,
+            tenant_scope=scope,
+            invocation_id=invocation_id,
+            adapter_id=adapter_id,
+            risk_class=str(record["risk_class"]),
+            required_inputs=tuple(str(item) for item in record["inputs"]),
+            allowed_tools=tuple(str(item) for item in record["allowed_tools"]),
+            required_gates=tuple(str(item) for item in record["required_gates"]),
+        )
+
     def describe(self) -> Mapping[str, Any]:
         return MappingProxyType(
             {
@@ -1279,9 +1350,20 @@ class SkillCatalog:
                 "pipelines": self.total_pipelines,
                 "bindings": len(self._skill_bindings),
                 "adapters": self.adapters.describe(),
-                "implementation_status": "MIXED_LOCAL_AND_PREPARE_ONLY",
+                "exact_adapter_bindings": len(self.adapters.describe()),
+                "external_integration_bindings": self.total_atomic_skills
+                - len(LOCAL_SEMANTIC_SKILLS),
+                "implementation_status": "ALL_EXACT_BINDINGS_LOCAL_OR_HOST_ROUTED",
                 "capability_states": MappingProxyType(
-                    {"LOCAL": len(LOCAL_SEMANTIC_SKILLS), "PREPARE_ONLY": 1_284}
+                    {"LOCAL": len(LOCAL_SEMANTIC_SKILLS), "PREPARE_ONLY": self.total_atomic_skills - len(LOCAL_SEMANTIC_SKILLS)}
+                ),
+                "integration_states": MappingProxyType(
+                    {
+                        "LOCAL_EXECUTABLE": len(LOCAL_SEMANTIC_SKILLS),
+                        "HOST_ROUTE_BOUND": self.total_atomic_skills
+                        - len(LOCAL_SEMANTIC_SKILLS),
+                        "UNBOUND": 0,
+                    }
                 ),
                 "local_evidence_status": "NOT_RUN",
                 "local_evidence_ceiling": LOCAL_EVIDENCE_STATUS,
