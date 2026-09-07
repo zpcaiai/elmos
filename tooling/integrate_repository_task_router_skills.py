@@ -29,31 +29,38 @@ from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
 PACKAGE_NAME = "elmos-repository-task-decomposition-cost-router-skills"
-PACKAGE_VERSION = "1.1.0"
+PACKAGE_VERSION = "2.0.0"
 PACKAGE_ID = "elmos.repository-task-router-skills"
-NAMESPACE = "repository-task-router-v1"
+NAMESPACE = "repository-task-router-v2"
 ARCHIVE_ROOT = "elmos_repo_orchestrator_skills"
 ARCHIVE_RELATIVE = Path("skills/subskills") / f"{PACKAGE_NAME}-v{PACKAGE_VERSION}.zip"
 SOURCE_RELATIVE = Path("skills") / f"{PACKAGE_NAME}-v{PACKAGE_VERSION}"
 DOC_RELATIVE = Path("docs/repository-task-router-skills")
 INSTALL_ROOTS = (Path("agent-skills/runtime"), Path(".agents/skills"))
 
-EXPECTED_ARCHIVE_SHA256 = "c5842c93d268f2ebc7126d743a2fce6fba9f92071ea7e6556c11349d4896337a"
-EXPECTED_ARCHIVE_BYTES = 72_565
-EXPECTED_ENTRY_COUNT = 108
-EXPECTED_FILE_COUNT = 63
-EXPECTED_DIRECTORY_COUNT = 45
-EXPECTED_UNCOMPRESSED_BYTES = 101_831
-EXPECTED_SOURCE_MODE_COUNTS = {"file:0644": 63, "directory:2755": 45}
+EXPECTED_ARCHIVE_SHA256 = "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db"
+EXPECTED_ARCHIVE_BYTES = 133_062
+EXPECTED_ENTRY_COUNT = 169
+EXPECTED_FILE_COUNT = 101
+EXPECTED_DIRECTORY_COUNT = 68
+EXPECTED_UNCOMPRESSED_BYTES = 205_624
+EXPECTED_SOURCE_MODE_COUNTS = {
+    "file:0644": 100,
+    "file:0755": 1,
+    "directory:2755": 65,
+    "directory:0755": 3,
+}
 EXPECTED_CATEGORY_COUNTS = {
     "(root)": 5,
-    "config": 5,
-    "docs": 4,
-    "examples": 3,
-    "schemas": 5,
-    "scripts": 2,
-    "skills": 37,
-    "tests": 2,
+    ".pytest_cache": 4,
+    "config": 6,
+    "docs": 6,
+    "examples": 4,
+    "reference_planner": 2,
+    "schemas": 11,
+    "scripts": 3,
+    "skills": 54,
+    "tests": 6,
 }
 MAX_ARCHIVE_ENTRY_BYTES = 128 * 1024
 MAX_ARCHIVE_TOTAL_BYTES = 1024 * 1024
@@ -111,16 +118,68 @@ EXPECTED_SKILLS = (
     "elmos-telemetry-learner",
     "elmos-routing-policy-optimizer",
     "elmos-model-selection-controller",
+    "elmos-implicit-requirement-miner",
+    "elmos-behavioral-scenario-graph",
+    "elmos-repository-intelligence-graph",
+    "elmos-architecture-invariant-ledger",
+    "elmos-semantic-seam-detector",
+    "elmos-adaptive-hierarchical-planner",
+    "elmos-task-granularity-controller",
+    "elmos-plan-graph-verifier",
+    "elmos-uncertainty-exploration-planner",
+    "elmos-proof-obligation-generator",
+    "elmos-integration-edge-planner",
+    "elmos-dynamic-replanner",
+    "elmos-semantic-conflict-detector",
+    "elmos-critical-path-resource-scheduler",
+    "elmos-baseline-golden-snapshotter",
+    "elmos-plan-diff-audit-journal",
+    "elmos-decomposition-telemetry-learner",
 )
 
 EXPECTED_V11_SKILLS = frozenset(
     {
-        "elmos-repository-orchestrator",
         "elmos-model-registry-guard",
         "elmos-cost-performance-router",
         "elmos-worker-executor",
         "elmos-retry-escalation-controller",
         "elmos-model-selection-controller",
+    }
+)
+EXPECTED_V20_SKILLS = frozenset(
+    {
+        "elmos-repository-orchestrator",
+        "elmos-requirement-normalizer",
+        "elmos-architecture-indexer",
+        "elmos-change-impact-analyzer",
+        "elmos-task-decomposer",
+        "elmos-atomicity-validator",
+        "elmos-task-dag-builder",
+        "elmos-contract-boundary-generator",
+        "elmos-complexity-estimator",
+        "elmos-risk-classifier",
+        "elmos-context-slicer",
+        "elmos-wave-scheduler",
+        "elmos-integration-manager",
+        "elmos-incremental-regression-gate",
+        "elmos-repository-certifier",
+        "elmos-implicit-requirement-miner",
+        "elmos-behavioral-scenario-graph",
+        "elmos-repository-intelligence-graph",
+        "elmos-architecture-invariant-ledger",
+        "elmos-semantic-seam-detector",
+        "elmos-adaptive-hierarchical-planner",
+        "elmos-task-granularity-controller",
+        "elmos-plan-graph-verifier",
+        "elmos-uncertainty-exploration-planner",
+        "elmos-proof-obligation-generator",
+        "elmos-integration-edge-planner",
+        "elmos-dynamic-replanner",
+        "elmos-semantic-conflict-detector",
+        "elmos-critical-path-resource-scheduler",
+        "elmos-baseline-golden-snapshotter",
+        "elmos-plan-diff-audit-journal",
+        "elmos-decomposition-telemetry-learner",
     }
 )
 
@@ -141,17 +200,81 @@ DAG_DEPENDENCIES: Mapping[str, tuple[str, ...]] = {
     ),
     "elmos-repo-intake": ("elmos-requirement-normalizer",),
     "elmos-architecture-indexer": ("elmos-repo-intake",),
-    "elmos-change-impact-analyzer": (
+    "elmos-repository-intelligence-graph": ("elmos-architecture-indexer",),
+    "elmos-implicit-requirement-miner": (
         "elmos-requirement-normalizer",
         "elmos-architecture-indexer",
+        "elmos-repository-intelligence-graph",
     ),
-    "elmos-task-decomposer": ("elmos-change-impact-analyzer",),
-    "elmos-atomicity-validator": ("elmos-task-decomposer",),
-    "elmos-task-dag-builder": ("elmos-atomicity-validator",),
-    "elmos-contract-boundary-generator": ("elmos-task-dag-builder",),
-    "elmos-complexity-estimator": ("elmos-contract-boundary-generator",),
-    "elmos-risk-classifier": ("elmos-contract-boundary-generator",),
-    "elmos-context-slicer": ("elmos-contract-boundary-generator",),
+    "elmos-behavioral-scenario-graph": (
+        "elmos-requirement-normalizer",
+        "elmos-implicit-requirement-miner",
+    ),
+    "elmos-architecture-invariant-ledger": (
+        "elmos-architecture-indexer",
+        "elmos-repository-intelligence-graph",
+        "elmos-behavioral-scenario-graph",
+    ),
+    "elmos-change-impact-analyzer": (
+        "elmos-behavioral-scenario-graph",
+        "elmos-repository-intelligence-graph",
+        "elmos-architecture-invariant-ledger",
+    ),
+    "elmos-uncertainty-exploration-planner": (
+        "elmos-change-impact-analyzer",
+        "elmos-repository-intelligence-graph",
+    ),
+    "elmos-baseline-golden-snapshotter": (
+        "elmos-change-impact-analyzer",
+        "elmos-behavioral-scenario-graph",
+    ),
+    "elmos-semantic-seam-detector": (
+        "elmos-repository-intelligence-graph",
+        "elmos-architecture-invariant-ledger",
+        "elmos-behavioral-scenario-graph",
+    ),
+    "elmos-adaptive-hierarchical-planner": (
+        "elmos-change-impact-analyzer",
+        "elmos-uncertainty-exploration-planner",
+        "elmos-semantic-seam-detector",
+        "elmos-baseline-golden-snapshotter",
+    ),
+    "elmos-task-decomposer": ("elmos-adaptive-hierarchical-planner",),
+    "elmos-task-granularity-controller": (
+        "elmos-task-decomposer",
+        "elmos-semantic-seam-detector",
+        "elmos-architecture-invariant-ledger",
+    ),
+    "elmos-atomicity-validator": ("elmos-task-granularity-controller",),
+    "elmos-contract-boundary-generator": ("elmos-atomicity-validator",),
+    "elmos-proof-obligation-generator": (
+        "elmos-contract-boundary-generator",
+        "elmos-architecture-invariant-ledger",
+        "elmos-behavioral-scenario-graph",
+    ),
+    "elmos-task-dag-builder": (
+        "elmos-atomicity-validator",
+        "elmos-contract-boundary-generator",
+    ),
+    "elmos-integration-edge-planner": (
+        "elmos-task-dag-builder",
+        "elmos-contract-boundary-generator",
+        "elmos-proof-obligation-generator",
+    ),
+    "elmos-plan-graph-verifier": (
+        "elmos-task-dag-builder",
+        "elmos-behavioral-scenario-graph",
+        "elmos-architecture-invariant-ledger",
+        "elmos-proof-obligation-generator",
+        "elmos-integration-edge-planner",
+    ),
+    "elmos-plan-diff-audit-journal": (
+        "elmos-plan-graph-verifier",
+        "elmos-run-state-journal",
+    ),
+    "elmos-complexity-estimator": ("elmos-plan-graph-verifier",),
+    "elmos-risk-classifier": ("elmos-plan-graph-verifier",),
+    "elmos-context-slicer": ("elmos-plan-graph-verifier",),
     "elmos-model-registry-guard": (
         "elmos-run-state-journal",
         "elmos-model-selection-controller",
@@ -173,10 +296,15 @@ DAG_DEPENDENCIES: Mapping[str, tuple[str, ...]] = {
         "elmos-task-dag-builder",
         "elmos-budget-planner",
     ),
-    "elmos-wave-scheduler": (
+    "elmos-critical-path-resource-scheduler": (
         "elmos-task-dag-builder",
         "elmos-budget-planner",
         "elmos-eta-estimator",
+        "elmos-plan-graph-verifier",
+    ),
+    "elmos-wave-scheduler": (
+        "elmos-critical-path-resource-scheduler",
+        "elmos-integration-edge-planner",
         "elmos-run-state-journal",
     ),
     "elmos-worktree-manager": ("elmos-wave-scheduler",),
@@ -229,12 +357,26 @@ DAG_DEPENDENCIES: Mapping[str, tuple[str, ...]] = {
         "elmos-security-auth-gate",
         "elmos-data-migration-gate",
         "elmos-concurrency-idempotency-gate",
+        "elmos-integration-edge-planner",
         "elmos-run-state-journal",
     ),
     "elmos-conflict-resolver": ("elmos-integration-manager",),
+    "elmos-semantic-conflict-detector": (
+        "elmos-integration-manager",
+        "elmos-contract-boundary-generator",
+        "elmos-architecture-invariant-ledger",
+    ),
     "elmos-incremental-regression-gate": (
         "elmos-integration-manager",
         "elmos-conflict-resolver",
+        "elmos-semantic-conflict-detector",
+        "elmos-baseline-golden-snapshotter",
+    ),
+    "elmos-dynamic-replanner": (
+        "elmos-failure-classifier",
+        "elmos-semantic-conflict-detector",
+        "elmos-incremental-regression-gate",
+        "elmos-plan-diff-audit-journal",
     ),
     "elmos-repository-certifier": (
         "elmos-model-registry-guard",
@@ -242,6 +384,9 @@ DAG_DEPENDENCIES: Mapping[str, tuple[str, ...]] = {
         "elmos-data-migration-gate",
         "elmos-concurrency-idempotency-gate",
         "elmos-incremental-regression-gate",
+        "elmos-plan-graph-verifier",
+        "elmos-proof-obligation-generator",
+        "elmos-dynamic-replanner",
     ),
     "elmos-rollback-recovery": (
         "elmos-repository-orchestrator",
@@ -258,6 +403,12 @@ DAG_DEPENDENCIES: Mapping[str, tuple[str, ...]] = {
         "elmos-model-registry-guard",
         "elmos-cost-performance-router",
         "elmos-telemetry-learner",
+        "elmos-decomposition-telemetry-learner",
+    ),
+    "elmos-decomposition-telemetry-learner": (
+        "elmos-repository-certifier",
+        "elmos-plan-diff-audit-journal",
+        "elmos-run-state-journal",
     ),
 }
 
@@ -271,6 +422,8 @@ CONDITIONAL_SKILLS = frozenset(
         "elmos-data-migration-gate",
         "elmos-concurrency-idempotency-gate",
         "elmos-conflict-resolver",
+        "elmos-uncertainty-exploration-planner",
+        "elmos-dynamic-replanner",
     }
 )
 CONTROL_SKILLS = frozenset(
@@ -281,7 +434,9 @@ CONTROL_SKILLS = frozenset(
     }
 )
 EXCEPTION_SKILLS = frozenset({"elmos-rollback-recovery"})
-OFFLINE_SKILLS = frozenset({"elmos-routing-policy-optimizer"})
+OFFLINE_SKILLS = frozenset(
+    {"elmos-routing-policy-optimizer", "elmos-decomposition-telemetry-learner"}
+)
 
 RUNTIME_REGISTRY_RELATIVE = Path(
     "packages/repository-orchestrator/config/handler-registry.json"
@@ -480,14 +635,14 @@ def _member_kind_and_mode(info: zipfile.ZipInfo) -> tuple[str, int]:
     file_type = stat.S_IFMT(unix_mode)
     permission = stat.S_IMODE(unix_mode)
     if info.is_dir():
-        if file_type != stat.S_IFDIR or permission != 0o2755:
+        if file_type != stat.S_IFDIR or permission not in {0o755, 0o2755}:
             raise IntegrationError(f"unexpected source directory mode: {info.filename!r}")
         if info.compress_type != zipfile.ZIP_STORED or info.file_size != 0:
             raise IntegrationError(f"source directory entry must be empty/stored: {info.filename!r}")
         return "directory", permission
-    if file_type != stat.S_IFREG or permission != 0o644:
+    if file_type != stat.S_IFREG or permission not in {0o644, 0o755}:
         raise IntegrationError(f"link, special, or wrong-mode file: {info.filename!r}")
-    if info.compress_type != zipfile.ZIP_DEFLATED:
+    if info.compress_type not in {zipfile.ZIP_DEFLATED, zipfile.ZIP_STORED}:
         raise IntegrationError(f"unsupported file compression: {info.filename!r}")
     if info.file_size < 0 or info.file_size > MAX_ARCHIVE_ENTRY_BYTES:
         raise IntegrationError(f"archive member size is unsafe: {info.filename!r}")
@@ -575,7 +730,11 @@ def inspect_archive(
                         raise IntegrationError(f"archive member size mismatch: {info.filename!r}")
                     content = b"".join(chunks)
                     digest = hasher.hexdigest()
-                    _decode_utf8(content, relative)
+                    # The v2 source archive unfortunately contains Python bytecode.
+                    # Preserve it as inert, non-executable source data; all other
+                    # package files must still be canonical UTF-8 text.
+                    if not relative.endswith(".pyc"):
+                        _decode_utf8(content, relative)
                 records[relative] = ArchiveRecord(
                     archive_name=info.filename,
                     relative=relative,
@@ -617,14 +776,18 @@ def _split_frontmatter(
     return frontmatter, text[match.end() :].lstrip("\n")
 
 
-def _section_items(body: str, heading: str) -> tuple[str, ...]:
+def _section_items(
+    body: str, heading: str, *, required: bool = True
+) -> tuple[str, ...]:
     match = re.search(
         rf"^## {re.escape(heading)}\s*$\n(.*?)(?=^## |\Z)",
         body,
         re.MULTILINE | re.DOTALL,
     )
     if match is None:
-        raise IntegrationError(f"source Skill is missing section: {heading}")
+        if required:
+            raise IntegrationError(f"source Skill is missing section: {heading}")
+        return ()
     items = []
     for line in match.group(1).splitlines():
         stripped = line.strip()
@@ -658,7 +821,13 @@ def _parse_source_skills(
         name = frontmatter.get("name")
         version = str(frontmatter.get("version"))
         description = frontmatter.get("description")
-        expected_version = "1.1.0" if expected_name in EXPECTED_V11_SKILLS else "1.0.0"
+        expected_version = (
+            "2.0.0"
+            if expected_name in EXPECTED_V20_SKILLS
+            else "1.1.0"
+            if expected_name in EXPECTED_V11_SKILLS
+            else "1.0.0"
+        )
         if (
             name != expected_name
             or version != expected_version
@@ -669,15 +838,19 @@ def _parse_source_skills(
         ):
             raise IntegrationError(f"source Skill identity mismatch: {path}")
         required_sections = (
-            "Trigger conditions",
             "Inputs",
             "Outputs",
             "Procedure",
-            "Guardrails",
             "Acceptance criteria",
             "Integration contract",
         )
-        sections = {section: _section_items(body, section) for section in required_sections}
+        sections = {
+            section: _section_items(body, section) for section in required_sections
+        }
+        sections["Trigger conditions"] = _section_items(
+            body, "Trigger conditions", required=False
+        )
+        sections["Guardrails"] = _section_items(body, "Guardrails", required=False)
         skills.append(
             SourceSkill(
                 ordinal=ordinal,
@@ -1000,7 +1173,9 @@ def _validator(schema: Mapping[str, Any]) -> Any:
 
 def _validate_dag() -> tuple[str, ...]:
     if set(DAG_DEPENDENCIES) != set(EXPECTED_SKILLS):
-        raise IntegrationError("repository DAG does not contain exactly all 37 Skills")
+        raise IntegrationError(
+            f"repository DAG does not contain exactly all {len(EXPECTED_SKILLS)} Skills"
+        )
     state: dict[str, int] = {}
     order: list[str] = []
 
@@ -1067,13 +1242,14 @@ def _validate_source_contracts(
 
     selection_schema = _load_json_record(files, "schemas/model-selection.schema.json")
     execution_schema = _load_json_record(files, "schemas/execution-record.schema.json")
-    for schema_path in (
-        "schemas/model-selection.schema.json",
-        "schemas/task.schema.json",
-        "schemas/execution-record.schema.json",
-        "schemas/dag.schema.json",
-        "schemas/evidence.schema.json",
-    ):
+    schema_paths = sorted(
+        path
+        for path in files
+        if path.startswith("schemas/") and path.endswith(".schema.json")
+    )
+    if len(schema_paths) != 11:
+        raise IntegrationError("source package must contain exactly 11 JSON Schemas")
+    for schema_path in schema_paths:
         _validator(_load_json_record(files, schema_path))
     selected = selection_schema["properties"]["selected_model"]["enum"]
     if tuple(item for item in selected if item is not None) != EXPECTED_ALLOWLIST:
@@ -1108,16 +1284,45 @@ def _validate_source_contracts(
                 collect_skills(child)
 
     collect_skills(workflow)
-    if len(workflow_names) != 27 or len(set(workflow_names)) != 27:
-        raise IntegrationError("source example workflow must reference exactly 27 unique Skills")
+    if len(workflow_names) != 46 or len(set(workflow_names)) != 44:
+        raise IntegrationError(
+            "source example workflow must contain 46 references to 44 unique Skills"
+        )
     if not set(workflow_names) <= set(EXPECTED_SKILLS):
         raise IntegrationError("source example workflow references an unknown Skill")
 
     findings: list[Mapping[str, Any]] = []
+    cache_artifacts = sorted(
+        path
+        for path in files
+        if path.startswith(".pytest_cache/")
+        or "/__pycache__/" in f"/{path}"
+        or path.endswith(".pyc")
+    )
+    if not cache_artifacts:
+        raise IntegrationError("expected quarantined source cache artifacts are absent")
+    findings.append(
+        {
+            "code": "SOURCE_ARCHIVE_CONTAINS_CACHE_ARTIFACTS",
+            "paths": cache_artifacts,
+            "source_files_executed": False,
+            "installed_as_non_executable_data": True,
+            "immutable_source_rewritten": False,
+            "compiled_contract_repaired": True,
+        }
+    )
     source_task_schema = _load_json_record(files, "schemas/task.schema.json")
     task_plan = _load_json_record(files, "examples/example-task-plan.json")
     task_validator = _validator(source_task_schema)
-    expected_missing = {"objective", "acceptance", "complexity", "status"}
+    expected_missing = {
+        "objective",
+        "acceptance",
+        "complexity",
+        "hierarchy_level",
+        "plan_revision",
+        "status",
+        "uncertainty",
+    }
     for task in task_plan.get("tasks", []):
         missing = set(source_task_schema["required"]) - set(task)
         if missing != expected_missing or not list(task_validator.iter_errors(task)):
@@ -1284,7 +1489,9 @@ def load_runtime_registry(repository_root: Path) -> RuntimeRegistry:
         raise IntegrationError("runtime handler registry identity/binding mismatch")
     entries = document.get("skills")
     if not isinstance(entries, list) or len(entries) != len(EXPECTED_SKILLS):
-        raise IntegrationError("runtime handler registry must contain exactly 37 entries")
+        raise IntegrationError(
+            f"runtime handler registry must contain exactly {len(EXPECTED_SKILLS)} entries"
+        )
     names: list[str] = []
     handlers: dict[str, str] = {}
     canonical_owners: dict[str, str] = {}
@@ -1391,7 +1598,7 @@ def _render_skill(skill: SourceSkill, registry: RuntimeRegistry) -> bytes:
         "",
         f"- Immutable package source: `{metadata['source_path']}` (`{metadata['source_sha256']}`).",
         f"- Shared source policy and schemas: `{SOURCE_RELATIVE.as_posix()}/config/` and `{SOURCE_RELATIVE.as_posix()}/schemas/`.",
-        f"- Repository-corrected contracts and the exact 37-node DAG: `{DOC_RELATIVE.as_posix()}/compiled-schemas/` and `{DOC_RELATIVE.as_posix()}/dependency-dag.json`.",
+        f"- Repository-corrected contracts and the exact {len(EXPECTED_SKILLS)}-node DAG: `{DOC_RELATIVE.as_posix()}/compiled-schemas/` and `{DOC_RELATIVE.as_posix()}/dependency-dag.json`.",
         f"- Bounded dispatch binding: `{RUNTIME_MODULE}:{RUNTIME_CALLABLE}`; implementation state is `{implementation_state}` and local execution evidence is `{local_evidence_state}`.",
         "- Package-authored instructions below describe the capability; they do not authorize provider, SCM, worktree, network, secret, merge, deployment, or certification side effects.",
         f"- Provider/SCM/worktree external evidence remains `{EXTERNAL_EVIDENCE_STATUS}` and certification remains `{CERTIFICATION_STATUS}`.",
@@ -1521,13 +1728,13 @@ def _readme(snapshot: PackageSnapshot, registry: RuntimeRegistry) -> bytes:
 
 This repository-owned integration treats `{ARCHIVE_RELATIVE.as_posix()}` as untrusted input. The importer reads every member as bounded data, never executes package scripts/tests/instructions, and preserves exact source bytes under `{SOURCE_RELATIVE.as_posix()}`.
 
-The 37 normalized Skills are installed byte-identically under `{INSTALL_ROOTS[0].as_posix()}` and `{INSTALL_ROOTS[1].as_posix()}`. Unsupported source `version` frontmatter is retained as `metadata.source_version`; each installed folder matches its exact Skill name and includes quoted `agents/openai.yaml` metadata.
+The {len(EXPECTED_SKILLS)} normalized Skills are installed byte-identically under `{INSTALL_ROOTS[0].as_posix()}` and `{INSTALL_ROOTS[1].as_posix()}`. Unsupported source `version` frontmatter is retained as `metadata.source_version`; each installed folder matches its exact Skill name and includes quoted `agents/openai.yaml` metadata.
 
-The source package has no manifest-owned dependency DAG, checksum inventory, signature, license, SBOM, or provenance attestation. `dependency-dag.json` is the authoritative repository-compiled 37-node graph. Corrected schemas live under `compiled-schemas/`; immutable source defects are recorded rather than rewritten.
+The source package has no manifest-owned dependency DAG, checksum inventory, signature, license, SBOM, or provenance attestation. It also contains `.pytest_cache` and Python bytecode artifacts; these are preserved as non-executable source data and never imported. `dependency-dag.json` is the authoritative repository-compiled {len(EXPECTED_SKILLS)}-node graph. Corrected schemas live under `compiled-schemas/`; immutable source defects are recorded rather than rewritten.
 
 The compiled model-selection contracts separate caller input from a server-resolved, registry-bound record: request payloads cannot forge `selection_source`, `locked_by_user`, `resolved_at`, or `registry_digest`. Atomic tasks may omit stage-owned `complexity` and `status` until their estimator/journal stages. Execution cost is optional; when recorded it is an exact decimal string and must include currency, effective pricing time, and a pricing-registry digest.
 
-- Bounded implementation bindings: `{implemented_count}/37` (`IMPLEMENTED` only when declared by `{registry.path}`)
+- Bounded implementation bindings: `{implemented_count}/{len(EXPECTED_SKILLS)}` (`IMPLEMENTED` only when declared by `{registry.path}`)
 - Local execution evidence: `NOT_RUN`
 - Provider, SCM, and worktree evidence: `{EXTERNAL_EVIDENCE_STATUS}`
 - Certification: `{CERTIFICATION_STATUS}`
@@ -1609,7 +1816,9 @@ def build_expected(snapshot: PackageSnapshot, repository_root: Path = ROOT) -> M
     source_directory_inventory = [
         {
             "path": path or ".",
-            "source_mode": "2755",
+            "source_mode": (
+                "0755" if path.startswith(".pytest_cache") else "2755"
+            ),
             "installed_mode": "0755",
         }
         for path in snapshot.directories
