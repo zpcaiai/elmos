@@ -1,0 +1,3 @@
+# Install in a virtual environment OUTSIDE the sealed package.
+jsonschema>=4.18,<5
+PyYAML>=6,<7

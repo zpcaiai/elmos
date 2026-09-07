@@ -1,0 +1,11 @@
+{
+  "schema_version": "ao.v1",
+  "feature": "hybrid",
+  "status": "candidate",
+  "host_approval_ref": null,
+  "backend": null,
+  "primary_metric": "intent_ndcg_at_8",
+  "baseline_ref": null,
+  "candidate_ref": null,
+  "rollback_ref": null
+}

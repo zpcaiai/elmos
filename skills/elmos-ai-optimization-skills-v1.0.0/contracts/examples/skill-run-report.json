@@ -1,0 +1,12 @@
+{
+  "schema_version": "ao.v1",
+  "batch": "B0",
+  "host_revision": null,
+  "status": "not_started",
+  "machine_seconds": null,
+  "approval_wait_seconds": null,
+  "artifact_refs": [],
+  "not_run": [
+    "actual-source-review"
+  ]
+}

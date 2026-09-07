@@ -1,0 +1,22 @@
+{
+  "langgraph": {
+    "status": "not_run",
+    "reason": "optional native dependency missing"
+  },
+  "elasticsearch": {
+    "status": "not_run",
+    "reason": "No native service/model qualification performed"
+  },
+  "pgvector": {
+    "status": "not_run",
+    "reason": "No native service/model qualification performed"
+  },
+  "dify": {
+    "status": "not_run",
+    "reason": "No native service/model qualification performed"
+  },
+  "real_models": {
+    "status": "not_run",
+    "reason": "No native service/model qualification performed"
+  }
+}

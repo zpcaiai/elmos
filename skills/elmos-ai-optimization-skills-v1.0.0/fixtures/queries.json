@@ -1,0 +1,114 @@
+[
+  {
+    "id": "Q01",
+    "query": "",
+    "mode": "exact",
+    "symbol": "cancelExpiredOrder",
+    "qrels": {
+      "expiry-java": 3
+    }
+  },
+  {
+    "id": "Q02",
+    "query": "",
+    "mode": "exact",
+    "symbol": "refundCents",
+    "qrels": {
+      "refund-ts": 3
+    }
+  },
+  {
+    "id": "Q03",
+    "query": "",
+    "mode": "exact",
+    "symbol": "discount",
+    "qrels": {
+      "discount-py": 3
+    }
+  },
+  {
+    "id": "Q04",
+    "query": "",
+    "mode": "exact",
+    "symbol": "CreateOrder",
+    "qrels": {
+      "orders-cs": 3
+    }
+  },
+  {
+    "id": "Q05",
+    "query": "",
+    "mode": "exact",
+    "symbol": "coalescedTotal",
+    "qrels": {
+      "nullable-sql": 3
+    }
+  },
+  {
+    "id": "Q06",
+    "query": "threshold 10000",
+    "mode": "lexical",
+    "qrels": {
+      "test-discount": 3,
+      "discount-py": 2
+    }
+  },
+  {
+    "id": "Q07",
+    "query": "sessions filter",
+    "mode": "lexical",
+    "qrels": {
+      "migration-notes": 3
+    }
+  },
+  {
+    "id": "Q08",
+    "query": "cancellation timeout",
+    "mode": "lexical",
+    "qrels": {
+      "expiry-java": 3
+    }
+  },
+  {
+    "id": "Q09",
+    "query": "return money meaning",
+    "mode": "hybrid",
+    "query_vector": [
+      0,
+      1,
+      0
+    ],
+    "qrels": {
+      "refund-ts": 3,
+      "discount-py": 1,
+      "nullable-sql": 1,
+      "test-discount": 1
+    }
+  },
+  {
+    "id": "Q10",
+    "query": "session behavior meaning",
+    "mode": "hybrid",
+    "query_vector": [
+      0,
+      0,
+      1
+    ],
+    "qrels": {
+      "migration-notes": 3
+    }
+  },
+  {
+    "id": "Q11",
+    "query": "",
+    "mode": "exact",
+    "symbol": "DoesNotExist",
+    "qrels": {}
+  },
+  {
+    "id": "Q12",
+    "query": "zzunfindabletokenzz",
+    "mode": "lexical",
+    "qrels": {}
+  }
+]
