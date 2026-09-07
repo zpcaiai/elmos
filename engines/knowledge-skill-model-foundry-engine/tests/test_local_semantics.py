@@ -102,6 +102,18 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
                     {"id": "capability-child", "dependencies": ["capability-root"]},
                 ]
             }
+        elif skill_name == "contract-migration-manager":
+            requirement = {
+                "source_version": "1.0.0",
+                "target_version": "2.0.0",
+                "schema_changes": [{"kind": "add_field", "field": "version"}],
+            }
+        elif skill_name == "extension-sdk-and-codegen":
+            requirement = {
+                "target_language": "python",
+                "package_name": "elmos-client-sdk",
+                "skills": ["artifact-identity-and-hashing"],
+            }
         return {
             "business requirement": requirement,
             "architecture decision": architecture,
@@ -266,6 +278,58 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
             "capacity state": {"status": "AVAILABLE"},
         }
 
+    @staticmethod
+    def _ingestion_extension_inputs(skill_name: str, scope: TenantScope) -> dict[str, Any]:
+        document: dict[str, Any] = {
+            "tenant_id": scope.tenant_id,
+            "project_id": scope.project_id,
+            "source_id": "document-local",
+        }
+        if skill_name == "archive-and-folder-ingestion":
+            document["archive_type"] = "zip"
+            document["entries"] = [{"path": "README.md", "size_bytes": 100, "sha256": "0" * 64}]
+        elif skill_name == "document-structure-ingestion":
+            document["sections"] = [{"heading": "Introduction", "level": 1, "body": "Overview"}]
+        elif skill_name == "ingestion-quarantine-gate":
+            document["quarantine_status"] = "CLEARED"
+            document["scan_results"] = [{"check": "malware", "passed": True}]
+        elif skill_name == "multimodal-artifact-ingestion":
+            document["artifacts"] = [{"artifact_id": "art-1", "mime_type": "image/png", "size_bytes": 1024, "sha256": "0" * 64}]
+        return {
+            "repository": {"path": "src/service.py", "revision": "abc123"},
+            "document": document,
+            "API schema": {"openapi": "3.1.0"},
+            "database metadata": {"engine": "sqlite"},
+            "runtime trace": {"status": "PASS"},
+            "ticket or incident": {"ticket_id": "ticket-local"},
+        }
+
+    @staticmethod
+    def _graph_inputs(scope: TenantScope) -> dict[str, Any]:
+        return {
+            "normalized repository artifact": {
+                "tenant_id": scope.tenant_id,
+                "project_id": scope.project_id,
+                "modules": [
+                    {
+                        "name": "core",
+                        "path": "src/core.py",
+                        "symbols": [
+                            {"name": "Engine", "kind": "class", "line": 10},
+                            {"name": "start", "kind": "function", "line": 20, "calls": ["stop"]},
+                            {"name": "stop", "kind": "function", "line": 30},
+                        ],
+                        "ast_nodes": [
+                            {"type": "FunctionDef", "name": "start", "blocks": ["b0", "b1", "b2"], "edges": [["b0", "b1"], ["b1", "b2"]]}
+                        ],
+                    }
+                ],
+            },
+            "build metadata": {"status": "SUCCESS"},
+            "runtime trace": {"traces": []},
+            "test result": {"passed": True},
+        }
+
     def _inputs_for(self, skill_name: str, scope: TenantScope | None = None) -> dict[str, Any]:
         record = self.service.skills.get_skill_record(skill_name)
         self.assertIsNotNone(record)
@@ -282,6 +346,8 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         from elmos_foundry.foundation_semantics import FOUNDATION_SEMANTIC_SKILLS
         from elmos_foundry.dataset_semantics import DATASET_SEMANTIC_SKILLS
         from elmos_foundry.ingestion_semantics import INGESTION_SEMANTIC_SKILLS
+        from elmos_foundry.graph_semantics import GRAPH_SEMANTIC_SKILLS
+        from elmos_foundry.ingestion_extensions import INGESTION_EXTENSION_SKILLS
 
         if skill_name == "build-and-dependency-graph":
             return build_graph_fixture(skill_name, scope or self.scope)
@@ -289,6 +355,10 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
             return ir_fixture(skill_name, scope or self.scope)
         if skill_name == "multi-language-ast-extraction":
             return ast_fixture(skill_name, scope or self.scope)
+        if skill_name in GRAPH_SEMANTIC_SKILLS:
+            return self._graph_inputs(scope or self.scope)
+        if skill_name in INGESTION_EXTENSION_SKILLS:
+            return self._ingestion_extension_inputs(skill_name, scope or self.scope)
         if skill_name in RUNTIME_SEMANTIC_SKILLS:
             return runtime_fixture(skill_name, scope or self.scope)
         if skill_name in FOUNDATION_SEMANTIC_SKILLS:
@@ -391,7 +461,7 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         return inner["outputs"]
 
     def test_all_exact_local_skills_execute_with_declared_contracts(self) -> None:
-        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 51)
+        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 61)
         described = {
             skill_name
             for row in self.service.status()["adapters"]

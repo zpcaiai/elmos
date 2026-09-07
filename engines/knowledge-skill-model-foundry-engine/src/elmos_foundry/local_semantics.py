@@ -74,6 +74,16 @@ LOCAL_SEMANTIC_SKILLS: frozenset[str] = frozenset(
         "repository-incremental-ingestion",
         "runtime-trace-ingestion",
         "source-freshness-and-expiry",
+        "contract-migration-manager",
+        "extension-sdk-and-codegen",
+        "archive-and-folder-ingestion",
+        "document-structure-ingestion",
+        "ingestion-quarantine-gate",
+        "multimodal-artifact-ingestion",
+        "symbol-and-reference-graph",
+        "call-graph-construction",
+        "control-flow-graph",
+        "semantic-diff-and-impact-analysis",
     }
 )
 
@@ -312,6 +322,9 @@ class LocalSemanticRuntime:
         from .ir_reconciliation_semantics import build_ir_reconciliation_handlers
         from .ast_extraction_semantics import build_ast_extraction_handlers
         from .ingestion_semantics import build_ingestion_handlers
+        from .foundation_extensions import build_foundation_extension_handlers
+        from .ingestion_extensions import build_ingestion_extension_handlers
+        from .graph_semantics import build_graph_extension_handlers
 
         handlers.update(build_foundation_handlers(catalog, store))
         handlers.update(build_dataset_handlers(catalog, store))
@@ -320,6 +333,9 @@ class LocalSemanticRuntime:
         handlers.update(build_ir_reconciliation_handlers(catalog, store))
         handlers.update(build_ast_extraction_handlers(catalog, store))
         handlers.update(build_ingestion_handlers(catalog, store))
+        handlers.update(build_foundation_extension_handlers(catalog, store))
+        handlers.update(build_ingestion_extension_handlers(catalog, store))
+        handlers.update(build_graph_extension_handlers(catalog, store))
         if set(handlers) != LOCAL_SEMANTIC_SKILLS:
             raise RuntimeError("local semantic handler registry is not exact")
         missing = sorted(LOCAL_SEMANTIC_SKILLS - set(catalog.atomic_skills))

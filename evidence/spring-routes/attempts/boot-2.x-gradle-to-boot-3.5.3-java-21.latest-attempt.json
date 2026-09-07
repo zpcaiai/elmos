@@ -1,0 +1,19 @@
+{
+  "attempted_at": "2026-09-07T15:36:04Z",
+  "authorized_customer_repository": "NOT_RUN",
+  "canonical_evidence": {
+    "execution_status_at_attempt": "ABSENT",
+    "path": "evidence/spring-routes/boot-2.x-gradle-to-boot-3.5.3-java-21.json",
+    "updated": false
+  },
+  "certification_eligible": false,
+  "certification_status": "NOT_CERTIFIED",
+  "evidence_scope": "LOCAL_ATTEMPT_AUDIT_ONLY",
+  "execution_status": "FAILED",
+  "external_evidence_status": "NOT_RUN",
+  "failure": "COMMAND_FAILED:/Users/stephen/.local/elmos-toolchain/gradle-8.14.3/bin/gradle --no-daemon --console=plain build\nTo honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.14.3/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.\nDaemon will be stopped at the end of the build \n\nFAILURE: Build failed with an exception.\n\n* Where:\nBuild file '/Users/stephen/DevProjects/AIProjects/elmos/build/spring-route-reference/boot-2.x-gradle-to-boot-3.5.3-java-21/source/build.gradle' line: 17\n\n* What went wrong:\nA problem occurred evaluating root project 'spring-reference-2-7-18'.\n> Could not find method implementation() for arguments [org.springframework.boot:spring-boot-starter-web] on root project 'spring-reference-2-7-18' of type org.gradle.api.Project.\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to get full insights.\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 1m 12s\n",
+  "independent_verification": "NOT_RUN",
+  "record_type": "NON_CERTIFYING_ROUTE_ATTEMPT",
+  "route_id": "boot-2.x-gradle-to-boot-3.5.3-java-21",
+  "schema_version": 1
+}

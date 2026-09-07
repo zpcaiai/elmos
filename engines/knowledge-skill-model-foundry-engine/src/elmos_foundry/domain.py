@@ -388,7 +388,7 @@ class ExecutionResult:
 
     def __post_init__(self) -> None:
         require_identifier(self.operation, "operation")
-        if self.status not in {"SUCCESS", "FAILED", "BLOCKED", "IN_PROGRESS"}:
+        if self.status not in {"SUCCESS", "SUCCEEDED", "FAILED", "BLOCKED", "IN_PROGRESS"}:
             raise ValueError("execution status is not recognized")
         validate_digest(self.evidence_digest, "evidence_digest")
         if not math.isfinite(self.duration_ms) or self.duration_ms < 0:

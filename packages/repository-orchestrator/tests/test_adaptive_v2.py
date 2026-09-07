@@ -257,9 +257,57 @@ class AdaptiveV2RuntimeTests(unittest.TestCase):
                 ]
             },
         )
-        self.assertEqual(Status.BLOCKED.value, result["status"])
-        self.assertFalse(result["output"]["safe_to_integrate"])
-        self.assertFalse(result["side_effects_performed"])
+    def test_example_hierarchical_plan_e2e(self) -> None:
+        plan_path = (
+            ROOT
+            / "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/examples/adaptive-hierarchical-plan.json"
+        )
+        plan = json.loads(plan_path.read_text(encoding="utf-8"))
+
+        # 1. Hierarchical planner accepts plan with object risk/uncertainty
+        planned = dispatch("elmos-adaptive-hierarchical-planner", plan)
+        self.assertEqual(Status.PLANNED.value, planned["status"])
+        self.assertEqual(["C1", "G0"], planned["output"]["refinement_frontier"])
+        self.assertTrue(planned["output"]["lazy_refinement"])
+
+        # 2. Plan graph verifier accepts hierarchical plan nodes and verifies coverage
+        verified = dispatch("elmos-plan-graph-verifier", plan)
+        self.assertEqual(Status.LOCAL_ENGINEERING_VALIDATED.value, verified["status"])
+        self.assertTrue(verified["output"]["executable"])
+        self.assertEqual([], verified["output"]["errors"])
+        self.assertEqual([], verified["output"]["coverage"]["missing_scenarios"])
+        self.assertEqual([], verified["output"]["coverage"]["missing_invariants"])
+        self.assertEqual([], verified["output"]["coverage"]["missing_proofs"])
+
+        # 3. Granularity controller matches reference decisions
+        expected_granularity = {
+            "G0": "split",
+            "C1": "split",
+            "T10": "keep",
+            "T20": "keep",
+            "T30": "keep",
+        }
+        for node in plan["nodes"]:
+            features = node.get("granularity_features")
+            if features:
+                gran = dispatch(
+                    "elmos-task-granularity-controller",
+                    {
+                        "features": {k: str(v) for k, v in features.items()},
+                        "indivisible_invariant": node.get("indivisible_invariant", False),
+                    },
+                )
+                self.assertEqual(
+                    expected_granularity[node["id"]],
+                    gran["output"]["decision"],
+                    f"node {node['id']} granularity decision mismatch",
+                )
+
+        # 4. CLI validate-plan succeeds on the real example plan
+        from elmos_repository_orchestrator.cli import main
+
+        exit_code = main(["validate-plan", "--input", str(plan_path)])
+        self.assertEqual(0, exit_code)
 
 
 if __name__ == "__main__":

@@ -70,17 +70,38 @@ def test_go_unannotated_define_rejected(tmp_path: Path) -> None:
         analyze(source, "go", "total")
 
 
-def test_go_reassignment_rejected(tmp_path: Path) -> None:
+def test_go_parameter_reassignment_rejected(tmp_path: Path) -> None:
+    source = _source(
+        tmp_path,
+        "func total(price int64) int64 {\n"
+        "    price = price + 1\n"
+        "    return price\n"
+        "}",
+    )
+    with pytest.raises(RouteError, match="GO_PARAMETER_REASSIGNMENT_OUTSIDE_CERTIFIED_SUBSET:price"):
+        analyze(source, "go", "total")
+
+
+def test_go_mutable_local_reassignment_accepted(tmp_path: Path) -> None:
     source = _source(
         tmp_path,
         "func total(price int64) int64 {\n"
         "    var subtotal int64 = price\n"
         "    subtotal = price + 1\n"
+        "    subtotal += 5\n"
         "    return subtotal\n"
         "}",
     )
-    with pytest.raises(RouteError, match="GO_MUTABLE_VARIABLE_OUTSIDE_CERTIFIED_SUBSET"):
-        analyze(source, "go", "total")
+    semantic = analyze(source, "go", "total")
+    statements = semantic.functions[0].body
+    assert statements[0].kind == "let"
+    assert statements[0].name == "subtotal"
+    assert statements[1].kind == "assign"
+    assert statements[1].name == "subtotal"
+    assert statements[2].kind == "assign"
+    assert statements[2].name == "subtotal"
+    assert statements[2].expression.kind == "binary"
+    assert statements[2].expression.operator == "+"
 
 
 def test_go_declaration_without_value_rejected(tmp_path: Path) -> None:

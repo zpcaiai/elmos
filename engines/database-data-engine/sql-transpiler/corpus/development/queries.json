@@ -24,6 +24,11 @@
       "sql": "SELECT COUNT(*) FILTER (WHERE status = 'OPEN') AS open_count FROM orders"
     },
     {
+      "id": "DEV-PG17-005",
+      "sourceProfile": "postgresql-17.5",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = $1 AND status = $2 ORDER BY id"
+    },
+    {
       "id": "DEV-PG-001",
       "sourceProfile": "postgresql-18.4",
       "sql": "SELECT id FROM customers WHERE email ILIKE '%@example.com' ORDER BY id LIMIT 25"
@@ -44,6 +49,11 @@
       "sql": "SELECT COUNT(*) FILTER (WHERE status = 'OPEN') AS open_count FROM orders"
     },
     {
+      "id": "DEV-PG-005",
+      "sourceProfile": "postgresql-18.4",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = $1 AND status = $2 ORDER BY id"
+    },
+    {
       "id": "DEV-MY-001",
       "sourceProfile": "mysql-8.4.10-lts",
       "sql": "SELECT IFNULL(total, 0) AS total FROM orders ORDER BY id LIMIT 25"
@@ -61,13 +71,12 @@
     {
       "id": "DEV-MY-004",
       "sourceProfile": "mysql-8.4.10-lts",
-      "targets": [
-        "postgresql-18.4",
-        "sqlserver-2022-cu26",
-        "oracle-26ai-ee",
-        "duckdb-1.5.4"
-      ],
       "sql": "SELECT GROUP_CONCAT(name ORDER BY name SEPARATOR ',') AS names FROM customers"
+    },
+    {
+      "id": "DEV-MY-005",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = ? AND status = ? ORDER BY id"
     },
     {
       "id": "DEV-MS-001",
@@ -90,6 +99,11 @@
       "sql": "SELECT IIF(total > 100, 'large', 'small') AS size FROM orders ORDER BY id"
     },
     {
+      "id": "DEV-MS-005",
+      "sourceProfile": "sqlserver-2022-cu26",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = @customer_id AND status = @status ORDER BY id"
+    },
+    {
       "id": "DEV-OR-001",
       "sourceProfile": "oracle-26ai-ee",
       "sql": "SELECT NVL(total, 0) AS total FROM orders ORDER BY id"
@@ -102,18 +116,17 @@
     {
       "id": "DEV-OR-003",
       "sourceProfile": "oracle-26ai-ee",
-      "targets": [
-        "postgresql-18.4",
-        "sqlserver-2022-cu26",
-        "sqlite-3.53.3",
-        "duckdb-1.5.4"
-      ],
       "sql": "SELECT TRUNC(created_at, 'MM') AS month_start, SUM(total) FROM orders GROUP BY TRUNC(created_at, 'MM') ORDER BY month_start"
     },
     {
       "id": "DEV-OR-004",
       "sourceProfile": "oracle-26ai-ee",
       "sql": "SELECT ADD_MONTHS(created_at, 1) AS next_month FROM orders ORDER BY id"
+    },
+    {
+      "id": "DEV-OR-005",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = :customer_id AND status = :status ORDER BY id"
     },
     {
       "id": "DEV-SQ-001",
@@ -136,6 +149,11 @@
       "sql": "SELECT strftime('%Y-%m', created_at) AS month_key, COUNT(*) FROM orders GROUP BY month_key ORDER BY month_key"
     },
     {
+      "id": "DEV-SQ-005",
+      "sourceProfile": "sqlite-3.53.3",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = ? AND status = ? ORDER BY id"
+    },
+    {
       "id": "DEV-DU-001",
       "sourceProfile": "duckdb-1.5.4",
       "sql": "SELECT id, ROW_NUMBER() OVER (PARTITION BY tenant_id ORDER BY created_at DESC) AS rn FROM orders QUALIFY rn = 1 ORDER BY id"
@@ -154,6 +172,11 @@
       "id": "DEV-DU-004",
       "sourceProfile": "duckdb-1.5.4",
       "sql": "SELECT COUNT(*) FILTER (WHERE status = 'OPEN') AS open_count FROM orders"
+    },
+    {
+      "id": "DEV-DU-005",
+      "sourceProfile": "duckdb-1.5.4",
+      "sql": "SELECT id, total FROM orders WHERE customer_id = $1 AND status = $2 ORDER BY id"
     }
   ]
 }

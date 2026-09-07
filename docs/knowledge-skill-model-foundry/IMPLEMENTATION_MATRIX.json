@@ -4,14 +4,10 @@
     "catalog_path": "registry/skill-catalog.yaml",
     "catalog_sha256": "57b25a220f20b01207443e3a748c82f495752a468a5b9c3e95073f8293f45e52"
   },
-  "catalog_content_digest": "sha256:6a88470284c46752347eca35274bbb56006ccbe9d83e62b7808510e9afe09533",
+  "catalog_content_digest": "sha256:8a8ad4b36f6d1c74dccc844530c68f44ae0ecd9e66d7ca0fc6b9e539d1d4b72f",
   "certification_status": "NOT_CERTIFIED",
   "external_evidence_status": "NOT_RUN",
   "highest_fanout_missing_handlers": [
-    {
-      "direct_dependents": 76,
-      "name": "multimodal-artifact-ingestion"
-    },
     {
       "direct_dependents": 76,
       "name": "test-to-code-evidence-graph"
@@ -23,10 +19,6 @@
     {
       "direct_dependents": 64,
       "name": "runtime-static-correlation"
-    },
-    {
-      "direct_dependents": 64,
-      "name": "semantic-diff-and-impact-analysis"
     },
     {
       "direct_dependents": 56,
@@ -209,7 +201,6 @@
     "api-abi-and-schema-compatibility",
     "api-and-event-contract-graph",
     "architecture-recovery",
-    "archive-and-folder-ingestion",
     "artifact-signing-and-verification",
     "audit-and-customer-evidence-export",
     "audit-readiness-package",
@@ -227,7 +218,6 @@
     "bronze-dataset-intake",
     "budget-guard-and-auto-throttle",
     "cache-retrieval-skill-effectiveness",
-    "call-graph-construction",
     "capability-calibration-and-boundary",
     "capability-gap-and-unknown-mining",
     "capacity-and-warm-pool-planning",
@@ -251,8 +241,6 @@
     "context-window-and-compaction-manager",
     "continual-learning-with-replay",
     "continuous-batching-and-speculation",
-    "contract-migration-manager",
-    "control-flow-graph",
     "cost-aware-agent-policy",
     "cost-capacity-and-margin-forecast",
     "cost-latency-and-soak-evaluation",
@@ -297,7 +285,6 @@
     "disagreement-adjudication",
     "distributed-training-checkpointing",
     "distribution-shift-robustness",
-    "document-structure-ingestion",
     "domain-continued-pretraining",
     "domain-ontology-induction",
     "domain-proof-and-certification-pack",
@@ -321,7 +308,6 @@
     "experience-value-scoring",
     "experiment-proposal-and-causal-analysis",
     "expert-review-routing",
-    "extension-sdk-and-codegen",
     "external-change-impact-analysis",
     "external-research-and-standard-watch",
     "failure-cluster-to-roadmap",
@@ -364,7 +350,6 @@
     "incident-to-recovery-skill-miner",
     "incremental-change-capture",
     "inference-graph-orchestration",
-    "ingestion-quarantine-gate",
     "invoice-and-cost-evidence",
     "iso42001-ai-management-profile",
     "issue-code-rationale-graph",
@@ -425,7 +410,6 @@
     "multi-model-skill-aware-router",
     "multi-objective-reward-contract",
     "multi-teacher-distillation",
-    "multimodal-artifact-ingestion",
     "mutation-counterexample-data",
     "mutation-testing-and-test-adequacy",
     "nist-ai-rmf-control-profile",
@@ -518,7 +502,6 @@
     "self-play-task-and-test-generation",
     "semantic-behavior-equivalence",
     "semantic-context-cache",
-    "semantic-diff-and-impact-analysis",
     "semantic-memory-distiller",
     "semantic-transformer-model-training",
     "sensitive-content-capture-policy",
@@ -584,7 +567,6 @@
     "supportability-and-lts-policy",
     "swift-language-adapter",
     "swiftpm-cocoapods-xcode-adapter",
-    "symbol-and-reference-graph",
     "symbol-aware-retrieval",
     "task-and-training-run-replay",
     "task-mutation-and-adversarial-env",
@@ -1961,25 +1943,25 @@
   "packs": [
     {
       "atomic_skills": 14,
-      "local_semantic_handlers": 12,
+      "local_semantic_handlers": 14,
       "pack": "00-foundation-contracts",
-      "prepare_only": 2,
+      "prepare_only": 0,
       "skills_with_missing_dependency_handlers": 0,
       "whole_skills_complete": 0
     },
     {
       "atomic_skills": 20,
-      "local_semantic_handlers": 9,
+      "local_semantic_handlers": 13,
       "pack": "01-knowledge-ingestion-governance",
-      "prepare_only": 11,
+      "prepare_only": 7,
       "skills_with_missing_dependency_handlers": 0,
       "whole_skills_complete": 0
     },
     {
       "atomic_skills": 24,
-      "local_semantic_handlers": 3,
+      "local_semantic_handlers": 7,
       "pack": "02-repository-semantic-intelligence",
-      "prepare_only": 21,
+      "prepare_only": 17,
       "skills_with_missing_dependency_handlers": 0,
       "whole_skills_complete": 0
     },
@@ -2432,7 +2414,7 @@
   ],
   "schema_version": "elmos.foundry.implementation-readiness.v2",
   "scope": "Repository code and source-contract inventory; no Skill or provider execution",
-  "semantic_registry_digest": "sha256:d98179a933d8101a8284381af3c2d5ae5f0138befe087a18b2975ba41f4292fb",
+  "semantic_registry_digest": "sha256:510e635621b944bc9a78bcd3ba7c8b0dcc9489b60d9eca410a6f4f4b30dc2be0",
   "skills": [
     {
       "allowed_tools": [
@@ -7252,13 +7234,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -7600,13 +7580,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -7944,13 +7922,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -8288,13 +8264,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -9437,12 +9411,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -10290,13 +10262,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -10636,13 +10606,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -11154,12 +11122,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -11328,13 +11294,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -11846,13 +11810,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -12526,13 +12488,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -12700,12 +12660,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -13033,13 +12991,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -13207,13 +13163,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -13494,11 +13448,11 @@
         "license.scan",
         "object.store"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "source.connect",
             "artifact.parse",
@@ -13507,7 +13461,7 @@
             "object.store"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -13572,14 +13526,10 @@
         "ticket or incident"
       ],
       "integration_binding": {
-        "adapter_digest": "b4725473a14cfed0abf30e4ee25287893683b6774dde74a6949df6f2e8203aea",
-        "adapter_id": "external.archive-and-folder-ingestion",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.archive-and-folder-ingestion.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "e88d7370ae1dda8d76073375161a058000bb1e399bdf450965fdb1bcf90e3535",
-        "route_id": "route.archive-and-folder-ingestion",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.archive-and-folder-ingestion",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "archive-and-folder-ingestion",
@@ -13599,8 +13549,8 @@
         "parse-quality-pass"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.ingestion_extensions._archive_folder_ingestion",
+      "semantic_handler_binding": "local.archive-and-folder-ingestion",
       "source_path": "skills/atomic/01-knowledge-ingestion-governance/archive-and-folder-ingestion/SKILL.md",
       "source_sha256": "eff150f1c5328bcf1723e7aa4eba4556218f4e69996cf5bebd8430125be265c8",
       "verification_missing": {
@@ -14887,12 +14837,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -19942,12 +19890,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -21288,12 +21234,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -22970,13 +22914,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -23756,11 +23698,11 @@
         "symbol.resolve",
         "trace.correlate"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "parser.run",
             "compiler.query",
@@ -23769,7 +23711,7 @@
             "trace.correlate"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -23830,14 +23772,10 @@
         "test result"
       ],
       "integration_binding": {
-        "adapter_digest": "9ecc474e75a0290b8f138aae66d033adb04f35e30f5356f9aec65214a85baedf",
-        "adapter_id": "external.call-graph-construction",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.call-graph-construction.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "21ae3bf077e8cda9c1a7a64587e0668a7d0367700f54187122c678ebc6cfe4c1",
-        "route_id": "route.call-graph-construction",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.call-graph-construction",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "call-graph-construction",
@@ -23857,8 +23795,8 @@
         "source-map-complete"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.graph_semantics._call_graph_construction",
+      "semantic_handler_binding": "local.call-graph-construction",
       "source_path": "skills/atomic/02-repository-semantic-intelligence/call-graph-construction/SKILL.md",
       "source_sha256": "f57cf49066f51b2a94ec122efcbdfc98c7fc29fe45f15b38897c3da85b0e341f",
       "verification_missing": {
@@ -23976,13 +23914,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -24150,12 +24086,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -27519,13 +27453,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -29890,12 +29822,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -31766,13 +31696,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -32276,12 +32204,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -34799,13 +34725,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -35648,12 +35572,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -36508,12 +36430,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -38283,11 +38203,11 @@
         "policy.evaluate",
         "artifact.hash"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "registry.read",
             "schema.validate",
@@ -38295,7 +38215,7 @@
             "artifact.hash"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -38356,14 +38276,10 @@
         "runtime capability inventory"
       ],
       "integration_binding": {
-        "adapter_digest": "8e5dc86b702fa9b94e5eb26e96a27b89668fab9a94eab509f7892f023c0b05c2",
-        "adapter_id": "external.contract-migration-manager",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.contract-migration-manager.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "dfc2b7a237bc62cda5c4d456f7e94691ba384db3d975e524cf43369f1c9bff1a",
-        "route_id": "route.contract-migration-manager",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.contract-migration-manager",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "contract-migration-manager",
@@ -38384,8 +38300,8 @@
         "rollback-defined"
       ],
       "risk_class": "medium",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.foundation_extensions._contract_migration",
+      "semantic_handler_binding": "local.contract-migration-manager",
       "source_path": "skills/atomic/00-foundation-contracts/contract-migration-manager/SKILL.md",
       "source_sha256": "6da60004cf34dd81d761e36dc034e9baa6c9dd160faaf7782b5cd50f3ae86381",
       "verification_missing": {
@@ -38446,11 +38362,11 @@
         "symbol.resolve",
         "trace.correlate"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "parser.run",
             "compiler.query",
@@ -38459,7 +38375,7 @@
             "trace.correlate"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -38520,14 +38436,10 @@
         "test result"
       ],
       "integration_binding": {
-        "adapter_digest": "62a54f6f20310826e16d7a2b3c3eca4064f1ffb9d8125fcf7bc94b57b50bd869",
-        "adapter_id": "external.control-flow-graph",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.control-flow-graph.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "760d33e4d0e26a7dad20fc7e3271a5eab82cea58f861211829960e98cf33c354",
-        "route_id": "route.control-flow-graph",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.control-flow-graph",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "control-flow-graph",
@@ -38547,8 +38459,8 @@
         "source-map-complete"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.graph_semantics._control_flow_graph",
+      "semantic_handler_binding": "local.control-flow-graph",
       "source_path": "skills/atomic/02-repository-semantic-intelligence/control-flow-graph/SKILL.md",
       "source_sha256": "e7a3c70511bd9e10e70c55e6ec975d86f63cbde20d9492490dae59769ea7f68c",
       "verification_missing": {
@@ -43785,13 +43697,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -46148,12 +46058,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -46823,13 +46731,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -54291,12 +54197,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -56322,12 +56226,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -57348,13 +57250,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -57840,13 +57740,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -58336,13 +58234,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -58510,12 +58406,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -58684,13 +58578,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -58858,12 +58750,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -61682,11 +61572,11 @@
         "license.scan",
         "object.store"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "source.connect",
             "artifact.parse",
@@ -61695,7 +61585,7 @@
             "object.store"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -61760,14 +61650,10 @@
         "ticket or incident"
       ],
       "integration_binding": {
-        "adapter_digest": "61b467cbe01078f35a20c21da2e6d1a07289fbc5ea75064d16aa4c31c15be20e",
-        "adapter_id": "external.document-structure-ingestion",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.document-structure-ingestion.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "ae56be59ef711f36d50d3c48f5b81ac6e07977498e114d458d83dbed50692962",
-        "route_id": "route.document-structure-ingestion",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.document-structure-ingestion",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "document-structure-ingestion",
@@ -61787,8 +61673,8 @@
         "parse-quality-pass"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.ingestion_extensions._document_structure_ingestion",
+      "semantic_handler_binding": "local.document-structure-ingestion",
       "source_path": "skills/atomic/01-knowledge-ingestion-governance/document-structure-ingestion/SKILL.md",
       "source_sha256": "bec68f94bcdcc667c29b43dcd7062ba4c4363519919162abc434cc1deb3f521a",
       "verification_missing": {
@@ -61906,13 +61792,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -62080,13 +61964,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -63764,13 +63646,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -64454,12 +64334,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -65808,12 +65686,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -69537,12 +69413,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -70046,12 +69920,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -72555,13 +72427,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -74995,11 +74865,11 @@
         "policy.evaluate",
         "artifact.hash"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "registry.read",
             "schema.validate",
@@ -75007,7 +74877,7 @@
             "artifact.hash"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -75068,14 +74938,10 @@
         "runtime capability inventory"
       ],
       "integration_binding": {
-        "adapter_digest": "86000d2d315bf702b1019a737ad94120c1c0444a3c78a9c5b4cd1da3906e1001",
-        "adapter_id": "external.extension-sdk-and-codegen",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.extension-sdk-and-codegen.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "9717c3b42f5122cc896e04a5eb2b7469f5c2754037fd5787d0fb183826e711c8",
-        "route_id": "route.extension-sdk-and-codegen",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.extension-sdk-and-codegen",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "extension-sdk-and-codegen",
@@ -75096,8 +74962,8 @@
         "rollback-defined"
       ],
       "risk_class": "medium",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.foundation_extensions._extension_codegen",
+      "semantic_handler_binding": "local.extension-sdk-and-codegen",
       "source_path": "skills/atomic/00-foundation-contracts/extension-sdk-and-codegen/SKILL.md",
       "source_sha256": "a7d1587d013afa09a87712601e6ae50a7b1586b092e506b22be51265db5994e1",
       "verification_missing": {
@@ -76854,12 +76720,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -78019,12 +77883,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -78881,12 +78743,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -79571,13 +79431,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -79745,13 +79603,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -80594,13 +80450,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -81277,13 +81131,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -81612,13 +81464,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -81947,13 +81797,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -82781,12 +82629,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -84994,12 +84840,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -89364,12 +89208,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -91528,13 +91370,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -95085,12 +94925,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -95259,12 +95097,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -95433,12 +95269,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -95607,12 +95441,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -96056,11 +95888,11 @@
         "license.scan",
         "object.store"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "source.connect",
             "artifact.parse",
@@ -96069,7 +95901,7 @@
             "object.store"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -96134,14 +95966,10 @@
         "ticket or incident"
       ],
       "integration_binding": {
-        "adapter_digest": "905e24eadcd0e805a214ca6069afe9cda0dc614e3ca4579aa32fe3a27cc49908",
-        "adapter_id": "external.ingestion-quarantine-gate",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.ingestion-quarantine-gate.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "e02441546c89fd14fbe09fcb68450ad178ae542435454eed1bcb3c158bbc2230",
-        "route_id": "route.ingestion-quarantine-gate",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.ingestion-quarantine-gate",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "ingestion-quarantine-gate",
@@ -96161,8 +95989,8 @@
         "parse-quality-pass"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.ingestion_extensions._ingestion_quarantine_gate",
+      "semantic_handler_binding": "local.ingestion-quarantine-gate",
       "source_path": "skills/atomic/01-knowledge-ingestion-governance/ingestion-quarantine-gate/SKILL.md",
       "source_sha256": "d7b344626a1521e3084efd55125f694194d29e7b7fdd76543fa07fb97c44689a",
       "verification_missing": {
@@ -97316,13 +97144,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -97823,13 +97649,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -98167,13 +97991,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -101563,13 +101385,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -107158,12 +106978,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -108180,12 +107998,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -110545,12 +110361,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -114745,13 +114559,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116122,13 +115934,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116296,13 +116106,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116470,13 +116278,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116644,13 +116450,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116818,13 +116622,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -116992,13 +116794,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -117166,12 +116966,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -118034,13 +117832,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -118382,12 +118178,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -122081,12 +121875,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -122255,13 +122047,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -122599,12 +122389,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -122943,12 +122731,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -125064,11 +124850,11 @@
         "license.scan",
         "object.store"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "source.connect",
             "artifact.parse",
@@ -125077,7 +124863,7 @@
             "object.store"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -125142,14 +124928,10 @@
         "ticket or incident"
       ],
       "integration_binding": {
-        "adapter_digest": "ee2a8b5b617450c79800dc1918acc7f7e2e4c76870af74164ebb2a0d306aa8cf",
-        "adapter_id": "external.multimodal-artifact-ingestion",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.multimodal-artifact-ingestion.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "bdb11708366956ed3eae0dba57189818165c8bbf97e4a0f0287b3ecf447e0459",
-        "route_id": "route.multimodal-artifact-ingestion",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.multimodal-artifact-ingestion",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "multimodal-artifact-ingestion",
@@ -125169,8 +124951,8 @@
         "parse-quality-pass"
       ],
       "risk_class": "medium",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.ingestion_extensions._multimodal_artifact_ingestion",
+      "semantic_handler_binding": "local.multimodal-artifact-ingestion",
       "source_path": "skills/atomic/01-knowledge-ingestion-governance/multimodal-artifact-ingestion/SKILL.md",
       "source_sha256": "0d730fabe789fcd44796a2e46a26030f298796303215a044ac5fb265475dfcec",
       "verification_missing": {
@@ -126473,12 +126255,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -127163,13 +126943,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -128877,12 +128655,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -131087,13 +130863,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -131435,12 +131209,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -133670,12 +133442,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -134832,12 +134602,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -136870,12 +136638,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -139950,12 +139716,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -141640,12 +141404,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -148341,12 +148103,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -149018,13 +148778,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -153389,13 +153147,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -153733,13 +153489,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -153907,13 +153661,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -154081,12 +153833,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -155085,12 +154835,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -157301,13 +157049,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -158639,13 +158385,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -158979,12 +158723,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -159839,12 +159581,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -161214,12 +160954,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -161734,13 +161472,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -163928,12 +163664,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -165576,12 +165310,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -166272,12 +166004,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -166446,12 +166176,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -167298,13 +167026,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -168141,13 +167867,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -169469,12 +169193,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -170826,12 +170548,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -173206,12 +172926,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -174554,13 +174272,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -175979,11 +175695,11 @@
         "symbol.resolve",
         "trace.correlate"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "parser.run",
             "compiler.query",
@@ -175992,7 +175708,7 @@
             "trace.correlate"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -176053,14 +175769,10 @@
         "test result"
       ],
       "integration_binding": {
-        "adapter_digest": "358ac5bf4c901ffdffe972be224377d39ba60d71bb0791dfd9de20a57e588eb3",
-        "adapter_id": "external.semantic-diff-and-impact-analysis",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.semantic-diff-and-impact-analysis.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "91750bf31bfc0cc7c5c9fb8dd7bfbd3879f4d61398aac982d94f23042a290f01",
-        "route_id": "route.semantic-diff-and-impact-analysis",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.semantic-diff-and-impact-analysis",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "semantic-diff-and-impact-analysis",
@@ -176080,8 +175792,8 @@
         "source-map-complete"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.graph_semantics._semantic_diff_impact_analysis",
+      "semantic_handler_binding": "local.semantic-diff-and-impact-analysis",
       "source_path": "skills/atomic/02-repository-semantic-intelligence/semantic-diff-and-impact-analysis/SKILL.md",
       "source_sha256": "48774514e15362fa0b801912edd9c51f526aed929f5739a677f6e8355da1ab6b",
       "verification_missing": {
@@ -177029,13 +176741,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -177859,12 +177569,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -181769,12 +181477,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -187466,13 +187172,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -192821,13 +192525,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -194985,13 +194687,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -195490,13 +195190,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -200339,11 +200037,11 @@
         "symbol.resolve",
         "trace.correlate"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "certification_status": "NOT_CERTIFIED",
       "code_missing": {
         "declared_tool_bindings": {
-          "status": "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED",
+          "status": "LOCAL_HANDLER_BOUND",
           "tools": [
             "parser.run",
             "compiler.query",
@@ -200352,7 +200050,7 @@
             "trace.correlate"
           ]
         },
-        "exact_semantic_handler": true,
+        "exact_semantic_handler": false,
         "unbound_source_contract_fields": {
           "compatibility_contract": [
             "compatibility_contract.exact_runtime_tuple"
@@ -200413,14 +200111,10 @@
         "test result"
       ],
       "integration_binding": {
-        "adapter_digest": "b55ebd64fcba6f02bd31f3cefacc14242890e3c19154fb200c190d22606c5f80",
-        "adapter_id": "external.symbol-and-reference-graph",
-        "effect_class": "PRIVILEGED_EXTERNAL",
-        "operation": "foundry.skill.symbol-and-reference-graph.execute",
-        "provider_status": "NOT_CONFIGURED",
-        "route_digest": "3d6f10f537b3df3d8d9d189d59696643d5d188b91aef11b09294ae81d0c1a54d",
-        "route_id": "route.symbol-and-reference-graph",
-        "status": "HOST_ROUTE_BOUND"
+        "adapter_id": "local.symbol-and-reference-graph",
+        "operation": "execute",
+        "route_id": null,
+        "status": "LOCAL_EXECUTABLE"
       },
       "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
       "name": "symbol-and-reference-graph",
@@ -200440,8 +200134,8 @@
         "source-map-complete"
       ],
       "risk_class": "high",
-      "semantic_callable": null,
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_callable": "elmos_foundry.graph_semantics._symbol_reference_graph",
+      "semantic_handler_binding": "local.symbol-and-reference-graph",
       "source_path": "skills/atomic/02-repository-semantic-intelligence/symbol-and-reference-graph/SKILL.md",
       "source_sha256": "c89ed91b77ddfff7a9792d59b733c43d16d9a7ccc006f144930c9029e72460f4",
       "verification_missing": {
@@ -200720,13 +200414,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -202054,13 +201746,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -202720,12 +202410,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "transitive_missing_semantic_handlers": [
           "formal-invariant-synthesis",
-          "multimodal-artifact-ingestion",
           "runtime-static-correlation"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -207358,12 +207046,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -208555,13 +208241,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -211054,13 +210738,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "transitive_missing_semantic_handlers": [
           "architecture-recovery",
-          "citation-and-source-binding",
-          "semantic-diff-and-impact-analysis"
+          "citation-and-source-binding"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -212861,12 +212543,10 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "transitive_missing_semantic_handlers": [
           "proof-carrying-skill",
-          "semantic-diff-and-impact-analysis",
           "test-to-code-evidence-graph"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
@@ -214709,13 +214389,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -215380,13 +215058,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -218266,13 +217942,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -219126,13 +218800,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -219300,13 +218972,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -220484,13 +220154,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -220830,13 +220498,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -221176,13 +220842,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -222692,13 +222356,11 @@
       "dependency_blockers": {
         "direct_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "transitive_missing_semantic_handlers": [
           "frontend-component-state-semantic-ir",
-          "frontend-visual-accessibility-differential",
-          "multimodal-artifact-ingestion"
+          "frontend-visual-accessibility-differential"
         ],
         "whole_dependency_contract_verification": "NOT_RUN"
       },
@@ -223313,12 +222975,12 @@
     "atomic_skills": 1310,
     "dependency_edges": 9090,
     "exact_adapter_bindings": 1310,
-    "host_route_bound": 1259,
+    "host_route_bound": 1249,
     "integration_unbound": 0,
-    "local_semantic_handlers": 51,
+    "local_semantic_handlers": 61,
     "packs": 41,
     "pipelines": 14,
-    "prepare_only": 1259,
+    "prepare_only": 1249,
     "source_acceptance_cases_required": 31440,
     "whole_skills_complete": 0
   }

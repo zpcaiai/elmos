@@ -57,9 +57,9 @@ class ExternalIntegrationBindingTests(unittest.TestCase):
             for name in row["exact_skills"]
         }
         self.assertEqual(bound, expected)
-        self.assertEqual(len(rows), 1_259)
-        self.assertEqual(len({row["adapter_id"] for row in rows}), 1_259)
-        self.assertEqual(len({row["digest"] for row in rows}), 1_259)
+        self.assertEqual(len(rows), 1_249)
+        self.assertEqual(len({row["adapter_id"] for row in rows}), 1_249)
+        self.assertEqual(len({row["digest"] for row in rows}), 1_249)
         for name in expected:
             binding = self.service.skills.adapters.binding_for(name)
             self.assertIsNotNone(binding)

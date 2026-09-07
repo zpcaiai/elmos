@@ -308,7 +308,7 @@ ai-optimization-skills:
 .PHONY: repository-task-router-skills
 repository-task-router-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_repository_task_router_skills.py --check
-	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src python3 -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/repair-orchestration,apps/agent-gateway -am test
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit

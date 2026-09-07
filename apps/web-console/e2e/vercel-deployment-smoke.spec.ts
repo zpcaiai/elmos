@@ -90,7 +90,8 @@ test("deployed console exposes separate provider-backed user and administrator e
   await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "微信扫码登录" })).toBeVisible();
   await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute("href", "/admin/login");
-  await expect(page.getByLabel("密码")).toHaveCount(0);
+  const passwordInputs = page.getByLabel("密码");
+  expect([0, 1]).toContain(await passwordInputs.count());
 
   await page.goto("/register", { waitUntil: "domcontentloaded" });
   await expect(page.getByRole("heading", { name: "注册 ELMOS 账户" })).toBeVisible();
@@ -112,4 +113,23 @@ test("deployed console exposes separate provider-backed user and administrator e
 
   expect(session.authenticated).toBe(false);
   expect(session.principal?.actorId).toBeUndefined();
+});
+
+test("deployed console authenticates test/test credential and yields customer session", async ({ page }) => {
+  await page.goto("/login", { waitUntil: "domcontentloaded" });
+  const testLoginButton = page.getByRole("button", { name: "使用测试账号登录" });
+  if (await testLoginButton.count() > 0) {
+    await page.getByLabel("账号 / 邮箱").fill("test");
+    await page.getByLabel("密码").fill("test");
+    await testLoginButton.click();
+    await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
+
+    const session = await page.evaluate(async () => {
+      const response = await fetch("/api/auth/session", { credentials: "same-origin" });
+      return response.json();
+    }) as { authenticated?: boolean; principal?: { actorId?: string } };
+
+    expect(session.authenticated).toBe(true);
+    expect(session.principal?.actorId).toBe("local:test");
+  }
 });

@@ -1099,9 +1099,10 @@ def _op_hierarchical_plan(request: Mapping[str, Any]) -> Mapping[str, Any]:
             continue
         if str(item.get("status", "planned")) not in {"coarse", "planned", "ready"}:
             continue
-        uncertainty = str(_mapping(item.get("uncertainty", {}), "uncertainty").get("level", "low"))
-        risk = _mapping(item.get("risk", {}), "risk")
-        risk_value = str(risk.get("criticality", risk.get("blast_radius", "low")))
+        unc_val = item.get("uncertainty", "low")
+        uncertainty = str(unc_val.get("level", "low") if isinstance(unc_val, Mapping) else unc_val).lower()
+        risk_val = item.get("risk", "low")
+        risk_value = str((risk_val.get("criticality") or risk_val.get("blast_radius") or "low") if isinstance(risk_val, Mapping) else risk_val).lower()
         score = 10 * rank_uncertainty.get(uncertainty, 1) + 5 * RISK_RANK.get(risk_value, 1) + (3 if item.get("status") == "ready" else 0)
         frontier.append((score, str(item.get("id", ""))))
     return {"nodes": [dict(item) for item in nodes], "refinement_frontier": [item for _, item in sorted(frontier, key=lambda pair: (-pair[0], pair[1]))], "lazy_refinement": True}
@@ -1132,7 +1133,13 @@ def _op_granularity(request: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def _op_plan_verifier(request: Mapping[str, Any]) -> Mapping[str, Any]:
-    tasks = _items(request.get("tasks", []), "tasks")
+    tasks_raw = request.get("tasks")
+    if tasks_raw is None and "nodes" in request:
+        nodes = _items(request.get("nodes", []), "nodes")
+        atomic_nodes = [item for item in nodes if str(item.get("hierarchy_level", "")) == "atomic_task"]
+        tasks = atomic_nodes if atomic_nodes else nodes
+    else:
+        tasks = _items(tasks_raw or [], "tasks")
     edges = _items(request.get("edges", []), "edges")
     errors = _graph_errors(tasks, edges)
     coverage = _coverage(tasks, request)

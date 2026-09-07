@@ -13,6 +13,7 @@ import path from "node:path";
 import type { NextRequest } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   AccountSessionError,
   accountSessionFromRequest,
   unsafeCookieValue,
@@ -161,7 +162,10 @@ function authorizeBrowser(
   request: NextRequest,
   permission: AccountPermission,
 ): RepositoryActorContext {
-  if (unsafeCookieValue(request, accountCookieNames.session)) {
+  if (
+    unsafeCookieValue(request, accountCookieNames.session)
+    || unsafeCookieValue(request, localAccountCookieNames.session)
+  ) {
     try {
       const account = accountSessionFromRequest(request, permission);
       return {

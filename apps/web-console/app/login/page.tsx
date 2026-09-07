@@ -131,15 +131,15 @@ export default async function LoginPage({
         )}
         {localConfigured && (
           <form className="auth-form" method="post" action="/api/auth/login">
-            <h2>使用邮箱登录</h2>
-            <p>本地邮箱密码登录仅限 localhost 开发测试；生产环境永久禁用。</p>
+            <h2>测试账号登录</h2>
+            <p>支持测试账号（用户名：test，密码：test）直接登录体验 C 端功能。</p>
             <input type="hidden" name="returnTo" value={returnTo} />
             <label>
-              <span>邮箱</span>
+              <span>账号 / 邮箱</span>
               <input
                 name="email"
                 type="text"
-                defaultValue="test@example.test"
+                defaultValue="test"
                 autoComplete="username"
                 maxLength={254}
                 required
@@ -149,15 +149,19 @@ export default async function LoginPage({
               <span>密码</span>
               <input name="password" type="password" autoComplete="current-password" required />
             </label>
-            <button className="button button-primary" type="submit">使用邮箱登录</button>
+            <button className="button button-primary" type="submit">使用测试账号登录</button>
           </form>
         )}
-        {(descopeReady || registrationConfigured) && (
-          <div className="auth-links">
-            <span>还没有账户？</span>
-            <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
-          </div>
-        )}
+        <div className="auth-links">
+          {(descopeReady || registrationConfigured) && (
+            <>
+              <span>还没有账户？</span>
+              <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>使用邮箱、手机号或微信注册</a>
+              <span style={{ margin: "0 8px" }}>·</span>
+            </>
+          )}
+          <a className="text-link" href="/admin/login">进入管理员登录</a>
+        </div>
         {!descopeReady && !configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>

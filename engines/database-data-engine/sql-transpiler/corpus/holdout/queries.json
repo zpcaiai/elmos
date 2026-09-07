@@ -9,9 +9,29 @@
       "sql": "WITH ranked AS (SELECT id, tenant_id, ROW_NUMBER() OVER (PARTITION BY tenant_id ORDER BY created_at DESC) AS rn FROM orders) SELECT id, tenant_id FROM ranked WHERE rn = 1 ORDER BY tenant_id, id"
     },
     {
+      "id": "HOLD-PG17-002",
+      "sourceProfile": "postgresql-17.5",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-PG17-003",
+      "sourceProfile": "postgresql-17.5",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
+    },
+    {
       "id": "HOLD-PG-001",
       "sourceProfile": "postgresql-18.4",
       "sql": "WITH ranked AS (SELECT id, tenant_id, ROW_NUMBER() OVER (PARTITION BY tenant_id ORDER BY created_at DESC) AS rn FROM orders) SELECT id, tenant_id FROM ranked WHERE rn = 1 ORDER BY tenant_id, id"
+    },
+    {
+      "id": "HOLD-PG-002",
+      "sourceProfile": "postgresql-18.4",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-PG-003",
+      "sourceProfile": "postgresql-18.4",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
     },
     {
       "id": "HOLD-MY-001",
@@ -19,9 +39,29 @@
       "sql": "SELECT id, CASE WHEN total IS NULL THEN 0 ELSE total END AS normalized_total FROM orders ORDER BY id"
     },
     {
+      "id": "HOLD-MY-002",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-MY-003",
+      "sourceProfile": "mysql-8.4.10-lts",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
+    },
+    {
       "id": "HOLD-MS-001",
       "sourceProfile": "sqlserver-2022-cu26",
       "sql": "SELECT id, CAST(total AS DECIMAL(19, 4)) AS exact_total FROM orders ORDER BY id"
+    },
+    {
+      "id": "HOLD-MS-002",
+      "sourceProfile": "sqlserver-2022-cu26",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-MS-003",
+      "sourceProfile": "sqlserver-2022-cu26",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
     },
     {
       "id": "HOLD-OR-001",
@@ -29,14 +69,44 @@
       "sql": "SELECT id, CASE status WHEN 'OPEN' THEN 1 ELSE 0 END AS is_open FROM orders ORDER BY id"
     },
     {
+      "id": "HOLD-OR-002",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-OR-003",
+      "sourceProfile": "oracle-26ai-ee",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
+    },
+    {
       "id": "HOLD-SQ-001",
       "sourceProfile": "sqlite-3.53.3",
       "sql": "SELECT id, COALESCE(total, 0) AS normalized_total FROM orders WHERE deleted_at IS NULL ORDER BY id"
     },
     {
+      "id": "HOLD-SQ-002",
+      "sourceProfile": "sqlite-3.53.3",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-SQ-003",
+      "sourceProfile": "sqlite-3.53.3",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
+    },
+    {
       "id": "HOLD-DU-001",
       "sourceProfile": "duckdb-1.5.4",
       "sql": "SELECT id, LAG(total) OVER (PARTITION BY tenant_id ORDER BY created_at) AS prior_total FROM orders ORDER BY tenant_id, created_at, id"
+    },
+    {
+      "id": "HOLD-DU-002",
+      "sourceProfile": "duckdb-1.5.4",
+      "sql": "SELECT i.id FROM invoices i LEFT JOIN accounts a ON i.account_id = a.id WHERE a.id IS NULL ORDER BY i.id"
+    },
+    {
+      "id": "HOLD-DU-003",
+      "sourceProfile": "duckdb-1.5.4",
+      "sql": "SELECT a.id, a.name, COALESCE(SUM(i.total), 0) AS billed FROM accounts a LEFT JOIN invoices i ON i.account_id = a.id AND i.status <> 'VOID' GROUP BY a.id, a.name ORDER BY a.id"
     }
   ]
 }

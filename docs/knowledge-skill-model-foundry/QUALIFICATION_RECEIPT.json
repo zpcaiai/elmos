@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "74488ef18606b696ced9c2fc5afa9b10f90ad2ad",
+  "baseline_commit": "eebd96377fb5fff9391d8e7f2f208c9f61e9ec62",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -10,14 +10,14 @@
   },
   "generated_artifacts": {
     "compiled_catalog": {
-      "bytes": 15948837,
+      "bytes": 15949018,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/compiled-catalog.json",
-      "sha256": "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
+      "sha256": "6b6a3fa6036d20b6a28dbabc7eb1926a830c79a3b73188be374e1930848c15cc"
     },
     "package_report": {
       "bytes": 6116,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
-      "sha256": "9d883e6d5689997685d5bd0922b477955265390392d24502d56002547932bb84"
+      "sha256": "adb5d500c5602a8dce986351bc71efa40648bbcf622b7708413a1c5104812b09"
     }
   },
   "implementation_tree": {
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 119,
+    "file_count": 125,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -38,7 +38,7 @@
       "tooling/qualify_knowledge_skill_model_foundry.py",
       "tooling/report_foundry_readiness.py"
     ],
-    "sha256": "27a8d43b148307f75d6b4a34def5febfe9e57fddf498f57f45731b48a622d9dc",
+    "sha256": "af56234c199586165663c308ebdc6b78f1d7a7452fde707c6e031ddb3461cc12",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
@@ -54,11 +54,11 @@
     "capability_scope": {
       "compiled_contracts_validated": 1310,
       "exact_integration_bindings_validated": 1310,
-      "exact_local_semantic_handlers_exercised": 51,
-      "host_route_bound_skills": 1259,
+      "exact_local_semantic_handlers_exercised": 61,
+      "host_route_bound_skills": 1249,
       "integration_unbound_skills": 0,
       "pipeline_host_routes_validated": 14,
-      "prepare_only_skills": 1259
+      "prepare_only_skills": 1249
     },
     "checks": [
       {

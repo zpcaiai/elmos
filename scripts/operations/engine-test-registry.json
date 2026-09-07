@@ -16,6 +16,20 @@
         }
       ]
     },
+    "ai-optimization-engine": {
+      "description": "AI optimization runtime and qualification tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "tests": ["tests/ai-optimization-skills"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": [".", "engines/ai-optimization-engine/src"],
+          "environment": {}
+        }
+      ]
+    },
     "ai-platform-engine": {
       "description": "Batch 23 independent AI platform worker contract",
       "steps": [
@@ -491,6 +505,20 @@
           "tests": ["engines/python-engine/tests"],
           "uv_args": ["--locked", "--group", "dev"],
           "pythonpath": [],
+          "environment": {}
+        }
+      ]
+    },
+    "repository-orchestrator-engine": {
+      "description": "Repository task decomposition, cost router, and orchestrator engine tests",
+      "steps": [
+        {
+          "name": "pytest",
+          "kind": "pytest",
+          "timeout_seconds": 1800,
+          "tests": ["packages/repository-orchestrator/tests", "tests/repository-task-router-skills"],
+          "uv_args": ["--with", "pytest==8.4.2", "--with", "pyyaml==6.0.2", "--with", "jsonschema==4.25.1"],
+          "pythonpath": ["packages/repository-orchestrator/src", "packages/repository-orchestrator/tests", "engines/repository-orchestrator-engine/src"],
           "environment": {}
         }
       ]

@@ -9,8 +9,8 @@ This directory records the safe repository integration of `elmos-project-intelli
 - Skill interface state: `INSTALLED`
 - Exact runtime bindings: `50` repository-owned allowlisted handlers
 - Capability states: `19 LOCAL`, `26 PARTIAL`, `5 PLAN`
-- Local qualification: `LOCAL_EXECUTED_SELF_ATTESTED` (`engines/project-intelligence-engine/qualification/local-qualification.json`, `sha256:8d8369e449a3458e55d7b9ac0c44fafc62b9e03b5d1d7d72253c4b83ad1473bd`)
-- Qualification runtime: `cpython 3.12.12` on `darwin/arm64` (`sha256:54192ee41e783b7acfea25a8eff4ac32d7feb7fb55257b2bec8251f48e77221b`)
+- Local qualification: `LOCAL_EXECUTED_SELF_ATTESTED` (`engines/project-intelligence-engine/qualification/local-qualification.json`, `sha256:d4758cba4a00822cb887ca10108a83cf407777e71b1bead6bec739fbe1616f3d`)
+- Qualification runtime: `cpython 3.12.14` on `darwin/arm64` (`sha256:30b2a6bf9706029b609327ca5db722cd458239df96efc87e1f8e37beed49db2e`)
 - Qualification dispatch guard: `PYTHON_AUDIT_BEST_EFFORT_EFFECT_GUARD_DURING_DISPATCH`
 - Qualification guard limitations: Python audit events are fail-closed when observed but are not an OS sandbox and cannot account for effects through inherited descriptors, native extensions, or events the interpreter does not emit.
 - External / independent evidence: `NOT_RUN` / `NOT_RUN`

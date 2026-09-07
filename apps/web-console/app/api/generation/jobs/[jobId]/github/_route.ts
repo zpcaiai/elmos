@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   accountCookieNames,
+  localAccountCookieNames,
   unsafeCookieValue,
 } from "../../../../../lib/server/accountSession";
 import {
@@ -73,7 +74,8 @@ async function publish(
   try {
     const authorized = authorize(request, "repository:push");
     const hasAccountSession = Boolean(
-      unsafeCookieValue(request, accountCookieNames.session),
+      unsafeCookieValue(request, accountCookieNames.session)
+      || unsafeCookieValue(request, localAccountCookieNames.session),
     );
     if (
       !hasAccountSession

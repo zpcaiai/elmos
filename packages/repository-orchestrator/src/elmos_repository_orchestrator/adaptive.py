@@ -331,8 +331,18 @@ def build_hierarchical_plan(payload: Mapping[str, Any]) -> Mapping[str, Any]:
         parent = item.get("parent_id")
         if parent is not None:
             parent = _identifier(parent, "node.parent_id")
-        uncertainty = require_string(item.get("uncertainty", "low"), "node.uncertainty").lower()
-        risk = require_string(item.get("risk", "low"), "node.risk").lower()
+        unc_raw = item.get("uncertainty", "low")
+        if isinstance(unc_raw, Mapping):
+            uncertainty = str(unc_raw.get("level", "low")).lower()
+        else:
+            uncertainty = require_string(unc_raw, "node.uncertainty").lower()
+
+        risk_raw = item.get("risk", "low")
+        if isinstance(risk_raw, Mapping):
+            risk = str(risk_raw.get("criticality", risk_raw.get("blast_radius", "low"))).lower()
+        else:
+            risk = require_string(risk_raw, "node.risk").lower()
+
         if uncertainty not in RISK_RANK or risk not in RISK_RANK:
             raise ContractError("invalid_plan_rank", "plan risk/uncertainty must be low through critical")
         normalized.append(
@@ -361,9 +371,12 @@ def build_hierarchical_plan(payload: Mapping[str, Any]) -> Mapping[str, Any]:
         if item["status"] == "ready":
             priority += 3
         frontier.append((priority, item["id"]))
+    raw_rev = payload.get("revision")
+    if raw_rev is None:
+        raise ContractError("missing_revision", "hierarchical plan requires revision")
     body = {
         "run_id": require_string(payload.get("run_id"), "run_id"),
-        "revision": require_string(payload.get("revision"), "revision"),
+        "revision": str(raw_rev),
         "nodes": normalized,
         "refinement_frontier": [item for _, item in sorted(frontier, key=lambda pair: (-pair[0], pair[1]))],
         "lazy_refinement": True,
@@ -372,7 +385,13 @@ def build_hierarchical_plan(payload: Mapping[str, Any]) -> Mapping[str, Any]:
 
 
 def verify_plan_graph(payload: Mapping[str, Any]) -> Mapping[str, Any]:
-    tasks = mapping_sequence(payload.get("tasks"), "tasks", allow_empty=False)
+    tasks_raw = payload.get("tasks")
+    if tasks_raw is None and "nodes" in payload:
+        nodes = mapping_sequence(payload.get("nodes"), "nodes", allow_empty=False)
+        atomic_nodes = [item for item in nodes if item.get("hierarchy_level") == "atomic_task"]
+        tasks = tuple(atomic_nodes if atomic_nodes else nodes)
+    else:
+        tasks = mapping_sequence(tasks_raw, "tasks", allow_empty=False)
     edges = mapping_sequence(payload.get("edges", []), "edges")
     ids = [_identifier(item.get("id"), "task.id") for item in tasks]
     _, _, _, graph_errors = _topological(ids, edges)

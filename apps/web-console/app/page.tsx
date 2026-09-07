@@ -35,7 +35,7 @@ const workspaces = [
     eyebrow: "BATCH 31 · CHINADB SQL",
     title: "国产数据库 SQL 转换",
     description: "在 13 个国产数据库目标上做 typed SQL 预评估，并在显式兼容模式下生成本地目标 SQL；实库执行与认证保持 NOT_RUN。",
-    href: "/migration",
+    href: "/migration/sql",
     icon: "database" as const,
     accent: "amber",
     meta: "13 个本地查询适配器 · 外部证据 NOT_RUN",

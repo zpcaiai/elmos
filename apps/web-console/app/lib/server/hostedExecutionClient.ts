@@ -4,7 +4,14 @@ import type {
   GenerationJob,
   GenerationJobCreateRequest,
 } from "../contracts";
-import { GenerationRunnerError } from "./generationRunner";
+import {
+  config,
+  consumeApprovedAnalysisForHosted,
+  GenerationRunnerError,
+  loadApprovedAnalysis,
+  projectIntentDocument,
+  validateCreate,
+} from "./generationRunner";
 import { configuredControlPlaneBaseUrl } from "./trustedUpstream";
 import { hostedExecutionRequired } from "./executionQueuePolicy";
 
@@ -272,6 +279,13 @@ export async function createHostedGenerationJob(
   if (!request.approved || !/^[0-9a-f]{64}$/.test(request.analysisDigest)) {
     throw new GenerationRunnerError(409, "APPROVED_ANALYSIS_REQUIRED");
   }
+  // The hosted runner executes the same engine pipeline as the local runner,
+  // so it must receive the same inputs: the exact validated intent and the
+  // synthesis request the approved analysis produced. Without the synthesis
+  // request the workload could only guess what to build.
+  const validated = validateCreate(request, context);
+  const runner = config();
+  const review = await loadApprovedAnalysis(runner, context, validated);
   const accepted = await call<{ jobId: string }>(
     context,
     "/api/v1/execution/jobs",
@@ -280,12 +294,22 @@ export async function createHostedGenerationJob(
       businessLine: "GENERATION",
       jobKind: "project-synthesis",
       idempotencyKey: idempotencyKey(context, request.analysisDigest),
-      payload: request,
+      payload: {
+        jobKind: "project-synthesis",
+        actor: context.actor,
+        tenantId: context.tenantId,
+        intent: projectIntentDocument(context, validated, new Date().toISOString()),
+        synthesisRequest: review.request,
+      },
       priority: 100,
       budgetWallSeconds: 3600,
       maxAttempts: 2,
     },
   );
+  // Consume only after the control plane accepted the job. A retried POST
+  // with the same idempotency key returns the same jobId, so a failure here
+  // is recovered by retrying the request, not by re-analyzing.
+  await consumeApprovedAnalysisForHosted(runner, context, request.analysisDigest, accepted.jobId);
   return getHostedGenerationJob(context, accepted.jobId);
 }
 
