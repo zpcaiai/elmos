@@ -135,7 +135,6 @@ final class DurableRunLeaseStore implements AutoCloseable {
     private final Duration queueTtl;
     private final Duration leaseTtl;
     private final Clock clock;
-    /** Guarded by {@link #processLock}. */
     private boolean closed;
 
     DurableRunLeaseStore(
@@ -337,11 +336,29 @@ final class DurableRunLeaseStore implements AutoCloseable {
                     lockPath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
                  FileLock ignored = channel.lock()) {
                 return operation.get();
+            } catch (LeaseException error) {
+                throw error;
+            } catch (IOException error) {
+                throw new IllegalStateException("durable queue lock unavailable", error);
             }
-        } catch (LeaseException error) {
-            throw error;
-        } catch (IOException error) {
-            throw new IllegalStateException("durable queue lock unavailable", error);
+        } finally {
+            processLock.unlock();
+        }
+    }
+
+    /**
+     * Closes queue mutation admission after all service tasks have terminated.
+     *
+     * <p>The same in-process lock guards mutation and closure. Consequently an
+     * in-flight heartbeat or release finishes before this method returns, and
+     * every later operation fails before opening (and potentially recreating)
+     * the filesystem lock. This is the final writer barrier required before an
+     * owner releases or removes the workspace.</p>
+     */
+    @Override public void close() {
+        processLock.lock();
+        try {
+            closed = true;
         } finally {
             processLock.unlock();
         }

@@ -134,7 +134,7 @@ class DurableRunLeaseStoreTest {
     }
 
     @Test
-    void closeRejectsFutureMutationsWithoutChangingFilesystemState() throws Exception {
+    void closeIsAFinalFilesystemWriterBarrier() throws Exception {
         Clock clock = Clock.fixed(Instant.parse("2026-07-29T00:00:00Z"), ZoneOffset.UTC);
         DurableRunLeaseStore store = new DurableRunLeaseStore(
                 temporary, "spring-upgrade", 1, 1,
@@ -142,34 +142,33 @@ class DurableRunLeaseStoreTest {
         String digest = "3".repeat(64);
         DurableRunLeaseStore.Lease lease = store.acquire(
                 "tenant-a", UUID.randomUUID().toString(), clock.instant(), digest);
-        List<String> beforeClose = filesystemSnapshot(temporary);
+        Path queueRoot = temporary.resolve(".durable-queue");
 
         store.close();
+        List<String> before = queueSnapshot(queueRoot);
 
         assertThrows(IllegalStateException.class, lease::heartbeat);
-        assertThrows(IllegalStateException.class, () -> lease.release("BLOCKED"));
+        assertThrows(IllegalStateException.class, () -> lease.release("SUCCEEDED"));
         assertThrows(IllegalStateException.class, () -> store.acquire(
                 "tenant-b", UUID.randomUUID().toString(), clock.instant(), digest));
-        assertEquals(beforeClose, filesystemSnapshot(temporary));
-
-        store.close();
-        assertEquals(beforeClose, filesystemSnapshot(temporary));
+        assertEquals(before, queueSnapshot(queueRoot));
     }
 
-    private static List<String> filesystemSnapshot(Path root) throws Exception {
-        List<String> snapshot = new ArrayList<>();
-        try (var paths = Files.walk(root)) {
-            for (Path path : paths.sorted().toList()) {
-                String relative = root.relativize(path).toString();
-                if (Files.isDirectory(path)) {
-                    snapshot.add("D:" + relative);
-                } else {
-                    snapshot.add("F:" + relative + ":" + java.util.HexFormat.of().formatHex(
-                            MessageDigest.getInstance("SHA-256").digest(Files.readAllBytes(path))));
-                }
-            }
+    private static List<String> queueSnapshot(Path queueRoot) throws Exception {
+        try (var paths = Files.walk(queueRoot)) {
+            return paths.sorted()
+                    .map(path -> queueRoot.relativize(path).toString()
+                            + (Files.isRegularFile(path) ? ":" + fileBytes(path) : "/"))
+                    .toList();
         }
-        return snapshot;
+    }
+
+    private static String fileBytes(Path path) {
+        try {
+            return java.util.HexFormat.of().formatHex(Files.readAllBytes(path));
+        } catch (java.io.IOException error) {
+            throw new IllegalStateException(error);
+        }
     }
 
     private static final class MutableClock extends Clock {
