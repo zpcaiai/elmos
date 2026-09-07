@@ -280,7 +280,7 @@ def verify_react_repository_project(
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=600,
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,
