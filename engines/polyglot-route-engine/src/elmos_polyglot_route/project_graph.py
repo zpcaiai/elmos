@@ -676,6 +676,7 @@ def _walk_repository(
                 )
                 inventory_issues.append((relative, "FILE_SYMLINK_NOT_READ"))
                 continue
+            content: bytes | None
             try:
                 if retain_content:
                     content = _stable_read(os.path.join(current, name))
