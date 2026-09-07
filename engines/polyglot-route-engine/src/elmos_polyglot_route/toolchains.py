@@ -3760,7 +3760,7 @@ _EXPECTED_RUST_WRAPPER_TREE_RECORD_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_FILE_COUNT = 3
 _EXPECTED_RUST_WRAPPER_TREE_DIRECTORY_COUNT = 0
 _EXPECTED_RUST_WRAPPER_TREE_BYTES = 1_963
-_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "fd9d219f8755f252cb05a242d57addbe8c090b17a855ad367434c4de8467ce31"
+_EXPECTED_RUST_SYSROOT_TREE_SHA256 = "93eef8c36cc9d93aae0eb213c3513367eb7b5043c3330d7cd17197714d2b5b7a"
 _EXPECTED_RUST_SYSROOT_TREE_RECORD_COUNT = 157
 _EXPECTED_RUST_SYSROOT_TREE_FILE_COUNT = 135
 _EXPECTED_RUST_SYSROOT_TREE_DIRECTORY_COUNT = 22
@@ -3857,6 +3857,30 @@ def _go() -> ExactToolchain:
     )
 
 
+def _rust_sysroot_root_identity() -> tuple[int, int, int, int, int, int, int]:
+    try:
+        metadata = _EXPECTED_RUST_SYSROOT.lstat()
+    except OSError as error:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE") from error
+    if (
+        not stat.S_ISDIR(metadata.st_mode)
+        or _EXPECTED_RUST_SYSROOT.is_symlink()
+        or stat.S_IMODE(metadata.st_mode) != 0o555
+        or metadata.st_uid not in {0, os.getuid()}
+        or metadata.st_nlink < 2
+    ):
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_UNSAFE")
+    return (
+        metadata.st_dev,
+        metadata.st_ino,
+        metadata.st_mode,
+        metadata.st_uid,
+        metadata.st_gid,
+        metadata.st_nlink,
+        metadata.st_mtime_ns,
+    )
+
+
 def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
     wrappers = _qualified_tree_manifest(
         _EXPECTED_RUST_WRAPPER_ROOT,
@@ -3873,6 +3897,7 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         expected_bytes=_EXPECTED_RUST_WRAPPER_TREE_BYTES,
         failure="EXACT_TOOLCHAIN_RUST_WRAPPER_TREE_MISMATCH",
     )
+    sysroot_root_before = _rust_sysroot_root_identity()
     sysroot = _qualified_tree_manifest(
         _EXPECTED_RUST_SYSROOT,
         _EXPECTED_USER_LOCAL,
@@ -3889,6 +3914,8 @@ def _rust_tree_identities() -> tuple[dict[str, object], dict[str, object]]:
         expected_bytes=_EXPECTED_RUST_SYSROOT_TREE_BYTES,
         failure="EXACT_TOOLCHAIN_RUST_SYSROOT_TREE_MISMATCH",
     )
+    if _rust_sysroot_root_identity() != sysroot_root_before:
+        raise RouteError("EXACT_TOOLCHAIN_RUST_SYSROOT_ROOT_CHANGED")
     return wrappers, sysroot
 
 
