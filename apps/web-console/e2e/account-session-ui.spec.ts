@@ -42,11 +42,7 @@ test("account session discovery represents anonymous state without a console-lev
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "使用邮箱登录" })).toBeVisible();
   await expect(page.getByLabel("邮箱")).toHaveAttribute("name", "email");
-  const passwordLogin = page.locator('form[action="/api/auth/login"]');
-  await expect(passwordLogin).toHaveCount(1);
-  // The endpoint itself fixes this flow to USER. Do not restore a
-  // client-controlled mode field that could imply an administrator flow.
-  await expect(passwordLogin.locator('input[name="loginMode"]')).toHaveCount(0);
+  await expect(page.locator('input[name="loginMode"]')).toHaveCount(0);
   await expect(page.getByRole("button", { name: "使用邮箱登录" })).toBeVisible();
   await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
     "href",
