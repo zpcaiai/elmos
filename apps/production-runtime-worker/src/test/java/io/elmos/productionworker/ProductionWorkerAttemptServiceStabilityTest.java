@@ -120,8 +120,10 @@ class ProductionWorkerAttemptServiceStabilityTest {
         assertFalse(service.executorsShutdown());
         service.close();
         assertTrue(service.executorsShutdown());
+        assertTrue(service.executorsTerminated());
         service.close();
         assertTrue(service.executorsShutdown());
+        assertTrue(service.executorsTerminated());
     }
 
     @Test
