@@ -5941,6 +5941,26 @@ def _javascript_bound_content(
     return content
 
 
+def _verify_trusted_php_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "php"
+        or not expected.version.startswith("PHP 8.5.9 ")
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("php")
+    except RouteError as error:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("PHP_ANALYZER_TOOLCHAIN_CHANGED")
+
+
 def _run_trusted_php_analyzer(
     toolchain: ExactToolchain,
     source: Path,
@@ -5980,10 +6000,28 @@ def _run_trusted_php_analyzer(
     arguments = [str(resolved), function_name]
     if emitted_target:
         arguments.append("--emitted-target")
-    value = _run(
-        [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
-        cwd=ENGINE_ROOT,
-    )
+    _verify_trusted_php_toolchain(toolchain)
+    try:
+        value = _run(
+            [toolchain.executable, *_PHP_INTERPRETER_FLAGS, str(_PHP_ANALYZER), *arguments],
+            cwd=ENGINE_ROOT,
+        )
+    except RouteError as error:
+        analyzer_after = _javascript_bound_content(
+            _PHP_ANALYZER,
+            ENGINE_ROOT,
+            expected_sha256=_PHP_ANALYZER_SHA256,
+            expected_bytes=_PHP_ANALYZER_BYTES,
+            failure="PHP_ANALYZER_ASSET_UNSAFE",
+        )
+        if analyzer_before != analyzer_after:
+            raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+        _verify_trusted_php_toolchain(toolchain)
+        wrapped = str(error)
+        php_reason = f"PHP_FUNCTION_NOT_FOUND:{function_name}"
+        if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{php_reason}":
+            raise RouteError(f"FUNCTION_NOT_FOUND:{function_name}") from error
+        raise
     analyzer_after = _javascript_bound_content(
         _PHP_ANALYZER,
         ENGINE_ROOT,
@@ -5993,6 +6031,7 @@ def _run_trusted_php_analyzer(
     )
     if analyzer_before != analyzer_after:
         raise RouteError("PHP_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+    _verify_trusted_php_toolchain(toolchain)
     if type(value) is not dict:
         raise RouteError("NATIVE_ANALYZER_OBJECT_REQUIRED")
     reported = value.get("analyzer_version")
