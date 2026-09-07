@@ -712,7 +712,7 @@ import sys
 
 repository = Path(sys.argv[1]).resolve(strict=True)
 language = sys.argv[2]
-if language not in {"javascript", "typescript", "php"}:
+if language not in {"javascript", "typescript", "php", "flutter"}:
     raise SystemExit(f"unsupported exact toolchain preflight: {language}")
 sys.path.insert(0, str(repository / "engines" / "polyglot-route-engine" / "src"))
 
@@ -721,6 +721,8 @@ from elmos_polyglot_route import toolchains  # noqa: E402
 receipt = toolchains.exact_toolchain(language)
 if receipt.language != language or not Path(receipt.executable).is_absolute():
     raise SystemExit(f"invalid exact toolchain preflight receipt: {language}")
+if language == "flutter":
+    toolchains.verify_flutter_build_toolchain(receipt)
 print(f"exact-toolchain-preflight={language}:{receipt.version}")
 PY
 }
@@ -1034,6 +1036,10 @@ if [[ "${CI_PROFILE}" == "full" ]]; then
   # can expose receipt-schema drift even when the bottle payload is unchanged;
   # the exact selector reports the normalized receipt once and fails closed.
   preflight_exact_route_toolchain php
+  # Bind the post-hydration Dart SDK tree before the long repository matrix.
+  # Hosted Flutter materializes one additional locked SDK artifact compared
+  # with the local cask, so this must select the authenticated host profile.
+  preflight_exact_route_toolchain flutter
 fi
 
 {
