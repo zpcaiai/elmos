@@ -151,6 +151,73 @@ def local_bom_path(repository: Path, group: str, artifact: str, version: str) ->
     return repository.joinpath(*group.split("."), artifact, version, f"{artifact}-{version}.pom")
 
 
+def local_component_pom(
+    repository: Path,
+    group: str,
+    artifact: str,
+    version: str,
+) -> tuple[Path, str] | None:
+    """Resolve an exact cached component POM without permitting path escape."""
+    segments = [*group.split("."), artifact, version]
+    if any(
+        not segment
+        or segment in {".", ".."}
+        or "/" in segment
+        or "\\" in segment
+        for segment in segments
+    ):
+        return None
+    root = repository.resolve()
+    path = root.joinpath(*segments, f"{artifact}-{version}.pom").resolve()
+    try:
+        relative = path.relative_to(root).as_posix()
+    except ValueError:
+        return None
+    if not path.is_file():
+        return None
+    return path, relative
+
+
+def direct_maven_license_metadata(
+    repository: Path,
+    group: str,
+    artifact: str,
+    version: str,
+) -> tuple[list[str], dict[str, object]]:
+    """Read license declarations from exact local POM bytes, never infer approval."""
+    coordinate = f"{group}:{artifact}:{version}"
+    resolved = local_component_pom(repository, group, artifact, version)
+    if resolved is None:
+        return [], {"status": "POM_NOT_CACHED", "coordinate": coordinate}
+    path, relative = resolved
+    try:
+        raw = path.read_bytes()
+        source = {
+            "coordinate": coordinate,
+            "path": relative,
+            "sha256": sha256_bytes(raw),
+        }
+        root = ElementTree.fromstring(raw)
+    except (ElementTree.ParseError, OSError):
+        source = {"coordinate": coordinate, "path": relative}
+        return [], {"status": "POM_UNREADABLE", "source": source}
+    licenses: set[str] = set()
+    for license_node in root.findall(f"{MAVEN_NAMESPACE}licenses/{MAVEN_NAMESPACE}license"):
+        name = text_of(license_node.find(f"{MAVEN_NAMESPACE}name"))
+        url = text_of(license_node.find(f"{MAVEN_NAMESPACE}url"))
+        if name:
+            licenses.add(name)
+        elif url:
+            licenses.add(url)
+    if not licenses:
+        return [], {"status": "NO_DIRECT_LICENSE_DECLARATION", "source": source}
+    return sorted(licenses), {
+        "status": "DIRECT_POM_DECLARATION",
+        "source": source,
+        "legalDecision": "NOT_RUN",
+    }
+
+
 def collect_managed_versions(
     root: ElementTree.Element,
     inherited: dict[str, str],
@@ -222,6 +289,7 @@ def maven_components(
     poms: list[Path],
     properties: dict[str, str],
     managed: dict[tuple[str, str], tuple[str, str]],
+    maven_repository: Path,
 ) -> list[dict]:
     components: dict[tuple[str, str, str | None], dict] = {}
     for pom in poms:
@@ -290,6 +358,15 @@ def maven_components(
     for entry in components.values():
         entry["scopes"] = sorted(entry["scopes"])
         entry["declaredIn"] = sorted(entry["declaredIn"])
+        if not entry["internal"] and entry["version"]:
+            licenses, evidence = direct_maven_license_metadata(
+                maven_repository,
+                entry["group"],
+                entry["name"],
+                entry["version"],
+            )
+            entry["licenses"] = licenses
+            entry["licenseMetadataEvidence"] = evidence
         ordered.append(entry)
     return sorted(ordered, key=lambda item: (item["group"], item["name"], item["version"] or ""))
 
@@ -318,14 +395,24 @@ def npm_components(repo: Path, locks: list[Path]) -> list[dict]:
                 "purl": f"pkg:npm/{name}" + (f"@{version}" if version else ""),
                 "integrity": package.get("integrity"),
                 "license": package.get("license"),
+                "licenses": set(),
                 "scopes": ["dev"] if package.get("dev") else ["runtime"],
                 "internal": False,
                 "declaredIn": set(),
             })
             entry["declaredIn"].add(relative)
+            license_value = package.get("license")
+            if isinstance(license_value, str) and license_value.strip():
+                entry["licenses"].add(license_value.strip())
     ordered = []
     for entry in components.values():
         entry["declaredIn"] = sorted(entry["declaredIn"])
+        entry["licenses"] = sorted(entry["licenses"])
+        entry["licenseMetadataEvidence"] = {
+            "status": "LOCKFILE_DECLARATION" if entry["licenses"] else "NO_LOCKFILE_LICENSE_DECLARATION",
+            "paths": entry["declaredIn"],
+            "legalDecision": "NOT_RUN",
+        }
         ordered.append(entry)
     return sorted(ordered, key=lambda item: (item["name"], item["version"] or ""))
 
@@ -363,10 +450,18 @@ def main() -> int:
             pom_root, properties, arguments.maven_repository.resolve(), visited, bom_sources
         )
         managed.update(discovered)
-    components = maven_components(repo, poms, properties, managed) + npm_components(repo, locks)
+    maven_repository = arguments.maven_repository.resolve()
+    components = maven_components(
+        repo,
+        poms,
+        properties,
+        managed,
+        maven_repository,
+    ) + npm_components(repo, locks)
 
     external = [item for item in components if not item["internal"]]
     versioned = [item for item in external if item["version"]]
+    license_metadata = [item for item in external if item.get("licenses")]
     resolution_counts: dict[str, int] = {}
     for item in components:
         resolution_counts[item["versionResolution"]] = resolution_counts.get(item["versionResolution"], 0) + 1
@@ -394,18 +489,25 @@ def main() -> int:
             "externalComponentCount": len(external),
             "internalComponentCount": len(components) - len(external),
             "versionedExternalCount": len(versioned),
+            "externalWithLicenseMetadataCount": len(license_metadata),
+            "externalMissingLicenseMetadataCount": len(external) - len(license_metadata),
         },
         "versionResolution": dict(sorted(resolution_counts.items())),
         "metrics": {
             # Coverage is the share of external components whose version is
             # actually known. Unresolved entries drag it down on purpose.
             "sbomCoverage": round(len(versioned) / len(external), 4) if external else 0.0,
+            "licenseMetadataCoverage": (
+                round(len(license_metadata) / len(external), 4) if external else 0.0
+            ),
         },
         "limitations": [
             "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
             "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
             "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
             "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure.",
+            "License metadata is copied only from exact npm lock entries and exact direct component POM bytes already present in the selected local Maven repository; missing declarations remain explicit.",
+            "Observed license metadata is not SPDX normalization, legal approval, risk acceptance, or certification.",
         ],
         "components": [
             {key: value for key, value in item.items() if key != "internal"} | {"internal": item["internal"]}

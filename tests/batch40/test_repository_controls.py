@@ -225,6 +225,28 @@ class Batch40RepositoryControlsTest(unittest.TestCase):
         report = self.analyze(repo, pack, config)
         self.assertIn("B40-LICENSE-DECISION-QUEUE", report["failedControls"])
 
+    def test_observed_license_metadata_advances_review_but_never_approves(self) -> None:
+        repo, pack, config = self.fixture()
+        path = pack / "evidence/execution/b40-dependency-inventory.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        payload["components"][0].update({
+            "licenses": ["Apache-2.0"],
+            "licenseMetadataEvidence": {
+                "status": "DIRECT_POM_DECLARATION",
+                "source": {"path": "example/a/1.0/a-1.0.pom", "sha256": "sha256:" + "a" * 64},
+                "legalDecision": "NOT_RUN",
+            },
+        })
+        path.write_text(json.dumps(payload), encoding="utf-8")
+
+        report = self.analyze(repo, pack, config)
+
+        decision = report["licenseReviewQueue"][0]
+        self.assertEqual("PENDING_APPROVAL", decision["decisionStatus"])
+        self.assertEqual(["Apache-2.0"], decision["observedLicenseMetadata"])
+        self.assertEqual("DIRECT_POM_DECLARATION", decision["licenseMetadataEvidence"]["status"])
+        self.assertIsNone(decision["approvalRef"])
+
     def test_assessment_identity_must_be_distinct(self) -> None:
         self.assertFalse(MODULE.identities_are_independent("same", "SAME"))
         self.assertTrue(MODULE.identities_are_independent("executor", "verifier"))

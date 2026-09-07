@@ -116,6 +116,46 @@ class DependencyInventoryTest(unittest.TestCase):
             self.assertEqual("dependency-management", entry["versionResolution"])
             self.assertEqual(1, report["sources"]["mavenBomCount"])
 
+    def test_it_records_direct_maven_license_metadata_with_exact_pom_digest(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            repo = self.build(root)
+            local = root / "m2/com/google/guava/guava/33.0.0-jre"
+            local.mkdir(parents=True)
+            pom = local / "guava-33.0.0-jre.pom"
+            pom.write_text(
+                '<project xmlns="http://maven.apache.org/POM/4.0.0">'
+                '<licenses><license><name>Apache-2.0</name>'
+                '<url>https://www.apache.org/licenses/LICENSE-2.0</url>'
+                '</license></licenses></project>'
+            )
+            code, report = run(
+                INVENTORY,
+                "--repo",
+                str(repo),
+                "--maven-repository",
+                str(root / "m2"),
+            )
+            self.assertEqual(0, code)
+            entry = next(item for item in report["components"] if item["name"] == "guava")
+            self.assertEqual(["Apache-2.0"], entry["licenses"])
+            evidence = entry["licenseMetadataEvidence"]
+            self.assertEqual("DIRECT_POM_DECLARATION", evidence["status"])
+            self.assertEqual(
+                "com/google/guava/guava/33.0.0-jre/guava-33.0.0-jre.pom",
+                evidence["source"]["path"],
+            )
+            self.assertRegex(evidence["source"]["sha256"], r"^sha256:[0-9a-f]{64}$")
+            self.assertEqual("NOT_RUN", evidence["legalDecision"])
+
+    def test_missing_maven_license_pom_stays_explicit_and_unapproved(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            report = self.inventory(self.build(Path(tmp)))
+            entry = next(item for item in report["components"] if item["name"] == "guava")
+            self.assertEqual([], entry["licenses"])
+            self.assertEqual("POM_NOT_CACHED", entry["licenseMetadataEvidence"]["status"])
+            self.assertTrue(any("legal approval" in item for item in report["limitations"]))
+
     def test_it_refuses_to_guess_an_unresolvable_property(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             report = self.inventory(self.build(Path(tmp)))

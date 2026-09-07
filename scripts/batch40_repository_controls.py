@@ -235,6 +235,7 @@ def build_license_review_queue(inventory: dict[str, Any]) -> tuple[list[str], li
             "version": component.get("version"),
             "declaredIn": component.get("declaredIn", []),
             "observedLicenseMetadata": observed,
+            "licenseMetadataEvidence": component.get("licenseMetadataEvidence"),
             "decisionStatus": "PENDING_APPROVAL" if observed else "PENDING_METADATA",
             "approvalRef": None,
             "approver": None,

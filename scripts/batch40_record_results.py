@@ -37,10 +37,36 @@ repository_controls = (
     if repository_controls_path.is_file() else None
 )
 actionable = scan['totals']['actionableFindingCount']
-unresolved_license_count = sum(
-    1 for component in inv['components']
-    if not component.get('internal') and not component.get('licenses')
+external_components = [
+    component for component in inv['components'] if not component.get('internal')
+]
+external_component_refs = {
+    component.get('purl') for component in external_components
+    if isinstance(component.get('purl'), str) and component.get('purl')
+}
+missing_license_metadata_count = sum(
+    1 for component in external_components
+    if not component.get('licenses') and not component.get('license')
 )
+license_queue = (
+    repository_controls.get('licenseReviewQueue', [])
+    if repository_controls is not None else []
+)
+approved_license_refs = {
+    record.get('componentRef')
+    for record in license_queue
+    if isinstance(record, dict)
+    and record.get('decisionStatus') == 'APPROVED'
+    and record.get('componentRef') in external_component_refs
+    and isinstance(record.get('approvalRef'), str)
+    and record.get('approvalRef')
+    and isinstance(record.get('approver'), str)
+    and record.get('approver')
+}
+approved_license_count = len(approved_license_refs)
+# Missing or stale decision queues fail closed. Metadata is useful legal-review
+# input, but it is never equivalent to an approved component/use-case decision.
+unapproved_license_decision_count = len(external_component_refs - approved_license_refs)
 
 
 def sha256_file(path: Path) -> str:
@@ -356,11 +382,12 @@ for entry in flags['flags']:
     if entry['name'] == 'unresolvedLicenseBlocks':
         entry.update({
             'evaluated': True,
-            'observed': unresolved_license_count,
-            'evidenceRefs': ['b40-dependency-inventory'],
+            'observed': unapproved_license_decision_count,
+            'evidenceRefs': ['b40-dependency-inventory', 'b40-repository-controls'],
             'note': (
-                f'{unresolved_license_count} external direct components have no resolved license '
-                'decision in the bounded inventory; unknown license state fails closed'
+                f'{unapproved_license_decision_count} external direct components have no approved license '
+                f'decision; {missing_license_metadata_count} also lack observed license metadata. '
+                'Metadata never implies legal approval, and unknown decision state fails closed'
             ),
         })
 (P / 'zero-tolerance.json').write_text(json.dumps(flags, indent=2, ensure_ascii=False) + '\n')
@@ -556,9 +583,12 @@ provenance_record.update({
 )
 
 if repository_controls is not None:
-    license_queue = repository_controls.get('licenseReviewQueue', [])
-    approved_license_count = sum(
-        record.get('decisionStatus') == 'APPROVED'
+    pending_metadata_count = sum(
+        record.get('decisionStatus') == 'PENDING_METADATA'
+        for record in license_queue if isinstance(record, dict)
+    )
+    pending_approval_count = sum(
+        record.get('decisionStatus') == 'PENDING_APPROVAL'
         for record in license_queue if isinstance(record, dict)
     )
     license_register = {
@@ -571,6 +601,8 @@ if repository_controls is not None:
         'policy': repository_controls.get('licenseReviewPolicy', {}),
         'componentCount': len(license_queue),
         'approvedCount': approved_license_count,
+        'pendingMetadataCount': pending_metadata_count,
+        'pendingApprovalCount': pending_approval_count,
         'unresolvedCount': len(license_queue) - approved_license_count,
         'evidenceRefs': ['b40-dependency-inventory', 'b40-repository-controls'],
         'records': license_queue,
@@ -601,7 +633,8 @@ residual_risks.update({
             'status': 'OPEN',
             'statement': (
                 f'The direct dependency surface is inventoried, but transitive Maven coverage is NOT_RUN '
-                f'and {unresolved_license_count} external direct components lack approved license decisions.'
+                f'and {unapproved_license_decision_count} external direct components lack approved license '
+                f'decisions; {missing_license_metadata_count} also lack observed license metadata.'
             ),
         },
         {
