@@ -37,7 +37,7 @@ test("administrator login is visibly separate from user login", async ({ page })
   await expect(page.getByRole("status")).toContainText("管理员身份提供商未配置");
   await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
   await expect(page.getByLabel("密码")).toHaveCount(0);
-  await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
+  await expect(page.getByText(/管理员登录入口不提供普通用户登录功能/)).toBeVisible();
   await expect(page.getByRole("link", { name: "返回用户登录" })).toHaveAttribute("href", "/login");
   await expect(page.locator(".admin-auth-card")).toBeVisible();
 
