@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "4c15fe5929169f47d80e8fdcc6db4728d62d0268",
+  "baseline_commit": "f1e5b21a5576f12b6d78313fd9233a86289d7a63",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -10,14 +10,14 @@
   },
   "generated_artifacts": {
     "compiled_catalog": {
-      "bytes": 15948721,
+      "bytes": 15948837,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/compiled-catalog.json",
-      "sha256": "a6879f76d075829da20982a066f2d175c0c7577e6b0d09c6c08a1ecc285b9006"
+      "sha256": "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
     },
     "package_report": {
       "bytes": 6116,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
-      "sha256": "30f43b7c5a74b073bf2cf3d4b6c175f327a81b7358c4ba02315d471da6cfc4c0"
+      "sha256": "9d883e6d5689997685d5bd0922b477955265390392d24502d56002547932bb84"
     }
   },
   "implementation_tree": {
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 114,
+    "file_count": 120,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -38,11 +38,12 @@
       "tooling/qualify_knowledge_skill_model_foundry.py",
       "tooling/report_foundry_readiness.py"
     ],
-    "sha256": "58d02bbfa0853b96f9641ed16d7c9b6fce33ae62ba4a3e8b7b36c36635cff9bb",
+    "sha256": "8d04cfc7a8a26ff72f1bd4a8fcdca4aba6c41dc1a15dc604cc8ef77bcd695a30",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
       ".ruff_cache",
+      ".venv",
       "__pycache__",
       ".pyc",
       ".pyo"
@@ -52,8 +53,12 @@
     "applies_to": "BOUNDED_LOCAL_ENGINEERING_IMPLEMENTATION_ONLY",
     "capability_scope": {
       "compiled_contracts_validated": 1310,
-      "exact_local_semantic_handlers_exercised": 45,
-      "prepare_only_skills": 1265
+      "exact_integration_bindings_validated": 1310,
+      "exact_local_semantic_handlers_exercised": 51,
+      "host_route_bound_skills": 1259,
+      "integration_unbound_skills": 0,
+      "pipeline_host_routes_validated": 14,
+      "prepare_only_skills": 1259
     },
     "checks": [
       {

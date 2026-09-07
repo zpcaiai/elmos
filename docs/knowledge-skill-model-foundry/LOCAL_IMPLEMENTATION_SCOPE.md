@@ -1,8 +1,22 @@
 # Exact local implementation scope
 
-The runtime now binds 45 exact local algorithms. `LOCAL` describes bounded
+The runtime now binds 51 exact local algorithms. `LOCAL` describes bounded
 repository-owned behavior; no whole-Skill completion, independent verification,
 provider execution or certification follows from registration or local tests.
+
+## Knowledge ingestion extension
+
+| Exact Skill | Implemented behavior | Remaining boundary |
+| --- | --- | --- |
+| `repository-incremental-ingestion` | Validate tenant/project-bound supplied revisions and file manifests; reject unsafe paths and case-fold collisions; emit deterministic added, modified, deleted and unchanged deltas | No SCM checkout, repository read, submodule/LFS hydration or provider attestation |
+| `api-contract-ingestion` | Normalize supplied OpenAPI, AsyncAPI, GraphQL, Protobuf and IDL operation facts with exact identities, types and digests | No native parser, endpoint discovery, provider call or compatibility proof |
+| `database-metadata-ingestion` | Validate typed database object inventories, dependencies and query-plan references; reject duplicates and dangling edges | No database connection, catalog query, credential use or engine/version qualification |
+| `runtime-trace-ingestion` | Validate supplied OTLP/ELMOS trace spans, timing, parent graph, metrics and log references; detect cycles and missing references | No collector connection, telemetry authenticity, sampling-completeness or production replay |
+| `source-freshness-and-expiry` | Evaluate deterministic freshness, refresh-due, expired and not-yet-valid states using explicit timestamps and versions | Caller facts and evaluation time remain unverified; no source refresh is performed |
+| `license-and-rights-classification` | Apply conservative allow, review and deny decisions to explicit purpose, territory, notice, redistribution and training declarations | No legal opinion, license discovery, consent verification or authorization to train/export |
+
+All six emit the exact declared artifact, provenance, rights and freshness
+outputs. Native/provider evidence remains `NOT_RUN`.
 
 ## Foundation extension
 
@@ -71,8 +85,8 @@ multi-host concurrency, backups/DR, KMS signing or production deployment.
 
 The unchanged source denominator is 1,310 atomic Skills, 41 packs, 9,090
 dependency edges and 14 pipelines. The exhaustive implementation matrix keeps
-code gaps separate from unexecuted verification and lists the source workflow
-for each unimplemented identity. Adding a local handler must also update the
+native semantic gaps separate from the 1,259 exact host integration routes and
+from unexecuted verification. Adding a local handler must also update the
 three explicit allowlists, regenerate and re-pin the compiled catalog, add
 public service acceptance and negative cases, refresh the matrix, and execute
 the qualification writer before the package gate can pass.

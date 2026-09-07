@@ -277,9 +277,11 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         from test_build_graph_semantics import fixture_inputs as build_graph_fixture
         from test_ir_reconciliation_semantics import fixture_inputs as ir_fixture
         from test_ast_extraction_semantics import fixture_inputs as ast_fixture
+        from test_ingestion_semantics import fixture_inputs as ingestion_fixture
         from elmos_foundry.runtime_semantics import RUNTIME_SEMANTIC_SKILLS
         from elmos_foundry.foundation_semantics import FOUNDATION_SEMANTIC_SKILLS
         from elmos_foundry.dataset_semantics import DATASET_SEMANTIC_SKILLS
+        from elmos_foundry.ingestion_semantics import INGESTION_SEMANTIC_SKILLS
 
         if skill_name == "build-and-dependency-graph":
             return build_graph_fixture(skill_name, scope or self.scope)
@@ -293,6 +295,8 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
             return foundation_fixture(skill_name, scope or self.scope)
         if skill_name in DATASET_SEMANTIC_SKILLS:
             return dataset_fixture(skill_name, scope or self.scope)
+        if skill_name in INGESTION_SEMANTIC_SKILLS:
+            return ingestion_fixture(skill_name, scope or self.scope)
         if pack == "00-foundation-contracts":
             values = self._foundation_inputs(skill_name)
         elif pack == "05-skill-foundry-runtime":
@@ -387,7 +391,7 @@ class LocalSemanticAcceptanceTests(unittest.TestCase):
         return inner["outputs"]
 
     def test_all_exact_local_skills_execute_with_declared_contracts(self) -> None:
-        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 45)
+        self.assertEqual(len(LOCAL_SEMANTIC_SKILLS), 51)
         described = {
             skill_name
             for row in self.service.status()["adapters"]

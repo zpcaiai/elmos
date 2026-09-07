@@ -16,11 +16,12 @@ import json
 from typing import Any
 
 from .canonical import canonical_digest, canonical_value
+from .external_bindings import exact_external_binding
 from .local_semantics import LocalHandler, LocalSemanticRuntime
 from .skills import CATALOG_SCHEMA_VERSION, EXPECTED_PACKAGE, EXPECTED_PIPELINES
 
 
-SCHEMA_VERSION = "elmos.foundry.implementation-readiness.v1"
+SCHEMA_VERSION = "elmos.foundry.implementation-readiness.v2"
 EXPECTED_ATOMIC_COUNT = 1_310
 EXPECTED_PACK_COUNT = 41
 EXPECTED_DEPENDENCY_COUNT = 9_090
@@ -197,6 +198,10 @@ def build_readiness(
         if _handler_identity(handler) != _handler_identity(runtime_handlers[name]):
             raise ReadinessValidationError(f"{name}: semantic callable identity is stale or mismatched")
     local_names = set(runtime_handlers)
+    external_bindings = {
+        name: exact_external_binding(name, records[name])
+        for name in sorted(set(records) - local_names)
+    }
     registry_identities = {
         name: _handler_identity(runtime_handlers[name]) for name in sorted(runtime_handlers)
     }
@@ -244,6 +249,26 @@ def build_readiness(
                 raise ReadinessValidationError(f"{name}: invalid {category} corpus requirement")
             corpus_requirements[category] = count
         direct_missing = sorted(set(dependencies[name]) - local_names)
+        external = external_bindings.get(name)
+        integration_binding = (
+            {
+                "status": "LOCAL_EXECUTABLE",
+                "adapter_id": f"local.{name}",
+                "route_id": None,
+                "operation": "execute",
+            }
+            if external is None
+            else {
+                "status": "HOST_ROUTE_BOUND",
+                "adapter_id": external[0].adapter_id,
+                "adapter_digest": external[0].digest,
+                "effect_class": external[0].effect_class.value,
+                "route_id": external[1].route_id,
+                "route_digest": external[1].digest,
+                "operation": external[1].operation,
+                "provider_status": "NOT_CONFIGURED",
+            }
+        )
         rows.append({
             "name": name,
             "pack": row["pack"],
@@ -262,6 +287,7 @@ def build_readiness(
             "capability_state": row["capability_state"],
             "semantic_handler_binding": row["semantic_handler_binding"],
             "semantic_callable": registry_identities.get(name),
+            "integration_binding": integration_binding,
             "local_evidence_status": "NOT_EVALUATED_BY_THIS_INVENTORY",
             "whole_skill_complete": False,
             "execution_authorized": False,
@@ -277,7 +303,11 @@ def build_readiness(
                 "unbound_source_contract_fields": unbound_contracts,
                 "declared_tool_bindings": {
                     "tools": list(tools),
-                    "status": "NOT_BOUND_TO_WHOLE_SKILL_CONTRACT",
+                    "status": (
+                        "LOCAL_HANDLER_BOUND"
+                        if external is None
+                        else "EXACT_HOST_ROUTE_BOUND_PROVIDER_NOT_CONFIGURED"
+                    ),
                 },
                 "whole_skill_workflow_coverage": "NOT_ESTABLISHED",
             },
@@ -330,6 +360,9 @@ def build_readiness(
             "pipelines": len(pipelines),
             "local_semantic_handlers": len(local_names),
             "prepare_only": len(rows) - len(local_names),
+            "exact_adapter_bindings": len(rows),
+            "host_route_bound": len(external_bindings),
+            "integration_unbound": 0,
             "whole_skills_complete": 0,
             "source_acceptance_cases_required": sum(
                 sum(row["verification_missing"]["source_acceptance_corpus"]["required_counts"].values())
@@ -349,6 +382,10 @@ def build_readiness(
         "skills": rows,
         "pipeline_states": [
             {"name": name, "execution_mode": pipelines[name]["execution_mode"],
+             "runtime_execution_mode": "HOST_BROKER",
+             "integration_binding_status": "HOST_ROUTE_BOUND",
+             "adapter_id": f"pipeline.{name}",
+             "route_id": f"pipeline-route.{name}",
              "whole_pipeline_complete": False, "external_evidence_status": "NOT_RUN"}
             for name in sorted(pipelines)
         ],
@@ -369,10 +406,14 @@ def render_markdown(report: Mapping[str, Any]) -> str:
         f"**{summary['packs']} packs**, and **{summary['dependency_edges']:,} dependency edges**. "
         f"**{summary['local_semantic_handlers']}** Skills have bounded local semantic handlers; "
         f"**{summary['prepare_only']:,}** remain `PREPARE_ONLY` and lack exact semantic code. "
+        f"All **{summary['exact_adapter_bindings']:,}** identities are integration-bound: "
+        f"**{summary['host_route_bound']:,}** use distinct fail-closed host routes and "
+        f"**{summary['integration_unbound']}** are route-unbound. "
         "No whole-Skill completion or production readiness is established.", "",
         "`IMPLEMENTATION_MATRIX.json` records every exact identity, source description, workflow, "
         "inputs, outputs, tools, gates, callable binding, unresolved contract fields, and direct "
-        "and transitive dependency blockers. `code_missing` and `verification_missing` are separate. "
+        "and transitive dependency blockers. `integration_binding`, `code_missing` and "
+        "`verification_missing` are separate. "
         "A local handler does not resolve an unbound whole-Skill contract or verify a source gate.", "",
         f"Source acceptance contracts require **{summary['source_acceptance_cases_required']:,} "
         "case slots** across positive, negative, ambiguous, and adversarial corpora. These are "

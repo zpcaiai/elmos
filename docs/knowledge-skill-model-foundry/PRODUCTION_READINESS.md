@@ -6,14 +6,16 @@ local control-plane behavior. The package as a whole remains `NOT_CERTIFIED`.
 ## Implemented local controls
 
 - exact source and runtime identity;
-- exact compiled contracts for all 1,310 Skills and real provider-free semantics
-  for the allowlisted 45-Skill `LOCAL` set; the remaining 1,265 are
-  `PREPARE_ONLY`;
+- exact compiled contracts and runtime bindings for all 1,310 Skills, with real
+  provider-free semantics for the allowlisted 51-Skill `LOCAL` set; the other
+  1,259 retain catalog state `PREPARE_ONLY` and have distinct digest-bound,
+  fail-closed host Broker routes;
 - tenant/project isolation and host-minted authority checks;
 - bounded canonical requests and exact durable idempotency for adapter effects;
 - request-bound, expiring, one-time adapter permits and trusted policy checks;
 - host-owned external Broker routes with exact operation/effect matching,
   verifier-bound provider receipts and complete declared-output enforcement;
+- exact permit-request and execution entry points for all 14 golden pipelines;
 - durable transitions, checkpoints, audit/evidence and outbox reconciliation;
 - private immutable artifact storage;
 - trusted receipt verification for consent, capture, data use, E1 promotion and
@@ -44,7 +46,8 @@ provider execution or production persistence qualification.
 - independent corpora, verifier, customer acceptance, legal approval and
   production certification.
 
-The 45 local handlers do not clear any item in this external-gate list. Their
+The 51 local handlers and 1,259 host route bindings do not clear any item in
+this external-gate list. Their
 receipts are bounded, self-attested engineering evidence only.
 
 The archive license explicitly asks for company-approved legal text before
@@ -60,12 +63,16 @@ dependency blockers, required tools, workflow and verification requirements.
 Regenerate with `uv run python tooling/report_foundry_readiness.py --write`;
 `make knowledge-skill-model-foundry-skills` rejects a stale inventory.
 
-The 1,265 `PREPARE_ONLY` Skills lack exact semantic implementations; these are
-code gaps, not merely unexecuted tests. Even the 45 `LOCAL` Skills cover bounded
-local behavior and are not whole-Skill or production completion. All 14 golden
-pipelines still prepare plans only. Source input/output schemas, concrete tool
-operations, target versions and environment bindings marked `UNBOUND` require
-implementation refinement and cannot be completed by generic dispatch.
+The 1,259 `PREPARE_ONLY` Skills still lack repository-owned native semantic
+implementations. They now have exact integration bindings rather than a generic
+dispatcher: each route fixes the Skill identity, source digest, operation,
+inputs, outputs, tools, gates and privileged effect class. Execution remains
+`NOT_RUN` until a concrete host/provider implementation and environment are
+injected and its permit and result receipt verify. Even the 51 `LOCAL` Skills
+cover bounded local behavior and are not whole-Skill or production completion.
+All 14 golden pipelines now expose exact Broker execution paths, but none was
+executed in a real training, deployment, device, database or customer
+environment by this local qualification.
 
 This expansion adds eight exact foundation handlers (ADR, taxonomy, directional
 compatibility, scope, evidence, policy, consent and release contracts) and six
@@ -82,3 +89,10 @@ projections with source spans, CFG and supplied evidence. They preserve
 unsupported syntax, missing facts and conflicting interpretations. These
 bounded algorithms do not execute builds, infer cross-language equivalence
 or replace real source/target runtime validation.
+
+Six knowledge-ingestion handlers now normalize supplied repository deltas, API
+contracts, database metadata and runtime traces, evaluate source freshness at a
+caller-supplied time, and conservatively classify caller-declared rights. They
+reject cross-scope identities, path collisions, dangling graph references,
+invalid time intervals and unsupported formats. They do not read repositories,
+connect to APIs/databases/telemetry systems, or provide legal verification.

@@ -5,7 +5,13 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
-from .adapters import AdapterRegistry, InvocationPermit
+from .adapters import (
+    AdapterRegistry,
+    ExternalExecutionBroker,
+    InvocationPermit,
+    InvocationRequest,
+    PermitVerifier,
+)
 from .artifacts import ContentAddressedArtifactStore
 from .authorizations import AuthorizationVerifier
 from .database import DatabaseManager
@@ -32,6 +38,8 @@ class FoundryService:
         kernel: ExecutionKernel | None = None,
         catalog_path: Path | None = None,
         adapter_registry: AdapterRegistry | None = None,
+        permit_verifier: PermitVerifier | None = None,
+        external_broker: ExternalExecutionBroker | None = None,
         store: FoundryStore | None = None,
         artifact_store: ContentAddressedArtifactStore | None = None,
         knowledge_consent_verifier: AuthorizationVerifier | None = None,
@@ -58,6 +66,8 @@ class FoundryService:
             catalog_path=catalog_path,
             adapter_registry=adapter_registry,
             store=store,
+            permit_verifier=permit_verifier,
+            external_broker=external_broker,
         )
         self.memory = ExperienceMemoryStore(
             self.kernel,
@@ -92,6 +102,9 @@ class FoundryService:
             serving=self.serving,
             policies=self.policies,
             evidence=self.evidence,
+            store=store,
+            permit_verifier=permit_verifier,
+            external_broker=external_broker,
         )
 
     def execute_skill(
@@ -111,6 +124,23 @@ class FoundryService:
             adapter_id=adapter_id,
             invocation_id=invocation_id,
             permit=permit,
+        )
+
+    def prepare_external_skill_request(
+        self,
+        skill_name: str,
+        inputs: Mapping[str, Any],
+        tenant_scope: TenantScope | None = None,
+        *,
+        adapter_id: str,
+        invocation_id: str,
+    ) -> InvocationRequest:
+        return self.skills.prepare_external_request(
+            skill_name,
+            inputs,
+            tenant_scope=tenant_scope,
+            adapter_id=adapter_id,
+            invocation_id=invocation_id,
         )
 
     def route_meta_skill(
@@ -141,6 +171,42 @@ class FoundryService:
             pipeline_name,
             params,
             tenant_scope=tenant_scope,
+        )
+
+    def execute_pipeline(
+        self,
+        pipeline_name: str,
+        params: Mapping[str, Any],
+        tenant_scope: TenantScope | None = None,
+        *,
+        adapter_id: str | None = None,
+        invocation_id: str | None = None,
+        permit: InvocationPermit | None = None,
+    ) -> Mapping[str, Any]:
+        return self.pipelines.execute_pipeline(
+            pipeline_name,
+            params,
+            tenant_scope=tenant_scope,
+            adapter_id=adapter_id,
+            invocation_id=invocation_id,
+            permit=permit,
+        )
+
+    def prepare_pipeline_execution_request(
+        self,
+        pipeline_name: str,
+        params: Mapping[str, Any],
+        tenant_scope: TenantScope | None = None,
+        *,
+        adapter_id: str,
+        invocation_id: str,
+    ) -> InvocationRequest:
+        return self.pipelines.prepare_execution_request(
+            pipeline_name,
+            params,
+            tenant_scope=tenant_scope,
+            adapter_id=adapter_id,
+            invocation_id=invocation_id,
         )
 
     def status(self) -> Mapping[str, Any]:

@@ -15534,7 +15534,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "api",
@@ -15743,7 +15743,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.api-contract-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/api-contract-ingestion/tests/conformance.yaml",
@@ -102987,7 +102987,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "database",
@@ -103196,7 +103196,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.database-metadata-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/database-metadata-ingestion/tests/conformance.yaml",
@@ -227533,7 +227533,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "classification",
@@ -227742,7 +227742,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.license-and-rights-classification",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/license-and-rights-classification/tests/conformance.yaml",
@@ -332852,7 +332852,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "incremental",
@@ -333061,7 +333061,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.repository-incremental-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/repository-incremental-ingestion/tests/conformance.yaml",
@@ -354834,7 +354834,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "ingestion",
@@ -355043,7 +355043,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.runtime-trace-ingestion",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/runtime-trace-ingestion/tests/conformance.yaml",
@@ -394346,7 +394346,7 @@
       "business_lines": [
         "knowledge-ingestion"
       ],
-      "capability_state": "PREPARE_ONLY",
+      "capability_state": "LOCAL",
       "capability_tags": [
         "01-knowledge-ingestion-governance",
         "expiry",
@@ -394555,7 +394555,7 @@
         "required": true,
         "strategy": "restore-checkpoint-and-compensate-side-effects"
       },
-      "semantic_handler_binding": "UNBOUND",
+      "semantic_handler_binding": "local.source-freshness-and-expiry",
       "source_bindings": {
         "conformance": {
           "path": "skills/atomic/01-knowledge-ingestion-governance/source-freshness-and-expiry/tests/conformance.yaml",
