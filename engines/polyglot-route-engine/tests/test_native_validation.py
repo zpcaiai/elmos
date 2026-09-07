@@ -483,6 +483,137 @@ def test_trusted_java_analyzer_rejects_non_analyze_command_shapes(
         )
 
 
+def _synthetic_go_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -> ExactToolchain:
+    return ExactToolchain(
+        language="go",
+        version="1.25.0",
+        executable="/fixed/go",
+        profile=profile,
+        executable_sha256="a" * 64,
+    )
+
+
+def _trusted_go_test_input(tmp_path: Path, function_name: str = "value") -> tuple[Path, list[str]]:
+    source = tmp_path / "narrow.go"
+    source.write_text("package narrow\nfunc value(input int) int { return input }\n", encoding="utf-8")
+    helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    return helper, [str(source.resolve()), function_name]
+
+
+def test_trusted_go_analyzer_promotes_only_exact_missing_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    reason = "FUNCTION_NOT_FOUND:absent"
+    toolchain = _synthetic_go_toolchain()
+    helper, arguments = _trusted_go_test_input(tmp_path, "absent")
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda helper, executable: None)
+
+    def fail(
+        command: list[str],
+        *,
+        cwd: Path,
+        environment_overrides: dict[str, str] | None,
+    ) -> dict[str, Any]:
+        snapshot = Path(command[2])
+        assert command == [toolchain.executable, "run", str(snapshot), "--", *arguments]
+        assert snapshot != helper
+        assert snapshot.parent == cwd
+        assert snapshot.read_bytes() == helper.read_bytes()
+        assert snapshot.stat().st_mode & 0o777 == 0o600
+        assert cwd.stat().st_mode & 0o777 == 0o700
+        assert environment_overrides is None
+        raise RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}\nexit status 2")
+
+    monkeypatch.setattr(native, "_run", fail)
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_go_analyzer(toolchain, helper, arguments)
+
+    assert str(captured.value) == reason
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "FUNCTION_NOT_FOUND:other\nexit status 2",
+        "FUNCTION_NOT_FOUND:absent",
+        "FUNCTION_NOT_FOUND:absent\nextra-output\nexit status 2",
+        "GO_UNSUPPORTED_TYPE\nexit status 2",
+        "NATIVE_ANALYZER_FAILED:/forged/go:FUNCTION_NOT_FOUND:absent\nexit status 2",
+    ],
+)
+def test_trusted_go_analyzer_does_not_promote_unknown_multiline_or_forged_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stderr: str,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper, arguments = _trusted_go_test_input(tmp_path, "absent")
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda helper, executable: None)
+    wrapped = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{stderr}"
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, environment_overrides: (_ for _ in ()).throw(RouteError(wrapped)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_go_analyzer(toolchain, helper, arguments)
+
+    assert str(captured.value) == wrapped
+
+
+def test_trusted_go_analyzer_rejects_toolchain_drift_before_error_promotion(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    changed = _synthetic_go_toolchain(profile=("changed-profile",))
+    observed = iter([toolchain, changed])
+    helper, arguments = _trusted_go_test_input(tmp_path, "absent")
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: next(observed))
+    monkeypatch.setattr(native, "_go_build_cache_environment", lambda helper, executable: None)
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd, environment_overrides: (_ for _ in ()).throw(
+            RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:FUNCTION_NOT_FOUND:absent\nexit status 2")
+        ),
+    )
+
+    with pytest.raises(RouteError, match="^GO_ANALYZER_TOOLCHAIN_CHANGED$"):
+        native._run_trusted_go_analyzer(toolchain, helper, arguments)
+
+
+@pytest.mark.parametrize(
+    ("source_kind", "selector", "tail"),
+    [
+        ("relative", "value", []),
+        ("absolute", "--inventory", []),
+        ("absolute", "--functions=value,value", []),
+        ("absolute", "--functions=value,", []),
+        ("absolute", "value", ["--unexpected"]),
+        ("absolute", "value\nforged", []),
+    ],
+)
+def test_trusted_go_analyzer_rejects_non_analyze_command_shapes(
+    tmp_path: Path,
+    source_kind: str,
+    selector: str,
+    tail: list[str],
+) -> None:
+    toolchain = _synthetic_go_toolchain()
+    helper = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    absolute_source = tmp_path / "narrow.go"
+    absolute_source.write_text("package narrow\n", encoding="utf-8")
+    source = "relative.go" if source_kind == "relative" else str(absolute_source.resolve())
+
+    with pytest.raises(RouteError, match="^GO_ANALYZER_COMMAND_SHAPE_INVALID$"):
+        native._run_trusted_go_analyzer(toolchain, helper, [source, selector, *tail])
+
+
 def _require_native_toolchain(language: str) -> None:
     try:
         exact_toolchain(language)  # type: ignore[arg-type]

@@ -762,6 +762,7 @@ _SWIFT_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     }
 )
 _JAVA_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
+_GO_ANALYZER_SOURCE_MAX_BYTES = 1_000_000
 _JAVA_ANALYZE_PROMOTABLE_DOMAIN_ERRORS = frozenset(
     {
         "JAVA_INTEGER_WIDTH_OUTSIDE_CERTIFIED_SUBSET:int",
@@ -5493,6 +5494,194 @@ def _go_build_cache_environment(helper: Path, executable: Path) -> dict[str, str
     }
 
 
+def _go_analyzer_source_snapshot(helper: Path) -> tuple[dict[str, object], bytes]:
+    expected = ENGINE_ROOT / "native" / "go" / "analyzer.go"
+    if not helper.is_absolute() or helper != expected:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE")
+    guarded_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    content = _stable_read_regular_file(
+        helper,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    final_content = _read_csharp_bound_file(
+        helper,
+        ENGINE_ROOT,
+        failure="GO_ANALYZER_SOURCE_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+    )
+    if content != guarded_content or content != final_content:
+        raise RouteError("GO_ANALYZER_SOURCE_UNSAFE_CHANGED")
+    return (
+        {
+            "path": str(helper),
+            "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+            "bytes": len(content),
+        },
+        content,
+    )
+
+
+def _go_analyzer_source_binding(helper: Path) -> dict[str, object]:
+    binding, _ = _go_analyzer_source_snapshot(helper)
+    return binding
+
+
+def _go_analyzer_snapshot_binding(snapshot: Path, root: Path) -> dict[str, object]:
+    try:
+        root_metadata = root.lstat()
+        resolved_root = root.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if (
+        root != resolved_root
+        or root.is_symlink()
+        or not stat.S_ISDIR(root_metadata.st_mode)
+        or root_metadata.st_uid != os.getuid()
+        or stat.S_IMODE(root_metadata.st_mode) != 0o700
+        or snapshot.parent != root
+        or snapshot.name != "analyzer.go"
+    ):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    content = _stable_read_regular_file(
+        snapshot,
+        failure="GO_ANALYZER_SNAPSHOT_UNSAFE",
+        maximum_bytes=_GO_ANALYZER_SOURCE_MAX_BYTES,
+        allowed_uids=frozenset({os.getuid()}),
+    )
+    try:
+        metadata = snapshot.lstat()
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE") from error
+    if stat.S_IMODE(metadata.st_mode) != 0o600:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_UNSAFE")
+    return {
+        "path": str(snapshot),
+        "sha256": "sha256:" + hashlib.sha256(content).hexdigest(),
+        "bytes": len(content),
+    }
+
+
+def _write_go_analyzer_snapshot(root: Path, content: bytes) -> tuple[Path, dict[str, object]]:
+    snapshot = root / "analyzer.go"
+    flags = os.O_WRONLY | os.O_CREAT | os.O_EXCL | getattr(os, "O_CLOEXEC", 0) | getattr(os, "O_NOFOLLOW", 0)
+    try:
+        descriptor = os.open(snapshot, flags, 0o600)
+        try:
+            written = 0
+            while written < len(content):
+                chunk_bytes = os.write(descriptor, content[written:])
+                if chunk_bytes <= 0:
+                    raise OSError("zero-byte Go analyzer snapshot write")
+                written += chunk_bytes
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CREATE_FAILED") from error
+    binding = _go_analyzer_snapshot_binding(snapshot, root)
+    if binding["sha256"] != "sha256:" + hashlib.sha256(content).hexdigest() or binding["bytes"] != len(content):
+        raise RouteError("GO_ANALYZER_SNAPSHOT_CONTENT_MISMATCH")
+    return snapshot, binding
+
+
+def _verify_trusted_go_toolchain(expected: ExactToolchain) -> None:
+    digest = re.compile(r"[0-9a-f]{64}").fullmatch
+    if (
+        expected.language != "go"
+        or expected.version != "1.25.0"
+        or not Path(expected.executable).is_absolute()
+        or expected.auxiliary is not None
+        or not expected.profile
+        or expected.executable_sha256 is None
+        or digest(expected.executable_sha256) is None
+    ):
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_POLICY_INVALID")
+    try:
+        current = exact_toolchain("go")
+    except RouteError as error:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED") from error
+    if current != expected:
+        raise RouteError("GO_ANALYZER_TOOLCHAIN_CHANGED")
+
+
+def _go_analyzer_arguments(arguments: list[str]) -> frozenset[str]:
+    if (
+        len(arguments) not in {2, 3}
+        or any(not isinstance(argument, str) or not argument for argument in arguments)
+        or any("\n" in argument or "\r" in argument or "\x00" in argument for argument in arguments)
+        or (len(arguments) == 3 and arguments[2] != "--emitted-target")
+        or arguments[1] in {"--inventory", "--emitted-target"}
+    ):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    source = Path(arguments[0])
+    try:
+        resolved = source.resolve(strict=True)
+    except OSError as error:
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID") from error
+    if not source.is_absolute() or source != resolved or source.is_symlink() or not source.is_file():
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    selector = arguments[1]
+    names = selector.removeprefix("--functions=").split(",") if selector.startswith("--functions=") else [selector]
+    if not names or any(not name or name.startswith("--") for name in names) or len(names) != len(set(names)):
+        raise RouteError("GO_ANALYZER_COMMAND_SHAPE_INVALID")
+    return frozenset(f"FUNCTION_NOT_FOUND:{name}" for name in names)
+
+
+def _run_trusted_go_analyzer(
+    toolchain: ExactToolchain,
+    helper: Path,
+    arguments: list[str],
+) -> dict[str, Any]:
+    """Run a source- and toolchain-bound Go analyzer with exact error promotion."""
+
+    promotable = _go_analyzer_arguments(arguments)
+    expected_helper, helper_content = _go_analyzer_source_snapshot(helper)
+    with tempfile.TemporaryDirectory(prefix="elmos-go-analyzer-") as temporary:
+        root = Path(temporary).resolve(strict=True)
+        root.chmod(0o700)
+        snapshot, expected_snapshot = _write_go_analyzer_snapshot(root, helper_content)
+        try:
+            current_helper = _go_analyzer_source_binding(helper)
+        except RouteError as error:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION") from error
+        if current_helper != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_BEFORE_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        command = [toolchain.executable, "run", str(snapshot), "--", *arguments]
+        environment = _go_build_cache_environment(helper, Path(toolchain.executable))
+        try:
+            value = _run(command, cwd=root, environment_overrides=environment)
+        except RouteError as error:
+            try:
+                current_snapshot = _go_analyzer_snapshot_binding(snapshot, root)
+                current_helper = _go_analyzer_source_binding(helper)
+            except RouteError as changed:
+                raise RouteError("GO_ANALYZER_INPUT_CHANGED_DURING_EXECUTION") from changed
+            if current_snapshot != expected_snapshot:
+                raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION") from error
+            if current_helper != expected_helper:
+                raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION") from error
+            _verify_trusted_go_toolchain(toolchain)
+            wrapped = str(error)
+            for reason in promotable:
+                if wrapped == f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}\nexit status 2":
+                    raise RouteError(reason) from error
+            raise
+        if _go_analyzer_snapshot_binding(snapshot, root) != expected_snapshot:
+            raise RouteError("GO_ANALYZER_SNAPSHOT_CHANGED_DURING_EXECUTION")
+        if _go_analyzer_source_binding(helper) != expected_helper:
+            raise RouteError("GO_ANALYZER_SOURCE_CHANGED_DURING_EXECUTION")
+        _verify_trusted_go_toolchain(toolchain)
+        return value
+
+
 def _run(
     command: list[str],
     *,
@@ -7626,17 +7815,11 @@ def _analyze_batch(
             arguments = [str(resolved), selector]
             if emitted_target:
                 arguments.append("--emitted-target")
-            document = _run(
-                [toolchain.executable, "run", str(helper), "--", *arguments],
-                cwd=ENGINE_ROOT,
-                environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-            )
-            # Go has no promotion list: a rejected function fails the analyzer
-            # process, and `_run` wraps whatever it printed.  Reconstructing that
-            # exact wrapping is what keeps a batched rejection indistinguishable
-            # from the individual call it replaced.
+            document = _run_trusted_go_analyzer(toolchain, helper, arguments)
+            promotable = _go_analyzer_arguments(arguments)
+
             def promote(reason: str) -> RouteError | None:
-                return RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{reason}")
+                return RouteError(reason) if reason in promotable else None
 
         elif language == "rust":
             package = ENGINE_ROOT / "native" / "rust"
@@ -8195,11 +8378,7 @@ def analyze(
         arguments = [str(source), function_name]
         if emitted_target:
             arguments.append("--emitted-target")
-        value = _run(
-            [toolchain.executable, "run", str(helper), "--", *arguments],
-            cwd=ENGINE_ROOT,
-            environment_overrides=_go_build_cache_environment(helper, Path(toolchain.executable)),
-        )
+        value = _run_trusted_go_analyzer(toolchain, helper, arguments)
     elif language == "rust":
         package = ENGINE_ROOT / "native" / "rust"
         assert toolchain.auxiliary is not None
