@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:elmos:ao:v1:agent-checkpoint",
+  "type": "object",
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "enum": [
+        "ao.v1"
+      ]
+    },
+    "graph_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "state_schema_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "scope_ref": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidence_refs": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "minItems": 0
+    },
+    "rounds": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "pending_intent_ref": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "RUNNABLE",
+        "NEEDS_INPUT",
+        "BLOCKED",
+        "CANDIDATE_READY",
+        "NO_PROGRESS",
+        "BUDGET_EXHAUSTED"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "graph_version",
+    "state_schema_version",
+    "scope_ref",
+    "evidence_refs",
+    "rounds",
+    "pending_intent_ref",
+    "status"
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,16 @@
+{
+  "local_precheck": "blocked",
+  "production_allowed": false,
+  "reasons": [
+    "real Elmos not qualified",
+    "host_mapping_review: missing/not_run/failed",
+    "real_consumer_e2e: missing/not_run/failed",
+    "tenant_acl_and_revocation: missing/not_run/failed",
+    "snapshot_and_tombstone: missing/not_run/failed",
+    "injection_and_redaction: missing/not_run/failed",
+    "paired_quality_latency_cost: missing/not_run/failed",
+    "rollback_and_compatibility: missing/not_run/failed",
+    "independent_host_review: missing/not_run/failed"
+  ],
+  "note": "Integrity only. Host signature/provenance/semantic review and K8 remain authoritative."
+}

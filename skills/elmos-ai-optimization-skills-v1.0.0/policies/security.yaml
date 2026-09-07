@@ -1,0 +1,12 @@
+fail_closed:
+- identity_unknown
+- acl_epoch_stale
+- revision_unknown
+- lease_expired
+- old_executor_generation
+public_trusted_scope: false
+source_is_instructions: false
+uncommitted_result_publish: false
+graph_may_certify: false
+hard_security_waiver: false
+not_run_is_pass: false

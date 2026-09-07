@@ -1,0 +1,15 @@
+{
+  "schema_version": "ao.v1",
+  "tenant": "t",
+  "principal": "u",
+  "acl_epoch": 1,
+  "security_context_ref": "host-fixture",
+  "expires_at": "2026-09-07T12:00:00Z",
+  "revisions": [
+    {
+      "repository": "shop",
+      "snapshot": "s1",
+      "generation": "g1"
+    }
+  ]
+}

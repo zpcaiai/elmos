@@ -1,6 +1,7 @@
 JAVA_21_HOME ?= $(shell if [ -x /usr/libexec/java_home ]; then /usr/libexec/java_home -v 21 2>/dev/null; else printf '%s' "$$JAVA_HOME"; fi)
 MAVEN ?= mvn
 UV ?= uv
+CARGO ?= cargo
 # A leaked UV_PROJECT_ENVIRONMENT from a one-engine survey shell makes
 # `uv --directory … --locked` resolve a foreign venv and fail the lockfile
 # check. Every recipe must see a project-local environment.
@@ -299,6 +300,11 @@ multimodal-intake-skills:
 build-cache-staging-parity-skills:
 	PYTHONDONTWRITEBYTECODE=1 python3 tooling/import_build_cache_parity_skills.py --check
 	PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/build-cache-staging-parity -p 'test_*.py'
+.PHONY: ai-optimization-skills
+ai-optimization-skills:
+	PYTHONDONTWRITEBYTECODE=1 $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_ai_optimization_skills.py --check
+	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=engines/ai-optimization-engine/src $(UV) run --offline --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/ai-optimization-skills -p 'test_*.py'
+
 .PHONY: repository-task-router-skills
 repository-task-router-skills:
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python tooling/integrate_repository_task_router_skills.py --check
@@ -518,6 +524,7 @@ project-synthesis:
 	$(UV) --directory engines/project-synthesis-engine run --locked python ../../scripts/operations/validate_generation_support_matrix.py
 	$(call guarded,elmos-project-synthesis-batch61-65,package-manifest.json,\
 		$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py)
+	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
 	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
