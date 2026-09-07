@@ -1078,25 +1078,43 @@ def _harness_runtime_plan(
         integration_environment[ENV_OIDC_JWKS_FILE] = str(state / "oidc-jwks.json")
         integration_environment[ENV_OIDC_PRIVATE_KEY_FILE] = str(state / "oidc-private-key.pem")
 
+    integration_command: list[str] | None = None
+    if integration is not None:
+        runner_name, runner_arguments = integration
+        runner = (
+            next((tool for tool in tools if Path(tool).name == runner_name), None)
+            if tools is not None
+            else None
+        ) or runner_name
+        integration_command = [runner, *runner_arguments]
+
     if blocking is not None:
-        return {
+        blocked_plan: dict[str, Any] = {
             "language": language,
             "cwd": str(workspace),
             "command": [interpreter or "python3", "scripts/local_runtime.py"],
             "environment": {"PORT": str(port), ENV_RUNTIME_STATE_DIR: str(state)},
             "providers": ["postgresql"],
             "port": port,
+            "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
             # A production profile owes integration evidence. Recording that
             # obligation here -- even on the blocked plan -- stops a probe that
             # merely answered /health from being reported as a pass.
             "requires_integration": True,
+            "integration_environment": integration_environment,
+            "integration_timeout_seconds": _INTEGRATION_TIMEOUT_SECONDS.get(language, 120),
             "execution_status": "NOT_RUN",
             "blocking_reason": blocking,
         }
+        # The plan must retain its exact integration contract even when the
+        # current host cannot execute it. This is declarative metadata only;
+        # execution_status remains NOT_RUN and the blocking reason remains
+        # authoritative, so a missing toolchain can never become a green run.
+        if integration_command is not None:
+            blocked_plan["integration_command"] = integration_command
+        return blocked_plan
 
-    assert interpreter is not None and tools is not None and integration is not None
-    runner_name, runner_arguments = integration
-    runner = next((tool for tool in tools if Path(tool).name == runner_name), None) or runner_name
+    assert interpreter is not None and tools is not None and integration_command is not None
     return {
         "language": language,
         "cwd": str(workspace),
@@ -1112,7 +1130,7 @@ def _harness_runtime_plan(
         "port": port,
         "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
         "requires_integration": True,
-        "integration_command": [runner, *runner_arguments],
+        "integration_command": integration_command,
         "integration_environment": integration_environment,
         # Compiled targets build their integration binary as part of this step.
         # On a cold cache that is comfortably slower than an interpreted test
