@@ -295,6 +295,16 @@ func liftExpression(_ raw: ExprSyntax, _ context: LiftContext) throws -> JSONVal
             return try replacingSpan(
                 try liftExpression(argument.expression, context), raw, context)
         }
+        if callee.baseName.text == "Double" {
+            guard call.arguments.count == 1,
+                let argument = call.arguments.first,
+                argument.label == nil
+            else {
+                throw AnalyzerError("SWIFT_EMITTED_DOUBLE_CAST_INVALID")
+            }
+            return try replacingSpan(
+                try liftExpression(argument.expression, context), raw, context)
+        }
         guard callee.baseName.text == "elmosNonZero" else {
             throw AnalyzerError("SWIFT_EMITTED_HELPER_UNRECOGNIZED:\(callee.baseName.text)")
         }

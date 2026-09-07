@@ -599,6 +599,33 @@ def test_swift_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> No
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_emitted_integer_to_number_cast_relifts_exactly(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    target = tmp_path / "Widen.swift"
+    target.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value) }\n",
+        encoding="utf-8",
+    )
+    semantic = analyze(target, "swift", "widen", emitted_target=True)
+    function = semantic.functions[0]
+    assert function.return_type == "number"
+    assert function.body[0].expression is not None
+    assert function.body[0].expression.kind == "name"
+    assert function.body[0].expression.value == "value"
+
+    target.write_text(
+        "func widen(_ value: Int64) -> Double { return Double(value, value) }\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        RouteError,
+        match=r"^NATIVE_ANALYZER_FAILED:.*:SWIFT_EMITTED_DOUBLE_CAST_INVALID$",
+    ):
+        analyze(target, "swift", "widen", emitted_target=True)
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
 @pytest.mark.parametrize(
     ("declaration", "reason"),
     [
