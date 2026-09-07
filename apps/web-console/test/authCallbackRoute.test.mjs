@@ -4,13 +4,16 @@ import test from "node:test";
 
 import { NextRequest } from "next/server.js";
 
+import "./descopeOtpVerifyRoute.test.mjs";
+import "./descopeIdentity.test.mjs";
+
 import {
   accountCookieNames,
   authCallbackFixture,
   resetAuthCallbackFixture,
 } from "./authCallbackRoute.fixture.mjs";
 
-const callbackRouteUrl = new URL("../app/api/auth/callback/route.ts", import.meta.url);
+const callbackRouteUrl = new URL("../app/api/auth/callback/_route.ts", import.meta.url);
 const fixtureUrl = new URL("./authCallbackRoute.fixture.mjs", import.meta.url).href;
 const routeDependencySpecifiers = new Set([
   "../../../lib/server/accountSession",

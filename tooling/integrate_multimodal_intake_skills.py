@@ -718,8 +718,8 @@ SDK_COMPILATION_TOOL_RUNTIME_CONTRACT_MARKERS = {
     ),
 }
 SURFACE_IMPLEMENTATION_FILES = (
-    "apps/web-console/app/api/multimodal-intake/v1/execute/route.ts",
-    "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/route.ts",
+    "apps/web-console/app/api/multimodal-intake/v1/execute/_route.ts",
+    "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/_route.ts",
     "apps/web-console/app/intake/MultimodalIntakeWorkbench.module.css",
     "apps/web-console/app/intake/MultimodalIntakeWorkbench.tsx",
     "apps/web-console/app/intake/page.tsx",
@@ -734,7 +734,7 @@ SURFACE_IMPLEMENTATION_FILES = (
 LEGACY_SURFACE_IMPLEMENTATION_FILES_V1 = tuple(
     relative
     for relative in SURFACE_IMPLEMENTATION_FILES
-    if relative != "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/route.ts"
+    if relative != "apps/web-console/app/api/multimodal-intake/v1/progress/jobs/[jobId]/_route.ts"
 )
 REPOSITORY_TEST_FILES = (
     "apps/web-console/e2e/multimodal-intake.spec.ts",

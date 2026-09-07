@@ -34,6 +34,7 @@ from route_runtime_metadata import (  # noqa: E402
     EXACT_TOOLCHAIN_ACTIVE_LANGUAGES,
     EXACT_TOOLCHAIN_CONTRACT_SHA256,
     EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES,
+    EXACT_TOOLCHAIN_PROFILE_OVERRIDES,
     EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION,
     EXACT_TOOLCHAIN_RECORD_SHA256,
     EXACT_TOOLCHAIN_VERSIONS,
@@ -1086,6 +1087,28 @@ def _route_receipt_digest(value: object) -> str:
     ).hexdigest()
 
 
+def _expected_route_toolchain_identity(
+    language: str,
+    profile: list[str],
+) -> tuple[str | None, str | None]:
+    expected_version = EXACT_TOOLCHAIN_VERSIONS.get(language)
+    expected_record_sha256 = EXACT_TOOLCHAIN_RECORD_SHA256.get(language)
+    if language != "kotlin":
+        return expected_version, expected_record_sha256
+    distributions = [
+        item for item in profile if item.startswith("kotlin-jvm-distribution=")
+    ]
+    if len(distributions) != 1:
+        raise ValueError("ROUTE_EXACT_RECEIPT_KOTLIN_JVM_DISTRIBUTION_INVALID")
+    selector = distributions[0]
+    if selector == "kotlin-jvm-distribution=homebrew":
+        return expected_version, expected_record_sha256
+    override = EXACT_TOOLCHAIN_PROFILE_OVERRIDES.get("kotlin", {}).get(selector)
+    if override is None:
+        raise ValueError("ROUTE_EXACT_RECEIPT_KOTLIN_JVM_DISTRIBUTION_INVALID")
+    return override.get("version"), override.get("record_sha256")
+
+
 def _validate_route_receipt(value: object) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise ValueError("ROUTE_EXACT_RECEIPT_ROOT_INVALID")
@@ -1093,6 +1116,7 @@ def _validate_route_receipt(value: object) -> dict[str, Any]:
         EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION != "1.1.0"
         or tuple(EXACT_TOOLCHAIN_VERSIONS) != ROUTE_RECEIPT_ACTIVE_LANGUAGES
         or tuple(EXACT_TOOLCHAIN_RECORD_SHA256) != ROUTE_RECEIPT_ACTIVE_LANGUAGES
+        or set(EXACT_TOOLCHAIN_PROFILE_OVERRIDES) != {"kotlin"}
         or EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES != ("javascript",)
         or not isinstance(EXACT_TOOLCHAIN_CONTRACT_SHA256, str)
         or re.fullmatch(r"[0-9a-f]{64}", EXACT_TOOLCHAIN_CONTRACT_SHA256) is None
@@ -1163,7 +1187,10 @@ def _validate_route_receipt(value: object) -> dict[str, Any]:
             or any(not isinstance(fact, str) or not fact for fact in item["profile"])
         ):
             raise ValueError("ROUTE_EXACT_RECEIPT_TOOLCHAIN_INVALID")
-        if item.get("version") != EXACT_TOOLCHAIN_VERSIONS.get(str(language)):
+        expected_version, expected_record_sha256 = (
+            _expected_route_toolchain_identity(str(language), item["profile"])
+        )
+        if item.get("version") != expected_version:
             raise ValueError(
                 f"ROUTE_EXACT_RECEIPT_TOOLCHAIN_VERSION_INVALID:{language}"
             )
@@ -1174,7 +1201,6 @@ def _validate_route_receipt(value: object) -> dict[str, Any]:
                 or re.fullmatch(r"[0-9a-f]{64}", digest) is None
             ):
                 raise ValueError("ROUTE_EXACT_RECEIPT_TOOLCHAIN_DIGEST_INVALID")
-        expected_record_sha256 = EXACT_TOOLCHAIN_RECORD_SHA256.get(str(language))
         if (
             not isinstance(expected_record_sha256, str)
             or re.fullmatch(r"[0-9a-f]{64}", expected_record_sha256) is None

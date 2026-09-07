@@ -28,6 +28,7 @@ from route_runtime_metadata import (  # noqa: E402
     EXACT_TOOLCHAIN_ACTIVE_LANGUAGES,
     EXACT_TOOLCHAIN_CONTRACT_SHA256,
     EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES,
+    EXACT_TOOLCHAIN_PROFILE_OVERRIDES,
     EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION,
     EXACT_TOOLCHAIN_RECORD_SHA256,
     EXACT_TOOLCHAIN_VERSIONS,
@@ -63,10 +64,11 @@ def _canonical_sha256(value: object) -> str:
 
 
 _PORTABLE_ROOT_MARKER = "<polyglot-toolchain-root>"
+_PORTABLE_JAVA_HOME_MARKER = "<java21-home>"
 
 
-def _portable_kotlin_value(value: str, root: Path) -> str:
-    """Tokenize only the governed Kotlin install root, preserving all digests."""
+def _portable_toolchain_value(value: str, root: Path) -> str:
+    """Tokenize the governed install root while preserving all content facts."""
 
     root_text = os.fspath(root)
     if value == root_text:
@@ -81,22 +83,63 @@ def _portable_toolchain_record(language: str) -> dict[str, Any]:
         raise RouteError(f"EXACT_TOOLCHAIN_LANGUAGE_DRIFT:{language}")
     value = asdict(toolchain)
     value["profile"] = list(toolchain.profile)
+    root = configured_polyglot_toolchain_root()
+    for field in ("executable", "auxiliary"):
+        raw = value.get(field)
+        if isinstance(raw, str):
+            value[field] = _portable_toolchain_value(raw, root)
+    value["profile"] = [
+        _portable_toolchain_value(item, root)
+        for item in value["profile"]
+    ]
     if language == "kotlin":
-        root = configured_polyglot_toolchain_root()
-        for field in ("executable", "auxiliary"):
-            raw = value.get(field)
-            if isinstance(raw, str):
-                value[field] = _portable_kotlin_value(raw, root)
-        value["profile"] = [
-            _portable_kotlin_value(item, root)
-            for item in value["profile"]
-        ]
+        if "kotlin-jvm-distribution=temurin" in value["profile"]:
+            jvm_homes = [
+                item.removeprefix("kotlin-jvm-home=")
+                for item in value["profile"]
+                if item.startswith("kotlin-jvm-home=")
+            ]
+            if len(jvm_homes) != 1 or not jvm_homes[0].startswith("/"):
+                raise RouteError("EXACT_TOOLCHAIN_KOTLIN_JVM_HOME_INVALID")
+            value["profile"] = [
+                f"kotlin-jvm-home={_PORTABLE_JAVA_HOME_MARKER}"
+                if item == f"kotlin-jvm-home={jvm_homes[0]}"
+                else item
+                for item in value["profile"]
+            ]
     return value
+
+
+def _expected_toolchain_identity(
+    language: str,
+    profile: list[str],
+) -> tuple[str | None, str | None]:
+    expected_version = EXACT_TOOLCHAIN_VERSIONS.get(language)
+    expected_record_sha256 = EXACT_TOOLCHAIN_RECORD_SHA256.get(language)
+    if language != "kotlin":
+        return expected_version, expected_record_sha256
+    distributions = [
+        item for item in profile if item.startswith("kotlin-jvm-distribution=")
+    ]
+    if len(distributions) != 1:
+        raise RouteError("EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_AMBIGUOUS")
+    selector = distributions[0]
+    if selector == "kotlin-jvm-distribution=homebrew":
+        return expected_version, expected_record_sha256
+    override = EXACT_TOOLCHAIN_PROFILE_OVERRIDES.get("kotlin", {}).get(selector)
+    if override is None:
+        raise RouteError(
+            f"EXACT_TOOLCHAIN_KOTLIN_JVM_DISTRIBUTION_UNSUPPORTED:{selector}"
+        )
+    return override.get("version"), override.get("record_sha256")
 
 
 def _portable_toolchain(language: str) -> dict[str, Any]:
     value = _portable_toolchain_record(language)
-    expected_version = EXACT_TOOLCHAIN_VERSIONS.get(language)
+    expected_version, expected_record_sha256 = _expected_toolchain_identity(
+        language,
+        value["profile"],
+    )
     if value.get("version") != expected_version:
         raise RouteError(
             f"EXACT_TOOLCHAIN_VERSION_CONTRACT_MISMATCH:{language}:"
@@ -108,7 +151,6 @@ def _portable_toolchain(language: str) -> dict[str, Any]:
             not isinstance(digest, str) or SHA256_PATTERN.fullmatch(digest) is None
         ):
             raise RouteError(f"EXACT_TOOLCHAIN_DIGEST_INVALID:{language}:{field}")
-    expected_record_sha256 = EXACT_TOOLCHAIN_RECORD_SHA256.get(language)
     observed_record_sha256 = exact_toolchain_record_sha256(value)
     if (
         not isinstance(expected_record_sha256, str)
@@ -127,6 +169,7 @@ def _validate_exact_toolchain_contract() -> None:
         EXACT_TOOLCHAIN_RECEIPT_SCHEMA_VERSION != "1.1.0"
         or tuple(EXACT_TOOLCHAIN_VERSIONS) != EXPECTED_ACTIVE_LANGUAGES
         or tuple(EXACT_TOOLCHAIN_RECORD_SHA256) != EXPECTED_ACTIVE_LANGUAGES
+        or set(EXACT_TOOLCHAIN_PROFILE_OVERRIDES) != {"kotlin"}
         or EXACT_TOOLCHAIN_DEPRECATED_LANGUAGES != ("javascript",)
         or not isinstance(EXACT_TOOLCHAIN_CONTRACT_SHA256, str)
         or SHA256_PATTERN.fullmatch(EXACT_TOOLCHAIN_CONTRACT_SHA256) is None

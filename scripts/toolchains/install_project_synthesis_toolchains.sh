@@ -252,9 +252,26 @@ write_rust_wrapper() {
   local wrapper="${target}/bin/${command_name}"
   printf '%s\n' \
     '#!/bin/sh' \
-    "export RUSTUP_HOME='${target}/rustup'" \
-    "export CARGO_HOME='${target}/cargo'" \
-    "exec '${target}/cargo/bin/${command_name}' \"\$@\"" \
+    'set -eu' \
+    'wrapper_path="$0"' \
+    'case "${wrapper_path}" in' \
+    '  */*) ;;' \
+    '  *) wrapper_path="$(command -v "${wrapper_path}")" ;;' \
+    'esac' \
+    'while [ -L "${wrapper_path}" ]; do' \
+    '  wrapper_dir="${wrapper_path%/*}"' \
+    '  link_target="$(/usr/bin/readlink "${wrapper_path}")"' \
+    '  case "${link_target}" in' \
+    '    /*) wrapper_path="${link_target}" ;;' \
+    '    *) wrapper_path="${wrapper_dir}/${link_target}" ;;' \
+    '  esac' \
+    'done' \
+    'wrapper_dir="${wrapper_path%/*}"' \
+    'wrapper_dir="$(CDPATH= cd -P -- "${wrapper_dir}" && pwd)"' \
+    'toolchain_root="${wrapper_dir%/*}"' \
+    'export RUSTUP_HOME="${toolchain_root}/rustup"' \
+    'export CARGO_HOME="${toolchain_root}/cargo"' \
+    "exec \"\${toolchain_root}/cargo/bin/${command_name}\" \"\$@\"" \
     >"${wrapper}"
   chmod 0755 "${wrapper}"
 }
@@ -281,15 +298,15 @@ install_rust() {
     RUSTUP_HOME="${stage}/rustup" CARGO_HOME="${stage}/cargo" \
       "${stage}/cargo/bin/rustup" component add \
       --toolchain "${RUST_VERSION}" clippy rustfmt
-    write_rust_wrapper "${stage}" "rustc"
-    write_rust_wrapper "${stage}" "cargo"
-    write_rust_wrapper "${stage}" "rustup"
     mv "${stage}" "${target}"
-    # Wrappers were generated in the staging path; rewrite them with the final path.
-    write_rust_wrapper "${target}" "rustc"
-    write_rust_wrapper "${target}" "cargo"
-    write_rust_wrapper "${target}" "rustup"
   fi
+  # Wrapper semantics are part of the qualified route-toolchain identity. A
+  # cached Rust payload can remain byte-identical while an older installer has
+  # left stale wrappers behind, so refresh the three repository-owned launchers
+  # on every successful install/reuse path before publishing public links.
+  write_rust_wrapper "${target}" "rustc"
+  write_rust_wrapper "${target}" "cargo"
+  write_rust_wrapper "${target}" "rustup"
   link_if_available "rustc" "${target}/bin/rustc"
   link_if_available "cargo" "${target}/bin/cargo"
   link_if_available "rustup" "${target}/bin/rustup"

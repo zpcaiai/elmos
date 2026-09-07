@@ -583,6 +583,22 @@ def test_swift_source_lifts_through_the_swiftsyntax_helper(tmp_path: Path) -> No
 
 
 @pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
+def test_swift_missing_symbol_preserves_the_native_failure(tmp_path: Path) -> None:
+    from elmos_polyglot_route.native import analyze
+
+    source = tmp_path / "pricing.swift"
+    source.write_text(
+        "func calculate(_ subtotal: Int64) -> Int64 { return subtotal }\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(
+        RouteError,
+        match="^FUNCTION_NOT_FOUND:__elmos_missing_function__$",
+    ):
+        analyze(source, "swift", "__elmos_missing_function__")
+
+
+@pytest.mark.skipif(SWIFTC is None, reason="swiftc is not installed")
 @pytest.mark.parametrize(
     ("declaration", "reason"),
     [

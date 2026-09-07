@@ -27,6 +27,8 @@ sys.path.insert(
     str(DEFAULT_REPOSITORY_ROOT / "engines" / "polyglot-route-engine" / "src"),
 )
 
+MISSING_SYMBOL_FAILURE = "FUNCTION_NOT_FOUND:__elmos_missing_function__"
+
 
 def _bootstrap_toolchain_source_receipts() -> tuple[dict[str, Any], dict[str, Any]]:
     """Load only models/toolchains without importing the proof-engine package."""
@@ -4979,11 +4981,7 @@ def execute_specialized_negative(
                     raise RuntimeError("MISSING_SYMBOL_UNEXPECTEDLY_PASSED")
                 if output.exists():
                     raise RuntimeError("MISSING_SYMBOL_CREATED_ARTIFACTS")
-            expected_fragments = (
-                ("NO_SUPPORTED_FUNCTIONS",)
-                if source in {"java", "swift"}
-                else ("FUNCTION_NOT_FOUND:__elmos_missing_function__",)
-            )
+            expected_fragments = (MISSING_SYMBOL_FAILURE,)
             input_refs = [
                 negative_input_ref(route, missing_source, "source"),
                 negative_input_ref(route, missing_cases, "cases"),
@@ -5421,7 +5419,7 @@ def execute_nodejs_negative(
             case_path = negative_root / "missing_symbol_cases.json"
             shutil.copy2(fixture_source, case_source)
             shutil.copy2(fixture_cases, case_path)
-            expected_codes = frozenset({"FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS"})
+            expected_codes = frozenset({"FUNCTION_NOT_FOUND"})
             with tempfile.TemporaryDirectory(
                 prefix=f"elmos-nodejs-missing-symbol-{route_key}-"
             ) as temporary:
@@ -5521,9 +5519,7 @@ def execute_negative(
             raise RuntimeError(
                 f"NEGATIVE_CASE_UNEXPECTEDLY_PASSED:{source}-to-{target}"
             )
-    if not any(
-        code in reason for code in ("FUNCTION_NOT_FOUND", "NO_SUPPORTED_FUNCTIONS")
-    ):
+    if reason != MISSING_SYMBOL_FAILURE:
         raise RuntimeError(f"NEGATIVE_CASE_WRONG_FAILURE:{source}-to-{target}:{reason}")
     relative = "certification/local-negative-evidence.json"
     write_json(

@@ -2,12 +2,20 @@ from __future__ import annotations
 
 import copy
 import os
+import subprocess
 from pathlib import Path
 
 import pytest
 
 from elmos_polyglot_route import toolchains
 from elmos_polyglot_route.models import RouteError
+
+PROJECT_TOOLCHAIN_INSTALLER = (
+    toolchains.REPOSITORY_ROOT
+    / "scripts"
+    / "toolchains"
+    / "install_project_synthesis_toolchains.sh"
+)
 
 
 def _tree_identity(
@@ -28,6 +36,69 @@ def _tree_identity(
     }
 
 
+def test_rust_wrapper_resolves_direct_and_public_symlink_without_realpath(
+    tmp_path: Path,
+) -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("write_rust_wrapper() {")
+    function_end = installer.index("\n}\n\ninstall_rust()", function_start) + 2
+    function = installer[function_start:function_end]
+    assert "/usr/bin/realpath" not in function
+
+    root = tmp_path / "root"
+    cargo_bin = root / "cargo" / "bin"
+    wrappers = root / "bin"
+    public = tmp_path / "public"
+    cargo_bin.mkdir(parents=True)
+    wrappers.mkdir()
+    public.mkdir()
+    probe = cargo_bin / "rustc"
+    probe.write_text(
+        '#!/bin/sh\nprintf "%s|%s\\n" "$RUSTUP_HOME" "$CARGO_HOME"\n',
+        encoding="utf-8",
+    )
+    probe.chmod(0o755)
+    subprocess.run(
+        ["/bin/bash", "-c", function + '\nwrite_rust_wrapper "$1" rustc', "bash", str(root)],
+        check=True,
+    )
+    public_wrapper = public / "rustc"
+    public_wrapper.symlink_to(Path("../root/bin/rustc"))
+    expected = f"{root}/rustup|{root}/cargo"
+    restricted_environment = {"PATH": "/usr/bin:/bin"}
+
+    direct = subprocess.run(
+        [str(wrappers / "rustc")],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+    linked = subprocess.run(
+        [str(public_wrapper)],
+        check=True,
+        capture_output=True,
+        text=True,
+        env=restricted_environment,
+    )
+
+    assert direct.stdout.strip() == expected
+    assert linked.stdout.strip() == expected
+
+
+def test_rust_installer_refreshes_wrappers_after_cached_payload_reuse() -> None:
+    installer = PROJECT_TOOLCHAIN_INSTALLER.read_text(encoding="utf-8")
+    function_start = installer.index("install_rust() {")
+    function_end = installer.index("\n}\n\nif [[ \",${INSTALL_ONLY},\"", function_start)
+    function = installer[function_start:function_end]
+    reuse_branch_end = function.index("\n  fi\n")
+
+    for command_name in ("rustc", "cargo", "rustup"):
+        wrapper_call = f'write_rust_wrapper "${{target}}" "{command_name}"'
+        assert function.count(wrapper_call) == 1
+        assert function.index(wrapper_call) > reuse_branch_end
+
+
 @pytest.mark.parametrize("language", ["go", "rust", "python"])
 def test_real_fixed_user_toolchains_work_without_ambient_path(
     language: str,
@@ -37,7 +108,9 @@ def test_real_fixed_user_toolchains_work_without_ambient_path(
 
     selected = toolchains.exact_toolchain(language)  # type: ignore[arg-type]
 
-    assert selected.executable.startswith("/Users/stephen/.local/share/elmos/toolchains/")
+    assert Path(selected.executable).is_relative_to(
+        toolchains.configured_polyglot_toolchain_root()
+    )
     assert selected.executable_sha256
     assert selected.profile
     assert any(item.endswith("=NOT_RUN") for item in selected.profile)
@@ -74,6 +147,47 @@ def test_go_tree_verifier_rejects_same_version_content_drift(
 
     with pytest.raises(RouteError, match="EXACT_TOOLCHAIN_GO_TREE_MISMATCH"):
         toolchains._go_tree_identity()
+
+
+def test_rust_sysroot_digest_excludes_only_verified_owner_metadata(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    root = tmp_path / "rust-sysroot"
+    root.mkdir()
+    compiler = root / "rustc"
+    compiler.write_bytes(b"immutable-rust-bytes")
+    compiler.chmod(0o755)
+
+    local = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    original = toolchains._qualified_file_record
+
+    def alternate_owner_record(*args: object, **kwargs: object) -> dict[str, object]:
+        record = dict(original(*args, **kwargs))
+        record.update(
+            {
+                "uid": int(record["uid"]) + 10_000,
+                "gid": int(record["gid"]) + 10_000,
+            }
+        )
+        return record
+
+    monkeypatch.setattr(toolchains, "_qualified_file_record", alternate_owner_record)
+    alternate = toolchains._qualified_tree_manifest(
+        root,
+        tmp_path,
+        "TEST_UNSAFE",
+        portable_owner_identity=True,
+    )
+    strict = toolchains._qualified_tree_manifest(root, tmp_path, "TEST_UNSAFE")
+
+    assert alternate["sha256"] == local["sha256"]
+    assert strict["sha256"] != local["sha256"]
 
 
 @pytest.mark.parametrize("drift", ["wrapper", "sysroot"])

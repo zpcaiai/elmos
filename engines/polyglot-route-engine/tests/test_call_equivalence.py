@@ -14,6 +14,7 @@ Verifies that:
 from __future__ import annotations
 
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +22,7 @@ import pytest
 
 from elmos_polyglot_route import types
 from elmos_polyglot_route.emitter import emit
-from elmos_polyglot_route.identifier_hygiene import alpha_normalize_target, plan_identifiers, target_ir_view
+from elmos_polyglot_route.identifier_hygiene import alpha_normalize_target, plan_identifiers
 from elmos_polyglot_route.models import ROUTED_LANGUAGES, RouteError, SemanticIR
 from elmos_polyglot_route.native import analyze
 from elmos_polyglot_route.toolchains import exact_toolchain
@@ -396,7 +397,7 @@ def test_multicall_differential_runtime_execution(tmp_path: Path) -> None:
         # 1. Run Python
         py_script = f"{emitted_py}\nprint(step_two({x_val}, {y_val}))\n"
         py_res = subprocess.run(
-            ["python3", "-c", py_script],
+            [sys.executable, "-c", py_script],
             capture_output=True,
             text=True,
             check=True,

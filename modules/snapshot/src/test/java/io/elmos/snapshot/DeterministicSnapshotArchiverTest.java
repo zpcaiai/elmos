@@ -33,6 +33,35 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 class DeterministicSnapshotArchiverTest {
     @TempDir Path temp;
 
+    @Test void streamedSpoolPreservesCanonicalBytesAndCleansItsPrivateFile() throws Exception {
+        Path source = Files.createDirectory(temp.resolve("spool-source"));
+        Files.writeString(source.resolve("main.py"), "print('hello')\n");
+        var context = new DeterministicSnapshotArchiver.SnapshotContext("GITHUB", "repo", "org/repo",
+                "main", "a".repeat(40), "b".repeat(40));
+        var archiver = new DeterministicSnapshotArchiver();
+        var legacy = archiver.archive(source, context);
+        var spool = archiver.spool(source, context);
+        try (spool; var input = spool.openStream()) {
+            assertArrayEquals(legacy.archive(), input.readAllBytes());
+            assertArrayEquals(legacy.manifest(), spool.metadata().manifest());
+            assertEquals(legacy.archiveSha256(), spool.metadata().archiveSha256());
+            assertEquals(legacy.archive().length, spool.metadata().archiveSize());
+        }
+        assertThrows(IllegalStateException.class, spool::openStream);
+        try (var files = Files.list(temp)) { assertEquals(List.of(source), files.toList()); }
+    }
+
+    @Test void failedSpoolDoesNotLeavePartialArchives() throws Exception {
+        Path source = Files.createDirectory(temp.resolve("bad-spool-source"));
+        Files.writeString(source.resolve("payload"), "0123456789");
+        var archiver = new DeterministicSnapshotArchiver(
+                new DeterministicSnapshotArchiver.Limits(10, 5, 8, 16));
+        var context = new DeterministicSnapshotArchiver.SnapshotContext("GITHUB", "repo", "org/repo",
+                "main", "a".repeat(40), "b".repeat(40));
+        assertThrows(SecurityException.class, () -> archiver.spool(source, context));
+        try (var files = Files.list(temp)) { assertEquals(List.of(source), files.toList()); }
+    }
+
     @Test void createsStableArchiveAndExcludesGitAndSecrets() throws Exception {
         Path source = Files.createDirectory(temp.resolve("source"));
         Files.writeString(source.resolve("pom.xml"), "<project/>");

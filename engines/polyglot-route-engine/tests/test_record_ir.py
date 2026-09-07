@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from pathlib import Path
+
 import pytest
 
 from elmos_polyglot_route.models import (
@@ -12,7 +14,24 @@ from elmos_polyglot_route.models import (
     SourceSpan,
     Statement,
 )
-from elmos_polyglot_route.types import check, infer
+from elmos_polyglot_route.types import check
+
+RECORD_TARGET_LANGUAGES = (
+    "python",
+    "java",
+    "csharp",
+    "typescript",
+    "javascript",
+    "go",
+    "rust",
+    "cpp",
+    "objc",
+    "swift",
+    "kotlin",
+    "flutter",
+    "php",
+    "react",
+)
 
 
 def make_ir(
@@ -280,9 +299,19 @@ def test_record_type_checking_rejections() -> None:
 
     # 1. Duplicate record name
     with pytest.raises(RouteError, match="DUPLICATE_RECORD_NAME"):
-        check(make_ir(records=(point_rec, point_rec), functions=(
-            Function(name="f", parameters=(), return_type="integer", body=(Statement(kind="return", expression=Expression(kind="literal", value=1)),)),
-        )))
+        check(
+            make_ir(
+                records=(point_rec, point_rec),
+                functions=(
+                    Function(
+                        name="f",
+                        parameters=(),
+                        return_type="integer",
+                        body=(Statement(kind="return", expression=Expression(kind="literal", value=1)),),
+                    ),
+                ),
+            )
+        )
 
     # 2. Field of undefined record type
     bad_field_rec = RecordDefinition(
@@ -290,9 +319,19 @@ def test_record_type_checking_rejections() -> None:
         fields=(Parameter(name="a", type="NonExistentPoint"),),
     )
     with pytest.raises(RouteError, match="UNSUPPORTED_RECORD_FIELD_TYPE"):
-        check(make_ir(records=(bad_field_rec,), functions=(
-            Function(name="f", parameters=(), return_type="integer", body=(Statement(kind="return", expression=Expression(kind="literal", value=1)),)),
-        )))
+        check(
+            make_ir(
+                records=(bad_field_rec,),
+                functions=(
+                    Function(
+                        name="f",
+                        parameters=(),
+                        return_type="integer",
+                        body=(Statement(kind="return", expression=Expression(kind="literal", value=1)),),
+                    ),
+                ),
+            )
+        )
 
     # 3. Member access on scalar
     fn_bad_access = Function(
@@ -424,7 +463,6 @@ def test_record_type_checking_rejections() -> None:
 
 def test_record_emission_all_14_targets() -> None:
     from elmos_polyglot_route.emitter import emit
-    from elmos_polyglot_route.models import COMPLETE_MATRIX_LANGUAGES
 
     point_rec = RecordDefinition(
         name="Point",
@@ -621,14 +659,14 @@ def test_python_analyzer_record_lifting(tmp_path: Path) -> None:
     assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
 
     from elmos_polyglot_route.emitter import emit
-    for target in ["python", "java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "kotlin", "flutter", "php", "react"]:
+    for target in RECORD_TARGET_LANGUAGES:
         emitted = emit(ir, target)
         assert "Point" in emitted.content
 
 
 def test_go_analyzer_record_lifting(tmp_path: Path) -> None:
-    from elmos_polyglot_route.native import analyze
     from elmos_polyglot_route.emitter import emit
+    from elmos_polyglot_route.native import analyze
 
     go_file = tmp_path / "point.go"
     go_file.write_text(
@@ -678,14 +716,14 @@ def test_go_analyzer_record_lifting(tmp_path: Path) -> None:
     assert stmt2.expression.arguments[0][0] == "x" and stmt2.expression.arguments[0][1].value == "new_x"
     assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
 
-    for target in ["python", "java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "kotlin", "flutter", "php", "react"]:
+    for target in RECORD_TARGET_LANGUAGES:
         emitted = emit(ir, target)
         assert "Point" in emitted.content
 
 
 def test_typescript_analyzer_record_lifting(tmp_path: Path) -> None:
-    from elmos_polyglot_route.native import analyze
     from elmos_polyglot_route.emitter import emit
+    from elmos_polyglot_route.native import analyze
 
     ts_file = tmp_path / "point.ts"
     ts_file.write_text(
@@ -733,14 +771,13 @@ def test_typescript_analyzer_record_lifting(tmp_path: Path) -> None:
     assert stmt2.expression.arguments[0][0] == "x" and stmt2.expression.arguments[0][1].value == "new_x"
     assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
 
-    for target in ["python", "java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "kotlin", "flutter", "php", "react"]:
+    for target in RECORD_TARGET_LANGUAGES:
         emitted = emit(ir, target)
         assert "Point" in emitted.content
 
 
 def test_typescript_type_alias_record_lifting(tmp_path: Path) -> None:
     from elmos_polyglot_route.native import analyze
-    from elmos_polyglot_route.emitter import emit
 
     ts_file = tmp_path / "point_alias.ts"
     ts_file.write_text(
@@ -774,8 +811,8 @@ def test_typescript_type_alias_record_lifting(tmp_path: Path) -> None:
 
 
 def test_java_analyzer_record_lifting(tmp_path: Path) -> None:
-    from elmos_polyglot_route.native import analyze
     from elmos_polyglot_route.emitter import emit
+    from elmos_polyglot_route.native import analyze
 
     java_file = tmp_path / "Geometry.java"
     java_file.write_text(
@@ -822,7 +859,7 @@ def test_java_analyzer_record_lifting(tmp_path: Path) -> None:
     assert stmt2.expression.arguments[0][0] == "x" and stmt2.expression.arguments[0][1].value == "new_x"
     assert stmt2.expression.arguments[1][0] == "y" and stmt2.expression.arguments[1][1].value == "new_y"
 
-    for target in ["python", "java", "csharp", "typescript", "javascript", "go", "rust", "cpp", "objc", "swift", "kotlin", "flutter", "php", "react"]:
+    for target in RECORD_TARGET_LANGUAGES:
         emitted = emit(ir, target)
         assert "Point" in emitted.content
 
@@ -847,8 +884,8 @@ def test_java_analyzer_record_field_access(tmp_path: Path) -> None:
 
 
 def test_java_analyzer_record_rejections(tmp_path: Path) -> None:
-    from elmos_polyglot_route.native import analyze
     from elmos_polyglot_route.models import RouteError
+    from elmos_polyglot_route.native import analyze
 
     # Generic record rejected
     f1 = tmp_path / "GenericRec.java"
@@ -885,7 +922,6 @@ def test_java_analyzer_record_rejections(tmp_path: Path) -> None:
     )
     with pytest.raises(RouteError):
         analyze(f3, "java", "f")
-
 
 
 

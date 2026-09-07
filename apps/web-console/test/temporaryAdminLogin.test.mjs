@@ -9,8 +9,9 @@ registerHooks({ resolve(specifier, context, nextResolve) {
 } });
 const account = await import("../app/lib/server/accountSession.ts");
 const { POST } = await import("../app/api/auth/admin/login/route.ts");
-const { POST: userLogin } = await import("../app/api/auth/login/route.ts");
-const { POST: logout } = await import("../app/api/auth/logout/route.ts");
+const { POST: userLogin } = await import("../app/api/auth/login/_route.ts");
+const { POST: logout } = await import("../app/api/auth/logout/_route.ts");
+const { GET: sessionRoute } = await import("../app/api/auth/session/route.ts");
 const { authorizeAdmin } = await import("../app/lib/server/operationsProxy.ts");
 const { requireRunnerFleetOidcAdmin } = await import("../app/lib/server/runnerFleetPolicy.ts");
 const password = randomBytes(24).toString("hex");
@@ -67,6 +68,11 @@ test("password login yields a real admin session without claiming mailbox verifi
   assert.equal(admin.authentication, "TEMPORARY_ADMIN_PASSWORD");
   assert.equal(admin.accessToken, undefined);
   assert.throws(() => requireRunnerFleetOidcAdmin(admin, "OPERATOR"), /企业账户/);
+  const sessionResponse = await sessionRoute(new NextRequest("http://localhost:3000/api/auth/session", {
+    headers: { host: "localhost:3000", cookie },
+  }));
+  assert.equal(sessionResponse.status, 200);
+  assert.equal((await sessionResponse.json()).authenticated, true);
 });
 
 test("wrong password and wrong username cannot create a session", async () => {

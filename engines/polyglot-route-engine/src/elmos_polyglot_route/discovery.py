@@ -1333,10 +1333,9 @@ def discover_repository(
                 blocker_verdict = blocker.get("verdict", Verdict.UNSUPPORTED)
                 if blocker_verdict not in {Verdict.UNSUPPORTED, Verdict.NOT_RUN}:
                     raise RouteError("DISCOVERY_BLOCKER_VERDICT_INVALID")
-                blocker_symbol = (
-                    blocker.get("source_symbol")
-                    if isinstance(blocker.get("source_symbol"), dict)
-                    else {}
+                raw_blocker_symbol = blocker.get("source_symbol")
+                blocker_symbol: dict[str, Any] = (
+                    raw_blocker_symbol if isinstance(raw_blocker_symbol, dict) else {}
                 )
                 blocker_name = str(
                     blocker.get("function_name")

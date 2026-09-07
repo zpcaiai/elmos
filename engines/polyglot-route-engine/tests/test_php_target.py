@@ -8,6 +8,7 @@ host without the pinned PHP build must not be able to make them pass.
 from __future__ import annotations
 
 import hashlib
+import json
 
 import pytest
 
@@ -474,6 +475,35 @@ def test_the_php_tree_identity_records_symlinks_instead_of_refusing_them(tmp_pat
     identity = php_tree_identity(root, root.parent, "TEST_UNSAFE")
     assert identity["symlinks"] == {"bin/phar": "phar.phar"}
     assert identity["unbound_symlinks"] == {"pecl": str(outside / "pecl")}
+
+
+def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    receipt = root / "INSTALL_RECEIPT.json"
+    document = {
+        "homebrew_version": "6.0.1",
+        "time": 1,
+        "source_modified_time": 100,
+        "arch": "arm64",
+        "source": {"tap": "homebrew/core", "versions": {"stable": "8.5.9"}},
+    }
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document.update(
+        {"homebrew_version": "6.1.0", "time": 2, "source_modified_time": 200}
+    )
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert invocation_drift == baseline
+
+    document["arch"] = "x86_64"
+    receipt.write_text(json.dumps(document), encoding="utf-8")
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
 
 
 def test_an_escaping_symlink_to_a_loadable_object_is_refused(tmp_path) -> None:

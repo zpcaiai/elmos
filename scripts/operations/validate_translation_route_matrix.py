@@ -1421,11 +1421,11 @@ def check_repository_pipeline() -> None:
 
     console = ROOT / "apps" / "web-console" / "app"
     require(
-        (console / "api" / "translation" / "repository-plan" / "route.ts").is_file(),
+        (console / "api" / "translation" / "repository-plan" / "_route.ts").is_file(),
         "CONSOLE_PLAN_ROUTE_MISSING",
     )
     require(
-        (console / "api" / "translation" / "discovery-report" / "route.ts").is_file(),
+        (console / "api" / "translation" / "discovery-report" / "_route.ts").is_file(),
         "CONSOLE_DISCOVERY_ROUTE_MISSING",
     )
     discovery_server = (

@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Mapping
-from typing import Protocol, cast
+from typing import Protocol
 
 import sqlglot
 from sqlglot import exp
@@ -586,16 +586,26 @@ def _body_statements(body: exp.Expression | None, source_dialect: Dialect) -> li
             current = []
             if chunk:
                 try:
-                    stmt = cast(exp.Expression, sqlglot.parse_one(chunk, read=source_dialect.value))
-                    statements.append(stmt)
+                    parsed_statement = sqlglot.parse_one(
+                        chunk, read=source_dialect.value
+                    )
+                    if isinstance(parsed_statement, exp.Expression):
+                        statements.append(parsed_statement)
+                    else:
+                        statements.append(exp.Command(this=chunk))
                 except Exception:
                     statements.append(exp.Command(this=chunk))
     if current:
         chunk = " ".join(current).rstrip(";").strip()
         if chunk:
             try:
-                stmt = cast(exp.Expression, sqlglot.parse_one(chunk, read=source_dialect.value))
-                statements.append(stmt)
+                parsed_statement = sqlglot.parse_one(
+                    chunk, read=source_dialect.value
+                )
+                if isinstance(parsed_statement, exp.Expression):
+                    statements.append(parsed_statement)
+                else:
+                    statements.append(exp.Command(this=chunk))
             except Exception:
                 statements.append(exp.Command(this=chunk))
     return statements
@@ -678,7 +688,9 @@ def parse_procedure(
             assignments.append(RoutineAssignment(target_name, value))
         elif isinstance(item, exp.Rollback):
             sp_id = item.args.get("savepoint")
-            sp_name = str(getattr(sp_id, "this", sp_id) or "")
+            sp_name = str(
+                sp_id.this if isinstance(sp_id, exp.Expression) else (sp_id or "")
+            )
             if not sp_name:
                 tokens = item.sql().split()
                 sp_name = tokens[-1].rstrip(";")
@@ -1404,8 +1416,9 @@ def emit_row_policy(policy: RowPolicy, target_dialect: Dialect, allow_rls_shim: 
             pol_name = quote_identifier(policy.name, target_dialect)
             tbl_name = _object_name(policy.schema, policy.table, target_dialect)
             return (
-                f"CREATE SECURITY POLICY {sec_schema}.{pol_name} ADD FILTER PREDICATE "
-                f"{sec_schema}.fn_rls({col}) ON {tbl_name} WITH (STATE = ON)"
+                f"CREATE SECURITY POLICY {sec_schema}.{pol_name} "
+                f"ADD FILTER PREDICATE {sec_schema}.fn_rls({col}) "
+                f"ON {tbl_name} WITH (STATE = ON)"
             )
         elif target_dialect is Dialect.ORACLE:
             schema_str = f"'{policy.schema}'" if policy.schema else "USER"
@@ -1558,8 +1571,8 @@ def emit_comment(
                     "CERTIFIED_COMMENT_TARGET_UNSUPPORTED",
                     f"{target_dialect.value} has no standalone COMMENT ON FUNCTION metadata route",
                 )
-            function_name = _object_name(comment.schema, comment.object_name, target_dialect)
-            return f"-- COMMENT ON FUNCTION {function_name} IS '{escaped}'"
+            qualified = _object_name(comment.schema, comment.object_name, target_dialect)
+            return f"-- COMMENT ON FUNCTION {qualified} IS '{escaped}'"
         qualified = _object_name(comment.schema, comment.object_name, target_dialect)
         signature = ", ".join(quote_identifier(item, target_dialect) for item in comment.routine_argument_types)
         if target_dialect is Dialect.MYSQL:

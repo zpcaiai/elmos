@@ -1053,8 +1053,11 @@ def plan_identifiers(
     if ir.diagnostics:
         raise RouteError("IDENTIFIER_SOURCE_DIAGNOSTICS_PRESENT")
     source_function_names = [function.name for function in ir.functions]
-    if len(set(source_function_names)) != len(source_function_names):
-        raise RouteError("IDENTIFIER_SOURCE_FUNCTION_DUPLICATED")
+    seen_source_function_names: set[str] = set()
+    for source_function_name in source_function_names:
+        if source_function_name in seen_source_function_names:
+            raise RouteError(f"DUPLICATE_FUNCTION_NAME:{source_function_name}")
+        seen_source_function_names.add(source_function_name)
     types.check(ir)
     policy = policy_for_language(target_language)
     source_ir_sha256 = _source_ir_digest(ir)

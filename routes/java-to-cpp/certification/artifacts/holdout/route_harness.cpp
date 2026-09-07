@@ -39,23 +39,23 @@
 }
 
 int main() {
-    const auto actual_0 = echoNumber(-0.0);
+    const auto actual_0 = elmos_fn_e66d7b6fbbab8d72(-0.0);
     const auto expected_0 = -0.0;
     if (!elmos_harness_same_fp64(actual_0, expected_0)) return 1;
     std::cout << "ELMOS_OBSERVATION\t0\tfp64-hex\t" << elmos_harness_fp64(actual_0) << "\n";
-    const auto actual_1 = echoNumber(0.0);
+    const auto actual_1 = elmos_fn_e66d7b6fbbab8d72(0.0);
     const auto expected_1 = 0.0;
     if (!elmos_harness_same_fp64(actual_1, expected_1)) return 2;
     std::cout << "ELMOS_OBSERVATION\t1\tfp64-hex\t" << elmos_harness_fp64(actual_1) << "\n";
-    const auto actual_2 = echoNumber(1.7976931348623157e+308);
+    const auto actual_2 = elmos_fn_e66d7b6fbbab8d72(1.7976931348623157e+308);
     const auto expected_2 = 1.7976931348623157e+308;
     if (!elmos_harness_same_fp64(actual_2, expected_2)) return 3;
     std::cout << "ELMOS_OBSERVATION\t2\tfp64-hex\t" << elmos_harness_fp64(actual_2) << "\n";
-    const auto actual_3 = echoNumber(-1.7976931348623157e+308);
+    const auto actual_3 = elmos_fn_e66d7b6fbbab8d72(-1.7976931348623157e+308);
     const auto expected_3 = -1.7976931348623157e+308;
     if (!elmos_harness_same_fp64(actual_3, expected_3)) return 4;
     std::cout << "ELMOS_OBSERVATION\t3\tfp64-hex\t" << elmos_harness_fp64(actual_3) << "\n";
-    const auto actual_4 = echoNumber(2.2250738585072014e-308);
+    const auto actual_4 = elmos_fn_e66d7b6fbbab8d72(2.2250738585072014e-308);
     const auto expected_4 = 2.2250738585072014e-308;
     if (!elmos_harness_same_fp64(actual_4, expected_4)) return 5;
     std::cout << "ELMOS_OBSERVATION\t4\tfp64-hex\t" << elmos_harness_fp64(actual_4) << "\n";

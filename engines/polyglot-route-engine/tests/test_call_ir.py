@@ -2,10 +2,11 @@ from __future__ import annotations
 
 import tempfile
 from pathlib import Path
+
 import pytest
 
 from elmos_polyglot_route import emitter, types
-from elmos_polyglot_route.identifier_hygiene import alpha_normalize_target, plan_identifiers
+from elmos_polyglot_route.identifier_hygiene import plan_identifiers
 from elmos_polyglot_route.models import (
     Expression,
     Function,

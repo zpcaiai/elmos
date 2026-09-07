@@ -1,7 +1,24 @@
 import { expect, test } from "@playwright/test";
 import { writeFile } from "node:fs/promises";
 
-const routes = ["/", "/frontend", "/capabilities", "/help"] as const;
+const routes = [
+  "/",
+  "/frontend",
+  "/capabilities",
+  "/help",
+  "/login",
+  "/register",
+  "/admin/login",
+] as const;
+const trustedOidcToken = process.env.ELMOS_VERCEL_TRUSTED_OIDC_TOKEN?.trim();
+
+test.beforeEach(async ({ context }) => {
+  if (trustedOidcToken) {
+    await context.setExtraHTTPHeaders({
+      "x-vercel-trusted-oidc-idp-token": trustedOidcToken,
+    });
+  }
+});
 
 test("deployed console renders its critical public routes", async ({ page }, testInfo) => {
   const observations: Array<Record<string, unknown>> = [];
@@ -66,19 +83,33 @@ test("health reports readiness honestly and never upgrades blocked dependencies"
   }
 });
 
-test("deployed console authenticates test/test credential and yields session", async ({ page }) => {
+test("deployed console exposes separate provider-backed user and administrator entry points", async ({ page }) => {
   await page.goto("/login", { waitUntil: "domcontentloaded" });
-  await page.getByLabel("邮箱").fill("test@example.test");
-  await page.getByLabel("密码").fill("test");
-  await page.getByRole("button", { name: "使用邮箱登录" }).click();
-  await expect(page).toHaveURL(/\/$/, { timeout: 20_000 });
+  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "邮箱验证码登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "微信扫码登录" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute("href", "/admin/login");
+  await expect(page.getByLabel("密码")).toHaveCount(0);
+
+  await page.goto("/register", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "注册 ELMOS 账户" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "邮箱注册" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "手机号注册" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "微信扫码注册" })).toBeVisible();
+
+  await page.goto("/admin/login", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+  await expect(page.getByLabel("管理员邮箱")).toHaveValue("zpchoney@gmail.com");
+  await expect(page.getByRole("heading", { name: "手机号验证码登录" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "微信扫码登录" })).toHaveCount(0);
+  await expect(page.getByText("每次管理员成功登录后")).toBeVisible();
 
   const session = await page.evaluate(async () => {
     const response = await fetch("/api/auth/session", { credentials: "same-origin" });
     return response.json();
   }) as { authenticated?: boolean; principal?: { actorId?: string } };
 
-  expect(session.authenticated).toBe(true);
-  expect(session.principal?.actorId).toBe("local:test");
+  expect(session.authenticated).toBe(false);
+  expect(session.principal?.actorId).toBeUndefined();
 });
-

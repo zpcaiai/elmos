@@ -239,6 +239,25 @@ class SpringLaunchReadinessTests(unittest.TestCase):
         self.assertIn("EXTERNAL_EVIDENCE_INTAKE=NOT_RUN", result.stdout)
         self.assertIn("CERTIFICATION=NOT_CERTIFIED", result.stdout)
 
+    def test_worker_management_endpoint_allowlist_is_exact(self):
+        validator = self.load_validator("spring_launch_endpoint_allowlist")
+        original = validator.WORKER_CONFIG.read_text(encoding="utf-8")
+        cases = (
+            original.replace("health,info,prometheus", "health,info"),
+            original.replace("health,info,prometheus", "health,info,prometheus,env"),
+        )
+        for index, worker_config in enumerate(cases):
+            with self.subTest(index=index), tempfile.TemporaryDirectory() as temporary:
+                candidate = Path(temporary) / "application.yml"
+                candidate.write_text(worker_config, encoding="utf-8")
+                with mock.patch.object(validator, "WORKER_CONFIG", candidate):
+                    errors: list[str] = []
+                    validator.validate_code(errors)
+                self.assertIn(
+                    "Spring worker must expose only the minimal internal health, info, and Prometheus endpoints",
+                    errors,
+                )
+
     def test_production_mode_fails_without_external_evidence(self):
         result = subprocess.run(
             [sys.executable, str(SCRIPT), "--require-production-evidence"],
