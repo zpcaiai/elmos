@@ -124,7 +124,7 @@ export default async function LoginPage({
         {configured && !descopeReady && (
           <a
             className="button button-primary"
-            href={`/api/auth/login?${new URLSearchParams({ mode: "USER", returnTo })}`}
+            href={`/api/auth/login?${new URLSearchParams({ returnTo })}`}
           >
             使用企业账户登录用户中心
           </a>
@@ -134,7 +134,6 @@ export default async function LoginPage({
             <h2>使用邮箱登录</h2>
             <p>本地邮箱密码登录仅限 localhost 开发测试；生产环境永久禁用。</p>
             <input type="hidden" name="returnTo" value={returnTo} />
-            <input type="hidden" name="loginMode" value="USER" />
             <label>
               <span>邮箱</span>
               <input
@@ -172,7 +171,7 @@ export default async function LoginPage({
             <span>需要设置精确的 issuer、授权端点、令牌端点、JWKS、client 和回调地址。</span>
           </div>
         )}
-        <small>普通用户登录不会授予管理员权限。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
+        <small>普通用户登录不会授予管理员权限。管理员登录使用完全独立的入口与页面，本页面不提供管理员登录功能。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
       </div>
     </section>
   );
