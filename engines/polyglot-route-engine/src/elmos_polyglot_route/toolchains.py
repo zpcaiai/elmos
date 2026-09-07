@@ -479,8 +479,12 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
-    php_tree_bytes=129_949_464,
+    # The bottle payload is unchanged, but the exact hosted Homebrew client
+    # emits a different INSTALL_RECEIPT schema from the local qualification
+    # host.  The receipt is deliberately part of the tree identity, so bind
+    # the observed current-image tree instead of erasing unknown schema drift.
+    php_tree_sha256="18bf35967489933e2808140742856a7e6b9cad30b3ec9416dfdb0d49166b1a93",
+    php_tree_bytes=129_949_446,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
@@ -488,6 +492,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     image_version="20260728.0273.1",
     product_version="26.5.2",
     build_version="25F84",
+    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
+    php_tree_bytes=129_949_464,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,

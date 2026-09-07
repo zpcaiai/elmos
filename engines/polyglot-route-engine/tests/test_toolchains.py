@@ -15,7 +15,7 @@ def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> Non
     local = toolchains._HOMEBREW_ROUTE_LOCAL_PROFILE
     legacy = toolchains._HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE
     current = toolchains._HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE
-    closure_fields = (
+    shared_dotnet_closure_fields = (
         "dotnet_muxer_sha256",
         "dotnet_muxer_bytes",
         "dotnet_sdk_tree_sha256",
@@ -30,15 +30,22 @@ def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> Non
         "dotnet_apphost_pack_tree_bytes",
         "dotnet_hostfxr_sha256",
         "dotnet_hostpolicy_sha256",
-        "php_tree_sha256",
-        "php_tree_bytes",
     )
 
     assert legacy.profile_id == "github-macos26-20260728.0273.1"
     assert current.profile_id == "github-macos26-20260831.0337.3"
-    assert tuple(getattr(legacy, field) for field in closure_fields) == tuple(
-        getattr(current, field) for field in closure_fields
+    assert tuple(getattr(legacy, field) for field in shared_dotnet_closure_fields) == tuple(
+        getattr(current, field) for field in shared_dotnet_closure_fields
     )
+    assert (legacy.php_tree_sha256, legacy.php_tree_bytes) == (
+        local.php_tree_sha256,
+        local.php_tree_bytes,
+    )
+    assert (current.php_tree_sha256, current.php_tree_bytes) == (
+        "18bf35967489933e2808140742856a7e6b9cad30b3ec9416dfdb0d49166b1a93",
+        129_949_446,
+    )
+    assert current.php_tree_sha256 != legacy.php_tree_sha256
     assert local.dotnet_muxer_sha256 != legacy.dotnet_muxer_sha256
 
 
