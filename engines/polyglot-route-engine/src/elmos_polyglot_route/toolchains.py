@@ -438,8 +438,14 @@ class HomebrewRouteBundleProfile:
     dotnet_hostpolicy_sha256: str
     php_tree_sha256: str
     php_tree_bytes: int
+    flutter_dart_sdk_tree_sha256: str
+    flutter_dart_sdk_tree_record_count: int
+    flutter_dart_sdk_tree_file_count: int
+    flutter_dart_sdk_tree_directory_count: int
+    flutter_dart_sdk_tree_bytes: int
     php_tree_alternates: tuple[tuple[str, int], ...] = ()
     php_tree_identity_status: str = "PINNED"
+    flutter_dart_sdk_tree_identity_status: str = "PINNED"
 
 
 _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
@@ -463,6 +469,11 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
     php_tree_sha256="927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177",
     php_tree_bytes=129_937_259,
+    flutter_dart_sdk_tree_sha256="04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50",
+    flutter_dart_sdk_tree_record_count=1_124,
+    flutter_dart_sdk_tree_file_count=1_012,
+    flutter_dart_sdk_tree_directory_count=112,
+    flutter_dart_sdk_tree_bytes=607_877_856,
 )
 # These hosted values are the last complete pre-normalization captures. They
 # deliberately remain unchanged until a hosted runner emits and a reviewer
@@ -490,7 +501,16 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
     php_tree_sha256="abc9393ce9a39a8fac107362bba382687aafe4953be02834531033d8e3198a23",
     php_tree_bytes=129_949_421,
+    # No post-install Dart SDK tree was captured for this retired image.
+    # These placeholder values can only be emitted by the fail-closed probe
+    # path below and can never authorize repository execution.
+    flutter_dart_sdk_tree_sha256="04d7a83d8272225ebed087d732418a40b0ab51ef32d370d22c17b80da72f8a50",
+    flutter_dart_sdk_tree_record_count=1_124,
+    flutter_dart_sdk_tree_file_count=1_012,
+    flutter_dart_sdk_tree_directory_count=112,
+    flutter_dart_sdk_tree_bytes=607_877_856,
     php_tree_identity_status="PROBE_REQUIRED",
+    flutter_dart_sdk_tree_identity_status="PROBE_REQUIRED",
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -513,6 +533,13 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
     php_tree_sha256="0d4e4ce28b2e8a7715fc93ea8dc5d095a3400d781056a574555fcbf927d2f9a0",
     php_tree_bytes=129_937_253,
+    # Emitted by the fail-closed repository-build preflight after the pinned
+    # Flutter cask install and flutter_tools lock hydration on this exact image.
+    flutter_dart_sdk_tree_sha256="723c91129a701c5f3aaf31e30df986e6d79c70092b3f9087b7d3225028a7b107",
+    flutter_dart_sdk_tree_record_count=1_125,
+    flutter_dart_sdk_tree_file_count=1_013,
+    flutter_dart_sdk_tree_directory_count=112,
+    flutter_dart_sdk_tree_bytes=611_763_504,
 )
 _HOMEBREW_ROUTE_HOST_PROFILES = (
     _HOMEBREW_ROUTE_LOCAL_PROFILE,
@@ -5543,26 +5570,38 @@ _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT = 112
 _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES = 607_877_856
 
 
-def _expected_flutter_build_closure() -> dict[str, object]:
+def _flutter_build_profile() -> HomebrewRouteBundleProfile:
+    profile = homebrew_route_bundle_profile()
+    if profile.flutter_dart_sdk_tree_identity_status not in {"PINNED", "PROBE_REQUIRED"}:
+        raise RouteError("EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_IDENTITY_STATUS_INVALID")
+    return profile
+
+
+def _expected_flutter_build_closure(
+    profile: HomebrewRouteBundleProfile | None = None,
+) -> dict[str, object]:
+    selected = profile or _flutter_build_profile()
     return {
         "schema": _EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA,
         "trees": {
             "dart_sdk": {
                 "root": str(_EXPECTED_FLUTTER_DART_SDK_ROOT),
-                "sha256": _EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-                "record_count": _EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-                "file_count": _EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-                "directory_count": _EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-                "bytes": _EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+                "sha256": selected.flutter_dart_sdk_tree_sha256,
+                "record_count": selected.flutter_dart_sdk_tree_record_count,
+                "file_count": selected.flutter_dart_sdk_tree_file_count,
+                "directory_count": selected.flutter_dart_sdk_tree_directory_count,
+                "bytes": selected.flutter_dart_sdk_tree_bytes,
             },
         },
     }
 
 
-def _flutter_build_closure_sha256() -> str:
+def _flutter_build_closure_sha256(
+    profile: HomebrewRouteBundleProfile | None = None,
+) -> str:
     return hashlib.sha256(
         json.dumps(
-            _expected_flutter_build_closure(),
+            _expected_flutter_build_closure(profile),
             sort_keys=True,
             separators=(",", ":"),
             ensure_ascii=True,
@@ -5571,20 +5610,26 @@ def _flutter_build_closure_sha256() -> str:
 
 
 def _flutter_build_tree_identities() -> dict[str, dict[str, object]]:
+    profile = _flutter_build_profile()
     dart_sdk = _qualified_tree_manifest(
         _EXPECTED_FLUTTER_DART_SDK_ROOT,
         _EXPECTED_FLUTTER_ROOT,
         "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_UNSAFE",
         portable_owner_identity=True,
     )
+    if profile.flutter_dart_sdk_tree_identity_status == "PROBE_REQUIRED":
+        raise RouteError(
+            "EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_PROBE_REQUIRED:observed="
+            + json.dumps(dart_sdk, sort_keys=True, separators=(",", ":"))
+        )
     _verify_qualified_tree_manifest(
         dart_sdk,
         expected_root=_EXPECTED_FLUTTER_DART_SDK_ROOT,
-        expected_sha256=_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256,
-        expected_record_count=_EXPECTED_FLUTTER_DART_SDK_TREE_RECORD_COUNT,
-        expected_file_count=_EXPECTED_FLUTTER_DART_SDK_TREE_FILE_COUNT,
-        expected_directory_count=_EXPECTED_FLUTTER_DART_SDK_TREE_DIRECTORY_COUNT,
-        expected_bytes=_EXPECTED_FLUTTER_DART_SDK_TREE_BYTES,
+        expected_sha256=profile.flutter_dart_sdk_tree_sha256,
+        expected_record_count=profile.flutter_dart_sdk_tree_record_count,
+        expected_file_count=profile.flutter_dart_sdk_tree_file_count,
+        expected_directory_count=profile.flutter_dart_sdk_tree_directory_count,
+        expected_bytes=profile.flutter_dart_sdk_tree_bytes,
         failure="EXACT_TOOLCHAIN_FLUTTER_DART_SDK_TREE_MISMATCH",
     )
     return {"dart_sdk": dart_sdk}
@@ -5598,6 +5643,11 @@ def _flutter() -> ExactToolchain:
             "EXACT_TOOLCHAIN_PLATFORM_MISMATCH:flutter:expected=Darwin/arm64:"
             f"observed={platform.system()}/{platform.machine()}"
         )
+    build_profile = _flutter_build_profile()
+    if build_profile.flutter_dart_sdk_tree_identity_status == "PROBE_REQUIRED":
+        # Emit the full safe observed identity on an unqualified historical
+        # image, but never allow that observation to authorize execution.
+        _flutter_build_tree_identities()
     paths = (
         (_EXPECTED_FLUTTER_EXECUTABLE, _EXPECTED_FLUTTER_EXECUTABLE_BYTES, _EXPECTED_FLUTTER_EXECUTABLE_SHA256),
         (_EXPECTED_FLUTTER_DART, _EXPECTED_FLUTTER_DART_BYTES, _EXPECTED_FLUTTER_DART_SHA256),
@@ -5648,9 +5698,10 @@ def _flutter() -> ExactToolchain:
             f"flutter-root={_EXPECTED_FLUTTER_ROOT}",
             f"flutter-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[1]}",
             f"flutter-engine-revision={_EXPECTED_FLUTTER_VERSION_FIELDS[2]}",
+            f"homebrew-bundle-profile={build_profile.profile_id}",
             f"flutter-build-closure-schema={_EXPECTED_FLUTTER_BUILD_CLOSURE_SCHEMA}",
-            f"flutter-build-closure-sha256={_flutter_build_closure_sha256()}",
-            f"flutter-dart-sdk-tree-sha256={_EXPECTED_FLUTTER_DART_SDK_TREE_SHA256}",
+            f"flutter-build-closure-sha256={_flutter_build_closure_sha256(build_profile)}",
+            f"flutter-dart-sdk-tree-sha256={build_profile.flutter_dart_sdk_tree_sha256}",
             "dart-analyzer=10.1.0",
             "_fe_analyzer_shared=95.0.0",
             "repository-build=pure-dart-import-free",
