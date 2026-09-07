@@ -473,6 +473,11 @@ jobs:
 
           _php_tree_identity()
           PY
+          # Exercise the hosted Flutter/Dart repository-build path before the
+          # multi-hour core partition. A failure remains blocking, while the
+          # report-bound assertion exposes the exact reason code for repair.
+          uv --directory engines/polyglot-route-engine run --locked pytest -q \
+            "$GITHUB_WORKSPACE/engines/polyglot-route-engine/tests/test_flutter_repository_pipeline.py::test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
           uv --directory engines/polyglot-route-engine run --locked pytest \
             "$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"
           uv --directory engines/polyglot-route-engine run --locked python - <<'PY'

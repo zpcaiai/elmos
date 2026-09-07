@@ -657,6 +657,9 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         php_identity_preflight = route_engine_job.index(
             "from elmos_polyglot_route.toolchains import _php_tree_identity"
         )
+        flutter_repository_preflight = route_engine_job.index(
+            "test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
+        )
         closure_tests = route_engine_job.index(
             '"$GITHUB_WORKSPACE/tests/batch35/test_packed_replay_schema_closure.py"'
         )
@@ -682,8 +685,15 @@ class PolyglotRouteCiReadinessTests(unittest.TestCase):
         self.assertLess(native_core_build, core_partition)
         self.assertLess(private_environment, route_sync)
         self.assertLess(route_sync, php_identity_preflight)
-        self.assertLess(php_identity_preflight, closure_tests)
+        self.assertLess(php_identity_preflight, flutter_repository_preflight)
+        self.assertLess(flutter_repository_preflight, closure_tests)
         self.assertEqual(route_engine_job.count("_php_tree_identity()"), 1)
+        self.assertEqual(
+            route_engine_job.count(
+                "test_flutter_target_repository_analyzes_compiles_and_runs_pure_dart_kernel"
+            ),
+            1,
+        )
         self.assertEqual(
             route_engine_job.count(
                 "uv --directory engines/polyglot-route-engine run --locked "
