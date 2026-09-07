@@ -66,9 +66,10 @@
       "evaluated": true,
       "observed": 427,
       "evidenceRefs": [
-        "b40-dependency-inventory"
+        "b40-dependency-inventory",
+        "b40-repository-controls"
       ],
-      "note": "427 external direct components have no resolved license decision in the bounded inventory; unknown license state fails closed"
+      "note": "427 external direct components have no approved license decision; 26 also lack observed license metadata. Metadata never implies legal approval, and unknown decision state fails closed"
     },
     {
       "name": "unsignedProductionArtifacts",

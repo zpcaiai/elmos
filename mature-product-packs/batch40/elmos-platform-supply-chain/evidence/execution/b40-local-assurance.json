@@ -2,9 +2,9 @@
   "check": "batch40-local-assurance",
   "batch": 40,
   "status": "PASS",
-  "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
-  "startedAt": "2026-09-06T23:59:48.318936Z",
-  "finishedAt": "2026-09-06T23:59:49.044417Z",
+  "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
+  "startedAt": "2026-09-07T04:48:45.197286Z",
+  "finishedAt": "2026-09-07T04:48:45.239670Z",
   "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
   "toolDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7",
   "scope": {
@@ -16,10 +16,10 @@
     "freshnessWindowDays": 30
   },
   "inputs": {
-    "workflowSha256": "sha256:8a8af2d85bcef8a462232167c490865ca435bdc4dad122d5b9c251dd703e974f",
+    "workflowSha256": "sha256:16e9ed595bebab8e09c4461f309ecab9c0d9025094252a722e11e983adaa273d",
     "threatModelSha256": "sha256:628bb97ab0f87d0f651b09c03a0a351676490eb50fc2c7e662b2036848d2634d",
-    "evidenceClaimSetSha256": "sha256:da1d0c8d836fa43079cb4d5acad7569ac17fc5b8bfd22f01b0ff8992c9e4ce91",
-    "claimNarrativeSetSha256": "sha256:e78e98d115c99ca27913e2c545769f3293ab16628770adeec67b0a7daf747d76"
+    "evidenceClaimSetSha256": "sha256:1a7bc47025b2a68e70b9106dd8517c5af3951ea8eec9bbf4f55ccdc66a502394",
+    "claimNarrativeSetSha256": "sha256:b9ffdd94f0b6ce923542668db115f0c8f02cf0ecd6a29da3bcd11463380ed01c"
   },
   "metrics": {
     "auditEvidenceFreshnessRate": 1.0,
@@ -337,13 +337,13 @@
     },
     {
       "evidenceRef": "b40-dependency-inventory",
-      "timestamp": "2026-09-06T19:43:57.124829Z",
+      "timestamp": "2026-09-07T04:48:43.817837Z",
       "fresh": true,
       "problem": null
     },
     {
       "evidenceRef": "b40-repository-controls",
-      "timestamp": "2026-09-06T23:59:38.761251Z",
+      "timestamp": "2026-09-07T04:48:44.863967Z",
       "fresh": true,
       "problem": null
     },

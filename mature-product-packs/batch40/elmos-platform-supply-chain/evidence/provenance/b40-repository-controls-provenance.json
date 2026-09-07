@@ -6,20 +6,20 @@
   "packKey": "elmos-platform-supply-chain",
   "evidenceId": "b40-repository-controls",
   "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
+  "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
   "replayCommand": "uv run --quiet python scripts/batch40_repository_controls.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
   "runReport": {
     "path": "evidence/execution/b40-repository-controls.json",
-    "sha256": "sha256:b3d321a4db354ef166ae7340129277215acaa42bb491d433e53c3ba60c79ef38",
-    "bytes": 388553
+    "sha256": "sha256:28a55bb12893749cc74db1c9076382de53a889d826d79030d73ece429f3d6d57",
+    "bytes": 492097
   },
   "analyzer": {
     "path": "scripts/batch40_repository_controls.py",
-    "sha256": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655",
-    "reportedDigest": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655"
+    "sha256": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3",
+    "reportedDigest": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3"
   },
   "environment": {
-    "capturedAt": "2026-09-06T23:59:43.183984Z",
+    "capturedAt": "2026-09-07T04:49:27.631708Z",
     "pythonVersion": "3.14.6",
     "system": "Darwin",
     "machine": "arm64"

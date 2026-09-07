@@ -21,20 +21,20 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-dependency-inventory",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
       "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
       "runReport": {
         "path": "evidence/execution/b40-dependency-inventory.json",
-        "sha256": "sha256:cbdf737c52db9112793a6abd003d3e1263c7014965295dd336a898d390cc4d0c",
-        "bytes": 288154
+        "sha256": "sha256:8f4ae9efabda9ce6c2f5044cdd17967463e5f759362ccdc29ea45e6a7e4c5e12",
+        "bytes": 409919
       },
       "analyzer": {
         "path": "scripts/batch40_dependency_inventory.py",
-        "sha256": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b",
-        "reportedDigest": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b"
+        "sha256": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4",
+        "reportedDigest": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4"
       },
       "environment": {
-        "capturedAt": "2026-09-06T19:49:22.245516Z",
+        "capturedAt": "2026-09-07T04:48:44.018957Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"
@@ -43,7 +43,9 @@
         "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
         "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
         "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
-        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
+        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure.",
+        "License metadata is copied only from exact npm lock entries and exact direct component POM bytes already present in the selected local Maven repository; missing declarations remain explicit.",
+        "Observed license metadata is not SPDX normalization, legal approval, risk acceptance, or certification."
       ],
       "externalOperationExecuted": false,
       "independentVerification": "NOT_RUN"
@@ -129,11 +131,11 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-local-assurance",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
       "replayCommand": "uv run --quiet --with pyyaml python scripts/batch40_local_assurance.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
       "runReport": {
         "path": "evidence/execution/b40-local-assurance.json",
-        "sha256": "sha256:360ffec6a68caad5d64c2f55faea97048f48cb712e7c327eef018a0cc620b49a",
+        "sha256": "sha256:1fbf14a8407ccf925d1b4c984c385d198decc91990e1a6d76274c3bb8a9bf2ee",
         "bytes": 13016
       },
       "analyzer": {
@@ -142,7 +144,7 @@
         "reportedDigest": "sha256:5f5b2bd0d39e9b19c197d881a1d7c8cfb895a327d051a9bf6efa199630b67fc7"
       },
       "environment": {
-        "capturedAt": "2026-09-06T23:59:51.643906Z",
+        "capturedAt": "2026-09-07T04:48:45.381172Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"
@@ -165,20 +167,20 @@
       "packKey": "elmos-platform-supply-chain",
       "evidenceId": "b40-repository-controls",
       "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-      "repositoryRevision": "cf8cbf6ba5d01b326fd34680dfca63fc5502b2e6",
+      "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
       "replayCommand": "uv run --quiet python scripts/batch40_repository_controls.py --pack mature-product-packs/batch40/elmos-platform-supply-chain",
       "runReport": {
         "path": "evidence/execution/b40-repository-controls.json",
-        "sha256": "sha256:b3d321a4db354ef166ae7340129277215acaa42bb491d433e53c3ba60c79ef38",
-        "bytes": 388553
+        "sha256": "sha256:28a55bb12893749cc74db1c9076382de53a889d826d79030d73ece429f3d6d57",
+        "bytes": 492097
       },
       "analyzer": {
         "path": "scripts/batch40_repository_controls.py",
-        "sha256": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655",
-        "reportedDigest": "sha256:c52f2399808270bc53b89ba264292fa9537e89cccfccfed05ac65c0fb4f34655"
+        "sha256": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3",
+        "reportedDigest": "sha256:0060893f1735931f499cd4564f855b751482b0b0445e7d847bf5b208483d50c3"
       },
       "environment": {
-        "capturedAt": "2026-09-06T23:59:43.183984Z",
+        "capturedAt": "2026-09-07T04:49:27.631708Z",
         "pythonVersion": "3.14.6",
         "system": "Darwin",
         "machine": "arm64"

@@ -24,7 +24,9 @@
         "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
         "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
         "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
-        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
+        "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure.",
+        "License metadata is copied only from exact npm lock entries and exact direct component POM bytes already present in the selected local Maven repository; missing declarations remain explicit.",
+        "Observed license metadata is not SPDX normalization, legal approval, risk acceptance, or certification."
       ],
       "evidenceRefs": [
         "b40-dependency-inventory"

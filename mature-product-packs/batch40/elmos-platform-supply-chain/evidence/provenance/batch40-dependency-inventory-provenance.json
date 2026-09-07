@@ -6,20 +6,20 @@
   "packKey": "elmos-platform-supply-chain",
   "evidenceId": "b40-dependency-inventory",
   "status": "LOCAL_EXECUTED_SELF_ATTESTED",
-  "repositoryRevision": "fe1ee5db9531bb920feb39f5291fafd890cc4a03",
+  "repositoryRevision": "c761365811c4ba3dcbed0a459331f65201785eab",
   "replayCommand": "python3 scripts/batch40_dependency_inventory.py --maven-repository <path>",
   "runReport": {
     "path": "evidence/execution/b40-dependency-inventory.json",
-    "sha256": "sha256:cbdf737c52db9112793a6abd003d3e1263c7014965295dd336a898d390cc4d0c",
-    "bytes": 288154
+    "sha256": "sha256:8f4ae9efabda9ce6c2f5044cdd17967463e5f759362ccdc29ea45e6a7e4c5e12",
+    "bytes": 409919
   },
   "analyzer": {
     "path": "scripts/batch40_dependency_inventory.py",
-    "sha256": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b",
-    "reportedDigest": "sha256:69b66fbb697ca076dc109701bd942b210239a7c71fb36298fb9770fb5473c18b"
+    "sha256": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4",
+    "reportedDigest": "sha256:b4b3790913e54c813207ce980b57c1c6c73af55056d0c257876a7d33c8a317e4"
   },
   "environment": {
-    "capturedAt": "2026-09-06T19:49:22.245516Z",
+    "capturedAt": "2026-09-07T04:48:44.018957Z",
     "pythonVersion": "3.14.6",
     "system": "Darwin",
     "machine": "arm64"
@@ -28,7 +28,9 @@
     "Static declaration parse only: transitive Maven dependencies are not expanded, so this is a direct-dependency inventory rather than a full build graph.",
     "Imported BOM versions are resolved only from content-addressed POMs in the selected local Maven repository; missing or invalid BOMs remain unresolved.",
     "Properties are flattened across the reactor; a property redefined with different values in different modules is dropped rather than guessed.",
-    "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure."
+    "No vulnerability lookup is performed, so this inventory alone does not establish CVE exposure.",
+    "License metadata is copied only from exact npm lock entries and exact direct component POM bytes already present in the selected local Maven repository; missing declarations remain explicit.",
+    "Observed license metadata is not SPDX normalization, legal approval, risk acceptance, or certification."
   ],
   "externalOperationExecuted": false,
   "independentVerification": "NOT_RUN"

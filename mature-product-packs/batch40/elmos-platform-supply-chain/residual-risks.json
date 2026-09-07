@@ -14,7 +14,7 @@
       "id": "RISK-B40-SBOM-LICENSE-001",
       "severity": "high",
       "status": "OPEN",
-      "statement": "The direct dependency surface is inventoried, but transitive Maven coverage is NOT_RUN and 427 external direct components lack approved license decisions."
+      "statement": "The direct dependency surface is inventoried, but transitive Maven coverage is NOT_RUN and 427 external direct components lack approved license decisions; 26 also lack observed license metadata."
     },
     {
       "id": "RISK-B40-SLA-001",
