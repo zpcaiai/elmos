@@ -857,6 +857,7 @@ while True:
     child: dict[str, int] = {}
     recorded_pids: list[int] = []
 
+    started = time.monotonic()
     try:
         with pytest.raises(RouteError) as captured:
             native._run_swift_build_step(
@@ -871,11 +872,18 @@ while True:
                 ],
                 cwd=tmp_path,
                 environment=dict(os.environ),
-                timeout=1 if leader_exits else 2,
+                # This test launches two real Python processes before it can
+                # exercise the timeout cleanup.  Leave enough startup budget
+                # for a loaded macOS host; the leader/child assertions below
+                # still prove that the execution deadline expires and that
+                # the whole session is reaped.
+                timeout=30 if leader_exits else 10,
                 failure="SWIFT_BUILD_TEST_TIMEOUT",
             )
         assert captured.value.args == ("SWIFT_BUILD_TEST_TIMEOUT:process",)
         assert isinstance(captured.value.__cause__, subprocess.TimeoutExpired)
+        if leader_exits:
+            assert time.monotonic() - started < 10
         if enumeration_mode in {"lost-after-first", "dual-failure-first"}:
             assert any(
                 note.startswith("Swift build cleanup:")
@@ -2120,6 +2128,60 @@ def test_swift_package_inputs_reject_hardlinked_source_files(tmp_path: Path) -> 
 
     with pytest.raises(RouteError, match="SWIFT_ANALYZER_INPUT_UNSAFE"):
         native._swift_analyzer_input_manifest(package)
+
+
+def test_swift_package_inputs_ignore_parent_directory_timestamp_churn(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    package = tmp_path / "package"
+    source_root = package / "Sources" / "ElmosSwiftAnalyzer"
+    source_root.mkdir(parents=True)
+    (package / "Package.swift").write_text("// swift-tools-version: 5.9\n", encoding="utf-8")
+    (package / "Package.resolved").write_text(
+        json.dumps(
+            {
+                "pins": [
+                    {
+                        "identity": native._SWIFT_DEPENDENCY_IDENTITY,
+                        "kind": "remoteSourceControl",
+                        "location": "https://github.com/swiftlang/swift-syntax.git",
+                        "state": {
+                            "revision": native._SWIFT_SYNTAX_REVISION,
+                            "version": native._SWIFT_SYNTAX_VERSION,
+                        },
+                    }
+                ],
+                "version": 2,
+            }
+        ),
+        encoding="utf-8",
+    )
+    (source_root / "main.swift").write_text("print(1)\n", encoding="utf-8")
+    calls = 0
+
+    def chain(path: Path, _failure: str) -> tuple[tuple[object, ...], ...]:
+        nonlocal calls
+        calls += 1
+        return (
+            (
+                str(path),
+                1,
+                2 if path == package else 3,
+                stat.S_IFDIR | 0o700,
+                os.getuid(),
+                os.getgid(),
+                calls,
+                calls,
+            ),
+        )
+
+    monkeypatch.setattr(native, "_verify_secure_directory_chain", chain)
+
+    manifest = native._swift_analyzer_input_manifest(package)
+
+    assert len(manifest["files"]) == 3
+    assert calls == 4
 
 
 def test_swift_network_isolation_fails_closed_when_socket_probe_is_not_denied(

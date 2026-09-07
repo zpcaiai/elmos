@@ -2861,7 +2861,7 @@ def _run(
     command: list[str],
     cwd: Path,
     *,
-    timeout: int = 300,
+    timeout: int = 600,
     executable_dirs: tuple[Path, ...] = (),
     failure_prefix: str = "ASSEMBLY_BUILD_VERIFICATION_FAILED",
 ) -> subprocess.CompletedProcess[str]:
@@ -3092,7 +3092,7 @@ def verify_assembled_project_runtime(
         command: list[str],
         cwd: Path,
         *,
-        timeout: int = 300,
+        timeout: int = 600,
     ) -> subprocess.CompletedProcess[str]:
         completed = _run(
             command,
@@ -4289,7 +4289,7 @@ def verify_assembled_project(
                 "-l",
                 relative,
             ]
-            completed = _run(command, destination, timeout=120, executable_dirs=toolchain_dirs)
+            completed = _run(command, destination, executable_dirs=toolchain_dirs)
             commands.append(
                 {
                     "command": command,

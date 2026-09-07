@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import re
-import tomllib
 import unittest
 from pathlib import Path
 
+import tomllib
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -17,6 +17,7 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.workflow = (ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        cls.makefile = (ROOT / "Makefile").read_text(encoding="utf-8")
 
     def test_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
         job = _job(self.workflow, "project-synthesis", "project-synthesis-acceptance")
@@ -56,6 +57,21 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
                 )
                 self.assertNotIn("source", locked[name])
                 self.assertNotIn("checksum", locked[name])
+
+    def test_local_project_synthesis_builds_native_solver_before_python_tests(self) -> None:
+        target = self.makefile.split("project-synthesis:\n", 1)[1].split(
+            "toolchains-validate:\n", 1
+        )[0]
+        native = target.index(
+            "$(CARGO) build --locked --release --offline "
+            "--manifest-path native/rust-core/Cargo.toml"
+        )
+        tests = target.index(
+            "$(UV) --directory engines/project-synthesis-engine run --locked pytest"
+        )
+
+        self.assertIn("CARGO ?= cargo", self.makefile)
+        self.assertLess(native, tests)
 
     def test_web_console_binds_chinadb_runtime_after_python_312_consumers(self) -> None:
         job = _job(self.workflow, "web-console", "precision-migration-b01-44")
