@@ -754,6 +754,120 @@ def test_trusted_rust_analyzer_rejects_non_analyze_command_shapes(
         native._run_trusted_rust_analyzer(toolchain, package, [source, selector, *tail])
 
 
+def _synthetic_php_toolchain(*, profile: tuple[str, ...] = ("test-profile",)) -> ExactToolchain:
+    return ExactToolchain(
+        language="php",
+        version="PHP 8.5.9 (cli) (built: test) (NTS)",
+        executable="/fixed/php",
+        profile=profile,
+        executable_sha256="a" * 64,
+    )
+
+
+def _trusted_php_test_source(tmp_path: Path) -> Path:
+    source = tmp_path / "narrow.php"
+    source.write_text("<?php function value(int $input): int { return $input; }\n", encoding="utf-8")
+    return source
+
+
+def test_trusted_php_analyzer_promotes_only_exact_missing_function(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchain = _synthetic_php_toolchain()
+    source = _trusted_php_test_source(tmp_path)
+    function_name = "absent"
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_javascript_bound_content", lambda *args, **kwargs: b"analyzer")
+
+    def fail(command: list[str], *, cwd: Path) -> dict[str, Any]:
+        assert command == [
+            toolchain.executable,
+            *native._PHP_INTERPRETER_FLAGS,
+            str(native._PHP_ANALYZER),
+            str(source.resolve()),
+            function_name,
+        ]
+        assert cwd == ENGINE_ROOT
+        raise RouteError(
+            f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:PHP_FUNCTION_NOT_FOUND:{function_name}"
+        )
+
+    monkeypatch.setattr(native, "_run", fail)
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_php_analyzer(
+            toolchain,
+            source,
+            function_name,
+            emitted_target=False,
+        )
+
+    assert str(captured.value) == f"FUNCTION_NOT_FOUND:{function_name}"
+
+
+@pytest.mark.parametrize(
+    "stderr",
+    [
+        "PHP_FUNCTION_NOT_FOUND:other",
+        "PHP_FUNCTION_NOT_FOUND:absent\nextra-output",
+        "PHP_FUNCTION_BODY_REQUIRED:absent",
+        "NATIVE_ANALYZER_FAILED:/forged/php:PHP_FUNCTION_NOT_FOUND:absent",
+    ],
+)
+def test_trusted_php_analyzer_does_not_promote_unknown_multiline_or_forged_output(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    stderr: str,
+) -> None:
+    toolchain = _synthetic_php_toolchain()
+    source = _trusted_php_test_source(tmp_path)
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: toolchain)
+    monkeypatch.setattr(native, "_javascript_bound_content", lambda *args, **kwargs: b"analyzer")
+    wrapped = f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:{stderr}"
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd: (_ for _ in ()).throw(RouteError(wrapped)),
+    )
+
+    with pytest.raises(RouteError) as captured:
+        native._run_trusted_php_analyzer(
+            toolchain,
+            source,
+            "absent",
+            emitted_target=False,
+        )
+
+    assert str(captured.value) == wrapped
+
+
+def test_trusted_php_analyzer_rejects_toolchain_drift_before_error_promotion(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    toolchain = _synthetic_php_toolchain()
+    changed = _synthetic_php_toolchain(profile=("changed-profile",))
+    observed = iter([toolchain, changed])
+    source = _trusted_php_test_source(tmp_path)
+    monkeypatch.setattr(native, "exact_toolchain", lambda language: next(observed))
+    monkeypatch.setattr(native, "_javascript_bound_content", lambda *args, **kwargs: b"analyzer")
+    monkeypatch.setattr(
+        native,
+        "_run",
+        lambda command, *, cwd: (_ for _ in ()).throw(
+            RouteError(f"NATIVE_ANALYZER_FAILED:{toolchain.executable}:PHP_FUNCTION_NOT_FOUND:absent")
+        ),
+    )
+
+    with pytest.raises(RouteError, match="^PHP_ANALYZER_TOOLCHAIN_CHANGED$"):
+        native._run_trusted_php_analyzer(
+            toolchain,
+            source,
+            "absent",
+            emitted_target=False,
+        )
+
+
 def _require_native_toolchain(language: str) -> None:
     try:
         exact_toolchain(language)  # type: ignore[arg-type]
