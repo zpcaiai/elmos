@@ -539,7 +539,6 @@ def test_php_tree_normalizes_only_install_invocation_receipt_fields(tmp_path) ->
     document["runtime_dependencies"][0].update(
         {"version": "3.1", "revision": 2, "pkg_version": "3.1_2"}
     )
-    document.pop("used_options")
     receipt.write_text(json.dumps(document), encoding="utf-8")
     invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
     assert invocation_drift == baseline
@@ -575,6 +574,163 @@ def test_php_tree_rejects_an_unpinned_synthetic_tap_formula_path(tmp_path) -> No
     )
 
     with pytest.raises(RouteError, match="TEST_UNSAFE"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+
+def test_php_tree_normalizes_only_the_four_pear_install_timestamps(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    channels = root / "share/php/pear/.channels"
+    channels.mkdir(parents=True)
+    names = ("__uri.reg", "doc.php.net.reg", "pear.php.net.reg", "pecl.php.net.reg")
+    for index, name in enumerate(names):
+        (channels / name).write_bytes(
+            f'a:2:{{s:4:"name";s:1:"{index}";s:13:"_lastmodified";i:170000000{index};}}'.encode()
+        )
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    for index, name in enumerate(names):
+        (channels / name).write_bytes(
+            f'a:2:{{s:4:"name";s:1:"{index}";s:13:"_lastmodified";i:180000000{index};}}'.encode()
+        )
+    timestamp_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert timestamp_drift == baseline
+
+    (channels / "pear.php.net.reg").write_bytes(
+        b'a:1:{s:4:"name";s:1:"x";s:13:"_lastmodified";i:1800000002;}'
+    )
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
+
+
+@pytest.mark.parametrize(
+    "mutation",
+    ("missing", "extra", "wrong-type", "wrong-width", "not-suffix", "duplicate"),
+)
+def test_php_tree_refuses_malformed_pear_channel_record_sets(
+    tmp_path, mutation: str
+) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    channels = root / "share/php/pear/.channels"
+    channels.mkdir(parents=True)
+    names = ["__uri.reg", "doc.php.net.reg", "pear.php.net.reg", "pecl.php.net.reg"]
+    valid = b'a:1:{s:13:"_lastmodified";i:1700000000;}'
+    for name in names:
+        (channels / name).write_bytes(valid)
+    if mutation == "missing":
+        (channels / names.pop()).unlink()
+    elif mutation == "extra":
+        (channels / "unbound.example.reg").write_bytes(valid)
+    elif mutation == "wrong-type":
+        (channels / names[0]).write_bytes(
+            b'a:1:{s:13:"_lastmodified";s:10:"1700000000";}'
+        )
+    elif mutation == "wrong-width":
+        (channels / names[0]).write_bytes(
+            b'a:1:{s:13:"_lastmodified";i:700000000;}'
+        )
+    elif mutation == "not-suffix":
+        (channels / names[0]).write_bytes(valid + b"trailing")
+    else:
+        (channels / names[0]).write_bytes(
+            b'a:2:{s:13:"_lastmodified";i:1700000000;'
+            b's:13:"_lastmodified";i:1700000001;}'
+        )
+
+    with pytest.raises(RouteError, match="PEAR_CHANNEL_RECORD"):
+        php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+
+def _php_sbom() -> dict[str, object]:
+    return {
+        "SPDXID": "SPDXRef-DOCUMENT",
+        "spdxVersion": "SPDX-2.3",
+        "dataLicense": "CC0-1.0",
+        "name": "SBOM-SPDX-php-8.5.9",
+        "documentNamespace": "https://formulae.brew.sh/spdx/php-8.5.9.json",
+        "creationInfo": {
+            "created": "2026-08-31T09:31:37Z",
+            "creators": ["Tool: https://github.com/Homebrew/brew@6.0.19-37-g129222b"],
+        },
+        "documentDescribes": ["SPDXRef-Package-php"],
+    }
+
+
+def test_php_tree_normalizes_only_homebrew_sbom_creation_fields(tmp_path) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    sbom = root / "sbom.spdx.json"
+    document = _php_sbom()
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    baseline = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+
+    document["creationInfo"] = {
+        "created": "2026-09-07T00:01:02Z",
+        "creators": ["Tool: https://github.com/Homebrew/brew@6.1.2+build-9"],
+    }
+    sbom.write_text(json.dumps(document, indent=2), encoding="utf-8")
+    invocation_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert invocation_drift == baseline
+
+    document["documentDescribes"] = ["SPDXRef-Package-other"]
+    sbom.write_text(json.dumps(document), encoding="utf-8")
+    semantic_drift = php_tree_identity(root, tmp_path, "TEST_UNSAFE")
+    assert semantic_drift["sha256"] != baseline["sha256"]
+
+
+@pytest.mark.parametrize(
+    ("mutation", "failure"),
+    (
+        ("spdx-id", "DOCUMENT_IDENTITY"),
+        ("schema", "DOCUMENT_IDENTITY"),
+        ("license", "DOCUMENT_IDENTITY"),
+        ("name", "DOCUMENT_IDENTITY"),
+        ("namespace", "DOCUMENT_IDENTITY"),
+        ("creation-keys", "CREATION_INFO"),
+        ("created", "CREATED_INVALID"),
+        ("creator-count", "CREATORS_INVALID"),
+        ("creator-prefix", "CREATOR_INVALID"),
+        ("creator-token", "CREATOR_VERSION_INVALID"),
+    ),
+)
+def test_php_tree_refuses_malformed_homebrew_sbom(
+    tmp_path, mutation: str, failure: str
+) -> None:
+    from elmos_polyglot_route.toolchains import php_tree_identity
+
+    root = tmp_path / "php"
+    root.mkdir()
+    document = _php_sbom()
+    creation = document["creationInfo"]
+    assert isinstance(creation, dict)
+    if mutation == "spdx-id":
+        document["SPDXID"] = "SPDXRef-OTHER"
+    elif mutation == "schema":
+        document["spdxVersion"] = "SPDX-2.2"
+    elif mutation == "license":
+        document["dataLicense"] = "MIT"
+    elif mutation == "name":
+        document["name"] = "SBOM-SPDX-php-latest"
+    elif mutation == "namespace":
+        document["documentNamespace"] = "https://example.invalid/php.json"
+    elif mutation == "creation-keys":
+        creation["comment"] = "unexpected"
+    elif mutation == "created":
+        creation["created"] = "2026-09-07T00:01:02+00:00"
+    elif mutation == "creator-count":
+        creation["creators"] = []
+    elif mutation == "creator-prefix":
+        creation["creators"] = ["Person: Homebrew"]
+    else:
+        creation["creators"] = ["Tool: https://github.com/Homebrew/brew@6.1/evil"]
+    (root / "sbom.spdx.json").write_text(json.dumps(document), encoding="utf-8")
+
+    with pytest.raises(RouteError, match=f"PHP_SBOM_{failure}"):
         php_tree_identity(root, tmp_path, "TEST_UNSAFE")
 
 

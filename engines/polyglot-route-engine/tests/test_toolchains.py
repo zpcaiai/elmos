@@ -37,13 +37,17 @@ def test_hosted_homebrew_profiles_bind_the_current_exact_bottle_closure() -> Non
     assert tuple(getattr(legacy, field) for field in shared_dotnet_closure_fields) == tuple(
         getattr(current, field) for field in shared_dotnet_closure_fields
     )
+    assert (local.php_tree_sha256, local.php_tree_bytes) == (
+        "927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177",
+        129_937_259,
+    )
     assert (legacy.php_tree_sha256, legacy.php_tree_bytes) == (
-        local.php_tree_sha256,
-        local.php_tree_bytes,
+        "741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
+        129_949_464,
     )
     assert (current.php_tree_sha256, current.php_tree_bytes) == (
-        "18bf35967489933e2808140742856a7e6b9cad30b3ec9416dfdb0d49166b1a93",
-        129_949_446,
+        "0d4e4ce28b2e8a7715fc93ea8dc5d095a3400d781056a574555fcbf927d2f9a0",
+        129_937_253,
     )
     assert current.php_tree_sha256 != legacy.php_tree_sha256
     assert local.dotnet_muxer_sha256 != legacy.dotnet_muxer_sha256

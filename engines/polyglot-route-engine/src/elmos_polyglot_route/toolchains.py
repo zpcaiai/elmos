@@ -4,10 +4,12 @@ import hashlib
 import json
 import os
 import platform
+import re
 import stat
 import subprocess
 import tempfile
 from dataclasses import dataclass, replace
+from datetime import datetime
 from functools import cache, lru_cache
 from pathlib import Path, PurePosixPath
 from typing import Any, cast
@@ -457,8 +459,8 @@ _HOMEBREW_ROUTE_LOCAL_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=_EXPECTED_DOTNET_APPHOST_PACK_TREE_BYTES,
     dotnet_hostfxr_sha256=_EXPECTED_DOTNET_HOSTFXR_SHA256,
     dotnet_hostpolicy_sha256=_EXPECTED_DOTNET_HOSTPOLICY_SHA256,
-    php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
-    php_tree_bytes=129_949_464,
+    php_tree_sha256="927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177",
+    php_tree_bytes=129_937_259,
 )
 _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     profile_id="github-macos26-20260831.0337.3",
@@ -479,12 +481,11 @@ _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE = HomebrewRouteBundleProfile(
     dotnet_apphost_pack_tree_bytes=11_486_272,
     dotnet_hostfxr_sha256="57ba0c46553492cde80ac856a807eb71f21a3c8142756b1a35a2a2d16c7899ff",
     dotnet_hostpolicy_sha256="b19594b09dbd1cd7eea2c846116652a10c8d76bdf31fd4baaa492bc70a6e7158",
-    # The bottle payload is unchanged, but the exact hosted Homebrew client
-    # emits a different INSTALL_RECEIPT schema from the local qualification
-    # host.  The receipt is deliberately part of the tree identity, so bind
-    # the observed current-image tree instead of erasing unknown schema drift.
-    php_tree_sha256="18bf35967489933e2808140742856a7e6b9cad30b3ec9416dfdb0d49166b1a93",
-    php_tree_bytes=129_949_446,
+    # Exact post-normalization identity observed after a fresh install on this
+    # authenticated hosted image. The executable, formula and semantic payload
+    # remain bound; installer-only PEAR/SBOM metadata is canonicalized below.
+    php_tree_sha256="0d4e4ce28b2e8a7715fc93ea8dc5d095a3400d781056a574555fcbf927d2f9a0",
+    php_tree_bytes=129_937_253,
 )
 _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     _HOMEBREW_ROUTE_CURRENT_HOSTED_PROFILE,
@@ -492,6 +493,8 @@ _HOMEBREW_ROUTE_LEGACY_HOSTED_PROFILE = replace(
     image_version="20260728.0273.1",
     product_version="26.5.2",
     build_version="25F84",
+    # Retired runner image: retain its last verified pre-normalization closure.
+    # It remains fail-closed if this image is ever selected again.
     php_tree_sha256="741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947",
     php_tree_bytes=129_949_464,
 )
@@ -4384,11 +4387,11 @@ _EXPECTED_PHP_ANCHOR = _EXPECTED_HOMEBREW_CELLAR / "php"
 _EXPECTED_PHP_EXECUTABLE = _EXPECTED_PHP_ROOT / "bin" / "php"
 _EXPECTED_PHP_EXECUTABLE_SHA256 = '6e52a2c84ff356bfc670809b7b5923a05aa64b3c8bcdb6c4a9a6b257c3435218'
 _EXPECTED_PHP_EXECUTABLE_BYTES = 23795728
-_EXPECTED_PHP_TREE_SHA256 = '741c401908f4e07e1cc7197adfefe12257f9e2b9570e1c33a3da0d7e90788947'
+_EXPECTED_PHP_TREE_SHA256 = '927af1f65b91a476aee7c205aaf09e8fa66116b6f952ec7451a01dd79750d177'
 _EXPECTED_PHP_TREE_RECORD_COUNT = 643
 _EXPECTED_PHP_TREE_FILE_COUNT = 532
 _EXPECTED_PHP_TREE_DIRECTORY_COUNT = 109
-_EXPECTED_PHP_TREE_BYTES = 129949464
+_EXPECTED_PHP_TREE_BYTES = 129937259
 #: Symlinks whose target resolves *inside* the install root. Pinned as
 #: name -> raw link text, exactly as `_EXPECTED_PYTHON_SYMLINKS` is: the link is
 #: part of the tree's identity, and a link that starts pointing somewhere else
@@ -4465,30 +4468,19 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
     ):
         raise RouteError(failure)
     source_tap = source["tap"]
-    path = source.get("path")
-    core_manifest_path = "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9"
-    pinned_tap_formula_suffix = "/elmos/homebrew-pinned-route-ci/Formula/php.rb"
-    if path is not None and not isinstance(path, str):
-        raise RouteError(failure)
-    if source_tap == "homebrew/core" and path is not None and not path.endswith(
-        "/php/manifests/8.5.9"
-    ):
-        raise RouteError(failure)
-    if source_tap == "elmos/pinned-route-ci" and path is not None and not (
-        path.endswith("/php/manifests/8.5.9")
-        or path.endswith(pinned_tap_formula_suffix)
-    ):
+    expected_source_paths = {
+        "homebrew/core": "https://ghcr.io/v2/homebrew/core/php/manifests/8.5.9",
+        "elmos/pinned-route-ci": str(
+            _EXPECTED_HOMEBREW_PREFIX
+            / "Library/Taps/elmos/homebrew-pinned-route-ci/Formula/php.rb"
+        ),
+    }
+    if source.get("path") != expected_source_paths[source_tap]:
         raise RouteError(failure)
 
     for key in ("used_options", "unused_options", "changed_files", "aliases"):
         values = normalized.get(key)
         if values is None:
-            # Older Homebrew clients omit an empty option array while newer
-            # clients serialize it. Absence and an empty set carry the same
-            # formula semantics; make that representation stable without
-            # inventing aliases or changed-file records when those are absent.
-            if key in {"used_options", "unused_options"}:
-                normalized[key] = []
             continue
         if not isinstance(values, list) or not all(isinstance(item, str) for item in values):
             raise RouteError(failure)
@@ -4539,11 +4531,10 @@ def _normalized_php_install_receipt(receipt: object, failure: str) -> bytes:
         f"homebrew/core@{_PHP_FORMULA_SOURCE_COMMIT}:"
         f"sha256:{_PHP_FORMULA_SOURCE_SHA256}"
     )
-    # Homebrew 6.x records the downloaded core manifest while older hosted
-    # clients record the exact synthetic-tap formula path. The installer has
-    # already pinned that formula's upstream commit and SHA-256, so bind both
-    # allowlisted representations to one stable source identity.
-    source["path"] = core_manifest_path
+    # Both representations were validated exactly above. Persist their shared
+    # digest-bound formula identity so installer location cannot alter the PHP
+    # payload identity.
+    source["path"] = "<pinned-php-formula-source>"
     if "tap_git_head" in source:
         source["tap_git_head"] = "<installer-local-tap-head>"
     return json.dumps(normalized, sort_keys=True, separators=(",", ":")).encode(
@@ -4577,6 +4568,97 @@ _PHP_RUNTIME_IDENTITY_SCRIPT = (
     "sort($d['extensions']);"
     "echo json_encode($d,JSON_UNESCAPED_SLASHES|JSON_PRESERVE_ZERO_FRACTION);"
 )
+
+_PHP_PEAR_CHANNEL_RECORDS = frozenset(
+    {
+        "share/php/pear/.channels/__uri.reg",
+        "share/php/pear/.channels/doc.php.net.reg",
+        "share/php/pear/.channels/pear.php.net.reg",
+        "share/php/pear/.channels/pecl.php.net.reg",
+    }
+)
+_PHP_PEAR_CHANNEL_DIRECTORY = "share/php/pear/.channels"
+_PHP_PEAR_LASTMODIFIED = re.compile(
+    rb'(?s)^(?P<prefix>.+s:13:"_lastmodified";i:)'
+    rb'(?P<timestamp>[1-9][0-9]{9})(?P<suffix>;})$'
+)
+_PHP_SBOM_DOCUMENT_NAMESPACE = "https://formulae.brew.sh/spdx/php-8.5.9.json"
+_PHP_SBOM_CREATOR_PREFIX = "Tool: https://github.com/Homebrew/brew@"
+_PHP_SBOM_CREATOR_VERSION = re.compile(r"[A-Za-z0-9][A-Za-z0-9.+-]{0,127}")
+_PHP_SBOM_CREATED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+
+def _normalized_php_pear_channel_record(
+    path: Path, relative: str, failure: str
+) -> bytes:
+    """Normalize only PEAR source/bottle transaction metadata in four records."""
+    if relative not in _PHP_PEAR_CHANNEL_RECORDS:
+        raise RouteError(failure)
+    try:
+        payload = path.read_bytes()
+    except OSError as error:
+        raise RouteError(failure) from error
+    marker = b's:13:"_lastmodified";i:'
+    match = _PHP_PEAR_LASTMODIFIED.fullmatch(payload)
+    if payload.count(marker) != 1 or match is None:
+        raise RouteError(f"{failure}:PEAR_CHANNEL_RECORD_INVALID:{relative}")
+    # `pear update-channels` rewrites this source/bottle transaction integer.
+    # Preserve its serialized width and every other byte; the evidence does
+    # not justify treating any additional PEAR content as installation noise.
+    return match.group("prefix") + b"1000000000" + match.group("suffix")
+
+
+def _normalized_php_sbom(path: Path, failure: str) -> bytes:
+    """Canonicalize only the Homebrew invocation fields in PHP's SPDX SBOM."""
+
+    def reject_duplicate_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        result: dict[str, object] = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON key")
+            result[key] = value
+        return result
+
+    try:
+        document = json.loads(
+            path.read_text(encoding="utf-8"),
+            object_pairs_hook=reject_duplicate_keys,
+        )
+    except (OSError, UnicodeDecodeError, json.JSONDecodeError, ValueError) as error:
+        raise RouteError(f"{failure}:PHP_SBOM_INVALID") from error
+    if (
+        not isinstance(document, dict)
+        or document.get("SPDXID") != "SPDXRef-DOCUMENT"
+        or document.get("spdxVersion") != "SPDX-2.3"
+        or document.get("dataLicense") != "CC0-1.0"
+        or document.get("name") != "SBOM-SPDX-php-8.5.9"
+        or document.get("documentNamespace") != _PHP_SBOM_DOCUMENT_NAMESPACE
+    ):
+        raise RouteError(f"{failure}:PHP_SBOM_DOCUMENT_IDENTITY_INVALID")
+    creation = document.get("creationInfo")
+    if not isinstance(creation, dict) or set(creation) != {"created", "creators"}:
+        raise RouteError(f"{failure}:PHP_SBOM_CREATION_INFO_INVALID")
+    created = creation["created"]
+    creators = creation["creators"]
+    if not isinstance(created, str):
+        raise RouteError(f"{failure}:PHP_SBOM_CREATED_INVALID")
+    try:
+        parsed_created = datetime.strptime(created, _PHP_SBOM_CREATED_FORMAT)
+    except ValueError as error:
+        raise RouteError(f"{failure}:PHP_SBOM_CREATED_INVALID") from error
+    if parsed_created.strftime(_PHP_SBOM_CREATED_FORMAT) != created:
+        raise RouteError(f"{failure}:PHP_SBOM_CREATED_INVALID")
+    if not isinstance(creators, list) or len(creators) != 1:
+        raise RouteError(f"{failure}:PHP_SBOM_CREATORS_INVALID")
+    creator = creators[0]
+    if not isinstance(creator, str) or not creator.startswith(_PHP_SBOM_CREATOR_PREFIX):
+        raise RouteError(f"{failure}:PHP_SBOM_CREATOR_INVALID")
+    creator_version = creator.removeprefix(_PHP_SBOM_CREATOR_PREFIX)
+    if _PHP_SBOM_CREATOR_VERSION.fullmatch(creator_version) is None:
+        raise RouteError(f"{failure}:PHP_SBOM_CREATOR_VERSION_INVALID")
+    creation["created"] = "1970-01-01T00:00:00Z"
+    creation["creators"] = [_PHP_SBOM_CREATOR_PREFIX + "0"]
+    return json.dumps(document, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
 def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, object]:
@@ -4627,6 +4709,17 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
             raise RouteError(failure) from error
 
     paths = discover()
+    relative_paths = {path.relative_to(root).as_posix() for path in paths}
+    pear_channel_entries = {
+        relative
+        for relative in relative_paths
+        if PurePosixPath(relative).parent.as_posix() == _PHP_PEAR_CHANNEL_DIRECTORY
+        and relative.endswith(".reg")
+    }
+    if (
+        _PHP_PEAR_CHANNEL_DIRECTORY in relative_paths or pear_channel_entries
+    ) and pear_channel_entries != _PHP_PEAR_CHANNEL_RECORDS:
+        raise RouteError(f"{failure}:PEAR_CHANNEL_RECORD_SET_INVALID")
     records: list[dict[str, object]] = []
     symlinks: dict[str, str] = {}
     unbound: dict[str, str] = {}
@@ -4681,6 +4774,20 @@ def php_tree_identity(root: Path, anchor: Path, failure: str) -> dict[str, objec
             except (OSError, UnicodeDecodeError, json.JSONDecodeError) as error:
                 raise RouteError(failure) from error
             normalized = _normalized_php_install_receipt(receipt, failure)
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
+        elif relative in _PHP_PEAR_CHANNEL_RECORDS:
+            normalized = _normalized_php_pear_channel_record(path, relative, failure)
+            record = {
+                **record,
+                "bytes": len(normalized),
+                "sha256": hashlib.sha256(normalized).hexdigest(),
+            }
+        elif relative == "sbom.spdx.json":
+            normalized = _normalized_php_sbom(path, failure)
             record = {
                 **record,
                 "bytes": len(normalized),
