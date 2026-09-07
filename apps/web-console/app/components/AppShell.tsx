@@ -351,15 +351,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 </div>
                 <Icon name="chevron" size={16} />
               </a>
-              <div className="profile-guest-bar">
-                <a
-                  className="profile-guest-admin"
-                  href="/admin/login"
-                  onClick={closeSidebar}
-                >
-                  {english ? "Administrator login →" : "管理员登录入口 →"}
-                </a>
-              </div>
             </>
           )}
         </div>
@@ -408,12 +399,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   href={`/login?${new URLSearchParams({ returnTo: pathname })}`}
                 >
                   {english ? "User sign in" : "用户登录"}
-                </a>
-                <a
-                  className={`top-login-link top-admin-login-link ${pathname === "/admin/login" ? "active" : ""}`}
-                  href="/admin/login"
-                >
-                  {english ? "Admin" : "管理员入口"}
                 </a>
               </div>
             )}

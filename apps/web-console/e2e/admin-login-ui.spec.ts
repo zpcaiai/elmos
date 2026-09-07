@@ -2,19 +2,15 @@ import { expect, test } from "@playwright/test";
 
 const administratorEmail = "zpchoney@gmail.com";
 
-test("anonymous administrator entries perform a document navigation", async ({ page }) => {
+test("anonymous administrator entries are absent from the homepage and require direct navigation", async ({ page }) => {
   await page.goto("/");
 
   const topAdminLogin = page.locator("header").getByRole("link", {
     name: "管理员入口",
     exact: true,
   });
-  await expect(topAdminLogin).toHaveAttribute("href", "/admin/login");
-  await topAdminLogin.click();
-  await expect(page).toHaveURL(/\/admin\/login$/);
-  await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
+  await expect(topAdminLogin).toHaveCount(0);
 
-  await page.goto("/");
   if ((page.viewportSize()?.width ?? Number.POSITIVE_INFINITY) <= 900) {
     await page.getByRole("button", { name: "打开导航" }).click();
     await expect(page.getByRole("button", { name: "关闭导航遮罩" })).toBeVisible();
@@ -22,8 +18,9 @@ test("anonymous administrator entries perform a document navigation", async ({ p
   const sidebarAdminLogin = page.locator("aside").getByRole("link", {
     name: /管理员登录入口/,
   });
-  await expect(sidebarAdminLogin).toHaveAttribute("href", "/admin/login");
-  await sidebarAdminLogin.click();
+  await expect(sidebarAdminLogin).toHaveCount(0);
+
+  await page.goto("/admin/login");
   await expect(page).toHaveURL(/\/admin\/login$/);
   await expect(page.getByRole("heading", { name: "管理员登录" })).toBeVisible();
 });
