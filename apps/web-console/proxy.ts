@@ -24,6 +24,7 @@ const userPrefixes = [
   "/repositories",
   "/migration",
   "/capabilities",
+  "/workbench",
 ];
 
 const protectedPrefixes = [...userPrefixes, ...operationsPrefixes];
@@ -75,6 +76,7 @@ function businessLine(path: string): string {
   if (path.startsWith("/api/spring-upgrades")) return "SPRING_MODERNIZATION";
   if (path.startsWith("/api/translation")) return "LANGUAGE_TRANSLATION";
   if (path.startsWith("/api/generation")) return "PROJECT_SYNTHESIS";
+  if (path.startsWith("/api/live-workbench")) return "LIVE_WORKBENCH";
   if (path.startsWith("/api/repository-workspaces") || path.startsWith("/api/github")) return "REPOSITORY_WORKSPACE";
   if (path.startsWith("/api/database-sql") || path.startsWith("/api/capabilities/database-sql")) return "DATABASE_DATA_SQL";
   if (path.startsWith("/api/capabilities/migration")) return "MIGRATION_GOVERNANCE";
