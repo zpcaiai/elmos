@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Repo Intake"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-repo-intake to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Repo Intake
+  short_description: Run bounded Repo Intake repository capability
+  default_prompt: Use $elmos-repo-intake with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

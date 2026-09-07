@@ -1,0 +1,4 @@
+interface:
+  display_name: Adaptive Hierarchical Planner
+  short_description: Run bounded Adaptive Hierarchical Planner repository capability
+  default_prompt: Use $elmos-adaptive-hierarchical-planner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

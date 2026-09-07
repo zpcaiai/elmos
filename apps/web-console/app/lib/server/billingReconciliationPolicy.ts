@@ -10,7 +10,7 @@ export const reconciliationBodyLimitBytes = 4_096;
 
 export type FinancialAdminPrincipal = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION";
+  authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
   accessToken?: string;
 };
 

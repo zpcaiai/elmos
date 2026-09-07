@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Context Slicer"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-context-slicer to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Context Slicer
+  short_description: Run bounded Context Slicer repository capability
+  default_prompt: Use $elmos-context-slicer with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

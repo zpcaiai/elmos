@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Worker Prompt Builder"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-worker-prompt-builder to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Worker Prompt Builder
+  short_description: Run bounded Worker Prompt Builder repository capability
+  default_prompt: Use $elmos-worker-prompt-builder with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

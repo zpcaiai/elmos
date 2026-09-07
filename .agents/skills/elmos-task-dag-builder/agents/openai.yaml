@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Task Dag Builder"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-task-dag-builder to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Task Dag Builder
+  short_description: Run bounded Task Dag Builder repository capability
+  default_prompt: Use $elmos-task-dag-builder with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

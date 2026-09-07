@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Requirement Normalizer"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-requirement-normalizer to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Requirement Normalizer
+  short_description: Run bounded Requirement Normalizer repository capability
+  default_prompt: Use $elmos-requirement-normalizer with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

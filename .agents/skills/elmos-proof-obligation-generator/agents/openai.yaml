@@ -1,0 +1,4 @@
+interface:
+  display_name: Proof Obligation Generator
+  short_description: Run bounded Proof Obligation Generator repository capability
+  default_prompt: Use $elmos-proof-obligation-generator with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

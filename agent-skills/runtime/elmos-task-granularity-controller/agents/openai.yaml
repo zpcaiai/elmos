@@ -1,0 +1,4 @@
+interface:
+  display_name: Task Granularity Controller
+  short_description: Run bounded Task Granularity Controller repository capability
+  default_prompt: Use $elmos-task-granularity-controller with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

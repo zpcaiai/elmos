@@ -1,0 +1,4 @@
+interface:
+  display_name: Plan Diff Audit Journal
+  short_description: Run bounded Plan Diff Audit Journal repository capability
+  default_prompt: Use $elmos-plan-diff-audit-journal with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

@@ -1,0 +1,4 @@
+interface:
+  display_name: Implicit Requirement Miner
+  short_description: Run bounded Implicit Requirement Miner repository capability
+  default_prompt: Use $elmos-implicit-requirement-miner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

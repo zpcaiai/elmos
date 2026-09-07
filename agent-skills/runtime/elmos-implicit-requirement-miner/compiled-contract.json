@@ -1,0 +1,28 @@
+{
+  "name": "elmos-implicit-requirement-miner",
+  "runtime": {
+    "certification": "NOT_CERTIFIED",
+    "effect_mode": "LOCAL_PURE",
+    "engine": "engines/repository-orchestrator-engine",
+    "external_evidence": "NOT_RUN",
+    "handler_id": "repo-orchestrator.implicit-requirement-miner.v1",
+    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "scope_fields": [
+      "tenant_id",
+      "project_id",
+      "actor_id",
+      "environment",
+      "repository_id",
+      "revision",
+      "purpose"
+    ]
+  },
+  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "source": {
+    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
+    "package": "elmos-repository-task-decomposition-cost-router-skills",
+    "path": "skills/37-implicit-requirement-miner/SKILL.md",
+    "sha256": "76e79ffa7e84b17580274c97e4e86c826cca02b7e3ba4fdc70cdd6864a504ab7",
+    "version": "2.0.0"
+  }
+}

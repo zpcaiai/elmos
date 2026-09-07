@@ -1,0 +1,4 @@
+interface:
+  display_name: Semantic Seam Detector
+  short_description: Run bounded Semantic Seam Detector repository capability
+  default_prompt: Use $elmos-semantic-seam-detector with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

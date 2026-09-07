@@ -6,22 +6,25 @@
   "pnpm": {
     "overrides": {
       "nanoid@<3.3.18": "3.3.18",
-      "deepmerge-ts": "8.0.2"
+      "deepmerge-ts": "8.0.2",
+      "@xmldom/xmldom": "0.8.15"
     }
   },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "check": "tsc --noEmit && pnpm test:account-session && pnpm test:admin-login-notification && pnpm test:auth-callback-route && pnpm test:durable-lease && pnpm test:translation-report && pnpm test:repository-translation && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && pnpm test:chinadb-sql-policy && pnpm test:multimodal-intake-runner && next build",
+    "check": "tsc --noEmit && pnpm test:api-route-dispatch && pnpm test:account-session && pnpm test:admin-login-notification && pnpm test:auth-callback-route && pnpm test:durable-lease && pnpm test:translation-report && pnpm test:repository-translation && pnpm test:upstream-policy && pnpm test:operations-jobs-policy && pnpm test:billing-reconciliation-policy && pnpm test:admin-mutation-policy && pnpm test:runner-fleet-policy && pnpm test:chinadb-sql-policy && pnpm test:chinadb-sql-local && pnpm test:multimodal-intake-runner && pnpm test:spring-engine-auth && next build",
     "check:evidence": "pnpm test:translation-cancellation",
     "test:chinadb-sql-policy": "node --experimental-strip-types app/lib/server/chinadbSql.verify.mjs",
+    "test:chinadb-sql-local": "node --loader ./test/ts-extension-loader.mjs test/chinadbSqlLocal.test.mjs",
     "test:upstream-policy": "node --experimental-strip-types app/lib/server/trustedUpstream.verify.mjs",
     "test:operations-jobs-policy": "node --experimental-strip-types app/lib/server/operationsJobsPolicy.verify.mjs",
     "test:billing-reconciliation-policy": "node --experimental-strip-types app/lib/server/billingReconciliation.verify.mjs",
     "test:admin-mutation-policy": "node --experimental-strip-types app/lib/server/adminMutationPolicy.verify.mjs",
     "test:runner-fleet-policy": "node --experimental-strip-types app/lib/server/runnerFleetPolicy.verify.mjs",
     "test:multimodal-intake-runner": "node --experimental-strip-types app/lib/server/multimodalIntakeRunner.verify.mjs",
+    "test:spring-engine-auth": "node --experimental-strip-types app/api/spring-upgrades/springEngineAuth.verify.mjs",
     "test:generation-insights": "node app/lib/server/generationInsights.verify.mjs",
     "test:qr-code": "uv run --with qrcode==8.2 --with numpy==2.5.1 --with opencv-python-headless==4.13.0.92 node --experimental-strip-types app/lib/qrCode.verify.mjs",
     "check:telemetry": "node ../../telemetry/validate.mjs",
@@ -29,6 +32,7 @@
     "test:account-session": "node --experimental-strip-types --test test/accountSession.test.mjs",
     "test:admin-login-notification": "node --loader ./test/ts-extension-loader.mjs --test test/adminLoginNotification.test.mjs",
     "test:auth-callback-route": "node --loader ./test/ts-extension-loader.mjs --test test/authCallbackRoute.test.mjs",
+    "test:api-route-dispatch": "node --experimental-strip-types --test test/apiRouteMatcher.test.mjs",
     "test:translation-report": "node --experimental-strip-types --test test/translationConversionReport.test.mjs",
     "test:translation-cancellation": "node --loader ./test/ts-extension-loader.mjs --test test/translationRunnerCancellation.test.mjs",
     "test:repository-translation": "node --loader ./test/ts-extension-loader.mjs --test test/repositoryTranslationWorkspace.test.mjs",

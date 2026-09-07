@@ -160,7 +160,7 @@ const capabilities = {
     },
     {
       routeId: "boot-1.5-3.5.15-maven-to-boot-3.5.16-java-21",
-      packKey: "spring-boot-1-5-3-5-15-to-3-5-16-inventory-only",
+      packKey: "spring-boot-1-5-3-5-15-to-3-5-16",
       label: "Spring Boot 1.5–3.5.15 / Java 8, 11, 17, 21 / Maven → Boot 3.5.16 / Java 21",
       sourceFrameworkFamily: "spring-boot",
       buildTool: "maven",
@@ -169,11 +169,11 @@ const capabilities = {
       sourceJavaVersions: ["8", "11", "17", "21"],
       targetSpringBoot: "3.5.16",
       targetJava: "21",
-      recipeId: "",
-      evidenceStatus: "NOT_IMPLEMENTED",
+      recipeId: "io.elmos.openrewrite.SpringBoot1_5To3_5_15ToBoot3_5_16Java21",
+      evidenceStatus: "NOT_RUN",
       verifiedSourceSpringBoot: "",
       verifiedSourceJava: "",
-      notes: "Inventory gap; no executable recipe is available.",
+      notes: "Executable OpenRewrite pin to Boot 3.5.16; no source/target runtime evidence.",
     },
     {
       routeId: "boot-1.5-maven-to-boot-4.1.0-java-21",
@@ -473,13 +473,14 @@ test("Spring 真实旅程 UI 可完成导入、证据查看、下载、启动、
   await expect(
     catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Framework MVC 5.3.39 / Java 11" }),
   ).toBeVisible();
-  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(1);
+  await expect(catalog.getByRole("cell", { name: "NOT_IMPLEMENTED · Spring Boot" })).toHaveCount(0);
+  await expect(catalog.getByRole("cell", { name: "NOT_RUN · Spring Boot" }).first()).toBeVisible();
   await expect(page.getByText("NOT_IMPLEMENTED 仅记录 inventory gap", { exact: false })).toBeVisible();
   await expect(
     catalog.getByRole("cell", { name: "PASSED_LOCAL @ Spring Boot 2.7.18 / Java 17" }),
   ).toBeVisible();
   const targetSelector = page.getByLabel("Spring 目标精确版本");
-  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(0);
+  await expect(targetSelector.locator('option[value="3.5.16|21"]')).toHaveCount(1);
   await expect(targetSelector.locator('option[value="4.1.0|21"]')).toHaveCount(1);
 
   await page.getByLabel("Git 仓库 URL").fill("https://github.com/example/legacy-orders.git");

@@ -1,0 +1,4 @@
+interface:
+  display_name: Critical Path Resource Scheduler
+  short_description: Run bounded Critical Path Resource Scheduler capability
+  default_prompt: Use $elmos-critical-path-resource-scheduler with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

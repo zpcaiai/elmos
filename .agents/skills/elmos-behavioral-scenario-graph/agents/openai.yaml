@@ -1,0 +1,4 @@
+interface:
+  display_name: Behavioral Scenario Graph
+  short_description: Run bounded Behavioral Scenario Graph repository capability
+  default_prompt: Use $elmos-behavioral-scenario-graph with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Risk Classifier"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-risk-classifier to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Risk Classifier
+  short_description: Run bounded Risk Classifier repository capability
+  default_prompt: Use $elmos-risk-classifier with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

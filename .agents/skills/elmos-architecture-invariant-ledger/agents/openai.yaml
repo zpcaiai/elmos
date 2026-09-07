@@ -1,0 +1,4 @@
+interface:
+  display_name: Architecture Invariant Ledger
+  short_description: Run bounded Architecture Invariant Ledger repository capability
+  default_prompt: Use $elmos-architecture-invariant-ledger with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

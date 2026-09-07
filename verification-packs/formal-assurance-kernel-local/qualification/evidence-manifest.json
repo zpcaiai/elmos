@@ -14,7 +14,7 @@
     {
       "byte_size": 1743,
       "path": "certification/certification.json",
-      "sha256": "8c6b5b52036a8538870debb7a3eee42fb50b0887371a518342ec42d879723117"
+      "sha256": "2ffd96ae32b16c294a46ae83e8fd806a636909d4de0ae99d69ff63b5c76e4904"
     },
     {
       "byte_size": 1693,
@@ -104,7 +104,7 @@
     {
       "byte_size": 1250,
       "path": "pack.json",
-      "sha256": "c7b55f703061fa59b9c6e3ef14570e8405deebc05522d193326007ec5b2de566"
+      "sha256": "75865ef59ce88100dd0d796a18b387989bab570f03d6381ae2025171b413ce86"
     },
     {
       "byte_size": 608,
@@ -112,29 +112,29 @@
       "sha256": "b698dcc5574be3985e8d30649ee428c58edf22847facf9caf560fd55cce68200"
     },
     {
-      "byte_size": 8192,
+      "byte_size": 9099,
       "path": "qualification/environment.json",
-      "sha256": "12bd1b7c5bf1b9934deb43fcfa56cefcb3db7f138d743fc545eea5a57c11c630"
+      "sha256": "8a6328d890d7b854a819c84e95d44704c13bbe26182a34aa432c48049dbc6990"
     },
     {
       "byte_size": 35682,
       "path": "qualification/implementation-manifest.json",
-      "sha256": "613829b5c2d197c74251ebdf1794e9da66981c65f84f3c8ce439e6b245c67073"
+      "sha256": "7835dc81ab4e22a62e7cbc02c19546bb062fca01fc0f13b421f5c0862f0e6a9a"
     },
     {
-      "byte_size": 44405,
+      "byte_size": 44446,
       "path": "qualification/local-qualification.json",
-      "sha256": "6eac624410a38b0824ab973ab48efadcf20c5ce17ea7cd7191e52b666bfefc61"
+      "sha256": "048c00d7a71c5144559a088c5b991a9abe74f66d29fc2688436971066260002b"
     },
     {
-      "byte_size": 86208,
+      "byte_size": 86207,
       "path": "qualification/raw/engine-tests.txt",
-      "sha256": "b710c9d6a4eb9b81c985b2d3d9ed25b438e62a516ba368ea09ecb641ad325796"
+      "sha256": "12904202036dd2986c0857f666927dfd79ab4f3e22cd0db493710a1594d2e86e"
     },
     {
-      "byte_size": 695,
+      "byte_size": 694,
       "path": "qualification/raw/integration-tests.txt",
-      "sha256": "db997f094b14fe2bacf0013f64cebb89bd495f5f295a8747db9ba95f46bcb557"
+      "sha256": "d03f0d9051f87c92ea8a32340ffeefdb110d0fc5de172cc344dbef175bf92937"
     },
     {
       "byte_size": 388,

@@ -1,0 +1,4 @@
+interface:
+  display_name: Decomposition Telemetry Learner
+  short_description: Run bounded Decomposition Telemetry Learner capability
+  default_prompt: Use $elmos-decomposition-telemetry-learner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

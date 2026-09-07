@@ -1,0 +1,4 @@
+interface:
+  display_name: Uncertainty Exploration Planner
+  short_description: Run bounded Uncertainty Exploration Planner capability
+  default_prompt: Use $elmos-uncertainty-exploration-planner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

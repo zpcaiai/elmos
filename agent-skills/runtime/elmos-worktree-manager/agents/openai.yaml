@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Worktree Manager"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-worktree-manager to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Worktree Manager
+  short_description: Run bounded Worktree Manager repository capability
+  default_prompt: Use $elmos-worktree-manager with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

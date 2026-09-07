@@ -1,0 +1,4 @@
+interface:
+  display_name: Integration Edge Planner
+  short_description: Run bounded Integration Edge Planner repository capability
+  default_prompt: Use $elmos-integration-edge-planner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

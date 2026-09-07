@@ -1,4 +1,4 @@
 interface:
-  display_name: "Elmos Deterministic Validator"
-  short_description: "Run repository task routing with bounded evidence"
-  default_prompt: "Use $elmos-deterministic-validator to perform its bounded repository workflow with provenance and fail-closed evidence."
+  display_name: Deterministic Validator
+  short_description: Run bounded Deterministic Validator repository capability
+  default_prompt: Use $elmos-deterministic-validator with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

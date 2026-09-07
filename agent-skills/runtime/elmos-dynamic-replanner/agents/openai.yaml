@@ -1,0 +1,4 @@
+interface:
+  display_name: Dynamic Replanner
+  short_description: Run bounded Dynamic Replanner repository capability
+  default_prompt: Use $elmos-dynamic-replanner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.

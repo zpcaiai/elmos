@@ -1,0 +1,28 @@
+{
+  "name": "elmos-architecture-invariant-ledger",
+  "runtime": {
+    "certification": "NOT_CERTIFIED",
+    "effect_mode": "LOCAL_PURE",
+    "engine": "engines/repository-orchestrator-engine",
+    "external_evidence": "NOT_RUN",
+    "handler_id": "repo-orchestrator.architecture-invariant-ledger.v1",
+    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
+    "scope_fields": [
+      "tenant_id",
+      "project_id",
+      "actor_id",
+      "environment",
+      "repository_id",
+      "revision",
+      "purpose"
+    ]
+  },
+  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "source": {
+    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
+    "package": "elmos-repository-task-decomposition-cost-router-skills",
+    "path": "skills/40-architecture-invariant-ledger/SKILL.md",
+    "sha256": "a4158041e4f3ea16b839bcb28a87ed2e6d1c881293fd24f747d2c8b90b7458c1",
+    "version": "2.0.0"
+  }
+}

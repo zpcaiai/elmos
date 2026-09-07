@@ -1,0 +1,4 @@
+interface:
+  display_name: Plan Graph Verifier
+  short_description: Run bounded Plan Graph Verifier repository capability
+  default_prompt: Use $elmos-plan-graph-verifier with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
