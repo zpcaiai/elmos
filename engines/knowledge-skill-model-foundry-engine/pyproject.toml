@@ -8,7 +8,7 @@ version = "3.0.0"
 description = "Fail-closed Elmos Knowledge-Skill-Model Foundry runtime"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = ["esprima==4.0.1"]
 
 [project.optional-dependencies]
 dev = [

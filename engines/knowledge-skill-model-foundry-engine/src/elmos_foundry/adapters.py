@@ -446,6 +446,55 @@ class AdapterRegistry:
             for binding in sorted(self._bindings.values(), key=lambda item: item.adapter_id)
         )
 
+    def prepare_external_request(
+        self,
+        *,
+        skill_name: str,
+        payload: Mapping[str, Any],
+        tenant_scope: TenantScope,
+        invocation_id: str,
+        adapter_id: str,
+        risk_class: str,
+        required_inputs: Sequence[str],
+        allowed_tools: Sequence[str],
+        required_gates: Sequence[str],
+    ) -> InvocationRequest:
+        """Build the exact side-effect-free request a host must authorize."""
+
+        binding = self.binding_for(skill_name)
+        if binding is None or binding.adapter_id != adapter_id:
+            raise ValueError("requested adapter identity does not match the exact binding")
+        if not binding.effect_class.is_external:
+            raise ValueError("local deterministic bindings do not use external permits")
+        if self._external_broker is None:
+            raise ValueError("external execution broker is not configured")
+        route = self._external_routes.get(adapter_id)
+        if route is None:
+            raise ValueError("external adapter route is not registered")
+        normalized = canonical_value(payload)
+        if not isinstance(normalized, dict):
+            raise TypeError("adapter payload must be an object")
+        operation, declared_inputs = self._validate_adapter_payload(
+            payload=normalized,
+            required_inputs=required_inputs,
+        )
+        if operation != route.operation:
+            raise ValueError("requested operation does not match the exact broker route")
+        return self._request(
+            binding=binding,
+            broker=self._external_broker,
+            route=route,
+            skill_name=skill_name,
+            payload=normalized,
+            tenant_scope=tenant_scope,
+            invocation_id=invocation_id,
+            risk_class=risk_class,
+            operation=operation,
+            declared_inputs=declared_inputs,
+            allowed_tools=allowed_tools,
+            required_gates=required_gates,
+        )
+
     def invoke(
         self,
         *,
