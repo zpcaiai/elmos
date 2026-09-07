@@ -1,4 +1,4 @@
 interface:
-  display_name: Atomicity Validator
-  short_description: Run bounded Atomicity Validator repository capability
-  default_prompt: Use $elmos-atomicity-validator with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Atomicity Validator"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-atomicity-validator to perform its bounded repository workflow with provenance and fail-closed evidence."

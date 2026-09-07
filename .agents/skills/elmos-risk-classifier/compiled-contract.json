@@ -1,28 +1,54 @@
 {
-  "name": "elmos-risk-classifier",
-  "runtime": {
-    "certification": "NOT_CERTIFIED",
-    "effect_mode": "LOCAL_PURE",
-    "engine": "engines/repository-orchestrator-engine",
-    "external_evidence": "NOT_RUN",
-    "handler_id": "repo-orchestrator.risk-classifier.v1",
-    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "scope_fields": [
-      "tenant_id",
-      "project_id",
-      "actor_id",
-      "environment",
-      "repository_id",
-      "revision",
-      "purpose"
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "risk consequences, required gates and rollback expectations are explicit"
+    ],
+    "guardrails": [
+      "Cost pressure cannot downgrade mandatory safety/compatibility gates."
+    ],
+    "inputs": [
+      "`task`",
+      "`impact subgraph`",
+      "`invariant ledger`"
+    ],
+    "outputs": [
+      "`risk vector`",
+      "`minimum model/review tier`",
+      "`mandatory proof obligations/gates`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-plan-graph-verifier"
     ]
   },
-  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.identity-policy",
+    "handler": "risk_classifier",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
-    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
-    "package": "elmos-repository-task-decomposition-cost-router-skills",
-    "path": "skills/10-risk-classifier/SKILL.md",
-    "sha256": "bc823d3b46d89f5cf8eabf7920cdc7fdad5b7deb25eac7fe05445f3ba935f40b",
+    "name": "elmos-risk-classifier",
+    "ordinal": 10,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/10-risk-classifier/SKILL.md",
+    "sha256": "sha256:bc823d3b46d89f5cf8eabf7920cdc7fdad5b7deb25eac7fe05445f3ba935f40b",
     "version": "2.0.0"
   }
 }

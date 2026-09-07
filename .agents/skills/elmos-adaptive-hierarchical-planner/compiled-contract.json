@@ -1,28 +1,63 @@
 {
-  "name": "elmos-adaptive-hierarchical-planner",
-  "runtime": {
-    "certification": "NOT_CERTIFIED",
-    "effect_mode": "LOCAL_PURE",
-    "engine": "engines/repository-orchestrator-engine",
-    "external_evidence": "NOT_RUN",
-    "handler_id": "repo-orchestrator.adaptive-hierarchical-planner.v1",
-    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "scope_fields": [
-      "tenant_id",
-      "project_id",
-      "actor_id",
-      "environment",
-      "repository_id",
-      "revision",
-      "purpose"
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "plan covers all scenarios without forced full-depth expansion",
+      "every executable leaf satisfies the current granularity policy",
+      "coarse nodes retain enough contract information for future refinement"
+    ],
+    "guardrails": [
+      "Do not fully expand a large plan at run start merely for completeness.",
+      "Do not make every node equally fine-grained."
+    ],
+    "inputs": [
+      "requirement/scenario graph",
+      "repository intelligence graph",
+      "invariant ledger",
+      "semantic seams",
+      "impact map"
+    ],
+    "outputs": [
+      "`hierarchical plan`",
+      "`refinement frontier`",
+      "`task candidates`",
+      "`plan confidence`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-change-impact-analyzer",
+      "elmos-uncertainty-exploration-planner",
+      "elmos-semantic-seam-detector",
+      "elmos-baseline-golden-snapshotter"
     ]
   },
-  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "adaptive_hierarchical_planner",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
-    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
-    "package": "elmos-repository-task-decomposition-cost-router-skills",
-    "path": "skills/42-adaptive-hierarchical-planner/SKILL.md",
-    "sha256": "049e4ac8ad88fb05ea686f7b3827af62fd909184d1050005875f91e322635a69",
+    "name": "elmos-adaptive-hierarchical-planner",
+    "ordinal": 42,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/42-adaptive-hierarchical-planner/SKILL.md",
+    "sha256": "sha256:049e4ac8ad88fb05ea686f7b3827af62fd909184d1050005875f91e322635a69",
     "version": "2.0.0"
   }
 }

@@ -1,4 +1,4 @@
 interface:
-  display_name: Semantic Conflict Detector
-  short_description: Run bounded Semantic Conflict Detector repository capability
-  default_prompt: Use $elmos-semantic-conflict-detector with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Semantic Conflict Detector"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-semantic-conflict-detector to perform its bounded repository workflow with provenance and fail-closed evidence."

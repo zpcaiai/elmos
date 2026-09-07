@@ -1,4 +1,4 @@
 interface:
-  display_name: Integration Manager
-  short_description: Run bounded Integration Manager repository capability
-  default_prompt: Use $elmos-integration-manager with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Integration Manager"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-integration-manager to perform its bounded repository workflow with provenance and fail-closed evidence."

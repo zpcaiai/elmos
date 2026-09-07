@@ -1,4 +1,4 @@
 interface:
-  display_name: Rollback Recovery
-  short_description: Run bounded Rollback Recovery repository capability
-  default_prompt: Use $elmos-rollback-recovery with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Rollback Recovery"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-rollback-recovery to perform its bounded repository workflow with provenance and fail-closed evidence."

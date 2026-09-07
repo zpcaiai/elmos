@@ -1,4 +1,4 @@
 interface:
-  display_name: Worker Executor
-  short_description: Run bounded Worker Executor repository capability
-  default_prompt: Use $elmos-worker-executor with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Worker Executor"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-worker-executor to perform its bounded repository workflow with provenance and fail-closed evidence."

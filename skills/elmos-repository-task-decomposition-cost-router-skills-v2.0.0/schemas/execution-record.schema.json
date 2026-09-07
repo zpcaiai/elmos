@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosExecutionRecord",
+  "type": "object",
+  "required": [
+    "task_id",
+    "model_alias",
+    "attempt",
+    "started_at",
+    "result"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string"
+    },
+    "model_alias": {
+      "type": "string"
+    },
+    "attempt": {
+      "type": "integer"
+    },
+    "prompt_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "output_tokens": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "cost": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "ended_at": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "result": {
+      "type": "string"
+    },
+    "failure_class": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "evidence": {
+      "type": "array"
+    },
+    "selection_mode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "smart",
+        "manual",
+        null
+      ]
+    },
+    "selection_provenance": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "system_smart",
+        "user_selected",
+        "fallback",
+        "required_verifier",
+        null
+      ]
+    },
+    "user_selected_model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "fallback_from_model": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "gpt-5.6-sol-max",
+        "claude-opus-5-max",
+        "claude-fable-5",
+        "grok-4.6",
+        "kimi-k3-max",
+        "glm-5.3-max",
+        "qwen3.8-max",
+        "deepseek-v4-pro-0813",
+        "gemini-3.7-flash-high",
+        "claude-sonnet-5",
+        null
+      ]
+    },
+    "routing_reason": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

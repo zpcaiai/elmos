@@ -1,4 +1,4 @@
 interface:
-  display_name: Telemetry Learner
-  short_description: Run bounded Telemetry Learner repository capability
-  default_prompt: Use $elmos-telemetry-learner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Telemetry Learner"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-telemetry-learner to perform its bounded repository workflow with provenance and fail-closed evidence."

@@ -10,7 +10,30 @@
       "type": "array",
       "uniqueItems": true
     },
+    "edges": {
+      "items": {
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "integration_barriers": {
+      "type": "array"
+    },
     "path_locks": {
+      "type": "object"
+    },
+    "plan_revision": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "refinement_frontier": {
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "resource_locks": {
       "type": "object"
     },
     "run_id": {
@@ -65,6 +88,12 @@
           "context_pack": {
             "type": "object"
           },
+          "cross_boundary_coupling": {
+            "type": [
+              "string",
+              "integer"
+            ]
+          },
           "dependencies": {
             "items": {
               "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
@@ -82,18 +111,74 @@
             "type": "array",
             "uniqueItems": true
           },
+          "granularity": {
+            "type": "object"
+          },
+          "hierarchy_level": {
+            "enum": [
+              "goal",
+              "capability",
+              "changeset",
+              "atomic_task",
+              "microstep"
+            ]
+          },
           "id": {
             "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$",
             "type": "string"
+          },
+          "impact_confidence": {
+            "type": [
+              "string",
+              "integer"
+            ]
+          },
+          "incoming_contract_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "invariant_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
           },
           "objective": {
             "minLength": 1,
             "type": "string"
           },
+          "outgoing_contract_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
           "owned_paths": {
             "items": {
               "minLength": 1,
               "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$",
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "parent_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "plan_revision": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "proof_obligation_refs": {
+            "items": {
               "type": "string"
             },
             "type": "array",
@@ -117,6 +202,19 @@
           "routing": {
             "type": "object"
           },
+          "scenario_refs": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "uniqueItems": true
+          },
+          "semantic_cohesion": {
+            "type": [
+              "string",
+              "integer"
+            ]
+          },
           "status": {
             "enum": [
               "planned",
@@ -135,6 +233,18 @@
           "title": {
             "minLength": 1,
             "type": "string"
+          },
+          "uncertainty": {
+            "type": [
+              "object",
+              "string"
+            ]
+          },
+          "verification_locality": {
+            "type": [
+              "string",
+              "integer"
+            ]
           }
         },
         "required": [

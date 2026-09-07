@@ -1,4 +1,4 @@
 interface:
-  display_name: Critical Path Resource Scheduler
-  short_description: Run bounded Critical Path Resource Scheduler capability
-  default_prompt: Use $elmos-critical-path-resource-scheduler with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Critical Path Resource Scheduler"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-critical-path-resource-scheduler to perform its bounded repository workflow with provenance and fail-closed evidence."

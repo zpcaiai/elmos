@@ -1,4 +1,4 @@
 interface:
-  display_name: Repository Intelligence Graph
-  short_description: Run bounded Repository Intelligence Graph repository capability
-  default_prompt: Use $elmos-repository-intelligence-graph with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Repository Intelligence Graph"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-repository-intelligence-graph to perform its bounded repository workflow with provenance and fail-closed evidence."

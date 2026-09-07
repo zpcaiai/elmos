@@ -23,7 +23,7 @@ REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 IMPORTER_PATH = REPOSITORY_ROOT / "tooling/integrate_repository_task_router_skills.py"
 ARCHIVE_PATH = REPOSITORY_ROOT / (
     "skills/subskills/"
-    "elmos-repository-task-decomposition-cost-router-skills-v1.1.0.zip"
+    "elmos-repository-task-decomposition-cost-router-skills-v2.0.0.zip"
 )
 
 SPEC = importlib.util.spec_from_file_location(
@@ -77,19 +77,19 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
     def test_archive_identity_inventory_skills_allowlist_and_dag_are_exact(self) -> None:
         snapshot = self.snapshot
         self.assertEqual(integration.EXPECTED_ARCHIVE_SHA256, snapshot.archive_sha256)
-        self.assertEqual(72_565, snapshot.archive_bytes)
-        self.assertEqual(108, snapshot.entry_count)
-        self.assertEqual(63, len(snapshot.files))
-        self.assertEqual(45, len(snapshot.directories))
-        self.assertEqual(101_831, snapshot.uncompressed_bytes)
+        self.assertEqual(133_062, snapshot.archive_bytes)
+        self.assertEqual(169, snapshot.entry_count)
+        self.assertEqual(101, len(snapshot.files))
+        self.assertEqual(68, len(snapshot.directories))
+        self.assertEqual(205_624, snapshot.uncompressed_bytes)
         self.assertEqual(
             integration.EXPECTED_SKILLS,
             tuple(skill.name for skill in snapshot.skills),
         )
         self.assertEqual(10, len(integration.EXPECTED_ALLOWLIST))
         self.assertEqual(set(integration.EXPECTED_SKILLS), set(integration.DAG_DEPENDENCIES))
-        self.assertEqual(37, len(snapshot.topological_order))
-        self.assertEqual(84, sum(map(len, integration.DAG_DEPENDENCIES.values())))
+        self.assertEqual(54, len(snapshot.topological_order))
+        self.assertEqual(142, sum(map(len, integration.DAG_DEPENDENCIES.values())))
         positions = {name: index for index, name in enumerate(snapshot.topological_order)}
         for name, dependencies in integration.DAG_DEPENDENCIES.items():
             self.assertTrue(all(positions[dependency] < positions[name] for dependency in dependencies))
@@ -98,6 +98,7 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
         findings = {finding["code"]: finding for finding in self.snapshot.source_findings}
         self.assertEqual(
             {
+                "SOURCE_ARCHIVE_CONTAINS_CACHE_ARTIFACTS",
                 "SOURCE_TASK_EXAMPLE_SCHEMA_MISMATCH",
                 "SOURCE_MANUAL_NULL_MODEL_ACCEPTED",
                 "SOURCE_EXECUTION_MODEL_ALIAS_UNCONSTRAINED",
@@ -198,7 +199,7 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
         self.assertEqual(set(integration.EXPECTED_SKILLS), set(registry.canonical_owners))
         expected = integration.build_expected(self.snapshot, REPOSITORY_ROOT)
         manifest = expected["installed_manifest"]
-        self.assertEqual(37, manifest["implementation_states"]["IMPLEMENTED"])
+        self.assertEqual(54, manifest["implementation_states"]["IMPLEMENTED"])
         self.assertEqual(0, manifest["implementation_states"]["DECLARED"])
         self.assertEqual("NOT_RUN", manifest["local_evidence_status"])
         self.assertEqual("NOT_RUN", manifest["external_evidence_status"])
@@ -249,19 +250,7 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
 
             contract = json.loads(tree.files["compiled-contract.json"].content)
             if skill.name == "elmos-repository-orchestrator":
-                model_selection_input = (
-                    "`model_selection` (Smart or manual, validated by "
-                    "`elmos-model-selection-controller`)"
-                )
-                self.assertIn(
-                    model_selection_input,
-                    contract["contract"]["inputs"],
-                )
-                self.assertNotIn(
-                    "model_selection` (Smart or manual, validated by "
-                    "`elmos-model-selection-controller`)",
-                    contract["contract"]["inputs"],
-                )
+                self.assertIn("`model_selection`", contract["contract"]["inputs"])
 
             interface_text = tree.files["agents/openai.yaml"].content.decode("utf-8")
             self.assertRegex(interface_text, r'^interface:\n  display_name: "')
@@ -274,13 +263,13 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
     def test_manifest_inventories_every_source_and_installed_file(self) -> None:
         expected = integration.build_expected(self.snapshot, REPOSITORY_ROOT)
         manifest = expected["installed_manifest"]
-        self.assertEqual(63, len(manifest["canonical_source"]["files"]))
-        self.assertEqual(45, len(manifest["canonical_source"]["directories"]))
+        self.assertEqual(101, len(manifest["canonical_source"]["files"]))
+        self.assertEqual(68, len(manifest["canonical_source"]["directories"]))
         self.assertTrue(all(value is False for value in manifest["source_absence_facts"].values()))
         for record in manifest["canonical_source"]["files"]:
             self.assertRegex(record["sha256"], r"^sha256:[0-9a-f]{64}$")
             self.assertEqual("0644", record["installed_mode"])
-        self.assertEqual(37, len(manifest["skills"]))
+        self.assertEqual(54, len(manifest["skills"]))
         self.assertTrue(all(len(record["installed_files"]) == 3 for record in manifest["skills"]))
 
     def test_archive_path_traversal_absolute_backslash_nfc_and_reserved_names_fail(self) -> None:
@@ -380,8 +369,8 @@ class RepositoryTaskRouterIntegrationTest(unittest.TestCase):
             right = integration._read_tree(root / integration.INSTALL_ROOTS[1] / name)
             self.assertEqual(left, right)
         source = integration._read_tree(root / integration.SOURCE_RELATIVE)
-        self.assertEqual(63, len(source.files))
-        self.assertEqual(44, len(source.directories))
+        self.assertEqual(101, len(source.files))
+        self.assertEqual(67, len(source.directories))
         for path, record in first.files.items():
             installed = source.files[path]
             self.assertEqual(record.content, installed.content)

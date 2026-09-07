@@ -450,7 +450,12 @@ CERTIFICATION_STATUS = "NOT_CERTIFIED"
 # output receipt was introduced.  This digest is the only receipt-less tree
 # that may be refreshed; arbitrary or partially modified trees still fail.
 LEGACY_MANAGED_DOC_TREE_SHA256S = frozenset(
-    {"sha256:d348470108610f66cc4e7d6638ae1fdf9a674ab6c2bc0a75b62aab02407dc0bf"}
+    {
+        "sha256:d348470108610f66cc4e7d6638ae1fdf9a674ab6c2bc0a75b62aab02407dc0bf",
+        # Exact v1.1.0 managed documentation tree observed immediately before
+        # the pinned v2.0.0 upgrade. This is a one-way ownership receipt only.
+        "sha256:644f5c65ee884f6c8ce2f2e3df542f7a2a7532fcf048af1e206722479ef5e656",
+    }
 )
 
 SOURCE_ABSENCE_FACTS = {
@@ -1039,6 +1044,20 @@ def _compiled_schemas() -> Mapping[str, Mapping[str, Any]]:
             "read_only": {"type": "boolean"},
             "context_pack": {"type": "object"},
             "routing": {"type": "object"},
+            "plan_revision": {"type": "string", "minLength": 1},
+            "hierarchy_level": {"enum": ["goal", "capability", "changeset", "atomic_task", "microstep"]},
+            "parent_id": {"type": ["string", "null"]},
+            "scenario_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+            "invariant_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+            "proof_obligation_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+            "incoming_contract_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+            "outgoing_contract_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+            "uncertainty": {"type": ["object", "string"]},
+            "impact_confidence": {"type": ["string", "integer"]},
+            "semantic_cohesion": {"type": ["string", "integer"]},
+            "verification_locality": {"type": ["string", "integer"]},
+            "cross_boundary_coupling": {"type": ["string", "integer"]},
+            "granularity": {"type": "object"},
             "status": {"enum": ["planned", "ready", "running", "blocked", "failed", "passed", "waived"]},
         },
         "allOf": [
@@ -1071,6 +1090,11 @@ def _compiled_schemas() -> Mapping[str, Mapping[str, Any]]:
             },
             "critical_path": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
             "path_locks": {"type": "object"},
+            "plan_revision": {"type": "string", "minLength": 1},
+            "edges": {"type": "array", "items": {"type": "object"}},
+            "resource_locks": {"type": "object"},
+            "integration_barriers": {"type": "array"},
+            "refinement_frontier": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
         },
     }
     evidence = {
@@ -1149,12 +1173,144 @@ def _compiled_schemas() -> Mapping[str, Mapping[str, Any]]:
             ],
         },
     }
+    graph_identifier = {
+        "type": "string",
+        "pattern": r"^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+    }
+    hierarchical_node = {
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["id", "hierarchy_level", "status", "uncertainty", "risk"],
+        "properties": {
+            "id": graph_identifier,
+            "parent_id": {"oneOf": [graph_identifier, {"type": "null"}]},
+            "hierarchy_level": {"enum": ["goal", "capability", "changeset", "atomic_task", "microstep"]},
+            "status": {"enum": ["coarse", "planned", "ready", "running", "blocked", "passed", "failed"]},
+            "uncertainty": {"enum": ["low", "medium", "high", "critical"]},
+            "risk": {"enum": ["low", "medium", "high", "critical"]},
+        },
+    }
+    hierarchical_plan = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/hierarchical-plan.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["run_id", "revision", "nodes", "refinement_frontier"],
+        "properties": {
+            "run_id": {"type": "string", "minLength": 1},
+            "revision": {"type": "string", "minLength": 1},
+            "nodes": {"type": "array", "minItems": 1, "items": hierarchical_node},
+            "refinement_frontier": {"type": "array", "uniqueItems": True, "items": graph_identifier},
+            "lazy_refinement": {"const": True},
+            "digest": {"type": "string", "pattern": r"^sha256:[0-9a-f]{64}$"},
+        },
+    }
+    scenario_graph = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/scenario-graph.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["scenarios", "edges"],
+        "properties": {
+            "scenarios": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["id", "kind", "statement"],
+                    "properties": {
+                        "id": graph_identifier,
+                        "kind": {"enum": ["happy", "failure", "boundary", "compatibility", "rollback", "operational"]},
+                        "statement": {"type": "string", "minLength": 1},
+                        "evidence_refs": {"type": "array", "uniqueItems": True, "items": {"type": "string"}},
+                    },
+                },
+            },
+            "edges": {"type": "array", "items": {"type": "object"}},
+        },
+    }
+    repository_graph = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/repository-intelligence-graph.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["revision", "nodes", "edges"],
+        "properties": {
+            "revision": {"type": "string", "minLength": 1},
+            "nodes": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+            "edges": {"type": "array", "items": {"type": "object"}},
+        },
+    }
+    invariant_ledger = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/invariant-ledger.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["invariants"],
+        "properties": {
+            "invariants": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                    "type": "object",
+                    "required": ["id", "statement", "risk", "status"],
+                    "properties": {
+                        "id": graph_identifier,
+                        "statement": {"type": "string", "minLength": 1},
+                        "risk": {"enum": ["low", "medium", "high", "critical"]},
+                        "status": {"enum": ["VERIFIED", "UNVERIFIED", "VIOLATED"]},
+                        "scope": {"type": "array", "items": {"type": "string"}},
+                        "evidence_refs": {"type": "array", "items": {"type": "string"}},
+                    },
+                },
+            }
+        },
+    }
+    proof_obligation = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/proof-obligation.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["id", "statement", "scope", "preferred_verifier", "status"],
+        "properties": {
+            "id": graph_identifier,
+            "statement": {"type": "string", "minLength": 1},
+            "scope": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+            "preferred_verifier": {"type": "string", "minLength": 1},
+            "status": {"enum": ["NOT_RUN", "PASS", "FAIL", "BLOCKED", "INCONCLUSIVE"]},
+            "evidence_refs": {"type": "array", "items": {"type": "string"}},
+        },
+    }
+    plan_revision = {
+        "$schema": "https://json-schema.org/draft/2020-12/schema",
+        "$id": "https://elmos.dev/schemas/repository-task-router/plan-revision.v2.json",
+        "type": "object",
+        "additionalProperties": False,
+        "required": ["run_id", "revision", "trigger", "changes", "assumptions_changed", "invalidated_evidence"],
+        "properties": {
+            "run_id": {"type": "string", "minLength": 1},
+            "revision": {"type": "string", "minLength": 1},
+            "parent_revision": {"type": ["string", "null"]},
+            "trigger": {"type": "string", "minLength": 1},
+            "changes": {"type": "array"},
+            "assumptions_changed": {"type": "array"},
+            "invalidated_evidence": {"type": "array"},
+            "preserved_evidence": {"type": "array"},
+        },
+    }
     return {
         "dag.schema.json": dag,
         "evidence.schema.json": evidence,
         "execution-record.schema.json": execution,
+        "hierarchical-plan.schema.json": hierarchical_plan,
+        "invariant-ledger.schema.json": invariant_ledger,
         "model-selection-request.schema.json": model_selection_request,
         "model-selection-resolved.schema.json": model_selection_resolved,
+        "plan-revision.schema.json": plan_revision,
+        "proof-obligation.schema.json": proof_obligation,
+        "repository-intelligence-graph.schema.json": repository_graph,
+        "scenario-graph.schema.json": scenario_graph,
         "task.schema.json": task,
     }
 
@@ -1483,6 +1639,7 @@ def load_runtime_registry(repository_root: Path) -> RuntimeRegistry:
     if (
         document.get("schema_version") != "elmos.repository-orchestrator.handler-registry.v1"
         or document.get("package") != PACKAGE_NAME
+        or document.get("package_version") != PACKAGE_VERSION
         or document.get("runtime_module") != RUNTIME_MODULE
         or document.get("runtime_callable") != RUNTIME_CALLABLE
     ):
@@ -1929,11 +2086,19 @@ def _resolve_below(repository_root: Path, relative: Path) -> Path:
     return destination
 
 
-def _read_tree(root: Path) -> TreeSpec:
+def _read_tree(
+    root: Path,
+    *,
+    allowed_root_modes: frozenset[int] = frozenset({0o755}),
+) -> TreeSpec:
     if root.is_symlink() or not root.is_dir():
         raise IntegrationError(f"managed tree is missing or unsafe: {root}")
-    if stat.S_IMODE(root.stat().st_mode) != 0o755:
-        raise IntegrationError(f"managed root directory mode is not 0755: {root}")
+    root_mode = stat.S_IMODE(root.stat().st_mode)
+    if root_mode not in allowed_root_modes:
+        rendered_modes = "/".join(f"{mode:04o}" for mode in sorted(allowed_root_modes))
+        raise IntegrationError(
+            f"managed root directory mode is not {rendered_modes}: {root}"
+        )
     files: dict[str, FilePayload] = {}
     directories: list[str] = []
     for path in sorted(root.rglob("*")):
@@ -2157,6 +2322,126 @@ def _verify_managed_skill(
     return observed
 
 
+def _verify_transitional_v2_skill(
+    destination: Path,
+    source: SourceSkill,
+    snapshot: PackageSnapshot,
+) -> TreeSpec:
+    """Verify the exact bounded v2 wrapper shape emitted by the retired importer.
+
+    The first v2 integration used a temporary duplicate engine and moved staged
+    Skill roots with mode 0700.  Accept that narrowly defined state only so it can
+    be atomically replaced by the canonical runtime-owned tree.  No package code
+    or wrapper instruction is executed while establishing ownership.
+    """
+
+    if destination.is_symlink() or not destination.is_dir():
+        raise IntegrationError(f"transitional Skill root is unsafe: {destination}")
+    if stat.S_IMODE(destination.stat().st_mode) not in {0o700, 0o755}:
+        raise IntegrationError(
+            f"transitional Skill root mode is not 0700/0755: {destination}"
+        )
+    files: dict[str, FilePayload] = {}
+    directories: list[str] = []
+    for path in sorted(destination.rglob("*")):
+        relative = path.relative_to(destination).as_posix()
+        if path.is_symlink():
+            raise IntegrationError(f"transitional Skill contains a symlink: {path}")
+        if path.is_dir():
+            if stat.S_IMODE(path.stat().st_mode) != 0o755:
+                raise IntegrationError(
+                    f"transitional Skill directory mode is not 0755: {path}"
+                )
+            directories.append(relative)
+        elif path.is_file():
+            mode = stat.S_IMODE(path.stat().st_mode)
+            if mode != 0o644:
+                raise IntegrationError(
+                    f"transitional Skill file mode is not 0644: {path}"
+                )
+            files[relative] = FilePayload(path.read_bytes(), mode)
+        else:
+            raise IntegrationError(f"transitional Skill has a special file: {path}")
+    observed = TreeSpec(dict(sorted(files.items())), tuple(sorted(directories)))
+    if observed.directories != ("agents",) or set(observed.files) != {
+        "SKILL.md",
+        "agents/openai.yaml",
+        "compiled-contract.json",
+    }:
+        raise IntegrationError(
+            f"transitional Skill inventory is not exact: {source.name}"
+        )
+
+    try:
+        contract = json.loads(
+            _decode_utf8(
+                observed.files["compiled-contract.json"].content,
+                f"{source.name}/compiled-contract.json",
+            )
+        )
+    except json.JSONDecodeError as exc:
+        raise IntegrationError(
+            f"transitional Skill contract is invalid JSON: {source.name}"
+        ) from exc
+    expected_handler = f"repo-orchestrator.{source.name.removeprefix('elmos-')}.v1"
+    expected_source = {
+        "package": PACKAGE_NAME,
+        "version": PACKAGE_VERSION,
+        "path": source.source_path,
+        "sha256": source.source_sha256,
+        "archive_sha256": snapshot.archive_sha256,
+    }
+    runtime = contract.get("runtime") if isinstance(contract, Mapping) else None
+    if (
+        not isinstance(contract, Mapping)
+        or contract.get("schema_version")
+        != "elmos.repository-orchestrator.skill-binding.v1"
+        or contract.get("name") != source.name
+        or contract.get("source") != expected_source
+        or not isinstance(runtime, Mapping)
+        or runtime.get("engine") != "engines/repository-orchestrator-engine"
+        or runtime.get("handler_id") != expected_handler
+        or runtime.get("effect_mode") not in {"LOCAL_PURE", "PREPARE_ONLY"}
+        or runtime.get("local_evidence") != "LOCAL_EXECUTED_SELF_ATTESTED"
+        or runtime.get("external_evidence") != "NOT_RUN"
+        or runtime.get("certification") != "NOT_CERTIFIED"
+    ):
+        raise IntegrationError(
+            f"transitional Skill contract identity drifted: {source.name}"
+        )
+
+    skill_text = _decode_utf8(
+        observed.files["SKILL.md"].content,
+        f"{source.name}/SKILL.md",
+    )
+    required_fragments = (
+        f"name: {source.name}",
+        f"source_path: {source.source_path}",
+        f"source_sha256: {source.source_sha256}",
+        f"`{expected_handler}`",
+        "`elmos_repository_orchestrator.runtime.invoke`",
+        "External evidence stays\n  `NOT_RUN`",
+        "certification stays `NOT_CERTIFIED`",
+        source.body.rstrip(),
+    )
+    if any(fragment not in skill_text for fragment in required_fragments):
+        raise IntegrationError(
+            f"transitional Skill wrapper identity drifted: {source.name}"
+        )
+    interface_text = _decode_utf8(
+        observed.files["agents/openai.yaml"].content,
+        f"{source.name}/agents/openai.yaml",
+    )
+    if (
+        "interface:" not in interface_text
+        or f"Use ${source.name} with trusted scope" not in interface_text
+    ):
+        raise IntegrationError(
+            f"transitional Skill interface identity drifted: {source.name}"
+        )
+    return observed
+
+
 def _stage_tree(destination: Path, tree: TreeSpec) -> None:
     destination.mkdir()
     os.chmod(destination, 0o755)
@@ -2205,6 +2490,7 @@ def write_integration(
         for name in EXPECTED_SKILLS
     }
     skill_receipts: Mapping[str, Mapping[str, Any]] | None = None
+    skills_by_name = {skill.name: skill for skill in snapshot.skills}
     missing: list[ManagedAction] = []
     refresh: list[tuple[ManagedAction, TreeSpec]] = []
     for action in actions:
@@ -2229,21 +2515,28 @@ def write_integration(
                 elif action.destination in skill_destinations:
                     name = skill_destinations[action.destination]
                     try:
-                        if skill_receipts is None:
-                            skill_receipts = _managed_skill_receipts(
-                                repository_root,
-                                snapshot,
-                            )
-                        previous = _verify_managed_skill(
+                        previous = _verify_transitional_v2_skill(
                             action.destination,
-                            name,
-                            skill_receipts[name],
+                            skills_by_name[name],
+                            snapshot,
                         )
-                    except (KeyError, IntegrationError) as ownership_exc:
-                        raise IntegrationError(
-                            "refusing unowned, incomplete, or drifted collision: "
-                            f"{action.destination}: {ownership_exc}"
-                        ) from ownership_exc
+                    except (KeyError, IntegrationError):
+                        try:
+                            if skill_receipts is None:
+                                skill_receipts = _managed_skill_receipts(
+                                    repository_root,
+                                    snapshot,
+                                )
+                            previous = _verify_managed_skill(
+                                action.destination,
+                                name,
+                                skill_receipts[name],
+                            )
+                        except (KeyError, IntegrationError) as ownership_exc:
+                            raise IntegrationError(
+                                "refusing unowned, incomplete, or drifted collision: "
+                                f"{action.destination}: {ownership_exc}"
+                            ) from ownership_exc
                     refresh.append((action, previous))
                 else:
                     raise IntegrationError(
@@ -2283,7 +2576,10 @@ def write_integration(
                                 f"managed destination appeared concurrently: {action.destination}"
                             )
                     else:
-                        if _read_tree(action.destination) != previous:
+                        if _read_tree(
+                            action.destination,
+                            allowed_root_modes=frozenset({0o700, 0o755}),
+                        ) != previous:
                             raise IntegrationError(
                                 f"managed documentation changed before refresh: {action.destination}"
                             )

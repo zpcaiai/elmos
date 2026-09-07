@@ -1,4 +1,4 @@
 interface:
-  display_name: Plan Graph Verifier
-  short_description: Run bounded Plan Graph Verifier repository capability
-  default_prompt: Use $elmos-plan-graph-verifier with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Plan Graph Verifier"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-plan-graph-verifier to perform its bounded repository workflow with provenance and fail-closed evidence."

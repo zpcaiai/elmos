@@ -1,4 +1,4 @@
 interface:
-  display_name: Retry Escalation Controller
-  short_description: Run bounded Retry Escalation Controller repository capability
-  default_prompt: Use $elmos-retry-escalation-controller with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Retry Escalation Controller"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-retry-escalation-controller to perform its bounded repository workflow with provenance and fail-closed evidence."

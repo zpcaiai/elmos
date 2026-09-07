@@ -1,4 +1,4 @@
 interface:
-  display_name: Conflict Resolver
-  short_description: Run bounded Conflict Resolver repository capability
-  default_prompt: Use $elmos-conflict-resolver with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Conflict Resolver"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-conflict-resolver to perform its bounded repository workflow with provenance and fail-closed evidence."

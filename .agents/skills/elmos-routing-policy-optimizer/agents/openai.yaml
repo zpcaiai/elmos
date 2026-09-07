@@ -1,4 +1,4 @@
 interface:
-  display_name: Routing Policy Optimizer
-  short_description: Run bounded Routing Policy Optimizer repository capability
-  default_prompt: Use $elmos-routing-policy-optimizer with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Routing Policy Optimizer"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-routing-policy-optimizer to perform its bounded repository workflow with provenance and fail-closed evidence."

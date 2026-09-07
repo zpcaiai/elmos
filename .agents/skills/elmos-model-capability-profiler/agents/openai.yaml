@@ -1,4 +1,4 @@
 interface:
-  display_name: Model Capability Profiler
-  short_description: Run bounded Model Capability Profiler repository capability
-  default_prompt: Use $elmos-model-capability-profiler with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Model Capability Profiler"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-model-capability-profiler to perform its bounded repository workflow with provenance and fail-closed evidence."

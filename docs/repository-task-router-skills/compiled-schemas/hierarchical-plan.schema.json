@@ -1,0 +1,105 @@
+{
+  "$id": "https://elmos.dev/schemas/repository-task-router/hierarchical-plan.v2.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "lazy_refinement": {
+      "const": true
+    },
+    "nodes": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "hierarchy_level": {
+            "enum": [
+              "goal",
+              "capability",
+              "changeset",
+              "atomic_task",
+              "microstep"
+            ]
+          },
+          "id": {
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+            "type": "string"
+          },
+          "parent_id": {
+            "oneOf": [
+              {
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          },
+          "status": {
+            "enum": [
+              "coarse",
+              "planned",
+              "ready",
+              "running",
+              "blocked",
+              "passed",
+              "failed"
+            ]
+          },
+          "uncertainty": {
+            "enum": [
+              "low",
+              "medium",
+              "high",
+              "critical"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "hierarchy_level",
+          "status",
+          "uncertainty",
+          "risk"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "refinement_frontier": {
+      "items": {
+        "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+        "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+    },
+    "revision": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "run_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id",
+    "revision",
+    "nodes",
+    "refinement_frontier"
+  ],
+  "type": "object"
+}

@@ -1,28 +1,58 @@
 {
-  "name": "elmos-semantic-seam-detector",
-  "runtime": {
-    "certification": "NOT_CERTIFIED",
-    "effect_mode": "LOCAL_PURE",
-    "engine": "engines/repository-orchestrator-engine",
-    "external_evidence": "NOT_RUN",
-    "handler_id": "repo-orchestrator.semantic-seam-detector.v1",
-    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "scope_fields": [
-      "tenant_id",
-      "project_id",
-      "actor_id",
-      "environment",
-      "repository_id",
-      "revision",
-      "purpose"
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "proposed split points minimize hidden cross-task assumptions",
+      "unsafe splits carry explicit reasons"
+    ],
+    "guardrails": [
+      "A directory boundary is not automatically a semantic seam."
+    ],
+    "inputs": [
+      "repository intelligence graph",
+      "invariant ledger",
+      "scenario graph"
+    ],
+    "outputs": [
+      "`candidate seams`",
+      "`unsafe seams`",
+      "`coupling score`",
+      "`recommended change clusters`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "required",
+    "dependencies": [
+      "elmos-repository-intelligence-graph",
+      "elmos-architecture-invariant-ledger",
+      "elmos-behavioral-scenario-graph"
     ]
   },
-  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.impact-graph",
+    "handler": "semantic_seam_detector",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
-    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
-    "package": "elmos-repository-task-decomposition-cost-router-skills",
-    "path": "skills/41-semantic-seam-detector/SKILL.md",
-    "sha256": "c124ac8f6f4b403a0418241ee90d979cf320b969e80e933eacced90563fd1354",
+    "name": "elmos-semantic-seam-detector",
+    "ordinal": 41,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/41-semantic-seam-detector/SKILL.md",
+    "sha256": "sha256:c124ac8f6f4b403a0418241ee90d979cf320b969e80e933eacced90563fd1354",
     "version": "2.0.0"
   }
 }

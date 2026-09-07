@@ -1,4 +1,4 @@
 interface:
-  display_name: Integration Edge Planner
-  short_description: Run bounded Integration Edge Planner repository capability
-  default_prompt: Use $elmos-integration-edge-planner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Integration Edge Planner"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-integration-edge-planner to perform its bounded repository workflow with provenance and fail-closed evidence."

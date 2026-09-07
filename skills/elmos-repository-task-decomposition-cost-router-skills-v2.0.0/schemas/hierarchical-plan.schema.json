@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ElmosHierarchicalPlan",
+  "type": "object",
+  "required": [
+    "run_id",
+    "revision",
+    "root",
+    "nodes",
+    "refinement_frontier",
+    "coverage"
+  ],
+  "properties": {
+    "run_id": {
+      "type": "string"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "root": {
+      "type": "string"
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "$ref": "task.schema.json"
+      }
+    },
+    "refinement_frontier": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "scenarios",
+        "invariants"
+      ],
+      "properties": {
+        "scenarios": {
+          "type": "object"
+        },
+        "invariants": {
+          "type": "object"
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  }
+}

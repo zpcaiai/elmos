@@ -1,28 +1,59 @@
 {
-  "name": "elmos-dynamic-replanner",
-  "runtime": {
-    "certification": "NOT_CERTIFIED",
-    "effect_mode": "LOCAL_PURE",
-    "engine": "engines/repository-orchestrator-engine",
-    "external_evidence": "NOT_RUN",
-    "handler_id": "repo-orchestrator.dynamic-replanner.v1",
-    "local_evidence": "LOCAL_EXECUTED_SELF_ATTESTED",
-    "scope_fields": [
-      "tenant_id",
-      "project_id",
-      "actor_id",
-      "environment",
-      "repository_id",
-      "revision",
-      "purpose"
+  "certification_status": "NOT_CERTIFIED",
+  "contract": {
+    "acceptance": [
+      "every replan identifies trigger, changed assumptions and invalidated evidence"
+    ],
+    "guardrails": [
+      "Never rewrite plan history in place; append a revision."
+    ],
+    "inputs": [
+      "current plan/DAG",
+      "run-state journal",
+      "validation failures",
+      "discovered graph changes"
+    ],
+    "outputs": [
+      "`plan revision`",
+      "`preserved evidence set`",
+      "`invalidated tasks`",
+      "`new refinement frontier`"
+    ],
+    "triggers": []
+  },
+  "dag": {
+    "activation": "conditional",
+    "dependencies": [
+      "elmos-failure-classifier",
+      "elmos-semantic-conflict-detector",
+      "elmos-incremental-regression-gate",
+      "elmos-plan-diff-audit-journal"
     ]
   },
-  "schema_version": "elmos.repository-orchestrator.skill-binding.v1",
+  "external_evidence_status": "NOT_RUN",
+  "namespace": "repository-task-router-v2",
+  "package": {
+    "id": "elmos.repository-task-router-skills",
+    "name": "elmos-repository-task-decomposition-cost-router-skills",
+    "version": "2.0.0"
+  },
+  "runtime_binding": {
+    "adapter_requirement": null,
+    "callable": "dispatch",
+    "canonical_owner": "canonical.elmos.durable-runtime",
+    "handler": "dynamic_replanner",
+    "implementation_state": "IMPLEMENTED",
+    "local_evidence_status": "NOT_RUN",
+    "module": "elmos_repository_orchestrator.runtime",
+    "registry_path": "packages/repository-orchestrator/config/handler-registry.json",
+    "registry_sha256": "sha256:0da86a2756adc43d45252d72e25f7df4f07f377ea9b0a1ffdae7b6e41cc148f9"
+  },
+  "schema_version": "elmos.repository-task-router.compiled-skill.v1",
   "source": {
-    "archive_sha256": "2a363af4a4008a811bbc739f9a25b6150015befe144629fe97aebdaa640667db",
-    "package": "elmos-repository-task-decomposition-cost-router-skills",
-    "path": "skills/48-dynamic-replanner/SKILL.md",
-    "sha256": "a3691c6e451411b5a1c54832d62365926de6a2cd485c64cf230474b943151152",
+    "name": "elmos-dynamic-replanner",
+    "ordinal": 48,
+    "path": "skills/elmos-repository-task-decomposition-cost-router-skills-v2.0.0/skills/48-dynamic-replanner/SKILL.md",
+    "sha256": "sha256:a3691c6e451411b5a1c54832d62365926de6a2cd485c64cf230474b943151152",
     "version": "2.0.0"
   }
 }

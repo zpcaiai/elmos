@@ -1,4 +1,4 @@
 interface:
-  display_name: Uncertainty Exploration Planner
-  short_description: Run bounded Uncertainty Exploration Planner capability
-  default_prompt: Use $elmos-uncertainty-exploration-planner with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Uncertainty Exploration Planner"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-uncertainty-exploration-planner to perform its bounded repository workflow with provenance and fail-closed evidence."

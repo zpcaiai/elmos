@@ -1,4 +1,4 @@
 interface:
-  display_name: Patch Reviewer
-  short_description: Run bounded Patch Reviewer repository capability
-  default_prompt: Use $elmos-patch-reviewer with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Patch Reviewer"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-patch-reviewer to perform its bounded repository workflow with provenance and fail-closed evidence."

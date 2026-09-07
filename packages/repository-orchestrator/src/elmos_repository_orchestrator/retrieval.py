@@ -54,6 +54,7 @@ class SourceAnchor:
     content_sha256: str
     start: int | None = None
     end: int | None = None
+    locator: Mapping[str, int | float | str] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         require_string(self.uri, "anchor.uri")
@@ -64,6 +65,12 @@ class SourceAnchor:
             raise ContractError("invalid_anchor_range", "anchor range requires both start and end")
         if self.start is not None and (self.start < 0 or self.end is None or self.end < self.start):
             raise ContractError("invalid_anchor_range", "anchor range is invalid")
+        for key, value in self.locator.items():
+            require_string(key, "anchor.locator.key")
+            if isinstance(value, bool) or not isinstance(value, (int, float, str)):
+                raise ContractError("invalid_anchor_locator", "anchor locator values must be scalar")
+            if isinstance(value, float) and not math.isfinite(value):
+                raise ContractError("invalid_anchor_locator", "anchor locator values must be finite")
 
 
 @dataclass(frozen=True, slots=True)
@@ -78,6 +85,7 @@ class SearchDocument:
     vector: tuple[float, ...] | None = None
     modality: str = "text"
     metadata: Mapping[str, Any] = field(default_factory=dict)
+    _document_digest: str = field(init=False, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         for field_name in ("document_id", "tenant_id", "project_id", "revision_id", "content", "modality"):
@@ -87,6 +95,21 @@ class SearchDocument:
         for principal in self.allowed_principals:
             require_string(principal, "allowed_principals[]")
         object.__setattr__(self, "vector", _vector(self.vector, "vector"))
+        object.__setattr__(
+            self,
+            "_document_digest",
+            sha256_payload(
+                {
+                    "identity": self.identity,
+                    "content": self.content,
+                    "anchor": self.anchor,
+                    "acl": sorted(self.allowed_principals),
+                    "vector": self.vector,
+                    "modality": self.modality,
+                    "metadata": self.metadata,
+                }
+            ),
+        )
 
     @property
     def identity(self) -> tuple[str, str, str, str]:
@@ -94,17 +117,7 @@ class SearchDocument:
 
     @property
     def digest(self) -> str:
-        return sha256_payload(
-            {
-                "identity": self.identity,
-                "content": self.content,
-                "anchor": self.anchor,
-                "acl": sorted(self.allowed_principals),
-                "vector": self.vector,
-                "modality": self.modality,
-                "metadata": self.metadata,
-            }
-        )
+        return self._document_digest
 
 
 @dataclass(frozen=True, slots=True)
@@ -152,6 +165,7 @@ class RetrievalHit:
                 "content_sha256": self.document.anchor.content_sha256,
                 "start": self.document.anchor.start,
                 "end": self.document.anchor.end,
+                "locator": dict(self.document.anchor.locator),
             },
             "metadata": dict(self.document.metadata),
         }
@@ -163,6 +177,24 @@ class HybridIndex:
     def __init__(self) -> None:
         self._documents: dict[tuple[str, str, str, str], SearchDocument] = {}
         self._digests: dict[tuple[str, str, str, str], str] = {}
+        self._terms: dict[tuple[str, str, str, str], Counter[str]] = {}
+        self._lengths: dict[tuple[str, str, str, str], int] = {}
+        self._unit_vectors: dict[tuple[str, str, str, str], tuple[float, ...]] = {}
+        self._scope_ids: dict[tuple[str, str, str], set[tuple[str, str, str, str]]] = defaultdict(set)
+        self._postings: dict[str, set[tuple[str, str, str, str]]] = defaultdict(set)
+
+    def _remove_indexes(self, key: tuple[str, str, str, str]) -> None:
+        existing = self._documents.get(key)
+        if existing is None:
+            return
+        self._scope_ids[key[:3]].discard(key)
+        for term in self._terms.get(key, ()):
+            self._postings[term].discard(key)
+            if not self._postings[term]:
+                del self._postings[term]
+        self._terms.pop(key, None)
+        self._lengths.pop(key, None)
+        self._unit_vectors.pop(key, None)
 
     def upsert(self, documents: Iterable[SearchDocument]) -> tuple[int, int]:
         inserted = unchanged = 0
@@ -172,8 +204,20 @@ class HybridIndex:
             if self._digests.get(key) == digest:
                 unchanged += 1
                 continue
+            self._remove_indexes(key)
             self._documents[key] = document
             self._digests[key] = digest
+            terms = Counter(tokenize(document.content))
+            self._terms[key] = terms
+            self._lengths[key] = sum(terms.values())
+            if document.vector is not None:
+                norm = math.sqrt(sum(item * item for item in document.vector))
+                self._unit_vectors[key] = tuple(0.0 for _ in document.vector) if norm == 0 else tuple(
+                    item / norm for item in document.vector
+                )
+            self._scope_ids[key[:3]].add(key)
+            for term in terms:
+                self._postings[term].add(key)
             inserted += 1
         return inserted, unchanged
 
@@ -181,8 +225,10 @@ class HybridIndex:
         scope = (tenant_id, project_id, revision_id)
         keys = [key for key in self._documents if key[:3] == scope]
         for key in keys:
+            self._remove_indexes(key)
             del self._documents[key]
             del self._digests[key]
+        self._scope_ids.pop(scope, None)
         return len(keys)
 
     @staticmethod
@@ -194,56 +240,62 @@ class HybridIndex:
         right_norm = math.sqrt(sum(item * item for item in right))
         return 0.0 if left_norm == 0 or right_norm == 0 else dot / (left_norm * right_norm)
 
-    def _visible(self, query: RetrievalQuery) -> list[SearchDocument]:
-        return [
-            document
-            for document in self._documents.values()
-            if document.tenant_id == query.tenant_id
-            and document.project_id == query.project_id
-            and document.revision_id == query.revision_id
-            and bool(document.allowed_principals & query.principal_ids)
-            and (not query.modalities or document.modality in query.modalities)
-        ]
+    def _visible_ids(self, query: RetrievalQuery) -> set[tuple[str, str, str, str]]:
+        scope = (query.tenant_id, query.project_id, query.revision_id)
+        return {
+            key
+            for key in self._scope_ids.get(scope, ())
+            if bool(self._documents[key].allowed_principals & query.principal_ids)
+            and (not query.modalities or self._documents[key].modality in query.modalities)
+        }
 
     def search(self, query: RetrievalQuery) -> tuple[RetrievalHit, ...]:
-        documents = self._visible(query)
-        if not documents:
+        visible_ids = self._visible_ids(query)
+        if not visible_ids:
             return ()
         query_terms = Counter(tokenize(query.text))
-        document_terms = {document.identity: Counter(tokenize(document.content)) for document in documents}
-        avg_length = sum(sum(terms.values()) for terms in document_terms.values()) / len(documents)
-        frequencies: Counter[str] = Counter()
-        for terms in document_terms.values():
-            frequencies.update(terms.keys())
+        avg_length = sum(self._lengths[key] for key in visible_ids) / len(visible_ids)
+        frequencies = {
+            term: len(self._postings.get(term, set()) & visible_ids)
+            for term in query_terms
+        }
         lexical_scores: dict[tuple[str, str, str, str], float] = defaultdict(float)
         k1, b = 1.2, 0.75
-        for document in documents:
-            terms = document_terms[document.identity]
-            length = sum(terms.values())
-            for term, query_frequency in query_terms.items():
+        for term, query_frequency in query_terms.items():
+            for key in self._postings.get(term, set()) & visible_ids:
+                terms = self._terms[key]
+                length = self._lengths[key]
                 term_frequency = terms[term]
-                if not term_frequency:
-                    continue
-                inverse = math.log(1 + (len(documents) - frequencies[term] + 0.5) / (frequencies[term] + 0.5))
+                inverse = math.log(1 + (len(visible_ids) - frequencies[term] + 0.5) / (frequencies[term] + 0.5))
                 denominator = term_frequency + k1 * (1 - b + b * length / max(avg_length, 1))
-                lexical_scores[document.identity] += query_frequency * inverse * term_frequency * (k1 + 1) / denominator
+                lexical_scores[key] += query_frequency * inverse * term_frequency * (k1 + 1) / denominator
         lexical = sorted(
-            (document for document in documents if lexical_scores[document.identity] > 0),
+            (self._documents[key] for key in lexical_scores if lexical_scores[key] > 0),
             key=lambda item: (-lexical_scores[item.identity], item.document_id),
         )
         vector_scores: dict[tuple[str, str, str, str], float] = {}
         if query.vector is not None:
-            for document in documents:
+            query_norm = math.sqrt(sum(item * item for item in query.vector))
+            unit_query = tuple(0.0 for _ in query.vector) if query_norm == 0 else tuple(
+                item / query_norm for item in query.vector
+            )
+            for key in visible_ids:
+                document = self._documents[key]
                 if document.vector is not None:
-                    vector_scores[document.identity] = self._cosine(query.vector, document.vector)
+                    if len(unit_query) != len(self._unit_vectors[key]):
+                        raise ContractError("vector_dimension_mismatch", "query and document vectors have different dimensions")
+                    vector_scores[document.identity] = sum(
+                        left * right for left, right in zip(unit_query, self._unit_vectors[key])
+                    )
         vectors = sorted(
-            (document for document in documents if document.identity in vector_scores),
+            (self._documents[key] for key in vector_scores),
             key=lambda item: (-vector_scores[item.identity], item.document_id),
         )
         lexical_rank = {item.identity: rank for rank, item in enumerate(lexical, 1)}
         vector_rank = {item.identity: rank for rank, item in enumerate(vectors, 1)}
         combined: list[RetrievalHit] = []
-        for document in documents:
+        for key in visible_ids:
+            document = self._documents[key]
             lr = lexical_rank.get(document.identity)
             vr = vector_rank.get(document.identity)
             if lr is None and vr is None:
@@ -252,9 +304,10 @@ class HybridIndex:
             combined.append(RetrievalHit(document=document, score=score, lexical_rank=lr, vector_rank=vr))
         combined.sort(key=lambda item: (-item.score, item.document.document_id))
         unique: list[RetrievalHit] = []
-        seen_anchors: set[str] = set()
+        seen_anchors: set[tuple[object, ...]] = set()
         for hit in combined:
-            anchor_key = canonical_json(hit.to_payload()["anchor"])
+            anchor = hit.document.anchor
+            anchor_key = (anchor.uri, anchor.kind, anchor.content_sha256, anchor.start, anchor.end, canonical_json(anchor.locator))
             if anchor_key in seen_anchors:
                 continue
             seen_anchors.add(anchor_key)

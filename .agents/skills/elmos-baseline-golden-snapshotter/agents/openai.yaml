@@ -1,4 +1,4 @@
 interface:
-  display_name: Baseline Golden Snapshotter
-  short_description: Run bounded Baseline Golden Snapshotter repository capability
-  default_prompt: Use $elmos-baseline-golden-snapshotter with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Baseline Golden Snapshotter"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-baseline-golden-snapshotter to perform its bounded repository workflow with provenance and fail-closed evidence."

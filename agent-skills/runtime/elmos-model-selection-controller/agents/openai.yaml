@@ -1,4 +1,4 @@
 interface:
-  display_name: Model Selection Controller
-  short_description: Run bounded Model Selection Controller repository capability
-  default_prompt: Use $elmos-model-selection-controller with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Model Selection Controller"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-model-selection-controller to perform its bounded repository workflow with provenance and fail-closed evidence."

@@ -1,4 +1,4 @@
 interface:
-  display_name: Change Impact Analyzer
-  short_description: Run bounded Change Impact Analyzer repository capability
-  default_prompt: Use $elmos-change-impact-analyzer with trusted scope and explicit inputs; report implementation prerequisites and preserve evidence boundaries.
+  display_name: "Elmos Change Impact Analyzer"
+  short_description: "Run repository task routing with bounded evidence"
+  default_prompt: "Use $elmos-change-impact-analyzer to perform its bounded repository workflow with provenance and fail-closed evidence."
