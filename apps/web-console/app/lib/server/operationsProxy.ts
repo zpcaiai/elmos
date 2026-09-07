@@ -4,6 +4,7 @@ import {
   AccountSessionError,
   accountSessionFromRequest,
   accountCookieNames,
+  localAccountCookieNames,
   isPlatformAdministrator,
   unsafeCookieValue,
   type AccountPermission,
@@ -385,7 +386,7 @@ export type AdminPrincipal = {
   role: AdminRole;
   organizationId: string;
   actorId: string;
-  authentication: "OIDC_SESSION";
+  authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
   accessToken?: string;
 };
 
@@ -400,6 +401,8 @@ export function authorizeAdmin(
   };
   const hasAccountSession = Boolean(
     unsafeCookieValue(request, accountCookieNames.session),
+  ) || Boolean(
+    unsafeCookieValue(request, localAccountCookieNames.administratorSession),
   );
   if (!hasAccountSession) {
     throw new OperationsProxyError(
@@ -425,8 +428,9 @@ export function authorizeAdmin(
       role,
       organizationId: session.principal.organizationId,
       actorId: session.principal.actorId,
-      authentication: "OIDC_SESSION",
-      accessToken: session.accessToken,
+      authentication: session.principal.temporaryAdministrator
+        ? "TEMPORARY_ADMIN_PASSWORD" : "OIDC_SESSION",
+      accessToken: session.principal.temporaryAdministrator ? undefined : session.accessToken,
     };
   } catch (error) {
     if (error instanceof OperationsProxyError) throw error;

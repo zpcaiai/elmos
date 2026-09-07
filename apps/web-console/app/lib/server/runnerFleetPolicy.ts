@@ -65,7 +65,7 @@ export class RunnerFleetPolicyError extends Error {
 
 export type RunnerFleetAdminPrincipal = {
   role: "VIEWER" | "OPERATOR" | "APPROVER";
-  authentication: "OIDC_SESSION";
+  authentication: "OIDC_SESSION" | "TEMPORARY_ADMIN_PASSWORD";
   accessToken?: string;
 };
 
