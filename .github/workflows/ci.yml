@@ -723,8 +723,15 @@ jobs:
         run: |
           uv sync --locked
           uv run pytest
-          uv run ruff check src tests
+          uv run ruff check src tests scripts workload
           uv run mypy src
+      - name: Verify generation support matrix and workload image assets
+        run: |
+          uv --directory engines/project-synthesis-engine run --locked \
+            python ../../scripts/operations/validate_generation_support_matrix.py
+          test -f engines/project-synthesis-engine/workload/Dockerfile
+          test -f engines/project-synthesis-engine/workload/entrypoint.py
+          python3 -m py_compile scripts/operations/build_generation_workload_image.py
       - name: Verify service operability contracts
         run: |
           uv run --with pyyaml python tooling/validate_runtime_operability.py
@@ -930,6 +937,30 @@ jobs:
           e2e/runtime-deployment-guide.spec.ts
           e2e/truthful-workbench-ui.spec.ts
           e2e/usage-meter-ui.spec.ts
+      - name: Verify generation hosted fail-closed journeys
+        id: generation-hosted-journeys
+        env:
+          ELMOS_E2E_PORT: "3211"
+          ELMOS_E2E_WEB_SERVER_MODE: development
+          ELMOS_E2E_OUTPUT_DIR: test-results/ci-playwright-hosted
+          ELMOS_E2E_REPORT_DIR: test-results/ci-playwright-hosted-report
+          ELMOS_HOSTED_EXECUTION_ENABLED: "true"
+          ELMOS_E2E_HOSTED_MODE: "true"
+          ELMOS_LOCAL_GITHUB_PUBLISH_ENABLED: "true"
+        run: >-
+          pnpm --dir apps/web-console exec playwright test
+          --project=chromium
+          e2e/generation-hosted-failclosed.spec.ts
+      - name: Preserve generation hosted journey evidence
+        if: ${{ always() && steps.generation-hosted-journeys.outcome != 'skipped' }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: web-console-generation-hosted-evidence-${{ github.sha }}-${{ github.run_attempt }}
+          path: |
+            apps/web-console/test-results/ci-playwright-hosted
+            apps/web-console/test-results/ci-playwright-hosted-report
+          if-no-files-found: error
+          retention-days: 30
       - name: Preserve browser journey evidence
         if: ${{ always() && steps.browser-journeys.outcome != 'skipped' }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

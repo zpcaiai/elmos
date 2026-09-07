@@ -110,12 +110,11 @@ def run_pipeline(request_path: Path, actor: str) -> tuple[int, str, str]:
         "--archive",
         str(archive),
     ]
-    completed = subprocess.run(
+    completed = subprocess.run(  # noqa: S603 - fixed interpreter, repository-owned engine module.
         command,
         cwd=str(WORK_DIR),
         check=False,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
+        capture_output=True,
         text=True,
     )
     return completed.returncode, completed.stdout, completed.stderr

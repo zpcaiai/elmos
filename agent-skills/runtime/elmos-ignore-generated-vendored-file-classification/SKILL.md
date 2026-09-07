@@ -94,8 +94,8 @@ description: "当项目包包含 node_modules、vendor、build、缓存、二进
 - Source contract SHA-256: `020cda71206d71a5388dcbefbf0c15762297f66ac4a152955715673aee83f020`
 - Runtime handler: `engines/multimodal-intake-engine/src/elmos_multimodal_intake/skill_runtime.py::execute_ignore_generated_vendored_file_classification`
 - Runtime phase: `project-package`
-- Runtime implementation aggregate SHA-256: `c498b260b3aa1cf9719fbdeaee0cf30d052901f5041f2fe8ba52256a198d0db1`
-- Runtime test aggregate SHA-256: `0f1029010e9f9888aa7524b64d8a00efd412ee16b72f0f45169ac1aa84f5a183`
+- Runtime implementation aggregate SHA-256: `acdae2e65af0088dea2fa043000b820d987f69dc6b60f1cda1dec3d9ea19dd87`
+- Runtime test aggregate SHA-256: `300c3248c75b6088c5417766c50cbb757461bb9e47bdcab61ee23b026bd7e73f`
 - Exact dependencies: `$elmos-project-package-manifest`, `$elmos-data-retention-and-governance`
 - Acceptance identities: `S47-01`, `S47-02`, `S47-03`, `S47-04`, `S47-05`, `S47-06`
 - Generated contract: `compiled-contract.json`

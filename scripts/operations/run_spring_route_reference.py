@@ -863,8 +863,10 @@ def gradle_build(route: Route) -> str:
     """Groovy-DSL build mirroring the POM fixture dependency-for-dependency.
 
     The Spring Boot Gradle plugin pins the source Boot version (the Gradle
-    counterpart of the POM's ``spring-boot-starter-parent``), starters come
-    from the plugin's own BOM, and the boot jar lands in ``build/libs``.
+    counterpart of the POM's ``spring-boot-starter-parent``), and the
+    dependency-management plugin -- the canonical pairing start.spring.io
+    generates for Boot 2.x -- imports the matching BOM so the starters resolve
+    without explicit versions. The boot jar lands in ``build/libs``.
     """
 
     starters = "".join(
@@ -881,6 +883,7 @@ def gradle_build(route: Route) -> str:
     )
     return f"""plugins {{
     id 'org.springframework.boot' version '{route.source_boot}'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'java'
 }}
 

@@ -24,6 +24,7 @@ from typing import Any
 
 from .canonical import canonical_digest, canonical_json_bytes, validate_digest
 from .flowgraph import function_control_flow
+from .java_flowgraph import java_function_control_flow
 from .java_structure import is_java_path, java_structure
 from .python_structure import (
     ORIGIN_PARSED,
@@ -1248,12 +1249,18 @@ def discover_flows(inputs: JsonObject) -> CapabilityOutcome:
         step = len(flows)
         for file in files:
             path = str(file["path"])
-            if not is_python_path(path):
-                continue
             if requested_path is not None and path != str(requested_path):
                 continue
+            python_source = is_python_path(path)
+            java_source = is_java_path(path)
+            if not python_source and not java_source:
+                continue
             step += 1
-            graph = function_control_flow(str(file["text"]), function_name)
+            graph = (
+                function_control_flow(str(file["text"]), function_name)
+                if python_source
+                else java_function_control_flow(str(file["text"]), function_name)
+            )
             if graph is None:
                 # The file did not parse. Say so rather than emitting an empty
                 # graph, which would read as "this function has no branches".
@@ -1310,6 +1317,7 @@ def derive_data_lineage(inputs: JsonObject) -> CapabilityOutcome:
                             "path": file["path"],
                             "line": line,
                             "confidence": "INFERRED",
+                            "origin": ORIGIN_REGEX,
                         }
                     )
     return _outcome(
@@ -1334,11 +1342,21 @@ def reconcile_api_event_topology(inputs: JsonObject) -> CapabilityOutcome:
         for line, text in enumerate(str(file["text"]).splitlines(), 1):
             if match := endpoint_pattern.search(text):
                 endpoints.append(
-                    {"path": match.group(1), "source": file["path"], "line": line}
+                    {
+                        "path": match.group(1),
+                        "source": file["path"],
+                        "line": line,
+                        "origin": ORIGIN_REGEX,
+                    }
                 )
             if match := event_pattern.search(text):
                 events.append(
-                    {"channel": match.group(1), "source": file["path"], "line": line}
+                    {
+                        "channel": match.group(1),
+                        "source": file["path"],
+                        "line": line,
+                        "origin": ORIGIN_REGEX,
+                    }
                 )
     return _outcome(
         "PARTIAL_LOCAL_EXECUTED",

@@ -940,6 +940,11 @@ _INTEGRATION_TIMEOUT_SECONDS: dict[str, int] = {
     "java": 240,
 }
 
+_HARNESS_STARTUP_TIMEOUT_SECONDS: dict[str, int] = {
+    "kotlin": 300,
+    "rust": 300,
+}
+
 # Python declares its integration command inline in ``runtime_commands``
 # because it also owns the in-memory runtime shape; every other target is
 # declared in the table above.
@@ -1093,7 +1098,7 @@ def _harness_runtime_plan(
         },
         "providers": ["postgresql"],
         "port": port,
-        "startup_timeout_seconds": 180,
+        "startup_timeout_seconds": _HARNESS_STARTUP_TIMEOUT_SECONDS.get(language, 180),
         "requires_integration": True,
         "integration_command": [runner, *runner_arguments],
         "integration_environment": integration_environment,

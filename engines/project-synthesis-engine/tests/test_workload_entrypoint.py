@@ -33,6 +33,7 @@ def approved_synthesis_request() -> dict[str, object]:
         name="work-order-service",
         description="维修工单创建、查询和健康检查服务。",
         entity="work_order",
+        languages=["php"],
     )
     return approve_request(draft, actor="user:test")
 

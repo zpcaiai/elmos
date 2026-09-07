@@ -311,8 +311,9 @@ repository-task-router-skills:
 	PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=packages/repository-orchestrator/src $(UV) run python -m unittest discover -s packages/repository-orchestrator/tests -p 'test_*.py'
 	PYTHONDONTWRITEBYTECODE=1 $(UV) run --quiet --with pyyaml==6.0.2 --with jsonschema==4.25.1 python -m unittest discover -s tests/repository-task-router-skills -p 'test_*.py'
 	JAVA_HOME="$(JAVA_21_HOME)" "$(MAVEN)" -B -pl modules/repair-orchestration,apps/agent-gateway -am test
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir engines/frontend-client-engine run build
 	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec tsc --noEmit
-	PATH="$(NODE_RUNTIME_BIN):$$PATH" $(PNPM) --dir apps/web-console exec playwright test e2e/repository-orchestrator.spec.ts --project=chromium
+	PATH="$(NODE_RUNTIME_BIN):$$PATH" ELMOS_E2E_ENGINE_SKIP_BUILD=true $(PNPM) --dir apps/web-console exec playwright test e2e/repository-orchestrator.spec.ts --project=chromium
 modernization-b01-44-packages:
 	PYTHONDONTWRITEBYTECODE=1 python3 -m scripts.modernization_b01_44.cli packages --summary
 modernization-b01-44-foundation:
@@ -526,7 +527,7 @@ project-synthesis:
 		$(UV) run --quiet --with 'jsonschema>=4.23' python tooling/validate_project_synthesis_batch61_65_schemas.py)
 	$(CARGO) build --locked --release --offline --manifest-path native/rust-core/Cargo.toml
 	$(UV) --directory engines/project-synthesis-engine run --locked pytest
-	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts
+	$(UV) --directory engines/project-synthesis-engine run --locked ruff check src tests scripts workload
 	$(UV) --directory engines/project-synthesis-engine run --locked mypy src
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_acceptance.py
 	$(UV) --directory engines/project-synthesis-engine run --locked python scripts/run_production_matrix.py

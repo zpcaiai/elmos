@@ -30,7 +30,29 @@ BRANDS = {
     "fastapi": "FastAPI",
 }
 SMALL_WORDS = {"and", "or", "to", "up", "with"}
-ALLOWED_FRONTMATTER = {"name", "description", "license", "allowed-tools", "metadata"}
+ALLOWED_FRONTMATTER = {
+    "name",
+    "description",
+    "license",
+    "allowed-tools",
+    "metadata",
+    "compatibility",
+    "dependencies",
+    "kind",
+    "layer",
+    "outputs",
+    "package",
+    "phase",
+    "priority",
+    "readiness",
+    "risk",
+    "routable",
+    "route_owner",
+    "skill_id",
+    "status",
+    "triggers",
+    "version",
+}
 
 
 def yaml_quote(value: str) -> str:
