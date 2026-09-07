@@ -97,6 +97,7 @@ import * as route093 from "./auth/descope/otp/verify/_route";
 import * as route094 from "./auth/descope/wechat/start/_route";
 import * as route095 from "./auth/descope/wechat/callback/_route";
 import * as route096 from "./live-workbench/[[...path]]/_route";
+import * as route097 from "./auth/admin/login/_route";
 
 type ApiMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type ApiHandler = (
@@ -204,6 +205,7 @@ const ROUTES = compileRoutes<ApiRouteModule>([
   { template: "wallet/topup/[topupOrderId]", value: route090 as ApiRouteModule },
   { template: "wallet/topup", value: route091 as ApiRouteModule },
   { template: "live-workbench/[[...path]]", value: route096 as ApiRouteModule },
+  { template: "auth/admin/login", value: route097 as ApiRouteModule },
 ]);
 
 function allowedMethods(module: ApiRouteModule): string {

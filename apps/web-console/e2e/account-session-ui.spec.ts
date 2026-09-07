@@ -42,7 +42,7 @@ test("account session discovery represents anonymous state without a console-lev
   await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "使用邮箱登录" })).toBeVisible();
   await expect(page.getByLabel("邮箱")).toHaveAttribute("name", "email");
-  await expect(page.locator('input[name="loginMode"]')).toHaveValue("USER");
+  await expect(page.locator('input[name="loginMode"]')).toHaveCount(0);
   await expect(page.getByRole("button", { name: "使用邮箱登录" })).toBeVisible();
   await expect(page.getByRole("link", { name: "进入管理员登录" })).toHaveAttribute(
     "href",

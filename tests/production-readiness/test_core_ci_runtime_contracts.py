@@ -105,7 +105,16 @@ class CoreCiRuntimeContractTests(unittest.TestCase):
             path.relative_to(api_root).as_posix()
             for path in api_root.rglob("route.ts")
         }
-        self.assertEqual({"[[...path]]/route.ts", "frt/catalog/route.ts"}, entrypoints)
+        self.assertEqual(
+            {
+                "[[...path]]/route.ts",
+                "auth/admin/login/route.ts",
+                "auth/logout/route.ts",
+                "auth/session/route.ts",
+                "frt/catalog/route.ts",
+            },
+            entrypoints,
+        )
 
         handlers = {
             "./" + path.relative_to(api_root).as_posix().removesuffix(".ts")
