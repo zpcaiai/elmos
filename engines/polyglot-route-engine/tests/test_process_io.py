@@ -37,6 +37,19 @@ def test_ast_budget_upper_bound_remains_supported() -> None:
     assert result.stdout == "ok\n"
 
 
+def test_sink_only_policy_requires_a_host_owned_sink_before_spawn(monkeypatch) -> None:
+    monkeypatch.setattr(
+        subprocess,
+        "Popen",
+        lambda *args, **kwargs: pytest.fail("invalid capture policy spawned process"),
+    )
+    with pytest.raises(ValueError, match="PROCESS_CAPTURE_POLICY_INVALID"):
+        run_bounded(
+            [sys.executable, "-c", "pass"],
+            retain_stdout=False,
+        )
+
+
 def test_exact_output_and_input_are_preserved() -> None:
     result = run_bounded(
         [sys.executable, "-c", "import sys; print(sys.stdin.read()); sys.stderr.write('err\\r\\n')"],
@@ -142,6 +155,38 @@ def test_log_sink_never_receives_bytes_beyond_capture_limit(tmp_path: Path) -> N
             max_stream_bytes=4096, stdout_log=stdout_log,
         )
     assert log_path.stat().st_size <= 4096
+
+
+def test_binary_stdout_can_stream_to_a_bounded_host_owned_sink(tmp_path: Path) -> None:
+    output_path = tmp_path / "artifact.bin"
+    payload = bytes(range(256)) * 16
+    script = f"import sys; sys.stdout.buffer.write({payload!r})"
+    with output_path.open("xb") as stdout_log:
+        result = run_bounded(
+            [sys.executable, "-c", script],
+            env={},
+            timeout=15,
+            max_stream_bytes=len(payload),
+            stdout_log=stdout_log,
+            retain_stdout=False,
+        )
+    assert result.stdout == ""
+    assert result.stderr == ""
+    assert output_path.read_bytes() == payload
+
+
+def test_sink_only_stdout_still_enforces_the_execution_limit(tmp_path: Path) -> None:
+    output_path = tmp_path / "partial.bin"
+    with output_path.open("xb") as stdout_log, pytest.raises(ProcessOutputLimitError):
+        run_bounded(
+            [sys.executable, "-c", "import sys; sys.stdout.buffer.write(b'x'*8192)"],
+            env={},
+            timeout=15,
+            max_stream_bytes=4096,
+            stdout_log=stdout_log,
+            retain_stdout=False,
+        )
+    assert output_path.stat().st_size <= 4096
 
 
 @pytest.mark.skipif(os.name != "posix", reason="POSIX process-group contract")

@@ -46,6 +46,11 @@ def _validate_budgets(timeout: float, max_stream_bytes: int) -> None:
         raise ValueError("PROCESS_STREAM_BUDGET_INVALID")
 
 
+def _validate_capture_policy(retain_stdout: bool, stdout_log: BinaryIO | None) -> None:
+    if type(retain_stdout) is not bool or (not retain_stdout and stdout_log is None):
+        raise ValueError("PROCESS_CAPTURE_POLICY_INVALID")
+
+
 def bounded_communicate(
     process: subprocess.Popen[str],
     *,
@@ -55,6 +60,7 @@ def bounded_communicate(
     reap: bool = False,
     stdout_log: BinaryIO | None = None,
     stderr_log: BinaryIO | None = None,
+    retain_stdout: bool = True,
 ) -> tuple[str, str]:
     """Drain pipes concurrently, retaining at most the per-stream byte budget.
 
@@ -63,10 +69,12 @@ def bounded_communicate(
     explicitly retains its own reap/cleanup protocol. No helper threads exist.
     """
     _validate_budgets(timeout, max_stream_bytes)
+    _validate_capture_policy(retain_stdout, stdout_log)
     if os.name != "posix":
         raise OSError("BOUNDED_PROCESS_PLATFORM_NOT_IMPLEMENTED")
     deadline = time.monotonic() + timeout
     outputs = [bytearray(), bytearray()]
+    stream_sizes = [0, 0]
     logs = (stdout_log, stderr_log)
     encoding = locale.getpreferredencoding(False)
     payload = memoryview(input.encode(encoding) if input is not None else b"")
@@ -110,11 +118,13 @@ def bounded_communicate(
                 if not chunk:
                     selector.unregister(key.fileobj)
                     continue
-                if len(outputs[index]) + len(chunk) > max_stream_bytes:
+                if stream_sizes[index] + len(chunk) > max_stream_bytes:
                     raise ProcessOutputLimitError(
                         f"PROCESS_OUTPUT_LIMIT_EXCEEDED:{'stdout' if index == 0 else 'stderr'}"
                     )
-                outputs[index].extend(chunk)
+                stream_sizes[index] += len(chunk)
+                if index != 0 or retain_stdout:
+                    outputs[index].extend(chunk)
                 log = logs[index]
                 if log is not None:
                     if log.write(chunk) != len(chunk):
@@ -215,6 +225,7 @@ def run_bounded(
     stdin: int | None = None,
     stdout_log: BinaryIO | None = None,
     stderr_log: BinaryIO | None = None,
+    retain_stdout: bool = True,
 ) -> subprocess.CompletedProcess[str]:
     """A narrow ``subprocess.run`` adapter for exact text protocols.
 
@@ -222,9 +233,12 @@ def run_bounded(
     shell, environment additions, network permission, or sandbox authority.
     Optional binary log handles are host-owned, bounded by the same output
     limit, flushed as output arrives, and never opened from child-controlled
-    paths. Raw logs may contain source data; no ambient/global log sink exists.
+    paths. A caller may stream stdout only to that bounded host-owned sink so
+    binary compiler artifacts are never decoded or duplicated in memory. Raw
+    logs may contain source data; no ambient/global log sink exists.
     """
     _validate_budgets(timeout, max_stream_bytes)
+    _validate_capture_policy(retain_stdout, stdout_log)
     if not capture_output or not text or stdin not in (None, subprocess.DEVNULL):
         raise ValueError("bounded text capture required")
     if input is not None and len(input.encode()) > max_stream_bytes:
@@ -251,6 +265,7 @@ def run_bounded(
             stdout, stderr = bounded_communicate(
                 process, timeout=timeout, input=input, max_stream_bytes=max_stream_bytes,
                 stdout_log=stdout_log, stderr_log=stderr_log,
+                retain_stdout=retain_stdout,
             )
             _terminate(process)
             completed = subprocess.CompletedProcess(command, process.returncode, stdout, stderr)
