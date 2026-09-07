@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Mapping
+from collections.abc import Callable, Iterator, Mapping, Sequence
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -13,6 +13,7 @@ import stat
 import threading
 import time
 import uuid
+from urllib.parse import quote
 from typing import Any
 
 from .canonical import (
@@ -21,6 +22,7 @@ from .canonical import (
     digest_bytes,
     require_identifier,
     strict_json_loads,
+    validate_digest,
 )
 from .domain import CertificationStatus, EvidenceState, TenantScope
 
@@ -116,6 +118,17 @@ class IdempotencyDecision:
 
 
 @dataclass(frozen=True, slots=True)
+class AssetRecord:
+    kind: str
+    asset_id: str
+    parent_id: str
+    identity_digest: str
+    revision: int
+    payload: Mapping[str, Any]
+    payload_digest: str
+
+
+@dataclass(frozen=True, slots=True)
 class EventRecord:
     event_id: str
     aggregate_id: str
@@ -178,9 +191,7 @@ class OutboxAttemptRecord:
     context_digest: str
 
 
-OutboxReceiptVerifier = Callable[
-    [TenantScope, OutboxRecord, str, str, Mapping[str, Any]], bool
-]
+OutboxReceiptVerifier = Callable[[TenantScope, OutboxRecord, str, str, Mapping[str, Any]], bool]
 
 
 _VERSION = "elmos.foundry.store.v1"
@@ -212,9 +223,36 @@ CREATE TRIGGER foundry_outbox_no_delete BEFORE DELETE ON foundry_outbox BEGIN SE
 CREATE TRIGGER foundry_outbox_attempts_no_update BEFORE UPDATE ON foundry_outbox_attempts BEGIN SELECT RAISE(ABORT,'foundry_outbox_attempts is immutable'); END;
 CREATE TRIGGER foundry_outbox_attempts_no_delete BEFORE DELETE ON foundry_outbox_attempts BEGIN SELECT RAISE(ABORT,'foundry_outbox_attempts is immutable'); END;
 """
+_V1_SCHEMA = _SCHEMA
+_V1_VERSION = _VERSION
+_V1_SCHEMA_DIGEST = canonical_digest(
+    {"schema_version": _VERSION, "ddl_digest": digest_bytes(_SCHEMA.encode())}
+)
+_ASSET_DDL = (
+    "CREATE TABLE foundry_assets(tenant_id TEXT NOT NULL,project_id TEXT NOT NULL,kind TEXT NOT NULL CHECK(kind IN('knowledge','experience','dataset','dataset_item','model','health')),asset_id TEXT NOT NULL,parent_id TEXT NOT NULL,identity_digest TEXT NOT NULL,initial_payload_digest TEXT NOT NULL,revision INTEGER NOT NULL CHECK(revision>=1),payload_json TEXT NOT NULL,payload_digest TEXT NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,context_digest TEXT NOT NULL,PRIMARY KEY(tenant_id,project_id,kind,asset_id)) STRICT",
+    "CREATE INDEX foundry_assets_parent_idx ON foundry_assets(tenant_id,project_id,kind,parent_id,asset_id)",
+    "CREATE TRIGGER foundry_assets_no_delete BEFORE DELETE ON foundry_assets BEGIN SELECT RAISE(ABORT,'foundry_assets cannot be deleted'); END",
+    "CREATE TRIGGER foundry_assets_identity_immutable BEFORE UPDATE ON foundry_assets WHEN NEW.tenant_id!=OLD.tenant_id OR NEW.project_id!=OLD.project_id OR NEW.kind!=OLD.kind OR NEW.asset_id!=OLD.asset_id OR NEW.parent_id!=OLD.parent_id OR NEW.identity_digest!=OLD.identity_digest OR NEW.initial_payload_digest!=OLD.initial_payload_digest OR NEW.created_at!=OLD.created_at OR NEW.revision!=OLD.revision+1 BEGIN SELECT RAISE(ABORT,'foundry_assets identity or revision changed'); END",
+)
+_VERSION = "elmos.foundry.store.v2"
+_SCHEMA += "\n" + ";\n".join(_ASSET_DDL) + ";\n"
 _SCHEMA_DIGEST = canonical_digest(
     {"schema_version": _VERSION, "ddl_digest": digest_bytes(_SCHEMA.encode())}
 )
+_ASSET_KINDS = {"knowledge", "experience", "dataset", "dataset_item", "model", "health"}
+_ASSET_CREATE_CAPABILITIES = {
+    "knowledge": "foundry.knowledge.ingest",
+    "experience": "foundry.experience.capture",
+    "dataset": "foundry.dataset.create",
+    "dataset_item": "foundry.dataset.create",
+    "model": "foundry.model.package",
+    "health": "foundry.serving.health",
+}
+_ASSET_UPDATE_CAPABILITIES = {
+    "dataset_item": "foundry.dataset.quarantine",
+    "model": "foundry.model.promote",
+    "health": "foundry.serving.health",
+}
 
 
 def _objects(connection: sqlite3.Connection) -> tuple[tuple[str, str, str], ...]:
@@ -226,16 +264,17 @@ def _objects(connection: sqlite3.Connection) -> tuple[tuple[str, str, str], ...]
     )
 
 
-def _expected() -> tuple[tuple[str, str, str], ...]:
+def _expected(schema: str = _SCHEMA) -> tuple[tuple[str, str, str], ...]:
     connection = sqlite3.connect(":memory:", isolation_level=None)
     try:
-        connection.executescript(_SCHEMA)
+        connection.executescript(schema)
         return _objects(connection)
     finally:
         connection.close()
 
 
 _EXPECTED = _expected()
+_V1_EXPECTED = _expected(_V1_SCHEMA)
 
 
 def _mapping(value: str) -> Mapping[str, Any]:
@@ -293,12 +332,15 @@ class FoundryStore:
             self._path = resolved
             database = os.fspath(resolved)
         try:
+            if not self._memory and self._path is not None and self._path.stat().st_size:
+                self._preflight_existing()
             self._connection = sqlite3.connect(
                 database, isolation_level=None, check_same_thread=False, timeout=5.0
             )
             self._connection.row_factory = sqlite3.Row
             self._configure()
             self._initialize()
+            self._configure_journal()
             self._verify_file()
         except BaseException:
             if hasattr(self, "_connection"):
@@ -308,6 +350,10 @@ class FoundryStore:
     @property
     def path(self) -> Path | None:
         return self._path
+
+    @property
+    def persistence_mode(self) -> str:
+        return "PROCESS_LOCAL" if self._memory else "SQLITE_DURABLE"
 
     @staticmethod
     def _validate_file(status: os.stat_result) -> None:
@@ -339,14 +385,40 @@ class FoundryStore:
         self._connection.execute("PRAGMA synchronous=FULL")
         self._connection.execute("PRAGMA busy_timeout=5000")
         self._connection.execute("PRAGMA temp_store=MEMORY")
+        if self._connection.execute("PRAGMA foreign_keys").fetchone()[0] != 1:
+            raise StoreSecurityError("SQLite foreign-key enforcement is unavailable")
+
+    def _configure_journal(self) -> None:
         if (
             not self._memory
             and str(self._connection.execute("PRAGMA journal_mode=DELETE").fetchone()[0]).lower()
             != "delete"
         ):
             raise StoreSecurityError("SQLite refused DELETE journal mode")
-        if self._connection.execute("PRAGMA foreign_keys").fetchone()[0] != 1:
-            raise StoreSecurityError("SQLite foreign-key enforcement is unavailable")
+
+    def _preflight_existing(self) -> None:
+        """Reject unknown existing databases before opening a write-capable connection."""
+        assert self._path is not None
+        connection = sqlite3.connect("file:" + quote(str(self._path)) + "?mode=ro", uri=True)
+        try:
+            connection.execute("PRAGMA trusted_schema=OFF")
+            objects = _objects(connection)
+            if objects not in {_EXPECTED, _V1_EXPECTED}:
+                raise StoreIntegrityError("SQLite schema differs from repository contract")
+            version, schema_digest = (
+                (_VERSION, _SCHEMA_DIGEST)
+                if objects == _EXPECTED
+                else (_V1_VERSION, _V1_SCHEMA_DIGEST)
+            )
+            rows = list(
+                connection.execute(
+                    "SELECT singleton,schema_version,schema_digest FROM foundry_schema_metadata"
+                )
+            )
+            if rows != [(1, version, schema_digest)]:
+                raise StoreIntegrityError("SQLite schema metadata attestation failed")
+        finally:
+            connection.close()
 
     def _initialize(self) -> None:
         count = self._connection.execute(
@@ -368,7 +440,41 @@ class FoundryStore:
                 if self._connection.in_transaction:
                     self._rollback()
                 raise
+        elif _objects(self._connection) == _V1_EXPECTED:
+            self._migrate_v1()
         self._attest()
+
+    def _migrate_v1(self) -> None:
+        """Upgrade only the exact repository-owned v1 schema in one transaction."""
+        self._connection.execute("BEGIN IMMEDIATE")
+        try:
+            if _objects(self._connection) != _V1_EXPECTED:
+                raise StoreIntegrityError("legacy schema changed during migration")
+            rows = [
+                tuple(row)
+                for row in self._connection.execute(
+                    "SELECT singleton,schema_version,schema_digest FROM foundry_schema_metadata"
+                )
+            ]
+            if rows != [(1, _V1_VERSION, _V1_SCHEMA_DIGEST)]:
+                raise StoreIntegrityError("legacy schema metadata attestation failed")
+            for statement in _ASSET_DDL:
+                self._connection.execute(statement)
+            self._connection.execute("DROP TRIGGER foundry_schema_metadata_no_update")
+            self._connection.execute(
+                "UPDATE foundry_schema_metadata SET schema_version=?,schema_digest=? WHERE singleton=1",
+                (_VERSION, _SCHEMA_DIGEST),
+            )
+            trigger = next(
+                sql for _, name, sql in _EXPECTED if name == "foundry_schema_metadata_no_update"
+            )
+            self._connection.execute(trigger)
+            self._attest()
+            self._connection.execute("COMMIT")
+        except BaseException:
+            if self._connection.in_transaction:
+                self._rollback()
+            raise
 
     def _attest(self) -> None:
         if _objects(self._connection) != _EXPECTED:
@@ -426,6 +532,407 @@ class FoundryStore:
             .isoformat(timespec="microseconds")
             .replace("+00:00", "Z")
         )
+
+    @staticmethod
+    def _asset_kind(kind: str) -> str:
+        if kind not in _ASSET_KINDS:
+            raise ValueError("asset kind is not allowlisted")
+        return kind
+
+    @staticmethod
+    def _validate_asset_payload(
+        kind: str,
+        asset_id: str,
+        parent_id: str,
+        payload: Mapping[str, Any],
+    ) -> None:
+        identity_field = {
+            "knowledge": "object_id",
+            "experience": "episode_id",
+            "dataset": "dataset_id",
+            "dataset_item": "item_id",
+            "model": "release_id",
+            "health": "candidate_id",
+        }[kind]
+        if payload.get(identity_field) != asset_id:
+            raise StoreIntegrityError("asset payload identity differs from its immutable key")
+        if kind == "dataset_item":
+            if not parent_id or payload.get("dataset_id") != parent_id:
+                raise StoreIntegrityError("dataset item parent identity mismatch")
+        elif parent_id:
+            raise StoreIntegrityError("this asset kind cannot have a parent")
+        # These codecs are imported lazily because they use StoreIntegrityError.
+        from .asset_store import restore_asset
+        from .domain import DatasetItem, ExperienceEpisode, KnowledgeObject, ModelRelease
+
+        try:
+            if kind == "knowledge":
+                restore_asset(KnowledgeObject, payload)
+            elif kind == "experience":
+                restore_asset(ExperienceEpisode, payload)
+            elif kind == "dataset_item":
+                restore_asset(DatasetItem, payload)
+            elif kind == "model":
+                restore_asset(ModelRelease, payload)
+        except (ValueError, TypeError, KeyError) as exc:
+            raise StoreIntegrityError("stored asset violates its local domain contract") from exc
+
+    @staticmethod
+    def _asset(row: sqlite3.Row) -> AssetRecord:
+        payload = _mapping(row["payload_json"])
+        if canonical_digest(payload) != row["payload_digest"]:
+            raise StoreIntegrityError("asset payload digest mismatch")
+        if (payload.get("tenant_id"), payload.get("project_id")) != (
+            row["tenant_id"],
+            row["project_id"],
+        ):
+            raise StoreIntegrityError("asset payload scope mismatch")
+        FoundryStore._validate_asset_payload(
+            row["kind"], row["asset_id"], row["parent_id"], payload
+        )
+        return AssetRecord(
+            row["kind"],
+            row["asset_id"],
+            row["parent_id"],
+            row["identity_digest"],
+            row["revision"],
+            payload,
+            row["payload_digest"],
+        )
+
+    def create_assets(
+        self,
+        scope: TenantScope,
+        assets: Sequence[tuple[str, str, str, str, Mapping[str, Any]]],
+    ) -> tuple[AssetRecord, ...]:
+        """Public creation cannot supply consent/capture/data-use authorization facts."""
+        for kind, _, _, _, payload in assets:
+            if kind in {"experience", "dataset", "dataset_item"} or (
+                kind == "knowledge" and payload.get("training_consent") != "deny"
+            ):
+                raise StoreSecurityError(
+                    "governed asset creation requires its trusted manager path"
+                )
+        return self._create_assets(scope, assets)
+
+    def _create_assets_after_verified_authorization(
+        self,
+        scope: TenantScope,
+        assets: Sequence[tuple[str, str, str, str, Mapping[str, Any]]],
+    ) -> tuple[AssetRecord, ...]:
+        """Host-only path used after manager consent/capture/data-use verification.
+
+        This private library API, like _connection, is not a caller-data or provider route.
+        """
+        return self._create_assets(scope, assets)
+
+    def _create_assets(
+        self,
+        scope: TenantScope,
+        assets: Sequence[tuple[str, str, str, str, Mapping[str, Any]]],
+    ) -> tuple[AssetRecord, ...]:
+        """Atomically create exact identities; retries retain all subsequent state."""
+        scope = self._authorize(scope, self.WRITE_CAPABILITY)
+        if not 1 <= len(assets) <= 100_001:
+            raise ValueError("asset batch must contain 1..100001 records")
+        prepared: list[tuple[str, str, str, str, str, str, str]] = []
+        total_bytes = 0
+        identities: set[tuple[str, str]] = set()
+        authorized_kinds: set[str] = set()
+        for kind, asset_id, parent_id, identity_digest, payload in assets:
+            self._asset_kind(kind)
+            if kind not in authorized_kinds:
+                self._authorize(scope, _ASSET_CREATE_CAPABILITIES[kind])
+                authorized_kinds.add(kind)
+            require_identifier(asset_id, "asset_id")
+            if parent_id:
+                require_identifier(parent_id, "parent_id")
+            validate_digest(identity_digest, "asset.identity_digest")
+            self._validate_asset_payload(kind, asset_id, parent_id, payload)
+            if kind == "model" and payload.get("gate_level") != "E0_SYNTACTIC":
+                raise StoreIntegrityError("model creation must start at E0")
+            if (payload.get("tenant_id"), payload.get("project_id")) != (
+                scope.tenant_id,
+                scope.project_id,
+            ):
+                raise StoreSecurityError("asset payload scope mismatch")
+            if (kind, asset_id) in identities:
+                raise RecordConflict("duplicate identity in asset batch")
+            identities.add((kind, asset_id))
+            payload_json = canonical_json(payload)
+            total_bytes += len(payload_json.encode())
+            if total_bytes > 64 * 1024 * 1024:
+                raise ValueError("asset batch exceeds 64 MiB")
+            initial_payload = dict(payload)
+            initial_payload.pop("created_at", None)
+            prepared.append(
+                (
+                    kind,
+                    asset_id,
+                    parent_id,
+                    identity_digest,
+                    canonical_digest(initial_payload),
+                    payload_json,
+                    digest_bytes(payload_json.encode()),
+                )
+            )
+        now, result = self._now(), []
+        with self._transaction() as connection:
+            for (
+                kind,
+                asset_id,
+                parent_id,
+                identity_digest,
+                initial_digest,
+                payload_json,
+                payload_digest,
+            ) in prepared:
+                key = (scope.tenant_id, scope.project_id, kind, asset_id)
+                row = connection.execute(
+                    "SELECT * FROM foundry_assets WHERE tenant_id=? AND project_id=? AND kind=? AND asset_id=?",
+                    key,
+                ).fetchone()
+                if row is not None:
+                    if (
+                        row["identity_digest"] != identity_digest
+                        or row["parent_id"] != parent_id
+                        or row["initial_payload_digest"] != initial_digest
+                    ):
+                        raise IdempotencyConflict("asset identity is bound to a different request")
+                    result.append(self._asset(row))
+                    continue
+                connection.execute(
+                    "INSERT INTO foundry_assets VALUES(?,?,?,?,?,?,?,1,?,?,?,?,?)",
+                    (
+                        *key,
+                        parent_id,
+                        identity_digest,
+                        initial_digest,
+                        payload_json,
+                        payload_digest,
+                        now,
+                        now,
+                        scope.binding_digest,
+                    ),
+                )
+                row = connection.execute(
+                    "SELECT * FROM foundry_assets WHERE tenant_id=? AND project_id=? AND kind=? AND asset_id=?",
+                    key,
+                ).fetchone()
+                assert row is not None
+                result.append(self._asset(row))
+        return tuple(result)
+
+    def get_asset(self, scope: TenantScope, kind: str, asset_id: str) -> AssetRecord | None:
+        scope = self._authorize(scope, self.READ_CAPABILITY)
+        self._asset_kind(kind)
+        require_identifier(asset_id, "asset_id")
+        with self._transaction() as connection:
+            row = connection.execute(
+                "SELECT * FROM foundry_assets WHERE tenant_id=? AND project_id=? AND kind=? AND asset_id=?",
+                (scope.tenant_id, scope.project_id, kind, asset_id),
+            ).fetchone()
+            return None if row is None else self._asset(row)
+
+    def query_assets(
+        self,
+        scope: TenantScope,
+        kind: str,
+        *,
+        parent_id: str | None = None,
+        after_id: str = "",
+        limit: int = 100,
+        filters: Mapping[str, Any] | None = None,
+        min_reward: float | None = None,
+    ) -> tuple[AssetRecord, ...]:
+        scope = self._authorize(scope, self.READ_CAPABILITY)
+        self._asset_kind(kind)
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 1000:
+            raise ValueError("asset query limit must be in [1, 1000]")
+        if after_id:
+            require_identifier(after_id, "after_id")
+        clauses = ["tenant_id=?", "project_id=?", "kind=?", "asset_id>?"]
+        parameters: list[Any] = [scope.tenant_id, scope.project_id, kind, after_id]
+        if parent_id is not None:
+            require_identifier(parent_id, "parent_id")
+            clauses.append("parent_id=?")
+            parameters.append(parent_id)
+        allowed_filters = {
+            "object_type",
+            "rights_class",
+            "training_consent",
+            "task_type",
+            "split",
+            "quarantine",
+        }
+        for key, value in (filters or {}).items():
+            if key not in allowed_filters:
+                raise ValueError("asset query filter is not allowlisted")
+            clauses.append("json_extract(payload_json,?)=?")
+            parameters.extend(("$." + key, value))
+        if min_reward is not None:
+            if isinstance(min_reward, bool) or not 0 <= min_reward <= 1:
+                raise ValueError("minimum reward is outside bounds")
+            clauses.append("json_extract(payload_json,'$.reward_score')>=?")
+            parameters.append(min_reward)
+        parameters.append(limit)
+        with self._transaction() as connection:
+            rows = connection.execute(
+                "SELECT * FROM foundry_assets WHERE "
+                + " AND ".join(clauses)
+                + " ORDER BY asset_id LIMIT ?",
+                parameters,
+            )
+            result: list[AssetRecord] = []
+            total_bytes = 0
+            for row in rows:
+                total_bytes += len(row["payload_json"].encode())
+                if total_bytes > 16 * 1024 * 1024:
+                    raise ValueError("asset query exceeds 16 MiB; reduce the page limit")
+                result.append(self._asset(row))
+            return tuple(result)
+
+    def update_asset(
+        self,
+        scope: TenantScope,
+        kind: str,
+        asset_id: str,
+        expected_revision: int,
+        payload: Mapping[str, Any],
+        *,
+        event_type: str,
+        event_payload: Mapping[str, Any],
+    ) -> AssetRecord:
+        """Public updates cannot bypass the host-owned model promotion verifier."""
+        if kind == "model":
+            raise StoreSecurityError("model promotion requires the trusted ModelFoundry path")
+        return self._update_asset(
+            scope,
+            kind,
+            asset_id,
+            expected_revision,
+            payload,
+            event_type=event_type,
+            event_payload=event_payload,
+        )
+
+    def _update_model_after_verified_promotion(
+        self,
+        scope: TenantScope,
+        release_id: str,
+        expected_revision: int,
+        payload: Mapping[str, Any],
+        *,
+        audit: Mapping[str, Any],
+    ) -> AssetRecord:
+        """Host-only library boundary, called after ModelFoundry verifies exact evidence/consent.
+
+        Like _connection, this method is unavailable to caller data or a public provider route.
+        """
+        return self._update_asset(
+            scope,
+            "model",
+            release_id,
+            expected_revision,
+            payload,
+            event_type="model.release.promoted.local-e1",
+            event_payload=audit,
+        )
+
+    def _update_asset(
+        self,
+        scope: TenantScope,
+        kind: str,
+        asset_id: str,
+        expected_revision: int,
+        payload: Mapping[str, Any],
+        *,
+        event_type: str,
+        event_payload: Mapping[str, Any],
+    ) -> AssetRecord:
+        """Commit compare-and-swap state and its hash-chained audit event together."""
+        scope = self._authorize(scope, self.WRITE_CAPABILITY)
+        self._asset_kind(kind)
+        require_identifier(asset_id, "asset_id")
+        require_identifier(event_type, "event_type")
+        capability = _ASSET_UPDATE_CAPABILITIES.get(kind)
+        if capability is None:
+            raise RecordConflict("this asset kind is immutable")
+        self._authorize(scope, capability)
+        if (
+            isinstance(expected_revision, bool)
+            or not isinstance(expected_revision, int)
+            or expected_revision < 1
+        ):
+            raise ValueError("expected asset revision must be a positive integer")
+        if (payload.get("tenant_id"), payload.get("project_id")) != (
+            scope.tenant_id,
+            scope.project_id,
+        ):
+            raise StoreSecurityError("asset payload scope mismatch")
+        payload_json, payload_digest = canonical_json(payload), canonical_digest(payload)
+        now = self._now()
+        with self._transaction() as connection:
+            key = (scope.tenant_id, scope.project_id, kind, asset_id)
+            row = connection.execute(
+                "SELECT * FROM foundry_assets WHERE tenant_id=? AND project_id=? AND kind=? AND asset_id=?",
+                key,
+            ).fetchone()
+            if row is None:
+                raise RecordNotFound("asset not found in authenticated scope")
+            current = self._asset(row)
+            self._validate_asset_payload(kind, asset_id, current.parent_id, payload)
+            if kind == "dataset_item":
+                permitted = {
+                    **current.payload,
+                    "quality_score": 0.0,
+                    "quarantine": True,
+                    "evidence_state": "REJECTED",
+                }
+                if canonical_digest(payload) != canonical_digest(permitted):
+                    raise StoreIntegrityError(
+                        "dataset item updates may only quarantine the original item"
+                    )
+            elif kind == "model":
+                permitted = {**current.payload, "gate_level": "E1_UNIT_EVAL", "status": "VERIFYING"}
+                if current.payload["gate_level"] != "E0_SYNTACTIC" or canonical_digest(
+                    payload
+                ) != canonical_digest(permitted):
+                    raise StoreIntegrityError("model updates require an exact E0 to E1 transition")
+            if current.revision != expected_revision:
+                raise RecordConflict("asset revision changed; reload before retry")
+            connection.execute(
+                "UPDATE foundry_assets SET revision=revision+1,payload_json=?,payload_digest=?,updated_at=?,context_digest=? WHERE tenant_id=? AND project_id=? AND kind=? AND asset_id=?",
+                (payload_json, payload_digest, now, scope.binding_digest, *key),
+            )
+            audit = {
+                "kind": kind,
+                "from_revision": current.revision,
+                "to_revision": current.revision + 1,
+                "previous_payload_digest": current.payload_digest,
+                "payload_digest": payload_digest,
+                "details": event_payload,
+            }
+            self._append_event(
+                connection,
+                scope,
+                asset_id,
+                event_type,
+                audit,
+                "evt-" + uuid.uuid4().hex,
+                canonical_json(audit),
+                canonical_digest(audit),
+                now,
+            )
+            return AssetRecord(
+                kind,
+                asset_id,
+                current.parent_id,
+                current.identity_digest,
+                current.revision + 1,
+                _mapping(payload_json),
+                payload_digest,
+            )
 
     @staticmethod
     def _run(row: sqlite3.Row) -> RunRecord:
@@ -605,43 +1112,67 @@ class FoundryStore:
         payload_digest = canonical_digest(payload)
         now = self._now()
         with self._transaction() as connection:
-            prior = connection.execute(
-                "SELECT sequence,event_digest FROM foundry_events WHERE tenant_id=? AND project_id=? AND aggregate_id=? ORDER BY sequence DESC LIMIT 1",
-                (scope.tenant_id, scope.project_id, aggregate_id),
-            ).fetchone()
-            sequence = 1 if prior is None else prior["sequence"] + 1
-            previous = "sha256:" + "0" * 64 if prior is None else prior["event_digest"]
-            document = {
-                "schema_version": "elmos.foundry.event.v1",
-                "tenant_id": scope.tenant_id,
-                "project_id": scope.project_id,
-                "aggregate_id": aggregate_id,
-                "event_id": identifier,
-                "event_type": event_type,
-                "sequence": sequence,
-                "payload_digest": payload_digest,
-                "previous_digest": previous,
-                "created_at": now,
-                "context_digest": scope.binding_digest,
-            }
-            event_digest = canonical_digest(document)
-            connection.execute(
-                "INSERT INTO foundry_events VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
-                (
-                    scope.tenant_id,
-                    scope.project_id,
-                    aggregate_id,
-                    sequence,
-                    identifier,
-                    event_type,
-                    payload_json,
-                    payload_digest,
-                    previous,
-                    event_digest,
-                    now,
-                    scope.binding_digest,
-                ),
+            return self._append_event(
+                connection,
+                scope,
+                aggregate_id,
+                event_type,
+                payload,
+                identifier,
+                payload_json,
+                payload_digest,
+                now,
             )
+
+    def _append_event(
+        self,
+        connection: sqlite3.Connection,
+        scope: TenantScope,
+        aggregate_id: str,
+        event_type: str,
+        payload: Mapping[str, Any],
+        identifier: str,
+        payload_json: str,
+        payload_digest: str,
+        now: str,
+    ) -> EventRecord:
+        prior = connection.execute(
+            "SELECT sequence,event_digest FROM foundry_events WHERE tenant_id=? AND project_id=? AND aggregate_id=? ORDER BY sequence DESC LIMIT 1",
+            (scope.tenant_id, scope.project_id, aggregate_id),
+        ).fetchone()
+        sequence = 1 if prior is None else prior["sequence"] + 1
+        previous = "sha256:" + "0" * 64 if prior is None else prior["event_digest"]
+        document = {
+            "schema_version": "elmos.foundry.event.v1",
+            "tenant_id": scope.tenant_id,
+            "project_id": scope.project_id,
+            "aggregate_id": aggregate_id,
+            "event_id": identifier,
+            "event_type": event_type,
+            "sequence": sequence,
+            "payload_digest": payload_digest,
+            "previous_digest": previous,
+            "created_at": now,
+            "context_digest": scope.binding_digest,
+        }
+        event_digest = canonical_digest(document)
+        connection.execute(
+            "INSERT INTO foundry_events VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+            (
+                scope.tenant_id,
+                scope.project_id,
+                aggregate_id,
+                sequence,
+                identifier,
+                event_type,
+                payload_json,
+                payload_digest,
+                previous,
+                event_digest,
+                now,
+                scope.binding_digest,
+            ),
+        )
         return EventRecord(
             identifier,
             aggregate_id,
@@ -1073,6 +1604,7 @@ class FoundryStore:
 
 StateStore = FoundryStore
 __all__ = [
+    "AssetRecord",
     "CheckpointRecord",
     "EvidenceRecord",
     "EventRecord",

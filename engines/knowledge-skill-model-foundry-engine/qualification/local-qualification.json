@@ -1,5 +1,5 @@
 {
-  "baseline_commit": "765c97fc8161e2c1e1a465adacd75cd52510eab1",
+  "baseline_commit": "66165d9a75b6c39736354cd608ae443470cf0af2",
   "evidence_boundaries": {
     "certification": "NOT_CERTIFIED",
     "customer": "NOT_RUN",
@@ -10,14 +10,14 @@
   },
   "generated_artifacts": {
     "compiled_catalog": {
-      "bytes": 15948366,
+      "bytes": 15948837,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/compiled-catalog.json",
-      "sha256": "74004fd557b95b58eb293c2c46518582f6d699eb6f2aea97c32e86ce9f45a2b9"
+      "sha256": "0e8f343979fa03cc70a384cda4554d3ad525fc7660afb3862713d4848eef2e6c"
     },
     "package_report": {
       "bytes": 6116,
       "path": "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
-      "sha256": "4922ff759db1a2d61bb034df2d21a3772b3b56e15c59100ec5702023df87ecf3"
+      "sha256": "9d883e6d5689997685d5bd0922b477955265390392d24502d56002547932bb84"
     }
   },
   "implementation_tree": {
@@ -27,7 +27,7 @@
       "engines/knowledge-skill-model-foundry-engine/catalog/package-report.json",
       "engines/knowledge-skill-model-foundry-engine/qualification/local-qualification.json"
     ],
-    "file_count": 91,
+    "file_count": 119,
     "roots": [
       "AGENTS.md",
       "Makefile",
@@ -35,13 +35,15 @@
       "docs/knowledge-skill-model-foundry",
       "tests/knowledge-skill-model-foundry-skills",
       "tooling/integrate_knowledge_skill_model_foundry_skills.py",
-      "tooling/qualify_knowledge_skill_model_foundry.py"
+      "tooling/qualify_knowledge_skill_model_foundry.py",
+      "tooling/report_foundry_readiness.py"
     ],
-    "sha256": "7eafe96320f7a3fe5912a13d482cd13a1e3038a53fd953aea23e9ed42de78b0e",
+    "sha256": "eac9d0da25c9f9f724fc28c85bee14da3baaa5ed0c78cfbf2d25a938a9db3264",
     "transient_exclusions": [
       ".mypy_cache",
       ".pytest_cache",
       ".ruff_cache",
+      ".venv",
       "__pycache__",
       ".pyc",
       ".pyo"
@@ -51,10 +53,31 @@
     "applies_to": "BOUNDED_LOCAL_ENGINEERING_IMPLEMENTATION_ONLY",
     "capability_scope": {
       "compiled_contracts_validated": 1310,
-      "exact_local_semantic_handlers_exercised": 26,
-      "prepare_only_skills": 1284
+      "exact_integration_bindings_validated": 1310,
+      "exact_local_semantic_handlers_exercised": 51,
+      "host_route_bound_skills": 1259,
+      "integration_unbound_skills": 0,
+      "pipeline_host_routes_validated": 14,
+      "prepare_only_skills": 1259
     },
     "checks": [
+      {
+        "command": [
+          "uv",
+          "run",
+          "--quiet",
+          "python",
+          "tooling/report_foundry_readiness.py",
+          "--check"
+        ],
+        "environment": {
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"
+        },
+        "id": "readiness_inventory_check",
+        "status": "PASS",
+        "timeout_seconds": 300
+      },
       {
         "command": [
           "uv",
@@ -73,7 +96,7 @@
         },
         "id": "direct_zip_importer_check",
         "status": "PASS",
-        "timeout_seconds": 300
+        "timeout_seconds": 1200
       },
       {
         "command": [
@@ -86,6 +109,7 @@
           "check",
           "tooling/integrate_knowledge_skill_model_foundry_skills.py",
           "tooling/qualify_knowledge_skill_model_foundry.py",
+          "tooling/report_foundry_readiness.py",
           "engines/knowledge-skill-model-foundry-engine/src",
           "engines/knowledge-skill-model-foundry-engine/tests",
           "tests/knowledge-skill-model-foundry-skills"
@@ -105,7 +129,8 @@
           "mypy",
           "--strict",
           "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry",
-          "tooling/qualify_knowledge_skill_model_foundry.py"
+          "tooling/qualify_knowledge_skill_model_foundry.py",
+          "tooling/report_foundry_readiness.py"
         ],
         "environment": {
           "PYTHONPATH": "engines/knowledge-skill-model-foundry-engine/src"
@@ -125,7 +150,8 @@
           "-q",
           "engines/knowledge-skill-model-foundry-engine/src/elmos_foundry",
           "tooling/integrate_knowledge_skill_model_foundry_skills.py",
-          "tooling/qualify_knowledge_skill_model_foundry.py"
+          "tooling/qualify_knowledge_skill_model_foundry.py",
+          "tooling/report_foundry_readiness.py"
         ],
         "environment": {
           "PYTHONDONTWRITEBYTECODE": "1",
@@ -140,6 +166,8 @@
           "uv",
           "run",
           "--quiet",
+          "--with-requirements",
+          "engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock",
           "--with",
           "pyyaml==6.0.2",
           "--with",
@@ -159,13 +187,15 @@
         },
         "id": "engine_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 1200
+        "timeout_seconds": 2400
       },
       {
         "command": [
           "uv",
           "run",
           "--quiet",
+          "--with-requirements",
+          "engines/knowledge-skill-model-foundry-engine/requirements-runtime.lock",
           "--with",
           "pyyaml==6.0.2",
           "--with",
@@ -185,7 +215,7 @@
         },
         "id": "repository_integration_unittest_suite",
         "status": "PASS",
-        "timeout_seconds": 600
+        "timeout_seconds": 1200
       }
     ],
     "evidence_capture": "EXECUTED_BY_WRITE_MODE_ONLY",

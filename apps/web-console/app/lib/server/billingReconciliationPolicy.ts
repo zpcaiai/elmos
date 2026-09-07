@@ -57,7 +57,7 @@ export function requireFinancialOidcAdmin(
       "财务对账只接受已验证的管理员企业账户会话。",
     );
   }
-  const actualRank = roleRank[principal.role];
+  const actualRank = roleRank[principal.role as keyof typeof roleRank];
   if (!actualRank || actualRank < roleRank[requiredRole]) {
     throw new BillingReconciliationPolicyError(
       403,

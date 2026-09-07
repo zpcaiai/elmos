@@ -139,6 +139,7 @@ _SWIFT_BUILD_PROCESS_LIST_TIMEOUT_SECONDS = 1.0
 # Normal completion still requires three consecutive empty session snapshots.
 # Keep enough bounded wall-clock budget for every identity scan plus scheduler
 # contention on production developer hosts; exhaustion remains fail-closed.
+_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS = 1.0
 _SWIFT_BUILD_POST_COMPLETION_TIMEOUT_SECONDS = 10.0
 _SWIFT_BUILD_MAXIMUM_PROCESS_IDS = 32_768
 _SWIFT_BUILD_MAXIMUM_PROCESS_LIST_BYTES = 512 * 1024
@@ -888,11 +889,15 @@ def _canonical_digest(value: object) -> str:
 def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     try:
         package = package.absolute()
-        package_identity = _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        package_identity = _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_UNSAFE")
+        )
     except OSError as error:
         raise RouteError("SWIFT_ANALYZER_INPUT_MISSING") from error
     sources = package / "Sources"
-    sources_identity = _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    sources_identity = _stable_secure_directory_chain_identity(
+        _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_UNSAFE")
+    )
 
     def discover() -> list[Path]:
         candidates = [
@@ -944,8 +949,14 @@ def _swift_analyzer_input_manifest(package: Path) -> dict[str, Any]:
     if [item.relative_to(package).as_posix() for item in discover()] != [item["path"] for item in files]:
         raise RouteError("SWIFT_ANALYZER_INPUT_SET_CHANGED")
     if (
-        _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED") != package_identity
-        or _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED") != sources_identity
+        _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(package, "SWIFT_ANALYZER_PACKAGE_CHANGED")
+        )
+        != package_identity
+        or _stable_secure_directory_chain_identity(
+            _verify_secure_directory_chain(sources, "SWIFT_ANALYZER_SOURCES_CHANGED")
+        )
+        != sources_identity
     ):
         raise RouteError("SWIFT_ANALYZER_INPUT_DIRECTORY_CHANGED")
     try:
@@ -2409,7 +2420,7 @@ def _verify_swift_git_repository(
         ["-C", str(repository), "fsck", "--strict", "--full", "--no-dangling"],
         cwd=root,
         environment=environment,
-        timeout=300,
+        timeout=600,
         failure="SWIFT_ANALYZER_DEPENDENCY_FSCK_FAILED",
     )
     if require_standalone_object_store:
@@ -2660,7 +2671,7 @@ def _clone_verified_swift_dependency(
         ["-C", str(destination), "checkout", "--detach", _SWIFT_SYNTAX_REVISION],
         cwd=root,
         environment=environment,
-        timeout=300,
+        timeout=600,
         failure="SWIFT_ANALYZER_DEPENDENCY_CHECKOUT_FAILED",
     )
     dependency = _verify_swift_git_repository(
@@ -2975,8 +2986,30 @@ def _run_swift_build_step(
     except OSError as error:
         raise RouteError(failure + ":process") from error
     effective_timeout = int(os.environ.get("ELMOS_SWIFT_BUILD_TIMEOUT_SECONDS", str(timeout)))
+    communication_deadline = time.monotonic() + effective_timeout
+    pending_input = input_text
     try:
-        stdout, stderr = process.communicate(input=input_text, timeout=effective_timeout)
+        while True:
+            remaining = communication_deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(command, effective_timeout)
+            try:
+                stdout, stderr = process.communicate(
+                    input=pending_input,
+                    timeout=min(_SWIFT_BUILD_COMMUNICATION_POLL_SECONDS, remaining),
+                )
+                break
+            except subprocess.TimeoutExpired:
+                # communicate() waits for inherited stdout/stderr pipes even
+                # after the session leader exits.  SwiftPM compiler helpers
+                # have exhibited exactly that leak, which otherwise consumes
+                # the full one-hour cold-build timeout.  Poll the pinned leader
+                # so a completed leader with live pipe holders enters the same
+                # bounded, identity-checked process-tree cleanup as a timeout.
+                pending_input = None
+                poll = getattr(process, "poll", None)
+                if not callable(poll) or poll() is not None:
+                    raise
     except BaseException as error:
         cleanup_error, cleanup_diagnostics = _attempt_swift_build_session_cleanup(process)
         if cleanup_error is not None or cleanup_diagnostics:
@@ -5803,7 +5836,11 @@ def _run(
     command: list[str],
     *,
     cwd: Path,
-    timeout: int = 120,
+    # Native source analysis accepts files up to the repository contract's
+    # two-megabyte ceiling. Keep its default deadline aligned with target
+    # validation so a valid near-limit source is not classified as NOT_RUN
+    # merely because analysis gets less time than the generated build.
+    timeout: int = 600,
     isolated_cargo: bool = False,
     cargo_package: Path | None = None,
     environment_overrides: Mapping[str, str] | None = None,
@@ -7486,7 +7523,7 @@ def _java_analyzer_classes(helper: Path, toolchain: ExactToolchain) -> tuple[Pat
             [str(compiler), "--release", "21", "-nowarn", "-d", str(staging), str(helper)],
             capture_output=True,
             text=True,
-            timeout=300,
+            timeout=600,
             check=False,
         )
         if completed.returncode != 0:
