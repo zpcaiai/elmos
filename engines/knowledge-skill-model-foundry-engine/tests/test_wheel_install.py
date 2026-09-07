@@ -1,4 +1,4 @@
-"""Build/install coverage for the self-contained Foundry runtime wheel."""
+"""Offline wheel installation with pinned parser dependencies and catalog integrity."""
 
 from __future__ import annotations
 
@@ -96,13 +96,26 @@ class WheelInstallTests(unittest.TestCase):
                 "pip",
                 "install",
                 "--offline",
-                "--no-deps",
                 "--python",
                 str(python),
+                "--requirements",
+                str(source / "requirements-runtime.lock"),
                 str(wheel),
                 env=command_env,
             )
             self.assertEqual(installed.returncode, 0, installed.stderr or installed.stdout)
+
+            parsed = _run(
+                str(python),
+                "-c",
+                "import esprima; "
+                "assert esprima.version == '4.0.1'; "
+                "tree = esprima.parseModule('export const answer = 42;').toDict(); "
+                "assert tree['body'][0]['type'] == 'ExportNamedDeclaration'; "
+                "assert tree['body'][0]['declaration']['declarations'][0]['init']['value'] == 42",
+                env=command_env,
+            )
+            self.assertEqual(parsed.returncode, 0, parsed.stderr or parsed.stdout)
 
             cli = environment / "bin/elmos-foundry"
             validated = _run(str(cli), "validate", env=command_env)

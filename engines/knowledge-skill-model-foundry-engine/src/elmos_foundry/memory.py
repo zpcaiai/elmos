@@ -8,9 +8,11 @@ from types import MappingProxyType
 from typing import Any, Mapping, Sequence, cast
 
 from .authorizations import AuthorizationVerifier, require_authorization
+from .asset_store import asset_payload, restore_asset
 from .canonical import canonical_digest, canonical_value
 from .domain import CertificationStatus, EvidenceState, ExperienceEpisode, TenantScope
 from .kernel import ExecutionKernel
+from .store import FoundryStore, IdempotencyConflict
 
 _SECRET_PATTERNS = (
     re.compile(r"(?i)(bearer\s+)[A-Za-z0-9._~+/=-]+"),
@@ -47,9 +49,11 @@ class ExperienceMemoryStore:
         kernel: ExecutionKernel | None = None,
         *,
         capture_verifier: AuthorizationVerifier | None = None,
+        store: FoundryStore | None = None,
     ) -> None:
         self.kernel = kernel or ExecutionKernel()
         self._capture_verifier = capture_verifier
+        self.store = store
         self._episodes: dict[tuple[str, str, str], ExperienceEpisode] = {}
         self._lock = RLock()
 
@@ -74,7 +78,9 @@ class ExperienceMemoryStore:
             raise ValueError("task_goal must be a non-empty string")
         if not isinstance(trajectory, Sequence) or isinstance(trajectory, (str, bytes)):
             raise TypeError("trajectory must be a sequence of objects")
-        if not 1 <= len(trajectory) <= 2048 or any(not isinstance(step, Mapping) for step in trajectory):
+        if not 1 <= len(trajectory) <= 2048 or any(
+            not isinstance(step, Mapping) for step in trajectory
+        ):
             raise ValueError("trajectory must contain 1..2048 object steps")
         subject_digest = canonical_digest(
             {
@@ -120,6 +126,7 @@ class ExperienceMemoryStore:
                 "reward_score": reward_score,
                 "capture_authorization_digest": capture_authorization_digest,
                 "capture_request_digest": authorization.request_digest,
+                "verifier_claim": claimed_verifier,
             }
         )
         episode_id = "ep-" + identity.removeprefix("sha256:")[:32]
@@ -146,7 +153,21 @@ class ExperienceMemoryStore:
             certification_status=CertificationStatus.NOT_CERTIFIED,
         )
         with self._lock:
-            self._episodes[(scope.tenant_id, scope.project_id, episode_id)] = episode
+            if self.store is not None:
+                record = self.store._create_assets_after_verified_authorization(
+                    scope, (("experience", episode_id, "", identity, asset_payload(episode)),)
+                )[0]
+                return restore_asset(ExperienceEpisode, record.payload)
+            key = (scope.tenant_id, scope.project_id, episode_id)
+            existing = self._episodes.get(key)
+            if existing is not None:
+                before, after = asset_payload(existing), asset_payload(episode)
+                before.pop("created_at")
+                after.pop("created_at")
+                if canonical_digest(before) != canonical_digest(after):
+                    raise IdempotencyConflict("experience episode ID collision")
+                return existing
+            self._episodes[key] = episode
         return episode
 
     def get_episode(
@@ -154,6 +175,9 @@ class ExperienceMemoryStore:
     ) -> ExperienceEpisode | None:
         scope = tenant_scope or self.kernel.current_tenant
         self.kernel.require_context(scope, "foundry.experience.read")
+        if self.store is not None:
+            record = self.store.get_asset(scope, "experience", episode_id)
+            return None if record is None else restore_asset(ExperienceEpisode, record.payload)
         with self._lock:
             return self._episodes.get((scope.tenant_id, scope.project_id, episode_id))
 
@@ -164,11 +188,30 @@ class ExperienceMemoryStore:
         tenant_scope: TenantScope | None = None,
         *,
         limit: int = 100,
+        after_id: str = "",
     ) -> Sequence[ExperienceEpisode]:
         scope = tenant_scope or self.kernel.current_tenant
         self.kernel.require_context(scope, "foundry.experience.read")
-        if not 0 <= min_reward <= 1 or not 1 <= limit <= 1000:
+        if (
+            isinstance(limit, bool)
+            or not isinstance(limit, int)
+            or isinstance(min_reward, bool)
+            or not 0 <= min_reward <= 1
+            or not 1 <= limit <= 1000
+        ):
             raise ValueError("reward and query limit are outside bounds")
+        if self.store is not None:
+            return tuple(
+                restore_asset(ExperienceEpisode, record.payload)
+                for record in self.store.query_assets(
+                    scope,
+                    "experience",
+                    limit=limit,
+                    min_reward=min_reward,
+                    after_id=after_id,
+                    filters={} if task_type is None else {"task_type": task_type},
+                )
+            )
         with self._lock:
             matches = sorted(
                 (
@@ -177,6 +220,7 @@ class ExperienceMemoryStore:
                     if tenant == scope.tenant_id
                     and project == scope.project_id
                     and episode.reward_score >= min_reward
+                    and episode.episode_id > after_id
                     and (task_type is None or episode.task_type == task_type)
                 ),
                 key=lambda item: item.episode_id,
