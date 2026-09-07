@@ -3,6 +3,7 @@ import {
   accountSessionFromRequest,
   localCredentialsConfigured,
   oidcConfigured,
+  temporaryAdministratorConfigured,
 } from "../../../lib/server/accountSession";
 
 export const runtime = "nodejs";
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         authenticated: false,
-        configured: oidcConfigured() || localCredentialsConfigured(),
+        configured: oidcConfigured() || localCredentialsConfigured() || temporaryAdministratorConfigured(),
         principal: null,
         expiresAt: null,
       },

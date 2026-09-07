@@ -12,13 +12,9 @@ test("administrator login is visibly separate from user login", async ({ page })
   await expect(page.getByLabel("管理员邮箱")).toHaveCount(0);
   await expect(page.getByLabel("密码")).toHaveCount(0);
   await expect(page.getByText(/每次管理员成功登录后/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "返回用户登录" })).toHaveAttribute("href", "/login");
+  // 管理员登录卡片不提供任何用户登录入口。
+  await expect(page.locator(".admin-auth-card a[href='/login']")).toHaveCount(0);
   await expect(page.locator(".admin-auth-card")).toBeVisible();
-
-  await page.getByRole("link", { name: "返回用户登录" }).click();
-  await expect(page).toHaveURL(/\/login$/);
-  await expect(page.getByRole("heading", { name: "用户登录" })).toBeVisible();
-  await expect(page.locator(".user-auth-card")).toBeVisible();
 });
 
 test("administrator login reports rejected and unavailable security states", async ({ page }) => {

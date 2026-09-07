@@ -175,10 +175,6 @@ a.profile-row.active { background: rgba(255,255,255,.08); }
 .user-scope-notice span, .admin-scope-notice span { font-size: 12px; line-height: 1.6; opacity: .92; }
 .user-scope-notice small, .admin-scope-notice small { font-size: 11px; line-height: 1.55; opacity: .72; }
 .admin-scope-notice { border-color: rgba(232,177,111,.3); background: rgba(148,80,15,.11); }
-.admin-entry-callout { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 15px; border: 1px solid #e2c7a9; border-radius: 11px; background: var(--amber-soft); }
-.admin-entry-callout > div { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
-.admin-entry-callout strong { color: var(--amber); font-size: 11px; }
-.admin-entry-callout span { color: var(--ink-soft); font-size: 10px; line-height: 1.5; }
 .admin-entry-button { flex: 0 0 auto; border-color: #c6915b; background: white; color: var(--amber); }
 .admin-entry-button:hover { background: #fff9f2; }
 .admin-auth-page { position: relative; isolation: isolate; }
@@ -195,7 +191,6 @@ a.profile-row.active { background: rgba(255,255,255,.08); }
 .admin-login-notification { width: 100%; display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #d8b58c; border-radius: 9px; background: #fff8ef; }
 .admin-login-notification strong { color: var(--amber); font-size: 10px; }
 .admin-login-notification span { color: var(--ink-soft); font-size: 10px; line-height: 1.55; }
-.admin-auth-links { padding-top: 2px; border-top: 1px solid #ead8c4; }
 .admin-shell .sidebar { border-right-color: rgba(241,189,125,.18); box-shadow: inset 0 4px 0 #94500f; }
 .admin-shell .brand-mark { background: #f5d5ac; color: #6e3508; }
 .admin-shell .topbar { border-bottom-color: #dfc4a4; }
@@ -1242,7 +1237,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible
 @media (max-width: 680px) {
   .topbar { height: 58px; gap: 8px; padding: 0 12px; }.topbar-actions { gap: 5px; }.environment-pill, .topbar-divider, .topbar-actions .icon-button { display: none; }.topbar .mobile-menu, .topbar .command-trigger { min-width: 44px; width: 44px; height: 44px; display: grid; flex: 0 0 44px; }.breadcrumb { min-width: 0; margin-left: 0; overflow: hidden; white-space: nowrap; flex: 1 1 auto; }.breadcrumb span, .breadcrumb strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; }.main-content { padding: 23px 15px 40px; }.page-stack { gap: 17px; }
   .anonymous-login-actions { gap: 4px; }.anonymous-login-actions .top-login-link { min-height: 36px; padding-inline: 7px; font-size: 9px; }
-  .admin-entry-callout { align-items: stretch; flex-direction: column; }.admin-entry-button { width: 100%; min-height: 44px; }
+  .admin-entry-button { width: 100%; min-height: 44px; }
   .auth-page { padding: 10px 0; }.auth-card { padding: 25px 20px; }
   .back-to-top { width: 44px; min-height: 44px; justify-content: center; padding: 0; }.back-to-top span { display: none; }
   .welcome-card { min-height: auto; padding: 30px 24px; }.welcome-copy h1 { font-size: 32px; }.welcome-actions { flex-direction: column; align-items: stretch; }

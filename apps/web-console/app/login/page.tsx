@@ -25,7 +25,7 @@ const errorMessages: Record<string, string> = {
   LOCAL_CREDENTIALS_UNAVAILABLE: "本地测试账号当前不可用。",
   EMAIL_CREDENTIALS_INVALID: "邮箱或密码错误。",
   LOGIN_MODE_INVALID: "登录入口无效，请从当前页面重新开始。",
-  ADMIN_LOGIN_ENTRY_REQUIRED: "管理员账户必须从独立的管理员入口登录。",
+  ADMIN_LOGIN_ENTRY_REQUIRED: "该账户无法通过用户入口登录。",
 };
 
 export default async function LoginPage({
@@ -60,7 +60,7 @@ export default async function LoginPage({
         {configured && (
           <a
             className="button button-primary"
-            href={`/api/auth/login?${new URLSearchParams({ mode: "USER", returnTo })}`}
+            href={`/api/auth/login?${new URLSearchParams({ returnTo })}`}
           >
             使用企业账户登录用户中心
           </a>
@@ -70,7 +70,6 @@ export default async function LoginPage({
             <h2>使用邮箱登录</h2>
             <p>本地邮箱密码登录仅限 localhost 开发测试；生产环境永久禁用。</p>
             <input type="hidden" name="returnTo" value={returnTo} />
-            <input type="hidden" name="loginMode" value="USER" />
             <label>
               <span>邮箱</span>
               <input
@@ -95,20 +94,13 @@ export default async function LoginPage({
             <a className="text-link" href={`/register?${new URLSearchParams({ returnTo })}`}>注册本地账户</a>
           </div>
         )}
-        <div className="admin-entry-callout" aria-label="管理员专用入口">
-          <div>
-            <strong>管理员专用入口</strong>
-            <span>管理员登录与普通用户登录使用独立页面和受控会话，可见页面也完全不同。</span>
-          </div>
-          <a className="button admin-entry-button" href="/admin/login">进入管理员登录</a>
-        </div>
         {!configured && !localConfigured && (
           <div className="auth-not-configured" role="status">
             <strong>身份提供商未配置</strong>
             <span>需要设置精确的 issuer、授权端点、令牌端点、JWKS、client 和回调地址。</span>
           </div>
         )}
-        <small>普通用户登录不会授予管理员权限。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
+        <small>普通用户登录不会授予管理员权限。管理员登录使用完全独立的入口与页面，本页面不提供管理员登录功能。未登录、令牌过期、权限不足或租户不匹配时，服务端 API 均会拒绝操作。</small>
       </div>
     </section>
   );

@@ -258,6 +258,8 @@ export async function proxy(request: NextRequest) {
     (localCredentialMode && !adminRoute)
     || request.cookies.has("__Host-elmos_session")
     || request.cookies.has("elmos_local_session")
+    // Presence only: the server-side surface guard validates the bootstrap.
+    || request.cookies.has("elmos_local_admin_session")
   ) {
     return NextResponse.next();
   }
