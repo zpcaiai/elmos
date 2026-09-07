@@ -165,6 +165,7 @@ def _run_clang(
     source: Path,
     language: Language,
     sdk_path: str | None,
+    timeout: int = 600,
 ) -> dict[str, Any]:
     mode = "c++" if language == "cpp" else "objective-c"
     standard = "-std=c++20" if language == "cpp" else "-std=c17"
@@ -195,7 +196,7 @@ def _run_clang(
                 check=False,
                 capture_output=True,
                 text=True,
-                timeout=120,
+                timeout=timeout,
                 env=sanitized_subprocess_env(
                     home=home,
                     temp_dir=scratch,
